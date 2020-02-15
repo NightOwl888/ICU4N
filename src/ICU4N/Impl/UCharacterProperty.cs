@@ -527,9 +527,9 @@ namespace ICU4N.Impl
 
         public bool HasBinaryProperty(int c, UProperty which)
         {
-            if (which < UProperty.Binary_Start
+            if (which < UPropertyConstants.Binary_Start
 #pragma warning disable 612, 618
-                || UProperty.Binary_Limit <= which)
+                || UPropertyConstants.Binary_Limit <= which)
 #pragma warning restore 612, 618
             {
                 // not a known binary property
@@ -701,21 +701,21 @@ namespace ICU4N.Impl
 
         public int GetIntPropertyValue(int c, UProperty which)
         {
-            if (which < UProperty.Int_Start)
+            if (which < UPropertyConstants.Int_Start)
             {
-                if (UProperty.Binary_Start <= which
+                if (UPropertyConstants.Binary_Start <= which
 #pragma warning disable 612, 618
-                    && which < UProperty.Binary_Limit)
+                    && which < UPropertyConstants.Binary_Limit)
 #pragma warning restore 612, 618
                 {
                     return binProps[(int)which].Contains(c) ? 1 : 0;
                 }
             }
 #pragma warning disable 612, 618
-            else if (which < UProperty.Int_Limit)
+            else if (which < UPropertyConstants.Int_Limit)
 #pragma warning restore 612, 618
             {
-                return intProps[which - UProperty.Int_Start].GetValue(c);
+                return intProps[which - UPropertyConstants.Int_Start].GetValue(c);
             }
             else if (which == UProperty.General_Category_Mask)
             {
@@ -726,48 +726,48 @@ namespace ICU4N.Impl
 
         public int GetIntPropertyMaxValue(UProperty which)
         {
-            if (which < UProperty.Int_Start)
+            if (which < UPropertyConstants.Int_Start)
             {
-                if (UProperty.Binary_Start <= which
+                if (UPropertyConstants.Binary_Start <= which
 #pragma warning disable 612, 618
-                    && which < UProperty.Binary_Limit)
+                    && which < UPropertyConstants.Binary_Limit)
 #pragma warning restore 612, 618
                 {
                     return 1;  // maximum TRUE for all binary properties
                 }
             }
 #pragma warning disable 612, 618
-            else if (which < UProperty.Int_Limit)
+            else if (which < UPropertyConstants.Int_Limit)
 #pragma warning restore 612, 618
             {
-                return intProps[which - UProperty.Int_Start].GetMaxValue(which);
+                return intProps[which - UPropertyConstants.Int_Start].GetMaxValue(which);
             }
             return -1; // undefined
         }
 
         public UPropertySource GetSource(UProperty which)
         {
-            if (which < UProperty.Binary_Start)
+            if (which < UPropertyConstants.Binary_Start)
             {
                 return UPropertySource.None; /* undefined */
             }
 #pragma warning disable 612, 618
-            else if (which < UProperty.Binary_Limit)
+            else if (which < UPropertyConstants.Binary_Limit)
 #pragma warning restore 612, 618
             {
                 return binProps[(int)which].Source;
             }
-            else if (which < UProperty.Int_Start)
+            else if (which < UPropertyConstants.Int_Start)
             {
                 return UPropertySource.None; /* undefined */
             }
 #pragma warning disable 612, 618
-            else if (which < UProperty.Int_Limit)
+            else if (which < UPropertyConstants.Int_Limit)
 #pragma warning restore 612, 618
             {
-                return intProps[which - UProperty.Int_Start].Source;
+                return intProps[which - UPropertyConstants.Int_Start].Source;
             }
-            else if (which < UProperty.String_Start)
+            else if (which < UPropertyConstants.String_Start)
             {
                 switch (which)
                 {
@@ -780,7 +780,7 @@ namespace ICU4N.Impl
                 }
             }
 #pragma warning disable 612, 618
-            else if (which < UProperty.String_Limit)
+            else if (which < UPropertyConstants.String_Limit)
 #pragma warning restore 612, 618
             {
                 switch (which)
@@ -802,9 +802,9 @@ namespace ICU4N.Impl
                         return UPropertySource.Case;
 
 #pragma warning disable 612, 618
-                    case UProperty.ISO_Comment:
+                    case UPropertyConstants.ISO_Comment:
                     case UProperty.Name:
-                    case UProperty.Unicode_1_Name:
+                    case UPropertyConstants.Unicode_1_Name:
 #pragma warning restore 612, 618
                         return UPropertySource.Names;
 
@@ -1414,11 +1414,11 @@ namespace ICU4N.Impl
 
             // consistency check
 #pragma warning disable 612, 618
-            if (binProps.Length != (int)UProperty.Binary_Limit)
+            if (binProps.Length != (int)UPropertyConstants.Binary_Limit)
             {
                 throw new ICUException("binProps.length!=UProperty.BINARY_LIMIT");
             }
-            if (intProps.Length != ((int)UProperty.Int_Limit - (int)UProperty.Int_Start))
+            if (intProps.Length != ((int)UPropertyConstants.Int_Limit - (int)UPropertyConstants.Int_Start))
             {
                 throw new ICUException("intProps.length!=(UProperty.INT_LIMIT-UProperty.INT_START)");
             }

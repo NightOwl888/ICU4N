@@ -1052,7 +1052,7 @@ namespace ICU4N.Text
         /// <param name="c"></param>
         /// <param name="set"></param>
         [Obsolete("This API is ICU internal only.")]
-        internal void InternalAddContractions(int c, UnicodeSet set)
+        internal void InternalAddContractions(int c, UnicodeSet set) // ICU4N specific - marked internal, since the functionality is obsolete
         {
             new ContractionsAndExpansions(set, null, null, false).ForCodePoint(data, c);
         }
@@ -1259,7 +1259,7 @@ namespace ICU4N.Text
         /// <param name="str">The string.</param>
         /// <internal>For tests &amp; tools.</internal>
         [Obsolete("This API is ICU internal only.")]
-        public long[] InternalGetCEs(ICharSequence str)
+        internal long[] InternalGetCEs(ICharSequence str) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             CollationBuffer buffer = null;
             try
@@ -1573,7 +1573,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected override int DoCompare(ICharSequence left, ICharSequence right)
+        internal override int DoCompare(ICharSequence left, ICharSequence right) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             if (left == right)
             {

@@ -93,7 +93,7 @@ namespace ICU4N.Dev.Test.Translit
             }
 
 #pragma warning disable 672
-            protected override void LoadRange(int myRange)
+            internal override void LoadRange(int myRange) // ICU4N: Marked internal instead of protected, since base class functionality is obsolete
 #pragma warning restore 672
             {
                 base.LoadRange(myRange);

@@ -2148,7 +2148,7 @@ namespace ICU4N.Text
         /// Register the script-based "Any" transliterators: Any-Latin, Any-Greek
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        public static void RegisterAny()
+        internal static void RegisterAny() // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             AnyTransliterator.Register();
         }

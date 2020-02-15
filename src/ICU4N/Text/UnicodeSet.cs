@@ -1965,7 +1965,7 @@ namespace ICU4N.Text
         /// <returns>Regex pattern equivalent to this <see cref="UnicodeSet"/>.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public string GetRegexEquivalent()
+        internal string GetRegexEquivalent() // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             if (strings.Count == 0)
             {
@@ -2361,10 +2361,10 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">If the parse fails.</exception>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual UnicodeSet ApplyPattern(string pattern,
+        internal virtual UnicodeSet ApplyPattern(string pattern,
                 ParsePosition pos,
                 ISymbolTable symbols,
-                PatternOptions options)
+                PatternOptions options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
 
             // Need to build the pattern in a temporary string because
@@ -3573,9 +3573,9 @@ namespace ICU4N.Text
         /// <param name="prop">
         /// A property in the range
         /// <list type="bullet">
-        ///     <item><description><see cref="UProperty.Binary_Start"/>..<see cref="UProperty.Binary_Limit"/>-1 or</description></item>
-        ///     <item><description><see cref="UProperty.Int_Start"/>..<see cref="UProperty.Int_Limit"/>-1 or</description></item>
-        ///     <item><description><see cref="UProperty.Mask_Start"/>..<see cref="UProperty.Mask_Limit"/>-1</description></item>
+        ///     <item><description><see cref="UPropertyConstants.Binary_Start"/>..<see cref="UPropertyConstants.Binary_Limit"/>-1 or</description></item>
+        ///     <item><description><see cref="UPropertyConstants.Int_Start"/>..<see cref="UPropertyConstants.Int_Limit"/>-1 or</description></item>
+        ///     <item><description><see cref="UPropertyConstants.Mask_Start"/>..<see cref="UPropertyConstants.Mask_Limit"/>-1</description></item>
         /// </list>
         /// </param>
         /// <param name="value">
@@ -3685,9 +3685,9 @@ namespace ICU4N.Text
                 }
 
 #pragma warning disable 612, 618
-                if ((p >= UProperty.Binary_Start && p < UProperty.Binary_Limit) ||
-                        (p >= UProperty.Int_Start && p < UProperty.Int_Limit) ||
-                        (p >= UProperty.Mask_Start && p < UProperty.Mask_Limit))
+                if ((p >= UPropertyConstants.Binary_Start && p < UPropertyConstants.Binary_Limit) ||
+                        (p >= UPropertyConstants.Int_Start && p < UPropertyConstants.Int_Limit) ||
+                        (p >= UPropertyConstants.Mask_Start && p < UPropertyConstants.Mask_Limit))
 #pragma warning restore 612, 618
                 {
                     // ICU4N specific - use safe methods that don't throw exceptions -
@@ -3750,7 +3750,7 @@ namespace ICU4N.Text
                                 return this;
                             }
 #pragma warning disable 612, 618
-                        case UProperty.Unicode_1_Name:
+                        case UPropertyConstants.Unicode_1_Name:
                             // ICU 49 deprecates the Unicode_1_Name property APIs.
                             throw new ArgumentException("Unicode_1_Name (na1) not supported");
 #pragma warning restore 612, 618
@@ -3784,18 +3784,18 @@ namespace ICU4N.Text
                 p = UProperty.General_Category_Mask;
                 v = (UProperty)pnames.GetPropertyValueEnum(p, propertyAlias);
 #pragma warning disable 612, 618
-                if (v == UProperty.Undefined)
+                if (v == UPropertyConstants.Undefined)
                 {
                     p = UProperty.Script;
                     v = (UProperty)pnames.GetPropertyValueEnum(p, propertyAlias);
-                    if (v == UProperty.Undefined)
+                    if (v == UPropertyConstants.Undefined)
                     {
                         p = (UProperty)pnames.GetPropertyEnum(propertyAlias);
-                        if (p == UProperty.Undefined)
+                        if (p == UPropertyConstants.Undefined)
                         {
                             p = (UProperty)(-1);
                         }
-                        if (p >= UProperty.Binary_Start && p < UProperty.Binary_Limit)
+                        if (p >= UPropertyConstants.Binary_Start && p < UPropertyConstants.Binary_Limit)
 #pragma warning restore 612, 618
                         {
                             v = (UProperty)1;
@@ -4665,7 +4665,7 @@ namespace ICU4N.Text
         /// <typeparam name="T">The type of items to compare.</typeparam>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public static int Compare<T>(IEnumerator<T> first, IEnumerator<T> other) where T : IComparable<T>
+        internal static int Compare<T>(IEnumerator<T> first, IEnumerator<T> other) where T : IComparable<T> // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             while (true)
             {
@@ -4761,7 +4761,7 @@ namespace ICU4N.Text
         /// <returns>The input set, modified.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual UnicodeSet AddBridges(UnicodeSet dontCare)
+        internal virtual UnicodeSet AddBridges(UnicodeSet dontCare) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             UnicodeSet notInInput = new UnicodeSet(this).Complement();
             for (UnicodeSetIterator it = new UnicodeSetIterator(notInInput); it.NextRange();)
@@ -4787,7 +4787,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public static XSymbolTable DefaultXSymbolTable
+        internal static XSymbolTable DefaultXSymbolTable // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             get { return XSYMBOL_TABLE; }
         }
@@ -4804,7 +4804,7 @@ namespace ICU4N.Text
         /// <param name="xSymbolTable">The new default symbol table.</param>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public static void SetDefaultXSymbolTable(XSymbolTable xSymbolTable) // ICU4N NOTE: Has side-effect, so isn't a good property candidate
+        internal static void SetDefaultXSymbolTable(XSymbolTable xSymbolTable) // ICU4N specific - marked internal instead of public, since the functionality is obsolete // ICU4N NOTE: Has side-effect, so isn't a good property candidate
         {
             INCLUSIONS = null; // If the properties override inclusions, these have to be regenerated.
             XSYMBOL_TABLE = xSymbolTable;

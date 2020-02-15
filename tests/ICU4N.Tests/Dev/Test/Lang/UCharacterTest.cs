@@ -2377,12 +2377,12 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.ID_CONTINUE) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Binary_Limit - 1) != 1)
+            if (UChar.GetIntPropertyMaxValue(UPropertyConstants.Binary_Limit - 1) != 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BINARY_LIMIT-1) wrong\n");
             }
 
-            if (UChar.GetIntPropertyMaxValue(UProperty.Bidi_Class) != UCharacterDirection.CharDirectionCount.ToInt32() - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Bidi_Class) != UCharacterDirectionExtensions.CharDirectionCount.ToInt32() - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BIDI_CLASS) wrong\n");
             }
@@ -2481,7 +2481,7 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     expect = false;
                 }
-                if ((UProperty)which < UProperty.Int_Start)
+                if ((UProperty)which < UPropertyConstants.Int_Start)
                 {
                     if (UChar.HasBinaryProperty(props[i][0], (UProperty)which)
                         != expect)
@@ -2673,7 +2673,7 @@ namespace ICU4N.Dev.Test.Lang
 
             /* Min should be 0 for everything. */
             /* Until JB#2478 is fixed, the one exception is UProperty.BLOCK. */
-            for (p = UProperty.Int_Start; p < UProperty.Int_Limit; ++p)
+            for (p = UPropertyConstants.Int_Start; p < UPropertyConstants.Int_Limit; ++p)
             {
                 min = UChar.GetIntPropertyMinValue(p);
                 if (min != 0)
@@ -3580,8 +3580,8 @@ namespace ICU4N.Dev.Test.Lang
         {
             /* Testing UCharacter.getIntPropertyMaxValue(type) */
             // Testing when "else if (type < UProperty.INT_START)" is true
-            UProperty[] cases = {UProperty.Binary_Limit, UProperty.Binary_Limit+1,
-                UProperty.Int_Start-2, UProperty.Int_Start-1};
+            UProperty[] cases = {UPropertyConstants.Binary_Limit, UPropertyConstants.Binary_Limit+1,
+                UPropertyConstants.Int_Start-2, UPropertyConstants.Int_Start-1};
             for (int i = 0; i < cases.Length; i++)
             {
                 if (UChar.GetIntPropertyMaxValue(cases[i]) != -1)

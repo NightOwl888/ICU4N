@@ -642,7 +642,7 @@ namespace ICU4N.Text
         /// <param name="newStrength"></param>
         /// <returns>this, for chaining</returns>
         [Obsolete("This API is ICU internal only.")]
-        public virtual Collator SetStrength2(CollationStrength newStrength)
+        internal virtual Collator SetStrength2(CollationStrength newStrength) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             Strength = newStrength;
             return this;
@@ -1501,7 +1501,7 @@ namespace ICU4N.Text
         /// <param name="right"></param>
         /// <returns></returns>
         [Obsolete("This API is ICU internal only.")]
-        protected virtual int DoCompare(ICharSequence left, ICharSequence right)
+        internal virtual int DoCompare(ICharSequence left, ICharSequence right) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return Compare(left.ToString(), right.ToString());
         }

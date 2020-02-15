@@ -727,7 +727,7 @@ namespace ICU4N.Text
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         //TODO: This protected method is @stable 2.0 in ICU4C
-        protected virtual void SetMatchNotFound()
+        internal virtual void SetMatchNotFound() // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             search_.matchedIndex_ = Done;
             search_.MatchedLength=0;

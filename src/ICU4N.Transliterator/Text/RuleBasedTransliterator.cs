@@ -258,7 +258,7 @@ namespace ICU4N.Text
     /// <author>Alan Liu</author>
     /// <internal/>
     [Obsolete("This API is ICU internal only.")]
-    public class RuleBasedTransliterator : Transliterator
+    public class RuleBasedTransliterator : Transliterator // ICU4N NOTE: This needs to be public to support Lucene.NET's ICUTransformFilter
     {
         private readonly Data data;
 

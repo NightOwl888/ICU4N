@@ -150,7 +150,7 @@ namespace ICU4N.Text
         /// typically implicit.)
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        protected internal CurrencyDisplayNames()
+        internal CurrencyDisplayNames() // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
         }
     }

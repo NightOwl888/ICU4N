@@ -5,6 +5,7 @@ using ICU4N.Util;
 using J2N.Text;
 using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 
@@ -976,11 +977,13 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <stable>ICU 54</stable>
         public const int Duployan = 135;/* Dupl */
-        /// <summary>
-        /// Typo; use DUPLOYAN
-        /// </summary>
-        [Obsolete("ICU 54")]
-        public const int DuployanShorthand = Duployan;
+
+        // ICU4N specific - removed because it is obsolete and not useful
+        ///// <summary>
+        ///// Typo; use DUPLOYAN
+        ///// </summary>
+        //[Obsolete("ICU 54")]
+        //public const int DuployanShorthand = Duployan;
 
         /// <summary>
         /// Elbasan
@@ -1285,7 +1288,8 @@ namespace ICU4N.Globalization
         /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/> (passing <see cref="UProperty.Script"/>).
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int CodeLimit = 178;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int CodeLimit = 178;
 
         private static int[] GetCodesFromLocale(ULocale locale)
         {

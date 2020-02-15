@@ -2407,7 +2407,7 @@ namespace ICU4N.Text
         /// <returns>The codepoint as an int.</returns>
         /// <seealso cref="StartIndex"/>
         [Obsolete("ICU 2.2. Use StartIndex instead.")]
-        public int GetBeginIndex()
+        internal int GetBeginIndex() // ICU4N specific - marked internal instead of public, since the functionality is obsolete and duplicated
         {
             return 0;
         }
@@ -2420,7 +2420,7 @@ namespace ICU4N.Text
         /// <returns>The codepoint as an int.</returns>
         /// <seealso cref="EndIndex"/>
         [Obsolete("ICU 2.2. Use EndIndex instead.")]
-        public int GetEndIndex()
+        internal int GetEndIndex() // ICU4N specific - marked internal instead of protected, since the functionality is obsolete and duplicated
         {
             return EndIndex;
         }

@@ -107,25 +107,25 @@ namespace ICU4N.Dev.Test.Lang
                 }
                 if (!sawProp)
                 {
-                    if (p >= UProperty.String_Limit)
+                    if (p >= UPropertyConstants.String_Limit)
                     {
                         break;
                     }
-                    else if (p >= UProperty.Double_Limit)
+                    else if (p >= UPropertyConstants.Double_Limit)
                     {
-                        p = UProperty.String_Start - 1;
+                        p = UPropertyConstants.String_Start - 1;
                     }
-                    else if (p >= UProperty.Mask_Limit)
+                    else if (p >= UPropertyConstants.Mask_Limit)
                     {
-                        p = UProperty.Double_Start - 1;
+                        p = UPropertyConstants.Double_Start - 1;
                     }
-                    else if (p >= UProperty.Int_Limit)
+                    else if (p >= UPropertyConstants.Int_Limit)
                     {
-                        p = UProperty.Mask_Start - 1;
+                        p = UPropertyConstants.Mask_Start - 1;
                     }
-                    else if (p >= UProperty.Binary_Limit)
+                    else if (p >= UPropertyConstants.Binary_Limit)
                     {
-                        p = UProperty.Int_Start - 1;
+                        p = UPropertyConstants.Int_Start - 1;
                     }
                 }
             }
@@ -247,25 +247,25 @@ namespace ICU4N.Dev.Test.Lang
                 }
                 if (!sawProp)
                 {
-                    if (p >= UProperty.String_Limit)
+                    if (p >= UPropertyConstants.String_Limit)
                     {
                         break;
                     }
-                    else if (p >= UProperty.Double_Limit)
+                    else if (p >= UPropertyConstants.Double_Limit)
                     {
-                        p = UProperty.String_Start - 1;
+                        p = UPropertyConstants.String_Start - 1;
                     }
-                    else if (p >= UProperty.Mask_Limit)
+                    else if (p >= UPropertyConstants.Mask_Limit)
                     {
-                        p = UProperty.Double_Start - 1;
+                        p = UPropertyConstants.Double_Start - 1;
                     }
-                    else if (p >= UProperty.Int_Limit)
+                    else if (p >= UPropertyConstants.Int_Limit)
                     {
-                        p = UProperty.Mask_Start - 1;
+                        p = UPropertyConstants.Mask_Start - 1;
                     }
-                    else if (p >= UProperty.Binary_Limit)
+                    else if (p >= UPropertyConstants.Binary_Limit)
                     {
-                        p = UProperty.Int_Start - 1;
+                        p = UPropertyConstants.Int_Start - 1;
                     }
                 }
             }

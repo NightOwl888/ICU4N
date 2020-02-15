@@ -85,7 +85,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("internal to ICU")]
-        protected FilteredBreakIteratorBuilder()
+        internal FilteredBreakIteratorBuilder() // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
         }
     }

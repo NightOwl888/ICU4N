@@ -71,6 +71,6 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected UnicodeFilter() { }
+        internal UnicodeFilter() { } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
     }
 }

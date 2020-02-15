@@ -934,7 +934,7 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected override void SetMatchNotFound()
+        internal override void SetMatchNotFound() // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             base.SetMatchNotFound();
             // SearchIterator#setMatchNotFound() does following:

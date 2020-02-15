@@ -269,17 +269,17 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual UnicodeSet Set
+        internal virtual UnicodeSet Set // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             get { return set; }
         }
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected int endElement;
+        internal int endElement; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected int nextElement;
+        internal int nextElement; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         /// <summary>
         /// Invariant: stringIterator is null when there are no (more) strings remaining
         /// </summary>
@@ -287,7 +287,7 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected virtual void LoadRange(int aRange) 
+        internal virtual void LoadRange(int aRange) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             nextElement = set.GetRangeStart(aRange);
             endElement = set.GetRangeEnd(aRange);

@@ -1669,7 +1669,7 @@ namespace ICU4N.Impl
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public ISet<string> TopLevelKeySet
+        internal ISet<string> TopLevelKeySet // ICU4N specific - marked internal, since the functionality is obsolete
         {
             get { return wholeBundle.topLevelKeys; }
             set { wholeBundle.topLevelKeys = value; }
@@ -1687,7 +1687,7 @@ namespace ICU4N.Impl
         }
 
 #pragma warning disable 672
-        protected override bool IsTopLevelResource
+        internal override bool IsTopLevelResource
 #pragma warning restore 672
         {
             get { return container == null; }

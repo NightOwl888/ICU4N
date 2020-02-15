@@ -118,8 +118,8 @@ namespace ICU4N.Dev.Test.StringPrep
             String mapOut = Map(src, options);
             UCharacterIterator iter = UCharacterIterator.GetInstance(mapOut);
 
-            UCharacterDirection direction = UCharacterDirection.CharDirectionCount,
-            firstCharDir = UCharacterDirection.CharDirectionCount;
+            UCharacterDirection direction = UCharacterDirectionExtensions.CharDirectionCount,
+            firstCharDir = UCharacterDirectionExtensions.CharDirectionCount;
             int rtlPos = -1, ltrPos = -1;
             bool rightToLeft = false, leftToRight = false;
 
@@ -135,7 +135,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
 
                 direction = UChar.GetDirection(ch);
-                if (firstCharDir == UCharacterDirection.CharDirectionCount)
+                if (firstCharDir == UCharacterDirectionExtensions.CharDirectionCount)
                 {
                     firstCharDir = direction;
                 }

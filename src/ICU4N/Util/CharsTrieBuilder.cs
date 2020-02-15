@@ -95,17 +95,17 @@ namespace ICU4N.Util
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected override bool MatchNodesCanHaveValues /*const*/ { get { return true; } }
+        internal override bool MatchNodesCanHaveValues /*const*/ { get { return true; } } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected override int MaxBranchLinearSubNodeLength /*const*/ { get { return CharsTrie.kMaxBranchLinearSubNodeLength; } }
+        internal override int MaxBranchLinearSubNodeLength /*const*/ { get { return CharsTrie.kMaxBranchLinearSubNodeLength; } } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected override int MinLinearMatch /*const*/{ get { return CharsTrie.kMinLinearMatch; } }
+        internal override int MinLinearMatch /*const*/{ get { return CharsTrie.kMinLinearMatch; } } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected override int MaxLinearMatchLength /*const*/{ get { return CharsTrie.kMaxLinearMatchLength; } }
+        internal override int MaxLinearMatchLength /*const*/{ get { return CharsTrie.kMaxLinearMatchLength; } } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 
         private void EnsureCapacity(int length)
         {
@@ -124,7 +124,7 @@ namespace ICU4N.Util
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected override int Write(int unit)
+        internal override int Write(int unit) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             int newLength = charsLength + 1;
             EnsureCapacity(newLength);
@@ -134,7 +134,7 @@ namespace ICU4N.Util
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected override int Write(int offset, int length)
+        internal override int Write(int offset, int length) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             int newLength = charsLength + length;
             EnsureCapacity(newLength);
@@ -161,7 +161,7 @@ namespace ICU4N.Util
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected override int WriteValueAndFinal(int i, bool isFinal)
+        internal override int WriteValueAndFinal(int i, bool isFinal) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             if (0 <= i && i <= CharsTrie.kMaxOneUnitValue)
             {
@@ -189,7 +189,7 @@ namespace ICU4N.Util
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected override int WriteValueAndType(bool hasValue, int value, int node)
+        internal override int WriteValueAndType(bool hasValue, int value, int node) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             if (!hasValue)
             {
@@ -219,7 +219,7 @@ namespace ICU4N.Util
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected override int WriteDeltaTo(int jumpTarget)
+        internal override int WriteDeltaTo(int jumpTarget) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             int i = charsLength - jumpTarget;
             Debug.Assert(i >= 0);

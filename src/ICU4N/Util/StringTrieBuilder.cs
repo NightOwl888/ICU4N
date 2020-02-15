@@ -44,11 +44,11 @@ namespace ICU4N.Util
         // ICU4N: De-nested Option and renamed TrieBuilderOption
 
         [Obsolete("This API is ICU internal only.")]
-        protected StringTrieBuilder() { }
+        internal StringTrieBuilder() { } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 
 
         [Obsolete("This API is ICU internal only.")]
-        protected virtual void AddImpl(ICharSequence s, int value)
+        internal virtual void AddImpl(ICharSequence s, int value) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             if (state != State.Adding)
             {
@@ -71,7 +71,7 @@ namespace ICU4N.Util
         }
 
         [Obsolete("This API is ICU internal only.")]
-        protected void BuildImpl(TrieBuilderOption buildOption)
+        internal void BuildImpl(TrieBuilderOption buildOption) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             switch (state)
             {
@@ -118,7 +118,7 @@ namespace ICU4N.Util
         }
 
         [Obsolete("This API is ICU internal only.")]
-        protected virtual void ClearImpl()
+        internal virtual void ClearImpl() // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             strings.Length = 0;
             nodes.Clear();
@@ -989,25 +989,25 @@ namespace ICU4N.Util
         }
 
         [Obsolete("This API is ICU internal only.")]
-        protected abstract bool MatchNodesCanHaveValues { get; } /*const*/
+        internal abstract bool MatchNodesCanHaveValues { get; } /*const*/ // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 
         [Obsolete("This API is ICU internal only.")]
-        protected abstract int MaxBranchLinearSubNodeLength { get; } /*const*/
+        internal abstract int MaxBranchLinearSubNodeLength { get; } /*const*/ // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         [Obsolete("This API is ICU internal only.")]
-        protected abstract int MinLinearMatch { get; } /*const*/
+        internal abstract int MinLinearMatch { get; } /*const*/ // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         [Obsolete("This API is ICU internal only.")]
-        protected abstract int MaxLinearMatchLength { get; } /*const*/
+        internal abstract int MaxLinearMatchLength { get; } /*const*/ // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 
         [Obsolete("This API is ICU internal only.")]
-        protected abstract int Write(int unit);
+        internal abstract int Write(int unit); // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         [Obsolete("This API is ICU internal only.")]
-        protected abstract int Write(int offset, int length);
+        internal abstract int Write(int offset, int length); // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         [Obsolete("This API is ICU internal only.")]
-        protected abstract int WriteValueAndFinal(int i, bool isFinal);
+        internal abstract int WriteValueAndFinal(int i, bool isFinal); // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         [Obsolete("This API is ICU internal only.")]
-        protected abstract int WriteValueAndType(bool hasValue, int value, int node);
+        internal abstract int WriteValueAndType(bool hasValue, int value, int node); // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         [Obsolete("This API is ICU internal only.")]
-        protected abstract int WriteDeltaTo(int jumpTarget);
+        internal abstract int WriteDeltaTo(int jumpTarget); // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 
         private enum State
         {
@@ -1017,7 +1017,7 @@ namespace ICU4N.Util
 
         // Strings and sub-strings for linear-match nodes.
         [Obsolete("This API is ICU internal only.")]
-        protected StringBuilder strings = new StringBuilder();
+        internal StringBuilder strings = new StringBuilder(); // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         private Node root;
 
         // Hash set of nodes, maps from nodes to integer 1.

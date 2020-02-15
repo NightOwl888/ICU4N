@@ -250,7 +250,7 @@ namespace ICU4N.Impl
             {
                 return ((ICUResourceBundleReader.Table)value).GetKey(wholeBundle.reader, index);
             }
-            protected override ISet<string> HandleKeySet()
+            internal override ISet<string> HandleKeySet() // ICU4N: Marked internal, since base class functionality is obsolete
             {
                 ICUResourceBundleReader reader = wholeBundle.reader;
                 SortedSet<string> keySet = new SortedSet<string>(StringComparer.Ordinal);

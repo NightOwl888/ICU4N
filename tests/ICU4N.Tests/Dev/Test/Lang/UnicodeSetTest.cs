@@ -58,7 +58,7 @@ namespace ICU4N.Dev.Test.Lang
         {
             int count = 0;
             // test to see that all of the names work
-            for (UProperty propNum = UProperty.Binary_Start; propNum < UProperty.Int_Limit; ++propNum)
+            for (UProperty propNum = UPropertyConstants.Binary_Start; propNum < UPropertyConstants.Int_Limit; ++propNum)
             {
                 count++;
                 //Skipping tests in the non-exhaustive mode to shorten the test time ticket#6475
@@ -66,9 +66,9 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     continue;
                 }
-                if (propNum >= UProperty.Binary_Limit && propNum < UProperty.Int_Start)
+                if (propNum >= UPropertyConstants.Binary_Limit && propNum < UPropertyConstants.Int_Start)
                 { // skip the gap
-                    propNum = UProperty.Int_Start;
+                    propNum = UPropertyConstants.Int_Start;
                 }
                 for (NameChoice nameChoice = NameChoice.Short; nameChoice <= NameChoice.Long; ++nameChoice)
                 {

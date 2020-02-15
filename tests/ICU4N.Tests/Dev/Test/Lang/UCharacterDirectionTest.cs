@@ -57,7 +57,7 @@ namespace ICU4N.Dev.Test.Lang
             for (UCharacterDirection i = UCharacterDirection.LeftToRight;
                 // Placed <= because we need to consider 'Unassigned'
                 // when it goes out of bounds of UCharacterDirection
-                i <= UCharacterDirection.CharDirectionCount; i++)
+                i <= UCharacterDirectionExtensions.CharDirectionCount; i++)
             {
                 if (!i.AsString().Equals(name[(int)i]))
                 {

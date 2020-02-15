@@ -1203,7 +1203,7 @@ namespace ICU4N.Text
         /// <returns>List of first characters in each script.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal, only for testing.")]
-        public List<string> GetFirstCharactersInScripts()
+        internal List<string> GetFirstCharactersInScripts() // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             List<string> dest = new List<string>(200);
             // Fetch the script-first-primary contractions which are defined in the root collator.

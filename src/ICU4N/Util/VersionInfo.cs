@@ -202,14 +202,14 @@ namespace ICU4N.Util
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal const string IcuDataVersionPath = "60b";
+        internal const string IcuDataVersionPath = "60b"; // ICU4N specific - marked internal, since the functionality is obsolete
 
         /// <summary>
         /// Data version in ICU4N.
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal static readonly VersionInfo IcuDataVersion = GetInstance(60, 0, 1, 0);
+        internal static readonly VersionInfo IcuDataVersion = GetInstance(60, 0, 1, 0); // ICU4N specific - marked internal, since the functionality is obsolete
 
         /// <summary>
         /// Collation runtime version (sort key generator, string comparisons).
@@ -234,7 +234,7 @@ namespace ICU4N.Util
         /// but instead the tailoring data carries a version number.
         /// </summary>
         [Obsolete("ICU 54")]
-        public static readonly VersionInfo CollationTailoringsVersion = GetInstance(1); // ICU4N: Renamed from UCOL_TAILORINGS_VERSION
+        internal static readonly VersionInfo CollationTailoringsVersion = GetInstance(1); // ICU4N specific - marked internal instead of public, since the functionality is obsolete // ICU4N: Renamed from UCOL_TAILORINGS_VERSION
 
 
         // public methods ------------------------------------------------------
@@ -609,7 +609,7 @@ namespace ICU4N.Util
         /// <returns>A tailored version string.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only. (For use in CLDR, etc.)")]
-        public string GetVersionString(int minDigits, int maxDigits)
+        internal string GetVersionString(int minDigits, int maxDigits) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             if (minDigits < 1 || maxDigits < 1
                     || minDigits > 4 || maxDigits > 4 || minDigits > maxDigits)

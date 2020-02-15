@@ -40,7 +40,7 @@ namespace ICU4N
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
 #pragma warning disable 612, 618
-            if (propEnum == (int)UProperty.Undefined)
+            if (propEnum == (int)UPropertyConstants.Undefined)
 #pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
@@ -70,7 +70,7 @@ namespace ICU4N
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
 #pragma warning disable 612, 618
-            if (propEnum == (int)UProperty.Undefined)
+            if (propEnum == (int)UPropertyConstants.Undefined)
 #pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
@@ -100,7 +100,7 @@ namespace ICU4N
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
 #pragma warning disable 612, 618
-            if (propEnum == (int)UProperty.Undefined)
+            if (propEnum == (int)UPropertyConstants.Undefined)
 #pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
@@ -130,7 +130,7 @@ namespace ICU4N
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
 #pragma warning disable 612, 618
-            if (propEnum == (int)UProperty.Undefined)
+            if (propEnum == (int)UPropertyConstants.Undefined)
 #pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
@@ -163,7 +163,7 @@ namespace ICU4N
             result = 0;
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
 #pragma warning disable 612, 618
-            if (propEnum == (int)UProperty.Undefined)
+            if (propEnum == (int)UPropertyConstants.Undefined)
 #pragma warning restore 612, 618
             {
                 return false;
@@ -197,7 +197,7 @@ namespace ICU4N
             result = 0;
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
 #pragma warning disable 612, 618
-            if (propEnum == (int)UProperty.Undefined)
+            if (propEnum == (int)UPropertyConstants.Undefined)
 #pragma warning restore 612, 618
             {
                 return false;
@@ -231,7 +231,7 @@ namespace ICU4N
             result = 0;
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
 #pragma warning disable 612, 618
-            if (propEnum == (int)UProperty.Undefined)
+            if (propEnum == (int)UPropertyConstants.Undefined)
 #pragma warning restore 612, 618
             {
                 return false;
@@ -265,7 +265,7 @@ namespace ICU4N
             result = 0;
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
 #pragma warning disable 612, 618
-            if (propEnum == (int)UProperty.Undefined)
+            if (propEnum == (int)UPropertyConstants.Undefined)
 #pragma warning restore 612, 618
             {
                 return false;
@@ -287,9 +287,9 @@ namespace ICU4N
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -312,7 +312,7 @@ namespace ICU4N
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
 #pragma warning disable 612, 618
-            if (propEnum == (int)UProperty.Undefined)
+            if (propEnum == (int)UPropertyConstants.Undefined)
 #pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
@@ -333,9 +333,9 @@ namespace ICU4N
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -358,7 +358,7 @@ namespace ICU4N
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
 #pragma warning disable 612, 618
-            if (propEnum == (int)UProperty.Undefined)
+            if (propEnum == (int)UPropertyConstants.Undefined)
 #pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
@@ -379,9 +379,9 @@ namespace ICU4N
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -404,7 +404,7 @@ namespace ICU4N
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
 #pragma warning disable 612, 618
-            if (propEnum == (int)UProperty.Undefined)
+            if (propEnum == (int)UPropertyConstants.Undefined)
 #pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
@@ -425,9 +425,9 @@ namespace ICU4N
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -450,7 +450,7 @@ namespace ICU4N
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
 #pragma warning disable 612, 618
-            if (propEnum == (int)UProperty.Undefined)
+            if (propEnum == (int)UPropertyConstants.Undefined)
 #pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
@@ -471,9 +471,9 @@ namespace ICU4N
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -512,9 +512,9 @@ namespace ICU4N
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -553,9 +553,9 @@ namespace ICU4N
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -594,9 +594,9 @@ namespace ICU4N
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is

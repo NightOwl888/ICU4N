@@ -995,8 +995,8 @@ namespace ICU4N.Util
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
-        public static string GetRegionForSupplementalData(
-                                    ULocale locale, bool inferRegion)
+        internal static string GetRegionForSupplementalData(
+                                    ULocale locale, bool inferRegion) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             string region = locale.GetKeywordValue("rg");
             if (region != null && region.Length == 6)
@@ -2774,7 +2774,7 @@ namespace ICU4N.Util
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
-        public enum Minimize
+        internal enum Minimize // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             /**
              * Favor including the script, when either the region <b>or</b> the script could be suppressed, but not both.
@@ -2823,7 +2823,7 @@ namespace ICU4N.Util
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
-        public static ULocale MinimizeSubtags(ULocale loc, Minimize fieldToFavor)
+        internal static ULocale MinimizeSubtags(ULocale loc, Minimize fieldToFavor) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             string[] tags = new string[3];
 

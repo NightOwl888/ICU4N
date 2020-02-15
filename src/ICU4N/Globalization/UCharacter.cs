@@ -7,6 +7,7 @@ using J2N.Text;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 
@@ -1987,7 +1988,7 @@ namespace ICU4N
         /// <param name="ch">The code point for which to get the name.</param>
         /// <returns>Null.</returns>
         [Obsolete("ICU 49")]
-        public static string GetName1_0(int ch)
+        internal static string GetName1_0(int ch) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return null;
         }
@@ -2039,14 +2040,14 @@ namespace ICU4N
         /// <summary>
         /// Returns null.
         /// Used to return the ISO 10646 comment for a character.
-        /// The Unicode <see cref="UProperty.ISO_Comment"/> property is deprecated and has no values.
+        /// The Unicode <see cref="UPropertyConstants.ISO_Comment"/> property is deprecated and has no values.
         /// </summary>
         /// <param name="ch">The code point for which to get the ISO comment.
         /// It must be the case that <c>0 &lt;= <paramref name="ch"/> &lt;= 0x10ffff</c>.
         /// </param>
         /// <returns>null.</returns>
         [Obsolete("ICU 49")]
-        public static string GetISOComment(int ch)
+        internal static string GetISOComment(int ch) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return null;
         }
@@ -2080,7 +2081,7 @@ namespace ICU4N
         /// <returns>-1</returns>
         /// <seealso cref="GetName1_0(int)"/>
         [Obsolete("ICU 49")]
-        public static int GetCharFromName1_0(string name)
+        internal static int GetCharFromName1_0(string name) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return -1;
         }
@@ -2226,10 +2227,10 @@ namespace ICU4N
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">
-        /// <see cref="UProperty"/> selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UPropertyConstants"/> selector constant.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
         /// If out of range, null is returned.
         /// </param>
         /// <param name="value">
@@ -2286,7 +2287,7 @@ namespace ICU4N
                             && value <= UChar.GetIntPropertyMaxValue(
                                     UProperty.Canonical_Combining_Class)
 #pragma warning disable 612, 618
-                                    && nameChoice >= 0 && nameChoice < NameChoice.Count)
+                                    && nameChoice >= 0 && nameChoice < NameChoiceConstants.Count)
 #pragma warning restore 612, 618
             {
                 // this is hard coded for the valid cc
@@ -2318,9 +2319,9 @@ namespace ICU4N
         /// </remarks>
         /// <param name="property">
         /// <see cref="UProperty"/> selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
         /// If out of range, null is returned.
         /// </param>
         /// <param name="value">
@@ -2380,7 +2381,7 @@ namespace ICU4N
                             && value <= UChar.GetIntPropertyMaxValue(
                                     UProperty.Canonical_Combining_Class)
 #pragma warning disable 612, 618
-                                    && nameChoice >= 0 && nameChoice < NameChoice.Count)
+                                    && nameChoice >= 0 && nameChoice < NameChoiceConstants.Count)
 #pragma warning restore 612, 618
             {
                 // this is hard coded for the valid cc
@@ -2397,13 +2398,13 @@ namespace ICU4N
         // ICU4N specific - GetPropertyValueEnum(UProperty property, ICharSequence valueAlias) moved to UCharacterExtension.tt
 
         /// <summary>
-        /// Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>, except doesn't throw exception. Instead, returns <see cref="UProperty.Undefined"/>.
+        /// Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>, except doesn't throw exception. Instead, returns <see cref="UPropertyConstants.Undefined"/>.
         /// </summary>
         /// <param name="property">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
         /// <param name="valueAlias">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
-        /// <returns>Returns <see cref="UProperty.Undefined"/> if the value is not valid, otherwise the value.</returns>
+        /// <returns>Returns <see cref="UPropertyConstants.Undefined"/> if the value is not valid, otherwise the value.</returns>
         [Obsolete("ICU4N 60.1.0 Use TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias) instead.")]
-        internal static int GetPropertyValueEnumNoThrow(UProperty property, ICharSequence valueAlias)
+        internal static int GetPropertyValueEnumNoThrow(UProperty property, ICharSequence valueAlias) // ICU4N specific - marked internal, since the functionality is obsolete
         {
             return UPropertyAliases.Instance.GetPropertyValueEnumNoThrow((int)property, valueAlias);
         }
@@ -3121,7 +3122,7 @@ namespace ICU4N
         /// <seealso cref="GetName1_0(int)"/>
         // NOTE: This is equivalent to getName1_0Iterator() in ICU4J
         [Obsolete("ICU 49")]
-        public static IValueEnumerator GetName1_0Enumerator()
+        internal static IValueEnumerator GetName1_0Enumerator() // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return new DummyValueEnumerator();
         }
@@ -3481,9 +3482,9 @@ namespace ICU4N
         /// <param name="ch">Code point to test.</param>
         /// <param name="type">UProperty selector constant, identifies which binary
         /// property to check. Must be
-        /// <see cref="UProperty.Binary_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Int_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UPropertyConstants.Int_Limit"/> or
+        /// <see cref="UPropertyConstants.Mask_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
         /// </param>
         /// <returns>
         /// Numeric value that is directly the property value or,
@@ -3518,10 +3519,10 @@ namespace ICU4N
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         //CLOVER:OFF
-        public static string GetStringPropertyValue(UProperty propertyEnum, int codepoint, NameChoice nameChoice)
+        internal static string GetStringPropertyValue(UProperty propertyEnum, int codepoint, NameChoice nameChoice) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
-            if ((propertyEnum >= UProperty.Binary_Start && propertyEnum < UProperty.Binary_Limit) ||
-                    (propertyEnum >= UProperty.Int_Start && propertyEnum < UProperty.Int_Limit))
+            if ((propertyEnum >= UPropertyConstants.Binary_Start && propertyEnum < UPropertyConstants.Binary_Limit) ||
+                    (propertyEnum >= UPropertyConstants.Int_Start && propertyEnum < UPropertyConstants.Int_Limit))
             {
                 return GetPropertyValueName(propertyEnum, GetIntPropertyValue(codepoint, propertyEnum),
                         nameChoice);
@@ -3534,7 +3535,7 @@ namespace ICU4N
             switch (propertyEnum)
             {
                 case UProperty.Age: return GetAge(codepoint).ToString();
-                case UProperty.ISO_Comment: return GetISOComment(codepoint);
+                case UPropertyConstants.ISO_Comment: return GetISOComment(codepoint);
                 case UProperty.Bidi_Mirroring_Glyph: return ConvertFromUtf32(GetMirror(codepoint));
                 case UProperty.Case_Folding: return ConvertFromUtf32(FoldCase(codepoint, true));
                 case UProperty.Lowercase_Mapping: return ConvertFromUtf32(ToLower(codepoint));
@@ -3544,7 +3545,7 @@ namespace ICU4N
                 case UProperty.Simple_Titlecase_Mapping: return ConvertFromUtf32(ToTitleCase(codepoint));
                 case UProperty.Simple_Uppercase_Mapping: return ConvertFromUtf32(ToUpper(codepoint));
                 case UProperty.Titlecase_Mapping: return ConvertFromUtf32(ToTitleCase(codepoint));
-                case UProperty.Unicode_1_Name: return GetName1_0(codepoint);
+                case UPropertyConstants.Unicode_1_Name: return GetName1_0(codepoint);
                 case UProperty.Uppercase_Mapping: return ConvertFromUtf32(ToUpper(codepoint));
             }
             throw new ArgumentException("Illegal Property Enum");
@@ -3559,8 +3560,8 @@ namespace ICU4N
         /// </summary>
         /// <param name="type"><see cref="UProperty"/> selector constant, identifies which binary
         /// property to check. Must be
-        /// <see cref="UProperty.Binary_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Int_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UProperty.Int_Limit"/>.
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UPropertyConstants.Int_Limit"/>.
         /// </param>
         /// <returns>
         /// Minimum value returned by <see cref="GetIntPropertyValue(int, UProperty)"/>
@@ -3603,8 +3604,8 @@ namespace ICU4N
         /// <param name="type">
         /// <see cref="UProperty"/> selector constant, identifies which binary
         /// property to check. Must be
-        /// <see cref="UProperty.Binary_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Int_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UProperty.Int_Limit"/>.
+        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
+        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UPropertyConstants.Int_Limit"/>.
         /// </param>
         /// <returns>
         /// Maximum value returned by <see cref="GetIntPropertyValue(int, UProperty)"/> for a Unicode
@@ -4841,7 +4842,8 @@ namespace ICU4N.Text.Unicode
         /// with parameter <see cref="UProperty.Block"/>.
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int Count = 281;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int Count = 281; // ICU4N specific - marked internal instead of public and made static readonly, only used for testing
 
         // blocks objects ---------------------------------------------------
 
@@ -5975,7 +5977,8 @@ namespace ICU4N.Globalization
         /// with parameter <see cref="UProperty.East_Asian_Width"/>.
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int Count = 6;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int Count = 6; // ICU4N specific - marked internal instead of public and made static readonly, only used for testing
     }
 
     /// <summary>
@@ -6027,7 +6030,8 @@ namespace ICU4N.Globalization
         /// with parameter <see cref="UProperty.Decomposition_Type"/>.
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int Count = 18;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int Count = 18; // ICU4N specific - marked internal instead of public and made static readonly, only used for testing
     }
 
     /// <summary>
@@ -6055,7 +6059,8 @@ namespace ICU4N.Globalization
         /// with parameter <see cref="UProperty.Joining_Type"/>.
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int Count = 6;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int Count = 6; // ICU4N specific - marked internal instead of public and made static readonly, only used for testing
     }
 
     /// <summary>
@@ -6277,7 +6282,8 @@ namespace ICU4N.Globalization
         /// with parameter <see cref="UProperty.Joining_Group"/>
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int Count = 100;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int Count = 100; // ICU4N specific - marked internal instead of public and made static readonly, only used for testing
     }
 
     /// <summary>
@@ -6330,7 +6336,8 @@ namespace ICU4N.Globalization
         /// with parameter <see cref="UProperty.Grapheme_Cluster_Break"/>.
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int Count = 18;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int Count = 18; // ICU4N specific - marked internal instead of public and made static readonly, only used for testing
     }
 
     /// <summary>
@@ -6391,7 +6398,8 @@ namespace ICU4N.Globalization
         /// with parameter <see cref="UProperty.Word_Break"/>.
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int Count = 22;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int Count = 22; // ICU4N specific - marked internal instead of public and made static readonly, only used for testing
     }
 
     /// <summary>
@@ -6438,7 +6446,8 @@ namespace ICU4N.Globalization
         /// with parameter <see cref="UProperty.Sentence_Break"/>.
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int Count = 15;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int Count = 15; // ICU4N specific - marked internal instead of public and made static readonly, only used for testing
     }
 
     /// <summary>
@@ -6547,7 +6556,8 @@ namespace ICU4N.Globalization
         /// with parameter <see cref="UProperty.Line_Break"/>.
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int Count = 43;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int Count = 43; // ICU4N specific - marked internal instead of public and made static readonly, only used for testing
     }
 
     /// <summary>
@@ -6572,7 +6582,8 @@ namespace ICU4N.Globalization
         /// with parameter <see cref="UProperty.Numeric_Type"/>.
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int Count = 4;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int Count = 4; // ICU4N specific - marked internal instead of public and made static readonly, only used for testing
     }
 
     /// <summary>
@@ -6601,7 +6612,8 @@ namespace ICU4N.Globalization
         /// with parameter <see cref="UProperty.Hangul_Syllable_Type"/>.
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int Count = 6;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int Count = 6; // ICU4N specific - marked internal instead of public and made static readonly, only used for testing
     }
 
     /// <summary>
@@ -6633,6 +6645,7 @@ namespace ICU4N.Globalization
         /// with parameter <see cref="UProperty.Bidi_Paired_Bracket_Type"/>.
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public const int Count = 3;
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly int Count = 3; // ICU4N specific - marked internal instead of public and made static readonly, only used for testing
     }
 }

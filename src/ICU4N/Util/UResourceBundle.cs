@@ -574,7 +574,7 @@ namespace ICU4N.Util
         /// <seealso cref="Get(string)"/>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected virtual UResourceBundle FindTopLevel(string aKey)
+        internal virtual UResourceBundle FindTopLevel(string aKey) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             // NOTE: this only works for top-level resources.  For resources at lower
             // levels, it fails when you fall back to the parent, since you're now
@@ -644,7 +644,7 @@ namespace ICU4N.Util
         /// <seealso cref="Get(int)"/>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected virtual UResourceBundle FindTopLevel(int index)
+        internal virtual UResourceBundle FindTopLevel(int index) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             // NOTE: this _barely_ works for top-level resources.  For resources at lower
             // levels, it fails when you fall back to the parent, since you're now
@@ -681,7 +681,7 @@ namespace ICU4N.Util
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
 #pragma warning disable 809
-        public override ISet<string> KeySet() // ICU4N TODO: API - change to KeySet property
+        internal override ISet<string> KeySet() // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 #pragma warning disable 809
         {
             // TODO: Java 6 ResourceBundle has keySet() which calls handleKeySet()
@@ -748,7 +748,7 @@ namespace ICU4N.Util
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
 #pragma warning disable 809
-        protected override ISet<string> HandleKeySet()
+        internal override ISet<string> HandleKeySet() // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 #pragma warning disable 809
         {
             return new HashSet<string>();
@@ -963,7 +963,7 @@ namespace ICU4N.Util
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected virtual bool IsTopLevelResource
+        internal virtual bool IsTopLevelResource // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             get { return true; }
         }
@@ -1105,7 +1105,7 @@ namespace ICU4N.Util
 
         public abstract IEnumerable<string> GetKeys();
 
-        public virtual ISet<string> KeySet()
+        internal virtual ISet<string> KeySet()
         {
             ISet<string> keys = new HashSet<string>();
             for (ResourceBundle rb = this; rb != null; rb = rb.m_parent)
@@ -1117,7 +1117,7 @@ namespace ICU4N.Util
 
         protected ISet<string> m_keySet = null;
 
-        protected virtual ISet<string> HandleKeySet()
+        internal virtual ISet<string> HandleKeySet() // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             if (m_keySet == null)
             {

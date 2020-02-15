@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ICU4N.Globalization
 {
@@ -262,14 +263,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 52</stable>
         PopDirectionalIsolate = 22,
 
-        /// <summary>
-        /// One more than the highest normal <see cref="UCharacterDirection"/> value.
-        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
-        /// with parameter <see cref="UProperty.Bidi_Class"/>.
-        /// </summary>
-        /// <stable>ICU 52</stable>
-        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        CharDirectionCount = 23,
+        // ICU4N specific - moved CharDirectionCount into a const in UCharacterDirectionExtensions
 
         /// <summary>
         /// Undefined bidirectional character type. Undefined <see cref="char"/>
@@ -289,6 +283,16 @@ namespace ICU4N.Globalization
     /// <stable>ICU 2.1</stable>
     public static class UCharacterDirectionExtensions 
     {
+        /// <summary>
+        /// One more than the highest normal <see cref="UCharacterDirection"/> value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.Bidi_Class"/>.
+        /// </summary>
+        /// <stable>ICU 52</stable>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        internal static readonly UCharacterDirection CharDirectionCount = (UCharacterDirection)23; // ICU4N specific - moved from UCharacterDirection and marked internal instead of public and made static readonly, as it is obsolete
+
         /// <summary>
         /// Gets the name of the argument direction.
         /// </summary>

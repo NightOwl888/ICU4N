@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ICU4N.Globalization
 {
@@ -25,12 +26,7 @@ namespace ICU4N.Globalization
     /// <stable>ICU 2.6</stable>
     public enum UProperty
     {
-        /// <summary>
-        /// Special value indicating undefined property.
-        /// </summary>
-        /// <internal/>
-        [Obsolete("This API is ICU internal only.")]
-        Undefined = -1,
+        // ICU4N specific - moved Undefined to UPropertyConstants
 
         /// <summary>
         /// Binary property Alphabetic.
@@ -43,11 +39,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.6</stable>
         Alphabetic = 0,
 
-        /// <summary>
-        /// First constant for binary Unicode properties.
-        /// </summary>
-        /// <stable>ICU 2.6</stable>
-        Binary_Start = Alphabetic,
+        // ICU4N specific - moved Binary_Start to UPropertyConstants
 
         /// <summary>
         /// Binary property ASCII_Hex_Digit (0-9 A-F a-f).
@@ -601,11 +593,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 60</stable>
         Prepended_Concatenation_Mark = 63,
 
-        /// <summary>
-        /// One more than the last constant for binary Unicode properties.
-        /// </summary>
-        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        Binary_Limit = 64,
+        // ICU4N specific - moved Binary_Limit to UPropertyConstants
 
         /// <summary>
         /// Enumerated property Bidi_Class.
@@ -614,11 +602,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.4</stable>
         Bidi_Class = 0x1000,
 
-        /// <summary>
-        ///  First constant for enumerated/integer Unicode properties.
-        /// </summary>
-        /// <stable>ICU 2.4</stable>
-        Int_Start = Bidi_Class,
+        // ICU4N specific - moved Int_Start to UPropertyConstants
 
         /// <summary>
         /// Enumerated property Block.
@@ -787,11 +771,8 @@ namespace ICU4N.Globalization
         /// <stable>ICU 52</stable>
         Bidi_Paired_Bracket_Type = 0x1015,
 
-        /// <summary>
-        /// One more than the last constant for enumerated/integer Unicode properties.
-        /// </summary>
-        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        Int_Limit = 0x1016,
+        // ICU4N specific - moved Int_Limit to UPropertyConstants
+        
 
         /// <summary>
         /// Bitmask property General_Category_Mask.
@@ -805,17 +786,8 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.4</stable>
         General_Category_Mask = 0x2000,
 
-        /// <summary>
-        /// First constant for bit-mask Unicode properties.
-        /// </summary>
-        /// <stable>ICU 2.4</stable>
-        Mask_Start = General_Category_Mask,
-
-        /// <summary>
-        /// One more than the last constant for bit-mask Unicode properties.
-        /// </summary>
-        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        Mask_Limit = 0x2001,
+        // ICU4N specific - moved Mask_Start to UPropertyConstants
+        // ICU4N specific - moved Mask_Limit to UPropertyConstants
 
         /// <summary>
         /// Double property Numeric_Value.
@@ -824,17 +796,8 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.4</stable>
         Numeric_Value = 0x3000,
 
-        /// <summary>
-        /// First constant for double Unicode properties.
-        /// </summary>
-        /// <stable>ICU 2.4</stable>
-        Double_Start = Numeric_Value,
-
-        /// <summary>
-        /// One more than the last constant for double Unicode properties.
-        /// </summary>
-        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        Double_Limit = 0x3001,
+        // ICU4N specific - moved Double_Start to UPropertyConstants
+        // ICU4N specific - moved Double_Limit to UPropertyConstants
 
         /// <summary>
         /// String property Age.
@@ -843,11 +806,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.4</stable>
         Age = 0x4000,
 
-        /// <summary>
-        /// First constant for string Unicode properties.
-        /// </summary>
-        /// <stable>ICU 2.4</stable>
-        String_Start = Age,
+        // ICU4N specific - moved String_Start to UPropertyConstants
 
         /// <summary>
         /// String property Bidi_Mirroring_Glyph.
@@ -863,12 +822,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.4</stable>
         Case_Folding = 0x4002,
 
-        /// <summary>
-        /// Deprecated string property ISO_Comment.
-        /// Corresponds to <see cref="UChar.GetISOComment(int)"/>.
-        /// </summary>
-        [Obsolete("ICU 49")]
-        ISO_Comment = 0x4003,
+        // ICU4N specific: moved ISO_Comment to UPropertyConstants (obsolete)
 
         /// <summary>
         /// String property Lowercase_Mapping.
@@ -919,14 +873,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.4</stable>
         Titlecase_Mapping = 0x400A,
 
-        /// <summary>
-        /// String property Unicode_1_Name.
-        /// This property is of little practical value.
-        /// Beginning with ICU 49, ICU APIs return null or an empty string for this property.
-        /// Corresponds to <see cref="UChar.GetName1_0(int)"/>.
-        /// </summary>
-        [Obsolete("ICU 49")]
-        Unicode_1_Name = 0x400B,
+        // ICU4N: Moved Unicode_1_Name to UPropertyConstants (obsolete)
 
         /// <summary>
         /// String property Uppercase_Mapping.
@@ -942,11 +889,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 52</stable>
         Bidi_Paired_Bracket = 0x400D,
 
-        /// <summary>
-        /// One more than the last constant for string Unicode properties.
-        /// </summary>
-        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        String_Limit = 0x400E,
+        // ICU4N specific - moved String_Limit to UPropertyConstants
 
         /// <summary>
         /// Miscellaneous property Script_Extensions (new in Unicode 6.0).
@@ -957,17 +900,8 @@ namespace ICU4N.Globalization
         /// <stable>ICU 4.6</stable>
         Script_Extensions = 0x7000,
 
-        /// <summary>
-        /// First constant for Unicode properties with unusual value types.
-        /// </summary>
-        /// <stable>ICU 4.6</stable>
-        Other_Property_Start = Script_Extensions,
-
-        /// <summary>
-        /// One more than the last constant for Unicode properties with unusual value types.
-        /// </summary>
-        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        Other_Property_Limit = 0x7001,
+        // ICU4N specific - moved Other_Property_Start to UPropertyConstants
+        // ICU4N specific - moved Other_Property_Limit to UPropertyConstants
     }
 
     /// <summary>
@@ -999,11 +933,126 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.4</stable>
         Long = 1,
 
+        // ICU4N specific - moved Count to NameChoiceConstants so it is not on the public API
+    }
+
+    /// <summary>
+    /// Constants for <see cref="UProperty"/>
+    /// </summary>
+    internal static class UPropertyConstants
+    {
+        /// <summary>
+        /// Special value indicating undefined property.
+        /// </summary>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        public const UProperty Undefined = (UProperty)(-1);
+
+        /// <summary>
+        /// First constant for binary Unicode properties.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
+        public const UProperty Binary_Start = UProperty.Alphabetic;
+
+        /// <summary>
+        /// One more than the last constant for binary Unicode properties.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        public static readonly UProperty Binary_Limit = (UProperty)64;
+
+        /// <summary>
+        ///  First constant for enumerated/integer Unicode properties.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public const UProperty Int_Start = UProperty.Bidi_Class;
+
+        /// <summary>
+        /// One more than the last constant for enumerated/integer Unicode properties.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        public static readonly UProperty Int_Limit = (UProperty)0x1016;
+
+        /// <summary>
+        /// First constant for bit-mask Unicode properties.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public const UProperty Mask_Start = UProperty.General_Category_Mask;
+
+        /// <summary>
+        /// One more than the last constant for bit-mask Unicode properties.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        public static readonly UProperty Mask_Limit = (UProperty)0x2001;
+
+        /// <summary>
+        /// First constant for double Unicode properties.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public const UProperty Double_Start = UProperty.Numeric_Value;
+
+        /// <summary>
+        /// One more than the last constant for double Unicode properties.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        public static readonly UProperty Double_Limit = (UProperty)0x3001;
+
+        /// <summary>
+        /// First constant for string Unicode properties.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public const UProperty String_Start = UProperty.Age;
+
+        /// <summary>
+        /// Deprecated string property ISO_Comment.
+        /// Corresponds to <see cref="UChar.GetISOComment(int)"/>.
+        /// </summary>
+        [Obsolete("ICU 49")]
+        internal const UProperty ISO_Comment = (UProperty)0x4003;
+
+        /// <summary>
+        /// String property Unicode_1_Name.
+        /// This property is of little practical value.
+        /// Beginning with ICU 49, ICU APIs return null or an empty string for this property.
+        /// Corresponds to <see cref="UChar.GetName1_0(int)"/>.
+        /// </summary>
+        [Obsolete("ICU 49")]
+        internal const UProperty Unicode_1_Name = (UProperty)0x400B;
+
+        /// <summary>
+        /// One more than the last constant for string Unicode properties.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        public static readonly UProperty String_Limit = (UProperty)0x400E;
+
+        /// <summary>
+        /// First constant for Unicode properties with unusual value types.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        public const UProperty Other_Property_Start = UProperty.Script_Extensions;
+
+        /// <summary>
+        /// One more than the last constant for Unicode properties with unusual value types.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
+        public static readonly UProperty Other_Property_Limit = (UProperty)0x7001;
+    }
+
+    /// <summary>
+    /// Constants for <see cref="NameChoice"/>
+    /// </summary>
+    internal static class NameChoiceConstants
+    {
         /// <summary>
         /// The number of predefined property name choices.  Individual
         /// properties or values may have more than <see cref="Count"/> aliases.
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        Count = 2,
+        public static readonly NameChoice Count = (NameChoice)Enum.GetNames(typeof(NameChoice)).Length;
     }
 }

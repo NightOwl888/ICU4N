@@ -259,31 +259,31 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void ResetInfo(IDNAInfo info)
+        internal static void ResetInfo(IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             info.Reset();
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static bool HasCertainErrors(IDNAInfo info, ISet<IDNAError> errors)
+        internal static bool HasCertainErrors(IDNAInfo info, ISet<IDNAError> errors) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             return info.errors.Count > 0 && info.errors.Overlaps(errors);
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static bool HasCertainLabelErrors(IDNAInfo info, ISet<IDNAError> errors)
+        internal static bool HasCertainLabelErrors(IDNAInfo info, ISet<IDNAError> errors) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             return info.labelErrors.Count > 0 && info.labelErrors.Overlaps(errors);
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void AddLabelError(IDNAInfo info, IDNAError error)
+        internal static void AddLabelError(IDNAInfo info, IDNAError error) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             info.labelErrors.Add(error);
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void PromoteAndResetLabelErrors(IDNAInfo info)
+        internal static void PromoteAndResetLabelErrors(IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             if (info.labelErrors.Count > 0)
             {
@@ -293,37 +293,37 @@ namespace ICU4N.Text
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void AddError(IDNAInfo info, IDNAError error)
+        internal static void AddError(IDNAInfo info, IDNAError error) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             info.errors.Add(error);
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void SetTransitionalDifferent(IDNAInfo info)
+        internal static void SetTransitionalDifferent(IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             info.isTransDiff = true;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void SetBiDi(IDNAInfo info)
+        internal static void SetBiDi(IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             info.isBiDi = true;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static bool IsBiDi(IDNAInfo info)
+        internal static bool IsBiDi(IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             return info.isBiDi;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void SetNotOkBiDi(IDNAInfo info)
+        internal static void SetNotOkBiDi(IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             info.isOkBiDi = false;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static bool IsOkBiDi(IDNAInfo info)
+        internal static bool IsOkBiDi(IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             return info.isOkBiDi;
         }
@@ -335,7 +335,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected IDNA()
+        internal IDNA() // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
         }
 
@@ -381,7 +381,7 @@ namespace ICU4N.Text
         /// <returns><see cref="StringBuffer"/> the converted <see cref="string"/>.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static StringBuffer ConvertToASCII(string src, IDNA2003Options options)
+        internal static StringBuffer ConvertToASCII(string src, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             UCharacterIterator iter = UCharacterIterator.GetInstance(src);
             return ConvertToASCII(iter, options);
@@ -427,7 +427,7 @@ namespace ICU4N.Text
         /// <returns><see cref="StringBuffer"/> the converted <see cref="string"/>.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static StringBuffer ConvertToASCII(StringBuffer src, IDNA2003Options options)
+        internal static StringBuffer ConvertToASCII(StringBuffer src, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             UCharacterIterator iter = UCharacterIterator.GetInstance(src);
             return ConvertToASCII(iter, options);
@@ -473,7 +473,7 @@ namespace ICU4N.Text
         /// <returns><see cref="StringBuffer"/> the converted <see cref="string"/>.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static StringBuffer ConvertToASCII(UCharacterIterator src, IDNA2003Options options)
+        internal static StringBuffer ConvertToASCII(UCharacterIterator src, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return IDNA2003.ConvertToASCII(src, options);
         }
@@ -523,7 +523,7 @@ namespace ICU4N.Text
         /// <returns><see cref="StringBuffer"/> the converted <see cref="string"/>.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static StringBuffer ConvertIDNToASCII(UCharacterIterator src, IDNA2003Options options)
+        internal static StringBuffer ConvertIDNToASCII(UCharacterIterator src, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return ConvertIDNToASCII(src.GetText(), options);
         }
@@ -573,7 +573,7 @@ namespace ICU4N.Text
         /// <returns><see cref="StringBuffer"/> the converted <see cref="string"/>.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static StringBuffer ConvertIDNToASCII(StringBuffer src, IDNA2003Options options)
+        internal static StringBuffer ConvertIDNToASCII(StringBuffer src, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return ConvertIDNToASCII(src.ToString(), options);
         }
@@ -623,7 +623,7 @@ namespace ICU4N.Text
         /// <returns><see cref="StringBuffer"/> the converted <see cref="string"/>.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static StringBuffer ConvertIDNToASCII(string src, IDNA2003Options options)
+        internal static StringBuffer ConvertIDNToASCII(string src, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return IDNA2003.ConvertIDNToASCII(src, options);
         }
@@ -668,7 +668,7 @@ namespace ICU4N.Text
         /// <returns><see cref="StringBuffer"/> the converted <see cref="string"/>.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static StringBuffer ConvertToUnicode(string src, IDNA2003Options options)
+        internal static StringBuffer ConvertToUnicode(string src, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             UCharacterIterator iter = UCharacterIterator.GetInstance(src);
             return ConvertToUnicode(iter, options);
@@ -714,7 +714,7 @@ namespace ICU4N.Text
         /// <returns><see cref="StringBuffer"/> the converted <see cref="string"/>.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static StringBuffer ConvertToUnicode(StringBuffer src, IDNA2003Options options)
+        internal static StringBuffer ConvertToUnicode(StringBuffer src, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             UCharacterIterator iter = UCharacterIterator.GetInstance(src);
             return ConvertToUnicode(iter, options);
@@ -760,7 +760,7 @@ namespace ICU4N.Text
         /// <returns><see cref="StringBuffer"/> the converted <see cref="string"/>.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static StringBuffer ConvertToUnicode(UCharacterIterator src, IDNA2003Options options)
+        internal static StringBuffer ConvertToUnicode(UCharacterIterator src, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return IDNA2003.ConvertToUnicode(src, options);
         }
@@ -807,7 +807,7 @@ namespace ICU4N.Text
         /// <returns><see cref="StringBuffer"/> the converted <see cref="string"/>.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static StringBuffer ConvertIDNToUnicode(UCharacterIterator src, IDNA2003Options options)
+        internal static StringBuffer ConvertIDNToUnicode(UCharacterIterator src, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return ConvertIDNToUnicode(src.GetText(), options);
         }
@@ -854,7 +854,7 @@ namespace ICU4N.Text
         /// <returns><see cref="StringBuffer"/> the converted <see cref="string"/>.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static StringBuffer ConvertIDNToUnicode(StringBuffer src, IDNA2003Options options)
+        internal static StringBuffer ConvertIDNToUnicode(StringBuffer src, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return ConvertIDNToUnicode(src.ToString(), options);
         }
@@ -901,7 +901,7 @@ namespace ICU4N.Text
         /// <returns><see cref="StringBuffer"/> the converted <see cref="string"/>.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static StringBuffer ConvertIDNToUnicode(string src, IDNA2003Options options)
+        internal static StringBuffer ConvertIDNToUnicode(string src, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return IDNA2003.ConvertIDNToUnicode(src, options);
         }
@@ -949,7 +949,7 @@ namespace ICU4N.Text
         /// <returns>0 if the strings are equal, &gt; 0 if s1 &gt; s2 and &lt; 0 if s1 &lt; s2.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static int Compare(StringBuffer s1, StringBuffer s2, IDNA2003Options options)
+        internal static int Compare(StringBuffer s1, StringBuffer s2, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             if (s1 == null || s2 == null)
             {
@@ -1001,7 +1001,7 @@ namespace ICU4N.Text
         /// <returns>0 if the strings are equal, &gt; 0 if s1 &gt; s2 and &lt; 0 if s1 &lt; s2.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static int Compare(string s1, string s2, IDNA2003Options options)
+        internal static int Compare(string s1, string s2, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             if (s1 == null || s2 == null)
             {
@@ -1053,7 +1053,7 @@ namespace ICU4N.Text
         /// <returns>0 if the strings are equal, &gt; 0 if s1 &gt; s2 and &lt; 0 if s1 &lt; s2.</returns>
         /// <exception cref="StringPrepParseException">When an error occurs for parsing a string.</exception>
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(IDNAOptions).")]
-        public static int Compare(UCharacterIterator s1, UCharacterIterator s2, IDNA2003Options options)
+        internal static int Compare(UCharacterIterator s1, UCharacterIterator s2, IDNA2003Options options) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             if (s1 == null || s2 == null)
             {

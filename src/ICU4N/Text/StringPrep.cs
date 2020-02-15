@@ -596,8 +596,8 @@ namespace ICU4N.Text
             UCharacterIterator iter = UCharacterIterator.GetInstance(normOut);
             Values val = new Values();
 #pragma warning disable 612, 618
-            UCharacterDirection direction = UCharacterDirection.CharDirectionCount,
-                firstCharDir = UCharacterDirection.CharDirectionCount;
+            UCharacterDirection direction = UCharacterDirectionExtensions.CharDirectionCount,
+                firstCharDir = UCharacterDirectionExtensions.CharDirectionCount;
 #pragma warning restore 612, 618
             int rtlPos = -1, ltrPos = -1;
             bool rightToLeft = false, leftToRight = false;
@@ -617,7 +617,7 @@ namespace ICU4N.Text
                 {
                     direction = (UCharacterDirection)bdp.GetClass(ch);
 #pragma warning disable 612, 618
-                    if (firstCharDir == UCharacterDirection.CharDirectionCount)
+                    if (firstCharDir == UCharacterDirectionExtensions.CharDirectionCount)
 #pragma warning restore 612, 618
                     {
                         firstCharDir = direction;

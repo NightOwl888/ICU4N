@@ -49,7 +49,7 @@ namespace ICU4N.Text
     /// It will be updated as later versions of Unicode are released.
     /// </remarks>
     [Obsolete("ICU 2.2")]
-    public sealed class ComposedCharIter
+    internal sealed class ComposedCharIter // ICU4N specific - marked internal instead of public, since the functionality is obsolete
     {
         /// <summary>
         /// Constant that indicates the iteration has completed.

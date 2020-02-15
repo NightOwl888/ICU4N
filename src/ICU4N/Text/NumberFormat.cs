@@ -1297,7 +1297,7 @@ namespace ICU4N.Text
          * @return the pattern
          * @deprecated ICU 3.4 subclassers should override getPattern(ULocale, int) instead of this method.
          */
-        [Obsolete("ICU 3.4 subclassers should override getPattern(ULocale, int) instead of this method.")]
+        [Obsolete("ICU 3.4 subclassers should override GetPattern(ULocale, int) instead of this method.")]
         protected static string GetPattern(CultureInfo forLocale, NumberFormatStyle choice)
         {
             return GetPattern(ULocale.ForLocale(forLocale), choice);
