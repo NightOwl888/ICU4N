@@ -667,15 +667,32 @@ namespace ICU4N.Dev.Test
             return handleAssert(condition, message, "true", null);
         }
 
+        protected static bool assertTrue(bool condition)
+        {
+            return handleAssert(condition, "", "true", null);
+        }
+
         protected static bool assertFalse(string message, bool condition)
         {
             return handleAssert(!condition, message, "false", null);
+        }
+
+        protected static bool assertFalse(bool condition)
+        {
+            return handleAssert(!condition, "", "false", null);
         }
 
         protected static bool assertEquals(string message, bool expected,
                 bool actual)
         {
             return handleAssert(expected == actual, message, 
+                    Convert.ToString(expected, CultureInfo.InvariantCulture), Convert.ToString(actual, CultureInfo.InvariantCulture));
+        }
+
+        protected static bool assertEquals(bool expected,
+                bool actual)
+        {
+            return handleAssert(expected == actual, "",
                     Convert.ToString(expected, CultureInfo.InvariantCulture), Convert.ToString(actual, CultureInfo.InvariantCulture));
         }
 
@@ -797,6 +814,18 @@ namespace ICU4N.Dev.Test
                     StringFor(actual));
         }
 
+        protected static bool assertEquals(object expected, object actual)
+        {
+            if (expected is ICharSequence)
+                return assertEquals("", (ICharSequence)expected, actual);
+            if (actual is ICharSequence)
+                return assertEquals("", expected, (ICharSequence)actual);
+
+            bool result = expected == null ? actual == null : StructuralEqualityComparer.Aggressive.Equals(expected, actual);
+            return handleAssert(result, "", StringFor(expected),
+                    StringFor(actual));
+        }
+
         // ICU4N specific overload for optimizing ICollection<T> comparisons
         protected static bool assertNotEquals<T>(string message, ICollection<T> expected,
             ICollection<T> actual)
@@ -839,10 +868,23 @@ namespace ICU4N.Dev.Test
                     StringFor(actual), "==", false);
         }
 
+        protected bool assertSame(object expected, object actual)
+        {
+            return handleAssert(expected == actual, "", StringFor(expected),
+                    StringFor(actual), "==", false);
+        }
+
         protected static bool assertNotSame(string message, object expected,
                 object actual)
         {
             return handleAssert(expected != actual, message, StringFor(expected),
+                    StringFor(actual), "!=", true);
+        }
+
+        protected static bool assertNotSame(object expected,
+                object actual)
+        {
+            return handleAssert(expected != actual, "", StringFor(expected),
                     StringFor(actual), "!=", true);
         }
 
@@ -854,6 +896,12 @@ namespace ICU4N.Dev.Test
         protected static bool assertNotNull(string message, object actual)
         {
             return handleAssert(actual != null, message, null, StringFor(actual),
+                    "!=", true);
+        }
+
+        protected static bool assertNotNull(object actual)
+        {
+            return handleAssert(actual != null, "", null, StringFor(actual),
                     "!=", true);
         }
 

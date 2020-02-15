@@ -1,7 +1,7 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
-using ICU4N.Support.Text;
 using J2N.IO;
+using J2N.Text;
 using System;
 using System.Globalization;
 using System.IO;

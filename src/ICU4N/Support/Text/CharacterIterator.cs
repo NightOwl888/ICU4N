@@ -5,17 +5,7 @@
     /// iteration starts at the begin index in the group of characters and continues
     /// to one index before the end index.
     /// </summary>
-    // ICU4N TODO: API - more analysis is needed to determine the impact, but it might make sense to make this
-    // more like System.Globalization.TextElementEnumerator. It seems we should be able
-    // to make these MoveNext(), MovePrevious(), MoveFirst(), and MoveLast() that return
-    // bool, and then use the Current property to read the char (as is typically done in .NET).
-    // This would allow us to implement the regular IEnumerble<char> interface in order to support
-    // LINQ.
-    // Alternatively, just implement that interface here without changing this from "iterator" to "enumerator" - call Next()
-    // within MoveNext() and check whether Done is returned to provide the result OR alternatively check the EndIndex against Index for the true/false
-    // result of MoveNext().
-    // We may be able to do something like that with BreakIterator as well.
-    public abstract class CharacterIterator
+    internal abstract class CharacterIterator
 #if FEATURE_CLONEABLE
         : ICloneable
 #endif
