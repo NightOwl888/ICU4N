@@ -11,7 +11,7 @@ namespace ICU4N.Support.Text
     /// Holds a string with attributes describing the characters of
     /// this string.
     /// </summary>
-    public class AttributedString
+    internal class AttributedString
 #if FEATURE_CLONEABLE
         : ICloneable
 #endif
