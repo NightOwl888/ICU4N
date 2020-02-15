@@ -2,6 +2,7 @@
 using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -766,7 +767,7 @@ namespace ICU4N.Text
         /// <returns>nothing because this method is not yet implemented.</returns>
         /// <exception cref="InvalidOperationException">will always be thrown by this method.</exception>
         /// <stable>ICU 3.8</stable>
-        public override object ParseObject(String source, ParsePosition pos)
+        public override object ParseObject(string source, ParsePosition pos)
         {
             throw new InvalidOperationException();
         }

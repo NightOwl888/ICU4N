@@ -1,5 +1,6 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N.Text;
 using NUnit.Framework;
 
 namespace ICU4N.Dev.Test.Rbbi

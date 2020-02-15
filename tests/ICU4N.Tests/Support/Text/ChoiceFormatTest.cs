@@ -1,5 +1,6 @@
 ﻿using ICU4N.Dev.Test;
 using ICU4N.Text;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using StringBuffer = System.Text.StringBuilder;

@@ -32,7 +32,7 @@ namespace ICU4N.Support.Text
         /// <exception cref="ArgumentException">If <paramref name="location"/> is negative or greater than the length
         /// of <paramref name="value"/>.</exception>
         public StringCharacterIterator(string value, int location)
-            : this(value, 0, value.Length, location)
+            : this(value, 0, value != null ? value.Length : 0, location)
         {
         }
 

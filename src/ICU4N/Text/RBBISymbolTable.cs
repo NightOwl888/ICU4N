@@ -1,6 +1,5 @@
-﻿using ICU4N.Globalization;
-using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
+﻿using ICU4N.Support.Collections;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
