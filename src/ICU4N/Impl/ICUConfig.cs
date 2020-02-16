@@ -6,7 +6,7 @@ namespace ICU4N.Impl
     /// <summary>
     /// ICUConfig is a class used for accessing ICU4N runtime configuration.
     /// </summary>
-    public class ICUConfig
+    internal class ICUConfig // ICU4N TODO: Refactor to use IConfiguration from .NET and make public
     {
         //public static readonly string CONFIG_PROPS_FILE = "/com/ibm/icu/ICUConfig.properties";
         //private static readonly IDictionary<string, string> CONFIG_PROPS;

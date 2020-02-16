@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security;
-using System.Text;
 
 namespace ICU4N.Support
 {
@@ -21,7 +19,7 @@ namespace ICU4N.Support
     /// to change the read behavior of these methods to throw the underlying exception 
     /// instead of returning the default value.
     /// </summary>
-    public static class SystemProperties
+    internal static class SystemProperties // ICU4N: We can probably factor this out completely once ICUConfig and ICUDebug classes are refactored to use .NET APIs
     {
         /// <summary>
         /// Retrieves the value of an environment variable from the current process.

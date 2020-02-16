@@ -4,11 +4,11 @@ using System;
 
 namespace ICU4N.Impl
 {
-    public sealed class ICUDebug
+    internal sealed class ICUDebug // ICU4N TODO: Refactor to use System.Diagnostics.Trace from .NET and make public
     {
-        private static string parameters;
-        private static bool debug;
-        private static bool help;
+        private static readonly string parameters;
+        private static readonly bool debug;
+        private static readonly bool help;
         public static readonly string javaVersionString;
         public static readonly bool isJDK14OrHigher;
         public static readonly VersionInfo javaVersion;
