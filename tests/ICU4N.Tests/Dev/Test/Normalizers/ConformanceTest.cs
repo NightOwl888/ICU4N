@@ -280,14 +280,14 @@ namespace ICU4N.Dev.Test.Normalizers
                 pass = false;
             }
 
-            @out = iterativeNorm(new StringCharacterIterator(field[0]), NormalizerMode.FCD, buf, +1, options);
-            @out = iterativeNorm(new StringCharacterIterator(field[0]), NormalizerMode.FCD, buf, -1, options);
+            @out = iterativeNorm(new StringCharacterEnumerator(field[0]), NormalizerMode.FCD, buf, +1, options);
+            @out = iterativeNorm(new StringCharacterEnumerator(field[0]), NormalizerMode.FCD, buf, -1, options);
 
-            @out = iterativeNorm(new StringCharacterIterator(field[2]), NormalizerMode.FCD, buf, +1, options);
-            @out = iterativeNorm(new StringCharacterIterator(field[2]), NormalizerMode.FCD, buf, -1, options);
+            @out = iterativeNorm(new StringCharacterEnumerator(field[2]), NormalizerMode.FCD, buf, +1, options);
+            @out = iterativeNorm(new StringCharacterEnumerator(field[2]), NormalizerMode.FCD, buf, -1, options);
 
-            @out = iterativeNorm(new StringCharacterIterator(field[4]), NormalizerMode.FCD, buf, +1, options);
-            @out = iterativeNorm(new StringCharacterIterator(field[4]), NormalizerMode.FCD, buf, -1, options);
+            @out = iterativeNorm(new StringCharacterEnumerator(field[4]), NormalizerMode.FCD, buf, +1, options);
+            @out = iterativeNorm(new StringCharacterEnumerator(field[4]), NormalizerMode.FCD, buf, -1, options);
 
             @out = Normalizer.Normalize(fcd, NormalizerMode.NFD);
             if (!@out.Equals(field[2]))
@@ -361,13 +361,13 @@ namespace ICU4N.Dev.Test.Normalizers
                 return false;
             }
 
-            @out = iterativeNorm(new StringCharacterIterator(s), mode, buf, +1, options);
+            @out = iterativeNorm(new StringCharacterEnumerator(s), mode, buf, +1, options);
             if (!assertEqual(modeString, "(+1)", s, @out, exp, msg))
             {
                 return false;
             }
 
-            @out = iterativeNorm(new StringCharacterIterator(s), mode, buf, -1, options);
+            @out = iterativeNorm(new StringCharacterEnumerator(s), mode, buf, -1, options);
             if (!assertEqual(modeString, "(-1)", s, @out, exp, msg))
             {
                 return false;
@@ -460,7 +460,7 @@ namespace ICU4N.Dev.Test.Normalizers
          * @param buf scratch buffer
          * @param dir either +1 or -1
          */
-        private String iterativeNorm(StringCharacterIterator str, NormalizerMode mode,
+        private String iterativeNorm(StringCharacterEnumerator str, NormalizerMode mode,
                                      StringBuffer buf, int dir, int options)
         {
             normalizer.SetText(str);

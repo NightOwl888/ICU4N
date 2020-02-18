@@ -215,7 +215,7 @@ namespace ICU4N.Text
         /// <summary>
         /// The character iterator through which this <see cref="BreakIterator"/> accesses the text.
         /// </summary>
-        private CharacterIterator fText = new StringCharacterIterator("");
+        private CharacterIterator fText = new Support.Text.CharacterEnumeratorWrapper(new StringCharacterEnumerator(""));
 
         /// <summary>
         /// The rule data for this <see cref="BreakIterator"/> instance. Package private.
@@ -490,13 +490,13 @@ namespace ICU4N.Text
             return fDone ? Done : fPosition;
         }
 
-        /// <exception cref="ArgumentException">Unless begin &lt;= offset &lt; end.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Unless begin &lt;= offset &lt; end.</exception>
         /// <stable>ICU 2.0</stable>
-        protected static void CheckOffset(int offset, CharacterIterator text)
+        internal static void CheckOffset(int offset, CharacterIterator text) // ICU4N: Opted not to provide a protected version that accepts ICharacterEnumerator
         {
             if (offset < text.BeginIndex || offset > text.EndIndex)
             {
-                throw new ArgumentException("offset out of bounds");
+                throw new ArgumentOutOfRangeException(nameof(offset), "offset out of bounds");
             }
         }
 
@@ -624,16 +624,32 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Gets a <see cref="CharacterIterator"/> over the text being analyzed.  This version
-        /// of this property returns the actual <see cref="CharacterIterator"/> we're using internally.
+        /// Gets a <see cref="ICharacterEnumerator"/> over the text being analyzed.  This version
+        /// of this property returns the actual <see cref="ICharacterEnumerator"/> we're using internally.
         /// Changing the state of this iterator can have undefined consequences.  If
         /// you need to change it, clone it first.
         /// </summary>
         /// <returns>An iterator over the text being analyzed.</returns>
         /// <stable>ICU 2.0</stable>
-        public override CharacterIterator Text
+        public override ICharacterEnumerator Text
         {
-            get { return fText; }
+            get
+            {
+                if (fText is Support.Text.CharacterEnumeratorWrapper text)
+                    return text.Enumerator;
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Set the enumerator to analyze a new piece of text.  This function resets
+        /// the current iteration position to the beginning of the text.
+        /// </summary>
+        /// <param name="newText">An enumerator over the text to analyze.</param>
+        /// <stable>ICU 2.0</stable>
+        public override void SetText(ICharacterEnumerator newText)
+        {
+            SetText(newText != null ? new ICU4N.Support.Text.CharacterEnumeratorWrapper(newText) : null);
         }
 
         /// <summary>
@@ -642,7 +658,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="newText">An iterator over the text to analyze.</param>
         /// <stable>ICU 2.0</stable>
-        public override void SetText(CharacterIterator newText)
+        internal override void SetText(CharacterIterator newText)
         {
             if (newText != null)
             {

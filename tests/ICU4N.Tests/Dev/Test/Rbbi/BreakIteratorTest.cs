@@ -316,7 +316,7 @@ namespace ICU4N.Dev.Test.Rbbi
             // not used boolean gotException = false;
 
 
-            iter.SetText(new StringCharacterIterator(str, begin, end, begin));
+            iter.SetText(new StringCharacterEnumerator(str, begin, Math.Max(end - begin, 0), begin));
             for (int index = -1; index < begin + 1; ++index)
             {
                 try
@@ -405,7 +405,7 @@ namespace ICU4N.Dev.Test.Rbbi
             String words3 = "aaa bbb ccc";
             BreakIterator e = BreakIterator.GetWordInstance(CultureInfo.CurrentCulture);
             e.SetText(words3);
-            e.First();
+            int t = e.First();
             int p1 = e.Next();
             int p2 = e.Next();
             int p3 = e.Next();

@@ -7,12 +7,12 @@ namespace ICU4N.Impl
 {
     /// <summary>
     /// This class is a wrapper around <see cref="UCharacterIterator"/> and implements the
-    /// <see cref="CharacterIterator"/> protocol
+    /// <see cref="ICharacterEnumerator"/> protocol.
     /// </summary>
     /// <author>ram</author>
-    public class UCharacterIteratorWrapper : CharacterIterator
+    public class UCharacterEnumeratorWrapper : ICharacterEnumerator
     {
-        public UCharacterIteratorWrapper(UCharacterIterator iter)
+        public UCharacterEnumeratorWrapper(UCharacterIterator iter)
         {
             this.iterator = iter;
         }
@@ -20,121 +20,122 @@ namespace ICU4N.Impl
         private UCharacterIterator iterator;
 
         /// <summary>
-        /// Sets the position to <see cref="BeginIndex"/> and returns the character at that
-        /// position.
+        /// Gets the start index of the text.
         /// </summary>
-        /// <returns>The first character in the text, or <see cref="UCharacterIterator.Done"/> if the text is empty.</returns>
-        /// <seealso cref="BeginIndex"/>
-        public override char First()
-        {
-            //UCharacterIterator always iterates from 0 to length
-            iterator.SetToStart();
-            return (char)iterator.Current;
-        }
+        public int StartIndex => 0; //UCharacterIterator always starts from 0
 
         /// <summary>
-        /// Sets the position to <see cref="EndIndex"/>-1 (<see cref="EndIndex"/> if the text is empty)
-        /// and returns the character at that position.
+        /// Gets the end index of the text. This index is the index of the end of the text.
         /// </summary>
-        /// <returns>The last character in the text, or <see cref="UCharacterIterator.Done"/> if the text is empty.</returns>
-        /// <seealso cref="EndIndex"/>
-        public override char Last()
+        public int EndIndex => Math.Max(iterator.Length - 1, 0);
+
+        /// <inheritdoc/>
+        public int Length => iterator.Length;
+
+        /// <summary>
+        /// Gets or sets the current index.
+        /// </summary>
+        public int Index
         {
-            iterator.SetToLimit();
-            return (char)iterator.Previous();
+            get => iterator.Index;
+            set => iterator.Index = value;
         }
 
         /// <summary>
         /// Gets the character at the current position (as returned by <see cref="Index"/>).
         /// </summary>
         /// <returns>
-        /// the character at the current position or <see cref="UCharacterIterator.Done"/> if the current
+        /// The character at the current position or <see cref="UCharacterIterator.Done"/> if the current
         /// position is off the end of the text.
         /// </returns>
         /// <seealso cref="Index"/>
-        public override char Current
+        public char Current => (char)iterator.Current;
+
+        object IEnumerator.Current => Current;
+
+        /// <summary>
+        /// Sets the position to <see cref="StartIndex"/>.
+        /// </summary>
+        /// <returns><c>true</c> if successful; <c>false</c> if the text is empty.</returns>
+        /// <seealso cref="StartIndex"/>
+        public bool MoveFirst()
         {
-            get { return (char)iterator.Current; }
+            //UCharacterIterator always iterates from 0 to length
+            iterator.SetToStart();
+            return iterator.Current != UCharacterIterator.Done;
         }
 
         /// <summary>
-        /// Increments the iterator's index by one and returns the character
-        /// at the new index.  If the resulting index is greater or equal
-        /// to <see cref="EndIndex"/>, the current index is reset to <see cref="EndIndex"/> and
-        /// a value of <see cref="UCharacterIterator.Done"/> is returned.
+        /// Sets the position to <see cref="EndIndex"/>.
         /// </summary>
-        /// <returns>The character at the new position or <see cref="UCharacterIterator.Done"/> if the new
-        /// position is off the end of the text range.</returns>
-        public override char Next()
+        /// <returns><c>true</c> if successful; <c>false</c> if the text is empty.</returns>
+        /// <seealso cref="EndIndex"/>
+        public bool MoveLast()
+        {
+            iterator.SetToLimit();
+            return iterator.Previous() != UCharacterIterator.Done;
+        }
+
+        /// <summary>
+        /// Increments the iterator's index by one.
+        /// </summary>
+        /// <returns><c>true</c> if the index was incremented; <c>false</c> if the current index is <see cref="EndIndex"/>.</returns>
+        public bool MoveNext()
         {
             //pre-increment
             iterator.Next();
-            return (char)iterator.Current;
+            return iterator.Current != UCharacterIterator.Done;
         }
 
         /// <summary>
-        /// Decrements the iterator's index by one and returns the character
-        /// at the new index. If the current index is <see cref="BeginIndex"/>, the index
-        /// remains at <see cref="BeginIndex"/> and a value of <see cref="UCharacterIterator.Done"/> is returned.
+        /// Decrements the iterator's index by one.
         /// </summary>
-        /// <returns>the character at the new position or <see cref="UCharacterIterator.Done"/> if the current
-        /// position is equal to <see cref="BeginIndex"/>.</returns>
-        public override char Previous()
+        /// <returns><c>true</c> if the index was decremented; <c>false</c> if the current index is <see cref="StartIndex"/>.</returns>
+        public bool MovePrevious()
         {
             //pre-decrement
-            return (char)iterator.Previous();
+            return iterator.Previous() != UCharacterIterator.Done;
         }
 
-        /// <summary>
-        /// Sets the position to the specified position in the text and returns that
-        /// character.
-        /// </summary>
-        /// <param name="position">The position within the text.  Valid values range from
-        /// <see cref="BeginIndex"/> to <see cref="EndIndex"/>. An <see cref="System.ArgumentException"/> is thrown
-        /// if an invalid value is supplied.</param>
-        /// <returns>The character at the specified position or <see cref="UCharacterIterator.Done"/> if 
-        /// the specified position is equal to <see cref="EndIndex"/>.</returns>
-        public override char SetIndex(int position)
+        /// <inheritdoc/>
+        public bool TrySetIndex(int value)
         {
-            iterator.Index = position;
-            return (char)iterator.Current;
+            if (value < StartIndex)
+            {
+                iterator.Index = StartIndex;
+                return false;
+            }
+            if (value > EndIndex)
+            {
+                iterator.Index = EndIndex;
+                return false;
+            }
+            iterator.Index = value;
+            return true;
         }
 
         /// <summary>
-        /// Gets the start index of the text.
-        /// </summary>
-        public override int BeginIndex
-        {
-            //UCharacterIterator always starts from 0
-            get { return 0; }
-        }
-
-        /// <summary>
-        /// Gets the end index of the text.  This index is the index of the first
-        /// character following the end of the text.
-        /// </summary>
-        public override int EndIndex
-        {
-            get { return iterator.Length; }
-        }
-
-        /// <summary>
-        /// Gets the current index.
-        /// </summary>
-        public override int Index
-        {
-            get { return iterator.Index; }
-        }
-
-        /// <summary>
-        /// Create a copy of this iterator.
+        /// Create a copy of this enumerator.
         /// </summary>
         /// <returns>A copy of this.</returns>
-        public override object Clone()
+        public object Clone()
         {
-            UCharacterIteratorWrapper result = (UCharacterIteratorWrapper)base.MemberwiseClone();
+            UCharacterEnumeratorWrapper result = (UCharacterEnumeratorWrapper)base.MemberwiseClone();
             result.iterator = (UCharacterIterator)this.iterator.Clone();
             return result;
         }
+
+        void IEnumerator.Reset()
+        {
+            iterator.Index = StartIndex;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) { }
     }
 }

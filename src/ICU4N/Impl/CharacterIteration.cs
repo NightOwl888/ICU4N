@@ -3,14 +3,14 @@ using ICU4N.Text;
 
 namespace ICU4N.Impl
 {
-    public static class CharacterIteration // ICU4N specific - made into static class rather than using a private constructor
+    internal static class CharacterIteration // ICU4N: made internal, since CharacterIterator is internal // ICU4N specific - made into static class rather than using a private constructor
     {
         /// <summary>
         /// 32 bit Char value returned from when an iterator has run out of range.
         ///     Positive value so fast case (not end, not surrogate) can be checked
         ///     with a single test.
         /// </summary>
-        public static readonly int Done32 = 0x7fffffff;
+        public const int Done32 = 0x7fffffff;
 
         /// <summary>
         /// Move the iterator forward to the next code point, and return that code point,

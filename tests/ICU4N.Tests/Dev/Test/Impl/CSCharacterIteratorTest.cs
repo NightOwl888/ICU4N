@@ -16,29 +16,35 @@ namespace ICU4N.Dev.Test.Impl
             String text = "Hello, World";
 
             ICharSequence cs = text.AsCharSequence();
-            CharacterIterator csci = new CharSequenceCharacterIterator(cs);
-            CharacterIterator sci = new StringCharacterIterator(text);
+            ICharacterEnumerator csci = new CharSequenceCharacterEnumerator(cs);
+            ICharacterEnumerator sci = new StringCharacterEnumerator(text);
 
-            assertEquals("", sci.SetIndex(6), csci.SetIndex(6));
+            assertEquals("", sci.TrySetIndex(6), csci.TrySetIndex(6));
             assertEquals("", sci.Index, csci.Index);
             assertEquals("", sci.Current, csci.Current);
-            assertEquals("", sci.Previous(), csci.Previous());
-            assertEquals("", sci.Next(), csci.Next());
-            assertEquals("", sci.BeginIndex, csci.BeginIndex);
+            assertEquals("", sci.MovePrevious(), csci.MovePrevious());
+            assertEquals("", sci.Current, csci.Current);
+            assertEquals("", sci.MoveNext(), csci.MoveNext());
+            assertEquals("", sci.Current, csci.Current);
+            assertEquals("", sci.StartIndex, csci.StartIndex);
             assertEquals("", sci.EndIndex, csci.EndIndex);
-            assertEquals("", sci.First(), csci.First());
-            assertEquals("", sci.Last(), csci.Last());
+            assertEquals("", sci.MoveFirst(), csci.MoveFirst());
+            assertEquals("", sci.Current, csci.Current);
+            assertEquals("", sci.MoveLast(), csci.MoveLast());
+            assertEquals("", sci.Current, csci.Current);
 
-            csci.SetIndex(4);
-            sci.SetIndex(4);
-            CharacterIterator clci = (CharacterIterator)csci.Clone();
+            csci.Index = 4;
+            sci.Index = 4;
+            ICharacterEnumerator clci = (ICharacterEnumerator)csci.Clone();
             for (int i = 0; i < 50; ++i)
             {
-                assertEquals("", sci.Next(), clci.Next());
+                assertEquals("", sci.MoveNext(), clci.MoveNext());
+                assertEquals("", sci.Current, clci.Current);
             }
             for (int i = 0; i < 50; ++i)
             {
-                assertEquals("", sci.Previous(), clci.Previous());
+                assertEquals("", sci.MovePrevious(), clci.MovePrevious());
+                assertEquals("", sci.Current, clci.Current);
             }
         }
     }

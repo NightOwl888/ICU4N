@@ -244,6 +244,22 @@ namespace ICU4N.Text
         /// <param name="source">The source string iterator.</param>
         /// <param name="collator">The <see cref="Text.RuleBasedCollator"/>.</param>
         /// <stable>ICU 2.8</stable>
+        internal CollationElementIterator(ICharacterEnumerator source, RuleBasedCollator collator) // ICU4N specific overload
+            : this(collator)
+        {
+            SetText(source);
+        }
+
+        /// <summary>
+        /// <see cref="CollationElementIterator"/> constructor. This takes a source
+        /// character iterator and a <see cref="Text.RuleBasedCollator"/>. The iterator will
+        /// walk through the source string based on the rules defined by
+        /// the collator. If the source string is empty, <see cref="NullOrder"/> will be
+        /// returned on the first call to <see cref="Next()"/>.
+        /// </summary>
+        /// <param name="source">The source string iterator.</param>
+        /// <param name="collator">The <see cref="Text.RuleBasedCollator"/>.</param>
+        /// <stable>ICU 2.8</stable>
         internal CollationElementIterator(UCharacterIterator source, RuleBasedCollator collator)
             : this(collator)
         {
@@ -608,7 +624,18 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="source">The new source string iterator for iteration.</param>
         /// <stable>ICU 2.8</stable>
-        public void SetText(CharacterIterator source)
+        public void SetText(ICharacterEnumerator source) // ICU4N specific overload
+        {
+            SetText(new ICU4N.Support.Text.CharacterEnumeratorWrapper(source));
+        }
+
+        /// <summary>
+        /// Set a new source string iterator for iteration, and reset the
+        /// offset to the beginning of the text.
+        /// </summary>
+        /// <param name="source">The new source string iterator for iteration.</param>
+        /// <stable>ICU 2.8</stable>
+        internal void SetText(CharacterIterator source)
         {
             // Note: In C++, we just setText(source.getText()).
             // In Java, we actually operate on a character iterator.

@@ -64,15 +64,18 @@ namespace ICU4N.Dev.Test.Rbbi
                 get { return position; }
             }
 
-            public override CharacterIterator Text
+            public override ICharacterEnumerator Text
             {
                 get { return null; }
             }
 
-            public override void SetText(CharacterIterator newText)
+            public override void SetText(ICharacterEnumerator newText)
             {
             }
 
+            internal override void SetText(CharacterIterator newText)
+            {
+            }
         }
 
         private BreakIterator bi;

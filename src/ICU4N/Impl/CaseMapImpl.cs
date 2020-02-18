@@ -368,7 +368,7 @@ namespace ICU4N.Impl
                 }
             }
 
-            public override CharacterIterator Text
+            public override ICharacterEnumerator Text
             {
                 get
                 {
@@ -377,9 +377,9 @@ namespace ICU4N.Impl
                 }
             }
 
-            public override void SetText(CharacterIterator newText)
+            public override void SetText(ICharacterEnumerator newText)
             {
-                length = newText.EndIndex;
+                length = newText.Length;
             }
 
             public override void SetText(ICharSequence newText)
@@ -390,6 +390,16 @@ namespace ICU4N.Impl
             public override void SetText(string newText)
             {
                 length = newText.Length;
+            }
+
+            public override void SetText(char[] newText)
+            {
+                length = newText.Length;
+            }
+
+            internal override void SetText(CharacterIterator newText)
+            {
+                length = newText.EndIndex;
             }
         }
 

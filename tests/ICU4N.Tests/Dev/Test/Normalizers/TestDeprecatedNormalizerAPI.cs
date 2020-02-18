@@ -20,7 +20,7 @@ namespace ICU4N.Dev.Test.Normalizers
             // instantiate a Normalizer from a CharacterIterator
             string s = Utility.Unescape("a\u0308\uac00\\U0002f800");
             // make s a bit longer and more interesting
-            CharacterIterator iter = new StringCharacterIterator(s + s);
+            ICharacterEnumerator iter = new StringCharacterEnumerator(s + s);
             //test deprecated constructors
             Normalizer norm = new Normalizer(iter, NormalizerMode.NFC, 0);
             if (norm.Next() != 0xe4)

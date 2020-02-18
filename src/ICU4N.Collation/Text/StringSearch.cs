@@ -185,7 +185,7 @@ namespace ICU4N.Text
         /// <seealso cref="BreakIterator"/>
         /// <seealso cref="RuleBasedCollator"/>
         /// <stable>ICU 2.0</stable>
-        public StringSearch(string pattern, CharacterIterator target, RuleBasedCollator collator,
+        public StringSearch(string pattern, ICharacterEnumerator target, RuleBasedCollator collator,
                 BreakIterator breakiter)
             : base(target, breakiter)
         {
@@ -227,8 +227,8 @@ namespace ICU4N.Text
             search_.reset_ = true;
              */
             ULocale collLocale = collator.GetLocale(ULocale.VALID_LOCALE);
-            search_.internalBreakIter_ = BreakIterator.GetCharacterInstance(collLocale == null ? ULocale.ROOT : collLocale);
-            search_.internalBreakIter_.SetText((CharacterIterator)target.Clone());  // We need to create a clone
+            search_.internalBreakIter_ = BreakIterator.GetCharacterInstance(collLocale ?? ULocale.ROOT);
+            search_.internalBreakIter_.SetText((ICharacterEnumerator)target.Clone());  // We need to create a clone
 
             Initialize();
         }
@@ -245,7 +245,7 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">Thrown when argument <paramref name="target"/> is length of 0.</exception>
         /// <seealso cref="RuleBasedCollator"/>
         /// <stable>ICU 2.0</stable>
-        public StringSearch(string pattern, CharacterIterator target, RuleBasedCollator collator)
+        public StringSearch(string pattern, ICharacterEnumerator target, RuleBasedCollator collator)
             : this(pattern, target, collator, null)
         {
         }
@@ -262,7 +262,7 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">Thrown when argument <paramref name="target"/> is length of 0.</exception>
         /// <exception cref="InvalidCastException">Thrown if the collator for the specfied <paramref name="locale"/> is not a <see cref="RuleBasedCollator"/>.</exception>
         /// <stable>ICU 2.0</stable>
-        public StringSearch(string pattern, CharacterIterator target, CultureInfo locale)
+        public StringSearch(string pattern, ICharacterEnumerator target, CultureInfo locale)
             : this(pattern, target, ULocale.ForLocale(locale))
         {
         }
@@ -285,7 +285,7 @@ namespace ICU4N.Text
         /// <seealso cref="RuleBasedCollator"/>
         /// <seealso cref="SearchIterator"/>
         /// <stable>ICU 3.2</stable>
-        public StringSearch(string pattern, CharacterIterator target, ULocale locale)
+        public StringSearch(string pattern, ICharacterEnumerator target, ULocale locale)
             : this(pattern, target, (RuleBasedCollator)Text.Collator.GetInstance(locale), null)
         {
         }
@@ -302,7 +302,7 @@ namespace ICU4N.Text
         /// <exception cref="InvalidCastException">Thrown if the collator for the default locale is not a <see cref="RuleBasedCollator"/>.</exception>
         /// <stable>ICU 2.0</stable>
         public StringSearch(string pattern, string target)
-            : this(pattern, new StringCharacterIterator(target), (RuleBasedCollator)Text.Collator.GetInstance(), null)
+            : this(pattern, new StringCharacterEnumerator(target), (RuleBasedCollator)Text.Collator.GetInstance(), null)
         {
         }
 
@@ -338,7 +338,7 @@ namespace ICU4N.Text
 
             ULocale collLocale = collator.GetLocale(ULocale.VALID_LOCALE);
             search_.internalBreakIter_ = BreakIterator.GetCharacterInstance(collLocale ?? ULocale.ROOT);
-            search_.internalBreakIter_.SetText((CharacterIterator)search_.Text.Clone());  // We need to create a clone
+            search_.internalBreakIter_.SetText((ICharacterEnumerator)search_.Text.Clone());  // We need to create a clone
 
             toShift_ = collator.IsAlternateHandlingShifted;
 #pragma warning disable 612, 618
@@ -394,7 +394,7 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">Thrown when text is null or has 0 length.</exception>
         /// <see cref="SearchIterator.Target"/>
         /// <stable>ICU 2.8</stable>
-        public override void SetTarget(CharacterIterator text)
+        public override void SetTarget(ICharacterEnumerator text)
         {
             base.SetTarget(text);
             textIter_.SetText(text);
@@ -943,7 +943,7 @@ namespace ICU4N.Text
             //      search_.setMatchedLength(0);
             if (search_.isForwardSearching_)
             {
-                textIter_.SetOffset(search_.Text.EndIndex);
+                textIter_.SetOffset(search_.Text.EndIndex + (search_.Text.Length > 0 ? 1 : 0));
             }
             else
             {
@@ -1413,38 +1413,38 @@ namespace ICU4N.Text
             return found;
         }
 
-        private static int CodePointAt(CharacterIterator iter, int index)
+        private static int CodePointAt(ICharacterEnumerator iter, int index)
         {
             int currentIterIndex = iter.Index;
-            char codeUnit = iter.SetIndex(index);
+            char codeUnit = iter.TrySetIndex(index) ? iter.Current : CharacterIterator.Done;
             int cp = codeUnit;
             if (char.IsHighSurrogate(codeUnit))
             {
-                char nextUnit = iter.Next();
+                char nextUnit = iter.MoveNext() ? iter.Current : CharacterIterator.Done;
                 if (char.IsLowSurrogate(nextUnit))
                 {
                     cp = Character.ToCodePoint(codeUnit, nextUnit);
                 }
             }
-            iter.SetIndex(currentIterIndex);  // restore iter position
+            iter.Index = currentIterIndex;  // restore iter position
             return cp;
         }
 
-        private static int CodePointBefore(CharacterIterator iter, int index)
+        private static int CodePointBefore(ICharacterEnumerator iter, int index)
         {
             int currentIterIndex = iter.Index;
-            iter.SetIndex(index);
-            char codeUnit = iter.Previous();
+            iter.Index = index;
+            char codeUnit = iter.MovePrevious() ? iter.Current : CharacterIterator.Done;
             int cp = codeUnit;
             if (char.IsLowSurrogate(codeUnit))
             {
-                char prevUnit = iter.Previous();
+                char prevUnit = iter.MovePrevious() ? iter.Current : CharacterIterator.Done;
                 if (char.IsHighSurrogate(prevUnit))
                 {
                     cp = Character.ToCodePoint(prevUnit, codeUnit);
                 }
             }
-            iter.SetIndex(currentIterIndex);  // restore iter position
+            iter.Index = currentIterIndex;  // restore iter position
             return cp;
         }
 
@@ -1817,25 +1817,25 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Gets a substring out of a <see cref="CharacterIterator"/>.
+        /// Gets a substring out of a <see cref="ICharacterEnumerator"/>.
         /// <para/>
         /// C# porting note: Not available in ICU4C
         /// </summary>
-        /// <param name="text"><see cref="CharacterIterator"/>.</param>
+        /// <param name="text"><see cref="ICharacterEnumerator"/>.</param>
         /// <param name="start">Start offset.</param>
         /// <param name="length">Length of substring.</param>
         /// <returns>Substring from <paramref name="text"/> starting at <paramref name="start"/> and <paramref name="length"/>.</returns>
-        private static string GetString(CharacterIterator text, int start, int length)
+        private static string GetString(ICharacterEnumerator text, int start, int length)
         {
             StringBuilder result = new StringBuilder(length);
             int offset = text.Index;
-            text.SetIndex(start);
+            bool pastEnd = !text.TrySetIndex(start);
             for (int i = 0; i < length; i++)
             {
-                result.Append(text.Current);
-                text.Next();
+                result.Append(!pastEnd ? text.Current : CharacterIterator.Done);
+                pastEnd |= text.MoveNext();
             }
-            text.SetIndex(offset);
+            text.Index = offset;
             return result.ToString();
         }
 

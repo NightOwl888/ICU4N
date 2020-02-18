@@ -14,8 +14,8 @@ namespace ICU4N.Impl
     {
         private BreakIterator @delegate;
         private UCharacterIterator text; // TODO(Tom): suffice to move into the local scope in next() ?
-        private CharsTrie backwardsTrie; // i.e. ".srM" for Mrs.
-        private CharsTrie forwardsPartialTrie; // Has ".a" for "a.M."
+        private readonly CharsTrie backwardsTrie; // i.e. ".srM" for Mrs.
+        private readonly CharsTrie forwardsPartialTrie; // Has ".a" for "a.M."
 
         /// <param name="adoptBreakIterator">Break iterator to adopt.</param>
         /// <param name="forwardsPartialTrie">Forward &amp; partial char trie to adopt.</param>
@@ -33,7 +33,7 @@ namespace ICU4N.Impl
         /// </summary>
         private void ResetState()
         {
-            text = UCharacterIterator.GetInstance((CharacterIterator)@delegate.Text.Clone());
+            text = UCharacterIterator.GetInstance((ICharacterEnumerator)@delegate.Text.Clone());
         }
 
         /// <summary>
@@ -266,12 +266,17 @@ namespace ICU4N.Impl
             return @delegate.Last();
         }
 
-        public override CharacterIterator Text
+        public override ICharacterEnumerator Text
         {
             get { return @delegate.Text; }
         }
 
-        public override void SetText(CharacterIterator newText)
+        public override void SetText(ICharacterEnumerator newText)
+        {
+            @delegate.SetText(newText);
+        }
+
+        internal override void SetText(CharacterIterator newText)
         {
             @delegate.SetText(newText);
         }
@@ -284,7 +289,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Filter set to store all exceptions.
         /// </summary>
-        private HashSet<ICharSequence> filterSet = new HashSet<ICharSequence>();
+        private readonly HashSet<ICharSequence> filterSet = new HashSet<ICharSequence>();
 
         internal const int Partial = (1 << 0); // < partial - need to run through forward trie
         internal const int Match = (1 << 1); // < exact match - skip this one.

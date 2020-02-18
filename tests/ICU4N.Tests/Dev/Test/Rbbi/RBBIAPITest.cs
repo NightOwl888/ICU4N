@@ -116,7 +116,7 @@ namespace ICU4N.Dev.Test.Rbbi
             String str2 = "Second string.";
             //RuleBasedBreakIterator charIter1 = (RuleBasedBreakIterator) BreakIterator.getCharacterInstance(Locale.getDefault());
             RuleBasedBreakIterator wordIter1 = (RuleBasedBreakIterator)BreakIterator.GetWordInstance(CultureInfo.CurrentCulture);
-            CharacterIterator text1 = new StringCharacterIterator(str1);
+            ICharacterEnumerator text1 = new StringCharacterEnumerator(str1);
             //CharacterIterator text1Clone = (CharacterIterator) text1.Clone();
             //CharacterIterator text2 = new StringCharacterIterator(str2);
             wordIter1.SetText(str1);
