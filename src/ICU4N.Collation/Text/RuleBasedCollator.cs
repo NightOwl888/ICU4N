@@ -1363,10 +1363,10 @@ namespace ICU4N.Text
             if (data.Base == null) { return h; }  // root collator
                                                   // Do not rely on the rule string, see comments in operator==().
             UnicodeSet set = GetTailoredSet();
-            UnicodeSetIterator iter = new UnicodeSetIterator(set);
-            while (iter.Next() && iter.Codepoint != UnicodeSetIterator.IsString)
+            UnicodeSetEnumerator iter = new UnicodeSetEnumerator(set);
+            while (iter.MoveNext() && !iter.IsString)
             {
-                h ^= data.GetCE32(iter.Codepoint);
+                h ^= data.GetCE32(iter.CodePoint);
             }
             return h;
         }

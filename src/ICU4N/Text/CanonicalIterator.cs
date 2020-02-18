@@ -352,9 +352,9 @@ namespace ICU4N.Text
                     continue;
                 }
                 // if so, see which decompositions match
-                for (UnicodeSetIterator iter = new UnicodeSetIterator(starts); iter.Next();)
+                for (UnicodeSetEnumerator iter = new UnicodeSetEnumerator(starts); iter.MoveNext();)
                 {
-                    int cp2 = iter.Codepoint;
+                    int cp2 = iter.CodePoint;
                     ISet<string> remainder = Extract(cp2, segment, i, workingBuffer);
                     if (remainder == null)
                     {

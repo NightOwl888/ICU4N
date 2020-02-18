@@ -316,10 +316,10 @@ namespace ICU4N.Dev.Test.Collate
             UTF16CollationIterator ci = new UTF16CollationIterator(cd, false, "".AsCharSequence(), 0);
             for (int i = 0; i < sets.Length; ++i)
             {
-                UnicodeSetIterator iter = new UnicodeSetIterator(sets[i]);
-                while (iter.Next())
+                UnicodeSetEnumerator iter = new UnicodeSetEnumerator(sets[i]);
+                while (iter.MoveNext())
                 {
-                    String s = iter.GetString();
+                    string s = iter.Current;
                     int c = s.CodePointAt(0);
                     ci.SetText(false, s.AsCharSequence(), 0);
                     long ce = ci.NextCE();
@@ -1132,10 +1132,10 @@ namespace ICU4N.Dev.Test.Collate
                     // For example, for a mapping p|st, if there is also a contraction ps,
                     // then we get CEs(ps)+CEs(t), rather than CEs(p|st).
                     UnicodeSet tailored = coll.GetTailoredSet();
-                    UnicodeSetIterator iter = new UnicodeSetIterator(tailored);
-                    while (iter.Next())
+                    UnicodeSetEnumerator iter = new UnicodeSetEnumerator(tailored);
+                    while (iter.MoveNext())
                     {
-                        String s = iter.GetString();
+                        string s = iter.Current;
                         ces = rbc.InternalGetCEs(s.AsCharSequence());
                         for (int i = 0; i < ces.Length; ++i)
                         {

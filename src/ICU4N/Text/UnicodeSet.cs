@@ -476,12 +476,12 @@ namespace ICU4N.Text
     ///     </description></item>
     /// </list>
     /// All of the above can be used in <b>for</b> loops.
-    /// The <see cref="UnicodeSetIterator"/> can also be used, but not in <b>for</b> loops.
+    /// The <see cref="UnicodeSetEnumerator"/> can also be used, but not in <b>for</b> loops.
     /// 
     /// <para/>
     /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
     /// </remarks>
-    /// <seealso cref="UnicodeSetIterator"/>
+    /// <seealso cref="UnicodeSetEnumerator"/>
     /// <seealso cref="UnicodeSetSpanner"/>
     /// <author>Alan Liu</author>
     /// <stable>ICU 2.0</stable>
@@ -4435,7 +4435,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns a string enumerator. Uses the same order of iteration as <see cref="UnicodeSetIterator"/>.
+        /// Returns a string enumerator. Uses the same order of iteration as <see cref="UnicodeSetEnumerator"/>.
         /// <para/>
         /// <b>Warning: </b>For speed, <see cref="UnicodeSet"/> iteration does not check for concurrent modification.
         /// <para/>
@@ -4764,11 +4764,11 @@ namespace ICU4N.Text
         internal virtual UnicodeSet AddBridges(UnicodeSet dontCare) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             UnicodeSet notInInput = new UnicodeSet(this).Complement();
-            for (UnicodeSetIterator it = new UnicodeSetIterator(notInInput); it.NextRange();)
+            for (UnicodeSetEnumerator it = new UnicodeSetEnumerator(notInInput, UnicodeSetEnumerationMode.Range); it.MoveNext();)
             {
-                if (it.Codepoint != 0 && it.Codepoint != UnicodeSetIterator.IsString && it.CodepointEnd != 0x10FFFF && dontCare.Contains(it.Codepoint, it.CodepointEnd))
+                if (it.CodePoint != 0 && !it.IsString && it.CodePointEnd != 0x10FFFF && dontCare.Contains(it.CodePoint, it.CodePointEnd))
                 {
-                    Add(it.Codepoint, it.CodepointEnd);
+                    Add(it.CodePoint, it.CodePointEnd);
                 }
             }
             return this;

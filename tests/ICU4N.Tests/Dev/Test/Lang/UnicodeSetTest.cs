@@ -139,12 +139,13 @@ namespace ICU4N.Dev.Test.Lang
                             continue;
                         }
                         UnicodeSet collectedErrors = new UnicodeSet();
-                        for (UnicodeSetIterator it = new UnicodeSetIterator(testSet); it.Next();)
+                        //for (UnicodeSetIterator it = new UnicodeSetIterator(testSet); it.Next();)
+                        for (UnicodeSetEnumerator it = new UnicodeSetEnumerator(testSet); it.MoveNext();)
                         {
-                            int value = UChar.GetIntPropertyValue(it.Codepoint, propNum);
+                            int value = UChar.GetIntPropertyValue(it.CodePoint, propNum);
                             if (value != valueNum)
                             {
-                                collectedErrors.Add(it.Codepoint);
+                                collectedErrors.Add(it.CodePoint);
                             }
                         }
                         if (collectedErrors.Count != 0)
@@ -732,12 +733,12 @@ namespace ICU4N.Dev.Test.Lang
             exp.ApplyPattern("[{ab}]");
             if (!set.Equals(exp)) { Errln("FAIL: complement(\"ab\")"); return; }
 
-            UnicodeSetIterator iset = new UnicodeSetIterator(set);
-            if (!iset.Next() || iset.Codepoint != UnicodeSetIterator.IsString)
+            UnicodeSetEnumerator iset = new UnicodeSetEnumerator(set);
+            if (!iset.MoveNext() || !iset.IsString)
             {
                 Errln("FAIL: UnicodeSetIterator.next/IS_STRING");
             }
-            else if (!iset.String.Equals("ab"))
+            else if (!iset.Current.Equals("ab"))
             {
                 Errln("FAIL: UnicodeSetIterator.string");
             }
@@ -1686,9 +1687,9 @@ namespace ICU4N.Dev.Test.Lang
             //public Iterator<String> iterator() {
 
             List<String> oldList = new List<String>();
-            for (UnicodeSetIterator it = new UnicodeSetIterator(set1); it.Next();)
+            for (UnicodeSetEnumerator it = new UnicodeSetEnumerator(set1); it.MoveNext();)
             {
-                oldList.Add(it.GetString());
+                oldList.Add(it.Current);
             }
 
             List<String> list1 = new List<String>();
@@ -1957,10 +1958,10 @@ namespace ICU4N.Dev.Test.Lang
             // fill a set of pairs from the pattern
             int[] pairs = new int[testSet.RangeCount * 2];
             int j = 0;
-            for (UnicodeSetIterator it = new UnicodeSetIterator(testSet); it.NextRange();)
+            for (UnicodeSetEnumerator it = new UnicodeSetEnumerator(testSet, UnicodeSetEnumerationMode.Range); it.MoveNext();)
             {
-                pairs[j++] = it.Codepoint;
-                pairs[j++] = it.CodepointEnd;
+                pairs[j++] = it.CodePoint;
+                pairs[j++] = it.CodePointEnd;
             }
             UnicodeSet fromRange = new UnicodeSet(testSet);
             assertEquals("from range vs pattern", testSet, fromRange);
@@ -2534,32 +2535,34 @@ namespace ICU4N.Dev.Test.Lang
         UnicodeSet copyWithIterator(UnicodeSet s, bool withRange)
         {
             UnicodeSet t = new UnicodeSet();
-            UnicodeSetIterator it = new UnicodeSetIterator(s);
+            
             if (withRange)
             {
-                while (it.NextRange())
+                UnicodeSetEnumerator it = new UnicodeSetEnumerator(s, UnicodeSetEnumerationMode.Range);
+                while (it.MoveNext())
                 {
-                    if (it.Codepoint == UnicodeSetIterator.IsString)
+                    if (it.IsString)
                     {
-                        t.Add(it.String);
+                        t.Add(it.Current);
                     }
                     else
                     {
-                        t.Add(it.Codepoint, it.CodepointEnd);
+                        t.Add(it.CodePoint, it.CodePointEnd);
                     }
                 }
             }
             else
             {
-                while (it.Next())
+                UnicodeSetEnumerator it = new UnicodeSetEnumerator(s, UnicodeSetEnumerationMode.Default);
+                while (it.MoveNext())
                 {
-                    if (it.Codepoint == UnicodeSetIterator.IsString)
+                    if (it.IsString)
                     {
-                        t.Add(it.String);
+                        t.Add(it.Current);
                     }
                     else
                     {
-                        t.Add(it.Codepoint);
+                        t.Add(it.CodePoint);
                     }
                 }
             }
@@ -2752,7 +2755,7 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestGetSet()
         {
-            UnicodeSetIterator us = new UnicodeSetIterator();
+            UnicodeSetEnumerator us = new UnicodeSetEnumerator();
             try
             {
                 var _ = us.Set;
@@ -2812,21 +2815,21 @@ namespace ICU4N.Dev.Test.Lang
             foreach (String test in tests)
             {
                 UnicodeSet us = new UnicodeSet(test);
-                UnicodeSetIterator it = new UnicodeSetIterator(us);
+                UnicodeSetEnumerator it = new UnicodeSetEnumerator(us, UnicodeSetEnumerationMode.Range);
                 foreach (UnicodeSetEntryRange range in us.Ranges)
                 {
                     String title = range.ToString();
                     Logln(title);
-                    it.NextRange();
-                    assertEquals(title, it.Codepoint, range.Codepoint);
-                    assertEquals(title, it.CodepointEnd, range.CodepointEnd);
+                    it.MoveNext();
+                    assertEquals(title, it.CodePoint, range.Codepoint);
+                    assertEquals(title, it.CodePointEnd, range.CodepointEnd);
                 }
                 foreach (String s in us.Strings)
                 {
-                    it.NextRange();
-                    assertEquals("strings", it.String, s);
+                    it.MoveNext();
+                    assertEquals("strings", it.Current, s);
                 }
-                assertFalse("", it.Next());
+                assertFalse("", it.MoveNext());
             }
         }
 

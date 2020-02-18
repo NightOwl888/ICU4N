@@ -575,12 +575,12 @@ namespace ICU4N.Text
                // make use of the fact that Ethiopic is allocated in 8's, where
                // the base is 0 mod 8.
                 UnicodeSet ethiopic = new UnicodeSet("[[:Block=Ethiopic:]&[:Script=Ethiopic:]]");
-                UnicodeSetIterator it = new UnicodeSetIterator(ethiopic);
-                while (it.Next() && it.Codepoint != UnicodeSetIterator.IsString)
+                UnicodeSetEnumerator it = new UnicodeSetEnumerator(ethiopic);
+                while (it.MoveNext() && !it.IsString)
                 {
-                    if ((it.Codepoint & 0x7) != 0)
+                    if ((it.CodePoint & 0x7) != 0)
                     {
-                        exemplars.Remove(it.Codepoint);
+                        exemplars.Remove(it.CodePoint);
                     }
                 }
             }

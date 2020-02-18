@@ -2369,24 +2369,24 @@ namespace ICU4N.Dev.Test.Translit
             UnicodeSet vowel = new UnicodeSet("[\u0905-\u090A \u090F\u0910\u0913\u0914 \u093e-\u0942\u0947\u0948\u094B\u094C\u094D]");
             UnicodeSet non_vowel = new UnicodeSet("[\u0915-\u0928\u092A-\u0930]");
 
-            UnicodeSetIterator vIter = new UnicodeSetIterator(vowel);
-            UnicodeSetIterator nvIter = new UnicodeSetIterator(non_vowel);
+            UnicodeSetEnumerator vIter = new UnicodeSetEnumerator(vowel);
+            UnicodeSetEnumerator nvIter = new UnicodeSetEnumerator(non_vowel);
             Transliterator trans = Transliterator.GetInstance("Devanagari-Gurmukhi");
             StringBuffer src = new StringBuffer(" \u0902");
             StringBuffer expect = new StringBuffer(" \u0A02");
-            while (vIter.Next())
+            while (vIter.MoveNext())
             {
-                src[0] = (char)vIter.Codepoint;
-                expect[0] = (char)(vIter.Codepoint + 0x0100);
+                src[0] = (char)vIter.CodePoint;
+                expect[0] = (char)(vIter.CodePoint + 0x0100);
                 Expect(trans, src.ToString(), expect.ToString());
             }
 
             expect[1] = '\u0A70';
-            while (nvIter.Next())
+            while (nvIter.MoveNext())
             {
                 //src.setCharAt(0,(char) nvIter.codepoint);
-                src[0] = (char)nvIter.Codepoint;
-                expect[0] = (char)(nvIter.Codepoint + 0x0100);
+                src[0] = (char)nvIter.CodePoint;
+                expect[0] = (char)(nvIter.CodePoint + 0x0100);
                 Expect(trans, src.ToString(), expect.ToString());
             }
         }
@@ -3264,9 +3264,9 @@ namespace ICU4N.Dev.Test.Translit
             {
                 UnicodeSet sample = new UnicodeSet().ApplyPropertyAlias("script", UScript.GetShortName(i)).RetainAll(alphabetic);
                 int count = 5;
-                for (UnicodeSetIterator it = new UnicodeSetIterator(sample); it.Next();)
+                for (UnicodeSetEnumerator it = new UnicodeSetEnumerator(sample); it.MoveNext();)
                 {
-                    testString.Append(it.GetString());
+                    testString.Append(it.Current);
                     if (--count < 0) break;
                 }
             }

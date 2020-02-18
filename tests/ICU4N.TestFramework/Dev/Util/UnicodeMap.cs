@@ -503,16 +503,16 @@ namespace ICU4N.Dev.Util
          */
         public UnicodeMap<T> PutAll(UnicodeSet codepoints, T value)
         {
-            UnicodeSetIterator it = new UnicodeSetIterator(codepoints);
-            while (it.NextRange())
+            UnicodeSetEnumerator it = new UnicodeSetEnumerator(codepoints, UnicodeSetEnumerationMode.Range);
+            while (it.MoveNext())
             {
-                if (it.String == null)
+                if (!it.IsString)
                 {
-                    _putAll(it.Codepoint, it.CodepointEnd, value);
+                    _putAll(it.CodePoint, it.CodePointEnd, value);
                 }
                 else
                 {
-                    Put(it.String, value);
+                    Put(it.Current, value);
                 }
             }
             return this;
@@ -574,14 +574,14 @@ namespace ICU4N.Dev.Util
         public UnicodeMap<T> PutAllFiltered(UnicodeMap<T> prop, UnicodeSet filter)
         {
             // TODO optimize
-            for (UnicodeSetIterator it = new UnicodeSetIterator(filter); it.Next();)
+            for (UnicodeSetEnumerator it = new UnicodeSetEnumerator(filter); it.MoveNext();)
             {
-                if (it.Codepoint != UnicodeSetIterator.IsString)
+                if (!it.IsString)
                 {
-                    T value = prop.GetValue(it.Codepoint);
+                    T value = prop.GetValue(it.CodePoint);
                     if (value != null)
                     {
-                        _put(it.Codepoint, value);
+                        _put(it.CodePoint, value);
                     }
                 }
             }
@@ -847,12 +847,11 @@ namespace ICU4N.Dev.Util
 
         public UnicodeMap<T> ComposeWith(UnicodeSet set, T value, Composer composer)
         {
-            for (UnicodeSetIterator it = new UnicodeSetIterator(set); it.Next();)
+            for (UnicodeSetEnumerator it = new UnicodeSetEnumerator(set); it.MoveNext();)
             {
-                int i = it.Codepoint;
-                if (i == UnicodeSetIterator.IsString)
+                if (it.IsString)
                 {
-                    string s = it.String;
+                    string s = it.Current;
                     T v1 = GetValue(s);
                     T v3 = composer.Compose(-1, s, v1, value);
                     if (!ReferenceEquals(v1, v3) && (v1 == null || !v1.Equals(v3)))
@@ -862,6 +861,7 @@ namespace ICU4N.Dev.Util
                 }
                 else
                 {
+                    int i = it.CodePoint;
                     T v1 = GetValue(i);
                     T v3 = composer.Compose(i, null, v1, value);
                     if (!ReferenceEquals(v1, v3) && (v1 == null || !v1.Equals(v3)))
