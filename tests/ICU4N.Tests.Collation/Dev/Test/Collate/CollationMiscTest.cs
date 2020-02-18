@@ -3440,9 +3440,9 @@ namespace ICU4N.Dev.Test.Collate
                     Warnln("Tailored set not equal");
                 }
 
-                for (UnicodeSetIterator it = new UnicodeSetIterator(tailoredSet); it.Next();)
+                for (UnicodeSetEnumerator it = new UnicodeSetEnumerator(tailoredSet); it.MoveNext();)
                 {
-                    String t = it.GetString();
+                    String t = it.Current;
                     CollationKey sk1 = viescoll.GetCollationKey(t);
                     CollationKey sk2 = importviescoll.GetCollationKey(t);
                     if (!sk1.Equals(sk2))
@@ -3476,9 +3476,9 @@ namespace ICU4N.Dev.Test.Collate
                     Warnln("Tailored set not equal");
                 }
 
-                for (UnicodeSetIterator it = new UnicodeSetIterator(tailoredSet); it.Next();)
+                for (UnicodeSetEnumerator it = new UnicodeSetEnumerator(tailoredSet); it.MoveNext();)
                 {
-                    String t = it.GetString();
+                    string t = it.Current;
                     CollationKey sk1 = videcoll.GetCollationKey(t);
                     CollationKey sk2 = importvidecoll.GetCollationKey(t);
                     if (!sk1.Equals(sk2))

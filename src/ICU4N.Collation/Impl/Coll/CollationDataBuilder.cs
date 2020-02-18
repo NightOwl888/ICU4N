@@ -306,10 +306,10 @@ namespace ICU4N.Impl.Coll
         internal void Optimize(UnicodeSet set)
         {
             if (set.IsEmpty) { return; }
-            UnicodeSetIterator iter = new UnicodeSetIterator(set);
-            while (iter.Next() && iter.Codepoint != UnicodeSetIterator.IsString)
+            UnicodeSetEnumerator iter = new UnicodeSetEnumerator(set);
+            while (iter.MoveNext() && !iter.IsString)
             {
-                int c = iter.Codepoint;
+                int c = iter.CodePoint;
                 int ce32 = trie.Get(c);
                 if (ce32 == Collation.FALLBACK_CE32)
                 {
@@ -324,10 +324,10 @@ namespace ICU4N.Impl.Coll
         internal void SuppressContractions(UnicodeSet set)
         {
             if (set.IsEmpty) { return; }
-            UnicodeSetIterator iter = new UnicodeSetIterator(set);
-            while (iter.Next() && iter.Codepoint != UnicodeSetIterator.IsString)
+            UnicodeSetEnumerator iter = new UnicodeSetEnumerator(set);
+            while (iter.MoveNext() && !iter.IsString)
             {
-                int c = iter.Codepoint;
+                int c = iter.CodePoint;
                 int ce32 = trie.Get(c);
                 if (ce32 == Collation.FALLBACK_CE32)
                 {
@@ -1024,11 +1024,11 @@ namespace ICU4N.Impl.Coll
         private void SetDigitTags()
         {
             UnicodeSet digits = new UnicodeSet("[:Nd:]");
-            UnicodeSetIterator iter = new UnicodeSetIterator(digits);
-            while (iter.Next())
+            UnicodeSetEnumerator iter = new UnicodeSetEnumerator(digits);
+            while (iter.MoveNext())
             {
-                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
-                int c = iter.Codepoint;
+                Debug.Assert(!iter.IsString);
+                int c = iter.CodePoint;
                 int ce32 = trie.Get(c);
                 if (ce32 != Collation.FALLBACK_CE32 && ce32 != Collation.UNASSIGNED_CE32)
                 {
@@ -1190,11 +1190,11 @@ namespace ICU4N.Impl.Coll
         private void ClearContexts()
         {
             contexts.Length = 0;
-            UnicodeSetIterator iter = new UnicodeSetIterator(contextChars);
-            while (iter.Next())
+            UnicodeSetEnumerator iter = new UnicodeSetEnumerator(contextChars);
+            while (iter.MoveNext())
             {
-                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
-                int ce32 = trie.Get(iter.Codepoint);
+                Debug.Assert(!iter.IsString);
+                int ce32 = trie.Get(iter.CodePoint);
                 Debug.Assert(IsBuilderContextCE32(ce32));
                 GetConditionalCE32ForCE32(ce32).BuiltCE32 = Collation.NO_CE32;
             }
@@ -1205,11 +1205,11 @@ namespace ICU4N.Impl.Coll
             // Ignore abandoned lists and the cached builtCE32,
             // and build all contexts from scratch.
             contexts.Length = 0;
-            UnicodeSetIterator iter = new UnicodeSetIterator(contextChars);
-            while (iter.Next())
+            UnicodeSetEnumerator iter = new UnicodeSetEnumerator(contextChars);
+            while (iter.MoveNext())
             {
-                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
-                int c = iter.Codepoint;
+                Debug.Assert(!iter.IsString);
+                int c = iter.CodePoint;
                 int ce32 = trie.Get(c);
                 if (!IsBuilderContextCE32(ce32))
                 {

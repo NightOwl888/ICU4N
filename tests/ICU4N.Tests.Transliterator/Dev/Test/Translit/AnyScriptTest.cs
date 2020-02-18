@@ -259,9 +259,9 @@ namespace ICU4N.Dev.Test.Translit
         private String getList(UnicodeSet set)
         {
             StringBuffer result = new StringBuffer();
-            for (UnicodeSetIterator it = new UnicodeSetIterator(set); it.Next();)
+            for (UnicodeSetEnumerator it = new UnicodeSetEnumerator(set); it.MoveNext();)
             {
-                result.Append(it.GetString());
+                result.Append(it.Current);
             }
             return result.ToString();
         }

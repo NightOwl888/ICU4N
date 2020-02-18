@@ -544,11 +544,12 @@ namespace ICU4N.Dev.Test.Lang
 
             /* verify that Bidi_Mirroring_Glyph roundtrips */
             UnicodeSet set = new UnicodeSet("[:Bidi_Mirrored:]");
-            UnicodeSetIterator iter = new UnicodeSetIterator(set);
+            UnicodeSetEnumerator iter = new UnicodeSetEnumerator(set, UnicodeSetEnumerationMode.Range);
             int start, end, c2, c3;
-            while (iter.NextRange() && (start = iter.Codepoint) >= 0)
+            while (iter.MoveNext() && !iter.IsString)
             {
-                end = iter.CodepointEnd;
+                start = iter.CodePoint;
+                end = iter.CodePointEnd;
                 do
                 {
                     c2 = UChar.GetMirror(start);

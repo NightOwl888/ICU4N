@@ -59,31 +59,31 @@ namespace ICU4N.Dev.Test.Translit
         // AbbreviatedUnicodeSetIterator
         //------------------------------------------------------------------
 
-        internal class AbbreviatedUnicodeSetIterator : UnicodeSetIterator
+        internal class AbbreviatedUnicodeSetEnumerator : UnicodeSetEnumerator
         {
 
             private bool abbreviated;
             private int perRange;
 
-            public AbbreviatedUnicodeSetIterator()
+            public AbbreviatedUnicodeSetEnumerator()
                     : base()
             {
                 abbreviated = false;
             }
 
-            public override void Reset(UnicodeSet newSet)
+            public override void Reset(UnicodeSet newSet, UnicodeSetEnumerationMode mode)
             {
-                Reset(newSet, false);
+                Reset(newSet, mode, false);
             }
 
-            public void Reset(UnicodeSet newSet, bool abb)
+            public void Reset(UnicodeSet newSet, UnicodeSetEnumerationMode mode, bool abb)
             {
-                Reset(newSet, abb, 100);
+                Reset(newSet, mode, abb, 100);
             }
 
-            public void Reset(UnicodeSet newSet, bool abb, int density)
+            public void Reset(UnicodeSet newSet, UnicodeSetEnumerationMode mode, bool abb, int density)
             {
-                base.Reset(newSet);
+                base.Reset(newSet, mode);
                 abbreviated = abb;
                 perRange = newSet.RangeCount;
                 if (perRange != 0)
@@ -103,6 +103,51 @@ namespace ICU4N.Dev.Test.Translit
                 }
             }
         }
+
+        //        internal class AbbreviatedUnicodeSetIterator : UnicodeSetIterator
+        //        {
+
+        //            private bool abbreviated;
+        //            private int perRange;
+
+        //            public AbbreviatedUnicodeSetIterator()
+        //                    : base()
+        //            {
+        //                abbreviated = false;
+        //            }
+
+        //            public override void Reset(UnicodeSet newSet)
+        //            {
+        //                Reset(newSet, false);
+        //            }
+
+        //            public void Reset(UnicodeSet newSet, bool abb)
+        //            {
+        //                Reset(newSet, abb, 100);
+        //            }
+
+        //            public void Reset(UnicodeSet newSet, bool abb, int density)
+        //            {
+        //                base.Reset(newSet);
+        //                abbreviated = abb;
+        //                perRange = newSet.RangeCount;
+        //                if (perRange != 0)
+        //                {
+        //                    perRange = density / perRange;
+        //                }
+        //            }
+
+        //#pragma warning disable 672
+        //            internal override void LoadRange(int myRange) // ICU4N: Marked internal instead of protected, since base class functionality is obsolete
+        //#pragma warning restore 672
+        //            {
+        //                base.LoadRange(myRange);
+        //                if (abbreviated && (endElement > nextElement + perRange))
+        //                {
+        //                    endElement = nextElement + perRange;
+        //                }
+        //            }
+        //        }
 
         //--------------------------------------------------------------------
 
@@ -183,9 +228,9 @@ namespace ICU4N.Dev.Test.Translit
             Transliterator lh = Transliterator.GetInstance("Latin-Hangul");
             Transliterator hl = lh.GetInverse();
             UnicodeSet representativeHangul = GetRepresentativeHangul();
-            for (UnicodeSetIterator it = new UnicodeSetIterator(representativeHangul); it.Next();)
+            for (UnicodeSetEnumerator it = new UnicodeSetEnumerator(representativeHangul); it.MoveNext();)
             {
-                AssertRoundTripTransform("Transform", it.GetString(), lh, hl);
+                AssertRoundTripTransform("Transform", it.Current, lh, hl);
             }
         }
 
@@ -235,13 +280,13 @@ namespace ICU4N.Dev.Test.Translit
 
             // do all combinations of L0 + V + nullL + V
 
-            for (UnicodeSetIterator iL0 = new UnicodeSetIterator(L0); iL0.Next();)
+            for (UnicodeSetEnumerator iL0 = new UnicodeSetEnumerator(L0); iL0.MoveNext();)
             {
-                for (UnicodeSetIterator iV = new UnicodeSetIterator(V); iV.Next();)
+                for (UnicodeSetEnumerator iV = new UnicodeSetEnumerator(V); iV.MoveNext();)
                 {
-                    for (UnicodeSetIterator iV2 = new UnicodeSetIterator(V); iV2.Next();)
+                    for (UnicodeSetEnumerator iV2 = new UnicodeSetEnumerator(V); iV2.MoveNext();)
                     {
-                        String sample = iL0.GetString() + iV.GetString() + nullL + iV2.GetString();
+                        String sample = iL0.Current + iV.Current + nullL + iV2.Current;
                         String trial = Normalizer.Compose(sample, false);
                         if (trial.Length == 2)
                         {
@@ -251,13 +296,13 @@ namespace ICU4N.Dev.Test.Translit
                 }
             }
 
-            for (UnicodeSetIterator iL = new UnicodeSetIterator(L); iL.Next();)
+            for (UnicodeSetEnumerator iL = new UnicodeSetEnumerator(L); iL.MoveNext();)
             {
                 // do all combinations of "g" + V + L + "a"
-                String suffix = iL.GetString() + suffixV;
-                for (UnicodeSetIterator iV = new UnicodeSetIterator(V); iV.Next();)
+                String suffix = iL.Current + suffixV;
+                for (UnicodeSetEnumerator iV = new UnicodeSetEnumerator(V); iV.MoveNext();)
                 {
-                    String sample = prefixL + iV.GetString() + suffix;
+                    String sample = prefixL + iV.Current + suffix;
                     String trial = Normalizer.Compose(sample, false);
                     if (trial.Length == 2)
                     {
@@ -265,9 +310,9 @@ namespace ICU4N.Dev.Test.Translit
                     }
                 }
                 // do all combinations of "ga" + T + L + "a"
-                for (UnicodeSetIterator iT = new UnicodeSetIterator(T); iT.Next();)
+                for (UnicodeSetEnumerator iT = new UnicodeSetEnumerator(T); iT.MoveNext();)
                 {
-                    String sample = prefixLV + iT.GetString() + suffix;
+                    String sample = prefixLV + iT.Current + suffix;
                     String trial = Normalizer.Compose(sample, false);
                     if (trial.Length == 2)
                     {
@@ -311,9 +356,9 @@ namespace ICU4N.Dev.Test.Translit
                 UnicodeSet exemplars = LocaleData.GetExemplarSet(new UCultureInfo("zh"), 0);
                 // create string with all chars
                 StringBuffer b = new StringBuffer();
-                for (UnicodeSetIterator it = new UnicodeSetIterator(exemplars); it.Next();)
+                for (UnicodeSetEnumerator it = new UnicodeSetEnumerator(exemplars); it.MoveNext();)
                 {
-                    UTF16.Append(b, it.Codepoint);
+                    UTF16.Append(b, it.CodePoint);
                 }
                 String source = b.ToString();
                 // transform with Han translit
@@ -1409,8 +1454,8 @@ namespace ICU4N.Dev.Test.Translit
                 return false;
             }
 
-            internal AbbreviatedUnicodeSetIterator usi = new AbbreviatedUnicodeSetIterator();
-            internal AbbreviatedUnicodeSetIterator usi2 = new AbbreviatedUnicodeSetIterator();
+            internal AbbreviatedUnicodeSetEnumerator usi = new AbbreviatedUnicodeSetEnumerator();
+            internal AbbreviatedUnicodeSetEnumerator usi2 = new AbbreviatedUnicodeSetEnumerator();
 
             internal Transliterator sourceToTarget;
             internal Transliterator targetToSource;
@@ -1497,10 +1542,10 @@ namespace ICU4N.Dev.Test.Translit
                 TestFmwk.Logln("Checking that source -> target -> source");
                 @out.WriteLine("<h3>Checking that source -> target -> source</h3>");
 
-                usi.Reset(sourceRange);
-                while (usi.Next())
+                usi.Reset(sourceRange, UnicodeSetEnumerationMode.Default);
+                while (usi.MoveNext())
                 {
-                    int c = usi.Codepoint;
+                    int c = usi.CodePoint;
 
                     String cs = UTF16.ValueOf(c);
                     String targ = sourceToTarget.Transliterate(cs);
@@ -1516,10 +1561,10 @@ namespace ICU4N.Dev.Test.Translit
             {
                 TestFmwk.Logln("Checking that target -> source -> target");
                 @out.WriteLine("<h3>Checking that target -> source -> target</h3>");
-                usi.Reset(targetRange);
-                while (usi.Next())
+                usi.Reset(targetRange, UnicodeSetEnumerationMode.Default);
+                while (usi.MoveNext())
                 {
-                    int c = usi.Codepoint;
+                    int c = usi.CodePoint;
 
                     String cs = UTF16.ValueOf(c);
                     String targ = targetToSource.Transliterate(cs);
@@ -1541,10 +1586,10 @@ namespace ICU4N.Dev.Test.Translit
                 for (char c = 0; c < 0xFFFF; ++c) {
                     if (!sourceRange.Contains(c)) continue;
                  */
-                usi.Reset(sourceRange);
-                while (usi.Next())
+                usi.Reset(sourceRange, UnicodeSetEnumerationMode.Default);
+                while (usi.MoveNext())
                 {
-                    int c = usi.Codepoint;
+                    int c = usi.CodePoint;
 
                     String cs = UTF16.ValueOf(c);
                     String targ = sourceToTarget.Transliterate(cs);
@@ -1589,11 +1634,11 @@ namespace ICU4N.Dev.Test.Translit
 
                 bool quickRt = TestFmwk.GetExhaustiveness() < 10;
 
-                usi.Reset(sourceRangeMinusFailures, quickRt, density);
+                usi.Reset(sourceRangeMinusFailures, UnicodeSetEnumerationMode.Default, quickRt, density);
 
-                while (usi.Next())
+                while (usi.MoveNext())
                 {
-                    int c = usi.Codepoint;
+                    int c = usi.CodePoint;
 
                     /*
                     for (char d = 0; d < 0xFFFF; ++d) {
@@ -1602,11 +1647,11 @@ namespace ICU4N.Dev.Test.Translit
                         if (failSourceTarg.get(d)) continue;
                      */
                     TestFmwk.Logln(count + "/" + pairLimit + " Checking starting with " + UTF16.ValueOf(c));
-                    usi2.Reset(sourceRangeMinusFailures, quickRt, density);
+                    usi2.Reset(sourceRangeMinusFailures, UnicodeSetEnumerationMode.Default, quickRt, density);
 
-                    while (usi2.Next())
+                    while (usi2.MoveNext())
                     {
-                        int d = usi2.Codepoint;
+                        int d = usi2.CodePoint;
                         ++count;
 
                         String cs = UTF16.ValueOf(c) + UTF16.ValueOf(d);
@@ -1644,19 +1689,19 @@ namespace ICU4N.Dev.Test.Translit
                         !targetRange.Contains(c)) continue;
                  */
 
-                usi.Reset(targetRange);
-                while (usi.Next())
+                usi.Reset(targetRange, UnicodeSetEnumerationMode.Default);
+                while (usi.MoveNext())
                 {
                     String cs;
                     int c;
-                    if (usi.Codepoint == UnicodeSetIterator.IsString)
+                    if (usi.IsString)
                     {
-                        cs = usi.String;
+                        cs = usi.Current;
                         c = UTF16.CharAt(cs, 0);
                     }
                     else
                     {
-                        c = usi.Codepoint;
+                        c = usi.CodePoint;
                         cs = UTF16.ValueOf(c);
                     }
 
@@ -1712,11 +1757,11 @@ namespace ICU4N.Dev.Test.Translit
                         !targetRange.Contains(c)) continue;
                  */
 
-                usi.Reset(targetRangeMinusFailures, quickRt, density);
+                usi.Reset(targetRangeMinusFailures, UnicodeSetEnumerationMode.Default, quickRt, density);
 
-                while (usi.Next())
+                while (usi.MoveNext())
                 {
-                    int c = usi.Codepoint;
+                    int c = usi.CodePoint;
 
                     //log.log(TestUtility.hex(c));
 
@@ -1726,12 +1771,12 @@ namespace ICU4N.Dev.Test.Translit
                             !targetRange.Contains(d)) continue;
                      */
                     TestFmwk.Logln(count + "/" + pairLimit + " Checking starting with " + UTF16.ValueOf(c));
-                    usi2.Reset(targetRangeMinusFailures, quickRt, density);
+                    usi2.Reset(targetRangeMinusFailures, UnicodeSetEnumerationMode.Default, quickRt, density);
 
-                    while (usi2.Next())
+                    while (usi2.MoveNext())
                     {
 
-                        int d = usi2.Codepoint;
+                        int d = usi2.CodePoint;
                         if (d < 0) break;
 
                         if (++count > pairLimit)

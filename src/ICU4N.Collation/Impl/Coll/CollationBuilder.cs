@@ -1052,11 +1052,11 @@ namespace ICU4N.Impl.Coll
 
             StringBuilderCharSequence newNFDString = new StringBuilderCharSequence(new StringBuilder()), newString = new StringBuilderCharSequence(new StringBuilder());
             long[] newCEs = new long[Collation.MAX_EXPANSION_LENGTH];
-            UnicodeSetIterator iter = new UnicodeSetIterator(composites);
-            while (iter.Next())
+            UnicodeSetEnumerator iter = new UnicodeSetEnumerator(composites);
+            while (iter.MoveNext())
             {
-                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
-                int composite = iter.Codepoint;
+                Debug.Assert(!iter.IsString);
+                int composite = iter.CodePoint;
                 string decomp = nfd.GetDecomposition(composite);
                 if (!MergeCompositeIntoString(nfdString, indexAfterLastStarter, composite, decomp,
                         newNFDString.Value, newString.Value))
@@ -1257,11 +1257,11 @@ namespace ICU4N.Impl.Coll
         private void CloseOverComposites()
         {
             ICharSequence prefix = new StringCharSequence("");  // empty
-            UnicodeSetIterator iter = new UnicodeSetIterator(COMPOSITES);
-            while (iter.Next())
+            UnicodeSetEnumerator iter = new UnicodeSetEnumerator(COMPOSITES);
+            while (iter.MoveNext())
             {
-                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
-                string nfdString = nfd.GetDecomposition(iter.Codepoint);
+                Debug.Assert(!iter.IsString);
+                string nfdString = nfd.GetDecomposition(iter.CodePoint);
                 cesLength = dataBuilder.GetCEs(nfdString.AsCharSequence(), ces, 0);
                 if (cesLength > Collation.MAX_EXPANSION_LENGTH)
                 {
@@ -1270,7 +1270,7 @@ namespace ICU4N.Impl.Coll
                     // However, this can only really happen in contrived cases.
                     continue;
                 }
-                string composite = iter.GetString();
+                string composite = iter.Current;
                 AddIfDifferent(prefix, composite.AsCharSequence(), ces, cesLength, Collation.UNASSIGNED_CE32);
             }
         }

@@ -2314,10 +2314,11 @@ namespace ICU4N.Dev.Test.Normalizers
 
             // test all of these precomposed characters
             Normalizer2 nfcNorm2 = Normalizer2.GetNFCInstance();
-            UnicodeSetIterator it = new UnicodeSetIterator(set);
+            UnicodeSetEnumerator it = new UnicodeSetEnumerator(set);
             int c;
-            while (it.Next() && (c = it.Codepoint) != UnicodeSetIterator.IsString)
+            while (it.MoveNext() && !it.IsString)
             {
+                c = it.CodePoint;
                 s1 = UTF16.ValueOf(c);
                 s2 = nfcNorm2.GetDecomposition(c);
                 for (k = 0; k < opt.Length; ++k)
@@ -2650,11 +2651,11 @@ namespace ICU4N.Dev.Test.Normalizers
             UnicodeSet combineBack = new UnicodeSet("[:NFC_QC=Maybe:]");
             int numCombineBack = combineBack.Count;
             int[] combineBackCharsAndCc = new int[numCombineBack * 2];
-            UnicodeSetIterator iter = new UnicodeSetIterator(combineBack);
+            UnicodeSetEnumerator iter = new UnicodeSetEnumerator(combineBack);
             for (int i = 0; i < numCombineBack; ++i)
             {
-                iter.Next();
-                int c = iter.Codepoint;
+                iter.MoveNext();
+                int c = iter.CodePoint;
                 combineBackCharsAndCc[2 * i] = c;
                 combineBackCharsAndCc[2 * i + 1] = UChar.GetCombiningClass(c);
             }
@@ -2670,9 +2671,9 @@ namespace ICU4N.Dev.Test.Normalizers
             Normalizer2 norm2 = Normalizer2.GetNFCInstance();
             StringBuilder s = new StringBuilder();
             iter.Reset(unsure);
-            while (iter.Next())
+            while (iter.MoveNext())
             {
-                int c = iter.Codepoint;
+                int c = iter.CodePoint;
                 s.Delete(0, 0x7fffffff - 0).AppendCodePoint(c); // ICU4N: Corrected 2nd parameter of Delete
                 int cLength = s.Length;
                 int tccc = UChar.GetIntPropertyValue(c, UProperty.Trail_Canonical_Combining_Class);
@@ -2824,11 +2825,11 @@ namespace ICU4N.Dev.Test.Normalizers
             }
 
             // test all of these characters
-            UnicodeSetIterator it = new UnicodeSetIterator(set);
-            while (it.NextRange() && it.Codepoint != UnicodeSetIterator.IsString)
+            UnicodeSetEnumerator it = new UnicodeSetEnumerator(set, UnicodeSetEnumerationMode.Range);
+            while (it.MoveNext() && !it.IsString)
             {
-                start = it.Codepoint;
-                end = it.CodepointEnd;
+                start = it.CodePoint;
+                end = it.CodePointEnd;
                 while (start <= end)
                 {
                     if (!sset.Contains(start))

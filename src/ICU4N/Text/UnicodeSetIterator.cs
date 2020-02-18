@@ -1,11 +1,27 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace ICU4N.Text
 {
     /// <summary>
-    /// <see cref="UnicodeSetIterator"/> iterates over the contents of a <see cref="UnicodeSet"/>.  It
-    /// iterates over either code points or code point ranges.  After all
+    /// Iteration modes that can be used with <see cref="UnicodeSetEnumerator"/>.
+    /// </summary>
+    public enum UnicodeSetEnumerationMode
+    {
+        /// <summary>
+        /// Iterate over code points and multicharacter strings.
+        /// </summary>
+        Default = 0,
+        /// <summary>
+        /// Iterate over code point ranges.
+        /// </summary>
+        Range = 1
+    }
+
+    /// <summary>
+    /// <see cref="UnicodeSetEnumerator"/> iterates over the contents of a <see cref="UnicodeSet"/>. It
+    /// iterates over either code points or code point ranges. After all
     /// code points or ranges have been returned, it returns the
     /// multicharacter strings of the <see cref="UnicodeSet"/>, if any.
     /// </summary>
@@ -13,23 +29,23 @@ namespace ICU4N.Text
     /// To iterate over code points and multicharacter strings,
     /// use a loop like this:
     /// <code>
-    /// for (UnicodeSetIterator it = new UnicodeSetIterator(set); it.Next();)
+    /// for (UnicodeSetEnumerator enumerator = new UnicodeSetEnumerator(set, UnicodeSetEnumeratorMode.Default); enumerator.MoveNext();)
     /// {
-    ///     ProcessString(it.GetString());
+    ///     ProcessString(enumerator.Current);
     /// }
     /// </code>
     /// <para/>
     /// To iterate over code point ranges, use a loop like this:
     /// <code>
-    /// for (UnicodeSetIterator it = new UnicodeSetIterator(set); it.NextRange();)
+    /// for (UnicodeSetEnumerator enumerator = new UnicodeSetEnumerator(set, UnicodeSetEnumeratorMode.Range); enumerator.MoveNext();)
     /// {
-    ///     if (it.Codepoint != UnicodeSetIterator.IS_STRING)
+    ///     if (!enumerator.IsString)
     ///     {
-    ///         ProcessCodepointRange(it.Codepoint, it.CodepointEnd);
+    ///         ProcessCodePointRange(enumerator.CodePoint, enumerator.CodePointEnd);
     ///     }
     ///     else
     ///     {
-    ///         ProcessString(it.GetString());
+    ///         ProcessString(enumerator.Current);
     ///     }
     /// }
     /// </code>
@@ -39,191 +55,240 @@ namespace ICU4N.Text
     /// </remarks>
     /// <author>M. Davis</author>
     /// <stable>ICU 2.0</stable>
-    public class UnicodeSetIterator // ICU4N TODO: API - refactor into UnicodeSetStringEnumerator and UnicodeSetCodepointEnumerator ?
+    public class UnicodeSetEnumerator : IEnumerator<string>
     {
+        private int endRange = 0;
+        private int range = 0;
+        internal int endElement; // internal for testing
+        internal int nextElement; // internal for testing
         /// <summary>
-        /// Value of <see cref="Codepoint"/> if the iterator points to a string.
-        /// If <c><see cref="Codepoint"/> == <see cref="IsString"/></c>, then examine
-        /// <c>string</c> for the current iteration result.
+        /// Invariant: stringEnumerator is null when there are no (more) strings remaining
         /// </summary>
-        /// <stable>ICU 2.0</stable>
-        public const int IsString = -1;
+        private IEnumerator<string> stringEnumerator = null;
+        private string str;
 
         /// <summary>
-        /// Current code point, or the special value <tt>IS_STRING</tt>, if
-        /// the iterator points to a string.
+        /// Create an enumerator over nothing. <see cref="MoveNext()"/> returns <c>false</c>.
+        /// This is a convenience constructor allowing the target to be set later in the
+        /// <see cref="Reset(UnicodeSet, UnicodeSetEnumerationMode)"/> method.
+        /// <para/>
+        /// The mode is set to <see cref="UnicodeSetEnumerationMode.Default"/>.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public int Codepoint { get; set; }
+        public UnicodeSetEnumerator()
+            : this(new UnicodeSet(), UnicodeSetEnumerationMode.Default) { }
 
         /// <summary>
-        /// When iterating over ranges using <see cref="NextRange()"/>,
-        /// <see cref="CodepointEnd"/> contains the inclusive end of the
-        /// iteration range, if <c><see cref="Codepoint"/> != <see cref="IsString"/></c>. If
-        /// iterating over code points using <see cref="Next()"/>, or if
-        /// <c><see cref="Codepoint"/> == <see cref="IsString"/></c>, then the value of
-        /// <see cref="CodepointEnd"/> is undefined.
-        /// </summary>
-        /// <stable>ICU 2.0</stable>
-        public int CodepointEnd { get; set; }
-
-        /// <summary>
-        /// If <c><see cref="Codepoint"/> == <see cref="IsString"/></c>, then <see cref="String"/> points
-        /// to the current string. If <c><see cref="Codepoint"/> != <see cref="IsString"/></c>, the
-        /// value of <see cref="String"/> is undefined.
-        /// </summary>
-        /// <stable>ICU 2.0</stable>
-        public string String { get; set; }
-
-        /// <summary>
-        /// Create an iterator over the given set.
+        /// Create an enumerator over the given <paramref name="set"/> using
+        /// <see cref="UnicodeSetEnumerationMode.Default"/> (iterating code points and multicharacter strings).
         /// </summary>
         /// <param name="set">Set to iterate over.</param>
         /// <stable>ICU 2.0</stable>
-        public UnicodeSetIterator(UnicodeSet set)
+        public UnicodeSetEnumerator(UnicodeSet set) : this(set, UnicodeSetEnumerationMode.Default) { }
+
+        /// <summary>
+        /// Create an enumerator over the given <paramref name="set"/> using
+        /// the specified <paramref name="mode"/>.
+        /// </summary>
+        /// <param name="set">Set to iterate over.</param>
+        /// <param name="mode">The mode to use when iterating.</param>
+        /// <stable>ICU 2.0</stable>
+        public UnicodeSetEnumerator(UnicodeSet set, UnicodeSetEnumerationMode mode)
         {
-            Reset(set);
+            Reset(set, mode);
+        }
+
+        internal UnicodeSet Set { get; private set; } // ICU4N specific - marked internal instead of public, since the functionality is obsolete
+
+        /// <summary>
+        /// Gets the current iteration mode.
+        /// <para/>
+        /// This value can be changed by calling <see cref="Reset(UnicodeSet, UnicodeSetEnumerationMode)"/>,
+        /// which also restarts the enumeration.
+        /// </summary>
+        public UnicodeSetEnumerationMode Mode { get; private set; }
+
+        /// <summary>
+        /// Gets whether the current enumerator points to a <see cref="string"/>.
+        /// If <c>true</c>, then examine <see cref="Current"/> for the current iteration result.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public bool IsString { get; protected set; }
+
+        /// <summary>
+        /// Current code point, if <c><see cref="IsString"/> == false</c>.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public int CodePoint { get; protected set; }
+
+        /// <summary>
+        /// When iterating over ranges using <see cref="UnicodeSetEnumerationMode.Range"/>,
+        /// <see cref="CodePointEnd"/> contains the inclusive end of the
+        /// iteration range, if <c><see cref="IsString"/> == false</c>. If
+        /// iterating over code points using <see cref="UnicodeSetEnumerationMode.Default"/>, or if
+        /// <c><see cref="IsString"/> == true</c>, then the value of
+        /// <see cref="CodePointEnd"/> is undefined.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public int CodePointEnd { get; protected set; }
+
+        /// <summary>
+        /// Gets the current string, if <see cref="IsString"/> returned <c>true</c>.
+        /// <para/>
+        /// If the current iteration item is a code point, a <see cref="string"/> with that single code point is returned.
+        /// <para/>
+        /// Ownership of the returned string remains with the enumerator. The string is guaranteed to remain valid only
+        /// until the enumerator is advanced to the next item, or until the enumerator is destroyed.
+        /// </summary>
+        /// <stable>ICU 4.0</stable>
+        public virtual string Current
+        {
+            get
+            {
+                if (!IsString)
+                {
+                    return str ?? (str = UTF16.ValueOf(CodePoint));
+                }
+                return str;
+            }
+        }
+
+        object IEnumerator.Current => Current;
+
+        /// <summary>
+        /// Disposes all resources associated with <see cref="UnicodeSetEnumerator"/>.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
-        /// Create an iterator over nothing.  <see cref="Next()"/> and
-        /// <see cref="NextRange()"/> return false. This is a convenience
-        /// constructor allowing the target to be set later.
+        /// May be overridden to dispose of managed and unmanaged resources.
         /// </summary>
-        /// <stable>ICU 2.0</stable>
-        public UnicodeSetIterator()
+        /// <param name="disposing"><c>true</c> indicates to dispose managed resources;
+        /// <c>false</c> indicates to dispose unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
         {
-            Reset(new UnicodeSet());
+            if (disposing)
+            {
+                str = null;
+                stringEnumerator?.Dispose();
+                stringEnumerator = null;
+            }
         }
 
         /// <summary>
         /// Returns the next element in the set, either a single code point
-        /// or a string.  If there are no more elements in the set, return
-        /// false.  If <c><see cref="Codepoint"/> == <see cref="IsString"/></c>, the value is a
-        /// string in the <see cref="String"/> field.  Otherwise the value is a
-        /// single code point in the <see cref="Codepoint"/> field.
+        /// or a string. If there are no more elements in the set, returns
+        /// <c>false</c>. If <c><see cref="IsString"/> == true</c>, the value is a
+        /// string in the <see cref="Current"/> property. Otherwise the value is a
+        /// single code point in the <see cref="CodePoint"/> property.
         /// </summary>
         /// <remarks>
         /// The order of iteration is all code points in sorted order,
-        /// followed by all strings sorted order.  <see cref="String"/> is
-        /// undefined unless <c><see cref="Codepoint"/> == <see cref="IsString"/></c>.  Do not mix
-        /// calls to <see cref="Next()"/> and <see cref="NextRange()"/> without
-        /// calling <see cref="Reset()"/> between them.  The results of doing so
-        /// are undefined.
+        /// followed by all strings sorted order. When using <see cref="UnicodeSetEnumerationMode.Range"/>, <see cref="Current"/> is
+        /// undefined unless <c><see cref="IsString"/> == true</c>.
         /// <para/>
-        /// <b>Warning: </b>For speed, <see cref="UnicodeSet"/> iteration does not check for concurrent modification. 
+        /// <b>Warning: </b>For speed, <see cref="UnicodeSet"/> iteration does not check for concurrent modification.
         /// Do not alter the <see cref="UnicodeSet"/> while iterating.
         /// </remarks>
-        /// <returns>true if there was another element in the set and this
+        /// <returns><c>true</c> if there was another element in the set and this
         /// object contains the element.</returns>
         /// <stable>ICU 2.0</stable>
-        public virtual bool Next()
+        public virtual bool MoveNext()
         {
-#pragma warning disable 612, 618
             if (nextElement <= endElement)
             {
-                Codepoint = CodepointEnd = nextElement++;
+                if (Mode == UnicodeSetEnumerationMode.Default)
+                {
+                    CodePoint = CodePointEnd = nextElement++;
+                }
+                else
+                {
+                    CodePointEnd = endElement;
+                    CodePoint = nextElement;
+                    nextElement = endElement + 1;
+                }
+                str = null;
                 return true;
             }
             if (range < endRange)
             {
                 LoadRange(++range);
-                Codepoint = CodepointEnd = nextElement++;
+                if (Mode == UnicodeSetEnumerationMode.Default)
+                {
+                    CodePoint = CodePointEnd = nextElement++;
+                }
+                else
+                {
+                    CodePointEnd = endElement;
+                    CodePoint = nextElement;
+                    nextElement = endElement + 1;
+                }
+                str = null;
                 return true;
             }
-#pragma warning restore 612, 618
 
-            // stringIterator == null iff there are no string elements remaining
+            CodePoint = default;
+            CodePointEnd = default;
 
-            if (stringIterator == null)
+            // stringEnumerator == null iff there are no string elements remaining
+            if (stringEnumerator == null)
             {
+                str = null;
                 return false;
             }
-            Codepoint = IsString; // signal that value is actually a string
-            if (!stringIterator.MoveNext())
+            IsString = true; // signal that value is actually a string
+            if (!stringEnumerator.MoveNext())
             {
-                stringIterator = null;
+                stringEnumerator = null;
+                str = null;
                 return false;
             }
-            String = stringIterator.Current;
+            str = stringEnumerator.Current;
             return true;
         }
 
         /// <summary>
-        /// Returns the next element in the set, either a code point range
-        /// or a string.  If there are no more elements in the set, return
-        /// false.  If <c><see cref="Codepoint"/> == <see cref="IsString"/></c>, the value is a
-        /// string in the <see cref="String"/> property.  Otherwise the value is a
-        /// range of one or more code points from <see cref="Codepoint"/> to
-        /// <see cref="CodepointEnd"/> inclusive.
+        /// Sets this enumerator to visit the elements of the given set and
+        /// resets it to the start of that set. The enumerator is valid only
+        /// so long as <paramref name="unicodeSet"/> is valid.
         /// </summary>
-        /// <remarks>
-        /// The order of iteration is all code points in sorted order,
-        /// followed by all strings sorted order.  <see cref="String"/> is
-        /// undefined unless <c><see cref="Codepoint"/> == <see cref="IsString"/></c>.  Do not mix
-        /// calls to <see cref="Next()"/> and <see cref="NextRange()"/> without
-        /// calling <see cref="Reset()"/> between them.  The results of doing so
-        /// are undefined.
-        /// </remarks>
-        /// <returns>true if there was another element in the set and this
-        /// object contains the element.</returns>
+        /// <param name="unicodeSet">The set to iterate over.</param>
+        /// <param name="mode">The mode to use when iterating.</param>
         /// <stable>ICU 2.0</stable>
-        public virtual bool NextRange()
+        public virtual void Reset(UnicodeSet unicodeSet, UnicodeSetEnumerationMode mode)
         {
-#pragma warning disable 612, 618
-            if (nextElement <= endElement)
-            {
-                CodepointEnd = endElement;
-                Codepoint = nextElement;
-                nextElement = endElement + 1;
-                return true;
-            }
-            if (range < endRange)
-            {
-                LoadRange(++range);
-                CodepointEnd = endElement;
-                Codepoint = nextElement;
-                nextElement = endElement + 1;
-                return true;
-            }
-#pragma warning restore 612, 618
-
-            // stringIterator == null iff there are no string elements remaining
-
-            if (stringIterator == null)
-            {
-                return false;
-            }
-            Codepoint = IsString; // signal that value is actually a string
-            if (!stringIterator.MoveNext())
-            {
-                stringIterator = null;
-                return false;
-            }
-            String = stringIterator.Current;
-            return true;
-        }
-
-        /// <summary>
-        /// Sets this iterator to visit the elements of the given set and
-        /// resets it to the start of that set.  The iterator is valid only
-        /// so long as <paramref name="uset"/> is valid.
-        /// </summary>
-        /// <param name="uset">The set to iterate over.</param>
-        /// <stable>ICU 2.0</stable>
-        public virtual void Reset(UnicodeSet uset)
-        {
-            set = uset;
+            Set = unicodeSet ?? throw new ArgumentNullException(nameof(unicodeSet));
+            this.Mode = mode;
             Reset();
         }
 
         /// <summary>
-        /// Resets this iterator to the start of the set.
+        /// Sets this enumerator to visit the elements of the given set and
+        /// resets it to the start of that set. The enumerator is valid only
+        /// so long as <paramref name="unicodeSet"/> is valid.
+        /// <para/>
+        /// The enumerator continues to use the same mode that was passed into
+        /// the constructor on the specified <paramref name="unicodeSet"/>.
+        /// </summary>
+        /// <param name="unicodeSet">The set to iterate over.</param>
+        /// <stable>ICU 2.0</stable>
+        public virtual void Reset(UnicodeSet unicodeSet)
+        {
+            Reset(unicodeSet, Mode);
+        }
+
+        /// <summary>
+        /// Resets this enumerator to the start of the set.
         /// </summary>
         /// <stable>ICU 2.0</stable>
+
         public virtual void Reset()
         {
-            endRange = set.RangeCount - 1;
+            endRange = Set.RangeCount - 1;
             range = 0;
 #pragma warning disable 612, 618
             endElement = -1;
@@ -233,61 +298,17 @@ namespace ICU4N.Text
                 LoadRange(range);
             }
 #pragma warning restore 612, 618
-            stringIterator = null;
-            if (set.Strings != null)
+            stringEnumerator = null;
+            if (Set.Strings != null && Set.Strings.Count > 0)
             {
-                stringIterator = set.Strings.GetEnumerator();
-                // ICU4N: We can't peek whether there is another element
-                // so we can safely skip that step. It is repeated anyway
-                // in Next() and NextRange().
-                //if (!stringIterator.MoveNext())
-                //{
-                //    stringIterator = null;
-                //}
+                stringEnumerator = Set.Strings.GetEnumerator();
             }
         }
 
-        /// <summary>
-        /// Gets the current string from the iterator. Only use after calling <see cref="Next()"/>,
-        /// not <see cref="NextRange()"/>.
-        /// </summary>
-        /// <stable>ICU 4.0</stable>
-        public virtual string GetString() // ICU4N TODO: API String vs GetString() - confusing. This should be made into String property and the current string property made into a private field.
-        {
-            if (Codepoint != IsString)
-            {
-                return UTF16.ValueOf(Codepoint);
-            }
-            return String;
-        }
-
-        // ======================= PRIVATES ===========================
-
-        private UnicodeSet set;
-        private int endRange = 0;
-        private int range = 0;
-
-        /// <internal/>
-        [Obsolete("This API is ICU internal only.")]
-        internal virtual UnicodeSet Set => set; // ICU4N specific - marked internal instead of public, since the functionality is obsolete
-
-        /// <internal/>
-        [Obsolete("This API is ICU internal only.")]
-        internal int endElement; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
-        /// <internal/>
-        [Obsolete("This API is ICU internal only.")]
-        internal int nextElement; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
-        /// <summary>
-        /// Invariant: stringIterator is null when there are no (more) strings remaining
-        /// </summary>
-        private IEnumerator<string> stringIterator = null;
-
-        /// <internal/>
-        [Obsolete("This API is ICU internal only.")]
         internal virtual void LoadRange(int aRange) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
-            nextElement = set.GetRangeStart(aRange);
-            endElement = set.GetRangeEnd(aRange);
+            nextElement = Set.GetRangeStart(aRange);
+            endElement = Set.GetRangeEnd(aRange);
         }
     }
 }
