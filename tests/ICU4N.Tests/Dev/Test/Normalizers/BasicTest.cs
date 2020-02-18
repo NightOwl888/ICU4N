@@ -1208,7 +1208,7 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             string src = Utility.Unescape("\\U0001d15e\\U0001d157\\U0001d165\\U0001d15e");
             string expected = Utility.Unescape("\\U0001d15e\\U0001d157\\U0001d165\\U0001d15e");
-            Normalizer iter = new Normalizer(new StringCharacterIterator(Utility.Unescape(src)),
+            Normalizer iter = new Normalizer(new StringCharacterEnumerator(Utility.Unescape(src)),
                                                     NormalizerMode.None, 0);
             int index = 0;
             int ch;
@@ -1260,7 +1260,7 @@ namespace ICU4N.Dev.Test.Normalizers
             string expectedReverse = "\uD834\uDD65\uD834\uDD57";
             int index = 0;
             int ch;
-            Normalizer iter = new Normalizer(new StringCharacterIterator(Utility.Unescape(input)),
+            Normalizer iter = new Normalizer(new StringCharacterEnumerator(Utility.Unescape(input)),
                                                     NormalizerMode.NFKC, 0);
             StringBuffer got = new StringBuffer();
             for (ch = iter.First(); ch != Normalizer.Done; ch = iter.Next())
@@ -1502,7 +1502,7 @@ namespace ICU4N.Dev.Test.Normalizers
             string moves = "0+0+0--0-0-+++0--+++++++0--------";
 
             // iterators
-            StringCharacterIterator text = new StringCharacterIterator(new string(src));
+            StringCharacterEnumerator text = new StringCharacterEnumerator(new string(src));
             Normalizer iter = new Normalizer(text, NormalizerMode.NFD, 0);
             UCharIterator iter32 = new UCharIterator(expect, expect.Length,
                                                          EXPECT_MIDDLE);

@@ -496,17 +496,17 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Gets a <see cref="CharacterIterator"/> over the text being analyzed.
+        /// Gets a <see cref="ICharacterEnumerator"/> over the text being analyzed.
         /// For at least some subclasses of <see cref="BreakIterator"/>, this is a reference
         /// to the <b>actual iterator being used</b> by the <see cref="BreakIterator"/>,
         /// and therefore, this function's return value should be treated as
         /// <c>const</c>.  No guarantees are made about the current position
         /// of this iterator when it is returned.  If you need to move that
-        /// position to examine the text, clone this function's return value first.
+        /// position to examine the text, clone this property's return value first.
         /// </summary>
-        /// <returns>A <see cref="CharacterIterator"/> over the text being analyzed.</returns>
+        /// <returns>A <see cref="ICharacterEnumerator"/> over the text being analyzed.</returns>
         /// <stable>ICU 2.0</stable>
-        public abstract CharacterIterator Text { get; }
+        public abstract ICharacterEnumerator Text { get; }
 
         /// <summary>
         /// Sets the iterator to analyze a new piece of text.  The new
@@ -519,7 +519,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual void SetText(string newText)
         {
-            SetText(new StringCharacterIterator(newText));
+            SetText(new StringCharacterEnumerator(newText));
         }
 
         /// <summary>
@@ -534,7 +534,7 @@ namespace ICU4N.Text
         // ICU4N specific
         public virtual void SetText(StringBuilder newText)
         {
-            SetText(new StringCharacterIterator(newText.ToString())); // ICU4N TODO: make a StringBuilderCharacterIterator
+            SetText(new StringCharacterEnumerator(newText.ToString()));
         }
 
         /// <summary>
@@ -549,7 +549,7 @@ namespace ICU4N.Text
         // ICU4N specific
         public virtual void SetText(char[] newText)
         {
-            SetText(new StringCharacterIterator(new string(newText))); // ICU4N TODO: make a CharArrayCharacterIterator
+            SetText(new StringCharacterEnumerator(new string(newText)));
         }
 
         /// <summary>
@@ -563,21 +563,25 @@ namespace ICU4N.Text
         /// <draft>ICU 60</draft>
         public virtual void SetText(ICharSequence newText)
         {
-            SetText(new CharSequenceCharacterIterator(newText));
+            SetText(new CharSequenceCharacterEnumerator(newText));
         }
 
         /// <summary>
         /// Sets the iterator to analyze a new piece of text.  The
-        /// <see cref="BreakIterator"/> is passed a <see cref="CharacterIterator"/> through which
+        /// <see cref="BreakIterator"/> is passed a <see cref="ICharacterEnumerator"/> through which
         /// it will access the text itself.  The current iteration
-        /// position is reset to the <see cref="CharacterIterator"/>'s start index.
+        /// position is reset to the <see cref="ICharacterEnumerator"/>'s start index.
         /// (The old iterator is dropped.)
         /// </summary>
-        /// <param name="newText">A <see cref="CharacterIterator"/> referring to the text
+        /// <param name="newText">A <see cref="ICharacterEnumerator"/> referring to the text
         /// to analyze with this BreakIterator (the iterator's current
         /// position is ignored, but its other state is significant).</param>
         /// <stable>ICU 2.0</stable>
-        public abstract void SetText(CharacterIterator newText);
+        public abstract void SetText(ICharacterEnumerator newText);
+
+        // ICU4N: This overload mimics the original method, but uses the CharacterEnumeratorWrapper (a CharacterIterator subclass)
+        // to do a conversion between the iteration types.
+        internal abstract void SetText(CharacterIterator newText);
 
         /// <icu/>
         /// <stable>ICU 2.4</stable>

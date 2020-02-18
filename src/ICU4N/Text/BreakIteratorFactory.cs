@@ -15,7 +15,7 @@ namespace ICU4N.Text
 
         public override object RegisterInstance(BreakIterator iter, UCultureInfo locale, int kind)
         {
-            iter.SetText(new StringCharacterIterator(""));
+            iter.SetText(new StringCharacterEnumerator(""));
             return service.RegisterObject(iter, locale, kind);
         }
 

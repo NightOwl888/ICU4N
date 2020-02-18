@@ -66,8 +66,8 @@ namespace ICU4N.Dev.Test.Rbbi
             assertTrue(error, "unregister null");
 
             {
-                CharacterIterator sci = BreakIterator.GetWordInstance(new CultureInfo("en-US")).Text;
-                int len = sci.EndIndex - sci.BeginIndex;
+                ICharacterEnumerator sci = BreakIterator.GetWordInstance(new CultureInfo("en-US")).Text;
+                int len = sci.Length;
                 assertEqual(len, 0, "us word text: " + getString(sci));
             }
 
@@ -93,8 +93,8 @@ namespace ICU4N.Dev.Test.Rbbi
                 // ICU4N: Arbitrary locales are not allowed in .NET
                 //assertEqual(test4, rwbi, "root word break");
 
-                CharacterIterator sci = test1.Text;
-                int len = sci.EndIndex - sci.BeginIndex;
+                ICharacterEnumerator sci = test1.Text;
+                int len = sci.Length;
                 assertEqual(len, 0, "us sentence-word break text: " + getString(sci));
             }
         }
@@ -114,14 +114,13 @@ namespace ICU4N.Dev.Test.Rbbi
             msg(msg_, arg ? LOG : ERR, true, true);
         }
 
-        private static String getString(CharacterIterator ci)
+        private static String getString(ICharacterEnumerator ci)
         {
-            StringBuffer buf = new StringBuffer(ci.EndIndex - ci.BeginIndex + 2);
+            StringBuffer buf = new StringBuffer(ci.Length + 2);
             buf.Append("'");
-            for (char c = ci.First(); c != CharacterIterator.Done; c = ci.Next())
-            {
-                buf.Append(c);
-            }
+            ci.MoveFirst();
+            while (ci.MoveNext())
+                buf.Append(ci.Current);
             buf.Append("'");
             return buf.ToString();
         }

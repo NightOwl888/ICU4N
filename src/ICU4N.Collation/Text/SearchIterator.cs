@@ -57,10 +57,10 @@ namespace ICU4N.Text
         /// <summary>
         /// Target text for searching.
         /// </summary>
-        /// <seealso cref="SetTarget(CharacterIterator)"/>
+        /// <seealso cref="SetTarget(ICharacterEnumerator)"/>
         /// <seealso cref="Target"/>
         /// <stable>ICU 2.0</stable>
-        protected CharacterIterator m_targetText;
+        protected ICharacterEnumerator m_targetText;
 
         /// <summary>
         /// Length of the most current match in target text. 
@@ -93,9 +93,9 @@ namespace ICU4N.Text
                 this.outerInstance = outerInstance;
             }
 
-            internal CharacterIterator Text => outerInstance.m_targetText;
+            internal ICharacterEnumerator Text => outerInstance.m_targetText;
 
-            internal void SetTarget(CharacterIterator text)
+            internal void SetTarget(ICharacterEnumerator text)
             {
                 outerInstance.m_targetText = text;
             }
@@ -147,7 +147,7 @@ namespace ICU4N.Text
                     {
                         return 0;
                     }
-                    return outerInstance.m_targetText.BeginIndex;
+                    return outerInstance.m_targetText.StartIndex;
                 }
             }
 
@@ -159,7 +159,7 @@ namespace ICU4N.Text
                     {
                         return 0;
                     }
-                    return outerInstance.m_targetText.EndIndex;
+                    return outerInstance.m_targetText.EndIndex + (outerInstance.m_targetText.Length > 0 ? 1 : 0);
                 }
             }
         }
@@ -186,7 +186,7 @@ namespace ICU4N.Text
         /// This method clears any previous match.
         /// </summary>
         /// <param name="position">Position from which to start the next search.</param>
-        /// <exception cref="IndexOutOfRangeException">Thrown if argument position is out of the target text range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if argument <paramref name="position"/> is out of the target text range.</exception>
         /// <see cref="Index"/>
         /// <stable>ICU 2.8</stable>
         public virtual void SetIndex(int position)
@@ -194,7 +194,7 @@ namespace ICU4N.Text
             if (position < search_.BeginIndex
                 || position > search_.EndIndex)
             {
-                throw new IndexOutOfRangeException(
+                throw new ArgumentOutOfRangeException(
                     "setIndex(int) expected position to be between " +
                     search_.BeginIndex + " and " + search_.EndIndex);
             }
@@ -227,7 +227,7 @@ namespace ICU4N.Text
                 // affect the position currently held by search_.text()
                 if (search_.Text != null)
                 {
-                    search_.BreakIterator.SetText((CharacterIterator)search_.Text.Clone());
+                    search_.BreakIterator.SetText((ICharacterEnumerator)search_.Text.Clone());
                 }
             }
         }
@@ -241,14 +241,14 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">Thrown when text is null or has 0 length.</exception>
         /// <see cref="Target"/>
         /// <stable>ICU 2.4</stable>
-        public virtual void SetTarget(CharacterIterator text)
+        public virtual void SetTarget(ICharacterEnumerator text)
         {
-            if (text == null || text.EndIndex == text.Index)
+            if (text == null || text.Length == 0)
             {
                 throw new ArgumentException("Illegal null or empty text");
             }
 
-            text.SetIndex(text.BeginIndex);
+            text.Index = text.StartIndex;
             search_.SetTarget(text);
             search_.matchedIndex_ = Done;
             search_.MatchedLength = 0;
@@ -258,11 +258,11 @@ namespace ICU4N.Text
             {
                 // Create a clone of CharacterItearator, so it won't
                 // affect the position currently held by search_.text()
-                search_.BreakIterator.SetText((CharacterIterator)text.Clone());
+                search_.BreakIterator.SetText((ICharacterEnumerator)text.Clone());
             }
             if (search_.internalBreakIter_ != null)
             {
-                search_.internalBreakIter_.SetText((CharacterIterator)text.Clone());
+                search_.internalBreakIter_.SetText((ICharacterEnumerator)text.Clone());
             }
         }
 
@@ -338,8 +338,8 @@ namespace ICU4N.Text
         /// Gets the string text to be searched.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        /// <seealso cref="SetTarget(CharacterIterator)"/>
-        public virtual CharacterIterator Target => search_.Text;
+        /// <seealso cref="SetTarget(ICharacterEnumerator)"/>
+        public virtual ICharacterEnumerator Target => search_.Text;
 
         /// <summary>
         /// Returns the text that was matched by the most recent call to 
@@ -361,14 +361,15 @@ namespace ICU4N.Text
             {
                 int limit = search_.matchedIndex_ + search_.MatchedLength;
                 StringBuilder result = new StringBuilder(search_.MatchedLength);
-                CharacterIterator it = search_.Text;
-                it.SetIndex(search_.matchedIndex_);
-                while (it.Index < limit)
+                ICharacterEnumerator it = search_.Text;
+                bool pastEnd = search_.matchedIndex_ > it.EndIndex;
+                it.TrySetIndex(search_.matchedIndex_);
+                while (!pastEnd && it.Index < limit)
                 {
                     result.Append(it.Current);
-                    it.Next();
+                    pastEnd |= !it.MoveNext();
                 }
-                it.SetIndex(search_.matchedIndex_);
+                it.TrySetIndex(search_.matchedIndex_);
                 return result.ToString();
             }
             return null;
@@ -640,26 +641,24 @@ namespace ICU4N.Text
         /// <param name="target">The target text to be searched.</param>
         /// <param name="breaker">A <see cref="Text.BreakIterator"/> that is used to determine the 
         /// boundaries of a logical match. This argument can be null.</param>
-        /// <exception cref="ArgumentException">Thrown when argument target is null, or of length 0.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="target"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="target"/> length is 0.</exception>
         /// <seealso cref="Text.BreakIterator"/>
         /// <stable>ICU 2.0</stable>
-        protected SearchIterator(CharacterIterator target, BreakIterator breaker)
+        protected SearchIterator(ICharacterEnumerator target, BreakIterator breaker)
         {
-            this.search_ = new Search(this);
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+            if (target.Length == 0)
+                throw new ArgumentException("Argument can not be null or of length 0", nameof(target));
 
-            if (target == null
-                || (target.EndIndex - target.BeginIndex) == 0)
-            {
-                throw new ArgumentException(
-                                   "Illegal argument target. " +
-                                   " Argument can not be null or of length 0");
-            }
+            this.search_ = new Search(this);
 
             search_.SetTarget(target);
             search_.BreakIterator = breaker;
             if (search_.BreakIterator != null)
             {
-                search_.BreakIterator.SetText((CharacterIterator)target.Clone());
+                search_.BreakIterator.SetText((ICharacterEnumerator)target.Clone());
             }
             search_.isOverlap_ = false;
             search_.isCanonicalMatch_ = false;

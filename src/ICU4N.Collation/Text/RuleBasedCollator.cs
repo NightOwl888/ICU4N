@@ -223,15 +223,15 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Return a <see cref="CollationElementIterator"/> for the given <see cref="CharacterIterator"/>. The source iterator's integrity will be
+        /// Return a <see cref="CollationElementIterator"/> for the given <see cref="ICharacterEnumerator"/>. The source iterator's integrity will be
         /// preserved since a new copy will be created for use.
         /// </summary>
         /// <seealso cref="CollationElementIterator"/>
         /// <stable>ICU 2.8</stable>
-        public CollationElementIterator GetCollationElementIterator(CharacterIterator source)
+        public CollationElementIterator GetCollationElementIterator(ICharacterEnumerator source)
         {
             InitMaxExpansions();
-            CharacterIterator newsource = (CharacterIterator)source.Clone();
+            ICharacterEnumerator newsource = (ICharacterEnumerator)source.Clone();
             return new CollationElementIterator(newsource, this);
         }
 

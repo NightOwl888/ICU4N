@@ -587,7 +587,7 @@ namespace ICU4N.Dev.Test.Search
             collator.Decomposition = (NormalizationMode.CanonicalDecomposition);
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), (RuleBasedCollator)collator, breaker);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), (RuleBasedCollator)collator, breaker);
                 strsrch.ElementComparisonType = (search.cmpType);
                 strsrch.IsCanonical = (true);
             }
@@ -624,7 +624,7 @@ namespace ICU4N.Dev.Test.Search
             collator.Strength = (search.strength);
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), (RuleBasedCollator)collator, breaker);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), (RuleBasedCollator)collator, breaker);
                 strsrch.ElementComparisonType = (search.cmpType);
             }
             catch (Exception e)
@@ -658,7 +658,7 @@ namespace ICU4N.Dev.Test.Search
             collator.Strength = (search.strength);
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), (RuleBasedCollator)collator, breaker);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), (RuleBasedCollator)collator, breaker);
                 strsrch.IsCanonical = (canonical);
                 strsrch.IsOverlapping = (overlap);
                 strsrch.ElementComparisonType = (search.cmpType);
@@ -768,7 +768,7 @@ namespace ICU4N.Dev.Test.Search
         {
             String pattern = "pattern";
             String text = "text";
-            StringCharacterIterator textiter = new StringCharacterIterator(text);
+            StringCharacterEnumerator textiter = new StringCharacterEnumerator(text);
             Collator defaultcollator = Collator.GetInstance();
             BreakIterator breaker = BreakIterator.GetCharacterInstance();
             breaker.SetText(text);
@@ -835,7 +835,7 @@ namespace ICU4N.Dev.Test.Search
             StringSearch strsrch = null;
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), m_en_us_, null);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), m_en_us_, null);
             }
             catch (Exception e)
             {
@@ -877,7 +877,7 @@ namespace ICU4N.Dev.Test.Search
                     breaker.SetText(text);
                 }
                 collator.Strength = (search.strength);
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), collator, breaker);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), collator, breaker);
                 if (strsrch.BreakIterator != breaker)
                 {
                     Errln("Error setting break iterator");
@@ -931,7 +931,7 @@ namespace ICU4N.Dev.Test.Search
                 StringSearch strsrch = null;
                 try
                 {
-                    strsrch = new StringSearch(pattern, new StringCharacterIterator(text), collator, breaker);
+                    strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), collator, breaker);
                 }
                 catch (Exception e)
                 {
@@ -999,7 +999,7 @@ namespace ICU4N.Dev.Test.Search
             StringSearch strsrch = null;
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), m_en_us_, null);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), m_en_us_, null);
             }
             catch (Exception e)
             {
@@ -1055,7 +1055,7 @@ namespace ICU4N.Dev.Test.Search
             StringSearch strsrch = null;
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), m_en_us_, null);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), m_en_us_, null);
                 strsrch.IsCanonical = (true);
             }
             catch (Exception e)
@@ -1150,7 +1150,7 @@ namespace ICU4N.Dev.Test.Search
             StringSearch strsrch = null;
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), collator, null);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), collator, null);
             }
             catch (Exception e)
             {
@@ -1161,7 +1161,7 @@ namespace ICU4N.Dev.Test.Search
             {
                 text = CONTRACTION[count].text;
                 pattern = CONTRACTION[count].pattern;
-                strsrch.SetTarget(new StringCharacterIterator(text));
+                strsrch.SetTarget(new StringCharacterEnumerator(text));
                 strsrch.Pattern = (pattern);
                 if (!assertEqualWithStringSearch(strsrch, CONTRACTION[count]))
                 {
@@ -1190,7 +1190,7 @@ namespace ICU4N.Dev.Test.Search
             StringSearch strsrch = null;
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), collator, null);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), collator, null);
                 strsrch.IsCanonical = (true);
             }
             catch (Exception e)
@@ -1202,7 +1202,7 @@ namespace ICU4N.Dev.Test.Search
             {
                 text = CONTRACTIONCANONICAL[count].text;
                 pattern = CONTRACTIONCANONICAL[count].pattern;
-                strsrch.SetTarget(new StringCharacterIterator(text));
+                strsrch.SetTarget(new StringCharacterEnumerator(text));
                 strsrch.Pattern = (pattern);
                 if (!assertEqualWithStringSearch(strsrch, CONTRACTIONCANONICAL[count]))
                 {
@@ -1221,7 +1221,7 @@ namespace ICU4N.Dev.Test.Search
             StringSearch strsrch = null;
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), m_en_us_, null);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), m_en_us_, null);
             }
             catch (Exception e)
             {
@@ -1274,7 +1274,7 @@ namespace ICU4N.Dev.Test.Search
             StringSearch strsrch = null;
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), m_en_us_, null);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), m_en_us_, null);
             }
             catch (Exception e)
             {
@@ -1327,7 +1327,7 @@ namespace ICU4N.Dev.Test.Search
             StringSearch strsrch = null;
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), m_en_us_, null);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), m_en_us_, null);
             }
             catch (Exception e)
             {
@@ -1342,7 +1342,7 @@ namespace ICU4N.Dev.Test.Search
                 strsrch.SetIndex(-1);
                 Errln("Error expecting set offset error");
             }
-            catch (IndexOutOfRangeException e)
+            catch (ArgumentOutOfRangeException e)
             {
                 Logln("PASS: strsrch.setIndex(-1) failed as expected");
             }
@@ -1352,7 +1352,7 @@ namespace ICU4N.Dev.Test.Search
                 strsrch.SetIndex(128);
                 Errln("Error expecting set offset error");
             }
-            catch (IndexOutOfRangeException e)
+            catch (ArgumentOutOfRangeException e)
             {
                 Logln("PASS: strsrch.setIndex(128) failed as expected");
             }
@@ -1363,7 +1363,7 @@ namespace ICU4N.Dev.Test.Search
 
                 text = search.text;
                 pattern = search.pattern;
-                strsrch.SetTarget(new StringCharacterIterator(text));
+                strsrch.SetTarget(new StringCharacterEnumerator(text));
                 strsrch.Pattern = (pattern);
                 strsrch.Collator.Strength = (search.strength);
                 strsrch.Reset();
@@ -1418,7 +1418,7 @@ namespace ICU4N.Dev.Test.Search
             StringSearch strsrch = null;
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), m_en_us_, null);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), m_en_us_, null);
             }
             catch (Exception e)
             {
@@ -1434,7 +1434,7 @@ namespace ICU4N.Dev.Test.Search
                 strsrch.SetIndex(-1);
                 Errln("Error expecting set offset error");
             }
-            catch (IndexOutOfRangeException e)
+            catch (ArgumentOutOfRangeException e)
             {
                 Logln("PASS: strsrch.setIndex(-1) failed as expected");
             }
@@ -1443,7 +1443,7 @@ namespace ICU4N.Dev.Test.Search
                 strsrch.SetIndex(128);
                 Errln("Error expecting set offset error");
             }
-            catch (IndexOutOfRangeException e)
+            catch (ArgumentOutOfRangeException e)
             {
                 Logln("PASS: strsrch.setIndex(128) failed as expected");
             }
@@ -1453,7 +1453,7 @@ namespace ICU4N.Dev.Test.Search
                 SearchData search = BASICCANONICAL[index];
                 text = search.text;
                 pattern = search.pattern;
-                strsrch.SetTarget(new StringCharacterIterator(text));
+                strsrch.SetTarget(new StringCharacterEnumerator(text));
                 strsrch.Pattern = (pattern);
                 int count = 0;
                 int matchindex = search.offset[count];
@@ -1518,7 +1518,7 @@ namespace ICU4N.Dev.Test.Search
             StringSearch strsrch = null;
             try
             {
-                strsrch = new StringSearch(pattern, new StringCharacterIterator(text), collator, null);
+                strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), collator, null);
             }
             catch (Exception e)
             {
@@ -1530,7 +1530,7 @@ namespace ICU4N.Dev.Test.Search
             {
                 text = IGNORABLE[count].text;
                 pattern = IGNORABLE[count].pattern;
-                strsrch.SetTarget(new StringCharacterIterator(text));
+                strsrch.SetTarget(new StringCharacterEnumerator(text));
                 strsrch.Pattern = (pattern);
                 if (!assertEqualWithStringSearch(strsrch, IGNORABLE[count]))
                 {
@@ -1552,7 +1552,7 @@ namespace ICU4N.Dev.Test.Search
             text = temp + temp + temp;
             try
             {
-                result = new StringSearch(pattern, new StringCharacterIterator(text), m_en_us_, null);
+                result = new StringSearch(pattern, new StringCharacterEnumerator(text), m_en_us_, null);
             }
             catch (Exception e)
             {
@@ -1568,7 +1568,7 @@ namespace ICU4N.Dev.Test.Search
             }
             try
             {
-                result = new StringSearch(pattern, new StringCharacterIterator(text), m_en_us_, null);
+                result = new StringSearch(pattern, new StringCharacterEnumerator(text), m_en_us_, null);
                 Logln("pattern:" + result.Pattern);
             }
             catch (Exception e)
@@ -1630,12 +1630,12 @@ namespace ICU4N.Dev.Test.Search
             String pattern = "";
             String text = "";
             String temp = "a";
-            StringCharacterIterator chariter = new StringCharacterIterator(text);
+            StringCharacterEnumerator chariter = new StringCharacterEnumerator(text);
 
             /* testing null arguments */
             try
             {
-                result = new StringSearch(pattern, new StringCharacterIterator(text), null, null);
+                result = new StringSearch(pattern, new StringCharacterEnumerator(text), null, null);
                 Errln("Error: null arguments should produce an error");
             }
             catch (Exception e)
@@ -1643,7 +1643,7 @@ namespace ICU4N.Dev.Test.Search
                 Logln("PASS: null arguments failed as expected");
             }
 
-            chariter.SetText(text);
+            chariter.Reset(text);
             try
             {
                 result = new StringSearch(pattern, chariter, null, null);
@@ -1658,7 +1658,7 @@ namespace ICU4N.Dev.Test.Search
             text = Convert.ToString(0x1, CultureInfo.InvariantCulture); // ICU4N TODO: Check this
             try
             {
-                result = new StringSearch(pattern, new StringCharacterIterator(text), null, null);
+                result = new StringSearch(pattern, new StringCharacterEnumerator(text), null, null);
                 Errln("Error: Empty pattern should produce an error");
             }
             catch (Exception e)
@@ -1666,7 +1666,7 @@ namespace ICU4N.Dev.Test.Search
                 Logln("PASS: Empty pattern failed as expected");
             }
 
-            chariter.SetText(text);
+            chariter.Reset(text);
             try
             {
                 result = new StringSearch(pattern, chariter, null, null);
@@ -1681,7 +1681,7 @@ namespace ICU4N.Dev.Test.Search
             pattern = temp;
             try
             {
-                result = new StringSearch(pattern, new StringCharacterIterator(text), null, null);
+                result = new StringSearch(pattern, new StringCharacterEnumerator(text), null, null);
                 Errln("Error: Empty text should produce an error");
             }
             catch (Exception e)
@@ -1689,7 +1689,7 @@ namespace ICU4N.Dev.Test.Search
                 Logln("PASS: Empty text failed as expected");
             }
 
-            chariter.SetText(text);
+            chariter.Reset(text);
             try
             {
                 result = new StringSearch(pattern, chariter, null, null);
@@ -1703,7 +1703,7 @@ namespace ICU4N.Dev.Test.Search
             text += temp;
             try
             {
-                result = new StringSearch(pattern, new StringCharacterIterator(text), null, null);
+                result = new StringSearch(pattern, new StringCharacterEnumerator(text), null, null);
                 Errln("Error: null arguments should produce an error");
             }
             catch (Exception e)
@@ -1711,7 +1711,7 @@ namespace ICU4N.Dev.Test.Search
                 Logln("PASS: null arguments failed as expected");
             }
 
-            chariter.SetText(text);
+            chariter.Reset(text);
             try
             {
                 result = new StringSearch(pattern, chariter, null, null);
@@ -1724,7 +1724,7 @@ namespace ICU4N.Dev.Test.Search
 
             try
             {
-                result = new StringSearch(pattern, new StringCharacterIterator(text), m_en_us_, null);
+                result = new StringSearch(pattern, new StringCharacterEnumerator(text), m_en_us_, null);
             }
             catch (Exception e)
             {
@@ -1742,7 +1742,7 @@ namespace ICU4N.Dev.Test.Search
 
             try
             {
-                result = new StringSearch(pattern, new StringCharacterIterator(text), new CultureInfo("en"));
+                result = new StringSearch(pattern, new StringCharacterEnumerator(text), new CultureInfo("en"));
             }
             catch (Exception e)
             {
@@ -1760,7 +1760,7 @@ namespace ICU4N.Dev.Test.Search
 
             try
             {
-                result = new StringSearch(pattern, new StringCharacterIterator(text), m_en_us_, breakiter);
+                result = new StringSearch(pattern, new StringCharacterEnumerator(text), m_en_us_, breakiter);
             }
             catch (Exception e)
             {
@@ -1809,7 +1809,7 @@ namespace ICU4N.Dev.Test.Search
                 StringSearch strsrch = null;
                 try
                 {
-                    strsrch = new StringSearch(pattern, new StringCharacterIterator(text), collator, null);
+                    strsrch = new StringSearch(pattern, new StringCharacterEnumerator(text), collator, null);
                 }
                 catch (Exception e)
                 {
@@ -1866,7 +1866,7 @@ namespace ICU4N.Dev.Test.Search
             {
                 SearchData search = OVERLAPCANONICAL[count];
                 RuleBasedCollator collator = getCollator(search.collator);
-                StringSearch strsrch = new StringSearch(search.pattern, new StringCharacterIterator(search.text), collator, null);
+                StringSearch strsrch = new StringSearch(search.pattern, new StringCharacterEnumerator(search.text), collator, null);
                 strsrch.IsCanonical = (true);
                 strsrch.IsOverlapping = (true);
                 if (strsrch.IsOverlapping != true)
@@ -1897,7 +1897,7 @@ namespace ICU4N.Dev.Test.Search
         public void TestPattern()
         {
             m_en_us_.Strength = (PATTERN[0].strength);
-            StringSearch strsrch = new StringSearch(PATTERN[0].pattern, new StringCharacterIterator(PATTERN[0].text), m_en_us_, null);
+            StringSearch strsrch = new StringSearch(PATTERN[0].pattern, new StringCharacterEnumerator(PATTERN[0].text), m_en_us_, null);
 
             if (strsrch.Pattern != PATTERN[0].pattern)
             {
@@ -1985,7 +1985,7 @@ namespace ICU4N.Dev.Test.Search
         {
             //StringCharacterIterator text = new StringCharacterIterator(PATTERNCANONICAL[0].text);
             m_en_us_.Strength = (PATTERNCANONICAL[0].strength);
-            StringSearch strsrch = new StringSearch(PATTERNCANONICAL[0].pattern, new StringCharacterIterator(PATTERNCANONICAL[0].text),
+            StringSearch strsrch = new StringSearch(PATTERNCANONICAL[0].pattern, new StringCharacterEnumerator(PATTERNCANONICAL[0].text),
                                                     m_en_us_, null);
             strsrch.IsCanonical = (true);
 
@@ -2040,7 +2040,7 @@ namespace ICU4N.Dev.Test.Search
         [Test]
         public void TestReset()
         {
-            StringCharacterIterator text = new StringCharacterIterator("fish fish");
+            StringCharacterEnumerator text = new StringCharacterEnumerator("fish fish");
             String pattern = "s";
 
             StringSearch strsrch = new StringSearch(pattern, text, m_en_us_, null);
@@ -2068,7 +2068,7 @@ namespace ICU4N.Dev.Test.Search
             for (int count = 0; count < MATCH.Length; count++)
             {
                 SearchData search = MATCH[count];
-                StringSearch strsrch = new StringSearch(search.pattern, new StringCharacterIterator(search.text),
+                StringSearch strsrch = new StringSearch(search.pattern, new StringCharacterEnumerator(search.text),
                                                         m_en_us_, null);
 
                 int size = 0;
@@ -2172,7 +2172,7 @@ namespace ICU4N.Dev.Test.Search
             SD("the foxy brown fox", "fox", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(4, 15, -1), IA(3, 3)),
             SD("the quick brown fox", "fox", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(16, -1), IA(3))
         };
-            StringCharacterIterator t = new StringCharacterIterator(TEXT[0].text);
+            StringCharacterEnumerator t = new StringCharacterEnumerator(TEXT[0].text);
             StringSearch strsrch = new StringSearch(TEXT[0].pattern, t, m_en_us_, null);
 
             if (!t.Equals(strsrch.Target))
@@ -2185,7 +2185,7 @@ namespace ICU4N.Dev.Test.Search
                 return;
             }
 
-            t = new StringCharacterIterator(TEXT[1].text);
+            t = new StringCharacterEnumerator(TEXT[1].text);
             strsrch.SetTarget(t);
             if (!t.Equals(strsrch.Target))
             {
@@ -2203,7 +2203,7 @@ namespace ICU4N.Dev.Test.Search
         [Test]
         public void TestTextCanonical()
         {
-            StringCharacterIterator t = new StringCharacterIterator(TEXTCANONICAL[0].text);
+            StringCharacterEnumerator t = new StringCharacterEnumerator(TEXTCANONICAL[0].text);
             StringSearch strsrch = new StringSearch(TEXTCANONICAL[0].pattern, t, m_en_us_, null);
             strsrch.IsCanonical = (true);
 
@@ -2217,7 +2217,7 @@ namespace ICU4N.Dev.Test.Search
                 return;
             }
 
-            t = new StringCharacterIterator(TEXTCANONICAL[1].text);
+            t = new StringCharacterEnumerator(TEXTCANONICAL[1].text);
             strsrch.SetTarget(t);
             if (!t.Equals(strsrch.Target))
             {
@@ -2232,7 +2232,7 @@ namespace ICU4N.Dev.Test.Search
                 return;
             }
 
-            t = new StringCharacterIterator(TEXTCANONICAL[0].text);
+            t = new StringCharacterEnumerator(TEXTCANONICAL[0].text);
             strsrch.SetTarget(t);
             if (!t.Equals(strsrch.Target))
             {
@@ -2285,19 +2285,18 @@ namespace ICU4N.Dev.Test.Search
             internal String pattern;
             internal String text;
 
-            internal TestSearch(StringCharacterIterator target, BreakIterator breaker,
+            internal TestSearch(StringCharacterEnumerator target, BreakIterator breaker,
                            String pattern)
                     : base(target, breaker)
             {
                 this.pattern = pattern;
                 StringBuffer buffer = new StringBuffer();
-                while (m_targetText.Index != m_targetText.EndIndex)
+                do
                 {
                     buffer.Append(m_targetText.Current);
-                    m_targetText.Next();
-                }
+                } while (m_targetText.MoveNext());
                 text = buffer.ToString();
-                m_targetText.SetIndex(m_targetText.BeginIndex);
+                m_targetText.Index = m_targetText.StartIndex;
             }
 
             protected override int HandleNext(int start)
@@ -2305,10 +2304,10 @@ namespace ICU4N.Dev.Test.Search
                 int match = text.IndexOf(pattern, start, StringComparison.Ordinal);
                 if (match < 0)
                 {
-                    m_targetText.Last();
+                    m_targetText.MoveLast();
                     return Done;
                 }
-                m_targetText.SetIndex(match);
+                m_targetText.TrySetIndex(match);
                 MatchLength = (pattern.Length);
                 return match;
             }
@@ -2318,10 +2317,10 @@ namespace ICU4N.Dev.Test.Search
                 int match = text.LastIndexOf(pattern, start /*- 1*/, StringComparison.Ordinal);
                 if (match < 0)
                 {
-                    m_targetText.SetIndex(0);
+                    m_targetText.TrySetIndex(0);
                     return Done;
                 }
-                m_targetText.SetIndex(match);
+                m_targetText.TrySetIndex(match);
                 MatchLength = (pattern.Length);
                 return match;
             }
@@ -2345,7 +2344,7 @@ namespace ICU4N.Dev.Test.Search
         {
 
             TestSearch search = new TestSearch(
-                    new StringCharacterIterator("abc abcd abc"),
+                    new StringCharacterEnumerator("abc abcd abc"),
                     null, "abc");
             int[] expected = { 0, 4, 9 };
             for (int i = 0; i < expected.Length; i++)
@@ -2405,7 +2404,7 @@ namespace ICU4N.Dev.Test.Search
                 strsrch.Reset();
                 text = DIACTRICMATCH[count].text;
                 pattern = DIACTRICMATCH[count].pattern;
-                strsrch.SetTarget(new StringCharacterIterator(text));
+                strsrch.SetTarget(new StringCharacterEnumerator(text));
                 strsrch.Pattern = (pattern);
                 if (!assertEqualWithStringSearch(strsrch, DIACTRICMATCH[count]))
                 {
@@ -2518,7 +2517,7 @@ namespace ICU4N.Dev.Test.Search
                     Errln("Error: in locale " + localeString + ", err in Collator.getInstance");
                     continue;
                 }
-                StringCharacterIterator ci = new StringCharacterIterator(tuscItem.getText());
+                StringCharacterEnumerator ci = new StringCharacterEnumerator(tuscItem.getText());
                 StringSearch srch = new StringSearch(dummyPat, ci, col);
                 foreach (PatternAndOffsets patternAndOffsets in tuscItem.getPatternsAndOffsets())
                 {
@@ -2614,7 +2613,7 @@ namespace ICU4N.Dev.Test.Search
             // index 256.
             pattern.Append('á');
 
-            CharacterIterator target = new StringCharacterIterator("not important");
+            ICharacterEnumerator target = new StringCharacterEnumerator("not important");
             try
             {
                 StringSearch ss = new StringSearch(pattern.ToString(), target, new CultureInfo("en"));

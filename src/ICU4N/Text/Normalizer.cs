@@ -752,7 +752,7 @@ namespace ICU4N.Text
         /// <param name="mode">The normalization mode.</param>
         /// <draft>ICU4N 60.1</draft>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public Normalizer(CharacterIterator iter, NormalizerMode mode)
+        public Normalizer(ICharacterEnumerator iter, NormalizerMode mode)
             : this(iter, mode, NormalizerUnicodeVersion.Default)
         {
         }
@@ -771,9 +771,9 @@ namespace ICU4N.Text
         /// </param>
         /// <draft>ICU4N 60.1</draft>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public Normalizer(CharacterIterator iter, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        public Normalizer(ICharacterEnumerator iter, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            this.text = UCharacterIterator.GetInstance((CharacterIterator)iter.Clone());
+            this.text = UCharacterIterator.GetInstance((ICharacterEnumerator)iter.Clone());
             this.mode = GetModeInstance(mode);
             this.options = (int)unicodeVersion;
             norm2 = this.mode.GetNormalizer2(this.options);
@@ -820,11 +820,11 @@ namespace ICU4N.Text
         /// <summary>
         /// Clones this <see cref="Normalizer"/> object.  All properties of this
         /// object are duplicated in the new object, including the cloning of any
-        /// <see cref="CharacterIterator"/> that was passed in to the constructor
-        /// or to <see cref="SetText(CharacterIterator)"/>.
+        /// <see cref="ICharacterEnumerator"/> that was passed in to the constructor
+        /// or to <see cref="SetText(ICharacterEnumerator)"/>.
         /// However, the text storage underlying
-        /// the <see cref="CharacterIterator"/> is not duplicated unless the
-        /// <see cref="CharacterIterator.Clone()"/> method does so.
+        /// the <see cref="ICharacterEnumerator"/> is not duplicated unless the
+        /// <see cref="ICharacterEnumerator.Clone()"/> method does so.
         /// </summary>
         /// <returns></returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
@@ -2675,7 +2675,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
-        public void SetText(CharacterIterator newText)
+        public void SetText(ICharacterEnumerator newText)
         {
             UCharacterIterator newIter = UCharacterIterator.GetInstance(newText);
             text = newIter ?? throw new InvalidOperationException("Could not create a new UCharacterIterator");

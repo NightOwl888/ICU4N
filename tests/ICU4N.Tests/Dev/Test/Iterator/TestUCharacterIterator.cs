@@ -49,7 +49,7 @@ namespace ICU4N.Dev.Test.Iterator
                     iterator.GetText(buf);
                     break;
                 }
-                catch (IndexOutOfRangeException e)
+                catch (ArgumentException e)
                 {
                     buf = new char[iterator.Length];
                 }
@@ -290,7 +290,7 @@ namespace ICU4N.Dev.Test.Iterator
             // iterators
             UCharacterIterator iter1 = UCharacterIterator.GetInstance(new ReplaceableString(new String(src)));
             UCharacterIterator iter2 = UCharacterIterator.GetInstance(src/*char array*/);
-            UCharacterIterator iter3 = UCharacterIterator.GetInstance(new StringCharacterIterator(new String(src)));
+            UCharacterIterator iter3 = UCharacterIterator.GetInstance(new StringCharacterEnumerator(new String(src)));
             UCharacterIterator iter4 = UCharacterIterator.GetInstance(new StringBuffer(new String(src)));
             previousNext(iter1);
             previousNext(iter2);
@@ -300,18 +300,21 @@ namespace ICU4N.Dev.Test.Iterator
             getText(iter2, new String(src));
             getText(iter3, new String(src));
             /* getCharacterIterator */
-            CharacterIterator citer1 = iter1.GetCharacterIterator();
-            CharacterIterator citer2 = iter2.GetCharacterIterator();
-            CharacterIterator citer3 = iter3.GetCharacterIterator();
-            if (citer1.First() != iter1.Current)
+            ICharacterEnumerator citer1 = iter1.GetCharacterEnumerator();
+            ICharacterEnumerator citer2 = iter2.GetCharacterEnumerator();
+            ICharacterEnumerator citer3 = iter3.GetCharacterEnumerator();
+            citer1.MoveFirst();
+            if (citer1.Current != iter1.Current)
             {
                 Errln("getCharacterIterator for iter1 failed");
             }
-            if (citer2.First() != iter2.Current)
+            citer2.MoveFirst();
+            if (citer2.Current != iter2.Current)
             {
                 Errln("getCharacterIterator for iter2 failed");
             }
-            if (citer3.First() != iter3.Current)
+            citer3.MoveFirst();
+            if (citer3.Current != iter3.Current)
             {
                 Errln("getCharacterIterator for iter3 failed");
             }
@@ -428,10 +431,10 @@ namespace ICU4N.Dev.Test.Iterator
         {
             String source = "asdfasdfjoiuyoiuy2341235679886765";
             UCharacterIterator it = UCharacterIterator.GetInstance(source);
-            CharacterIterator wrap_ci = it.GetCharacterIterator();
-            CharacterIterator ci = new StringCharacterIterator(source);
-            wrap_ci.SetIndex(10);
-            ci.SetIndex(10);
+            ICharacterEnumerator wrap_ci = it.GetCharacterEnumerator();
+            ICharacterEnumerator ci = new StringCharacterEnumerator(source);
+            wrap_ci.TrySetIndex(10);
+            ci.TrySetIndex(10);
             String moves = "0+0+0--0-0-+++0--+++++++0--------++++0000----0-";
             int c1, c2;
             char m;
@@ -442,8 +445,10 @@ namespace ICU4N.Dev.Test.Iterator
                 m = moves[movesIndex++];
                 if (m == '-')
                 {
-                    c1 = wrap_ci.Previous();
-                    c2 = ci.Previous();
+                    wrap_ci.MovePrevious();
+                    c1 = wrap_ci.Current;
+                    ci.MovePrevious();
+                    c2 = ci.Current;
                 }
                 else if (m == '0')
                 {
@@ -452,8 +457,10 @@ namespace ICU4N.Dev.Test.Iterator
                 }
                 else
                 {// m=='+'
-                    c1 = wrap_ci.Next();
-                    c2 = ci.Next();
+                    wrap_ci.MoveNext();
+                    c1 = wrap_ci.Current;
+                    ci.MoveNext();
+                    c2 = ci.Current;
                 }
 
                 // compare results
@@ -477,17 +484,21 @@ namespace ICU4N.Dev.Test.Iterator
                     break;
                 }
             }
-            if (ci.First() != wrap_ci.First())
+            ci.MoveFirst();
+            wrap_ci.MoveFirst();
+            if (ci.Current != wrap_ci.Current)
             {
-                Errln("CharacterIteratorWrapper.First() failed. expected: " + ci.First() + " got: " + wrap_ci.First());
+                Errln("CharacterIteratorWrapper.First() failed. expected: " + ci.Current + " got: " + wrap_ci.Current);
             }
-            if (ci.Last() != wrap_ci.Last())
+            ci.MoveLast();
+            wrap_ci.MoveLast();
+            if (ci.Current != wrap_ci.Current)
             {
-                Errln("CharacterIteratorWrapper.Last() failed expected: " + ci.Last() + " got: " + wrap_ci.Last());
+                Errln("CharacterIteratorWrapper.Last() failed expected: " + ci.Current + " got: " + wrap_ci.Current);
             }
-            if (ci.BeginIndex != wrap_ci.BeginIndex)
+            if (ci.StartIndex != wrap_ci.StartIndex)
             {
-                Errln("CharacterIteratorWrapper.BeginIndex failed expected: " + ci.BeginIndex + " got: " + wrap_ci.BeginIndex);
+                Errln("CharacterIteratorWrapper.BeginIndex failed expected: " + ci.StartIndex + " got: " + wrap_ci.StartIndex);
             }
             if (ci.EndIndex != wrap_ci.EndIndex)
             {
@@ -495,7 +506,7 @@ namespace ICU4N.Dev.Test.Iterator
             }
             try
             {
-                CharacterIterator cloneWCI = (CharacterIterator)wrap_ci.Clone();
+                ICharacterEnumerator cloneWCI = (ICharacterEnumerator)wrap_ci.Clone();
                 if (wrap_ci.Index != cloneWCI.Index)
                 {
                     Errln("CharacterIteratorWrapper.Clone() failed expected: " + wrap_ci.Index + " got: " + cloneWCI.Index);

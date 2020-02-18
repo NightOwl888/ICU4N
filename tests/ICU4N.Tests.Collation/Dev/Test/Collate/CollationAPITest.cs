@@ -294,7 +294,7 @@ namespace ICU4N.Dev.Test.Collate
             // Logln("Constructors and comparison testing....");
             CollationElementIterator iterator1 = ((RuleBasedCollator)col).GetCollationElementIterator(testString1);
 
-            CharacterIterator chariter = new StringCharacterIterator(testString1);
+            ICharacterEnumerator chariter = new StringCharacterEnumerator(testString1);
             // copy ctor
             CollationElementIterator iterator2 = ((RuleBasedCollator)col).GetCollationElementIterator(chariter);
             UCharacterIterator uchariter = UCharacterIterator.GetInstance(testString2);

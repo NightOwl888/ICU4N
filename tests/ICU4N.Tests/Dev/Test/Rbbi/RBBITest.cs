@@ -245,7 +245,7 @@ namespace ICU4N.Dev.Test.Rbbi
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
             try
             {
-                rbbi.SetText((CharacterIterator)null);
+                rbbi.SetText((ICharacterEnumerator)null);
                 if (((RuleBasedBreakIterator)rbbi.Clone()).Text != null)
                     Errln("RuleBasedBreakIterator.clone() was suppose to return "
                             + "the same object because fText is set to null.");
@@ -268,7 +268,7 @@ namespace ICU4N.Dev.Test.Rbbi
             // TODO: Tests when "if (fRData != other.fRData && (fRData == null || other.fRData == null))" is true
 
             // Tests when "if (fText == null || other.fText == null)" is true
-            rbbi.SetText((CharacterIterator)null);
+            rbbi.SetText((ICharacterEnumerator)null);
             if (rbbi.Equals(rbbi1))
             {
                 Errln("RuleBasedBreakIterator.equals(Object) was not suppose to return "
@@ -276,7 +276,7 @@ namespace ICU4N.Dev.Test.Rbbi
             }
 
             // Tests when "if (fText == null && other.fText == null)" is true
-            rbbi1.SetText((CharacterIterator)null);
+            rbbi1.SetText((ICharacterEnumerator)null);
             if (!rbbi.Equals(rbbi1))
             {
                 Errln("RuleBasedBreakIterator.equals(Object) was not suppose to return "
@@ -307,7 +307,7 @@ namespace ICU4N.Dev.Test.Rbbi
         {
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
             // Tests when "if (fText == null)" is true
-            rbbi.SetText((CharacterIterator)null);
+            rbbi.SetText((ICharacterEnumerator)null);
             assertEquals("RuleBasedBreakIterator.First()", BreakIterator.Done, rbbi.First());
 
             rbbi.SetText("abc");
@@ -323,7 +323,7 @@ namespace ICU4N.Dev.Test.Rbbi
         {
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
             // Tests when "if (fText == null)" is true
-            rbbi.SetText((CharacterIterator)null);
+            rbbi.SetText((ICharacterEnumerator)null);
             if (rbbi.Last() != BreakIterator.Done)
             {
                 Errln("RuleBasedBreakIterator.Last() was supposed to return "
@@ -355,7 +355,7 @@ namespace ICU4N.Dev.Test.Rbbi
         {
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
             // Tests when "if (fText == null || offset > fText.getEndIndex())" is true
-            rbbi.SetText((CharacterIterator)null);
+            rbbi.SetText((ICharacterEnumerator)null);
             if (rbbi.Preceding(-1) != BreakIterator.Done)
             {
                 Errln("RuleBasedBreakIterator.Preceding(-1) was suppose to return "
@@ -377,7 +377,7 @@ namespace ICU4N.Dev.Test.Rbbi
         {
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
             // Tests when "(fText != null) ? fText.getIndex() : BreakIterator.Done" is true and false
-            rbbi.SetText((CharacterIterator)null);
+            rbbi.SetText((ICharacterEnumerator)null);
             if (rbbi.Current != BreakIterator.Done)
             {
                 Errln("RuleBasedBreakIterator.Current was suppose to return "

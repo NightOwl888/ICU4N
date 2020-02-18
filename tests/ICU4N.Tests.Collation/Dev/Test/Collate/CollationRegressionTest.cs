@@ -1277,7 +1277,7 @@ namespace ICU4N.Dev.Test.Collate
         public void Test4663220()
         {
             RuleBasedCollator collator = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US") /* Locale.US */);
-            StringCharacterIterator stringIter = new StringCharacterIterator("fox");
+            StringCharacterEnumerator stringIter = new StringCharacterEnumerator("fox");
             CollationElementIterator iter = collator.GetCollationElementIterator(stringIter);
 
             int[] elements_next = new int[3];

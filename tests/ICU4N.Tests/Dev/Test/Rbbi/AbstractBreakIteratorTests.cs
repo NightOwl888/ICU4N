@@ -61,12 +61,15 @@ namespace ICU4N.Dev.Test.Rbbi
 
             public override int Current => position;
 
-            public override CharacterIterator Text => null;
+            public override ICharacterEnumerator Text => null;
 
-            public override void SetText(CharacterIterator newText)
+            public override void SetText(ICharacterEnumerator newText)
             {
             }
 
+            internal override void SetText(CharacterIterator newText)
+            {
+            }
         }
 
         private BreakIterator bi;

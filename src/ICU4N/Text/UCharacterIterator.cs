@@ -80,14 +80,14 @@ namespace ICU4N.Text
         /// Returns a <see cref="UCharacterIterator"/> object given a source character array.
         /// </summary>
         /// <param name="source">An array of UTF-16 code units.</param>
-        /// <param name="start"></param>
-        /// <param name="limit"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="length"></param>
         /// <returns><see cref="UCharacterIterator"/> object.</returns>
         /// <exception cref="ArgumentException">If the argument is null.</exception>
         /// <stable>ICU 2.4</stable>
-        public static UCharacterIterator GetInstance(char[] source, int start, int limit)
+        public static UCharacterIterator GetInstance(char[] source, int startIndex, int length)
         {
-            return new UCharArrayIterator(source, start, limit);
+            return new UCharArrayIterator(source, startIndex, length);
         }
 
         /// <summary>
@@ -103,13 +103,25 @@ namespace ICU4N.Text
         }
 
         /// <summary>
+        /// Returns a <see cref="UCharacterIterator"/> object given a <see cref="ICharacterEnumerator"/>.
+        /// </summary>
+        /// <param name="source">A valid <see cref="ICharacterEnumerator"/> object.</param>
+        /// <returns><see cref="UCharacterIterator"/> object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
+        /// <stable>ICU 2.4</stable>
+        public static UCharacterIterator GetInstance(ICharacterEnumerator source)
+        {
+            return new ICU4N.Impl.CharacterEnumeratorWrapper(source);
+        }
+
+        /// <summary>
         /// Returns a <see cref="UCharacterIterator"/> object given a <see cref="CharacterIterator"/>.
         /// </summary>
         /// <param name="source">A valid <see cref="CharacterIterator"/> object.</param>
         /// <returns><see cref="UCharacterIterator"/> object.</returns>
-        /// <exception cref="ArgumentException">If the argument is null.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
         /// <stable>ICU 2.4</stable>
-        public static UCharacterIterator GetInstance(CharacterIterator source)
+        internal static UCharacterIterator GetInstance(CharacterIterator source)
         {
             return new CharacterIteratorWrapper(source);
         }
@@ -117,14 +129,14 @@ namespace ICU4N.Text
         // public methods ----------------------------------------------------------
 
         /// <summary>
-        /// Returns a <see cref="CharacterIterator"/> object for the underlying text of this iterator. The returned
+        /// Returns a <see cref="ICharacterEnumerator"/> object for the underlying text of this iterator. The returned
         /// iterator is independent of this iterator.
         /// </summary>
-        /// <returns><see cref="CharacterIterator"/> object.</returns>
+        /// <returns><see cref="ICharacterEnumerator"/> object.</returns>
         /// <stable>ICU 2.4</stable>
-        public virtual CharacterIterator GetCharacterIterator()
+        public virtual ICharacterEnumerator GetCharacterEnumerator()
         {
-            return new UCharacterIteratorWrapper(this);
+            return new UCharacterEnumeratorWrapper(this);
         }
 
         /// <summary>
@@ -281,41 +293,27 @@ namespace ICU4N.Text
         /// char[] buf = new char[iter.Length];
         /// iter.GetText(buf);
         /// </code>
-        /// OR
-        /// <code>
-        /// char[] buf= new char[1];
-        /// int len = 0;
-        /// while (true)
-        /// {
-        ///     try
-        ///     {
-        ///         len = iter.GetText(buf);
-        ///         break;
-        ///     }
-        ///     catch (IndexOutOfRangeException)
-        ///     {
-        ///         buf = new char[iter.Length];
-        ///     }
-        /// }
-        /// </code>
         /// </remarks>
-        /// <param name="fillIn">An array of chars to fill with the underlying UTF-16 code units.</param>
+        /// <param name="destination">An array of chars to fill with the underlying UTF-16 code units.</param>
         /// <param name="offset">The position within the array to start putting the data.</param>
         /// <returns>The number of code units added to fillIn, as a convenience.</returns>
-        /// <exception cref="IndexOutOfRangeException">Exception if there is not enough room after offset in the array, or if offset &lt; 0.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="destination"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> is less than 0.</exception>
+        /// <exception cref="ArgumentException">There is not enough room after <paramref name="offset"/> in <paramref name="destination"/>.</exception>
         /// <stable>ICU 2.4</stable>
-        public abstract int GetText(char[] fillIn, int offset); // ICU4N TODO: API - try to work out how to check for an invalid state rather than rely on exception to be thrown
+        public abstract int GetText(char[] destination, int offset);
 
         /// <summary>
         /// Convenience override for <see cref="GetText(char[], int)"/> that provides an offset of 0.
         /// </summary>
-        /// <param name="fillIn">An array of chars to fill with the underlying UTF-16 code units.</param>
+        /// <param name="destination">An array of chars to fill with the underlying UTF-16 code units.</param>
         /// <returns>The number of code units added to fillIn, as a convenience.</returns>
-        /// <exception cref="IndexOutOfRangeException">If there is not enough room in the array.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="destination"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">There is not enough room in <paramref name="destination"/>.</exception>
         /// <stable>ICU 2.4</stable>
-        public int GetText(char[] fillIn)
+        public int GetText(char[] destination)
         {
-            return GetText(fillIn, 0);
+            return GetText(destination, 0);
         }
 
         /// <summary>
@@ -337,7 +335,6 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="delta">The number of code units to move the current index.</param>
         /// <returns>The new index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown if an invalid index is supplied.</exception>
         /// <stable>ICU 2.4</stable>
         public virtual int MoveIndex(int delta)
         {
@@ -355,7 +352,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="delta">The number of code units to move the current index.</param>
         /// <returns>The new index.</returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown if an invalid index is supplied.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if an invalid index is supplied.</exception>
         /// <stable>ICU 2.4</stable>
         public virtual int MoveCodePointIndex(int delta)
         {
@@ -375,7 +372,7 @@ namespace ICU4N.Text
             }
             if (delta != 0)
             {
-                throw new IndexOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(delta));
             }
 
             return Index;

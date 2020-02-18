@@ -23,11 +23,7 @@ namespace ICU4N.Impl
         /// <param name="replaceable">Text which the iterator will be based on.</param>
         public ReplaceableUCharacterIterator(IReplaceable replaceable)
         {
-            if (replaceable == null)
-            {
-                throw new ArgumentException();
-            }
-            this.replaceable = replaceable;
+            this.replaceable = replaceable ?? throw new ArgumentNullException(nameof(replaceable));
             this.currentIndex = 0;
         }
 
@@ -128,7 +124,7 @@ namespace ICU4N.Impl
         /// Gets or Sets the current <see cref="currentIndex"/> in text.
         /// This assumes the text is stored as 16-bit code units.
         /// </summary>
-        /// <exception cref="IndexOutOfRangeException">if an invalid value is
+        /// <exception cref="ArgumentOutOfRangeException">if an invalid value is
         ///            supplied. i.e. value is out of bounds.</exception>
         public override int Index
         {
@@ -137,7 +133,7 @@ namespace ICU4N.Impl
             {
                 if (value < 0 || value > replaceable.Length)
                 {
-                    throw new IndexOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
                 this.currentIndex = value;
             }
@@ -179,14 +175,18 @@ namespace ICU4N.Impl
 
         // ICU4N specific - moved setter to the Index property
 
-        public override int GetText(char[] fillIn, int offset)
+        public override int GetText(char[] destination, int offset)
         {
+            // ICU4N: Reworked guard clauses
+            if (destination == null)
+                throw new ArgumentNullException(nameof(destination));
             int length = replaceable.Length;
-            if (offset < 0 || offset + length > fillIn.Length)
-            {
-                throw new IndexOutOfRangeException(length.ToString());
-            }
-            replaceable.CopyTo(0, fillIn, offset, length);
+            if (offset < 0 || offset > length)
+                throw new ArgumentOutOfRangeException(nameof(offset));
+            if (offset + length > destination.Length)
+                throw new ArgumentException($"Not enough space in the destination array: {length}", nameof(destination));
+
+            replaceable.CopyTo(0, destination, offset, length);
             return length;
         }
 
@@ -195,7 +195,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Replacable object
         /// </summary>
-        private IReplaceable replaceable;
+        private readonly IReplaceable replaceable;
         /// <summary>
         /// Current currentIndex
         /// </summary>

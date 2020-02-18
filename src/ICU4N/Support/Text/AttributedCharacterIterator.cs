@@ -11,7 +11,7 @@ namespace ICU4N.Support.Text
     /// their limits. Runs are defined as ranges of characters that all have the same
     /// attributes with the same values.
     /// </summary>
-    public abstract class AttributedCharacterIterator : CharacterIterator
+    internal abstract class AttributedCharacterIterator : CharacterIterator
     {
         /// <summary>
         /// Returns a set of attributes present in the <see cref="AttributedCharacterIterator"/>.
@@ -89,10 +89,10 @@ namespace ICU4N.Support.Text
     /// <summary>
     /// Defines keys for text attributes.
     /// </summary>
-    public class AttributedCharacterIteratorAttribute //implements Serializable
+    internal class AttributedCharacterIteratorAttribute //implements Serializable
     {
 
-        private static readonly long serialVersionUID = -9142742483513960612L;
+        //private static readonly long serialVersionUID = -9142742483513960612L;
 
         /// <summary>
         /// This attribute marks segments from an input method. Most input
