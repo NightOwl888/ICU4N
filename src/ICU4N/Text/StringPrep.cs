@@ -578,7 +578,7 @@ namespace ICU4N.Text
         /// <returns>A <see cref="StringBuffer"/> containing the output.</returns>
         /// <exception cref="StringPrepParseException">An exception occurs when parsing a string is invalid.</exception>
         /// <stable>ICU 2.8</stable>
-        public StringBuffer Prepare(UCharacterIterator src, StringPrepOptions options)
+        internal StringBuffer Prepare(UCharacterIterator src, StringPrepOptions options) // ICU4N TODO: API Changed from public to internal until UCharacterIterator can be converted into an enumerator
         {
 
             // map 

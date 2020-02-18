@@ -822,7 +822,7 @@ namespace ICU4N.Text
         /// <param name="mode">The normalization mode.</param>
         /// <draft>ICU4N 60.1</draft>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public Normalizer(UCharacterIterator iter, NormalizerMode mode)
+        internal Normalizer(UCharacterIterator iter, NormalizerMode mode) // ICU4N specific: Changed from public to internal, as the functionality is obsolete
             : this(iter, mode, NormalizerUnicodeVersion.Default)
         {
         }
@@ -841,7 +841,7 @@ namespace ICU4N.Text
         /// </param>
         /// <draft>ICU4N 60.1</draft>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public Normalizer(UCharacterIterator iter, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        internal Normalizer(UCharacterIterator iter, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion) // ICU4N specific: Changed from public to internal, as the functionality is obsolete
         {
             this.text = (UCharacterIterator)iter.Clone();
             this.mode = GetModeInstance(mode);
@@ -2730,7 +2730,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
-        public void SetText(UCharacterIterator newText)
+        internal void SetText(UCharacterIterator newText) // ICU4N specific: Changed from public to internal, as the functionality is obsolete
         {
             UCharacterIterator newIter = (UCharacterIterator)newText.Clone();
             text = newIter ?? throw new InvalidOperationException("Could not create a new UCharacterIterator");

@@ -52,7 +52,7 @@
     /// </code>
     /// </remarks>
     /// <stable>ICU 2.4</stable>
-    public interface IUForwardCharacterIterator
+    internal interface IUForwardCharacterIterator // ICU4N TODO: API Changed from public to internal until this can be converted into an enumerator
     {
         /// <summary>
         /// Returns the UTF16 code unit at index, and increments to the next
@@ -81,7 +81,7 @@
     /// <summary>
     /// <see cref="IUForwardCharacterIterator"/> constants.
     /// </summary>
-    public static class UForwardCharacterIterator
+    internal static class UForwardCharacterIterator // ICU4N TODO: API Changed from public to internal until this can be converted into an enumerator
     {
         /// <summary>
         /// Indicator that we have reached the ends of the UTF16 text.

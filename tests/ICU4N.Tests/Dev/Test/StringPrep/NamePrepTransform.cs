@@ -87,18 +87,18 @@ namespace ICU4N.Dev.Test.StringPrep
             get { return mapTransform.IsReady; }
         }
 
-        public StringBuffer Prepare(UCharacterIterator src,
-                                           StringPrepOptions options)
+        internal StringBuffer Prepare(UCharacterIterator src,
+                                           StringPrepOptions options) // ICU4N TODO: API Changed from public to internal until UCharacterIterator can be converted into an enumerator
         {
             return Prepare(src.GetText(), options);
         }
 
-        private String Map(String src, StringPrepOptions options)
+        private string Map(string src, StringPrepOptions options)
         {
             // map 
             bool allowUnassigned = ((options & ALLOW_UNASSIGNED) > 0);
             // disable test
-            String caseMapOut = mapTransform.Transliterate(src);
+            string caseMapOut = mapTransform.Transliterate(src);
             UCharacterIterator iter = UCharacterIterator.GetInstance(caseMapOut);
             int ch;
             while ((ch = iter.NextCodePoint()) != UCharacterIterator.Done)
@@ -111,11 +111,11 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             return caseMapOut;
         }
-        public StringBuffer Prepare(String src, StringPrepOptions options)
+        public StringBuffer Prepare(string src, StringPrepOptions options)
         {
 
             int ch;
-            String mapOut = Map(src, options);
+            string mapOut = Map(src, options);
             UCharacterIterator iter = UCharacterIterator.GetInstance(mapOut);
 
             UCharacterDirection direction = UCharacterDirectionExtensions.CharDirectionCount,
@@ -174,23 +174,23 @@ namespace ICU4N.Dev.Test.StringPrep
 
         private class MapTransform
         {
-            private Object translitInstance;
+            private object translitInstance;
             private MethodInfo translitMethod;
             private bool isReady;
 
-            internal MapTransform(String id, String rule, int direction)
+            internal MapTransform(string id, string rule, int direction)
             {
                 isReady = Initialize(id, rule, direction);
             }
 
-            internal bool Initialize(String id, String rule, int direction)
+            internal bool Initialize(string id, string rule, int direction)
             {
                 try
                 {
                     Type cls = Type.GetType("ICU4N.Text.Transliterator, ICU4N.Transliterator");
-                    MethodInfo createMethod = cls.GetMethod("CreateFromRules", new Type[] { typeof(String), typeof(String), typeof(int) });
+                    MethodInfo createMethod = cls.GetMethod("CreateFromRules", new Type[] { typeof(string), typeof(string), typeof(int) });
                     translitInstance = createMethod.Invoke(null, new object[] { id, rule, direction });
-                    translitMethod = cls.GetMethod("Transliterate", new Type[] { typeof(String) });
+                    translitMethod = cls.GetMethod("Transliterate", new Type[] { typeof(string) });
                 }
                 catch (Exception e)
                 {
@@ -204,16 +204,16 @@ namespace ICU4N.Dev.Test.StringPrep
                 get { return isReady; }
             }
 
-            internal String Transliterate(String text)
+            internal string Transliterate(string text)
             {
                 if (!isReady)
                 {
                     throw new InvalidOperationException("Transliterator is not ready");
                 }
-                String result = null;
+                string result = null;
                 try
                 {
-                    result = (String)translitMethod.Invoke(translitInstance, new object[] { text });
+                    result = (string)translitMethod.Invoke(translitInstance, new object[] { text });
                 }
                 catch (TargetInvocationException ite)
                 {
