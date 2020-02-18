@@ -582,7 +582,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="source">The new source string iterator for iteration.</param>
         /// <stable>ICU 2.8</stable>
-        public void SetText(UCharacterIterator source)
+        internal void SetText(UCharacterIterator source) // ICU4N TODO: API Changed from public to internal until UCharacterIterator can be converted into an enumerator
         {
             string_ = source.GetText(); // TODO: do we need to remember the source string in a field?
                                         // Note: In C++, we just setText(source.getText()).
@@ -635,7 +635,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="source">The new source string iterator for iteration.</param>
         /// <stable>ICU 2.8</stable>
-        internal void SetText(CharacterIterator source)
+        internal void SetText(CharacterIterator source) // ICU4N: Changed from public to internal, and replaced with ICharacterEnumerator overload
         {
             // Note: In C++, we just setText(source.getText()).
             // In Java, we actually operate on a character iterator.

@@ -193,7 +193,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public static StringBuffer ConvertToASCII(UCharacterIterator src, IDNA2003Options options)
+        internal static StringBuffer ConvertToASCII(UCharacterIterator src, IDNA2003Options options) // ICU4N TODO: API Changed from public to internal until UCharacterIterator can be converted into an enumerator
         {
 
             bool[]
@@ -360,7 +360,7 @@ namespace ICU4N.Impl
             return result;
         }
 
-        public static StringBuffer ConvertToUnicode(UCharacterIterator src, IDNA2003Options options)
+        internal static StringBuffer ConvertToUnicode(UCharacterIterator src, IDNA2003Options options) // ICU4N TODO: API Changed from public to internal until UCharacterIterator can be converted into an enumerator
         {
             bool[] caseFlags = null;
 

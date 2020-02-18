@@ -7,7 +7,7 @@ namespace ICU4N.Impl.Coll
     /// Handles normalized text, with length or NUL-terminated.
     /// Unnormalized text is handled by a subclass.
     /// </summary>
-    public class IterCollationIterator : CollationIterator
+    internal class IterCollationIterator : CollationIterator // ICU4N TODO: API Changed from public to internal until this can be converted into an enumerator
     {
         public IterCollationIterator(CollationData d, bool numeric, UCharacterIterator ui)
             : base(d, numeric)

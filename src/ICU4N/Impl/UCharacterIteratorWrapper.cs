@@ -10,7 +10,7 @@ namespace ICU4N.Impl
     /// <see cref="ICharacterEnumerator"/> protocol.
     /// </summary>
     /// <author>ram</author>
-    public class UCharacterEnumeratorWrapper : ICharacterEnumerator
+    internal class UCharacterEnumeratorWrapper : ICharacterEnumerator // ICU4N TODO: API Changed from public to internal until UCharacterIterator can be converted into an enumerator
     {
         public UCharacterEnumeratorWrapper(UCharacterIterator iter)
         {

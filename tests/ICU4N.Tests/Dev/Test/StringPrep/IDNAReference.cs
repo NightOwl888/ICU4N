@@ -8,7 +8,7 @@ using StringBuffer = System.Text.StringBuilder;
 namespace ICU4N.Dev.Test.StringPrep
 {
     /// <author>ram</author>
-    public class IDNAReference
+    internal static class IDNAReference // ICU4N: Marked internal rather than public, since some of the API members were marked internal
     {
         private static char[] ACE_PREFIX = new char[] { (char)0x0078, (char)0x006E, (char)0x002d, (char)0x002d };
         private const int ACE_PREFIX_LENGTH = 4;

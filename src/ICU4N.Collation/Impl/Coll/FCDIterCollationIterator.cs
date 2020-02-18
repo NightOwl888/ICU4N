@@ -10,7 +10,7 @@ namespace ICU4N.Impl.Coll
     /// <summary>
     /// Incrementally checks the input text for FCD and normalizes where necessary.
     /// </summary>
-    public sealed class FCDIterCollationIterator : IterCollationIterator
+    internal sealed class FCDIterCollationIterator : IterCollationIterator // ICU4N TODO: API Changed from public to internal until this can be converted into an enumerator
     {
         public FCDIterCollationIterator(CollationData data, bool numeric,
             UCharacterIterator ui, int startIndex)

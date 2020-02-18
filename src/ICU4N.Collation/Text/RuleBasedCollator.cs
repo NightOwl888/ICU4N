@@ -241,7 +241,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <seealso cref="CollationElementIterator"/>
         /// <stable>ICU 2.8</stable>
-        public CollationElementIterator GetCollationElementIterator(UCharacterIterator source)
+        internal CollationElementIterator GetCollationElementIterator(UCharacterIterator source) // ICU4N TODO: API Changed from public to internal until UCharacterIterator can be converted into an enumerator
         {
             InitMaxExpansions();
             return new CollationElementIterator(source, this);

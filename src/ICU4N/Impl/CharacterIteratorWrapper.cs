@@ -10,7 +10,7 @@ namespace ICU4N.Impl
     /// <see cref="UCharacterIterator"/> protocol
     /// </summary>
     /// <author>ram</author>
-    public class CharacterEnumeratorWrapper : UCharacterIterator
+    internal class CharacterEnumeratorWrapper : UCharacterIterator // ICU4N TODO: API Changed from public to internal until UCharacterIterator can be converted into an enumerator
     {
         private ICharacterEnumerator iterator;
         // ICU4N: Since our ICharacterEnumerator's EndIndex is the end of the string

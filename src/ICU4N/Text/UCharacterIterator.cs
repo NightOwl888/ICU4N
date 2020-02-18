@@ -18,7 +18,7 @@ namespace ICU4N.Text
     /// </summary>
     /// <author>Ram</author>
     /// <stable>ICU 2.4</stable>
-    public abstract class UCharacterIterator : IUForwardCharacterIterator // ICU4N TODO: API Make into enumerator ?
+    internal abstract class UCharacterIterator : IUForwardCharacterIterator // ICU4N TODO: API Changed from public to internal until this can be converted into an enumerator
 #if FEATURE_CLONEABLE
         , ICloneable
 #endif

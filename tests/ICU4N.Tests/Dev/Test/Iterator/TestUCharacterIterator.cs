@@ -38,7 +38,7 @@ namespace ICU4N.Dev.Test.Iterator
                 }
             }
         }
-        public void getText(UCharacterIterator iterator, String result)
+        internal void getText(UCharacterIterator iterator, String result)
         {
             /* test getText */
             char[] buf = new char[1];
@@ -342,7 +342,7 @@ namespace ICU4N.Dev.Test.Iterator
                 Errln("could not clone the iterator");
             }
         }
-        public void previousNext(UCharacterIterator iter)
+        internal void previousNext(UCharacterIterator iter)
         {
 
             int[] expect ={

@@ -13,7 +13,7 @@ namespace ICU4N.Impl
     // moved up into UCharacterIterator.
     // 
     // What are first, last, and getBeginIndex doing here?!?!?!
-    public class ReplaceableUCharacterIterator : UCharacterIterator
+    internal class ReplaceableUCharacterIterator : UCharacterIterator // ICU4N TODO: API Changed from public to internal until this can be converted into an enumerator
     {
         // public constructor ------------------------------------------------------
 

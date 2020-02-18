@@ -4,7 +4,7 @@ using System;
 namespace ICU4N.Impl
 {
     /// <author>Doug Felt</author>
-    public sealed class UCharArrayIterator : UCharacterIterator
+    internal sealed class UCharArrayIterator : UCharacterIterator // ICU4N TODO: API Changed from public to internal until this can be converted into an enumerator
     {
         private readonly char[] text;
         private readonly int start;
