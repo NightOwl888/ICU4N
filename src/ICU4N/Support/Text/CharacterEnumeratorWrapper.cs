@@ -87,7 +87,7 @@ namespace ICU4N.Support.Text
         /// <inheritdoc/>
         public override char SetIndex(int location)
         {
-            if (location < BeginIndex || location > EndIndex)
+            if (location < BeginIndex || location > EndIndex + 1)
                 throw new ArgumentException("Invalid index");
 
             pastEnd = !enumerator.TrySetIndex(location);
