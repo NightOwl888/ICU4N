@@ -102,7 +102,7 @@ namespace ICU4N.Text
         /// text, but points to the same logical position in the text.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public int ContextLimit { get; set; }
+        public int ContextLimit { get; set; } // ICU4N TODO: API - Change to ContextLength
 
         /// <summary>
         /// Beginning index, inclusive, of the text to be transliteratd.
@@ -120,7 +120,7 @@ namespace ICU4N.Text
         /// logical position in the text.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public int Limit { get; set; }
+        public int Limit { get; set; } // ICU4N TODO: API - Change to ContextLength
 
         /// <summary>
         /// Constructs a <see cref="TransliterationPosition"/> object with <see cref="Start"/>, <see cref="Limit"/>,
