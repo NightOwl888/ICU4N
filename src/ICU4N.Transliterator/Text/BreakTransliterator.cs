@@ -1,6 +1,8 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Support.Text;
+using J2N.Text;
 using System;
+using System.Collections;
 using System.Threading;
 
 namespace ICU4N.Text
@@ -74,7 +76,7 @@ namespace ICU4N.Text
                 boundaryCount = 0;
                 int boundary = 0;
                 GetBreakIterator(); // Lazy-create it if necessary
-                bi.SetText(new ReplaceableCharacterIterator(text, pos.Start, pos.Limit, pos.Start));
+                bi.SetText(new ReplaceableCharacterEnumerator(text, pos.Start, pos.Limit, pos.Start));
                 // TODO: fix clumsy workaround used below.
                 /*
                 char[] tempBuffer = new char[text.length()];
@@ -154,8 +156,8 @@ namespace ICU4N.Text
             */
         }
 
-        // Hack, just to get a real character iterator.
-        internal sealed class ReplaceableCharacterIterator : CharacterIterator
+        // Hack, just to get a real character enumerator.
+        private class ReplaceableCharacterEnumerator : ICharacterEnumerator
         {
             private IReplaceable text;
             private int begin;
@@ -167,7 +169,7 @@ namespace ICU4N.Text
             ///// Constructs an iterator with an initial index of 0.
             ///// </summary>
             ///// <param name="text">The <see cref="string"/> to be iterated over.</param>
-            //public ReplaceableCharacterIterator(IReplaceable text)
+            //public ReplaceableCharacterEnumerator(IReplaceable text)
             //    : this(text, 0)
             //{
             //}
@@ -177,7 +179,7 @@ namespace ICU4N.Text
             ///// </summary>
             ///// <param name="text">The <see cref="string"/> to be iterated over.</param>
             ///// <param name="pos">Initial iterator position.</param>
-            //public ReplaceableCharacterIterator(IReplaceable text, int pos)
+            //public ReplaceableCharacterEnumerator(IReplaceable text, int pos)
             //    : this(text, 0, text.Length, pos)
             //{
             //}
@@ -190,7 +192,7 @@ namespace ICU4N.Text
             /// <param name="begin">Index of the first character.</param>
             /// <param name="end">Index of the character following the last character.</param>
             /// <param name="pos">Initial iterator position.</param>
-            public ReplaceableCharacterIterator(IReplaceable text, int begin, int end, int pos)
+            public ReplaceableCharacterEnumerator(IReplaceable text, int begin, int end, int pos)
             {
                 this.text = text ?? throw new ArgumentNullException(nameof(text));
 
@@ -212,12 +214,12 @@ namespace ICU4N.Text
             /// <summary>
             /// Reset this iterator to point to a new string.  This public
             /// method is used by classes that want to avoid allocating
-            /// new <see cref="ReplaceableCharacterIterator"/> objects every 
-            /// time their <see cref="SetText(IReplaceable)"/> method
+            /// new <see cref="ReplaceableCharacterEnumerator"/> objects every 
+            /// time their <see cref="Reset(IReplaceable)"/> method
             /// is called.
             /// </summary>
             /// <param name="text">The <see cref="string"/> to be iterated over.</param>
-            public void SetText(IReplaceable text)
+            public void Reset(IReplaceable text)
             {
                 this.text = text ?? throw new ArgumentNullException(nameof(text));
                 this.begin = 0;
@@ -226,20 +228,20 @@ namespace ICU4N.Text
             }
 
             /// <summary>
-            /// Implements <see cref="CharacterIterator.First()"/> for <see cref="string"/>.
+            /// Implements <see cref="ICharacterEnumerator.MoveFirst()"/> for <see cref="string"/>.
             /// </summary>
-            /// <seealso cref="CharacterIterator.First()"/>
-            public override char First()
+            /// <seealso cref="ICharacterEnumerator.MoveFirst()"/>
+            public bool MoveFirst()
             {
                 pos = begin;
-                return Current;
+                return true;
             }
 
             /// <summary>
-            /// Implements <see cref="CharacterIterator.Last()"/> for <see cref="string"/>.
+            /// Implements <see cref="ICharacterEnumerator.MoveLast()"/> for <see cref="string"/>.
             /// </summary>
-            /// <seealso cref="CharacterIterator.Last()"/>
-            public override char Last()
+            /// <seealso cref="ICharacterEnumerator.MoveLast()"/>
+            public bool MoveLast()
             {
                 if (end != begin)
                 {
@@ -249,113 +251,103 @@ namespace ICU4N.Text
                 {
                     pos = end;
                 }
-                return Current;
+                return true;
             }
 
             /// <summary>
-            /// Implements <see cref="CharacterIterator.SetIndex(int)"/> for <see cref="string"/>.
+            /// Implements <see cref="ICharacterEnumerator.Index"/> for <see cref="string"/>.
             /// </summary>
-            /// <seealso cref="CharacterIterator.SetIndex(int)"/>
-            public override char SetIndex(int p)
+            /// <seealso cref="ICharacterEnumerator.Index"/>
+            public int Index
             {
-                if (p < begin || p > end)
+                get => pos;
+                set
                 {
-                    throw new ArgumentException("Invalid index");
-                }
-                pos = p;
-                return Current;
-            }
-
-            /// <summary>
-            /// Implements <see cref="CharacterIterator.Current"/> for <see cref="string"/>.
-            /// </summary>
-            /// <seealso cref="CharacterIterator.Current"/>
-            public override char Current
-            {
-                get
-                {
-                    if (pos >= begin && pos < end)
+                    if (value < begin || value > end)
                     {
-                        return text[pos];
+                        throw new ArgumentException("Invalid index");
                     }
-                    else
-                    {
-                        return Done;
-                    }
+                    pos = value;
                 }
             }
 
-            /// <summary>
-            /// Implements <see cref="CharacterIterator.Next()"/> for <see cref="string"/>.
-            /// </summary>
-            /// <seealso cref="CharacterIterator.Next()"/>
-            public override char Next()
+            public bool TrySetIndex(int value)
             {
-                if (pos < end - 1)
+                if (value < StartIndex)
+                {
+                    pos = StartIndex;
+                    return false;
+                }
+                if (value > EndIndex)
+                {
+                    pos = end;
+                    return false;
+                }
+                pos = value;
+                return true;
+            }
+
+            public char Current => pos < text.Length ? text[pos] : unchecked((char)-1);
+
+            object IEnumerator.Current => Current;
+
+            /// <summary>
+            /// Implements <see cref="IEnumerator.MoveNext()"/> for <see cref="string"/>.
+            /// </summary>
+            /// <seealso cref="IEnumerator.MoveNext()"/>
+            public bool MoveNext()
+            {
+                if (pos < end /*- 1*/)
                 {
                     pos++;
-                    return text[pos];
+                    return true;
                 }
                 else
                 {
                     pos = end;
-                    return Done;
+                    return false;
                 }
             }
 
             /// <summary>
-            /// Implements <see cref="CharacterIterator.Previous()"/> for <see cref="string"/>.
+            /// Implements <see cref="ICharacterEnumerator.MovePrevious()"/> for <see cref="string"/>.
             /// </summary>
-            /// <seealso cref="CharacterIterator.Previous()"/>
-            public override char Previous()
+            /// <seealso cref="ICharacterEnumerator.MovePrevious()"/>
+            public bool MovePrevious()
             {
                 if (pos > begin)
                 {
                     pos--;
-                    return text[pos];
+                    return true;
                 }
                 else
                 {
-                    return Done;
+                    return false;
                 }
             }
 
-            /// <summary>
-            /// Implements <see cref="CharacterIterator.BeginIndex"/> for <see cref="string"/>.
-            /// </summary>
-            /// <seealso cref="CharacterIterator.BeginIndex"/>
-            public override int BeginIndex => begin;
+            public int StartIndex => begin;
+
+            public int EndIndex => end /*- (end == begin ? 0 : 1)*/;
+
+            public int Length => end - begin;
 
             /// <summary>
-            /// Implements <see cref="CharacterIterator.EndIndex"/> for <see cref="string"/>.
+            /// Compares the equality of two <see cref="ReplaceableCharacterEnumerator"/> objects.
             /// </summary>
-            /// <seealso cref="CharacterIterator.EndIndex"/>
-            public override int EndIndex => end;
-
-            /// <summary>
-            /// Implements <see cref="CharacterIterator.Index"/> for <see cref="string"/>.
-            /// </summary>
-            /// <seealso cref="CharacterIterator.Index"/>
-            public override int Index => pos;
-
-            /// <summary>
-            /// Compares the equality of two <see cref="ReplaceableCharacterIterator"/> objects.
-            /// </summary>
-            /// <param name="obj">The <see cref="ReplaceableCharacterIterator"/> object to be compared with.</param>
+            /// <param name="obj">The <see cref="ReplaceableCharacterEnumerator"/> object to be compared with.</param>
             /// <returns><c>true</c> if the given obj is the same as this
-            /// <see cref="ReplaceableCharacterIterator"/> object; <c>false</c> otherwise.</returns>
+            /// <see cref="ReplaceableCharacterEnumerator"/> object; <c>false</c> otherwise.</returns>
             public override bool Equals(object obj)
             {
                 if (this == obj)
                 {
                     return true;
                 }
-                if (!(obj is ReplaceableCharacterIterator))
+                if (!(obj is ReplaceableCharacterEnumerator that))
                 {
                     return false;
                 }
-
-                ReplaceableCharacterIterator that = (ReplaceableCharacterIterator)obj;
 
                 if (GetHashCode() != that.GetHashCode())
                 {
@@ -385,12 +377,17 @@ namespace ICU4N.Text
             /// Creates a copy of this iterator.
             /// </summary>
             /// <returns>A copy of this iterator.</returns>
-            public override object Clone()
+            public object Clone()
             {
-                ReplaceableCharacterIterator other = (ReplaceableCharacterIterator)base.MemberwiseClone();
-                return other;
+                return MemberwiseClone();
             }
 
+            public void Dispose() { }
+
+            void IEnumerator.Reset()
+            {
+                pos = StartIndex;
+            }
         }
 
         /// <seealso cref="Transliterator.AddSourceTargetSet(UnicodeSet, UnicodeSet, UnicodeSet)"/>
