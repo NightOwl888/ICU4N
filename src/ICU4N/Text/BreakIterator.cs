@@ -578,10 +578,6 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public abstract void SetText(ICharacterEnumerator newText);
 
-        // ICU4N: This overload mimics the original method, but uses the CharacterEnumeratorWrapper (a CharacterIterator subclass)
-        // to do a conversion between the iteration types.
-        internal abstract void SetText(CharacterIterator newText);
-
         /// <icu/>
         /// <stable>ICU 2.4</stable>
         internal const int KIND_CHARACTER = 0; // ICU4N specific - constant for obsolete API - changed from public to internal
