@@ -652,7 +652,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="newText">An iterator over the text to analyze.</param>
         /// <stable>ICU 2.0</stable>
-        internal override void SetText(CharacterIterator newText)
+        private void SetText(CharacterIterator newText)
         {
             if (newText != null)
             {

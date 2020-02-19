@@ -66,10 +66,6 @@ namespace ICU4N.Dev.Test.Rbbi
             public override void SetText(ICharacterEnumerator newText)
             {
             }
-
-            internal override void SetText(CharacterIterator newText)
-            {
-            }
         }
 
         private BreakIterator bi;

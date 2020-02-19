@@ -267,11 +267,6 @@ namespace ICU4N.Impl
             @delegate.SetText(newText);
         }
 
-        internal override void SetText(CharacterIterator newText)
-        {
-            @delegate.SetText(newText);
-        }
-
         // ICU4N: De-nested Builder and renamed SimpleFilteredSentenceBreakIteratorBuilder
     }
 

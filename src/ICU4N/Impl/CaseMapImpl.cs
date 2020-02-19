@@ -395,11 +395,6 @@ namespace ICU4N.Impl
             {
                 length = newText.Length;
             }
-
-            internal override void SetText(CharacterIterator newText)
-            {
-                length = newText.EndIndex;
-            }
         }
 
         // ICU4N specific - AppendCodePoint(IAppendable a, int c) moved to CaseMapImplExtension.tt
