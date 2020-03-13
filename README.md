@@ -27,7 +27,6 @@ There are several other features too numerous to mention that are also functioni
 ## Partially Functioning
 
 1. ULocale (we recommend using `System.Globalization.CultureInfo` only to set cultures/locales for the time being)
-2. MessageFormat (only supports ChoiceFormat currently)
 
 
 ## NuGet Packages
