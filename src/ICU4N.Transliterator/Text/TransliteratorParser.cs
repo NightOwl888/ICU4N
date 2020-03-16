@@ -9,6 +9,7 @@ using Data = ICU4N.Text.RuleBasedTransliterator.Data;
 using StringBuffer = System.Text.StringBuilder;
 using J2N.Collections;
 using J2N.Text;
+using ParsePosition = ICU4N.Support.Text.ParsePosition;
 
 namespace ICU4N.Text
 {
