@@ -22,7 +22,11 @@ namespace ICU4N.Support
         /// <see cref="FlagsAttribute"/> and <paramref name="options"/> matches more than one enum symbol.</exception>
         public static T AsFlagsToEnum<T>(this int options, T defaultValue) where T : Enum
         {
+#if NET40
+            bool isFlagsEnum = typeof(T).GetCustomAttributes(true) != null;
+#else
             bool isFlagsEnum = typeof(T).GetTypeInfo().GetCustomAttribute<FlagsAttribute>(true) != null;
+#endif
             int result = 0;
             bool isSet = false;
             foreach (int option in Enum.GetValues(typeof(T)))

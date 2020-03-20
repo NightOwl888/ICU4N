@@ -719,7 +719,11 @@ namespace ICU4N.Impl
 
         protected virtual Assembly Assembly
         {
+#if NET40
+            get { return GetType().Assembly; }
+#else
             get { return GetType().GetTypeInfo().Assembly; }
+#endif
         }
 
         public override string ToString()

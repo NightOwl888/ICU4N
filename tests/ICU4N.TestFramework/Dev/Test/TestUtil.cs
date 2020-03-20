@@ -23,7 +23,11 @@ namespace ICU4N.Dev.Test
             Stream input = null;
             try
             {
+#if NET40
+                input = typeof(TestUtil).Assembly.GetManifestResourceStream(DATA_PATH + name);
+#else
                 input = typeof(TestUtil).GetTypeInfo().Assembly.GetManifestResourceStream(DATA_PATH + name);
+#endif
             }
             catch (Exception t)
             {

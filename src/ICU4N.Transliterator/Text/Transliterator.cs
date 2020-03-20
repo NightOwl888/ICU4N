@@ -428,7 +428,11 @@ namespace ICU4N.Text
     public abstract class Transliterator : IStringTransform
     {
         // ICU4N specific - need to use the current assembly for resources
+#if NET40
+        public static readonly Assembly ICU_DATA_CLASS_LOADER = typeof(Transliterator).Assembly;
+#else
         public static readonly Assembly ICU_DATA_CLASS_LOADER = typeof(Transliterator).GetTypeInfo().Assembly;
+#endif
 
         /// <summary>
         /// Direction constant indicating the forward direction in a transliterator,

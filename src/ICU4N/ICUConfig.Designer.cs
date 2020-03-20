@@ -40,7 +40,11 @@ namespace ICU4N {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
+#if NET40
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ICU4N.ICUConfig", typeof(ICUConfig).Assembly);
+#else
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ICU4N.ICUConfig", typeof(ICUConfig).GetTypeInfo().Assembly);
+#endif
                     resourceMan = temp;
                 }
                 return resourceMan;

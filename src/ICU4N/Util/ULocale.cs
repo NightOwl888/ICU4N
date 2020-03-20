@@ -4012,7 +4012,11 @@ namespace ICU4N.Util
                 }
                 catch (FormatException e)
                 {
+#if NET40
+                    throw new IllformedLocaleException(e.ToString(), e);
+#else
                     throw new IllformedLocaleException(e.ToString(), e.HResult);
+#endif
                 }
                 return this;
             }
@@ -4713,7 +4717,11 @@ namespace ICU4N.Util
             // this method returns false.
             public static bool IsOriginalDefaultLocale(CultureInfo loc)
             {
+#if NET40
+                return loc.Equals(CultureInfo.CurrentCulture);
+#else
                 return loc.Equals(CultureInfo.DefaultThreadCurrentCulture);
+#endif
             }
 
         }

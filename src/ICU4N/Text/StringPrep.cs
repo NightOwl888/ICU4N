@@ -211,7 +211,11 @@ namespace ICU4N.Text
             "rfc4518ci",    /* RFC4518_LDAP_CI */
         };
 
+#if NET40
+        private static readonly WeakReference[] CACHE = new WeakReference[(int)MAX_PROFILE + 1];
+#else
         private static readonly WeakReference<StringPrep>[] CACHE = new WeakReference<StringPrep>[(int)MAX_PROFILE + 1];
+#endif
 
         private const int UNASSIGNED = 0x0000;
         private const int MAP = 0x0001;
@@ -345,11 +349,19 @@ namespace ICU4N.Text
             // per type and store it in the internal cache.
             lock (CACHE)
             {
+#if NET40
+                WeakReference @ref = CACHE[(int)profile];
+#else
                 WeakReference<StringPrep> @ref = CACHE[(int)profile];
+#endif
                 if (@ref != null)
                 {
+#if NET40
+                    instance = (StringPrep) @ref.Target;
+#else
                     //instance = @ref.Get();
                     @ref.TryGetTarget(out instance);
+#endif
                 }
 
                 if (instance == null)
@@ -368,7 +380,11 @@ namespace ICU4N.Text
                     }
                     if (instance != null)
                     {
+#if NET40
+                        CACHE[(int)profile] = new WeakReference(instance);
+#else
                         CACHE[(int)profile] = new WeakReference<StringPrep>(instance);
+#endif
                     }
                 }
             }
