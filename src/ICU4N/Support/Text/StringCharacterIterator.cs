@@ -5,7 +5,7 @@ namespace ICU4N.Support.Text
     /// <summary>
     /// An implementation of <see cref="CharacterIterator"/> for strings.
     /// </summary>
-    internal sealed class StringCharacterIterator : CharacterIterator
+    public sealed class StringCharacterIterator : CharacterIterator
     {
         private string str;
 
