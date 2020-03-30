@@ -5,7 +5,7 @@
     /// iteration starts at the begin index in the group of characters and continues
     /// to one index before the end index.
     /// </summary>
-    internal abstract class CharacterIterator
+    public abstract class CharacterIterator
 #if FEATURE_CLONEABLE
         : ICloneable
 #endif
