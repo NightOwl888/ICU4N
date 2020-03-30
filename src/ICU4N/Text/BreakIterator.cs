@@ -578,6 +578,22 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public abstract void SetText(ICharacterEnumerator newText);
 
+        /// <summary>
+        /// Sets the iterator to analyze a new piece of text.  The
+        /// <see cref="BreakIterator"/> is passed a <see cref="CharacterIterator"/> through which
+        /// it will access the text itself.  The current iteration
+        /// position is reset to the <see cref="CharacterIterator"/>'s start index.
+        /// (The old iterator is dropped.)
+        /// </summary>
+        /// <param name="newText">A <see cref="CharacterIterator"/> referring to the text
+        /// to analyze with this BreakIterator (the iterator's current
+        /// position is ignored, but its other state is significant).</param>
+        /// <stable>ICU 2.0</stable>
+        public virtual void SetText(CharacterIterator newText)
+        {
+
+        }
+
         /// <icu/>
         /// <stable>ICU 2.4</stable>
         internal const int KIND_CHARACTER = 0; // ICU4N specific - constant for obsolete API - changed from public to internal
