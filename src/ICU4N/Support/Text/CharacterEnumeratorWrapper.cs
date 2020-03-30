@@ -46,7 +46,7 @@ namespace ICU4N.Support.Text
         public override char First()
         {
             pastEnd = false;
-            if (enumerator.Length != 0 && enumerator.MoveFirst())
+            if (enumerator.MoveFirst())
             {
                 return enumerator.Current;
             }
@@ -57,7 +57,7 @@ namespace ICU4N.Support.Text
         public override char Last()
         {
             pastEnd = false;
-            if (enumerator.Length != 0 && enumerator.MoveLast())
+            if (enumerator.MoveLast())
             {
                 return enumerator.Current;
             }
