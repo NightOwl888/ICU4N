@@ -40,10 +40,6 @@
 #pragma warning disable 1591
 
 using System.Diagnostics.CodeAnalysis;
-#if NET40
-    using MethodImplOptions = J2N.Compatibility.MethodImplOptions;
-    using MethodImplAttribute = J2N.Compatibility.MethodImplAttribute;
-#endif
 
 [assembly: SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "ICU4N.Logging")]
 [assembly: SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed", Scope = "member", Target = "ICU4N.Logging.Logger.#Invoke(ICU4N.Logging.LogLevel,System.Func`1<System.String>,System.Exception,System.Object[])")]

@@ -10,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Numerics;
 using System.Resources;
+using J2N.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text

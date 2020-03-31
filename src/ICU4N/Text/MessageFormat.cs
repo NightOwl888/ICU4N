@@ -11,7 +11,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
-using ParsePosition = ICU4N.Support.Text.ParsePosition;
 
 namespace ICU4N.Text
 {

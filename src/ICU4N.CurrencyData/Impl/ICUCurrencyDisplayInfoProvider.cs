@@ -31,24 +31,24 @@ namespace ICU4N.Impl
                 ICUResourceBundle rb;
                 if (withFallback)
                 {
-#if NET40
-                    rb = ICUResourceBundle.GetBundleInstance(
-                            ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).Assembly, OpenType.LocaleDefaultRoot);
-#else
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
                     rb = ICUResourceBundle.GetBundleInstance(
                             ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LocaleDefaultRoot);
+#else
+                    rb = ICUResourceBundle.GetBundleInstance(
+                            ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).Assembly, OpenType.LocaleDefaultRoot);
 #endif
                 }
                 else
                 {
                     try
                     {
-#if NET40
-                        rb = ICUResourceBundle.GetBundleInstance(
-                                ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).Assembly, OpenType.LocaleOnly);
-#else
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
                         rb = ICUResourceBundle.GetBundleInstance(
                                 ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LocaleOnly);
+#else
+                        rb = ICUResourceBundle.GetBundleInstance(
+                                ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).Assembly, OpenType.LocaleOnly);
 #endif
                     }
                     catch (MissingManifestResourceException)

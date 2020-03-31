@@ -13,7 +13,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using ParsePosition = ICU4N.Support.Text.ParsePosition;
 
 namespace ICU4N.Text
 {

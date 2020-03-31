@@ -105,16 +105,16 @@ namespace ICU4N.Util
             if (IsResourceFor("curr", baseName))
                 return GetAssemblyFor("ICU4N.Impl.ICUCurrencyDisplayInfoProvider, ICU4N.CurrencyData");
             if (IsResourceFor("lang", baseName))
-#if NET40
-                return LocaleDisplayNamesImpl.LangDataTables.impl.GetType().Assembly;
-#else
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
                 return LocaleDisplayNamesImpl.LangDataTables.impl.GetType().GetTypeInfo().Assembly;
+#else
+                return LocaleDisplayNamesImpl.LangDataTables.impl.GetType().Assembly;
 #endif
             if (IsResourceFor("region", baseName))
-#if NET40
-                return LocaleDisplayNamesImpl.RegionDataTables.impl.GetType().Assembly;
-#else
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
                 return LocaleDisplayNamesImpl.RegionDataTables.impl.GetType().GetTypeInfo().Assembly;
+#else
+                return LocaleDisplayNamesImpl.RegionDataTables.impl.GetType().Assembly;
 #endif
             if (IsResourceFor("translit", baseName))
                 return GetAssemblyFor("ICU4N.Text.Transliterator, ICU4N.Transliterator");
@@ -133,10 +133,10 @@ namespace ICU4N.Util
             // ICU4N NOTE: If providerType is null, it means that the assembly the type is in is not referenced in the client project
             if (providerType != null)
             {
-#if NET40
-                return providerType.Assembly;
-#else
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
                 return providerType.GetTypeInfo().Assembly;
+#else
+                return providerType.Assembly;
 #endif
             }
 

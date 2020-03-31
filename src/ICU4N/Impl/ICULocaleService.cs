@@ -719,10 +719,10 @@ namespace ICU4N.Impl
 
         protected virtual Assembly Assembly
         {
-#if NET40
-            get { return GetType().Assembly; }
-#else
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
             get { return GetType().GetTypeInfo().Assembly; }
+#else
+            get { return GetType().Assembly; }
 #endif
         }
 

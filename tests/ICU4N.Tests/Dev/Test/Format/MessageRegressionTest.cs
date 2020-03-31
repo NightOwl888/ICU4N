@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using J2N.Text;
 
 namespace ICU4N.Dev.Test.Format
 {

@@ -4,6 +4,7 @@ using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using J2N.Text;
 
 namespace ICU4N.Text
 {

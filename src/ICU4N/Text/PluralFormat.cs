@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using J2N.Text;
 using static ICU4N.Text.PluralRules;
 using StringBuffer = System.Text.StringBuilder;
 

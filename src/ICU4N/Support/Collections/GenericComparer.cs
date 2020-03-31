@@ -36,10 +36,10 @@ namespace ICU4N.Support.Collections
             // implements IComparable<T>, otherwise use Comparer<T>.Default.
             // This allows the comparison to be customized, but it is not mandatory
             // to implement IComparable<T>.
-#if NET40
-            else if (typeof(IComparable<T>).IsAssignableFrom(genericClosingType))
-#else
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
             else if (typeof(IComparable<T>).GetTypeInfo().IsAssignableFrom(genericClosingType.GetTypeInfo()))
+#else
+            else if (typeof(IComparable<T>).IsAssignableFrom(genericClosingType))
 #endif
             {
                 return new NaturalComparerImpl<T>();
