@@ -328,11 +328,10 @@ namespace ICU4N.Dev.Test.Collate
         {
             // Creating a default collator doesn't work when Korean is the default
             // locale
-#if NETSTANDARD
             CultureInfo oldDefault = CultureInfo.CurrentCulture;
+#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
             CultureInfo.CurrentCulture = new CultureInfo("ko");
 #else
-            CultureInfo oldDefault = System.Threading.Thread.CurrentThread.CurrentCulture;
             System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("ko");
 #endif
 
@@ -343,7 +342,7 @@ namespace ICU4N.Dev.Test.Collate
             if (c == null)
             {
                 Errln("Could not create a Korean collator");
-#if NETSTANDARD
+#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
                 CultureInfo.CurrentCulture = oldDefault;
 #else
                 System.Threading.Thread.CurrentThread.CurrentCulture = oldDefault;
@@ -358,7 +357,7 @@ namespace ICU4N.Dev.Test.Collate
                 Errln("Decomposition is not set to NO_DECOMPOSITION for Korean collator");
             }
 
-#if NETSTANDARD
+#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
             CultureInfo.CurrentCulture = oldDefault;
 #else
             System.Threading.Thread.CurrentThread.CurrentCulture = oldDefault;

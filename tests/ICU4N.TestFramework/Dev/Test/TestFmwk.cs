@@ -80,7 +80,7 @@ namespace ICU4N.Dev.Test
             }
             set
             {
-#if NETSTANDARD
+#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
                 CultureInfo.CurrentCulture = value;
 #else
                 System.Threading.Thread.CurrentThread.CurrentCulture = value;

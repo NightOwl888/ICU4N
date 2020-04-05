@@ -40,7 +40,7 @@ namespace ICU4N.Impl
             {
                 CultureInfo culture = new CultureInfo(newName);
 
-#if NETSTANDARD1_3
+#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
                 // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
                 // to be created, but will be "unknown" languages. We need to manually
                 // ignore these.
@@ -174,7 +174,7 @@ namespace ICU4N.Impl
         //                return null;
         //            }
 
-        //#if NETSTANDARD1_3
+        //#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
         //            // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
         //            // to be created, but will be "unknown" languages. We need to manually
         //            // ignore these.
@@ -215,7 +215,7 @@ namespace ICU4N.Impl
                 return null;
             }
 
-#if NETSTANDARD1_3
+#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
             // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
             // to be created, but will be "unknown" languages. We need to manually
             // ignore these.
@@ -281,7 +281,7 @@ namespace ICU4N.Impl
                     string newName = string.Join("-", segments.Take(i));
                     culture = new CultureInfo(newName);
 
-#if NETSTANDARD1_3
+#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
                     // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
                     // to be created, but will be "unknown" languages. We need to manually
                     // ignore these.

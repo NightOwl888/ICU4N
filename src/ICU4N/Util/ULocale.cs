@@ -624,7 +624,7 @@ namespace ICU4N.Util
             {
                 defaultLocale = newLocale.ToLocale();
                 //Locale.setDefault(defaultLocale);
-#if NETSTANDARD
+#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
                 CultureInfo.CurrentCulture = defaultLocale;
 #else
                 System.Threading.Thread.CurrentThread.CurrentCulture = defaultLocale;
@@ -2232,7 +2232,7 @@ namespace ICU4N.Util
                     //                    try
                     //                    {
                     //                        CultureInfo loc = aLocale.ToLocale();
-                    //#if NETSTANDARD1_3
+                    //#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
                     //                        // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
                     //                        // to be created, but will be "unknown" languages. We need to manually
                     //                        // ignore these.
@@ -2240,7 +2240,7 @@ namespace ICU4N.Util
                     //                        {
                     //#endif
                     //                            parent = LocaleUtility.Fallback(loc);
-                    //#if NETSTANDARD1_3
+                    //#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
                     //                        }
                     //#endif
                     //                    }
@@ -4654,15 +4654,15 @@ namespace ICU4N.Util
                 {
                     CultureInfo culture = new CultureInfo(newName);
 
-//#if NETSTANDARD1_3
-//                    // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
-//                    // to be created, but will be "unknown" languages. We need to manually
-//                    // ignore these.
-//                    if (culture.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
-//                    {
-//                        return null;
-//                    }
-//#endif
+                    //#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
+                    //                    // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
+                    //                    // to be created, but will be "unknown" languages. We need to manually
+                    //                    // ignore these.
+                    //                    if (culture.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
+                    //                    {
+                    //                        return null;
+                    //                    }
+                    //#endif
                     return culture;
                 }
                 catch (CultureNotFoundException)
@@ -4691,14 +4691,14 @@ namespace ICU4N.Util
                 switch (category)
                 {
                     case Category.DISPLAY:
-#if NETSTANDARD
+#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
                         CultureInfo.CurrentUICulture = newLocale;
 #else
                         System.Threading.Thread.CurrentThread.CurrentUICulture = newLocale;
 #endif
                         break;
                     case Category.FORMAT:
-#if NETSTANDARD
+#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
                         CultureInfo.CurrentCulture = newLocale;
 #else
                         System.Threading.Thread.CurrentThread.CurrentCulture = newLocale;

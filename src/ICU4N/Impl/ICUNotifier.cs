@@ -163,7 +163,7 @@ namespace ICU4N.Impl
                 IEventListener[] list;
                 while (true)
                 {
-#if !NETSTANDARD1_3
+#if FEATURE_THREADINTERRUPT
                     try
                     {
 #endif
@@ -181,7 +181,7 @@ namespace ICU4N.Impl
                     {
                         notifier.NotifyListener(list[i]);
                     }
-#if !NETSTANDARD1_3
+#if FEATURE_THREADINTERRUPT
                     }
                     catch (ThreadInterruptedException)
                     {

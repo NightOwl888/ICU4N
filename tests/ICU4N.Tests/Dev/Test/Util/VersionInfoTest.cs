@@ -4,9 +4,7 @@ using J2N.Text;
 using J2N.Threading;
 using NUnit.Framework;
 using System;
-#if !NETCOREAPP1_0
 using System.Threading;
-#endif
 
 namespace ICU4N.Dev.Test.Util
 {
@@ -414,17 +412,17 @@ namespace ICU4N.Dev.Test.Util
             // Wait for the completion
             for (int i = 0; i < workers.Length; i++)
             {
-#if !NETCOREAPP1_0
-                        try
-                        {
+#if FEATURE_THREADINTERRUPT
+                try
+                {
 #endif
-                workers[i].Join();
-#if !NETCOREAPP1_0
-                        }
-                        catch (ThreadInterruptedException e)
-                        {
-                            Errln("A problem in thread execution. " + e.ToString());
-                        }
+                    workers[i].Join();
+#if FEATURE_THREADINTERRUPT
+                }
+                catch (ThreadInterruptedException e)
+                {
+                    Errln("A problem in thread execution. " + e.ToString());
+                }
 #endif
             }
 

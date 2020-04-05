@@ -7,9 +7,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Text;
-#if !NETSTANDARD
 using System.Threading;
-#endif
 using StringBuffer = System.Text.StringBuilder;
 
 //Regression testing of RuleBasedBreakIterator
@@ -487,14 +485,16 @@ namespace ICU4N.Dev.Test.Rbbi
             }
             foreach (var thread in threads)
             {
-#if !NETCOREAPP1_0
-                try {
+#if FEATURE_THREADINTERRUPT
+                try
+                {
 #endif
-                thread.Join();
-#if !NETCOREAPP1_0
-            } catch (ThreadInterruptedException e) {
-                fail(e.ToString());
-            }
+                    thread.Join();
+#if FEATURE_THREADINTERRUPT
+                }
+                    catch (ThreadInterruptedException e) {
+                    fail(e.ToString());
+                }
 #endif
             }
 

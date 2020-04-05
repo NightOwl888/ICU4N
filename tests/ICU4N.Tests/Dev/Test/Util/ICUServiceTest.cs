@@ -627,12 +627,12 @@ namespace ICU4N.Dev.Test.Util
                 ls.RegisterObject("Boo", "en_BOO");
                 Logln("...done");
 
-#if !NETCOREAPP1_0
+#if FEATURE_THREADINTERRUPT
                 try
                 {
 #endif
                 Thread.Sleep(100);
-#if !NETCOREAPP1_0
+#if FEATURE_THREADINTERRUPT
                 }
                 catch (ThreadInterruptedException e)
                 {

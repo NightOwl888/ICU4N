@@ -34,23 +34,23 @@ namespace ICU4N.Dev.Test.Translit
             long expectedCount = 0;
             foreach (Worker thread in threads)
             {
-#if !NETCOREAPP1_0
+#if FEATURE_THREADINTERRUPT
                 try
                 {
 #endif
-                thread.Join();
-                if (expectedCount == 0)
-                {
-                    expectedCount = thread.count;
-                }
-                else
-                {
-                    if (expectedCount != thread.count)
+                    thread.Join();
+                    if (expectedCount == 0)
                     {
-                        Errln("Threads gave differing results.");
+                        expectedCount = thread.count;
                     }
-                }
-#if !NETCOREAPP1_0
+                    else
+                    {
+                        if (expectedCount != thread.count)
+                        {
+                            Errln("Threads gave differing results.");
+                        }
+                    }
+#if FEATURE_THREADINTERRUPT
                 }
                 catch (ThreadInterruptedException e)
                 {
@@ -105,12 +105,12 @@ namespace ICU4N.Dev.Test.Translit
             }
             foreach (Thread th in threads)
             {
-#if !NETCOREAPP1_0
+#if FEATURE_THREADINTERRUPT
                 try
                 {
 #endif
-                th.Join();
-#if !NETCOREAPP1_0
+                    th.Join();
+#if FEATURE_THREADINTERRUPT
                 }
                 catch (ThreadInterruptedException e)
                 {

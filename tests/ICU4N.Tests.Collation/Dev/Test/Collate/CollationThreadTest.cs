@@ -230,7 +230,7 @@ namespace ICU4N.Dev.Test.Collate
                         }
                     }
                 }
-#if !NETCOREAPP1_0
+#if FEATURE_THREADINTERRUPT
                 catch (ThreadInterruptedException e)
                 {
                     // die
@@ -250,7 +250,7 @@ namespace ICU4N.Dev.Test.Collate
                 threads[i].Start();
             }
 
-#if !NETCOREAPP1_0
+#if FEATURE_THREADINTERRUPT
             try
             {
 #endif
@@ -268,7 +268,7 @@ namespace ICU4N.Dev.Test.Collate
                 {
                     threads[i].Join();
                 }
-#if !NETCOREAPP1_0
+#if FEATURE_THREADINTERRUPT
             }
             catch (ThreadInterruptedException e)
             {

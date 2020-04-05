@@ -111,24 +111,24 @@ namespace ICU4N.Dev.Test.Util
 
         public static void RunThreads(long time)
         {
-#if !NETCOREAPP1_0
-    try
-    {
+#if FEATURE_THREADINTERRUPT
+            try
+            {
 #endif
-            GO = true;
-            WAIT = false;
+                GO = true;
+                WAIT = false;
 
-            Thread.Sleep((int)time);
+                Thread.Sleep((int)time);
 
-            WAIT = true;
-            GO = false;
+                WAIT = true;
+                GO = false;
 
-            Thread.Sleep(300);
-#if !NETCOREAPP1_0
-    }
-    catch (ThreadInterruptedException e)
-    {
-    }
+                Thread.Sleep(300);
+#if FEATURE_THREADINTERRUPT
+            }
+                catch (ThreadInterruptedException e)
+            {
+            }
 #endif
         }
 
@@ -153,23 +153,23 @@ namespace ICU4N.Dev.Test.Util
                     Thread.Sleep(0);
                 }
 
-#if !NETCOREAPP1_0
-    try
-    {
-#endif
-                while (GO)
+#if FEATURE_THREADINTERRUPT
+                try
                 {
-                    Iterate();
-                    if (delay > 0)
+#endif
+                    while (GO)
                     {
-                        Thread.Sleep((int)delay);
+                        Iterate();
+                        if (delay > 0)
+                        {
+                            Thread.Sleep((int)delay);
+                        }
                     }
+#if FEATURE_THREADINTERRUPT
                 }
-#if !NETCOREAPP1_0
-    }
-    catch (ThreadInterruptedException e)
-    {
-    }
+                catch (ThreadInterruptedException e)
+                {
+                }
 #endif
             }
 

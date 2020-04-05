@@ -1223,13 +1223,13 @@ namespace ICU4N.Dev.Test.Rbbi
             StringBuilder errors = new StringBuilder();
             foreach (RBBIMonkeyImpl test in startedTests)
             {
-#if !NETCOREAPP1_0
+#if FEATURE_THREADINTERRUPT
                 try
                 {
 #endif
                     test.Join();
                     errors.Append(test.fErrorMsgs);
-#if !NETCOREAPP1_0
+#if FEATURE_THREADINTERRUPT
                 }
                 catch (ThreadInterruptedException e)
                 {

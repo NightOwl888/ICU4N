@@ -71,7 +71,7 @@ namespace ICU4N.Support.Collections
                 throw new ArgumentNullException(nameof(bits));
             int count = 0;
 
-#if NETSTANDARD1_3
+#if !FEATURE_BITARRAY_COPYTO
             for (int i = 0; i < bits.Length; i++)
             {
                 if (bits[i])

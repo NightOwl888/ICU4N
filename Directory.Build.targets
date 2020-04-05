@@ -3,6 +3,45 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
+
+  <!-- Features in .NET Standard and .NET Core only (no .NET Framework support) -->
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) Or $(TargetFramework.StartsWith('netcoreapp')) ">
+    <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER</DefineConstants>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <!-- Features in .NET Framework 4+, .NET Standard 2.x, .NET Core 2.x, and .NET Core 3.x -->
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('net4')) Or $(TargetFramework.StartsWith('netstandard2.')) Or $(TargetFramework.StartsWith('netcoreapp2.')) Or $(TargetFramework.StartsWith('netcoreapp3.')) ">
+
+    <DefineConstants>$(DefineConstants);FEATURE_SERIALIZABLE</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_THREADINTERRUPT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_BITARRAY_COPYTO</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_STACKTRACE</DefineConstants>
+
+    <!-- NOTE: Microsoft's recommendation is not to use the ICloneable interface.
+        To add it to the build, just add /p:IncludeICloneable to the command line. -->
+    <DefineConstants Condition=" '$(IncludeICloneable)' == 'true' ">$(DefineConstants);FEATURE_CLONEABLE</DefineConstants>
+  </PropertyGroup>
+
+  <!-- Features in .NET Standard 1.x and .NET Core 1.x -->
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard1.')) Or $(TargetFramework.StartsWith('netcoreapp1.')) ">
+
+    <DefineConstants>$(DefineConstants);NETSTANDARD1_X</DefineConstants>
+    <DefineConstants>$(DefineConstants);NETCOREAPP1_X</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_UNKNOWNLANGUAGE</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_TYPEEXTENSIONS_GETTYPEINFO</DefineConstants>
+
+  </PropertyGroup>
+
+  <!-- Features in .NET Framework 4.5+ only -->
+  <PropertyGroup Condition="$(TargetFramework.StartsWith('net4'))">
+
+    <DefineConstants>$(DefineConstants);FEATURE_SERIALIZABLE_EXCEPTIONS</DefineConstants>
+
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
   <PropertyGroup>
     <!-- NuGet.org only supports portable debug symbol format: 
          https://docs.microsoft.com/en-us/nuget/create-packages/symbol-packages-snupkg#nugetorg-symbol-package-constraints -->

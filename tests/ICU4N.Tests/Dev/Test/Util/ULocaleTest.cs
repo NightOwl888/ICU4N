@@ -240,7 +240,7 @@ namespace ICU4N.Dev.Test.Util
         //    }
 
         //            // Default locale
-        //#if NETSTANDARD
+        //#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
         //            CultureInfo.CurrentCulture = (jaJPJP);
         //#else
         //            System.Threading.Thread.CurrentThread.CurrentCulture = (jaJPJP);
@@ -269,7 +269,7 @@ namespace ICU4N.Dev.Test.Util
         //    {
         //        Errln("FAIL: Invalid calendar type: " + caltype + " /expected: japanese");
         //    }
-        //#if NETSTANDARD
+        //#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
         //            CultureInfo.CurrentCulture = backupDefault;
         //#else
         //            System.Threading.Thread.CurrentThread.CurrentCulture = backupDefault;
@@ -4873,7 +4873,7 @@ namespace ICU4N.Dev.Test.Util
             CultureInfo arEg = new CultureInfo("ar-EG");
             ULocale uArEg = ULocale.ForLocale(arEg);
 
-#if NETSTANDARD
+#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
             CultureInfo.CurrentCulture = arEg;
 #else
             System.Threading.Thread.CurrentThread.CurrentCulture = arEg;
@@ -4895,7 +4895,7 @@ namespace ICU4N.Dev.Test.Util
             }
 
             // Restore back up
-#if NETSTANDARD
+#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
             CultureInfo.CurrentCulture = backupDefault;
 #else
             System.Threading.Thread.CurrentThread.CurrentCulture = backupDefault;
