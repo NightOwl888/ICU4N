@@ -210,9 +210,9 @@ namespace ICU4N.Dev.Test.Util
 
         // ICU4N TODO: Most of this doesn't apply to .NET, but there may
         // be a sensible way to port this.
-        ///*
-        // * ticket#5060
-        // */
+        /////*
+        //// * ticket#5060
+        //// */
         //[Test]
         //    public void TestJavaLocaleCompatibility()
         //{
@@ -351,7 +351,7 @@ namespace ICU4N.Dev.Test.Util
         /**
          * Compare two locale IDs.  If they are equal, return 0.  If `string'
          * starts with `prefix' plus an additional element, that is, string ==
-         * prefix + '_' + x, then return 1.  Otherwise return a value < 0.
+         * prefix + '_' + x, then return 1.  Otherwise return a value &lt; 0.
          */
         internal static int loccmp(String str, String prefix)
         {

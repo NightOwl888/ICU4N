@@ -3,11 +3,11 @@ using NUnit.Framework;
 using System;
 using System.Globalization;
 
-/// <summary>
-/// Port From:   ICU4C v2.1 : Collate/CollationDummyTest
-/// Source File: $ICU4CRoot/source/test/intltest/allcoll.cpp
-///              $ICU4CRoot/source/test/cintltst/callcoll.c
-/// </summary>
+//
+// Port From:   ICU4C v2.1 : Collate/CollationDummyTest
+// Source File: $ICU4CRoot/source/test/intltest/allcoll.cpp
+//              $ICU4CRoot/source/test/cintltst/callcoll.c
+//
 namespace ICU4N.Dev.Test.Collate
 {
     public class CollationDummyTest : TestFmwk

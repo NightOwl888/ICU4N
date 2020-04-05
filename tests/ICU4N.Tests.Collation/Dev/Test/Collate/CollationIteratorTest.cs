@@ -9,10 +9,10 @@ using System;
 using System.Globalization;
 using StringBuffer = System.Text.StringBuilder;
 
-/// <summary>
-/// Port From:   ICU4C v2.1 : collate/CollationIteratorTest
-/// Source File: $ICU4CRoot/source/test/intltest/itercoll.cpp
-/// </summary>
+//
+// Port From:   ICU4C v2.1 : collate/CollationIteratorTest
+// Source File: $ICU4CRoot/source/test/intltest/itercoll.cpp
+//
 namespace ICU4N.Dev.Test.Collate
 {
     public class CollationIteratorTest : TestFmwk

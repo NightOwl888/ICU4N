@@ -237,7 +237,7 @@ namespace ICU4N.Dev.Test.Lang
         }
 
         /**
-         * Test various implementations of Pattern_Syntax & Pattern_White_Space.
+         * Test various implementations of Pattern_Syntax &amp; Pattern_White_Space.
          */
         [Test]
         public void TestPatternProperties()
@@ -707,10 +707,10 @@ namespace ICU4N.Dev.Test.Lang
         }
 
         /**
-        * Tests for the character types, direction.<br>
+        * Tests for the character types, direction.<br/>
         * This method reads in UnicodeData.txt file for testing purposes. A
         * default path is provided relative to the src path, however the user
-        * could set a system property to change the directory path.<br>
+        * could set a system property to change the directory path.<br/>
         * e.g. java -DUnicodeData="data_directory_path"
         * com.ibm.icu.dev.test.lang.UCharacterTest
         */

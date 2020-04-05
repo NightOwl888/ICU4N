@@ -581,7 +581,7 @@ namespace ICU4N.Dev.Test.Lang
          * Tests for case mapping in the file SpecialCasing.txt
          * This method reads in SpecialCasing.txt file for testing purposes.
          * A default path is provided relative to the src path, however the user
-         * could set a system property to change the directory path.<br>
+         * could set a system property to change the directory path.<br/>
          * e.g. java -DUnicodeData="data_dir_path" com.ibm.dev.test.lang.UCharacterTest
          */
         [Test]

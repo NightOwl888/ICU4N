@@ -71,11 +71,11 @@ namespace ICU4N.Dev.Test.Normalizers
          * Run through all of the characters returned by a composed-char iterator
          * and make sure that:
          * <ul>
-         * <li>a) They do indeed have decompositions.
+         * <li>a) They do indeed have decompositions.</li>
          * <li>b) The decomposition according to the iterator is the same as
-         *          returned by Normalizer.decompose().
+         *          returned by Normalizer.decompose().</li>
          * <li>c) All characters <em>not</em> returned by the iterator do not
-         *          have decompositions.
+         *          have decompositions.</li>
          * </ul>
          */
         [Test]

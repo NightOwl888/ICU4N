@@ -3,10 +3,10 @@ using NUnit.Framework;
 using System;
 using System.Globalization;
 
-/// <summary>
-/// Port From:   ICU4C v2.1 : collate/CollationMonkeyTest
-/// Source File: $ICU4CRoot/source/test/intltest/mnkytst.cpp
-/// </summary>
+//
+// Port From:   ICU4C v2.1 : collate/CollationMonkeyTest
+// Source File: $ICU4CRoot/source/test/intltest/mnkytst.cpp
+//
 namespace ICU4N.Dev.Test.Collate
 {
     /// <summary>

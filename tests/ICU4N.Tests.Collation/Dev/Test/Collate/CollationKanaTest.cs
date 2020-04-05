@@ -4,10 +4,10 @@ using NUnit.Framework;
 using System;
 using System.Globalization;
 
-/// <summary>
-/// Port From:   ICU4C v2.1 : Collate/CollationKanaTest
-/// Source File: $ICU4CRoot/source/test/intltest/jacoll.cpp
-/// </summary>
+//
+// Port From:   ICU4C v2.1 : Collate/CollationKanaTest
+// Source File: $ICU4CRoot/source/test/intltest/jacoll.cpp
+//
 namespace ICU4N.Dev.Test.Collate
 {
     public class CollationKanaTest : TestFmwk

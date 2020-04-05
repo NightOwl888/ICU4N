@@ -1228,7 +1228,7 @@ namespace ICU4N.Dev.Util
                 iterator.Reset();
             }
 
-            ///* (non-Javadoc)
+            ////* (non-Javadoc)
             // * @see java.util.Iterator#hasNext()
             // */
             //public bool HasNext()
@@ -1236,7 +1236,7 @@ namespace ICU4N.Dev.Util
             //    return iterator.hasNext();
             //}
 
-            ///* (non-Javadoc)
+            ////* (non-Javadoc)
             // * @see java.util.Iterator#next()
             // */
             //public Entry<String, T> next()
@@ -1245,7 +1245,7 @@ namespace ICU4N.Dev.Util
             //    return new ImmutableEntry(key, get(key));
             //}
 
-            ///* (non-Javadoc)
+            ////* (non-Javadoc)
             // * @see java.util.Iterator#remove()
             // */
             //public void remove()

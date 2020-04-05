@@ -12,10 +12,10 @@ using System.Resources;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
-/// <summary>
-/// Port From:   ICU4C v2.1 : collate/CollationAPITest
-/// Source File: $ICU4CRoot/source/test/intltest/apicoll.cpp
-/// </summary>
+//
+// Port From:   ICU4C v2.1 : collate/CollationAPITest
+// Source File: $ICU4CRoot/source/test/intltest/apicoll.cpp
+//
 namespace ICU4N.Dev.Test.Collate
 {
     public class CollationAPITest : TestFmwk

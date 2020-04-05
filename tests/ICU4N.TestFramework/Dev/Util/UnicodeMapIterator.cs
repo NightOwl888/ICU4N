@@ -63,16 +63,16 @@ namespace ICU4N.Dev.Util
         /**
          * Returns the next element in the set, either a single code point
          * or a string.  If there are no more elements in the set, return
-         * false.  If <tt>codepoint == IS_STRING</tt>, the value is a
-         * string in the <tt>string</tt> field.  Otherwise the value is a
-         * single code point in the <tt>codepoint</tt> field.
+         * false.  If <c>codepoint == IS_STRING</c>, the value is a
+         * string in the <c>string</c> field.  Otherwise the value is a
+         * single code point in the <c>codepoint</c> field.
          * 
-         * <p>The order of iteration is all code points in sorted order,
-         * followed by all strings sorted order.  <tt>codepointEnd</tt> is
-         * undefined after calling this method.  <tt>string</tt> is
-         * undefined unless <tt>codepoint == IS_STRING</tt>.  Do not mix
-         * calls to <tt>next()</tt> and <tt>nextRange()</tt> without
-         * calling <tt>reset()</tt> between them.  The results of doing so
+         * <para/>The order of iteration is all code points in sorted order,
+         * followed by all strings sorted order.  <c>codepointEnd</c> is
+         * undefined after calling this method.  <c>string</c> is
+         * undefined unless <c>codepoint == IS_STRING</c>.  Do not mix
+         * calls to <c>next()</c> and <c>nextRange()</c> without
+         * calling <c>reset()</c> between them.  The results of doing so
          * are undefined.
          *
          * @return true if there was another element in the set and this
@@ -114,17 +114,17 @@ namespace ICU4N.Dev.Util
         /**
          * Returns the next element in the set, either a code point range
          * or a string.  If there are no more elements in the set, return
-         * false.  If <tt>codepoint == IS_STRING</tt>, the value is a
+         * false.  If <c>codepoint == IS_STRING</c>, the value is a
          * string in the <tt>string</tt> field.  Otherwise the value is a
-         * range of one or more code points from <tt>codepoint</tt> to
-         * <tt>codepointeEnd</tt> inclusive.
+         * range of one or more code points from <c>codepoint</c> to
+         * <c>codepointeEnd</c> inclusive.
          * 
-         * <p>The order of iteration is all code points ranges in sorted
+         * <para/>The order of iteration is all code points ranges in sorted
          * order, followed by all strings sorted order.  Ranges are
-         * disjoint and non-contiguous.  <tt>string</tt> is undefined
-         * unless <tt>codepoint == IS_STRING</tt>.  Do not mix calls to
-         * <tt>next()</tt> and <tt>nextRange()</tt> without calling
-         * <tt>reset()</tt> between them.  The results of doing so are
+         * disjoint and non-contiguous.  <c>string</c> is undefined
+         * unless <c>codepoint == IS_STRING</c>.  Do not mix calls to
+         * <c>next()</c> and <c>nextRange()</c> without calling
+         * <c>reset()</c> between them.  The results of doing so are
          * undefined.
          *
          * @return true if there was another element in the set and this

@@ -113,7 +113,7 @@ namespace ICU4N.Dev.Test
         protected abstract bool AddTestObject(IList<T> c);
         /**
          * Override if the tested objects are mutable.
-         * <br>Since Java doesn't tell us, we need a function to tell if so.
+         * <br/>Since Java doesn't tell us, we need a function to tell if so.
          * The default is true, so must be overridden if not.
          */
         protected virtual bool IsMutable(T a)

@@ -19,7 +19,7 @@ namespace ICU4N.Dev.Test
     /// TestFmwk is a base class for tests that can be run conveniently from the
     /// command line as well as in Visual Studio.
     /// <para/>
-    /// Sub-classes implement a set of methods named Test <something>. Each of these
+    /// Sub-classes implement a set of methods named Test &lt;something&gt;. Each of these
     /// methods performs some test. Test methods should indicate errors by calling
     /// either err or Errln. This will increment the errorCount field and may
     /// optionally print a message to the log. Debugging information may also be
@@ -30,9 +30,9 @@ namespace ICU4N.Dev.Test
     {
         private static readonly object syncLock = new object();
 
-        /**
-     * The default time zone for all of our tests. Used in @Before
-     */
+        /////**
+        //// * The default time zone for all of our tests. Used in @Before
+        //// */
         // ICU4N NOTE: In .NET, there is no way to set the time zone for the entire app, so
         // we need to use another approach than setting it for the test fixture.
 
@@ -143,9 +143,9 @@ namespace ICU4N.Dev.Test
 
         /**
          * Integer Random number generator, produces positive int values.
-         * Similar to C++ std::minstd_rand, with the same algorithm & constants.
+         * Similar to C++ std::minstd_rand, with the same algorithm &amp; constants.
          * Provided for compatibility with ICU4C.
-         * Get & set of the seed allows for reproducible monkey tests.
+         * Get &amp; set of the seed allows for reproducible monkey tests.
          */
         public class ICU_Rand // ICU4N: made public because of accessiblity issues
         {
@@ -441,7 +441,7 @@ namespace ICU4N.Dev.Test
             internal int seed;
             internal int loggingLevel;
 
-            internal string policyFileName;
+            //internal string policyFileName;
             //internal SecurityManager testSecurityManager;
             //internal SecurityManager originalSecurityManager;
 

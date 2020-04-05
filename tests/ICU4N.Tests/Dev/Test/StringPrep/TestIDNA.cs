@@ -727,7 +727,7 @@ namespace ICU4N.Dev.Test.StringPrep
         private Random random = null;
 
         /**
-         * Return a random integer i where 0 <= i < n.
+         * Return a random integer i where 0 &lt;= i &lt; n.
          * A special function that gets random codepoints from planes 0,1,2 and 14
          */
         private int RandUni()

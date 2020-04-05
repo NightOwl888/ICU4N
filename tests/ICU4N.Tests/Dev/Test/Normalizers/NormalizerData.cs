@@ -13,7 +13,7 @@ namespace ICU4N.Dev.Test.Normalizers
     /// <author>
     /// Mark Davis
     /// Updates for supplementary code points:
-    /// Vladimir Weinstein & Markus Scher
+    /// Vladimir Weinstein &amp; Markus Scher
     /// </author>
     public class NormalizerData
     {

@@ -3,10 +3,10 @@ using NUnit.Framework;
 using System;
 using System.Globalization;
 
-/// <summary>
-/// Port From:   ICU4C v2.1 : Collate/CollationSpanishTest
-/// Source File: $ICU4CRoot/source/test/intltest/escoll.cpp
-/// </summary>
+//
+// Port From:   ICU4C v2.1 : Collate/CollationSpanishTest
+// Source File: $ICU4CRoot/source/test/intltest/escoll.cpp
+//
 namespace ICU4N.Dev.Test.Collate
 {
     public class CollationSpanishTest : TestFmwk

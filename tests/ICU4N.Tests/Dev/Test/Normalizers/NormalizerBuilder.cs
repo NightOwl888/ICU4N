@@ -11,16 +11,16 @@ namespace ICU4N.Dev.Test.Normalizers
 {
     /**
      * Builds the normalization tables. This is a separate class so that it
-     * can be unloaded once not needed.<br>
+     * can be unloaded once not needed.<br/>
      * Copyright (C) 1998-2007 International Business Machines Corporation and
-     * Unicode, Inc. All Rights Reserved.<br>
+     * Unicode, Inc. All Rights Reserved.<br/>
      * The Unicode Consortium makes no expressed or implied warranty of any
      * kind, and assumes no liability for errors or omissions.
      * No liability is assumed for incidental and consequential damages
      * in connection with or arising out of the use of the information here.
      * @author Mark Davis
      * Updates for supplementary code points:
-     * Vladimir Weinstein & Markus Scherer
+     * Vladimir Weinstein &amp; Markus Scherer
      */
 
     internal class NormalizerBuilder
@@ -34,9 +34,9 @@ namespace ICU4N.Dev.Test.Normalizers
         private static readonly bool DEBUG = false;
         //private static readonly boolean GENERATING = false;
 
-        /**
-         * Constants for the data file version to use.
-         */
+        /////**
+        //// * Constants for the data file version to use.
+        //// */
         /*static final boolean NEW_VERSION = true;
         private static readonly String DIR = "D:\\UnicodeData\\" + (NEW_VERSION ? "WorkingGroups\\" : "");
 

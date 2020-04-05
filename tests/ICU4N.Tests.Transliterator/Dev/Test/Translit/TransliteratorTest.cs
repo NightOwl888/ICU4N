@@ -1293,7 +1293,7 @@ namespace ICU4N.Dev.Test.Translit
         /**
          * Compound filter semantics were orginially not implemented
          * correctly.  Originally, each component filter f(i) is replaced by
-         * f'(i) = f(i) && g, where g is the filter for the compound
+         * f'(i) = f(i) &amp;&amp; g, where g is the filter for the compound
          * transliterator.
          *
          * From Mark:

@@ -14,10 +14,10 @@ using System.Globalization;
 using System.Linq;
 using StringBuffer = System.Text.StringBuilder;
 
-/// <summary>
-/// Port From:   ICU4C v2.1 : cintltest
-/// Source File: $ICU4CRoot/source/test/cintltest/cmsccoll.c
-/// </summary>
+//
+// Port From:   ICU4C v2.1 : cintltest
+// Source File: $ICU4CRoot/source/test/cintltest/cmsccoll.c
+//
 namespace ICU4N.Dev.Test.Collate
 {
     public class CollationMiscTest : TestFmwk

@@ -584,7 +584,7 @@ namespace ICU4N.Dev.Test.Format
          * Test the applyPattern and toPattern handling of single quotes
          * by ChoiceFormat.  (This is in here because this was a bug reported
          * against MessageFormat.)  The single quote is used to quote the
-         * pattern characters '|', '#', '<', and '\u2264'.  Two quotes in a row
+         * pattern characters '|', '#', '&lt;', and '\u2264'.  Two quotes in a row
          * is a quote literal.
          */
         [Test]

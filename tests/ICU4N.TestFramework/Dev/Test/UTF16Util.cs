@@ -399,7 +399,7 @@ namespace ICU4N.Dev.Test
 
 
         /**
-         * Forms a supplementary code point from the argument character<br>
+         * Forms a supplementary code point from the argument character<br/>
          * Note this is for internal use hence no checks for the validity of the
          * surrogate characters are done
          * @param lead lead surrogate character

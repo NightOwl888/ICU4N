@@ -506,6 +506,11 @@ namespace ICU4N.Dev.Test.Translit
                 return false;
             }
 
+            public override int GetHashCode() // ICU4N: Added to satisfy Equals/GetHashCode parity
+            {
+                return value.GetHashCode();
+            }
+
             public static implicit operator char(Char c)
             {
                 return c.value;

@@ -10,7 +10,7 @@ namespace ICU4N.Dev.Test
     public abstract class AbstractTestLog : TestLog
     {
         /**
-         * Returns true if ICU_Version < major.minor.
+         * Returns true if ICU_Version &lt; major.minor.
          */
         static public bool IsICUVersionBefore(int major, int minor)
         {
@@ -18,7 +18,7 @@ namespace ICU4N.Dev.Test
         }
 
         /**
-         * Returns true if ICU_Version < major.minor.milli.
+         * Returns true if ICU_Version &lt; major.minor.milli.
          */
         static public bool IsICUVersionBefore(int major, int minor, int milli)
         {

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
-/// <summary>
-/// Port From:   ICU4C v2.1 : collate/CollationRegressionTest
-/// Source File: $ICU4CRoot/source/test/intltest/regcoll.cpp
-/// </summary>
+//
+// Port From:   ICU4C v2.1 : collate/CollationRegressionTest
+// Source File: $ICU4CRoot/source/test/intltest/regcoll.cpp
+//
 namespace ICU4N.Dev.Test.Collate
 {
     public class CollationThaiTest : TestFmwk

@@ -71,10 +71,10 @@ namespace ICU4N.Dev.Test.Translit
          * This is a test class that simulates styled text.
          * It associates a style number (0..65535) with each character,
          * and maintains that style in the normal fashion:
-         * When setting text from raw string or characters,<br>
-         * Set the styles to the style of the first character replaced.<br>
-         * If no characters are replaced, use the style of the previous character.<br>
-         * If at start, use the following character<br>
+         * When setting text from raw string or characters,<br/>
+         * Set the styles to the style of the first character replaced.<br/>
+         * If no characters are replaced, use the style of the previous character.<br/>
+         * If at start, use the following character<br/>
          * Otherwise use NO_STYLE.
          */
         internal class TestReplaceable : IReplaceable

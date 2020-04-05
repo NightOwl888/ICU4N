@@ -215,9 +215,9 @@ namespace ICU4N.Dev.Test.StringPrep
         }
 
         /**
-         * Change unicode string from <00AD> to \u00AD, for the later is accepted
+         * Change unicode string from &lt;00AD&gt; to \u00AD, for the later is accepted
          * by Java
-         * @param str String including <*> style unicode
+         * @param str String including &lt;*&gt; style unicode
          * @return \\u String
          */
         private static String StringReplace(String str)
