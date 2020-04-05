@@ -12,6 +12,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="ICU4N.Tests.Collation" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Util\" />
   </ItemGroup>
 

@@ -12,6 +12,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="ICU4N.Collation" />
+    <InternalsVisibleTo Include="ICU4N.CurrencyData" />
+    <InternalsVisibleTo Include="ICU4N.Transliterator" />
+    
+    <InternalsVisibleTo Include="ICU4N.TestFramework" />
+    <InternalsVisibleTo Include="ICU4N.Tests" />
+    <InternalsVisibleTo Include="ICU4N.Tests.Collation" />
+    <InternalsVisibleTo Include="ICU4N.Tests.Transliterator" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="J2N" Version="$(J2NPackageReferenceVersion)" />
   </ItemGroup>
   
@@ -60,10 +71,6 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Include="$(RepositoryRoot)build/CommonAssemblyKeys.cs" Link="Properties\CommonAssemblyKeys.cs" />
   </ItemGroup>
 
   <ItemGroup>

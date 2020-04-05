@@ -11,6 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="ICU4N.Tests" />
+    <InternalsVisibleTo Include="ICU4N.Tests.Transliterator" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Dev\Data\*" />
     <None Remove="Dev\Data\unicode\*" />
   </ItemGroup>
