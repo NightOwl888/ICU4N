@@ -1,4 +1,4 @@
-﻿using ICU4N.Support.Text;
+﻿using J2N.Text;
 
 namespace ICU4N.Text
 {

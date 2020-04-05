@@ -1,4 +1,5 @@
-﻿using System;
+﻿using J2N.Text;
+using System;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
