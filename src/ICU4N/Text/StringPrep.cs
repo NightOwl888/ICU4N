@@ -211,10 +211,10 @@ namespace ICU4N.Text
             "rfc4518ci",    /* RFC4518_LDAP_CI */
         };
 
-#if NET40
-        private static readonly WeakReference[] CACHE = new WeakReference[(int)MAX_PROFILE + 1];
-#else
+#if FEATURE_TYPEDWEAKREFERENCE
         private static readonly WeakReference<StringPrep>[] CACHE = new WeakReference<StringPrep>[(int)MAX_PROFILE + 1];
+#else
+        private static readonly WeakReference[] CACHE = new WeakReference[(int)MAX_PROFILE + 1];
 #endif
 
         private const int UNASSIGNED = 0x0000;
@@ -349,18 +349,18 @@ namespace ICU4N.Text
             // per type and store it in the internal cache.
             lock (CACHE)
             {
-#if NET40
-                WeakReference @ref = CACHE[(int)profile];
-#else
+#if FEATURE_TYPEDWEAKREFERENCE
                 WeakReference<StringPrep> @ref = CACHE[(int)profile];
+#else
+                WeakReference @ref = CACHE[(int)profile];
 #endif
                 if (@ref != null)
                 {
-#if NET40
-                    instance = (StringPrep) @ref.Target;
-#else
+#if FEATURE_TYPEDWEAKREFERENCE
                     //instance = @ref.Get();
                     @ref.TryGetTarget(out instance);
+#else
+                    instance = (StringPrep) @ref.Target;
 #endif
                 }
 
@@ -380,10 +380,10 @@ namespace ICU4N.Text
                     }
                     if (instance != null)
                     {
-#if NET40
-                        CACHE[(int)profile] = new WeakReference(instance);
-#else
+#if FEATURE_TYPEDWEAKREFERENCE
                         CACHE[(int)profile] = new WeakReference<StringPrep>(instance);
+#else
+                        CACHE[(int)profile] = new WeakReference(instance);
 #endif
                     }
                 }

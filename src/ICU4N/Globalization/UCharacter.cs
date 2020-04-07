@@ -5857,11 +5857,11 @@ namespace ICU4N.Text.Unicode
             IDictionary<string, UnicodeBlock> m = null;
             if (mref != null)
             {
-#if NET40
-                m = (IDictionary<string, UnicodeBlock>) mref.Target;
-#else
+#if FEATURE_TYPEDWEAKREFERENCE
                 //m = mref.Get();
                 mref.TryGetTarget(out m);
+#else
+                m = (IDictionary<string, UnicodeBlock>) mref.Target;
 #endif
             }
             if (m == null)
@@ -5875,10 +5875,10 @@ namespace ICU4N.Text.Unicode
                                     NameChoice.Long));
                     m[name] = b2;
                 }
-#if NET40
-                mref = new WeakReference(m);
-#else
+#if FEATURE_TYPEDWEAKREFERENCE
                 mref = new WeakReference<IDictionary<string, UnicodeBlock>>(m);
+#else
+                mref = new WeakReference(m);
 #endif
             }
             UnicodeBlock b = m[TrimBlockName(blockName)];
@@ -5888,10 +5888,10 @@ namespace ICU4N.Text.Unicode
             }
             return b;
         }
-#if NET40
-        private static WeakReference mref;
-#else
+#if FEATURE_TYPEDWEAKREFERENCE
         private static WeakReference<IDictionary<string, UnicodeBlock>> mref;
+#else
+        private static WeakReference mref;
 #endif
 
         private static string TrimBlockName(string name)

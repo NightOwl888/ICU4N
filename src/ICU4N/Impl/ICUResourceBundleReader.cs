@@ -5,10 +5,10 @@ using J2N.Collections.Concurrent;
 using J2N.IO;
 using J2N.Numerics;
 using J2N.Text;
-#if NET40
-    using System.Runtime.Caching;
-#else
+#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
     using Microsoft.Extensions.Caching.Memory;
+#else
+    using System.Runtime.Caching;
 #endif
 using System;
 using System.Diagnostics;
@@ -1433,14 +1433,14 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-#if NET40
-                        values[index] = new SoftReference<object>(
-                            item,
-                            new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
-#else
+#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
                         values[index] = new SoftReference<object>(
                             item,
                             new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
+#else
+                        values[index] = new SoftReference<object>(
+                            item,
+                            new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
 #endif
                     }
                 }
@@ -1523,16 +1523,16 @@ namespace ICU4N.Impl
                             try
                             {
                                 keys[index] = key;
-#if NET40
-                                values[index] = StoreDirectly(size) ? item
-                                    : new SoftReference<object>(
-                                        item,
-                                        new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
-#else
+#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
                                 values[index] = StoreDirectly(size) ? item
                                     : new SoftReference<object>(
                                         item,
                                         new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
+#else
+                                values[index] = StoreDirectly(size) ? item
+                                    : new SoftReference<object>(
+                                        item,
+                                        new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
 #endif
                             }
                             finally
@@ -1732,16 +1732,16 @@ namespace ICU4N.Impl
                                 }
                                 ++length;
                                 keys[index] = res;
-#if NET40
-                                values[index] = StoreDirectly(size) ? item
-                                    : new SoftReference<object>(
-                                        item,
-                                        new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
-#else
+#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
                                 values[index] = StoreDirectly(size) ? item
                                     : new SoftReference<object>(
                                         item,
                                         new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
+#else
+                                values[index] = StoreDirectly(size) ? item
+                                    : new SoftReference<object>(
+                                        item,
+                                        new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
 #endif
                             }
                             finally

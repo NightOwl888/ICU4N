@@ -1,8 +1,8 @@
 ﻿using ICU4N.Support;
-#if NET40
-    using System.Runtime.Caching;
-#else
+#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
     using Microsoft.Extensions.Caching.Memory;
+#else
+    using System.Runtime.Caching;
 #endif
 using System;
 using System.Threading;
@@ -117,10 +117,10 @@ namespace ICU4N.Impl
 
             private SoftReference<TValue> CreateReference(TValue value)
             {
-#if NET40
-                return new SoftReference<TValue>(value, new CacheItemPolicy { SlidingExpiration = SlidingExpiration });
-#else
+#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
                 return new SoftReference<TValue>(value, new MemoryCacheEntryOptions { SlidingExpiration = SlidingExpiration });
+#else
+                return new SoftReference<TValue>(value, new CacheItemPolicy { SlidingExpiration = SlidingExpiration });
 #endif
             }
 
