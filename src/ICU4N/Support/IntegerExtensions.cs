@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -25,7 +26,7 @@ namespace ICU4N.Support
 #if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
             bool isFlagsEnum = typeof(T).GetTypeInfo().GetCustomAttribute<FlagsAttribute>(true) != null;
 #else
-            bool isFlagsEnum = typeof(T).GetCustomAttributes(true) != null;
+            bool isFlagsEnum = typeof(T).GetCustomAttributes(true).Any(a => typeof(FlagsAttribute).Equals(a.GetType()));
 #endif
             int result = 0;
             bool isSet = false;

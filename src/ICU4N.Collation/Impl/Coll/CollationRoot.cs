@@ -53,10 +53,11 @@ namespace ICU4N.Impl.Coll
             try
             {
                 // ICU4N specific - passing in assembly name so we resolve to this assembly rather than ICU4N.dll
+                ByteBuffer bytes =
 #if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                ByteBuffer bytes = ICUBinary.GetRequiredData(typeof(CollationRoot).GetTypeInfo().Assembly, null, "coll/ucadata.icu");
+                ICUBinary.GetRequiredData(typeof(CollationRoot).GetTypeInfo().Assembly, null, "coll/ucadata.icu");
 #else
-                ByteBuffer bytes = ICUBinary.GetRequiredData(typeof(CollationRoot).Assembly, null, "coll/ucadata.icu");
+                ICUBinary.GetRequiredData(typeof(CollationRoot).Assembly, null, "coll/ucadata.icu");
 #endif
                 CollationTailoring t2 = new CollationTailoring(null);
                 CollationDataReader.Read(null, bytes, t2);

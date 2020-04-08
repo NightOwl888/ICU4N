@@ -93,12 +93,12 @@ namespace ICU4N.Impl
             if (i == null && required)
             {
 #if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                throw new MissingManifestResourceException("could not locate data " + resourceName +
-                    " Assembly: " + root.GetTypeInfo().Assembly.FullName + " Resource: " + resourceName);
+                Assembly assembly = root.GetTypeInfo().Assembly;
 #else
-                throw new MissingManifestResourceException("could not locate data " + resourceName +
-                    " Assembly: " + root.Assembly.FullName + " Resource: " + resourceName);
+                Assembly assembly = root.Assembly;
 #endif
+                throw new MissingManifestResourceException("could not locate data " + resourceName +
+                    " Assembly: " + assembly.FullName + " Resource: " + resourceName);
             }
             CheckStreamForBinaryData(i, resourceName);
             return i;

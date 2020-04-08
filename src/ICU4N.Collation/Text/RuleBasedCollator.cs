@@ -158,10 +158,11 @@ namespace ICU4N.Text
             // Most code using Collator does not need to build a Collator from rules.
             // By using reflection, most code will not have a static dependency on the builder code.
             // CollationBuilder builder = new CollationBuilder(base);
+            Assembly classLoader =
 #if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            Assembly classLoader = GetType().GetTypeInfo().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
+            GetType().GetTypeInfo().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
 #else
-            Assembly classLoader = GetType().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
+            GetType().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
 #endif
             CollationTailoring t;
             try

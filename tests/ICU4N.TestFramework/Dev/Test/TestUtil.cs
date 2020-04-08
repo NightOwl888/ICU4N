@@ -24,10 +24,11 @@ namespace ICU4N.Dev.Test
             try
             {
 #if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                input = typeof(TestUtil).GetTypeInfo().Assembly.GetManifestResourceStream(DATA_PATH + name);
+                Assembly assembly = typeof(TestUtil).GetTypeInfo().Assembly;
 #else
-                input = typeof(TestUtil).Assembly.GetManifestResourceStream(DATA_PATH + name);
+                Assembly assembly = typeof(TestUtil).Assembly;
 #endif
+                input = assembly.GetManifestResourceStream(DATA_PATH + name);
             }
             catch (Exception t)
             {

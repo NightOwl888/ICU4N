@@ -29,27 +29,20 @@ namespace ICU4N.Impl
             if (instance == null || !instance.locale.Equals(locale) || instance.fallback != withFallback)
             {
                 ICUResourceBundle rb;
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+                Assembly assembly = typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly;
+#else
+                Assembly assembly = typeof(ICUCurrencyDisplayInfoProvider).Assembly;
+#endif
                 if (withFallback)
                 {
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                    rb = ICUResourceBundle.GetBundleInstance(
-                            ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LocaleDefaultRoot);
-#else
-                    rb = ICUResourceBundle.GetBundleInstance(
-                            ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).Assembly, OpenType.LocaleDefaultRoot);
-#endif
+                    rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, locale, assembly, OpenType.LocaleDefaultRoot);
                 }
                 else
                 {
                     try
                     {
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                        rb = ICUResourceBundle.GetBundleInstance(
-                                ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LocaleOnly);
-#else
-                        rb = ICUResourceBundle.GetBundleInstance(
-                                ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).Assembly, OpenType.LocaleOnly);
-#endif
+                        rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, locale, assembly, OpenType.LocaleOnly);
                     }
                     catch (MissingManifestResourceException)
                     {
