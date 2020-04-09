@@ -280,13 +280,13 @@ namespace ICU4N.Dev.Test.Lang
                 catch (Exception e)
                 {
                     //if (!exc.GetTypeInfo().isInstance(e))
-                    bool isAssignableForm =
+                    bool isAssignableFrom =
 #if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
                         exc.GetTypeInfo().IsAssignableFrom(e.GetType());
 #else
                         exc.IsAssignableFrom(e.GetType());
 #endif
-                    if (!isAssignableForm)
+                    if (!isAssignableFrom)
                     {
                         Warnln("bad exception " + Str(s, start, limit)
                                 + e.GetType().Name);
@@ -398,13 +398,13 @@ namespace ICU4N.Dev.Test.Lang
                 catch (Exception e)
                 {
                     //if (!exc.isInstance(e))
-                    bool isAssignableForm =
+                    bool isAssignableFrom =
 #if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
                         exc.GetTypeInfo().IsAssignableFrom(e.GetType());
 #else
                         exc.IsAssignableFrom(e.GetType());
 #endif
-                    if (!isAssignableForm)
+                    if (!isAssignableFrom)
                     {
                         Errln("bad exception "
                                 + Str(new String(text), start, count, index,
@@ -424,13 +424,13 @@ namespace ICU4N.Dev.Test.Lang
                 catch (Exception e)
                 {
                     //if (!exc.isInstance(e))
-                    bool isAssignableForm =
+                    bool isAssignableFrom =
 #if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
                         exc.GetTypeInfo().IsAssignableFrom(e.GetType());
 #else
                         exc.IsAssignableFrom(e.GetType());
 #endif
-                    if (!isAssignableForm)
+                    if (!isAssignableFrom)
                     {
                         Errln("bad exception "
                                 + Str(text, 0, text.Length, index, offset)
