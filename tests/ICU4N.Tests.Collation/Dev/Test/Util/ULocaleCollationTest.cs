@@ -5,7 +5,6 @@ using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -389,7 +388,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 try
                 {
-                    ISet<ULocale> supported = ImmutableHashSet.Create(new ULocale(malformed)); //Collections.singleton(new ULocale(malformed));
+                    ISet<ULocale> supported = new HashSet<ULocale> { new ULocale(malformed) }; //Collections.singleton(new ULocale(malformed));
                     names.GetUiList(supported, false, collator);
                     assertNull("Failed to detect bogus locale «" + malformed + "»", supported);
                 }

@@ -3032,7 +3032,13 @@ namespace ICU4N.Dev.Test.Lang
 
                 try
                 {
-                    if ((int)ubc.GetTypeInfo().GetField(name + "_ID").GetValue(blk) != b)
+                    int fieldValue =
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+                    (int)ubc.GetTypeInfo().GetField(name + "_ID").GetValue(blk);
+#else
+                    (int)ubc.GetField(name + "_ID").GetValue(blk);
+#endif
+                    if (fieldValue != b)
                     {
                         Errln("UCharacter.UnicodeBlock.GetInstance(" + b + ") returned a block with a name of " + name +
                               " which does not match the block id.");

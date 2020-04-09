@@ -30,7 +30,11 @@ namespace ICU4N.Dev.Test.StringPrep
 
         private NFS4StringPrep()
         {
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
             Assembly loader = typeof(NFS4StringPrep).GetTypeInfo().Assembly;
+#else
+            Assembly loader = typeof(NFS4StringPrep).Assembly;
+#endif
             try
             {
                 string resourcePrefix = "ICU4N.Dev.Data.TestData.";

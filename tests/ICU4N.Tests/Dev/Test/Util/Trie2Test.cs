@@ -764,13 +764,24 @@ namespace ICU4N.Dev.Test.Util
         private void checkTrieRanges(String testName, String serializedName, bool withClone,
                 int[][] setRanges, int[][] checkRanges)
         {
-            string ns = typeof(Trie2Test).GetTypeInfo().Namespace;
+            string ns =
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            typeof(Trie2Test).GetTypeInfo().Namespace;
+#else
+            typeof(Trie2Test).Namespace;
+#endif
 
             // Run tests against Tries that were built by ICU4C and serialized.
             String fileName16 = ns + ".Trie2Test." + serializedName + ".16.tri2";
             String fileName32 = ns + ".Trie2Test." + serializedName + ".32.tri2";
 
-            Stream @is = typeof(Trie2Test).GetTypeInfo().Assembly.GetManifestResourceStream(fileName16);
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            Assembly assembly = typeof(Trie2Test).GetTypeInfo().Assembly;
+#else
+            Assembly assembly = typeof(Trie2Test).Assembly;
+#endif
+
+            Stream @is = assembly.GetManifestResourceStream(fileName16);
             Trie2 trie16;
             try
             {
@@ -782,7 +793,7 @@ namespace ICU4N.Dev.Test.Util
             }
             trieGettersTest(testName, trie16, checkRanges);
 
-            @is = typeof(Trie2Test).GetTypeInfo().Assembly.GetManifestResourceStream(fileName32);
+            @is = assembly.GetManifestResourceStream(fileName32);
             Trie2 trie32;
             try
             {
