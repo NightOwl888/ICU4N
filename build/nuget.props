@@ -5,7 +5,7 @@
     <Authors>NightOwl888</Authors>
     <RepositoryUrl>https://github.com/NightOwl888/ICU4N/</RepositoryUrl>
     <PackageProjectUrl>https://github.com/NightOwl888/ICU4N/</PackageProjectUrl>
-    <PackageIcon>unicode-icon-68x68.png</PackageIcon>
+    <PackageIcon>unicode-icon-128x128.jpg</PackageIcon>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageReleaseNotes>This is an early prerelease. Not all features are fully functional yet, and there may still be some gaps in functionality that haven't been accounted for. See https://github.com/NightOwl888/ICU4N for more info about what is functioning and what is not.</PackageReleaseNotes>
   </PropertyGroup>
