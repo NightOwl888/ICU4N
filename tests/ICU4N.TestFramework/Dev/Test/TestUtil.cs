@@ -23,7 +23,12 @@ namespace ICU4N.Dev.Test
             Stream input = null;
             try
             {
-                input = typeof(TestUtil).GetTypeInfo().Assembly.GetManifestResourceStream(DATA_PATH + name);
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+                Assembly assembly = typeof(TestUtil).GetTypeInfo().Assembly;
+#else
+                Assembly assembly = typeof(TestUtil).Assembly;
+#endif
+                input = assembly.GetManifestResourceStream(DATA_PATH + name);
             }
             catch (Exception t)
             {

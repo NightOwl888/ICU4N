@@ -50,7 +50,11 @@ namespace ICU4N.Support
         }
 
         public Utf32Regex(string pattern, RegexOptions options, TimeSpan matchTimeout)
+#if FEATURE_REGEX_MATCHTIMEOUT
             : base(ConvertUTF32Characters(pattern), options, matchTimeout)
+#else
+            : base(ConvertUTF32Characters(pattern), options)
+#endif
         {
         }
 

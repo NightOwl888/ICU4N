@@ -29,17 +29,20 @@ namespace ICU4N.Impl
             if (instance == null || !instance.locale.Equals(locale) || instance.fallback != withFallback)
             {
                 ICUResourceBundle rb;
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+                Assembly assembly = typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly;
+#else
+                Assembly assembly = typeof(ICUCurrencyDisplayInfoProvider).Assembly;
+#endif
                 if (withFallback)
                 {
-                    rb = ICUResourceBundle.GetBundleInstance(
-                            ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LocaleDefaultRoot);
+                    rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, locale, assembly, OpenType.LocaleDefaultRoot);
                 }
                 else
                 {
                     try
                     {
-                        rb = ICUResourceBundle.GetBundleInstance(
-                                ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LocaleOnly);
+                        rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, locale, assembly, OpenType.LocaleOnly);
                     }
                     catch (MissingManifestResourceException)
                     {

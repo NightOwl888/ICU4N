@@ -5,7 +5,11 @@ using J2N.Collections.Concurrent;
 using J2N.IO;
 using J2N.Numerics;
 using J2N.Text;
-using Microsoft.Extensions.Caching.Memory;
+#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
+    using Microsoft.Extensions.Caching.Memory;
+#else
+    using System.Runtime.Caching;
+#endif
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -1429,9 +1433,15 @@ namespace ICU4N.Impl
                     }
                     else
                     {
+#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
                         values[index] = new SoftReference<object>(
                             item,
                             new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
+#else
+                        values[index] = new SoftReference<object>(
+                            item,
+                            new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
+#endif
                     }
                 }
                 finally
@@ -1513,10 +1523,17 @@ namespace ICU4N.Impl
                             try
                             {
                                 keys[index] = key;
+#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
                                 values[index] = StoreDirectly(size) ? item
                                     : new SoftReference<object>(
                                         item,
                                         new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
+#else
+                                values[index] = StoreDirectly(size) ? item
+                                    : new SoftReference<object>(
+                                        item,
+                                        new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
+#endif
                             }
                             finally
                             {
@@ -1715,10 +1732,17 @@ namespace ICU4N.Impl
                                 }
                                 ++length;
                                 keys[index] = res;
+#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
                                 values[index] = StoreDirectly(size) ? item
                                     : new SoftReference<object>(
                                         item,
                                         new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
+#else
+                                values[index] = StoreDirectly(size) ? item
+                                    : new SoftReference<object>(
+                                        item,
+                                        new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
+#endif
                             }
                             finally
                             {

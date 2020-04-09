@@ -23,8 +23,13 @@ namespace ICU4N.Dev.Test.StringPrep
         private NamePrepTransform()
         {
             // load the resource bundle
-            //ICUResourceBundle bundle = (ICUResourceBundle)ICUResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "idna_rules", typeof(NamePrepTransform).GetTypeInfo().Assembly, true);
-            ICUResourceBundle bundle = (ICUResourceBundle)ICUResourceBundle.GetBundleInstance("Dev/Data/TestData", "idna_rules", typeof(NamePrepTransform).GetTypeInfo().Assembly, true);
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            Assembly assembly = typeof(NamePrepTransform).GetTypeInfo().Assembly;
+#else
+            Assembly assembly = typeof(NamePrepTransform).Assembly;
+#endif
+            //ICUResourceBundle bundle = (ICUResourceBundle)ICUResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "idna_rules", assembly, true);
+            ICUResourceBundle bundle = (ICUResourceBundle)ICUResourceBundle.GetBundleInstance("Dev/Data/TestData", "idna_rules", assembly, true);
             String mapRules = bundle.GetString("MapNoNormalization");
             mapRules += bundle.GetString("MapNFKC");
             // disable

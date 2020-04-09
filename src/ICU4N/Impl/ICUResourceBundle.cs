@@ -26,7 +26,12 @@ namespace ICU4N.Impl
         /// <summary>
         /// The class loader constant to be used with <see cref="GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
-        public static readonly Assembly IcuDataAssembly = typeof(ICUData).GetTypeInfo().Assembly; //ClassLoaderUtil.getClassLoader(ICUData.class); // ICU4N specific: This was named ICU_DATA_CLASS_LOADER in Java
+        public static readonly Assembly IcuDataAssembly =
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            typeof(ICUData).GetTypeInfo().Assembly; //ClassLoaderUtil.getClassLoader(ICUData.class); // ICU4N specific: This was named ICU_DATA_CLASS_LOADER in Java
+#else
+            typeof(ICUData).Assembly; //ClassLoaderUtil.getClassLoader(ICUData.class); // ICU4N specific: This was named ICU_DATA_CLASS_LOADER in Java
+#endif
 
         /// <summary>
         /// The name of the resource containing the installed locales

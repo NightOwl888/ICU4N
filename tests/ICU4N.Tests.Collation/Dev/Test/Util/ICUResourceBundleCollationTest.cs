@@ -65,8 +65,12 @@ namespace ICU4N.Dev.Test.Util
                };
 
             Logln("Testing functional equivalents for collation...");
-            getFunctionalEquivalentTestCases(ICUData.IcuCollationBaseName,
-                                             typeof(Collator).GetTypeInfo().Assembly,
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            Assembly assembly = typeof(Collator).GetTypeInfo().Assembly;
+#else
+            Assembly assembly = typeof(Collator).Assembly;
+#endif
+            getFunctionalEquivalentTestCases(ICUData.IcuCollationBaseName, assembly,
                COLLATION_RESNAME, COLLATION_KEYWORD, true, collCases);
         }
 

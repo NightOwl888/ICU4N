@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -22,7 +23,11 @@ namespace ICU4N.Support
         /// <see cref="FlagsAttribute"/> and <paramref name="options"/> matches more than one enum symbol.</exception>
         public static T AsFlagsToEnum<T>(this int options, T defaultValue) where T : Enum
         {
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
             bool isFlagsEnum = typeof(T).GetTypeInfo().GetCustomAttribute<FlagsAttribute>(true) != null;
+#else
+            bool isFlagsEnum = typeof(T).GetCustomAttributes(true).Any(a => typeof(FlagsAttribute).Equals(a.GetType()));
+#endif
             int result = 0;
             bool isSet = false;
             foreach (int option in Enum.GetValues(typeof(T)))

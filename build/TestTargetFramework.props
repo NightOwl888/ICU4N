@@ -6,12 +6,13 @@
     this setting only affects the test projects. -->
     <!--<TargetFramework>net451</TargetFramework>-->
     <!--<TargetFramework>netcoreapp1.0</TargetFramework>-->
+    <TargetFramework>net40</TargetFramework>
     <TargetFramework>netcoreapp2.0</TargetFramework>
 
     <!-- Allow the build script to pass in the test frameworks to build for.
       This overrides the above TargetFramework setting. 
       ICU4N TODO: Due to a parsing bug, we cannot pass a string with a ; to dotnet msbuild, so passing true as a workaround -->
-    <TargetFrameworks Condition=" '$(TestAllTargetFrameworks)' == 'true' ">netcoreapp2.0;netcoreapp1.0;net451</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(TestAllTargetFrameworks)' == 'true' ">netcoreapp2.0;netcoreapp1.0;net451;net40</TargetFrameworks>
     <TargetFramework Condition=" '$(TargetFrameworks)' != '' "></TargetFramework>
   </PropertyGroup>
   

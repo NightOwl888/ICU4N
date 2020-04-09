@@ -13,7 +13,12 @@ namespace ICU4N.Dev.Test.Util
 {
     public sealed class ICUResourceBundleTest : TestFmwk
     {
-        private static readonly Assembly testLoader = typeof(ICUResourceBundleTest).GetTypeInfo().Assembly; //ICUResourceBundleTest.class.getClassLoader();
+        private static readonly Assembly testLoader =
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            typeof(ICUResourceBundleTest).GetTypeInfo().Assembly; //ICUResourceBundleTest.class.getClassLoader();
+#else
+            typeof(ICUResourceBundleTest).Assembly; //ICUResourceBundleTest.class.getClassLoader();
+#endif
 
         // ICU4N TODO: Finish implementation
         //        [Test]
@@ -897,16 +902,21 @@ namespace ICU4N.Dev.Test.Util
        };
 
             Logln("Testing functional equivalents for calendar...");
+
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            Assembly assembly = typeof(BreakIterator).GetTypeInfo().Assembly;
+#else
+            Assembly assembly = typeof(BreakIterator).Assembly;
+#endif
             getFunctionalEquivalentTestCases(ICUData.IcuBaseName,
                                              //typeof(Calendar).GetTypeInfo().Assembly, // ICU4N TODO: If we ever port the Calendar type, we should reference it here
-                                             typeof(BreakIterator).GetTypeInfo().Assembly,
+                                             assembly,
                        CALENDAR_RESNAME, CALENDAR_KEYWORD, false, calCases);
 
             Logln("Testing error conditions:");
             try
             {
-                Assembly cl = typeof(BreakIterator).GetTypeInfo().Assembly;
-                ICUResourceBundle.GetFunctionalEquivalent(ICUData.IcuBreakIteratorBaseName, cl, "calendar",
+                ICUResourceBundle.GetFunctionalEquivalent(ICUData.IcuBreakIteratorBaseName, assembly, "calendar",
                               "calendar", new ULocale("ar_EG@calendar=islamic"), new bool[1], true);
                 Errln("Err: expected MissingManifestResourceException");
             }
