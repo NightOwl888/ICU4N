@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using J2N.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text

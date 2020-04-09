@@ -3,7 +3,6 @@ using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using J2N.Text;
 
 namespace ICU4N.Text
 {

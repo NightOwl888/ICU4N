@@ -1,6 +1,4 @@
-﻿using ICU4N.Support.Text;
-using ICU4N.Util;
-using J2N;
+﻿using ICU4N.Util;
 using J2N.IO;
 using J2N.IO.MemoryMappedFiles;
 using J2N.Numerics;
