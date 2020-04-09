@@ -52,7 +52,12 @@ namespace ICU4N.Dev.Test.Rbbi
             Stream @is = null;
             try
             {
-                @is = typeof(RBBITestExtended).GetTypeInfo().Assembly.GetManifestResourceStream("ICU4N.Dev.Test.Rbbi.rbbitst.txt");
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+                Assembly assembly = typeof(RBBITestExtended).GetTypeInfo().Assembly;
+#else
+                Assembly assembly = typeof(RBBITestExtended).Assembly;
+#endif
+                @is = assembly.GetManifestResourceStream("ICU4N.Dev.Test.Rbbi.rbbitst.txt");
                 if (@is == null)
                 {
                     Errln("Could not open test data file rbbitst.txt");

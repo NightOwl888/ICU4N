@@ -160,9 +160,9 @@ namespace ICU4N.Text
             // CollationBuilder builder = new CollationBuilder(base);
             Assembly classLoader =
 #if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            GetType().GetTypeInfo().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
+                GetType().GetTypeInfo().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
 #else
-            GetType().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
+                GetType().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
 #endif
             CollationTailoring t;
             try

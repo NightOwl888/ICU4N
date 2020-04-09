@@ -2953,10 +2953,15 @@ namespace ICU4N.Dev.Test.Normalizers
             new string[] { "\\uFFF3\\uFFF7\\U00010036\\U00010077", "\\U00010037\\U00010037\\uFFF6\\U00010037" }
         };
             Normalizer2 customNorm2;
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            Assembly assembly = typeof(BasicTest).GetTypeInfo().Assembly;
+#else
+            Assembly assembly = typeof(BasicTest).Assembly;
+#endif
             customNorm2 =
                 Normalizer2.GetInstance(
                     //BasicTest.class.getResourceAsStream("/com/ibm/icu/dev/data/testdata/testnorm.nrm"),
-                    typeof(BasicTest).GetTypeInfo().Assembly.GetManifestResourceStream("ICU4N.Dev.Data.TestData.testnorm.nrm"),
+                    assembly.GetManifestResourceStream("ICU4N.Dev.Data.TestData.testnorm.nrm"),
                         "testnorm",
                         Normalizer2Mode.Compose);
             for (int i = 0; i < pairs.Length; ++i)
@@ -2987,11 +2992,16 @@ namespace ICU4N.Dev.Test.Normalizers
                 new string[] { "\\uE111\\u1161\\uE112\\u1162", "\\uAE4C\\u1102\\u0062\\u1162" },
                 new string[] { "\\uFFF3\\uFFF7\\U00010036\\U00010077", "\\U00010037\\U00010037\\uFFF6\\U00010037" }
             };
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            Assembly assembly = typeof(BasicTest).GetTypeInfo().Assembly;
+#else
+            Assembly assembly = typeof(BasicTest).Assembly;
+#endif
             Normalizer2 customNorm2;
             customNorm2 =
                 Normalizer2.GetInstance(
                     //BasicTest.class.getResourceAsStream("/com/ibm/icu/dev/data/testdata/testnorm.nrm"),
-                    typeof(BasicTest).GetTypeInfo().Assembly.GetManifestResourceStream("ICU4N.Dev.Data.TestData.testnorm.nrm"),
+                    assembly.GetManifestResourceStream("ICU4N.Dev.Data.TestData.testnorm.nrm"),
                         "testnorm",
                         Normalizer2Mode.ComposeContiguous);
             for (int i = 0; i < pairs.Length; ++i)
