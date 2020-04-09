@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -4720,7 +4721,16 @@ namespace ICU4N.Util
 #if FEATURE_CULTUREINFO_DEFAULTTHREADCURRENTCULTURE
                 return loc.Equals(CultureInfo.DefaultThreadCurrentCulture);
 #else
-                return loc.Equals(CultureInfo.CurrentCulture);
+                // ICU4N HACK: For .NET Framework 4.0, we need to read the internal state of
+                // defaultThreadCurrentCulture by reading the private field through reflection.
+                // See: https://rastating.github.io/setting-default-currentculture-in-all-versions-of-net/
+                CultureInfo defaultThreadCurrentCulture = typeof(CultureInfo).InvokeMember("s_userDefaultCulture",
+                            BindingFlags.GetField | BindingFlags.NonPublic | BindingFlags.Static,
+                            null,
+                            loc,
+                            new object[0]) as CultureInfo;
+
+                return loc.Equals(defaultThreadCurrentCulture);
 #endif
             }
 
