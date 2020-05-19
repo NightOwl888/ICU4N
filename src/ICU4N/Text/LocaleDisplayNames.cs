@@ -478,7 +478,7 @@ namespace ICU4N.Text
         }
 
         // ICU4N: Load class name only once for both methods below
-        private static readonly string implClassName = Impl.ICUConfig.Get("ICU4N.Text.LocaleDisplayNames.impl", "ICU4N.Impl.LocaleDisplayNamesImpl, ICU4N");
+        private static readonly string implClassName = Impl.ICUConfig.Get("ICU4N.Text.LocaleDisplayNames.impl", null);
         // ICU4N: Avoid static constructor by initializing inline
         private static readonly MethodInfo FACTORY_DIALECTHANDLING = LoadFactoryDialectHandling();
         private static readonly MethodInfo FACTORY_DISPLAYCONTEXT = LoadFactoryDisplayContext();

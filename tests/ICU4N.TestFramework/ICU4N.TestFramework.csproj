@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework></TargetFramework>
+    <!--netstandard2.0;-->
     <TargetFrameworks>netstandard1.4;net451;net40</TargetFrameworks>
     <RootNamespace>ICU4N</RootNamespace>
   </PropertyGroup>
@@ -29,4 +30,48 @@
     <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj" />
   </ItemGroup>
 
+  <!--<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion)" />
+  </ItemGroup>-->
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsConfigurationJsonPackageReferenceVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="$(MicrosoftExtensionsConfigurationXmlPackageReferenceVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(MicrosoftExtensionsConfigurationEnvironmentVariablesPackageReferenceVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(MicrosoftExtensionsConfigurationCommandLinePackageReferenceVersion)" />
+    <PackageReference Include="System.IO.MemoryMappedFiles" Version="$(SystemIOMemoryMappedFilesPackageReferenceVersion)" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="$(SystemReflectionTypeExtensionsPackageReferenceVersion)" />
+    <PackageReference Include="System.Resources.ResourceManager" Version="$(SystemResourcesResourceManagerPackageReferenceVersion)" />
+    <PackageReference Include="System.Runtime" Version="$(SystemRuntimePackageReferenceVersion)" />
+    <PackageReference Include="System.Threading.Thread" Version="$(SystemThreadingThreadPackageReferenceVersion)" />
+  </ItemGroup>
+  
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.4' ">
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion_NET4_5_1)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsConfigurationJsonPackageReferenceVersion_NET4_5_1)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="$(MicrosoftExtensionsConfigurationXmlPackageReferenceVersion_NET4_5_1)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(MicrosoftExtensionsConfigurationEnvironmentVariablesPackageReferenceVersion_NET4_5_1)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(MicrosoftExtensionsConfigurationCommandLinePackageReferenceVersion_NET4_5_1)" />
+    <PackageReference Include="System.IO.MemoryMappedFiles" Version="$(SystemIOMemoryMappedFilesPackageReferenceVersion)" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="$(SystemReflectionTypeExtensionsPackageReferenceVersion)" />
+    <PackageReference Include="System.Resources.ResourceManager" Version="$(SystemResourcesResourceManagerPackageReferenceVersion)" />
+    <PackageReference Include="System.Runtime" Version="$(SystemRuntimePackageReferenceVersion)" />
+    <PackageReference Include="System.Threading.Thread" Version="$(SystemThreadingThreadPackageReferenceVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net451' ">
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion_NET4_5_1)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsConfigurationJsonPackageReferenceVersion_NET4_5_1)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="$(MicrosoftExtensionsConfigurationXmlPackageReferenceVersion_NET4_5_1)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(MicrosoftExtensionsConfigurationEnvironmentVariablesPackageReferenceVersion_NET4_5_1)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(MicrosoftExtensionsConfigurationCommandLinePackageReferenceVersion_NET4_5_1)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="lucene.TestSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
