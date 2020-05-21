@@ -30,7 +30,6 @@ namespace ICU4N.Configuration
 #if !NET40        
         IConfigurationRoot CreateConfiguration();
 #endif
-        void ReloadConfiguration();
     }
 
 }

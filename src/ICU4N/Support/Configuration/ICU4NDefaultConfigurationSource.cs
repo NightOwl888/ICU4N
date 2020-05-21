@@ -11,19 +11,24 @@ namespace ICU4N.Configuration
     /// </summary>
     internal class ICU4NDefaultConfigurationSource : IConfigurationSource
     {
+
         /// <summary>
         /// A prefix used to filter environment variables.
         /// </summary>
         public string Prefix { get; set; }
+        /// <summary>
+        /// Set to true by default - used to prevent any security exceptions thrown when reading environment variables
+        /// </summary>
+        public bool IgnoreSecurityExceptionsOnRead { get; set; }
 
         /// <summary>
-        /// Builds the <see cref="ICU4NDefaultConfigurationProvider"/> for this source.
+        /// Builds the <see cref="LuceneDefaultConfigurationProvider"/> for this source.
         /// </summary>
         /// <param name="builder">The <see cref="IConfigurationBuilder"/>.</param>
-        /// <returns>A <see cref="ICU4NDefaultConfigurationProvider"/></returns>
+        /// <returns>A <see cref="LuceneDefaultConfigurationProvider"/></returns>
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new ICU4NDefaultConfigurationProvider(Prefix);
+            return new ICU4NDefaultConfigurationProvider(Prefix, IgnoreSecurityExceptionsOnRead);
         }
     }
 }

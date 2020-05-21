@@ -36,11 +36,11 @@
   </ItemGroup>-->
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsConfigurationJsonPackageReferenceVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="$(MicrosoftExtensionsConfigurationXmlPackageReferenceVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(MicrosoftExtensionsConfigurationEnvironmentVariablesPackageReferenceVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(MicrosoftExtensionsConfigurationCommandLinePackageReferenceVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersionNETSTANDARD2_0)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsConfigurationJsonPackageReferenceVersionNETSTANDARD2_0)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="$(MicrosoftExtensionsConfigurationXmlPackageReferenceVersionNETSTANDARD2_0)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(MicrosoftExtensionsConfigurationEnvironmentVariablesPackageReferenceVersionNETSTANDARD2_0)" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="$(MicrosoftExtensionsConfigurationCommandLinePackageReferenceVersionNETSTANDARD2_0)" />
     <PackageReference Include="System.IO.MemoryMappedFiles" Version="$(SystemIOMemoryMappedFilesPackageReferenceVersion)" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="$(SystemReflectionTypeExtensionsPackageReferenceVersion)" />
     <PackageReference Include="System.Resources.ResourceManager" Version="$(SystemResourcesResourceManagerPackageReferenceVersion)" />

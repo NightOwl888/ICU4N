@@ -1,0 +1,10 @@
+{
+    "tests": {
+        "locale": "fr",
+        "seed": "0x00000010",
+        "timezone": "SE Asia Standard Time",
+        "verbose": "false",
+        "weekly": "false"
+    },
+    "ICU4N.Text.LocaleDisplayNames.impl" : "ICU4N.Text.LocaleDisplayNamesImpl"
+}

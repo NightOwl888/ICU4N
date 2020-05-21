@@ -20,28 +20,19 @@ namespace ICU4N.Configuration
     internal class ICU4NDefaultConfigurationProvider : IConfigurationProvider
     {
         private readonly bool ignoreSecurityExceptionsOnRead;
-
-        private const string MySqlServerPrefix = "MYSQLCONNSTR_";
-        private const string SqlAzureServerPrefix = "SQLAZURECONNSTR_";
-        private const string SqlServerPrefix = "SQLCONNSTR_";
-        private const string CustomPrefix = "CUSTOMCONNSTR_";
-
-        private const string ConnStrKeyFormat = "ConnectionStrings:{0}";
-        private const string ProviderKeyFormat = "ConnectionStrings:{0}_ProviderName";
-
         private readonly string _prefix;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public ICU4NDefaultConfigurationProvider() : this(string.Empty)
+        public ICU4NDefaultConfigurationProvider(bool ignoreSecurityExceptionsOnRead) : this(string.Empty, ignoreSecurityExceptionsOnRead)
         { }
 
         /// <summary>
         /// Initializes a new instance with the specified prefix.
         /// </summary>
         /// <param name="prefix">A prefix used to filter the environment variables.</param>
-        public ICU4NDefaultConfigurationProvider(string prefix, bool ignoreSecurityExceptionsOnRead = false)
+        public ICU4NDefaultConfigurationProvider(string prefix, bool ignoreSecurityExceptionsOnRead = true)
         {
             _prefix = prefix ?? string.Empty;
             this.ignoreSecurityExceptionsOnRead = ignoreSecurityExceptionsOnRead;
@@ -53,100 +44,12 @@ namespace ICU4N.Configuration
         public void Load()
         {
             Data = new ConcurrentDictionary<string, string>();
-            
-            //Load(Environment.GetEnvironmentVariables());
         }
-        //public bool TryGetEnvironmentVariable(string name, out string value)
-        //{
-        //    try
-        //    {
-        //        value = Environment.GetEnvironmentVariable(name);
-        //        return !string.IsNullOrEmpty(value);
-        //    }
-        //    catch (SecurityException)
-        //    {
-        //    }
-        //}
-
-        //internal void Load(IDictionary envVariables)
-        //{
-        //    Data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        //    var filteredEnvVariables = envVariables
-        //        .Cast<DictionaryEntry>()
-        //        .SelectMany(AzureEnvToAppEnv)
-        //        .Where(entry => ((string)entry.Key).StartsWith(_prefix, StringComparison.OrdinalIgnoreCase));
-
-        //    foreach (var envVariable in filteredEnvVariables)
-        //    {
-        //        var key = ((string)envVariable.Key).Substring(_prefix.Length);
-        //        Data[key] = (string)envVariable.Value;
-        //    }
-        //}
-
-        //private static string NormalizeKey(string key)
-        //{
-        //    return key.Replace("__", ConfigurationPath.KeyDelimiter);
-        //}
-
-        //private static IEnumerable<DictionaryEntry> AzureEnvToAppEnv(DictionaryEntry entry)
-        //{
-        //    var key = (string)entry.Key;
-        //    var prefix = string.Empty;
-        //    var provider = string.Empty;
-
-        //    if (key.StartsWith(MySqlServerPrefix, StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        prefix = MySqlServerPrefix;
-        //        provider = "MySql.Data.MySqlClient";
-        //    }
-        //    else if (key.StartsWith(SqlAzureServerPrefix, StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        prefix = SqlAzureServerPrefix;
-        //        provider = "System.Data.SqlClient";
-        //    }
-        //    else if (key.StartsWith(SqlServerPrefix, StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        prefix = SqlServerPrefix;
-        //        provider = "System.Data.SqlClient";
-        //    }
-        //    else if (key.StartsWith(CustomPrefix, StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        prefix = CustomPrefix;
-        //    }
-        //    else
-        //    {
-        //        entry.Key = NormalizeKey(key);
-        //        yield return entry;
-        //        yield break;
-        //    }
-
-        //    // Return the key-value pair for connection string
-        //    yield return new DictionaryEntry(
-        //        string.Format(ConnStrKeyFormat, NormalizeKey(key.Substring(prefix.Length))),
-        //        entry.Value);
-
-        //    if (!string.IsNullOrEmpty(provider))
-        //    {
-        //        // Return the key-value pair for provider name
-        //        yield return new DictionaryEntry(
-        //            string.Format(ProviderKeyFormat, NormalizeKey(key.Substring(prefix.Length))),
-        //            provider);
-        //    }
-        //}
 
         /// <summary>
         /// The configuration key value pairs for this provider.
         /// </summary>
         protected ConcurrentDictionary<string, string> Data { get; set; }
-
-        /// <summary>
-        /// Attempts to find a value with the given key, returns true if one is found, false otherwise.
-        /// </summary>
-        /// <param name="key">The key to lookup.</param>
-        /// <param name="value">The value found at key if one is found.</param>
-        /// <returns>True if key has a value, false otherwise.</returns>
-        //public virtual bool TryGet(string key, out string value)             => Data.TryGetValue(key, out value);
 
         public virtual bool TryGet(string key, out string value)
         {
@@ -216,4 +119,5 @@ namespace ICU4N.Configuration
         }
     }
 }
+
 #endif

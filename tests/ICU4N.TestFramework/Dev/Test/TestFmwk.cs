@@ -100,7 +100,9 @@ namespace ICU4N.Dev.Test
         public virtual void TestInitialize()
         {
             this.CurrentCulture = defaultLocale;
-
+#if !NET40
+            ConfigurationSettings.SetConfigurationRootFactory(ConfigurationFactory);
+#endif
             //TimeZone.setDefault(defaultTimeZone);
 
             //if (getParams().testSecurityManager != null)

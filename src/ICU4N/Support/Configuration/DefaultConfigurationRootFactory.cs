@@ -12,19 +12,36 @@ using Microsoft.Extensions.Primitives;
 
 namespace ICU4N.Configuration
 {
+    /*
+    * Licensed to the Apache Software Foundation (ASF) under one or more
+    * contributor license agreements.  See the NOTICE file distributed with
+    * this work for additional information regarding copyright ownership.
+    * The ASF licenses this file to You under the Apache License, Version 2.0
+    * (the "License"); you may not use this file except in compliance with
+    * the License.  You may obtain a copy of the License at
+    *
+    *     http://www.apache.org/licenses/LICENSE-2.0
+    *
+    * Unless required by applicable law or agreed to in writing, software
+    * distributed under the License is distributed on an "AS IS" BASIS,
+    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    * See the License for the specific language governing permissions and
+    * limitations under the License.
+    */
     internal class DefaultConfigurationRootFactory : IConfigurationRootFactory
     {
-        private readonly bool ignoreSecurityExceptionsOnRead;
         private bool initialized = false;
         protected object m_initializationLock = new object();
-        private IConfigurationBuilder builder { get; }
+        private readonly IConfigurationBuilder builder;
         private IConfigurationRoot configuration;
 
-        public DefaultConfigurationRootFactory(bool ignoreSecurityExceptionsOnRead)
+        /// <summary>
+        /// Creates a new LuceneDefaultConfigurationSource to read environment variables
+        /// </summary>
+        public DefaultConfigurationRootFactory(bool ignoreSecurityExceptionsOnRead = true)
         {
             this.builder = new ConfigurationBuilder();
-            builder.Add(new ICU4NDefaultConfigurationSource() { Prefix = "lucene:" });
-            this.ignoreSecurityExceptionsOnRead = ignoreSecurityExceptionsOnRead;
+            builder.Add(new ICU4NDefaultConfigurationSource() { Prefix = "lucene:", IgnoreSecurityExceptionsOnRead = ignoreSecurityExceptionsOnRead });
         }
 
         public virtual IConfigurationRoot CreateConfiguration()
@@ -51,61 +68,6 @@ namespace ICU4N.Configuration
         {
             return builder.Build();
         }
-        /// <summary>
-        /// Reloads the dependencies of this factory.
-        /// </summary>
-        public void ReloadConfiguration()
-        {
-            CreateConfiguration().Reload();
-        }
     }
-    //internal class DefaultConfiguration : IConfiguration
-    //{
-    //    private readonly bool ignoreSecurityExceptionsOnRead;
-
-    //    public DefaultConfiguration(bool ignoreSecurityExceptionsOnRead)
-    //    {
-    //        this.ignoreSecurityExceptionsOnRead = ignoreSecurityExceptionsOnRead;
-    //    }
-
-    //    public string this[string key]
-    //    {
-    //        get
-    //        {
-    //            if (ignoreSecurityExceptionsOnRead)
-    //            {
-    //                try
-    //                {
-    //                    return Environment.GetEnvironmentVariable(key);
-    //                }
-    //                catch (SecurityException)
-    //                {
-    //                    return null;
-    //                }
-    //            }
-    //            else
-    //            {
-    //                return Environment.GetEnvironmentVariable(key);
-    //            }
-    //        }
-    //        set => Environment.SetEnvironmentVariable(key, value);
-    //    }
-
-    //    public IEnumerable<IConfigurationSection> GetChildren()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public IChangeToken GetReloadToken()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public IConfigurationSection GetSection(string key)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
-
 }
 #endif

@@ -1,4 +1,5 @@
-﻿using ICU4N.Support;
+﻿using ICU4N.Configuration;
+using ICU4N.Support;
 using System.Resources;
 
 namespace ICU4N.Impl
@@ -64,7 +65,7 @@ namespace ICU4N.Impl
 
             try
             {
-                value =  global::ICU4N.ICUConfig.ResourceManager.GetString(name.Replace(".", "_"));
+                value = global::ICU4N.ICUConfig.ResourceManager.GetString(name.Replace(".", "_"));
                 if (value != null)
                     return value;
             }

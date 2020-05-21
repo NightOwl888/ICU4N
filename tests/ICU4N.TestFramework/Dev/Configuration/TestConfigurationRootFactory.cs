@@ -74,24 +74,24 @@ namespace ICU4N.Configuration
 
             return configurationCache.GetOrAdd(testDirectory, (key) =>
             {
-            return new ConfigurationBuilder()
-                //.Add(new LuceneDefaultConfigurationSource() { Prefix = "lucene:" })
-                    .AddJsonFile(JsonTestSettingsFileName)
+                return new ConfigurationBuilder()
+                    .Add(new ICU4NDefaultConfigurationSource() { Prefix = "lucene:" })
+                    //.AddJsonFile(JsonTestSettingsFileName)
 #if TESTFRAMEWORK_NUNIT
                     .AddNUnitTestRunSettings()
 #endif
                     .Build();
             });
         }
-            ///// <summary>
-            ///// Initializes the dependencies of this factory.
-            ///// </summary>
-            //[CLSCompliant(false)]
-            //protected override IConfiguration Initialize()
-            //{
-            //    return builder.Build();
-            //}
-        }
+        ///// <summary>
+        ///// Initializes the dependencies of this factory.
+        ///// </summary>
+        //[CLSCompliant(false)]
+        //protected override IConfiguration Initialize()
+        //{
+        //    return builder.Build();
+        //}
+    }
 
 }
 #endif

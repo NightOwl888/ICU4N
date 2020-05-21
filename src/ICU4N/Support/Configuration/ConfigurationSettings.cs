@@ -1,6 +1,7 @@
 ﻿
 #if !NET40
 using ICU4N.Configuration;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -26,18 +27,19 @@ namespace ICU4N.Configuration
 
     public abstract class ConfigurationSettings
     {
-        private static IConfigurationRootFactory configurationFactory = new DefaultConfigurationRootFactory(false);
+
+        private static IConfigurationRootFactory configurationRootFactory = new DefaultConfigurationRootFactory();
 
         /// <summary>
         /// Sets the <see cref="IConfigurationRootFactory"/> instance used to instantiate
         /// <see cref="ConfigurationSettings"/> subclasses.
         /// </summary>
-        /// <param name="configurationFactory">The new <see cref="IConfigurationRootFactory"/>.</param>
-        /// <exception cref="ArgumentNullException">The <paramref name="configurationFactory"/> parameter is <c>null</c>.</exception>
+        /// <param name="configurationRootFactory">The new <see cref="IConfigurationRootFactory"/>.</param>
+        /// <exception cref="ArgumentNullException">The <paramref name="configurationRootFactory"/> parameter is <c>null</c>.</exception>
         [CLSCompliant(false)]
-        public static void SetConfigurationFactory(IConfigurationRootFactory configurationFactory)
+        public static void SetConfigurationRootFactory(IConfigurationRootFactory configurationRootFactory)
         {
-            ConfigurationSettings.configurationFactory = configurationFactory ?? throw new ArgumentNullException(nameof(configurationFactory));
+            ConfigurationSettings.configurationRootFactory = configurationRootFactory ?? throw new ArgumentNullException(nameof(configurationRootFactory));
         }
 
         /// <summary>
@@ -47,40 +49,13 @@ namespace ICU4N.Configuration
         [CLSCompliant(false)]
         public static IConfigurationRootFactory GetConfigurationFactory()
         {
-            return configurationFactory;
-        }
-
-        public static void Reload()
-        {
-            configurationFactory.ReloadConfiguration();
-        }
-        /*
-         ********
-         * Set IConfigurationBuilder directly instead of going via a factory
-         * 
-        
-        private static IConfigurationBuilder configurationBuilder { get; set; } = new LuceneConfigurationBuilder().Add(new LuceneConfigurationSource());
-        /// <summary>
-        /// Sets the <see cref="IConfigurationFactory"/> instance used to instantiate
-        /// <see cref="ConfigurationSettings"/> subclasses.
-        /// </summary>
-        /// <param name="configurationFactory">The new <see cref="IConfigurationFactory"/>.</param>
-        /// <exception cref="ArgumentNullException">The <paramref name="configurationFactory"/> parameter is <c>null</c>.</exception>
-        [CLSCompliant(false)]
-        public static void SetConfiguration(IConfigurationBuilder configurationBuilder)
-        {
-            ConfigurationSettings.configurationBuilder = configurationBuilder ?? throw new ArgumentNullException(nameof(configurationBuilder));
+            return configurationRootFactory;
         }
         /// <summary>
-        /// Gets the associated ConfigurationSettings factory.
+        /// Returns the current configuration
         /// </summary>
-        /// <returns>The ConfigurationSettings factory.</returns>
         [CLSCompliant(false)]
-        public static IConfigurationRoot GetConfiguration()
-        {
-            return configurationBuilder.Build();
-        }
-        */
+        public static IConfigurationRoot CurrentConfiguration => configurationRootFactory.CreateConfiguration();
     }
 }
 #endif

@@ -1,4 +1,9 @@
-﻿using System;
+﻿
+#if !NET40
+using ICU4N.Configuration;
+using Microsoft.Extensions.Configuration;
+#endif
+using System;
 using System.Security;
 
 namespace ICU4N.Support
@@ -112,6 +117,8 @@ namespace ICU4N.Support
             );
         }
 
+        internal static bool ignoreSecurityExceptions = GetPropertyAsBoolean("icu4n.ignoreSecurityExceptions", true);
+#if NET40
         private static T GetProperty<T>(string key, T defaultValue, Func<string, T> conversionFunction)
         {
             string setting;
@@ -136,7 +143,6 @@ namespace ICU4N.Support
                 : conversionFunction(setting);
         }
 
-        internal static bool ignoreSecurityExceptions = GetPropertyAsBoolean("icu4n.ignoreSecurityExceptions", true);
 
         /// <summary>
         /// Creates, modifies, or deletes an environment variable stored in the current process.
@@ -149,4 +155,30 @@ namespace ICU4N.Support
             Environment.SetEnvironmentVariable(key, value);
         }
     }
+#else
+
+        private static T GetProperty<T>(string key, T defaultValue, Func<string, T> conversionFunction)
+        {
+            IConfiguration configuration = ConfigurationSettings.GetConfigurationFactory().CreateConfiguration();
+            string setting = configuration[key];
+
+            return string.IsNullOrEmpty(setting)
+                ? defaultValue
+                : conversionFunction(setting);
+        }
+
+        /// <summary>
+        /// Creates, modifies, or deletes an environment variable stored in the current process.
+        /// </summary>
+        /// <param name="key">The name of the environment variable.</param>
+        /// <param name="value">The new environment variable value.</param>
+        /// <exception cref="SecurityException">The caller does not have the required permission to perform this operation.</exception>
+        public static void SetProperty(string key, string value)
+        {
+            IConfiguration configuration = ConfigurationSettings.GetConfigurationFactory().CreateConfiguration();
+            configuration[key] = value;
+        }
+    }
+#endif
+
 }
