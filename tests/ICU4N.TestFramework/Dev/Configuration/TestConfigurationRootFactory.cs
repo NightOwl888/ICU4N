@@ -76,7 +76,7 @@ namespace ICU4N.Configuration
             {
                 return new ConfigurationBuilder()
                     .Add(new ICU4NDefaultConfigurationSource() { Prefix = "lucene:" })
-                    //.AddJsonFile(JsonTestSettingsFileName)
+                    .AddJsonFile(JsonTestSettingsFileName)
 #if TESTFRAMEWORK_NUNIT
                     .AddNUnitTestRunSettings()
 #endif

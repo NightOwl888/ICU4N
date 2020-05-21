@@ -13,7 +13,7 @@ namespace ICU4N.Configuration
     /// </summary>
     internal class ConfigurationBuilder : IConfigurationBuilder
     {
-        //#if NETSTANDARD2_X
+//#if NETSTANDARD2_X
 #if NETSTANDARD2_0
         /// <summary>
         /// Returns the sources used to obtain configuration values.
@@ -25,7 +25,7 @@ namespace ICU4N.Configuration
         /// and the registered <see cref="IConfigurationProvider"/>s.
         /// </summary>
         public IDictionary<string, object> Properties { get; } = new Dictionary<string, object>();
-#elif NET45 || NET451 || NETSTANDARD1_3 // || NETSTANDARD2_0
+#elif NET45 || NET451 || NETSTANDARD1_3  //|| NETSTANDARD2_0
         private Dictionary<string, object> _properties = new Dictionary<string, object>();
 
         private IList<IConfigurationSource> _sources = new List<IConfigurationSource>();
