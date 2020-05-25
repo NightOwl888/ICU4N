@@ -2864,6 +2864,74 @@ namespace ICU4N.Dev.Test.Translit
             }
         }
 
+        /**
+         * This test is not in trnstst.cpp. This test has been moved from com/ibm/icu/dev/test/lang/TestUScript.java
+         * during ICU4J modularization to remove dependency of tests on Transliterator.
+         */
+        [Test]
+        public void TestScriptAllCodepointsUsingTry()
+        {
+            int code;
+            HashSet<string> scriptIdsChecked = new HashSet<string>();
+            HashSet<string> scriptAbbrsChecked = new HashSet<string>();
+            for (int i = 0; i <= 0x10ffff; i++)
+            {
+                code = UScript.GetScript(i);
+                if (code == UScript.InvalidCode)
+                {
+                    Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
+                }
+                string id = "";
+                if (!UScript.TryGetName(code, out id))
+                { break; }
+
+                string abbr = "";
+                if (!UScript.TryGetShortName(code, out abbr))
+                { break; }
+
+                if (!scriptIdsChecked.Contains(id))
+                {
+                    scriptIdsChecked.Add(id);
+                    String newId = "[:" + id + ":];NFD";
+                    try
+                    {
+                        Transliterator t = Transliterator.GetInstance(newId);
+                        if (t == null)
+                        {
+                            Errln("Failed to create transliterator for " + Hex(i) +
+                                    " script code: " + id);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Errln("Failed to create transliterator for " + Hex(i)
+                                + " script code: " + id
+                                + " Exception: " + e.ToString());
+                    }
+                }
+                if (!scriptAbbrsChecked.Contains(abbr))
+                {
+                    scriptAbbrsChecked.Add(abbr);
+                    String newAbbrId = "[:" + abbr + ":];NFD";
+                    try
+                    {
+                        Transliterator t = Transliterator.GetInstance(newAbbrId);
+                        if (t == null)
+                        {
+                            Errln("Failed to create transliterator for " + Hex(i) +
+                                    " script code: " + abbr);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Errln("Failed to create transliterator for " + Hex(i)
+                                + " script code: " + abbr
+                                + " Exception: " + e.ToString());
+                    }
+                }
+            }
+        }
+
 
         static readonly string[][] registerRules = {
         new string[] {"Any-Dev1", "x > X; y > Y;"},
