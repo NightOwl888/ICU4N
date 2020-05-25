@@ -269,6 +269,59 @@ namespace ICU4N.Dev.Test.Lang
                 }
             }
         }
+
+        [Test]
+        public void TestScriptNamesUsingTry()
+        {
+            int v, rev;
+            for (int i = 0; i < UScript.CodeLimit; i++)
+            {
+                string name = null;
+                if (UScript.TryGetName(i, out name))
+                {
+                    if (name.Equals(""))
+                    {
+                        Errln("FAILED: getName for code : " + i);
+                    }
+                }
+                else
+                {
+                    break;
+                }
+                if (name != null)
+                {
+                    /* test reverse mapping */
+                    rev = UScript.GetCodeFromName(name);
+                    if (rev != (int)i)
+                    {
+                        Errln("Property round-trip failure: " + i + " -> " +
+                              name + " -> " + rev);
+                    }
+                }
+                string shortName = null;
+                if (UScript.TryGetShortName(i, out shortName))
+                {
+                    if (shortName.Equals(""))
+                    {
+                        Errln("FAILED: getName for code : " + i);
+                    }
+                }
+                else
+                {
+                    break;
+                }
+                if (shortName != null)
+                {
+                    /* test reverse mapping */
+                    rev = UScript.GetCodeFromName(shortName);
+                    if (rev != (int)i)
+                    {
+                        Errln("Property round-trip failure: " + i + " -> " +
+                              shortName + " -> " + rev);
+                    }
+                }
+            }
+        }
         [Test]
         public void TestAllCodepoints()
         {
@@ -292,6 +345,39 @@ namespace ICU4N.Dev.Test.Lang
                 if (abbr.IndexOf("INV", StringComparison.Ordinal) >= 0)
                 {
                     Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
+                }
+            }
+        }
+
+        [Test]
+        public void TestAllCodepointsUsingTry()
+        {
+            int code;
+            //String oldId="";
+            //String oldAbbrId="";
+            for (int i = 0; i <= 0x10ffff; i++)
+            {
+                code = UScript.InvalidCode;
+                code = UScript.GetScript(i);
+                if (code == UScript.InvalidCode)
+                {
+                    Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
+                }
+                string id = null;
+                if (UScript.TryGetName(code, out id)) {
+                    if (id.IndexOf("INVALID", StringComparison.Ordinal) >= 0)
+                    {
+                        Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
+                    }
+                }
+
+                string abbr = null;
+                if (UScript.TryGetShortName(code, out abbr))
+                {
+                    if (abbr.IndexOf("INV", StringComparison.Ordinal) >= 0)
+                    {
+                        Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
+                    }
                 }
             }
         }
@@ -403,6 +489,7 @@ namespace ICU4N.Dev.Test.Lang
                     Errln("UScript.getCode did not return expected code for script" + expectedShort[i] + ". EXPECTED: " + (UScript.Balinese + i) + " GOT: %i\n" + ret[0]);
                 }
             }
+
         }
     }
 }

@@ -97,6 +97,97 @@ namespace ICU4N.Dev.Test.Translit
                 }
             }
         }
+        [Test]
+        public void TestScriptsUsingTry()
+        {
+            // get a couple of characters of each script for testing
+
+            StringBuffer testBuffer = new StringBuffer();
+            for (int script = 0; script < UScript.CodeLimit; ++script)
+            {
+                string name = "";
+                if (UScript.TryGetName(script, out name))
+                {
+
+                    UnicodeSet test = new UnicodeSet().ApplyPropertyAlias("script", name);
+                    int count = Math.Min(20, test.Count);
+                    for (int i = 0; i < count; ++i)
+                    {
+                        testBuffer.Append(UTF16.ValueOf(test[i]));
+                    }
+                }
+            }
+            {
+                String test = testBuffer.ToString();
+                Logln("Test line: " + test);
+
+                int inclusion = TestFmwk.GetExhaustiveness();
+                bool testedUnavailableScript = false;
+
+                for (int script = 0; script < UScript.CodeLimit; ++script)
+                {
+                    if (script == UScript.Common || script == UScript.Inherited)
+                    {
+                        continue;
+                    }
+                    // if the inclusion rate is not 10, skip all but a small number of items.
+                    // Make sure, however, that we test at least one unavailable script
+                    if (inclusion < 10 && script != UScript.Latin
+                            && script != UScript.Han
+                            && script != UScript.Hiragana
+                            && testedUnavailableScript
+                            )
+                    {
+                        continue;
+                    }
+
+                    string scriptName = "";
+                    if (UScript.TryGetName(script, out scriptName))
+                    {
+                        ULocale locale = new ULocale(scriptName);
+                        if (locale.GetLanguage().Equals("new") || locale.GetLanguage().Equals("pau"))
+                        {
+                            if (logKnownIssue("11171",
+                                    "long script name loosely looks like a locale ID with a known likely script"))
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                    Transliterator t;
+                    try
+                    {
+                        t = Transliterator.GetInstance("any-" + scriptName);
+                    }
+                    catch (Exception e)
+                    {
+                        testedUnavailableScript = true;
+                        Logln("Skipping unavailable: " + scriptName);
+                        continue; // we don't handle all scripts
+                    }
+                    Logln("Checking: " + scriptName);
+                    if (t != null)
+                    {
+                        t.Transform(test); // just verify we don't crash
+                    }
+
+                    string shortScriptName = "";
+                    if (UScript.TryGetName(script, out scriptName))  // 4-letter script code
+                    {
+                        try
+                        {
+                            t = Transliterator.GetInstance("any-" + shortScriptName);
+                        }
+                        catch (Exception e)
+                        {
+                            Errln("Transliterator.GetInstance() worked for \"any-" + scriptName +
+                                    "\" but not for \"any-" + shortScriptName + '\"');
+                        }
+                    }
+                    t.Transform(test); // just verify we don't crash
+                }
+            }
+        }
 
         /**
          * Check to make sure that wide characters are converted when going to narrow scripts.
