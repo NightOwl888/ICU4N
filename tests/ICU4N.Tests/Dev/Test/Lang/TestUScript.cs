@@ -11,8 +11,8 @@ namespace ICU4N.Dev.Test.Lang
     public class TestUScript : TestFmwk
     {
         /**
-    * Constructor
-    */
+        * Constructor
+        */
         public TestUScript()
         {
         }
@@ -276,17 +276,9 @@ namespace ICU4N.Dev.Test.Lang
             int v, rev;
             for (int i = 0; i < UScript.CodeLimit; i++)
             {
-                string name = null;
-                if (UScript.TryGetName(i, out name))
+                if (!UScript.TryGetName(i, out string name) || name.Equals(""))
                 {
-                    if (name.Equals(""))
-                    {
-                        Errln("FAILED: getName for code : " + i);
-                    }
-                }
-                else
-                {
-                    break;
+                    Errln("FAILED: getName for code : " + i);
                 }
                 if (name != null)
                 {
@@ -298,17 +290,9 @@ namespace ICU4N.Dev.Test.Lang
                               name + " -> " + rev);
                     }
                 }
-                string shortName = null;
-                if (UScript.TryGetShortName(i, out shortName))
+                if (!UScript.TryGetShortName(i, out string shortName) || shortName.Equals(""))
                 {
-                    if (shortName.Equals(""))
-                    {
-                        Errln("FAILED: getName for code : " + i);
-                    }
-                }
-                else
-                {
-                    break;
+                    Errln("FAILED: getName for code : " + i);
                 }
                 if (shortName != null)
                 {
@@ -322,6 +306,7 @@ namespace ICU4N.Dev.Test.Lang
                 }
             }
         }
+
         [Test]
         public void TestAllCodepoints()
         {
@@ -334,17 +319,17 @@ namespace ICU4N.Dev.Test.Lang
                 code = UScript.GetScript(i);
                 if (code == UScript.InvalidCode)
                 {
-                    Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
+                    Errln("UScript.GetScript for codepoint 0x" + Hex(i) + " failed");
                 }
                 String id = UScript.GetName(code);
                 if (id.IndexOf("INVALID", StringComparison.Ordinal) >= 0)
                 {
-                    Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
+                    Errln("UScript.GetScript for codepoint 0x" + Hex(i) + " failed");
                 }
                 String abbr = UScript.GetShortName(code);
                 if (abbr.IndexOf("INV", StringComparison.Ordinal) >= 0)
                 {
-                    Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
+                    Errln("UScript.GetScript for codepoint 0x" + Hex(i) + " failed");
                 }
             }
         }
@@ -353,34 +338,20 @@ namespace ICU4N.Dev.Test.Lang
         public void TestAllCodepointsUsingTry()
         {
             int code;
-            //String oldId="";
-            //String oldAbbrId="";
             for (int i = 0; i <= 0x10ffff; i++)
             {
-                code = UScript.InvalidCode;
                 code = UScript.GetScript(i);
                 if (code == UScript.InvalidCode)
-                {
-                    Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
-                }
-                string id = null;
-                if (UScript.TryGetName(code, out id)) {
-                    if (id.IndexOf("INVALID", StringComparison.Ordinal) >= 0)
-                    {
-                        Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
-                    }
-                }
+                    Errln("UScript.GetScript for codepoint 0x" + Hex(i) + " failed");
 
-                string abbr = null;
-                if (UScript.TryGetShortName(code, out abbr))
-                {
-                    if (abbr.IndexOf("INV", StringComparison.Ordinal) >= 0)
-                    {
-                        Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
-                    }
-                }
+                if (!UScript.TryGetName(code, out string id) || id.IndexOf("INVALID", StringComparison.Ordinal) >= 0)
+                    Errln("UScript.GetScript for codepoint 0x" + Hex(i) + " failed");
+
+                if (!UScript.TryGetShortName(code, out string abbr) || abbr.IndexOf("INV", StringComparison.Ordinal) >= 0)
+                    Errln("UScript.GetScript for codepoint 0x" + Hex(i) + " failed");
             }
         }
+
         [Test]
         public void TestNewCode()
         {
@@ -489,7 +460,6 @@ namespace ICU4N.Dev.Test.Lang
                     Errln("UScript.getCode did not return expected code for script" + expectedShort[i] + ". EXPECTED: " + (UScript.Balinese + i) + " GOT: %i\n" + ret[0]);
                 }
             }
-
         }
     }
 }
