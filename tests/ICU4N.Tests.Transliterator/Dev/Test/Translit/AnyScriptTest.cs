@@ -97,6 +97,7 @@ namespace ICU4N.Dev.Test.Translit
                 }
             }
         }
+
         [Test]
         public void TestScriptsUsingTry()
         {
@@ -105,10 +106,8 @@ namespace ICU4N.Dev.Test.Translit
             StringBuffer testBuffer = new StringBuffer();
             for (int script = 0; script < UScript.CodeLimit; ++script)
             {
-                string name = "";
-                if (UScript.TryGetName(script, out name))
+                if (UScript.TryGetName(script, out string name))
                 {
-
                     UnicodeSet test = new UnicodeSet().ApplyPropertyAlias("script", name);
                     int count = Math.Min(20, test.Count);
                     for (int i = 0; i < count; ++i)
@@ -118,7 +117,7 @@ namespace ICU4N.Dev.Test.Translit
                 }
             }
             {
-                String test = testBuffer.ToString();
+                string test = testBuffer.ToString();
                 Logln("Test line: " + test);
 
                 int inclusion = TestFmwk.GetExhaustiveness();
@@ -141,8 +140,7 @@ namespace ICU4N.Dev.Test.Translit
                         continue;
                     }
 
-                    string scriptName = "";
-                    if (UScript.TryGetName(script, out scriptName))
+                    if (UScript.TryGetName(script, out string scriptName))
                     {
                         ULocale locale = new ULocale(scriptName);
                         if (locale.GetLanguage().Equals("new") || locale.GetLanguage().Equals("pau"))
