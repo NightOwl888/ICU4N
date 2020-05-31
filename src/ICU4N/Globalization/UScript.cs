@@ -1587,7 +1587,7 @@ namespace ICU4N.Globalization
         /// <returns>true if the script code is valid, otherwise false.</returns>
         /// <seealso cref="GetName(int)"/>
         /// <stable>ICU4N 60.1.0</stable>
-        public static bool TryGetName(int scriptCode, out string result) // ICU4N TODO: Tests
+        public static bool TryGetName(int scriptCode, out string result)
         {
             return UChar.TryGetPropertyValueName(UProperty.Script,
                     scriptCode,
@@ -1622,7 +1622,7 @@ namespace ICU4N.Globalization
         /// <exception cref="ArgumentException">If the script code is not valid.</exception>
         /// <seealso cref="GetShortName(int)"/>
         /// <stable>ICU4N 60.1.0</stable>
-        public static bool TryGetShortName(int scriptCode, out string result) // ICU4N TODO: Tests
+        public static bool TryGetShortName(int scriptCode, out string result)
         {
             return UChar.TryGetPropertyValueName(UProperty.Script,
                     scriptCode,
