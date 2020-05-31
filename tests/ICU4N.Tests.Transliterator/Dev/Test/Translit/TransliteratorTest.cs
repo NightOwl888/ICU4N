@@ -2881,18 +2881,17 @@ namespace ICU4N.Dev.Test.Translit
                 {
                     Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
                 }
-                string id = "";
-                if (!UScript.TryGetName(code, out id))
-                { break; }
 
-                string abbr = "";
-                if (!UScript.TryGetShortName(code, out abbr))
-                { break; }
+                if (!UScript.TryGetName(code, out string id))
+                    Errln("UScript.TryGetName for codepoint 0x" + Hex(i) + " failed");
+
+                if (!UScript.TryGetShortName(code, out string abbr))
+                    Errln("UScript.TryGetShortName for codepoint 0x" + Hex(i) + " failed");
 
                 if (!scriptIdsChecked.Contains(id))
                 {
                     scriptIdsChecked.Add(id);
-                    String newId = "[:" + id + ":];NFD";
+                    string newId = "[:" + id + ":];NFD";
                     try
                     {
                         Transliterator t = Transliterator.GetInstance(newId);
@@ -2934,15 +2933,15 @@ namespace ICU4N.Dev.Test.Translit
 
 
         static readonly string[][] registerRules = {
-        new string[] {"Any-Dev1", "x > X; y > Y;"},
-        new string[] {"Any-Dev2", "XY > Z"},
-        new string[] {"Greek-Latin/FAKE",
-            "[^[:L:][:M:]] { \u03bc\u03c0 > b ; "+
-            "\u03bc\u03c0 } [^[:L:][:M:]] > b ; "+
-            "[^[:L:][:M:]] { [\u039c\u03bc][\u03a0\u03c0] > B ; "+
-            "[\u039c\u03bc][\u03a0\u03c0] } [^[:L:][:M:]] > B ;"
-        },
-    };
+            new string[] {"Any-Dev1", "x > X; y > Y;"},
+            new string[] {"Any-Dev2", "XY > Z"},
+            new string[] {"Greek-Latin/FAKE",
+                "[^[:L:][:M:]] { \u03bc\u03c0 > b ; "+
+                "\u03bc\u03c0 } [^[:L:][:M:]] > b ; "+
+                "[^[:L:][:M:]] { [\u039c\u03bc][\u03a0\u03c0] > B ; "+
+                "[\u039c\u03bc][\u03a0\u03c0] } [^[:L:][:M:]] > B ;"
+            },
+        };
 
         internal static readonly String DESERET_DEE = UTF16.ValueOf(0x10414);
         internal static readonly String DESERET_dee = UTF16.ValueOf(0x1043C);
@@ -2991,7 +2990,7 @@ namespace ICU4N.Dev.Test.Translit
                     new string[] {"Upper", "tat\u02B9\u00E2na", "TAT\u02B9\u00C2NA"},
                     new string[] {"Lower", "TAT\u02B9\u00C2NA", "tat\u02B9\u00E2na"},
                     new string[] {"Title", "tat\u02B9\u00E2na", "Tat\u02B9\u00E2na"},
-    };
+        };
 
         [Test]
         public void TestSpecialCases()
