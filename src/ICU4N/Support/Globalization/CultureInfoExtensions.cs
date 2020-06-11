@@ -1,25 +1,87 @@
-﻿using System;
+﻿using ICU4N.Impl;
+using ICU4N.Impl.Locale;
+using J2N.Collections.Concurrent;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace ICU4N.Support.Globalization
+namespace ICU4N.Globalization
 {
-    internal static class CultureInfoExtensions
+    /// <summary>
+    /// Extensions to <see cref="CultureInfo"/>.
+    /// </summary>
+    public static class CultureInfoExtensions
     {
-        public static string GetLanguage(this CultureInfo culture)
+        private static readonly LurchTable<CultureInfo, UCultureInfo> uCultureInfoCache = new LurchTable<CultureInfo, UCultureInfo>(LurchTableOrder.Access, limit: 64, comparer: null);
+
+        /// <summary>
+        /// <icu/> Returns a <see cref="UCultureInfo"/> object for a <see cref="CultureInfo"/>.
+        /// The <see cref="UCultureInfo"/> is canonicalized.
+        /// </summary>
+        /// <param name="culture"></param>
+        /// <returns></returns>
+        public static UCultureInfo ToUCultureInfo(this CultureInfo culture)
         {
-            throw new NotImplementedException(); // ICU4N TODO: Implement or find a better approach
+            if (culture == null)
+                return null;
+
+            if (culture is UCultureInfo uCulture)
+                return uCulture;
+
+            return uCultureInfoCache.GetOrAdd(culture, (key) => UCultureInfo.DotNetLocaleHelper.ToUCultureInfo(key));
         }
 
-        public static string GetCountry(this CultureInfo culture)
-        {
-            throw new NotImplementedException(); // ICU4N TODO: Implement or find a better approach
-        }
+        ///// <summary>
+        ///// Returns the language code for this <paramref name="culture"/>, which will either be the empty string
+        ///// or a lowercase ISO 639 code.
+        ///// </summary>
+        ///// <param name="culture"></param>
+        ///// <returns></returns>
+        //// ICU4N TODO: Add seealso's
+        //public static string GetLanguage(this CultureInfo culture)
+        //{
+        //    return Base(culture).GetLanguage();
+        //}
 
-        public static string GetVariant(this CultureInfo culture)
-        {
-            throw new NotImplementedException(); // ICU4N TODO: Implement or find a better approach
-        }
+        //public static string GetScript(this CultureInfo culture)
+        //{
+        //    return Base(culture).GetScript();
+        //}
+
+        //public static string GetCountry(this CultureInfo culture)
+        //{
+        //    return Base(culture).GetRegion();
+        //}
+
+        //public static string GetVariant(this CultureInfo culture)
+        //{
+        //    return Base(culture).GetVariant();
+        //}
+
+        //private static readonly LurchTable<string, BaseLocale> baseLocales = new LurchTable<string, BaseLocale>(LurchTableOrder.Access, limit: 64, comparer: null);
+
+        //internal static BaseLocale Base(this CultureInfo culture)
+        //{
+        //    if (culture == null)
+        //        throw new ArgumentNullException(nameof(culture));
+
+        //    string localeID = culture.ToString();
+        //    return baseLocales.GetOrAdd(localeID, (key) =>
+        //    {
+        //        string language, script, region, variant;
+        //        language = script = region = variant = string.Empty;
+        //        if (!culture.Equals(CultureInfo.InvariantCulture))
+        //        {
+        //            LocaleIDParser lp = new LocaleIDParser(localeID);
+        //            language = lp.GetLanguage();
+        //            script = lp.GetScript();
+        //            region = lp.GetCountry();
+        //            variant = lp.GetVariant();
+        //        }
+        //        return BaseLocale.GetInstance(language, script, region, variant);
+        //    });
+        //}
     }
 }

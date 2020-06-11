@@ -295,10 +295,15 @@ namespace ICU4N.Impl
             return name;
         }
 
-        public override string LocaleDisplayName(ULocale locale)
+        public override string LocaleDisplayName(ULocale locale) // ICU4N TODO: API - remove
         {
             return LocaleDisplayNameInternal(locale);
         }
+
+        //public override string LocaleDisplayName(UCultureInfo locale)
+        //{
+        //    return LocaleDisplayNameInternal(locale);
+        //}
 
         public override string LocaleDisplayName(CultureInfo locale)
         {

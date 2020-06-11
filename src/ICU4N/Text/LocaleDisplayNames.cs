@@ -595,10 +595,15 @@ namespace ICU4N.Text
                 return result;
             }
 
-            public override string LocaleDisplayName(ULocale locale)
+            public override string LocaleDisplayName(ULocale locale) // ICU4N TODO: API - remove
             {
                 return locale.GetName();
             }
+
+            //public override string LocaleDisplayName(UCultureInfo locale)
+            //{
+            //    return locale.FullName;
+            //}
 
             public override string LocaleDisplayName(CultureInfo locale)
             {

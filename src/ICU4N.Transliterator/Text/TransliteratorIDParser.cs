@@ -6,7 +6,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
-using J2N.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text

@@ -637,7 +637,7 @@ namespace ICU4N.Dev.Test.Lang
                             String lang = "";
                             if (locale != null)
                             {
-                                lang = locale.GetLanguage();
+                                lang = ULocale.GetLanguage(locale.Name);
                             }
                             if (lang.Equals("tr") || lang.Equals("az"))
                             {
@@ -670,7 +670,7 @@ namespace ICU4N.Dev.Test.Lang
                             String lang = "";
                             if (locale != null)
                             {
-                                lang = locale.GetLanguage();
+                                lang = ULocale.GetLanguage(locale.Name);
                             }
                             if (lang.Equals("tr") || lang.Equals("az"))
                             {
