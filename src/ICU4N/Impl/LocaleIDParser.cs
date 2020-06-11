@@ -1,6 +1,7 @@
 ﻿using ICU4N.Impl.Locale;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
+using J2N.Collections.Generic.Extensions;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
@@ -700,8 +701,15 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a map of the keywords and values, or null if there are none.
         /// </summary>
-        public IDictionary<string, string> GetKeywordMap()
-        {
+#if FEATURE_READONLYDICTIONARY
+        public IReadOnlyDictionary<string, string> Keywords
+#else
+        public IDictionary<string, string> Keywords
+#endif
+            => GetKeywords().AsReadOnly();
+
+        private IDictionary<string, string> GetKeywords()
+        { 
             if (keywords == null)
             {
                 IDictionary<string, string> m = null;
@@ -746,7 +754,7 @@ namespace ICU4N.Impl
                         m[key] = value;
                     } while (Next() == ITEM_SEPARATOR);
                 }
-                keywords = m != null ? m : new Dictionary<string, string>();
+                keywords = m ?? new Dictionary<string, string>();
             }
 
             return keywords;
@@ -758,7 +766,7 @@ namespace ICU4N.Impl
         private int ParseKeywords()
         {
             int oldBlen = buffer.Length;
-            var m = GetKeywordMap();
+            var m = GetKeywords();
             if (m.Count > 0)
             {
                 bool first = true;
@@ -779,22 +787,13 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Returns an iterator over the keywords, or null if we have an empty map.
-        /// </summary>
-        public IEnumerator<string> GetKeywords()
-        {
-            IDictionary<string, string> m = GetKeywordMap();
-            return !m.Any() ? null : m.Keys.GetEnumerator();
-        }
-
-        /// <summary>
         /// Returns the value for the named keyword, or null if the keyword is not
         /// present.
         /// </summary>
         public string GetKeywordValue(string keywordName)
         {
-            var m = GetKeywordMap();
-            return !m.Any() ? null : m.Get(AsciiUtil.ToLower(keywordName.Trim()));
+            var m = GetKeywords();
+            return m.Count == 0 ? null : m.Get(AsciiUtil.ToLower(keywordName.Trim()));
         }
 
         /// <summary>
@@ -847,8 +846,8 @@ namespace ICU4N.Impl
                         throw new ArgumentException("value must not be empty");
                     }
                 }
-                var m = GetKeywordMap();
-                if (!m.Any())
+                var m = GetKeywords();
+                if (m.Count == 0)
                 { // it is EMPTY_MAP
                     if (value != null)
                     {
@@ -868,7 +867,7 @@ namespace ICU4N.Impl
                         else
                         {
                             m.Remove(keywordName);
-                            if (!m.Any())
+                            if (m.Count == 0)
                             {
                                 // force new map
                                 keywords = new Dictionary<string, string>();

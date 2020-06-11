@@ -11,7 +11,19 @@
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
-  <!-- Features in .NET Framework 4+, .NET Standard 2.x, .NET Core 2.x, and .NET Core 3.x -->
+  <!-- Features in .NET Framework 4.5+, .NET Standard 2.x, .NET Core 2.x, and .NET Core 3.x -->
+  <PropertyGroup Condition=" '$(TargetFramework)' != 'net40' And ($(TargetFramework.StartsWith('net4')) Or $(TargetFramework.StartsWith('netstandard2.')) Or $(TargetFramework.StartsWith('netcoreapp2.')) Or $(TargetFramework.StartsWith('netcoreapp3.'))) ">
+
+    <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_DEFAULTTHREADCURRENTCULTURE</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_EXCEPTION_HRESULT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_MICROSOFT_EXTENSIONS_CACHING</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_READONLYDICTIONARY</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_REGEX_MATCHTIMEOUT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_TYPEDWEAKREFERENCE</DefineConstants>
+    
+  </PropertyGroup>
+
+    <!-- Features in .NET Framework 4+, .NET Standard 2.x, .NET Core 2.x, and .NET Core 3.x -->
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('net4')) Or $(TargetFramework.StartsWith('netstandard2.')) Or $(TargetFramework.StartsWith('netcoreapp2.')) Or $(TargetFramework.StartsWith('netcoreapp3.')) ">
 
     <DefineConstants>$(DefineConstants);FEATURE_SERIALIZABLE</DefineConstants>
@@ -36,6 +48,12 @@
     <DefineConstants>$(DefineConstants);NETCOREAPP1_X</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_UNKNOWNLANGUAGE</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TYPEEXTENSIONS_GETTYPEINFO</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_DEFAULTTHREADCURRENTCULTURE</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_EXCEPTION_HRESULT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_MICROSOFT_EXTENSIONS_CACHING</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_READONLYDICTIONARY</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_REGEX_MATCHTIMEOUT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_TYPEDWEAKREFERENCE</DefineConstants>
 
   </PropertyGroup>
 
@@ -46,17 +64,6 @@
     <DefineConstants>$(DefineConstants);FEATURE_SERIALIZABLE_EXCEPTIONS</DefineConstants>
 
     <DebugType>full</DebugType>
-  </PropertyGroup>
-
-  <!-- Features not in .NET Framework 4.0 -->
-  <PropertyGroup Condition="'$(TargetFramework)' != 'net40'">
-
-    <DefineConstants>$(DefineConstants);FEATURE_MICROSOFT_EXTENSIONS_CACHING</DefineConstants>
-    <DefineConstants>$(DefineConstants);FEATURE_REGEX_MATCHTIMEOUT</DefineConstants>
-    <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_DEFAULTTHREADCURRENTCULTURE</DefineConstants>
-    <DefineConstants>$(DefineConstants);FEATURE_EXCEPTION_HRESULT</DefineConstants>
-    <DefineConstants>$(DefineConstants);FEATURE_TYPEDWEAKREFERENCE</DefineConstants>
-
   </PropertyGroup>
 
   <PropertyGroup>

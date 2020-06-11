@@ -1225,7 +1225,7 @@ namespace ICU4N.Util
          */
         public static IEnumerator<string> GetKeywords(string localeID)
         {
-            return new LocaleIDParser(localeID).GetKeywords();
+            return new LocaleIDParser(localeID).Keywords.Keys.GetEnumerator();
         }
 
         /**
