@@ -311,7 +311,7 @@ namespace ICU4N.Globalization
         /// <seealso cref="DisplayLanguage"/>
         /// <seealso cref="GetDisplayLanguage(UCultureInfo)"/>
         /// <stable>ICU4N 60</stable>
-        public string Language => Base.GetLanguage();
+        public string Language => Base.Language;
 
         /// <summary>
         /// Returns the language code for the locale ID,
@@ -334,7 +334,7 @@ namespace ICU4N.Globalization
         /// <seealso cref="DisplayScript"/>
         /// <seealso cref="GetDisplayScript(UCultureInfo)"/>
         /// <stable>ICU4N 60</stable>
-        public string Script => Base.GetScript();
+        public string Script => Base.Script;
 
         /// <summary>
         /// <icu/> Returns the script code for the specified <paramref name="localeID"/>, 
@@ -357,7 +357,7 @@ namespace ICU4N.Globalization
         /// <seealso cref="DisplayCountry"/>
         /// <seealso cref="GetDisplayCountry(UCultureInfo)"/>
         /// <stable>ICU4N 60</stable>
-        public string Country => Base.GetRegion();
+        public string Country => Base.Region;
 
         /// <summary>
         /// <icu/> Returns the country/region code for the specified <paramref name="localeID"/>,
@@ -379,7 +379,7 @@ namespace ICU4N.Globalization
         /// <seealso cref="DisplayVariant"/>
         /// <seealso cref="GetDisplayVariant(UCultureInfo)"/>
         /// <stable>ICU4N 60</stable>
-        public string Variant => Base.GetVariant();
+        public string Variant => Base.Variant;
 
         /// <summary>
         /// <icu/> Returns the variant code for the specified <paramref name="localeID"/>,
@@ -893,8 +893,8 @@ namespace ICU4N.Globalization
 
         private static UCultureInfo GetInstance(BaseLocale @base, LocaleExtensions exts)
         {
-            string id = LscvToID(@base.GetLanguage(), @base.GetScript(), @base.GetRegion(),
-                    @base.GetVariant());
+            string id = LscvToID(@base.Language, @base.Script, @base.Region,
+                    @base.Variant);
 
             var extKeys = exts.Keys;
             if (extKeys.Count > 0)
@@ -917,7 +917,7 @@ namespace ICU4N.Globalization
                             string lkey = ToLegacyKey(bcpKey);
                             string ltype = ToLegacyType(bcpKey, ((bcpType.Length == 0) ? "yes" : bcpType)); // use "yes" as the value of typeless keywords
                                                                                                             // special handling for u-va-posix, since this is a variant, not a keyword
-                            if (lkey.Equals("va") && ltype.Equals("posix") && @base.GetVariant().Length == 0)
+                            if (lkey.Equals("va") && ltype.Equals("posix") && @base.Variant.Length == 0)
                             {
                                 id = id + "_POSIX";
                             }

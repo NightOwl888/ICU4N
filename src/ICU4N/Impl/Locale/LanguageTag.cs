@@ -456,10 +456,10 @@ namespace ICU4N.Impl.Locale
         {
             LanguageTag tag = new LanguageTag();
 
-            string language = baseLocale.GetLanguage();
-            string script = baseLocale.GetScript();
-            string region = baseLocale.GetRegion();
-            string variant = baseLocale.GetVariant();
+            string language = baseLocale.Language;
+            string script = baseLocale.Script;
+            string region = baseLocale.Region;
+            string variant = baseLocale.Variant;
 
             bool hasSubtag = false;
 

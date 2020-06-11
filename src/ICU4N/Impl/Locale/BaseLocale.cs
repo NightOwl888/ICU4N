@@ -1,5 +1,4 @@
-﻿using ICU4N.Support.Text;
-using J2N.Text;
+﻿using J2N.Text;
 using System;
 using System.Text;
 
@@ -72,27 +71,13 @@ namespace ICU4N.Impl.Locale
             return baseLocale;
         }
 
-        // ICU4N TODO: API Holding out hope that we can patch CultureInfo with extension methods
-        // similar to these. For now, we should not make these properties.
-        public string GetLanguage()
-        {
-            return _language;
-        }
+        public string Language => _language;
 
-        public string GetScript()
-        {
-            return _script;
-        }
+        public string Script => _script;
 
-        public string GetRegion()
-        {
-            return _region;
-        }
+        public string Region => _region;
 
-        public string GetVariant()
-        {
-            return _variant;
-        }
+        public string Variant => _variant;
 
 
         public override bool Equals(object obj)
@@ -189,25 +174,13 @@ namespace ICU4N.Impl.Locale
 
             private volatile int _hash; // Default to 0
 
-            internal string Lang
-            {
-                get { return _lang; }
-            }
+            internal string Lang => _lang;
 
-            internal string Scrt
-            {
-                get { return _scrt; }
-            }
+            internal string Scrt => _scrt;
 
-            internal string Regn
-            {
-                get { return _regn; }
-            }
+            internal string Regn => _regn;
 
-            internal string Vart
-            {
-                get { return _vart; }
-            }
+            internal string Vart => _vart;
 
             public Key(string language, string script, string region, string variant)
             {

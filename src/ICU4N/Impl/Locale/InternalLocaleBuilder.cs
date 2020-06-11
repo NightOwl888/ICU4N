@@ -428,10 +428,10 @@ namespace ICU4N.Impl.Locale
 
         public InternalLocaleBuilder SetLocale(BaseLocale @base, LocaleExtensions extensions)
         {
-            string language = @base.GetLanguage();
-            string script = @base.GetScript();
-            string region = @base.GetRegion();
-            string variant = @base.GetVariant();
+            string language = @base.Language;
+            string script = @base.Script;
+            string region = @base.Region;
+            string variant = @base.Variant;
 
             // ICU4N TODO: Remove ?
             if (JDKIMPL)

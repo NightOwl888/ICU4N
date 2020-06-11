@@ -911,7 +911,7 @@ namespace ICU4N.Util
          */
         public string GetLanguage()
         {
-            return Base().GetLanguage();
+            return Base().Language;
         }
 
         /**
@@ -935,7 +935,7 @@ namespace ICU4N.Util
          */
         public string GetScript()
         {
-            return Base().GetScript();
+            return Base().Script;
         }
 
         /**
@@ -959,7 +959,7 @@ namespace ICU4N.Util
          */
         public string GetCountry()
         {
-            return Base().GetRegion();
+            return Base().Region;
         }
 
         /**
@@ -1025,7 +1025,7 @@ namespace ICU4N.Util
          */
         public string GetVariant()
         {
-            return Base().GetVariant();
+            return Base().Variant;
         }
 
         /**
@@ -3593,10 +3593,10 @@ namespace ICU4N.Util
             BaseLocale @base = Base();
             LocaleExtensions exts = Extensions();
 
-            if (@base.GetVariant().Equals("POSIX", StringComparison.OrdinalIgnoreCase))
+            if (@base.Variant.Equals("POSIX", StringComparison.OrdinalIgnoreCase))
             {
                 // special handling for variant POSIX
-                @base = BaseLocale.GetInstance(@base.GetLanguage(), @base.GetScript(), @base.GetRegion(), "");
+                @base = BaseLocale.GetInstance(@base.Language, @base.Script, @base.Region, "");
                 if (exts.GetUnicodeLocaleType("va") == null)
                 {
                     // add va-posix
@@ -4339,8 +4339,8 @@ namespace ICU4N.Util
 
         private static ULocale GetInstance(BaseLocale @base, LocaleExtensions exts)
         {
-            string id = LscvToID(@base.GetLanguage(), @base.GetScript(), @base.GetRegion(),
-                    @base.GetVariant());
+            string id = LscvToID(@base.Language, @base.Script, @base.Region,
+                    @base.Variant);
 
             var extKeys = exts.Keys;
             if (extKeys.Any())
@@ -4364,7 +4364,7 @@ namespace ICU4N.Util
                             string lkey = ToLegacyKey(bcpKey);
                             string ltype = ToLegacyType(bcpKey, ((bcpType.Length == 0) ? "yes" : bcpType)); // use "yes" as the value of typeless keywords
                                                                                                             // special handling for u-va-posix, since this is a variant, not a keyword
-                            if (lkey.Equals("va") && ltype.Equals("posix") && @base.GetVariant().Length == 0)
+                            if (lkey.Equals("va") && ltype.Equals("posix") && @base.Variant.Length == 0)
                             {
                                 id = id + "_POSIX";
                             }
