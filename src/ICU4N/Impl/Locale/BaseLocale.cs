@@ -207,18 +207,18 @@ namespace ICU4N.Impl.Locale
                 if (JDKIMPL)
                 {
                     return (this == obj) ||
-                            (obj is Key)
-                            && AsciiUtil.CaseIgnoreMatch(((Key)obj)._lang, this._lang)
-                            && AsciiUtil.CaseIgnoreMatch(((Key)obj)._scrt, this._scrt)
-                            && AsciiUtil.CaseIgnoreMatch(((Key)obj)._regn, this._regn)
-                            && ((Key)obj)._vart.Equals(_vart); // variant is case sensitive in JDK!
+                            (obj is Key key1)
+                            && AsciiUtil.CaseIgnoreMatch(key1._lang, this._lang)
+                            && AsciiUtil.CaseIgnoreMatch(key1._scrt, this._scrt)
+                            && AsciiUtil.CaseIgnoreMatch(key1._regn, this._regn)
+                            && key1._vart.Equals(_vart); // variant is case sensitive in JDK!
                 }
                 return (this == obj) ||
-                        (obj is Key)
-                        && AsciiUtil.CaseIgnoreMatch(((Key)obj)._lang, this._lang)
-                        && AsciiUtil.CaseIgnoreMatch(((Key)obj)._scrt, this._scrt)
-                        && AsciiUtil.CaseIgnoreMatch(((Key)obj)._regn, this._regn)
-                        && AsciiUtil.CaseIgnoreMatch(((Key)obj)._vart, this._vart);
+                        (obj is Key key)
+                        && AsciiUtil.CaseIgnoreMatch(key._lang, this._lang)
+                        && AsciiUtil.CaseIgnoreMatch(key._scrt, this._scrt)
+                        && AsciiUtil.CaseIgnoreMatch(key._regn, this._regn)
+                        && AsciiUtil.CaseIgnoreMatch(key._vart, this._vart);
             }
 
             public virtual int CompareTo(Key other)
