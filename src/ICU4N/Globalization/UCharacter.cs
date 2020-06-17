@@ -879,7 +879,7 @@ namespace ICU4N
         // ICU4N TODO: Tests
         public static bool IsWhiteSpace(char c) // ICU4N specific overload to cover System.Char
         {
-            return IsWhiteSpace(c);
+            return IsWhiteSpace((int)c);
         }
 
         /// <summary>
