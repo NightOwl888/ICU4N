@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
+using DialectHandling = ICU4N.Text.DialectHandling;
 
 namespace ICU4N.Util
 {
@@ -1409,7 +1410,7 @@ namespace ICU4N.Util
          */
         public static string GetISO3Language(string localeID)
         {
-            return LocaleIDs.GetISO3Language(GetLanguage(localeID));
+            return LocaleIDs.GetThreeLetterISOLanguageName(GetLanguage(localeID));
         }
 
         /**
@@ -1435,7 +1436,7 @@ namespace ICU4N.Util
          */
         public static string GetISO3Country(string localeID)
         {
-            return LocaleIDs.GetISO3Country(GetCountry(localeID));
+            return LocaleIDs.GetThreeLetterISOCountryName(GetCountry(localeID));
         }
 
         /**
@@ -4598,12 +4599,12 @@ namespace ICU4N.Util
                 }
 
                 // Calander info
-                var calandarType = loc.Calendar.GetType();
-                if (!calandarType.Equals(typeof(GregorianCalendar)) && 
-                    DOTNET_CALENDARS.TryGetValue(calandarType, out string calendar))
+                var calendarType = loc.DateTimeFormat.Calendar.GetType();
+                if (!calendarType.Equals(typeof(GregorianCalendar)) && 
+                    DOTNET_CALENDARS.TryGetValue(calendarType, out string calendar))
                 {
                     string sep = newName.Contains("@") ? ";" : "@";
-                    newName += string.Concat(sep, "calandar=", calendar);
+                    newName += string.Concat(sep, "calendar=", calendar);
                 }
 
                 //for (int i = 0; i < NET_MAPDATA.Length; i++)

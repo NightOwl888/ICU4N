@@ -4,6 +4,7 @@
     /// Utilities for mapping between old and new language, country, and other
     /// locale ID related names.
     /// </summary>
+     // ICU4N TODO: Move to Globalization namespace
     public static class LocaleIDs // ICU4N specific - marked static, since there are no instance methods or fields
     {
         /// <summary>
@@ -41,7 +42,7 @@
         /// <exception cref="System.Resources.MissingManifestResourceException">Throws <see cref="System.Resources.MissingManifestResourceException"/> if the
         /// three-letter country abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
-        public static string GetISO3Country(string country)
+        public static string GetThreeLetterISOCountryName(string country) // Renamed from GetISO3Country
         {
             int offset = FindIndex(_countries, country);
             if (offset >= 0)
@@ -70,7 +71,7 @@
         /// <exception cref="System.Resources.MissingManifestResourceException">Throws <see cref="System.Resources.MissingManifestResourceException"/> if the
         /// three-letter language abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
-        public static string GetISO3Language(string language)
+        public static string GetThreeLetterISOLanguageName(string language) // ICU4N: Renamed from GetISO3Language
         {
             int offset = FindIndex(_languages, language);
             if (offset >= 0)
