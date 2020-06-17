@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Collections;
+﻿using ICU4N.Globalization;
+using ICU4N.Support.Collections;
 using ICU4N.Support.Globalization;
 using ICU4N.Util;
 using J2N;
@@ -535,7 +536,7 @@ namespace ICU4N.Impl
         /// Get the set of <see cref="ULocale"/>s installed in the specified bundles.
         /// </summary>
         /// <returns>The list of available locales.</returns>
-        public static ULocale[] GetAvailableULocales(string baseName, Assembly assembly) // ICU4N TODO: API - rename GetAvaliableUCultureInfos ?
+        public static ULocale[] GetAvailableULocales(string baseName, Assembly assembly) // ICU4N TODO: API - remove
         {
             return GetAvailEntry(baseName, assembly).GetULocaleList();
         }
@@ -544,9 +545,27 @@ namespace ICU4N.Impl
         /// Get the set of <see cref="ULocale"/>s installed the base bundle.
         /// </summary>
         /// <returns>The list of available locales.</returns>
-        public static ULocale[] GetAvailableULocales() // ICU4N TODO: API - rename GetAvaliableUCultureInfos ?
+        public static ULocale[] GetAvailableULocales() // ICU4N TODO: API - remove
         {
             return GetAvailableULocales(ICUData.IcuBaseName, IcuDataAssembly);
+        }
+
+        /// <summary>
+        /// Get the set of <see cref="ULocale"/>s installed in the specified bundles.
+        /// </summary>
+        /// <returns>The list of available locales.</returns>
+        public static UCultureInfo[] GetAvailableUCultures(string baseName, Assembly assembly)
+        {
+            return GetAvailEntry(baseName, assembly).GetUCultureList();
+        }
+
+        /// <summary>
+        /// Get the set of <see cref="ULocale"/>s installed the base bundle.
+        /// </summary>
+        /// <returns>The list of available locales.</returns>
+        public static UCultureInfo[] GetAvailableUCultures()
+        {
+            return GetAvailableUCultures(ICUData.IcuBaseName, IcuDataAssembly);
         }
 
         /// <summary>
@@ -614,7 +633,7 @@ namespace ICU4N.Impl
         private static readonly bool DEBUG = ICUDebug.Enabled("localedata");
 
         private static ULocale[] CreateULocaleList(string baseName,
-            Assembly root)
+            Assembly root) // ICU4N TODO: API - Remove this
         {
             // the canned list is a subset of all the available .res files, the idea
             // is we don't export them
@@ -640,6 +659,40 @@ namespace ICU4N.Impl
                     else
                     {
                         locales[i++] = new ULocale(locstr);
+                    }
+                }
+            }
+            bundle = null;
+            return locales;
+        }
+
+        private static UCultureInfo[] CreateCultureList(string baseName,
+            Assembly root)
+        {
+            // the canned list is a subset of all the available .res files, the idea
+            // is we don't export them
+            // all. gotta be a better way to do this, since to add a locale you have
+            // to update this list,
+            // and it's embedded in our binary resources.
+            ICUResourceBundle bundle = (ICUResourceBundle)UResourceBundle.InstantiateBundle(baseName, ICU_RESOURCE_INDEX, root, true);
+
+            bundle = (ICUResourceBundle)bundle.Get(InstalledLocales);
+            int length = bundle.Length;
+            int i = 0;
+            UCultureInfo[] locales = new UCultureInfo[length];
+            using (UResourceBundleEnumerator iter = bundle.GetEnumerator())
+            {
+                iter.Reset();
+                while (iter.MoveNext())
+                {
+                    string locstr = iter.Current.Key;
+                    if (locstr.Equals("root"))
+                    {
+                        locales[i++] = UCultureInfo.InvariantCulture.ToUCultureInfo();
+                    }
+                    else
+                    {
+                        locales[i++] = new UCultureInfo(locstr);
                     }
                 }
             }
@@ -805,7 +858,8 @@ namespace ICU4N.Impl
         {
             private string prefix;
             private Assembly assembly; // ICU4N specific - renamed loader to assembly
-            private volatile ULocale[] ulocales;
+            private volatile ULocale[] ulocales; // ICU4N TODO: Remove this
+            private volatile UCultureInfo[] uCultureInfos;
             private volatile CultureInfo[] locales;
             private volatile ISet<string> nameSet;
             private volatile ISet<string> fullNameSet;
@@ -816,7 +870,7 @@ namespace ICU4N.Impl
                 this.assembly = assembly;
             }
 
-            internal ULocale[] GetULocaleList()
+            internal ULocale[] GetULocaleList() // ICU4N TODO: API - remove
             {
                 if (ulocales == null)
                 {
@@ -830,11 +884,24 @@ namespace ICU4N.Impl
                 }
                 return ulocales;
             }
+            internal UCultureInfo[] GetUCultureList()
+            {
+                if (uCultureInfos == null)
+                {
+                    lock (this)
+                    {
+                        if (uCultureInfos == null)
+                        {
+                            uCultureInfos = CreateCultureList(prefix, assembly);
+                        }
+                    }
+                }
+                return uCultureInfos;
+            }
             internal CultureInfo[] GetLocaleList()
             {
                 if (locales == null)
                 {
-                    GetULocaleList();
                     lock (this)
                     {
                         if (locales == null)

@@ -9,6 +9,16 @@ namespace ICU4N.Globalization
 {
     public class CultureInfoExtensionsTest : TestFmwk
     {
+        [Test]
+        public void TestToUCultureInfoAllCultures()
+        {
+            var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
+            foreach (var culture in cultures)
+            {
+                Assert.IsNotNull(culture.ToUCultureInfo().culture);
+            }
+        }
+
         //[Test]
         //public void TestAllCultureInfos()
         //{

@@ -1,11 +1,5 @@
-﻿using ICU4N.Impl;
-using ICU4N.Impl.Locale;
-using J2N.Collections.Concurrent;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using J2N.Collections.Concurrent;
 using System.Globalization;
-using System.Text;
 
 namespace ICU4N.Globalization
 {
@@ -20,8 +14,8 @@ namespace ICU4N.Globalization
         /// <icu/> Returns a <see cref="UCultureInfo"/> object for a <see cref="CultureInfo"/>.
         /// The <see cref="UCultureInfo"/> is canonicalized.
         /// </summary>
-        /// <param name="culture"></param>
-        /// <returns></returns>
+        /// <param name="culture">A <see cref="CultureInfo"/> instance.</param>
+        /// <returns>Returns the closest matching <see cref="UCultureInfo"/> instance for the provided <see cref="CultureInfo"/>.</returns>
         public static UCultureInfo ToUCultureInfo(this CultureInfo culture)
         {
             if (culture == null)

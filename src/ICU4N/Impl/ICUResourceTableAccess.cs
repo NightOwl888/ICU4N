@@ -1,4 +1,5 @@
-﻿using ICU4N.Util;
+﻿using ICU4N.Globalization;
+using ICU4N.Util;
 using System;
 
 namespace ICU4N.Impl
@@ -14,10 +15,22 @@ namespace ICU4N.Impl
         /// wrapper for <see cref="GetTableString(ICUResourceBundle, string, string, string, string)"/>.
         /// </summary>
         public static string GetTableString(string path, ULocale locale, string tableName,
-                string itemName, string defaultValue)
+                string itemName, string defaultValue) // ICU4N TODO: API - Remove
         {
             ICUResourceBundle bundle = (ICUResourceBundle)UResourceBundle.
                 GetBundleInstance(path, locale.GetBaseName());
+            return GetTableString(bundle, tableName, null, itemName, defaultValue);
+        }
+
+        /// <summary>
+        /// Utility to fetch locale display data from resource bundle tables.  Convenience
+        /// wrapper for <see cref="GetTableString(ICUResourceBundle, string, string, string, string)"/>.
+        /// </summary>
+        public static string GetTableString(string path, UCultureInfo locale, string tableName,
+                string itemName, string defaultValue)
+        {
+            ICUResourceBundle bundle = (ICUResourceBundle)UResourceBundle.
+                GetBundleInstance(path, locale.Name);
             return GetTableString(bundle, tableName, null, itemName, defaultValue);
         }
 

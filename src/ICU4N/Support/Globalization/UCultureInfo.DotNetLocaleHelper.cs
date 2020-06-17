@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace ICU4N.Globalization
 {
@@ -27,13 +26,6 @@ namespace ICU4N.Globalization
             ///// When an ICU locale matches &lt;minumum base&gt; with
             ///// &lt;keyword>/&tl;value>, the ICU locale is mapped to &lt;.NET> locale.
             ///// </summary>
-            //private static readonly string[][] NET_MAPDATA = { // ICU4N TODO: Do we need different values for .NET Framework/.NET Standard ?
-            //    //  { <Java>,       <ICU base>, <keyword>,  <value>,    <minimum base>
-            //    new string[] { "ja-JP",   "ja_JP",    "calendar", "japanese", "ja"},
-            //    //new string[] { "nn-NO",   "nn_NO",    null,       null,       "nn"},
-            //    new string[] { "th-TH",   "th_TH",    "numbers",  "thai",     "th"},
-            //};
-
             private static readonly string[][] NET_MAPDATA = { // ICU4N TODO: Do we need different values for .NET Framework/.NET Standard ?
                 //  { <Java>,       <ICU base>, <keyword>,  <value>,    <minimum base>
                 //new string[] { "ja-JP",   "ja_JP",    "calendar", "japanese", "ja"},
@@ -55,7 +47,7 @@ namespace ICU4N.Globalization
 
             public static UCultureInfo ToUCultureInfo(CultureInfo loc)
             {
-                if (loc == CultureInfo.InvariantCulture)
+                if (CultureInfo.InvariantCulture.Equals(loc))
                 {
                     return new UCultureInfo("");
                 }
@@ -93,30 +85,80 @@ namespace ICU4N.Globalization
                     newName = "nn_NO";
                 }
 
-                // Calander info
-                var calandarType = loc.Calendar.GetType();
-                if (!calandarType.Equals(typeof(GregorianCalendar)) &&
-                    DOTNET_CALENDARS.TryGetValue(calandarType, out string calendar))
+                // Calander formatting info
+                var calendarType = loc.Calendar.GetType();
+                var formattingCalendarType = loc.DateTimeFormat.Calendar.GetType();
+                if (!calendarType.Equals(typeof(GregorianCalendar)) &&
+                    DOTNET_CALENDARS.TryGetValue(calendarType, out string calendar))
                 {
                     string sep = newName.Contains("@") ? ";" : "@";
-                    newName += string.Concat(sep, "calandar=", calendar);
+                    newName += string.Concat(sep, "calendar=", calendar);
+                }
+                else if (!formattingCalendarType.Equals(typeof(GregorianCalendar)) &&
+                    DOTNET_CALENDARS.TryGetValue(formattingCalendarType, out string formattingCalendar))
+                {
+                    string sep = newName.Contains("@") ? ";" : "@";
+                    newName += string.Concat(sep, "calendar=", formattingCalendar);
                 }
 
-                //for (int i = 0; i < NET_MAPDATA.Length; i++)
-                //{
-                //    if (newName.StartsWith(NET_MAPDATA[i][1], StringComparison.Ordinal) & NET_MAPDATA[i][2] != null)
-                //    {
-                //        string sep = newName.Contains("@") ? ";" : "@";
-                //        newName += string.Concat(sep, NET_MAPDATA[i][2], "=", NET_MAPDATA[i][3]);
-                //    }
-                //}
+
+                    //for (int i = 0; i < NET_MAPDATA.Length; i++)
+                    //{
+                    //    if (newName.StartsWith(NET_MAPDATA[i][1], StringComparison.Ordinal) & NET_MAPDATA[i][2] != null)
+                    //    {
+                    //        string sep = newName.Contains("@") ? ";" : "@";
+                    //        newName += string.Concat(sep, NET_MAPDATA[i][2], "=", NET_MAPDATA[i][3]);
+                    //    }
+                    //}
 
 
-                return new UCultureInfo(newName, loc);
+                    return new UCultureInfo(newName, loc);
             }
 
             public static CultureInfo ToCultureInfo(UCultureInfo uloc)
             {
+                //                CultureInfo loc = null;
+                //                string ulocStr = uloc.FullName;
+                //#if FEATURE_CULTUREINFO_IETFLANGUAGETAG
+                //                //if (uloc.Script.Length > 0 || ulocStr.Contains("@"))
+                //                {
+                //                    // With script or keywords available, the best way
+                //                    // to get a mapped Locale is to go through a language tag.
+                //                    // A Locale with script or keywords can only have variants
+                //                    // that is 1 to 8 alphanum. If this ULocale has a variant
+                //                    // subtag not satisfying the criteria, the variant subtag
+                //                    // will be lost.
+                //                    string tag = uloc.IetfLanguageTag;
+
+                //                    //// Workaround for variant casing problem:
+                //                    ////
+                //                    //// The variant field in ICU is case insensitive and normalized
+                //                    //// to upper case letters by getVariant(), while
+                //                    //// the variant field in JDK Locale is case sensitive.
+                //                    //// ULocale#toLanguageTag use lower case characters for
+                //                    //// BCP 47 variant and private use x-lvariant.
+                //                    ////
+                //                    //// Locale#forLanguageTag in JDK preserves character casing
+                //                    //// for variant. Because ICU always normalizes variant to
+                //                    //// upper case, we convert language tag to upper case here.
+                //                    //tag = tag.ToUpperInvariant();
+
+                //                    loc = CultureInfo.GetCultureInfoByIetfLanguageTag(tag);
+                //                }
+                //#endif
+                //                if (loc == null)
+                //                {
+                //                    // Without script or keywords, use a Locale constructor,
+                //                    // so we can preserve any ill-formed variants.
+                //                    loc = new CultureInfo(
+                //                        uloc.Language + 
+                //                        (uloc.Country.Length > 0 ? '-' + uloc.Country : "") + 
+                //                        (uloc.Variant.Length > 0 ? '-' + uloc.Variant : ""));
+                //                }
+                //                return loc;
+
+
+
                 var name = uloc.FullName;
 
                 if (name.Equals("root", StringComparison.OrdinalIgnoreCase) || name.Equals("any", StringComparison.OrdinalIgnoreCase))
@@ -142,7 +184,7 @@ namespace ICU4N.Globalization
 
                 var parser = new LocaleIDParser(uloc.FullName);
 
-                var newName = parser.GetBaseName().Replace('_', '-');
+                var newName = uloc.IetfLanguageTag; //parser.GetBaseName().Replace('_', '-');
                 var language = parser.GetLanguage();
                 var country = parser.GetCountry();
                 var variant = parser.GetVariant();
