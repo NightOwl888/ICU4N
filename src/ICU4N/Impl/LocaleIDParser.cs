@@ -13,7 +13,7 @@ namespace ICU4N.Impl
     /// <summary>
     /// Utility class to parse and normalize locale ids (including POSIX style)
     /// </summary>
-    public sealed class LocaleIDParser
+    public sealed class LocaleIDParser // ICU4N TODO: Move to Globalization namespace
     {
         /// <summary>
         /// Char array representing the locale ID.

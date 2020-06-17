@@ -12,10 +12,12 @@ using System.Linq;
 using System.Resources;
 using System.Text;
 using System.Threading;
+using DialectHandling = ICU4N.Text.DialectHandling;
+using UiListItem = ICU4N.Text.UiListItem;
 
 namespace ICU4N.Impl
 {
-    public class LocaleDisplayNamesImpl : LocaleDisplayNames
+    public class LocaleDisplayNamesImpl : LocaleDisplayNames // ICU4N TODO: Remove this, as it is only to support ULocale, and we have made a new DataTableCultureDisplayNames class to replace this
     {
         private readonly ULocale locale;
         private readonly DialectHandling dialectHandling;
