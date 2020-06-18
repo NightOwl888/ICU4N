@@ -1510,108 +1510,112 @@ namespace ICU4N.Globalization
             => ICUResourceTableAccess.GetTableString(ICUData.IcuBaseName, this,
                     "layout", "lines", "lines");
 
-        /**
-        * {@icu} Based on a HTTP formatted list of acceptable locales, determine an available
-        * locale for the user.  NullPointerException is thrown if acceptLanguageList or
-        * availableLocales is null.  If fallback is non-null, it will contain true if a
-        * fallback locale (one not in the acceptLanguageList) was returned.  The value on
-        * entry is ignored.  ULocale will be one of the locales in availableLocales, or the
-        * ROOT ULocale if if a ROOT locale was used as a fallback (because nothing else in
-        * availableLocales matched).  No ULocale array element should be null; behavior is
-        * undefined if this is the case.
-        * @param acceptLanguageList list in HTTP "Accept-Language:" format of acceptable locales
-        * @param availableLocales list of available locales. One of these will be returned.
-        * @param fallback if non-null, a 1-element array containing a bool to be set with
-        * the fallback status
-        * @return one of the locales from the availableLocales list, or null if none match
-        * @stable ICU 3.4
-        */
-        public static UCultureInfo AcceptLanguage(string acceptLanguageList, UCultureInfo[] availableLocales,
-                bool[] fallback)
+        /// <summary>
+        /// <icu/> Based on an HTTP formatted list of acceptable cultures, determine an available
+        /// culture for the user. <paramref name="isFallback"/> will be <c>true</c> if a
+        /// fallback culture (one not in the <paramref name="acceptLanguageList"/>) was returned.
+        /// The return value will be one of the cultures in <paramref name="availableCultures"/>, or
+        /// <see cref="CultureInfo.InvariantCulture"/> if an invariant culture was used as a fallback
+        /// (because nothing else in <paramref name="availableCultures"/> matched). No
+        /// <see cref="UCultureInfo"/> in <paramref name="availableCultures"/> should be <c>null</c>;
+        /// an <see cref="ArgumentException"/> will be thrown in this case.
+        /// </summary>
+        /// <param name="acceptLanguageList">List in HTTP "Accept-Language:" format of acceptable cultures.</param>
+        /// <param name="availableCultures">List of available cultures. One of these will be returned.</param>
+        /// <param name="isFallback">Returns the fallback status.</param>
+        /// <returns>One of the cultures from the <paramref name="availableCultures"/> list, or <c>null</c> if none match.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="availableCultures"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">One of the elements of <paramref name="availableCultures"/> is <c>null</c>.</exception>
+        /// <stable>ICU 3.4</stable>
+        public static UCultureInfo AcceptLanguage(string acceptLanguageList, IList<UCultureInfo> availableCultures,
+            out bool isFallback)
         {
             if (acceptLanguageList == null)
-            {
                 throw new ArgumentNullException(nameof(acceptLanguageList));
-            }
-            UCultureInfo[] acceptList = null;
-            try
+            if (availableCultures == null)
+                throw new ArgumentNullException(nameof(availableCultures));
+
+            if (!TryParseAcceptLanguage(acceptLanguageList, true, out IList<UCultureInfo> acceptList))
             {
-                acceptList = ParseAcceptLanguage(acceptLanguageList, true); // ICU4N TODO: TryParseAcceptLanguage
-            }
-            catch (FormatException)
-            {
-                acceptList = null;
-            }
-            if (acceptList == null)
-            {
+                isFallback = false;
                 return null;
             }
-            return AcceptLanguage(acceptList, availableLocales, fallback);
+            return AcceptLanguage(acceptList, availableCultures, out isFallback);
         }
 
-        /**
-         * {@icu} Based on a list of acceptable locales, determine an available locale for the
-         * user.  NullPointerException is thrown if acceptLanguageList or availableLocales is
-         * null.  If fallback is non-null, it will contain true if a fallback locale (one not
-         * in the acceptLanguageList) was returned.  The value on entry is ignored.  ULocale
-         * will be one of the locales in availableLocales, or the ROOT ULocale if if a ROOT
-         * locale was used as a fallback (because nothing else in availableLocales matched).
-         * No ULocale array element should be null; behavior is undefined if this is the case.
-         * @param acceptLanguageList list of acceptable locales
-         * @param availableLocales list of available locales. One of these will be returned.
-         * @param fallback if non-null, a 1-element array containing a bool to be set with
-         * the fallback status
-         * @return one of the locales from the availableLocales list, or null if none match
-         * @stable ICU 3.4
-         */
-
-        public static UCultureInfo AcceptLanguage(UCultureInfo[] acceptLanguageList, UCultureInfo[]
-                availableLocales, bool[] fallback)
+        /// <summary>
+        /// <icu/> Based on an ordered list of acceptable cultures, determine an available
+        /// culture for the user. <paramref name="isFallback"/> will be <c>true</c> if a
+        /// fallback culture (one not in the <paramref name="acceptLanguageList"/>) was returned.
+        /// The return value will be one of the cultures in <paramref name="availableCultures"/>, or
+        /// <see cref="CultureInfo.InvariantCulture"/> if an invariant culture was used as a fallback
+        /// (because nothing else in <paramref name="availableCultures"/> matched). No
+        /// <see cref="UCultureInfo"/> in <paramref name="acceptLanguageList"/> or <paramref name="availableCultures"/>
+        /// should be <c>null</c>; behavior is undefined in this case.
+        /// </summary>
+        /// <param name="acceptLanguageList">Ordered list of acceptable cultures (preferred are listed first).</param>
+        /// <param name="availableCultures">List of available cultures. One of these will be returned.</param>
+        /// <param name="isFallback">Returns the fallback status.</param>
+        /// <returns>One of the cultures from the <paramref name="availableCultures"/> list, or <c>null</c> if none match.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="acceptLanguageList"/> or <paramref name="availableCultures"/>
+        /// is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">One of the elements of <paramref name="acceptLanguageList"/> or
+        /// <paramref name="availableCultures"/> is <c>null</c>.</exception>
+        /// <stable>ICU 3.4</stable>
+        public static UCultureInfo AcceptLanguage(IList<UCultureInfo> acceptLanguageList,
+            IList<UCultureInfo> availableCultures, out bool isFallback)
         {
+            if (acceptLanguageList == null)
+                throw new ArgumentNullException(nameof(acceptLanguageList));
+            if (availableCultures == null)
+                throw new ArgumentNullException(nameof(availableCultures));
+
             // fallbacklist
             int i, j;
-            if (fallback != null)
+            isFallback = true;
+            for (i = 0; i < acceptLanguageList.Count; i++)
             {
-                fallback[0] = true;
-            }
-            for (i = 0; i < acceptLanguageList.Length; i++)
-            {
-                UCultureInfo aLocale = acceptLanguageList[i];
-                bool[] setFallback = fallback;
+                var aLocale = acceptLanguageList[i];
+                if (aLocale == null)
+                    throw new ArgumentException($"Element {i} of {nameof(acceptLanguageList)} is null.");
+                bool setFallback = true;
                 do
                 {
-                    for (j = 0; j < availableLocales.Length; j++)
+                    for (j = 0; j < availableCultures.Count; j++)
                     {
-                        if (availableLocales[j].Equals(aLocale))
+                        var availableLocale = availableCultures[j];
+                        if (availableLocale == null)
+                            throw new ArgumentException($"Element {j} of {nameof(availableCultures)} is null.");
+                        if (availableLocale.Equals(aLocale))
                         {
-                            if (setFallback != null)
+                            if (setFallback)
                             {
-                                setFallback[0] = false; // first time with this locale - not a fallback.
+                                isFallback = false; // first time with this locale - not a fallback.
                             }
-                            return availableLocales[j];
+                            return availableLocale;
                         }
                         // compare to scriptless alias, so locales such as
                         // zh_TW, zh_CN are considered as available locales - see #7190
                         if (aLocale.Script.Length == 0
-                                && availableLocales[j].Script.Length > 0
-                                && availableLocales[j].Language.Equals(aLocale.Language)
-                                && availableLocales[j].Country.Equals(aLocale.Country)
-                                && availableLocales[j].Variant.Equals(aLocale.Variant))
+                                && availableLocale.Script.Length > 0
+                                && availableLocale.Language.Equals(aLocale.Language)
+                                && availableLocale.Country.Equals(aLocale.Country)
+                                && availableLocale.Variant.Equals(aLocale.Variant))
                         {
-                            UCultureInfo minAvail = UCultureInfo.MinimizeSubtags(availableLocales[j]);
+                            UCultureInfo minAvail = UCultureInfo.MinimizeSubtags(availableLocale);
                             if (minAvail.Script.Length == 0)
                             {
-                                if (setFallback != null)
+                                if (setFallback)
                                 {
-                                    setFallback[0] = false; // not a fallback.
+                                    isFallback = false; // not a fallback.
                                 }
                                 return aLocale;
                             }
                         }
                     }
-                    UCultureInfo parent = (UCultureInfo)aLocale.GetParent();
+                    var parent = (UCultureInfo)aLocale.Parent;
 
-                    if (parent != null)
+                    if (!UCultureInfo.InvariantCulture.Equals(parent))
                     {
                         aLocale = parent;
                     }
@@ -1620,69 +1624,64 @@ namespace ICU4N.Globalization
                         aLocale = null;
                     }
 
-                    setFallback = null; // Do not set fallback in later iterations
+                    setFallback = false; // Do not set fallback in later iterations
                 } while (aLocale != null);
             }
             return null;
         }
 
-        /**
-         * {@icu} Based on a HTTP formatted list of acceptable locales, determine an available
-         * locale for the user.  NullPointerException is thrown if acceptLanguageList or
-         * availableLocales is null.  If fallback is non-null, it will contain true if a
-         * fallback locale (one not in the acceptLanguageList) was returned.  The value on
-         * entry is ignored.  ULocale will be one of the locales in availableLocales, or the
-         * ROOT ULocale if if a ROOT locale was used as a fallback (because nothing else in
-         * availableLocales matched).  No ULocale array element should be null; behavior is
-         * undefined if this is the case.  This function will choose a locale from the
-         * ULocale.getAvailableLocales() list as available.
-         * @param acceptLanguageList list in HTTP "Accept-Language:" format of acceptable locales
-         * @param fallback if non-null, a 1-element array containing a bool to be set with
-         * the fallback status
-         * @return one of the locales from the ULocale.getAvailableLocales() list, or null if
-         * none match
-         * @stable ICU 3.4
-         */
-        public static UCultureInfo AcceptLanguage(string acceptLanguageList, bool[] fallback)
+        /// <summary>
+        /// <icu/> Based on an HTTP formatted list of acceptable cultures, determine an available
+        /// locale for the user. <paramref name="isFallback"/> will be <c>true</c> if a
+        /// fallback culture (one not in the <paramref name="acceptLanguageList"/>) was returned.
+        /// The return value will be one of the cultures in <see cref="UCultureInfo.GetCultures()"/>, or
+        /// <see cref="CultureInfo.InvariantCulture"/> if an invariant culture was used as a fallback
+        /// (because nothing else in <see cref="UCultureInfo.GetCultures()"/> matched). No
+        /// <see cref="UCultureInfo"/> in <paramref name="acceptLanguageList"/> should be <c>null</c>;
+        /// behavior is undefined in this case.
+        /// </summary>
+        /// <param name="acceptLanguageList">List in HTTP "Accept-Language:" format of acceptable cultures.</param>
+        /// <param name="isFallback">Returns the fallback status.</param>
+        /// <returns>One of the cultures from the <see cref="UCultureInfo.GetCultures()"/> list, or <c>null</c> if none match.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="acceptLanguageList"/> is <c>null</c>.</exception>
+        /// <stable>ICU 3.4</stable>
+        public static UCultureInfo AcceptLanguage(string acceptLanguageList, out bool isFallback)
         {
-            return AcceptLanguage(acceptLanguageList, UCultureInfo.GetCultures(),
-                    fallback);
+            return AcceptLanguage(acceptLanguageList, UCultureInfo.GetCultures(), out isFallback);
         }
 
-        /**
-         * {@icu} Based on an ordered array of acceptable locales, determine an available
-         * locale for the user.  NullPointerException is thrown if acceptLanguageList or
-         * availableLocales is null.  If fallback is non-null, it will contain true if a
-         * fallback locale (one not in the acceptLanguageList) was returned.  The value on
-         * entry is ignored.  ULocale will be one of the locales in availableLocales, or the
-         * ROOT ULocale if if a ROOT locale was used as a fallback (because nothing else in
-         * availableLocales matched).  No ULocale array element should be null; behavior is
-         * undefined if this is the case.  This function will choose a locale from the
-         * ULocale.getAvailableLocales() list as available.
-         * @param acceptLanguageList ordered array of acceptable locales (preferred are listed first)
-         * @param fallback if non-null, a 1-element array containing a bool to be set with
-         * the fallback status
-         * @return one of the locales from the ULocale.getAvailableLocales() list, or null if none match
-         * @stable ICU 3.4
-         */
-        public static UCultureInfo AcceptLanguage(UCultureInfo[] acceptLanguageList, bool[] fallback)
+        /// <summary>
+        /// <icu/> Based on an ordered list of acceptable cultures, determine an available
+        /// culture for the user. <paramref name="isFallback"/> will be <c>true</c> if a
+        /// fallback culture (one not in the <paramref name="acceptLanguageList"/>) was returned.
+        /// The return value will be one of the cultures in <see cref="UCultureInfo.GetCultures()"/>, or
+        /// <see cref="CultureInfo.InvariantCulture"/> if an invariant culture was used as a fallback
+        /// (because nothing else in <see cref="UCultureInfo.GetCultures()"/> matched). No
+        /// <see cref="UCultureInfo"/> in <paramref name="acceptLanguageList"/> should be <c>null</c>;
+        /// behavior is undefined in this case.
+        /// </summary>
+        /// <param name="acceptLanguageList">Ordered list of acceptable cultures (preferred are listed first).</param>
+        /// <param name="isFallback">Returns the fallback status.</param>
+        /// <returns>One of the cultures from the <see cref="UCultureInfo.GetCultures()"/> list, or <c>null</c> if none match.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="acceptLanguageList"/> is <c>null</c>.</exception>
+        /// <stable>ICU 3.4</stable>
+        public static UCultureInfo AcceptLanguage(IList<UCultureInfo> acceptLanguageList, out bool isFallback)
         {
-            return AcceptLanguage(acceptLanguageList, UCultureInfo.GetCultures(),
-                    fallback);
+            return AcceptLanguage(acceptLanguageList, UCultureInfo.GetCultures(), out isFallback);
         }
 
-        private class ULocaleAcceptLanguageQ : IComparable<ULocaleAcceptLanguageQ>
+        private class CultureAcceptLanguageQ : IComparable<CultureAcceptLanguageQ>
         {
             private readonly double q;
             private readonly double serial;
 
-            public ULocaleAcceptLanguageQ(double theq, int theserial)
+            public CultureAcceptLanguageQ(double q, int serial)
             {
-                q = theq;
-                serial = theserial;
+                this.q = q;
+                this.serial = serial;
             }
 
-            public int CompareTo(ULocaleAcceptLanguageQ other)
+            public int CompareTo(CultureAcceptLanguageQ other)
             {
                 if (q > other.q)
                 { // reverse - to sort in descending order
@@ -1707,16 +1706,15 @@ namespace ICU4N.Globalization
             }
         }
 
-        /**
-         * Package local method used for parsing Accept-Language string
-         */
-        internal static UCultureInfo[] ParseAcceptLanguage(string acceptLanguage, bool isLenient)
+        /// <summary>
+        /// Internal method used for parsing Accept-Language string
+        /// </summary>
+        internal static bool TryParseAcceptLanguage(string acceptLanguage, bool isLenient, out IList<UCultureInfo> result)
         {
-
-
+            result = null;
             // parse out the acceptLanguage into an array
-            SortedDictionary<ULocaleAcceptLanguageQ, UCultureInfo> map =
-                    new SortedDictionary<ULocaleAcceptLanguageQ, UCultureInfo>();
+            SortedDictionary<CultureAcceptLanguageQ, UCultureInfo> map =
+                    new SortedDictionary<CultureAcceptLanguageQ, UCultureInfo>();
             StringBuilder languageRangeBuf = new StringBuilder();
             StringBuilder qvalBuf = new StringBuilder();
             int state = 0;
@@ -1987,8 +1985,7 @@ namespace ICU4N.Globalization
                 }
                 if (state == -1)
                 {
-                    // error state
-                    throw new FormatException("Invalid Accept-Language" /*, n*/); // ICU4N TODO: Make a Try... version of this
+                    return false;
                 }
                 if (gotLanguageQ)
                 {
@@ -2000,15 +1997,6 @@ namespace ICU4N.Globalization
                             // Already validated, so it should never happen
                             q = 1.0;
                         }
-                        //try // ICU4N TODO: Use TryParse
-                        //{
-                        //    q = Double.Parse(qvalBuf.ToString(), CultureInfo.InvariantCulture);
-                        //}
-                        //catch (FormatException nfe)
-                        //{
-                        //    // Already validated, so it should never happen
-                        //    q = 1.0;
-                        //}
                         if (q > 1.0)
                         {
                             q = 1.0;
@@ -2017,7 +2005,7 @@ namespace ICU4N.Globalization
                     if (languageRangeBuf[0] != '*')
                     {
                         int serial = map.Count;
-                        ULocaleAcceptLanguageQ entry = new ULocaleAcceptLanguageQ(q, serial);
+                        CultureAcceptLanguageQ entry = new CultureAcceptLanguageQ(q, serial);
                         // sort in reverse order..   1.0, 0.9, 0.8 .. etc
                         map[entry] = new UCultureInfo(Canonicalize(languageRangeBuf.ToString()));
                     }
@@ -2031,12 +2019,12 @@ namespace ICU4N.Globalization
             if (state != 0)
             {
                 // Well, the parser should handle all cases.  So just in case.
-                throw new FormatException("Invalid AcceptlLanguage" /*, n*/);
+                return false;
             }
 
             // pull out the map
-            UCultureInfo[] acceptList = map.Values.ToArray();
-            return acceptList;
+            result = map.Values.ToArray();
+            return true;
         }
 
         private const string UndefinedLanguage = "und";

@@ -1457,8 +1457,8 @@ namespace ICU4N.Globalization
 
                 Logln("#" + i + ": expecting: " + expectLocale + " (" + expectBoolean + ")");
 
-                bool[] r = { false };
-                UCultureInfo n = UCultureInfo.AcceptLanguage(ACCEPT_LANGUAGE_HTTP[i], r);
+                bool r = false;
+                UCultureInfo n = UCultureInfo.AcceptLanguage(ACCEPT_LANGUAGE_HTTP[i], out r);
                 if ((n == null) && (expectLocale != null))
                 {
                     Errln("result was null! line #" + i);
@@ -1472,13 +1472,13 @@ namespace ICU4N.Globalization
                 {
                     Errln("expected " + expectLocale + " but got " + n.ToString());
                 }
-                if (expectBoolean.Equals(r[0]))
+                if (expectBoolean.Equals(r))
                 {
                     Logln(" bool: OK.");
                 }
                 else
                 {
-                    Errln("bool: not OK, was " + (r[0]).ToString() + " expected " + expectBoolean.ToString());
+                    Errln("bool: not OK, was " + (r).ToString() + " expected " + expectBoolean.ToString());
                 }
             }
         }
@@ -1603,8 +1603,8 @@ namespace ICU4N.Globalization
 
                 Logln("#" + i + ": expecting: " + expectLocale + " (" + expectBoolean + ")");
 
-                bool[] r = { false };
-                UCultureInfo n = UCultureInfo.AcceptLanguage(StringToULocaleArray(ACCEPT_LANGUAGE_HTTP[i]), r);
+                bool r = false;
+                UCultureInfo n = UCultureInfo.AcceptLanguage(StringToULocaleArray(ACCEPT_LANGUAGE_HTTP[i]), out r);
                 if ((n == null) && (expectLocale != null))
                 {
                     Errln("result was null! line #" + i);
@@ -1618,15 +1618,34 @@ namespace ICU4N.Globalization
                 {
                     Errln("expected " + expectLocale + " but got " + n.ToString());
                 }
-                if (expectBoolean.Equals(r[0]))
+                if (expectBoolean.Equals(r))
                 {
                     Logln(" bool: OK.");
                 }
                 else
                 {
-                    Errln("bool: not OK, was " + (r[0]).ToString() + " expected " + expectBoolean.ToString());
+                    Errln("bool: not OK, was " + (r).ToString() + " expected " + expectBoolean.ToString());
                 }
             }
+        }
+
+        [Test] // ICU4N specific
+        public void TestAcceptLanguageWithNullParameters()
+        {
+            AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage((string)null, out bool _));
+            AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage((IList<UCultureInfo>)null, out bool _));
+            AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage((string)null, UCultureInfo.GetCultures(), out bool _));
+            AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage("zh-hant-cn", null, out bool _));
+            AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage((IList<UCultureInfo>)null, UCultureInfo.GetCultures(), out bool _));
+            AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage(new UCultureInfo[] { new UCultureInfo("en_US") }, null, out bool _));
+        }
+
+        [Test] // ICU4N specific
+        public void TestAcceptLanguageWithNullElementsWithinParameters()
+        {
+            AssertThrows<ArgumentException>(() => UCultureInfo.AcceptLanguage(new UCultureInfo[] { null }, out bool _));
+            AssertThrows<ArgumentException>(() => UCultureInfo.AcceptLanguage(new UCultureInfo[] { new UCultureInfo("en_US"), null }, new UCultureInfo[] { new UCultureInfo("fr_FR") }, out bool _));
+            AssertThrows<ArgumentException>(() => UCultureInfo.AcceptLanguage(new UCultureInfo[] { new UCultureInfo("en_US") }, new UCultureInfo[] { new UCultureInfo("fr_FR"), null }, out bool _));
         }
 
         [Test]
