@@ -1,4 +1,5 @@
 ﻿using J2N.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace ICU4N.Globalization
@@ -8,7 +9,8 @@ namespace ICU4N.Globalization
     /// </summary>
     public static class CultureInfoExtensions
     {
-        private static readonly LurchTable<CultureInfo, UCultureInfo> uCultureInfoCache = new LurchTable<CultureInfo, UCultureInfo>(LurchTableOrder.Access, limit: 64, comparer: null);
+        private static readonly LurchTable<CultureInfo, UCultureInfo> uCultureInfoCache
+            = new LurchTable<CultureInfo, UCultureInfo>(LurchTableOrder.Access, limit: 64, comparer: CultureInfoEqualityComparer.Instance);
 
         /// <summary>
         /// <icu/> Returns a <see cref="UCultureInfo"/> object for a <see cref="CultureInfo"/>.
@@ -25,6 +27,32 @@ namespace ICU4N.Globalization
                 return uCulture;
 
             return uCultureInfoCache.GetOrAdd(culture, (key) => UCultureInfo.DotNetLocaleHelper.ToUCultureInfo(key));
+        }
+
+        // ICU4N: For now, we are just comparing using CultureInfo.Equals() as well as comparing
+        // both calendar properties. Ideally, we would compare each writable/overridable property
+        // for equality, but this is all we support right now.
+        private class CultureInfoEqualityComparer : IEqualityComparer<CultureInfo>
+        {
+            public static IEqualityComparer<CultureInfo> Instance { get; } = new CultureInfoEqualityComparer();
+
+            public bool Equals(CultureInfo x, CultureInfo y)
+            {
+                if (x is null)
+                    return y is null;
+
+                return x.Equals(y)
+                    && (x.Calendar is null ? y.Calendar is null : x.Calendar.Equals(y.Calendar))
+                    && (x.DateTimeFormat is null ? y.DateTimeFormat is null : 
+                        (x.DateTimeFormat.Calendar is null ? y.DateTimeFormat is null : x.DateTimeFormat.Calendar.Equals(y.DateTimeFormat.Calendar)));
+            }
+
+            public int GetHashCode(CultureInfo obj)
+            {
+                return obj.GetHashCode()
+                    ^ (!(obj.Calendar is null) ? obj.Calendar.GetHashCode() : 31)
+                    ^ (!(obj.DateTimeFormat is null) && !(obj.DateTimeFormat.Calendar is null) ? obj.DateTimeFormat.Calendar.GetHashCode() : 31);
+            }
         }
 
         ///// <summary>
