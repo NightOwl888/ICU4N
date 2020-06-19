@@ -1,17 +1,16 @@
 ﻿using ICU4N.Dev.Test;
 using ICU4N.Dev.Test.Util;
-using ICU4N.Support;
 using ICU4N.Support.Collections;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Text;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace ICU4N.Globalization
 {
@@ -4410,163 +4409,152 @@ namespace ICU4N.Globalization
             }
         }
 
-        [Test]
-        public void TestForLocale()
+        // NOTE: We purposely don't provide an Equals and GetHashCode overload here to test the
+        // comparison that is used for caching.
+        private class CultureWithCalendar : CultureInfo
         {
-            object[][] DATA = {
-                    new object[]{CultureInfo.InvariantCulture,                    ""},
-                    new object[]{new CultureInfo("en-US"),            "en_US"},
-                    new object[]{new CultureInfo("en-US-POSIX"),   "en_US_POSIX"},
-                    //new object[]{new CultureInfo("-US"),              "_US"}, // This ugliness is not supported in .NET
-                    //new object[]{new CultureInfo("en--POSIX"),     "en__POSIX"}, // This ugliness is not supported in .NET
-                    new object[]{new CultureInfo("no-NO-NY"),      "nn_NO"},
-                    //new object[]{new CultureInfo("en-BOGUS"),         "en__BOGUS"}, // This ugliness is not supported in .NET // ill-formed country is mapped to variant - see #8383 and #8384
-            };
+            private readonly Calendar calendar;
+            private Calendar[] optionalCalendars;
 
-            for (int i = 0; i < DATA.Length; i++)
+            public CultureWithCalendar(string culture, Calendar calendar)
+                : base(culture)
             {
-                UCultureInfo uloc = ((CultureInfo)DATA[i][0]).ToUCultureInfo();
-                assertEquals("ToUCultureInfo() with " + DATA[i][0], DATA[i][1], uloc.FullName);
+                this.calendar = calendar;
+                this.DateTimeFormat.Calendar = calendar;
             }
 
-            // ICU4N specific - language tag not 
-            //    if (JAVA7_OR_LATER)
-            //    {
-            //        object[][] DATA7 = {
-            //                    new object[]{new CultureInfo("ja-JP" /*, "JP"*/),      "ja_JP_JP@calendar=japanese"},
-            //                    new object[]{new CultureInfo("th-TH" /*, "TH"*/),      "th_TH_TH@numbers=thai"},
-            //            };
-            //        for (int i = 0; i < DATA7.Length; i++)
-            //        {
-            //            ULocale uloc = ULocale.ForLocale((CultureInfo)DATA7[i][0]);
-            //            assertEquals("forLocale with " + DATA7[i][0], DATA7[i][1], uloc.GetName());
-            //        }
+            public override Calendar Calendar => calendar;
 
-            //        try
-            //        {
-            //            //Method localeForLanguageTag = Locale.class.getMethod("forLanguageTag", String.class);
-
-            //                string[][] DATA7EXT = {
-            //                        new string[]{"en-Latn-US",                  "en_Latn_US"},
-            //                        new string[]{"zh-Hant-TW",                  "zh_Hant_TW"},
-            //                        new string[]{"und-US-u-cu-usd",             "_US@currency=usd"},
-            //                        new string[]{"th-TH-u-ca-buddhist-nu-thai", "th_TH@calendar=buddhist;numbers=thai"},
-            //                        new string[]{"en-US-u-va-POSIX",            "en_US_POSIX"},
-            //                        new string[]{"de-DE-u-co-phonebk",          "de_DE@collation=phonebook"},
-            //                        new string[]{"en-a-exta-b-extb-x-privu",    "en@a=exta;b=extb;x=privu"},
-            //                        new string[]{"fr-u-attr1-attr2-cu-eur",     "fr@attribute=attr1-attr2;currency=eur"},
-            //                };
-
-            //                for (int i = 0; i<DATA7EXT.Length; i++) {
-            //                    Locale loc = (Locale)localeForLanguageTag.invoke(null, DATA7EXT[i][0]);
-            //ULocale uloc = ULocale.forLocale(loc);
-            //                    assertEquals("forLocale with " + loc, DATA7EXT[i][1], uloc.GetName());
-            //                }
-            //            } catch (Exception e) {
-            //                throw new RuntimeException(e);
-            //            }
-
-            //        } else {
-
-            // In .NET, the calendar cannot be set using a culture string, it must be done explicitly
-            var jaJPJP = new CultureInfo("ja-JP");
-            jaJPJP.DateTimeFormat.Calendar = new JapaneseCalendar();
-            //var thTHTH = new CultureInfo("th-TH-TH");
-            //thTHTH.NumberFormat.
-
-            object[][] DATA6 = {
-                    new object[]{ jaJPJP,      "ja_JP@calendar=japanese"},
-                    // In .NET the digits are in the NativeDigits property, but they are not used by default in formatting
-                    //new object[]{new CultureInfo("th-TH-TH"),      "th_TH@numbers=thai"},
-            };
-            for (int i = 0; i < DATA6.Length; i++)
+            public override Calendar[] OptionalCalendars
             {
-                UCultureInfo uloc = ((CultureInfo)DATA6[i][0]).ToUCultureInfo();
-                assertEquals("forLocale with " + DATA6[i][0].ToString(), DATA6[i][1], uloc.FullName);
+                get
+                {
+                    if (optionalCalendars == null)
+                    {
+                        if (!(base.OptionalCalendars.Contains(calendar)))
+                            optionalCalendars = new List<Calendar>(optionalCalendars) { calendar }.ToArray();
+                        else
+                            optionalCalendars = base.OptionalCalendars;
+                    }
+                    return optionalCalendars;
+                }
             }
-            //}
+
+            public override string ToString()
+            {
+                return base.ToString() + $" with {calendar.GetType().Name}";
+            }
+        }
+            
+
+        public static IEnumerable<TestCaseData> GetCultureInfoData()
+        {
+            yield return new TestCaseData(CultureInfo.InvariantCulture,    "");
+            yield return new TestCaseData(new CultureInfo("en-US"),        "en_US");
+            yield return new TestCaseData(new CultureInfo("en-US-POSIX"),  "en_US_POSIX"); // Not recognized by .NET, but allowed
+
+            // Cultures names that are unsupported in ICU.
+            // These names are automatically converted to .NET equivalents. This test
+            // ensures we can convert those .NET equivalent names back to ICU names.
+            yield return new TestCaseData(new CultureInfo("ckb"),          "ckb");      // DotNet: ku
+            yield return new TestCaseData(new CultureInfo("ckb-IQ"),       "ckb_IQ");   // DotNet: ku-Arab-IQ
+            yield return new TestCaseData(new CultureInfo("ckb-IR"),       "ckb_IR");   // DotNet: ku-Arab-IR
+            yield return new TestCaseData(new CultureInfo("fa-AF"),        "fa_AF");    // DotNet: prs-AF
+            yield return new TestCaseData(new CultureInfo("qu"),           "qu");       // DotNet: quz
+            yield return new TestCaseData(new CultureInfo("qu-BO"),        "qu_BO");    // DotNet: quz-BO
+            yield return new TestCaseData(new CultureInfo("qu-EC"),        "qu_EC");    // DotNet: quz-EC
+            yield return new TestCaseData(new CultureInfo("qu-PE"),        "qu_PE");    // DotNet: quz-PE
+
+
+            // Alternate collation order
+            yield return new TestCaseData(new CultureInfo("es-ES_tradnl"), "es_ES@collation=traditional");
+            yield return new TestCaseData(new CultureInfo("zh-TW_pronun"), "zh_TW@collation=zhuyin");
+            yield return new TestCaseData(new CultureInfo("zh-CN_stroke"), "zh_CN@collation=stroke");
+            yield return new TestCaseData(new CultureInfo("zh-SG_stroke"), "zh_SG@collation=stroke");
+            yield return new TestCaseData(new CultureInfo("zh-MO_stroke"), "zh_MO");
+            yield return new TestCaseData(new CultureInfo("zh-MO"),        "zh_MO@collation=pinyin");
+            yield return new TestCaseData(new CultureInfo("de-DE_phoneb"), "de_DE@collation=phonebook");
+            yield return new TestCaseData(new CultureInfo("hu-HU_technl"), "hu_HU"); // Not supported in ICU
+            yield return new TestCaseData(new CultureInfo("ka-GE_modern"), "ka_GE");
+
+
+            // Default calendar
+            yield return new TestCaseData(new CultureInfo("ja-JP"), "ja_JP");             // Gregorian
+            yield return new TestCaseData(new CultureInfo("fa"), "fa");                   // Persian
+            yield return new TestCaseData(new CultureInfo("th-TH"), "th_TH");             // buddhist
+
+            yield return new TestCaseData(new CultureInfo("ar-SA"), "ar_SA");             // islamic-umalqura
+            yield return new TestCaseData(new CultureInfo("ckb-IR"), "ckb_IR");           // persian
+            yield return new TestCaseData(new CultureInfo("fa-IR"), "fa_IR");             // persian
+            yield return new TestCaseData(new CultureInfo("lrc-IR"), "lrc_IR");           // persian
+            yield return new TestCaseData(new CultureInfo("mzn-IR"), "mzn_IR");           // persian
+            yield return new TestCaseData(new CultureInfo("ps-AF"), "ps_AF");             // persian
+            yield return new TestCaseData(new CultureInfo("uz-Arab-AF"), "uz_Arab_AF");   // persian
+
+            // Alternate calendar
+            yield return new TestCaseData(new CultureWithCalendar("ja-JP", new JapaneseCalendar()), "ja_JP@calendar=japanese");
+            yield return new TestCaseData(new CultureWithCalendar("fa", new GregorianCalendar()), "fa@calendar=gregorian");
+            yield return new TestCaseData(new CultureWithCalendar("th-TH", new GregorianCalendar()), "th_TH@calendar=gregorian");
+        }
+
+        [Test, TestCaseSource("GetCultureInfoData")]
+        public void TestToUCultureInfo(CultureInfo culture, string fullName)
+        {
+            assertEquals($"ToUCultureInfo() with {culture}", fullName, culture.ToUCultureInfo().FullName);
+        }
+
+
+        public static IEnumerable<TestCaseData> GetUCultureInfoData()
+        {
+            yield return new TestCaseData("",                                   CultureInfo.InvariantCulture);
+            yield return new TestCaseData("en_US",                              new CultureInfo("en-US"));
+            yield return new TestCaseData("_US",                                new CultureInfo("US"));
+
+            // Since .NET doesn't recognize nn-NO-NY, we are simply doing default conversion
+            yield return new TestCaseData("nn_NO",                              new CultureInfo("nn-NO"));
+            
+            // ICU4N TODO: Create conversions for calendars
+            //yield return new TestCaseData("ja_JP@calendar=japanese", new CultureInfo("ja-JP"));
+
+            // In .NET, there is no way to switch to the thai numbering system, so we should
+            // simply return the default Thai culture
+            yield return new TestCaseData("th_TH@numbers=thai",                 new CultureInfo("th-TH"));
+
+            // Alternate collation order
+            yield return new TestCaseData("es_ES@collation=traditional",        new CultureInfo("es-ES_tradnl"));
+            yield return new TestCaseData("zh_TW@collation=zhuyin",             new CultureInfo("zh-TW_pronun"));
+            yield return new TestCaseData("zh_CN@collation=stroke",             new CultureInfo("zh-CN_stroke"));
+            yield return new TestCaseData("zh_SG@collation=stroke",             new CultureInfo("zh-SG_stroke"));
+            yield return new TestCaseData("zh_MO",                              new CultureInfo("zh-MO_stroke"));
+            yield return new TestCaseData("zh_MO@collation=pinyin",             new CultureInfo("zh-MO"));
+            yield return new TestCaseData("de_DE@collation=phonebook",          new CultureInfo("de-DE_phoneb"));
+        }
+
+        [Test, TestCaseSource("GetUCultureInfoData")]
+        public void TestToCultureInfo(string fullName, CultureInfo culture)
+        {
+            assertEquals($"ToCultureInfo() with {fullName}", culture, new UCultureInfo(fullName).ToCultureInfo());
         }
 
         [Test]
-        // ICU4N specific - make sure all ICU cultures will convert to .NET cultures
-        public void TestToLocale_AllCultures()
+        //[Ignore("Run this to find gaps in cultures between platforms")]
+        // ICU4N specific - make sure all ICU cultures will convert to .NET cultures without exceptions
+        public void TestToCultureInfo_AllCultures()
         {
             var locales = UCultureInfo.GetCultures();
+            var unknownCultures = new J2N.Collections.Generic.Dictionary<CultureInfo, string>();
+            
+
             CultureInfo ci = null;
             foreach (var locale in locales)
             {
                 ci = locale.ToCultureInfo();
+                if (ci.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
+                    unknownCultures.Add(ci, locale.EnglishName);
             }
+
+            assertEquals($"Cultures not mapped: \n\n{unknownCultures.ToString(StringFormatter.InvariantCulture)}\n\n", 0, unknownCultures.Count);
         }
-
-        [Test]
-        public void TestToLocale()
-        {
-            object[][] DATA = {
-                    new object[]{"",                CultureInfo.InvariantCulture},
-                    new object[]{"en_US",           new CultureInfo("en-US")},
-                    new object[]{"_US",             new CultureInfo("US")},
-                    //new object[]{"en__POSIX",       new CultureInfo("en"/*, "", "POSIX"*/)}, // ICU4N: Not supported in .NET
-            };
-
-            for (int i = 0; i < DATA.Length; i++)
-            {
-                CultureInfo loc = new UCultureInfo((String)DATA[i][0]).ToCultureInfo();
-                assertEquals("toLocale with " + DATA[i][0], DATA[i][1], loc);
-            }
-
-            //    if (JAVA7_OR_LATER)
-            //    {
-            //            Object[][] DATA7 = {
-            //                                new object[]{"nn_NO",                       new CultureInfo("nn-NO")},
-            //                                new object[]{"no_NO_NY",                    new CultureInfo("no-NO")}, // .NET doesn't support this
-            //                        };
-            //            for (int i = 0; i < DATA7.Length; i++)
-            //            {
-            //                CultureInfo loc = new ULocale((String)DATA7[i][0]).ToLocale();
-            //                assertEquals("toLocale with " + DATA7[i][0], DATA7[i][1], loc);
-            //            }
-
-            //            try
-            //            {
-            //                Method localeForLanguageTag = Locale.class.getMethod("forLanguageTag", String.class);
-
-            //                            String[][] DATA7EXT = {
-            //                                    new string[]{"en_Latn_US",                  "en-Latn-US"},
-            //                                    new string[]{"zh_Hant_TW",                  "zh-Hant-TW"},
-            //                                    new string[]{"ja_JP@calendar=japanese",     "ja-JP-u-ca-japanese"},
-            //                                    new string[]{"ja_JP_JP@calendar=japanese",  "ja-JP-u-ca-japanese-x-lvariant-JP"},
-            //                                    new string[]{"th_TH@numbers=thai",          "th-TH-u-nu-thai"},
-            //                                    new string[]{"th_TH_TH@numbers=thai",       "th-TH-u-nu-thai-x-lvariant-TH"},
-            //                                    new string[]{"de@collation=phonebook",      "de-u-co-phonebk"},
-            //                                    new string[]{"en@a=exta;b=extb;x=privu",    "en-a-exta-b-extb-x-privu"},
-            //                                    new string[]{"fr@attribute=attr1-attr2;currency=eur",   "fr-u-attr1-attr2-cu-eur"},
-            //                            };
-
-            //                            for (int i = 0; i<DATA7EXT.Length; i++) {
-            //                                CultureInfo loc = new ULocale(DATA7EXT[i][0]).ToLocale();
-            //        Locale expected = (Locale)localeForLanguageTag.invoke(null, DATA7EXT[i][1]);
-            //        assertEquals("toLocale with " + DATA7EXT[i][0], expected, loc);
-            //    }
-            //} catch (Exception e) {
-            //                            throw new RuntimeException(e);
-            //                        }
-
-            //        } else {
-            object[][] DATA6 = {
-                    new object[]{"nn_NO",                       new CultureInfo("nn-NO")},
-                    new object[]{"no_NO_NY",                    new CultureInfo("nn-NO")},
-                    new object[]{"ja_JP@calendar=japanese",     new CultureInfo("ja-JP")},
-                    new object[]{"th_TH@numbers=thai",          new CultureInfo("th-TH")},
-            };
-            for (int i = 0; i < DATA6.Length; i++)
-            {
-                CultureInfo loc = new UCultureInfo((String)DATA6[i][0]).ToCultureInfo();
-                assertEquals("toLocale with " + DATA6[i][0], DATA6[i][1], loc);
-            }
-            //}
-        }
-
 
         [Test]
         [Ignore("ICU4N TOOD: Fix this")]
@@ -4952,14 +4940,6 @@ namespace ICU4N.Globalization
             }
         }
 
-
-
-
-        [Test]
-        public void TestSomething()
-        {
-
-        }
 
         //[Test]
         //public void TestLanguageTagAllCultures()

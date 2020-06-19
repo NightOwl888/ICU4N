@@ -77,6 +77,8 @@ namespace ICU4N.Globalization
 #endif
         private volatile string languageTag;
 
+        private const string UndeterminedWithSeparator = LanguageTag.Undetermined + "-";
+
         /// <summary>
         /// This table lists pairs of locale ids for canonicalization.  The
         /// The 1st item is the normalized id. The 2nd item is the

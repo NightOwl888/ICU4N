@@ -1,6 +1,7 @@
 ﻿using ICU4N.Impl.Locale;
 using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace ICU4N.Globalization
 {
@@ -38,8 +39,12 @@ namespace ICU4N.Globalization
                 if (languageTag == null)
                 {
                     var tempLanguageTag = ToIetfLanguageTag();
-                    // For .NET compatibility, remove the "und" from the language tag
-                    languageTag = tempLanguageTag == LanguageTag.Undetermined ? string.Empty : tempLanguageTag;
+                    // For .NET compatibility, remove the "und" from the language tag.
+                    // Basically an optimized version of Regex.Replace Regex.Replace(tempLanguageTag, "^und-?", string.Empty)
+                    languageTag = tempLanguageTag == LanguageTag.Undetermined ? string.Empty :
+                        tempLanguageTag.StartsWith(UndeterminedWithSeparator, StringComparison.Ordinal)
+                            ? tempLanguageTag.Substring(UndeterminedWithSeparator.Length)
+                            : tempLanguageTag;
                 }
 
                 return languageTag;

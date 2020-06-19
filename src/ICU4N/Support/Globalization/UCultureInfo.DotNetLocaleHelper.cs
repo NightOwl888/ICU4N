@@ -1,4 +1,5 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -27,14 +28,56 @@ namespace ICU4N.Globalization
             ///// &lt;keyword>/&tl;value>, the ICU locale is mapped to &lt;.NET> locale.
             ///// </summary>
             private static readonly string[][] NET_MAPDATA = { // ICU4N TODO: Do we need different values for .NET Framework/.NET Standard ?
-                //  { <Java>,       <ICU base>, <keyword>,  <value>,    <minimum base>
+                //             { <.NET>,     <ICU base>, <keyword>,  <value>,    <minimum base>
                 //new string[] { "ja-JP",   "ja_JP",    "calendar", "japanese", "ja"},
                 //new string[] { "nn-NO",   "nn_NO",    null,       null,       "nn"},
-                new string[] { "th-TH",   "th_TH",    "numbers",  "thai", "",     "th"},
+                //new string[] { "th-TH",     "th_TH",    "numbers",  "thai",     "th"},
             };
 
-            private static readonly IDictionary<System.Type, string> DOTNET_CALENDARS = new Dictionary<System.Type, string>
+            private static readonly IDictionary<string, string> UnsupportedDotNetNames = new Dictionary<string, string>
             {
+                // <.NET>      = <ICU Base>
+                ["ku"]         = "ckb",
+                ["ku-Arab-IQ"] = "ckb_IQ",
+                ["ku-Arab-IR"] = "ckb_IR",
+                ["prs-AF"]     = "fa_AF",
+                ["quz"]        = "qu",
+                ["quz-BO"]     = "qu_BO",
+                ["quz-EC"]     = "qu_EC",
+                ["quz-PE"]     = "qu_PE",
+            };
+
+
+            private static readonly string[][] CollationMapData =
+            {
+                //             <DotNet>          <ICU base>, <keyword>,       <value>,           <minimum base>
+                new string[] { "es-ES_tradnl",   "es_ES",    "collation",     "traditional",     "es"      },
+                new string[] { "zh-TW_pronun",   "zh_TW",    "collation",     "zhuyin",          "zh_TW"   },
+                new string[] { "zh-CN_stroke",   "zh_CN",    "collation",     "stroke",          "zh"      },
+                
+                new string[] { "zh-SG_stroke",   "zh_SG",    "collation",     "stroke",          "zh_SG"   },
+                new string[] { "zh-MO",          "zh_MO",    "collation",     "pinyin",          "zh_MO"   },
+                new string[] { "zh-MO_stroke",   "zh_MO",    null,            null,              "zh_MO"   },
+                
+                new string[] { "de-DE_phoneb",   "de_DE",    "collation",     "phonebook",       "de"      },
+
+                // Map this only .NET > ICU
+                new string[] { "hu-HU_technl",   "hu_HU",     null,           null,              "hu"      }, // Not supported in ICU ?
+                new string[] { "ka-GE_modern",   "ka_GE",     null,           null,              "ka"      }, // This is the standard..? Traditional is apparently not supported by ICU, so we map both to standard (modern).
+
+
+                //// Map this only .NET > ICU (stroke is the default)
+                //new string[] { "zh-HK_stroke", "zh_HK", null, null, "zh_HK" }, // This maps to both LCID 0x00000c04 and 0x00020c04 (the latter of which is an obsolete Windows locale)
+                
+                //new string[] { "ja-JP_unicod", "ja_JP", "collation", "unihan", "ja_JP" }, // Obsolete Windows locale (may throw CultureNotFoundException)
+                //new string[] { "ko-KR_unicod", "ko_KR", "collation", "unihan", "ko_KR" }, // Obsolete Windows locale (may throw CultureNotFoundException)
+            };
+
+
+
+            private static readonly IDictionary<Type, string> DOTNET_CALENDARS = new Dictionary<Type, string>
+            {
+                { typeof(GregorianCalendar), "gregorian" },
                 { typeof(JapaneseCalendar), "japanese" },
                 { typeof(ThaiBuddhistCalendar), "buddhist" },
                 { typeof(ChineseLunisolarCalendar), "chinese" },
@@ -42,180 +85,106 @@ namespace ICU4N.Globalization
                 { typeof(HijriCalendar), "islamic" },
                 { typeof(HebrewCalendar), "hebrew" },
                 { typeof(TaiwanCalendar), "taiwan" },
+                { typeof(UmAlQuraCalendar), "islamic-umalqura" }
             };
 
 
-            public static UCultureInfo ToUCultureInfo(CultureInfo loc)
+            public static UCultureInfo ToUCultureInfo(CultureInfo culture)
             {
-                if (CultureInfo.InvariantCulture.Equals(loc))
+                if (CultureInfo.InvariantCulture.Equals(culture))
                 {
-                    return new UCultureInfo("");
+                    return new UCultureInfo("", culture);
                 }
 
-                var name = loc.Name;
+                var collationName = culture.CompareInfo?.Name;
+                LocaleIDParser parser = null;
 
-                // Convert from RFC 4646, ISO 639, ISO 639-2, and ISO 15924 to ICU  format 
-
-
-                // ICU4N TODO: Need to append currency, number, and collation data
-                //name = name.Replace('-', '_');
-                var segments = name.Split(new char[] { '-', '_' });
-                string newName = "";
-                for (int i = 0; i < segments.Length; i++)
+                if (!string.IsNullOrEmpty(collationName))
                 {
-                    if (newName.Length > 0)
-                        newName += '_';
-                    if (i == 0)
-                        newName += segments[i].ToLowerInvariant();
-                    else
-                        newName += segments[i].ToUpperInvariant(); // Special case - .NET makes the variant lower case, but ULocale expects upper case
+                    // First check whether this is an alternate sort order
+                    // https://docs.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo?view=netcore-3.1#alternate-sort-orders
+                    foreach (var collation in CollationMapData)
+                    {
+                        if (collation[0].Equals(collationName, StringComparison.Ordinal))
+                        {
+                            parser = new LocaleIDParser(collation[1]);
+                            if (collation[2] != null)
+                                parser.SetKeywordValue(collation[2], collation[3]);
+                            break;
+                        }
+                    }
                 }
 
-                // Special cases...
+                // Convert from RFC 4646, ISO 639, ISO 639-2, and ISO 15924 to ICU format 
 
-                string language = segments.Length > 0 ? segments[0] : "";
-                string country = segments.Length > 1 ? segments[1] : "";
-                string variant = segments.Length > 2 ? segments[2] : "";
-
-                // .NET doesn't recognize no-NO-NY any more than ICU does, but if it is input,
-                // we need to patch it (at least for the tests)
-
-                if (language.Equals("no") && country.Equals("NO") && variant.Equals("NY", StringComparison.OrdinalIgnoreCase))
+                // If collation wasn't found, use the culture name (base name) to get a new parser.
+                // Map any unsupported names from .NET to their nearest equivalent in ICU.
+                if (parser == null)
                 {
-                    newName = "nn_NO";
+                    var name = UnsupportedDotNetNames.TryGetValue(culture.Name, out string baseName) ? baseName : culture.Name;
+                    parser = new LocaleIDParser(name);
                 }
 
                 // Calander formatting info
-                var calendarType = loc.Calendar.GetType();
-                var formattingCalendarType = loc.DateTimeFormat.Calendar.GetType();
-                if (!calendarType.Equals(typeof(GregorianCalendar)) &&
-                    DOTNET_CALENDARS.TryGetValue(calendarType, out string calendar))
-                {
-                    string sep = newName.Contains("@") ? ";" : "@";
-                    newName += string.Concat(sep, "calendar=", calendar);
-                }
-                else if (!formattingCalendarType.Equals(typeof(GregorianCalendar)) &&
-                    DOTNET_CALENDARS.TryGetValue(formattingCalendarType, out string formattingCalendar))
-                {
-                    string sep = newName.Contains("@") ? ";" : "@";
-                    newName += string.Concat(sep, "calendar=", formattingCalendar);
-                }
+                // The user may have set CultureInfo.DateTimeFormat.Calendar explicitly, in which
+                // case it will be different from the CultureInfo.Calendar property. We cover this
+                // by checking both cases.
+                var defaultCalendar = GetDefaultCalendar(parser.GetBaseName());
+                var calendarType = culture.Calendar.GetType();
+                var formattingCalendarType = culture.DateTimeFormat.Calendar.GetType();
+                if (DOTNET_CALENDARS.TryGetValue(calendarType, out string calendar) && calendar != defaultCalendar)
+                    parser.SetKeywordValue("calendar", calendar);
+                else if (DOTNET_CALENDARS.TryGetValue(formattingCalendarType, out string formattingCalendar) && formattingCalendar != defaultCalendar)
+                    parser.SetKeywordValue("calendar", formattingCalendar);
 
+                // ICU4N TODO: Need to append currency, number
+                // but this isn't important until we provide string formatting support.
 
-                    //for (int i = 0; i < NET_MAPDATA.Length; i++)
-                    //{
-                    //    if (newName.StartsWith(NET_MAPDATA[i][1], StringComparison.Ordinal) & NET_MAPDATA[i][2] != null)
-                    //    {
-                    //        string sep = newName.Contains("@") ? ";" : "@";
-                    //        newName += string.Concat(sep, NET_MAPDATA[i][2], "=", NET_MAPDATA[i][3]);
-                    //    }
-                    //}
-
-
-                    return new UCultureInfo(newName, loc);
+                return new UCultureInfo(parser.GetName(), culture);
             }
 
             public static CultureInfo ToCultureInfo(UCultureInfo uloc)
             {
-                //                CultureInfo loc = null;
-                //                string ulocStr = uloc.FullName;
-                //#if FEATURE_CULTUREINFO_IETFLANGUAGETAG
-                //                //if (uloc.Script.Length > 0 || ulocStr.Contains("@"))
-                //                {
-                //                    // With script or keywords available, the best way
-                //                    // to get a mapped Locale is to go through a language tag.
-                //                    // A Locale with script or keywords can only have variants
-                //                    // that is 1 to 8 alphanum. If this ULocale has a variant
-                //                    // subtag not satisfying the criteria, the variant subtag
-                //                    // will be lost.
-                //                    string tag = uloc.IetfLanguageTag;
+                var baseName = uloc.Name;
 
-                //                    //// Workaround for variant casing problem:
-                //                    ////
-                //                    //// The variant field in ICU is case insensitive and normalized
-                //                    //// to upper case letters by getVariant(), while
-                //                    //// the variant field in JDK Locale is case sensitive.
-                //                    //// ULocale#toLanguageTag use lower case characters for
-                //                    //// BCP 47 variant and private use x-lvariant.
-                //                    ////
-                //                    //// Locale#forLanguageTag in JDK preserves character casing
-                //                    //// for variant. Because ICU always normalizes variant to
-                //                    //// upper case, we convert language tag to upper case here.
-                //                    //tag = tag.ToUpperInvariant();
-
-                //                    loc = CultureInfo.GetCultureInfoByIetfLanguageTag(tag);
-                //                }
-                //#endif
-                //                if (loc == null)
-                //                {
-                //                    // Without script or keywords, use a Locale constructor,
-                //                    // so we can preserve any ill-formed variants.
-                //                    loc = new CultureInfo(
-                //                        uloc.Language + 
-                //                        (uloc.Country.Length > 0 ? '-' + uloc.Country : "") + 
-                //                        (uloc.Variant.Length > 0 ? '-' + uloc.Variant : ""));
-                //                }
-                //                return loc;
-
-
-
-                var name = uloc.FullName;
-
-                if (name.Equals("root", StringComparison.OrdinalIgnoreCase) || name.Equals("any", StringComparison.OrdinalIgnoreCase))
+                if (baseName.Equals("root", StringComparison.OrdinalIgnoreCase) || baseName.Equals("any", StringComparison.OrdinalIgnoreCase))
                 {
                     return CultureInfo.InvariantCulture;
                 }
 
-                //// Strip off the config options
-                //int optionsIndex = name.IndexOf('@');
-                //if (optionsIndex > -1)
-                //{
-                //    // ICU4N TODO: Need to convert calendar, currency, number, and collation options by
-                //    // creating a custom CultureInfo subclass...where possible
-
-                //    name = name.Substring(0, optionsIndex); // ICU4N: Checked 2nd parameter
-                //}
-
-                //string newName = name.Replace('_', '-').Trim('-');
-
-                // ICU4N special cases...
-
-                // ICU4N TODO: Check whether accuracy can be improved by using UCultureInfo.ToLanguageTag()
-
-                var parser = new LocaleIDParser(uloc.FullName);
-
-                var newName = uloc.IetfLanguageTag; //parser.GetBaseName().Replace('_', '-');
-                var language = parser.GetLanguage();
-                var country = parser.GetCountry();
-                var variant = parser.GetVariant();
-
-                // .NET doesn't recognize no-NO-NY any more than ICU does, but if it is input,
-                // we need to patch it (at least for the tests)
-
-                if (language.Equals("no") && country.Equals("NO") && variant.Equals("NY"))
+                uloc.Keywords.TryGetValue("collation", out string collationValue);
+                foreach (var collation in CollationMapData)
                 {
-                    newName = "nn-NO";
+                    if (baseName.Equals(collation[1], StringComparison.Ordinal) || baseName.Equals(collation[4], StringComparison.Ordinal))
+                    {
+                        if (collation[2] == null || collationValue != null && collationValue.Equals(collation[3]))
+                        {
+                            baseName = collation[0];
+                            break;
+                        }
+                    }
+                }
+
+                try
+                {
+                    // ICU4N TODO: Apply calendars, numbers, etc before returning
+                    return new CultureInfo(baseName);
+                }
+                catch (CultureNotFoundException)
+                {
+                    // Fallback to original base name(collation not supported)
+                    //baseName = uloc.Name;
                 }
 
 
                 try
                 {
-                    CultureInfo culture = new CultureInfo(newName);
-
-                    //#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
-                    //                    // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
-                    //                    // to be created, but will be "unknown" languages. We need to manually
-                    //                    // ignore these.
-                    //                    if (culture.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
-                    //                    {
-                    //                        return null;
-                    //                    }
-                    //#endif
-                    return culture;
+                    return new CultureInfo(uloc.IetfLanguageTag);
                 }
                 catch (CultureNotFoundException)
                 {
-                    return null;
+                    // Fallback
+                    return ToCultureInfo(uloc.GetParent() ?? UCultureInfo.InvariantCulture.ToUCultureInfo());
                 }
             }
 
@@ -303,6 +272,15 @@ namespace ICU4N.Globalization
             //#endif
             //            }
 
+
+            /// <summary>
+            /// Gets the default ICU calendar for the <paramref name="baseName"/>.
+            /// </summary>
+            private static string GetDefaultCalendar(string baseName)
+            {
+                var rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBundle, baseName, ICUResourceBundle.IcuDataAssembly);
+                return rb.GetStringWithFallback("calendar/default");
+            }
         }
     }
 }
