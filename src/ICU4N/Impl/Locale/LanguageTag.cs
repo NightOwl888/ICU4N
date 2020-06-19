@@ -15,10 +15,10 @@ namespace ICU4N.Impl.Locale
         //
         // static fields
         //
-        public static readonly string Separator = "-";
-        public static readonly string Private_Use = "x";
-        public static string Undetermined = "und";
-        public static readonly string PrivateUse_Variant_Prefix = "lvariant";
+        public const string Separator = "-";
+        public const string Private_Use = "x";
+        public const string Undetermined = "und";
+        public const string PrivateUse_Variant_Prefix = "lvariant";
 
         //
         // Language subtag fields
