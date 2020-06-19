@@ -1,9 +1,6 @@
 ﻿using ICU4N.Dev.Test;
+using ICU4N.Support.Globalization;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
 
 namespace ICU4N.Globalization
 {
@@ -12,17 +9,18 @@ namespace ICU4N.Globalization
         [Test]
         public void TestToUCultureInfoAllCultures()
         {
-            var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
+            var cultures = CultureInfoUtil.GetAllCultures();
             foreach (var culture in cultures)
             {
                 Assert.IsNotNull(culture.ToUCultureInfo().culture);
             }
         }
 
+
         //[Test]
         //public void TestAllCultureInfos()
         //{
-        //    var cultures = CultureInfo.GetCultures(CultureTypes.SpecificCultures | CultureTypes.NeutralCultures);
+        //    var cultures = CultureInfoUtil.GetNeutralAndSpecificCultures();
         //    foreach (var culture in cultures)
         //    {
         //        string localeID = culture.ToString();
@@ -31,8 +29,6 @@ namespace ICU4N.Globalization
         //        string script = culture.GetScript();
         //        string variant = culture.GetVariant();
         //        string language = culture.GetLanguage();
-
-
         //    }
         //}
     }
