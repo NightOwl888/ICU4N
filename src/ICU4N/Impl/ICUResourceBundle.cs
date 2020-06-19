@@ -906,6 +906,7 @@ namespace ICU4N.Impl
                     {
                         if (locales == null)
                         {
+                            GetULocaleList();
                             locales = ICUResourceBundle.GetLocaleList(ulocales);
                         }
                     }
