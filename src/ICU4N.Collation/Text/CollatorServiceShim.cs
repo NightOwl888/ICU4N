@@ -90,7 +90,7 @@ namespace ICU4N.Text
             if (service.IsDefault)
             {
                 result = ICUResourceBundle.GetAvailableLocales(ICUData.IcuCollationBaseName,
-                        ICUResourceBundle.IcuDataAssembly);
+                    CollationData.IcuDataAssembly);
             }
             else
             {
@@ -105,7 +105,7 @@ namespace ICU4N.Text
             if (service.IsDefault)
             {
                 result = ICUResourceBundle.GetAvailableULocales(ICUData.IcuCollationBaseName,
-                        ICUResourceBundle.IcuDataAssembly);
+                        CollationData.IcuDataAssembly);
             }
             else
             {
@@ -186,6 +186,6 @@ namespace ICU4N.Text
             return new RuleBasedCollator(t, validLocale);
         }
 
-        private static ICULocaleService service = new CService();
+        private static readonly ICULocaleService service = new CService();
     }
 }
