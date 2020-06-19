@@ -4596,8 +4596,8 @@ namespace ICU4N.Globalization
             // Setting ULocale default will overrides category defaults
             UCultureInfo uFrFr = new UCultureInfo("fr_FR");
 
-            UCultureInfo.CurrentCulture = uFrFr;
-            UCultureInfo.CurrentUICulture = uFrFr; // ICU4N: .NET dosen't automatically set both values, you have to do it explicitly
+            UCultureInfo.DotNetLocaleHelper.CurrentCulture = uFrFr;
+            UCultureInfo.DotNetLocaleHelper.CurrentUICulture = uFrFr; // ICU4N: .NET dosen't automatically set both values, you have to do it explicitly
 
             if (!UCultureInfo.CurrentUICulture.Equals(uFrFr))
             {
