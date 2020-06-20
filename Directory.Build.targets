@@ -6,8 +6,11 @@
 
   <!-- Features in .NET Standard and .NET Core only (no .NET Framework support) -->
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) Or $(TargetFramework.StartsWith('netcoreapp')) ">
+    
     <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_ASYNCLOCAL</DefineConstants>
+
     <DebugType>portable</DebugType>
   </PropertyGroup>
 
@@ -60,7 +63,14 @@
 
   </PropertyGroup>
 
-  <!-- Features in .NET Framework 4.5+ only -->
+  <!-- Features in .NET Framework 4.6+ only -->
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('net46')) Or $(TargetFramework.StartsWith('net47')) Or $(TargetFramework.StartsWith('net48')) ">
+
+    <DefineConstants>$(DefineConstants);FEATURE_ASYNCLOCAL</DefineConstants>
+    
+  </PropertyGroup>
+
+  <!-- Features in .NET Framework 4+ only -->
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net4'))">
 
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_SERIALIZABLE</DefineConstants>
