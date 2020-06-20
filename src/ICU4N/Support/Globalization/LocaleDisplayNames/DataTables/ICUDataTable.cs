@@ -18,7 +18,7 @@ namespace ICU4N.Globalization
                     path, culture.ToUCultureInfo().Name, assembly);
         }
 
-        public override CultureInfo CultureInfo => bundle.GetLocale(); // ICU4N TODO: Rename GetCulture
+        public override CultureInfo CultureInfo => bundle.CultureInfo;
 
         public override string Get(string tableName, string subTableName, string code)
         {
