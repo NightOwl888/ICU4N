@@ -78,9 +78,9 @@ namespace ICU4N.Impl
             buffer.Append(c);
         }
 
-        private void AddSeparator()
+        private void AddSeparator(char separator = UNDERSCORE)
         {
-            Append(UNDERSCORE);
+            Append(separator);
         }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace ICU4N.Impl
         /// in the buffer (this may be equal to the buffer length, if there is no
         /// script).
         /// </summary>
-        private int ParseScript()
+        private int ParseScript(char separator = UNDERSCORE)
         {
             if (!AtTerminator())
             {
@@ -272,7 +272,7 @@ namespace ICU4N.Impl
                 {
                     if (firstPass)
                     {
-                        AddSeparator();
+                        AddSeparator(separator);
                         Append(AsciiUtil.ToUpper(c));
                         firstPass = false;
                     }
@@ -330,7 +330,7 @@ namespace ICU4N.Impl
         /// and IDSeparator.  Return the start of the country code in the buffer.
         /// </summary>
         /// <returns></returns>
-        private int ParseCountry()
+        private int ParseCountry(char separator = UNDERSCORE)
         {
             if (!AtTerminator())
             {
@@ -345,7 +345,7 @@ namespace ICU4N.Impl
                     if (firstPass)
                     { // first, add hyphen
                         hadCountry = true; // we have a country, let variant parsing know
-                        AddSeparator();
+                        AddSeparator(separator);
                         ++oldBlen; // increment past hyphen
                         firstPass = false;
                     }
@@ -440,7 +440,7 @@ namespace ICU4N.Impl
         /// Note:  since it was decided that we want an option to not handle POSIX ids, this
         /// becomes a bit more complex.
         /// </remarks>
-        private int ParseVariant()
+        private int ParseVariant(char separator = UNDERSCORE)
         {
             int oldBlen = buffer.Length;
 
@@ -482,10 +482,10 @@ namespace ICU4N.Impl
                         needSeparator = false;
                         if (firstPass && !hadCountry)
                         { // no country, we'll need two
-                            AddSeparator();
+                            AddSeparator(separator);
                             ++oldBlen; // for sure
                         }
-                        AddSeparator();
+                        AddSeparator(separator);
                         if (firstPass)
                         { // only for the first separator
                             ++oldBlen;
@@ -569,7 +569,7 @@ namespace ICU4N.Impl
             this.baseName = baseName;
         }
 
-        public void ParseBaseName()
+        public void ParseBaseName(char separator = UNDERSCORE)
         {
             if (baseName != null)
             {
@@ -579,17 +579,26 @@ namespace ICU4N.Impl
             {
                 Reset();
                 ParseLanguage();
-                ParseScript();
-                ParseCountry();
-                ParseVariant();
+                ParseScript(separator);
+                ParseCountry(separator);
+                ParseVariant(separator);
 
-                // catch unwanted trailing underscore after country if there was no variant
+                // catch unwanted trailing underscore or hyphen after country if there was no variant
                 int len = buffer.Length;
-                if (len > 0 && buffer[len - 1] == UNDERSCORE)
+                if (len > 0 && (buffer[len - 1] == UNDERSCORE || buffer[len - 1] == HYPHEN))
                 {
                     //buffer.DeleteCharAt(len - 1);
                     buffer.Remove(len - 1, 1);
                 }
+            }
+        }
+
+        private void RemoveLeadingSeparator(char separator = UNDERSCORE)
+        {
+            int len = buffer.Length;
+            if (len > 0 && (buffer[0] == separator))
+            {
+                buffer.Remove(0, 1);
             }
         }
 
@@ -608,10 +617,26 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
+        /// Returns the normalized base form of the locale id using hyphen as the
+        /// separator, for compatibility with <see cref="System.Globalization.CultureInfo.Name"/>.
+        /// Does not include keywords.
+        /// </summary>
+        public string GetName()
+        {
+            if (baseName != null)
+            {
+                return baseName;
+            }
+            ParseBaseName(HYPHEN);
+            RemoveLeadingSeparator(HYPHEN);
+            return GetString(0);
+        }
+
+        /// <summary>
         /// Returns the normalized full form of the locale id.  The full
         /// form includes keywords if they are present.
         /// </summary>
-        public string GetName()
+        public string GetFullName()
         {
             ParseBaseName();
             ParseKeywords();

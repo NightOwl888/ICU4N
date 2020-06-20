@@ -1194,7 +1194,7 @@ namespace ICU4N.Util
             {
                 tmpLocaleID = localeID;
             }
-            return nameCache.GetOrCreate(tmpLocaleID, (key) => new LocaleIDParser(key).GetName());
+            return nameCache.GetOrCreate(tmpLocaleID, (key) => new LocaleIDParser(key).GetFullName());
         }
 
         /**
@@ -1324,7 +1324,7 @@ namespace ICU4N.Util
                 }
             }
 
-            return parser.GetName();
+            return parser.GetFullName();
         }
 
         /**
@@ -1365,7 +1365,7 @@ namespace ICU4N.Util
         {
             LocaleIDParser parser = new LocaleIDParser(localeID);
             parser.SetKeywordValue(keyword, value);
-            return parser.GetName();
+            return parser.GetFullName();
         }
 
         /*

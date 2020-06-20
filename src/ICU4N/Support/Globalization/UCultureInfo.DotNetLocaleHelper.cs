@@ -140,7 +140,7 @@ namespace ICU4N.Globalization
                 // ICU4N TODO: Need to append currency, number
                 // but this isn't important until we provide string formatting support.
 
-                return new UCultureInfo(parser.GetName(), culture);
+                return new UCultureInfo(parser.GetFullName(), culture);
             }
 
             public static CultureInfo ToCultureInfo(UCultureInfo uloc)
@@ -152,6 +152,7 @@ namespace ICU4N.Globalization
                     return CultureInfo.InvariantCulture;
                 }
 
+                bool isCollationValue = false;
                 uloc.Keywords.TryGetValue("collation", out string collationValue);
                 foreach (var collation in CollationMapData)
                 {
@@ -160,6 +161,7 @@ namespace ICU4N.Globalization
                         if (collation[2] == null || collationValue != null && collationValue.Equals(collation[3]))
                         {
                             baseName = collation[0];
+                            isCollationValue = true;
                             break;
                         }
                     }
@@ -168,7 +170,10 @@ namespace ICU4N.Globalization
                 try
                 {
                     // ICU4N TODO: Apply calendars, numbers, etc before returning
-                    return new CultureInfo(baseName);
+                    if (isCollationValue)
+                        return new CultureInfo(baseName);
+                    else
+                        return new CultureInfo(ICUBaseNameToCultureInfoName(baseName));
                 }
                 catch (CultureNotFoundException)
                 {
@@ -179,7 +184,8 @@ namespace ICU4N.Globalization
 
                 try
                 {
-                    return new CultureInfo(uloc.IetfLanguageTag);
+                    // ICU4N TODO: Apply calendars, numbers, etc before returning
+                    return new CultureInfo(ICUBaseNameToCultureInfoName(uloc.Name));
                 }
                 catch (CultureNotFoundException)
                 {
@@ -280,6 +286,11 @@ namespace ICU4N.Globalization
             {
                 var rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBundle, baseName, ICUResourceBundle.IcuDataAssembly);
                 return rb.GetStringWithFallback("calendar/default");
+            }
+
+            private static string ICUBaseNameToCultureInfoName(string baseName)
+            {
+                return new LocaleIDParser(baseName).GetName();
             }
         }
     }
