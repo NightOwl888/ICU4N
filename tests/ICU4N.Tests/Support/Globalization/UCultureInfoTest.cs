@@ -560,19 +560,19 @@ namespace ICU4N.Globalization
         [Test]
         public void TestUldnWithGarbage()
         {
-            LocaleDisplayNames ldn = LocaleDisplayNames.GetInstance(new CultureInfo("en-US"), DisplayContext.DialectNames);
+            CultureDisplayNames ldn = CultureDisplayNames.GetInstance(new CultureInfo("en-US"), DialectHandling.DialectNames);
             String badLocaleID = "english (United States) [w";
             String expectedResult = "english [united states] [w"; // case changed from input
-            String result = ldn.LocaleDisplayName(badLocaleID);
+            String result = ldn.GetLocaleDisplayName(badLocaleID);
             if (result.CompareToOrdinal(expectedResult) != 0)
             {
-                Errln("FAIL: LocaleDisplayNames.localeDisplayName(String) for bad locale ID \"" + badLocaleID + "\", expected \"" + expectedResult + "\", got \"" + result + "\"");
+                Errln("FAIL: CultureDisplayNames.GetLocaleDisplayName(string) for bad locale ID \"" + badLocaleID + "\", expected \"" + expectedResult + "\", got \"" + result + "\"");
             }
             UCultureInfo badLocale = new UCultureInfo(badLocaleID);
-            result = ldn.LocaleDisplayName(badLocale);
+            result = ldn.GetLocaleDisplayName(badLocale);
             if (result.CompareToOrdinal(expectedResult) != 0)
             {
-                Errln("FAIL: LocaleDisplayNames.localeDisplayName(ULocale) for bad locale ID \"" + badLocaleID + "\", expected \"" + expectedResult + "\", got \"" + result + "\"");
+                Errln("FAIL: CultureDisplayNames.GetLocaleDisplayName(UCultureInfo) for bad locale ID \"" + badLocaleID + "\", expected \"" + expectedResult + "\", got \"" + result + "\"");
             }
         }
 
@@ -1026,7 +1026,7 @@ namespace ICU4N.Globalization
         [Test]
         public void TestDisplayLanguageWithDialectCoverage()
         {
-            // Coverage test. Implementation is in class LocaleDisplayNames.
+            // Coverage test. Implementation is in class CultureDisplayNames.
             assertFalse("en in system default locale: anything but empty",
                     new UCultureInfo("en").GetDisplayLanguageWithDialect() == string.Empty);
             assertEquals("en in de", "Englisch",
@@ -1040,7 +1040,7 @@ namespace ICU4N.Globalization
         [Test]
         public void TestDisplayNameWithDialectCoverage()
         {
-            // Coverage test. Implementation is in class LocaleDisplayNames.
+            // Coverage test. Implementation is in class CultureDisplayNames.
             assertFalse("en-GB in system default locale: anything but empty",
                     new UCultureInfo("en_GB").DisplayNameWithDialect == string.Empty);
             assertEquals("en-GB in de", "Britisches Englisch",
@@ -1054,7 +1054,7 @@ namespace ICU4N.Globalization
         [Test]
         public void TestDisplayScriptCoverage()
         {
-            // Coverage test. Implementation is in class LocaleDisplayNames.
+            // Coverage test. Implementation is in class CultureDisplayNames.
             assertFalse("zh-Hans in system default locale: anything but empty",
                     new UCultureInfo("zh_Hans").DisplayScript == string.Empty);
             // Stand-alone script name, so not just "Vereinfacht".
