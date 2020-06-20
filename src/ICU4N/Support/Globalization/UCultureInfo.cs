@@ -3208,7 +3208,7 @@ namespace ICU4N.Globalization
         }
 
 
-        private static UCultureInfo GetInstance(BaseLocale @base, LocaleExtensions exts)
+        internal static UCultureInfo GetInstance(BaseLocale @base, LocaleExtensions exts)
         {
             string id = LscvToID(@base.Language, @base.Script, @base.Region,
                     @base.Variant);
@@ -3291,7 +3291,7 @@ namespace ICU4N.Globalization
             return new UCultureInfo(id);
         }
 
-        private BaseLocale Base
+        internal BaseLocale Base
         {
             get
             {
@@ -3315,7 +3315,7 @@ namespace ICU4N.Globalization
 
         private static readonly Regex HyphenOrUnderscore = new Regex("[-_]", RegexOptions.Compiled);
 
-        private LocaleExtensions LocaleExtensions
+        internal LocaleExtensions LocaleExtensions
         {
             get
             {
@@ -3335,7 +3335,7 @@ namespace ICU4N.Globalization
                             if (pair.Key.Equals(LocaleAttributeKey))
                             {
                                 // special keyword used for representing Unicode locale attributes
-                                string[] uattributes = HyphenOrUnderscore.Split(pair.Value); // Regex.Split(GetKeywordValue(key), "[-_]");
+                                string[] uattributes = HyphenOrUnderscore.Split(pair.Value);
                                 foreach (string uattr in uattributes)
                                 {
                                     // ICU4N: Proactively check the parameter going in rather than responding to exceptions
