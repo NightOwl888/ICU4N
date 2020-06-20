@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N.IO;
@@ -1038,10 +1039,13 @@ namespace ICU4N.Dev.Test.Util
 
         private class CoverageStub : UResourceBundle
         {
-            public override ULocale GetULocale() { return ULocale.ROOT; }
+            public override ULocale GetULocale() { return ULocale.ROOT; } // ICU4N TODO: API - Remove
+
+            public override UCultureInfo UCultureInfo => UCultureInfo.InvariantCulture.ToUCultureInfo(); // ICU4N TODO: Remove ToUCultureInfo()
             protected override string GetLocaleID() { return null; }
             protected internal override string GetBaseName() { return null; }
             public override UResourceBundle Parent { get { return null; } }
+
             public override IEnumerable<string> GetKeys() { return null; }
             protected override object HandleGetObject(string aKey) { return null; }
         }

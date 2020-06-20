@@ -50,14 +50,16 @@ namespace ICU4N.Impl
             {
                 this.baseName = baseName;
                 this.localeID = localeID;
-                this.ulocale = new ULocale(localeID);
+                this.ulocale = new ULocale(localeID); // ICU4N TODO: API - Remove
+                this.uculture = new UCultureInfo(localeID);
                 this.loader = loader;
                 this.reader = reader;
             }
 
             internal string baseName;
             internal string localeID;
-            internal ULocale ulocale;
+            internal ULocale ulocale; // ICU4N TODO: API - Remove
+            internal UCultureInfo uculture;
             internal Assembly loader;
 
             /// <summary>
@@ -615,10 +617,20 @@ namespace ICU4N.Impl
         /// really corresponds to the requested locale or is a fallback.
         /// </summary>
         /// <returns>The locale of this resource bundle.</returns>
-        public override CultureInfo GetLocale()
+        public override CultureInfo GetLocale() // ICU4N TODO: API - Remove
         {
             return GetULocale().ToLocale();
         }
+
+        /// <summary>
+        /// Returns the locale of this resource bundle. This method can be used after
+        /// a call to <see cref="GetBundle(ICUResourceBundleReader, string, string, Assembly)"/>
+        /// to determine whether the resource bundle returned
+        /// really corresponds to the requested locale or is a fallback.
+        /// </summary>
+        /// <returns>The locale of this resource bundle.</returns>
+        public override CultureInfo CultureInfo
+            => UCultureInfo.ToCultureInfo();
 
         // ========== privates ==========
         private const string ICU_RESOURCE_INDEX = "res_index";
@@ -1285,7 +1297,7 @@ namespace ICU4N.Impl
         }
 
         public static ICUResourceBundle GetBundleInstance(
-            string baseName, ULocale locale, OpenType openType)
+            string baseName, UCultureInfo locale, OpenType openType)
         {
             return GetBundleInstance(baseName, locale,
                     ICUResourceBundle.IcuDataAssembly, openType);
@@ -1294,7 +1306,27 @@ namespace ICU4N.Impl
         // ICU4N specific overload so we can pass the Assembly from submodules (since 
         // the main assembly won't see submodules by default).
         public static ICUResourceBundle GetBundleInstance(
-            string baseName, ULocale locale, Assembly root, OpenType openType)
+            string baseName, UCultureInfo locale, Assembly root, OpenType openType)
+        {
+            if (locale == null)
+            {
+                locale = UCultureInfo.CurrentCulture.ToUCultureInfo(); // ICU4N TODO: Remove ToUCultureInfo()
+            }
+            return GetBundleInstance(baseName, locale.Name,
+                    root, openType);
+        }
+
+        public static ICUResourceBundle GetBundleInstance(
+            string baseName, ULocale locale, OpenType openType) // ICU4N TODO: API - remove
+        {
+            return GetBundleInstance(baseName, locale,
+                    ICUResourceBundle.IcuDataAssembly, openType);
+        }
+
+        // ICU4N specific overload so we can pass the Assembly from submodules (since 
+        // the main assembly won't see submodules by default).
+        public static ICUResourceBundle GetBundleInstance(
+            string baseName, ULocale locale, Assembly root, OpenType openType) // ICU4N TODO: API - remove
         {
             if (locale == null)
             {
@@ -1507,7 +1539,9 @@ namespace ICU4N.Impl
             return wholeBundle.baseName;
         }
 
-        public override ULocale GetULocale()
+        public override UCultureInfo UCultureInfo => wholeBundle.uculture;
+
+        public override ULocale GetULocale() // ICU4N TODO: API - Remove
         {
             return wholeBundle.ulocale;
         }

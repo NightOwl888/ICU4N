@@ -220,8 +220,7 @@ namespace ICU4N.Globalization
                 capitalizationBrkIter = BreakIterator.GetSentenceInstance(locale);
             }
 
-            // ICU4N TODO: Convert currency provider to utilize UCultureInfo
-            this.currencyDisplayInfo = CurrencyData.Provider.GetInstance(ULocale.ForLocale(locale), false);
+            this.currencyDisplayInfo = CurrencyData.Provider.GetInstance(locale.ToUCultureInfo(), false);
         }
 
         public override UCultureInfo Culture => locale;

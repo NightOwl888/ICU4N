@@ -1,4 +1,5 @@
-﻿using ICU4N.Util;
+﻿using ICU4N.Globalization;
+using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -90,10 +91,13 @@ namespace ICU4N.Impl
             return bundle.GetType().FullName.Replace('.', '/');
         }
 
-        public override ULocale GetULocale()
+        public override ULocale GetULocale() // ICU4N TODO: API - Remove
         {
             return new ULocale(localeID);
         }
+
+        public override UCultureInfo UCultureInfo
+            => new UCultureInfo(localeID);
 
         new public UResourceBundle Parent
         {

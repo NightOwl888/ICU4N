@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Util;
 using System;
 using System.Collections.Generic;
@@ -96,7 +97,14 @@ namespace ICU4N.Text
         /// This is not necessarily the same locale passed to <see cref="GetInstance(ULocale)"/>.
         /// </summary>
         /// <stable>ICU 49</stable>
-        public abstract ULocale ULocale { get; }
+        public abstract ULocale ULocale { get; } // ICU4N TODO: API Remove
+
+        /// <summary>
+        /// Returns the locale used to determine how to translate the currency names.
+        /// This is not necessarily the same locale passed to <see cref="GetInstance(ULocale)"/>.
+        /// </summary>
+        /// <stable>ICU 49</stable>
+        public abstract UCultureInfo UCultureInfo { get; }
 
         /// <summary>
         /// Returns the symbol for the currency with the provided ISO code.  If
