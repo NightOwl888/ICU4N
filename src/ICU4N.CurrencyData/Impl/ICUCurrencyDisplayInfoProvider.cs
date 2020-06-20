@@ -1,6 +1,4 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Impl;
-using ICU4N.Support;
 using ICU4N.Support.Collections;
 using ICU4N.Util;
 using System;
@@ -27,7 +25,7 @@ namespace ICU4N.Impl
             // Make sure the locale is non-null (this can happen during deserialization):
             if (culture == null) { culture = UCultureInfo.InvariantCulture.ToUCultureInfo(); }
             ICUCurrencyDisplayInfo instance = currencyDisplayInfoCache;
-            if (instance == null || !instance.culture.Equals(culture) || instance.fallback != withFallback)
+            if (instance == null || !culture.Equals(instance.culture) || instance.fallback != withFallback)
             {
                 ICUResourceBundle rb;
 #if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
@@ -61,7 +59,7 @@ namespace ICU4N.Impl
             // Make sure the locale is non-null (this can happen during deserialization):
             if (locale == null) { locale = ULocale.ROOT; }
             ICUCurrencyDisplayInfo instance = currencyDisplayInfoCache;
-            if (instance == null || !instance.locale.Equals(locale) || instance.fallback != withFallback)
+            if (instance == null || !locale.Equals(instance.locale) || instance.fallback != withFallback)
             {
                 ICUResourceBundle rb;
 #if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
