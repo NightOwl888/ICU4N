@@ -23,7 +23,7 @@ namespace ICU4N.Impl
         public virtual CurrencyDisplayInfo GetInstance(UCultureInfo culture, bool withFallback)
         {
             // Make sure the locale is non-null (this can happen during deserialization):
-            if (culture == null) { culture = UCultureInfo.InvariantCulture.ToUCultureInfo(); }
+            if (culture == null) { culture = UCultureInfo.InvariantCulture; }
             ICUCurrencyDisplayInfo instance = currencyDisplayInfoCache;
             if (instance == null || !culture.Equals(instance.culture) || instance.fallback != withFallback)
             {

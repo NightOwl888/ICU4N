@@ -37,6 +37,12 @@ namespace ICU4N.Globalization
         // special keyword key for Unicode locale attributes
         private const string LocaleAttributeKey = "attribute";
 
+        /// <summary>
+        /// Gets the <see cref="UCultureInfo"/> object that is culture-independent (invariant).
+        /// </summary>
+        // ICU4N: This corresponds to the ROOT in ICU4J
+        public new static UCultureInfo InvariantCulture { get; } = new UCultureInfo("", CultureInfo.InvariantCulture);
+
         private readonly bool isInvariantCulture;
         private readonly bool isNeutralCulture;
 

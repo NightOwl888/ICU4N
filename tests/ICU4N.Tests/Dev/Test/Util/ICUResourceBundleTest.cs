@@ -1041,7 +1041,7 @@ namespace ICU4N.Dev.Test.Util
         {
             public override ULocale GetULocale() { return ULocale.ROOT; } // ICU4N TODO: API - Remove
 
-            public override UCultureInfo UCultureInfo => UCultureInfo.InvariantCulture.ToUCultureInfo(); // ICU4N TODO: Remove ToUCultureInfo()
+            public override UCultureInfo UCultureInfo => UCultureInfo.InvariantCulture;
             protected override string GetLocaleID() { return null; }
             protected internal override string GetBaseName() { return null; }
             public override UResourceBundle Parent { get { return null; } }

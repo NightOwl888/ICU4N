@@ -190,7 +190,7 @@ namespace ICU4N.Globalization
                 catch (CultureNotFoundException)
                 {
                     // Fallback
-                    return ToCultureInfo(uloc.GetParent() ?? UCultureInfo.InvariantCulture.ToUCultureInfo());
+                    return ToCultureInfo(uloc.GetParent() ?? UCultureInfo.InvariantCulture);
                 }
             }
 

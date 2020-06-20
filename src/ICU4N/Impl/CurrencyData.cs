@@ -162,7 +162,7 @@ namespace ICU4N.Impl
         }
 
         public override UCultureInfo UCultureInfo
-            => UCultureInfo.InvariantCulture.ToUCultureInfo(); // ICU4N TODO: Remove ToUCultureInfo()
+            => UCultureInfo.InvariantCulture;
 
         public override IDictionary<string, string> GetUnitPatterns()
         {

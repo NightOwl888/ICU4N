@@ -4243,11 +4243,11 @@ namespace ICU4N.Globalization
             // Testing ULocale getFallback()
             UCultureInfo[][] TESTLOCALES =
                 {
-                new UCultureInfo[]{new UCultureInfo("en_US"), new UCultureInfo("en"), UCultureInfo.InvariantCulture.ToUCultureInfo(), null},
-                new UCultureInfo[]{new UCultureInfo("en__POSIX"), new UCultureInfo("en"), UCultureInfo.InvariantCulture.ToUCultureInfo(), null},
+                new UCultureInfo[]{new UCultureInfo("en_US"), new UCultureInfo("en"), UCultureInfo.InvariantCulture, null},
+                new UCultureInfo[]{new UCultureInfo("en__POSIX"), new UCultureInfo("en"), UCultureInfo.InvariantCulture, null},
                 new UCultureInfo[]{new UCultureInfo("de_DE@collation=phonebook"), new UCultureInfo("de@collation=phonebook"), new UCultureInfo("@collation=phonebook"), null},
-                new UCultureInfo[]{new UCultureInfo("_US_POSIX"), new UCultureInfo("_US"), UCultureInfo.InvariantCulture.ToUCultureInfo(), null},
-                new UCultureInfo[]{new UCultureInfo("root"), UCultureInfo.InvariantCulture.ToUCultureInfo(), null},
+                new UCultureInfo[]{new UCultureInfo("_US_POSIX"), new UCultureInfo("_US"), UCultureInfo.InvariantCulture, null},
+                new UCultureInfo[]{new UCultureInfo("root"), UCultureInfo.InvariantCulture, null},
             };
 
             foreach (UCultureInfo[] chain in TESTLOCALES)
@@ -4898,7 +4898,7 @@ namespace ICU4N.Globalization
         [Test]
         public void TestIsRightToLeft()
         {
-            assertFalse("root LTR", UCultureInfo.InvariantCulture.ToUCultureInfo().IsRightToLeft);
+            assertFalse("root LTR", UCultureInfo.InvariantCulture.IsRightToLeft);
             assertFalse("zh LTR", new UCultureInfo("zh").IsRightToLeft);
             assertTrue("ar RTL", new UCultureInfo("ar").IsRightToLeft);
             assertTrue("und-EG RTL", new UCultureInfo("und-EG").IsRightToLeft);

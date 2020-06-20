@@ -700,7 +700,7 @@ namespace ICU4N.Impl
                     string locstr = iter.Current.Key;
                     if (locstr.Equals("root"))
                     {
-                        locales[i++] = UCultureInfo.InvariantCulture.ToUCultureInfo();
+                        locales[i++] = UCultureInfo.InvariantCulture;
                     }
                     else
                     {
