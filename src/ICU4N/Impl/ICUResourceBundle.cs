@@ -1058,7 +1058,7 @@ namespace ICU4N.Impl
         private static string FindStringWithFallback(string path,
             UResourceBundle actualBundle, UResourceBundle requested)
         {
-            if (path.Length == 0)
+            if (string.IsNullOrEmpty(path)) // ICU4N: BUG: path may be null here, and it throws.
             {
                 return null;
             }
