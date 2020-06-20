@@ -165,22 +165,10 @@ namespace ICU4N.Globalization
                     }
                 }
 
-                var parser = new LocaleIDParser(baseName);
-                const int language = 0;
-                const int country = 2;
-                const int variant = 3;
-                string[] parts = parser.GetLanguageScriptCountryVariant();
-                string languageString = parts[language];
-                string countryString = parts[country];
-                string variantString = parts[variant];
-
                 try
                 {
                     // ICU4N TODO: Apply calendars, numbers, etc before returning
-                    return new CultureInfo(
-                        languageString +
-                        (countryString.Length > 0 ? '-' + countryString : "") +
-                        (variantString.Length > 0 ? '-' + variantString : ""));
+                    return new CultureInfo(baseName);
                 }
                 catch (CultureNotFoundException)
                 {
