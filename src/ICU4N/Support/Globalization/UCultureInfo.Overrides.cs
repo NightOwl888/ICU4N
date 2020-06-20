@@ -21,8 +21,7 @@ namespace ICU4N.Globalization
         }
 
         /// <inheritdoc/>
-        // ICU4N TODO: use ULocale display name
-        //public override string DisplayName => isInvariantCulture ? base.DisplayName : culture.DisplayName;
+        // ICU4N TODO: Use InstalledUICulture for display name to mimic .NET?
         public override string DisplayName => GetDisplayNameInternal(this, CurrentUICulture);
 
         /// <inheritdoc/>

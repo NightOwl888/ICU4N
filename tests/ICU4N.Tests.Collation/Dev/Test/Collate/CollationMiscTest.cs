@@ -1,7 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
 using ICU4N.Support;
-using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
@@ -2026,7 +2025,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestVariableTopSetting()
         {
             int varTopOriginal = 0, varTop1, varTop2;
-            Collator coll = Collator.GetInstance(ULocale.ROOT);
+            Collator coll = Collator.GetInstance(UCultureInfo.InvariantCulture);
 
             String empty = "";
             String space = " ";
@@ -2126,7 +2125,7 @@ namespace ICU4N.Dev.Test.Collate
             String dollar = "$";  /* currency symbol */
             String zero = "0";  /* digit */
 
-            Collator coll = Collator.GetInstance(ULocale.ROOT);
+            Collator coll = Collator.GetInstance(UCultureInfo.InvariantCulture);
 
             oldMax = coll.MaxVariable;
             Logln(String.Format("coll.getMaxVariable(root) -> {0:x4}", (int)oldMax));
@@ -2487,7 +2486,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestJB5298()
         {
-            ULocale[] locales = Collator.GetAvailableULocales();
+            UCultureInfo[] locales = Collator.GetAvailableULocales();
             Logln("Number of collator locales returned : " + locales.Length);
             // double-check keywords
             String[] keywords = Collator.Keywords.ToArray();
@@ -2518,10 +2517,10 @@ namespace ICU4N.Dev.Test.Collate
             {
                 for (int j = 0; j < values.Length; ++j)
                 {
-                    ULocale tryLocale = values[j].Equals("standard")
-                    ? locales[i] : new ULocale(locales[i] + "@collation=" + values[j]);
+                    UCultureInfo tryLocale = values[j].Equals("standard")
+                    ? locales[i] : new UCultureInfo(locales[i] + "@collation=" + values[j]);
                     // only append if not standard
-                    ULocale canon = Collator.GetFunctionalEquivalent("collation", tryLocale);
+                    UCultureInfo canon = Collator.GetFunctionalEquivalent("collation", tryLocale);
                     if (!canon.Equals(tryLocale))
                     {
                         continue; // has a different
@@ -3427,8 +3426,8 @@ namespace ICU4N.Dev.Test.Collate
         {
             try
             {
-                RuleBasedCollator vicoll = (RuleBasedCollator)Collator.GetInstance(new ULocale("vi"));
-                RuleBasedCollator escoll = (RuleBasedCollator)Collator.GetInstance(new ULocale("es"));
+                RuleBasedCollator vicoll = (RuleBasedCollator)Collator.GetInstance(new UCultureInfo("vi"));
+                RuleBasedCollator escoll = (RuleBasedCollator)Collator.GetInstance(new UCultureInfo("es"));
                 RuleBasedCollator viescoll = new RuleBasedCollator(vicoll.GetRules() + escoll.GetRules());
                 RuleBasedCollator importviescoll = new RuleBasedCollator("[import vi][import es]");
 
@@ -3463,8 +3462,8 @@ namespace ICU4N.Dev.Test.Collate
         {
             try
             {
-                RuleBasedCollator vicoll = (RuleBasedCollator)Collator.GetInstance(new ULocale("vi"));
-                RuleBasedCollator decoll = (RuleBasedCollator)Collator.GetInstance(ULocale.ForLanguageTag("de-u-co-phonebk"));
+                RuleBasedCollator vicoll = (RuleBasedCollator)Collator.GetInstance(new UCultureInfo("vi"));
+                RuleBasedCollator decoll = (RuleBasedCollator)Collator.GetInstance(UCultureInfo.GetCultureInfoByIetfLanguageTag("de-u-co-phonebk"));
                 RuleBasedCollator videcoll = new RuleBasedCollator(vicoll.GetRules() + decoll.GetRules());
                 RuleBasedCollator importvidecoll = new RuleBasedCollator("[import vi][import de-u-co-phonebk]");
 
@@ -3946,7 +3945,7 @@ namespace ICU4N.Dev.Test.Collate
          */
         private void doTestOneReorderingAPITestCase(OneTestCase[] testCases, int[] reorderTokens)
         {
-            Collator myCollation = Collator.GetInstance(ULocale.ENGLISH);
+            Collator myCollation = Collator.GetInstance(new UCultureInfo("en"));
             myCollation.SetReorderCodes(reorderTokens);
 
             foreach (OneTestCase testCase in testCases)
@@ -4115,7 +4114,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestFrozeness()
         {
-            Collator myCollation = Collator.GetInstance(ULocale.CANADA);
+            Collator myCollation = Collator.GetInstance(new UCultureInfo("en_CA"));
             bool exceptionCaught = false;
 
             myCollation.Freeze();
@@ -4178,8 +4177,8 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestUnknownCollationKeyword()
         {
-            Collator coll1 = Collator.GetInstance(new ULocale("en_US@collation=bogus"));
-            Collator coll2 = Collator.GetInstance(new ULocale("en_US"));
+            Collator coll1 = Collator.GetInstance(new UCultureInfo("en_US@collation=bogus"));
+            Collator coll2 = Collator.GetInstance(new UCultureInfo("en_US"));
             assertEquals("Unknown collation keyword 'bogus' should be ignored", coll1, coll2);
         }
     }

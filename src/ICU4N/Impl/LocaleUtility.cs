@@ -1,9 +1,7 @@
-﻿using ICU4N.Util;
+﻿using ICU4N.Globalization;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 
 namespace ICU4N.Impl
 {
@@ -11,7 +9,7 @@ namespace ICU4N.Impl
     /// A class to hold utility functions missing from java.util.Locale.
     /// </summary>
      // ICU4N TODO: Move to Globalization namespace ?
-    public class LocaleUtility // ICU4N TODO: Evaluate the need for this class, or whether a subclass of CultureInfo can serve as an all-inclusive ULocale object (possibly named UCultureInfo)
+    public class LocaleUtility // ICU4N TODO: Evaluate the need for this class, or whether UCultureInfo can serve as an all-inclusive culture object
     {
         /**
          * A helper function to convert a string of the form
@@ -286,9 +284,9 @@ namespace ICU4N.Impl
             //            return new CultureInfo(culture);
         }
 
-        public static CultureInfo Fallback(ULocale locale)
+        public static CultureInfo Fallback(UCultureInfo locale)
         {
-            return Fallback(locale.GetName());
+            return Fallback(locale.FullName);
         }
 
         /// <summary>

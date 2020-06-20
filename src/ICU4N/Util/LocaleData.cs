@@ -1,9 +1,9 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Text;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Resources;
-using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: API de-nest?
 
 namespace ICU4N.Util
 {
@@ -186,7 +186,7 @@ namespace ICU4N.Util
 
         /// <summary>
         /// Returns the set of exemplar characters for a locale. Equivalent to calling 
-        /// <see cref="GetExemplarSet(ULocale, PatternOptions, ExemplarSetType)"/> with the
+        /// <see cref="GetExemplarSet(UCultureInfo, PatternOptions, ExemplarSetType)"/> with the
         /// extype == <see cref="ExemplarSetType.Standard"/>.
         /// </summary>
         /// <param name="locale">Locale for which the exemplar character set
@@ -201,7 +201,7 @@ namespace ICU4N.Util
         /// </param>
         /// <returns>The set of exemplar characters for the given locale.</returns>
         /// <stable>ICU 3.0</stable>
-        public static UnicodeSet GetExemplarSet(ULocale locale, PatternOptions options)
+        public static UnicodeSet GetExemplarSet(UCultureInfo locale, PatternOptions options)
         {
             return LocaleData.GetInstance(locale).GetExemplarSet(options, ExemplarSetType.Standard);
         }
@@ -225,7 +225,7 @@ namespace ICU4N.Util
         /// <see cref="ExemplarSetType.Auxiliary"/>, or <see cref="ExemplarSetType.Punctuation"/>.</param>
         /// <returns>The set of exemplar characters for the given <paramref name="locale"/>.</returns>
         /// <stable>ICU 3.0</stable>
-        public static UnicodeSet GetExemplarSet(ULocale locale, PatternOptions options, ExemplarSetType extype)
+        public static UnicodeSet GetExemplarSet(UCultureInfo locale, PatternOptions options, ExemplarSetType extype)
         {
             return LocaleData.GetInstance(locale).GetExemplarSet(options, extype);
         }
@@ -295,29 +295,30 @@ namespace ICU4N.Util
         }
 
         /// <summary>
-        /// Gets the <see cref="LocaleData"/> object associated with the <see cref="ULocale"/> specified in <paramref name="locale"/>.
+        /// Gets the <see cref="LocaleData"/> object associated with the <see cref="UCultureInfo"/> specified in <paramref name="locale"/>.
         /// </summary>
-        /// <param name="locale"><see cref="ULocale"/> with thich the locale data object is associated.</param>
+        /// <param name="locale"><see cref="UCultureInfo"/> with thich the locale data object is associated.</param>
         /// <returns>A locale data object.</returns>
         /// <stable>ICU 3.4</stable>
-        public static LocaleData GetInstance(ULocale locale)
+        public static LocaleData GetInstance(UCultureInfo locale)
         {
-            LocaleData ld = new LocaleData();
-            ld.bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, locale);
-            ld.langBundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuLanguageBaseName, locale);
-            ld.noSubstitute = false;
-            return ld;
+            return new LocaleData
+            {
+                bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, locale),
+                langBundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuLanguageBaseName, locale),
+                noSubstitute = false
+            };
         }
 
         /// <summary>
-        /// Gets the <see cref="LocaleData"/> object associated with the default <see cref="Category.FORMAT"/> locale.
+        /// Gets the <see cref="LocaleData"/> object associated with the <see cref="UCultureInfo.CurrentCulture"/> locale.
         /// </summary>
         /// <returns>A locale data object.</returns>
-        /// <see cref="Category.FORMAT"/>
+        /// <see cref="UCultureInfo.CurrentCulture"/>
         /// <stable>ICU 3.4</stable>
         public static LocaleData GetInstance()
         {
-            return LocaleData.GetInstance(ULocale.GetDefault(Category.FORMAT));
+            return LocaleData.GetInstance(UCultureInfo.CurrentCulture);
         }
 
         /// <summary>
@@ -365,14 +366,14 @@ namespace ICU4N.Util
         }
 
         /// <summary>
-        /// Utility for <see cref="GetMeasurementSystem(ULocale)"/> and <see cref="GetPaperSize(ULocale)"/>
+        /// Utility for <see cref="GetMeasurementSystem(UCultureInfo)"/> and <see cref="GetPaperSize(UCultureInfo)"/>
         /// </summary>
-        private static UResourceBundle MeasurementTypeBundleForLocale(ULocale locale, string measurementType)
+        private static UResourceBundle MeasurementTypeBundleForLocale(UCultureInfo locale, string measurementType)
         {
             // Much of this is taken from getCalendarType in impl/CalendarUtil.java
             UResourceBundle measTypeBundle = null;
 #pragma warning disable 612, 618
-            string region = ULocale.GetRegionForSupplementalData(locale, true);
+            string region = UCultureInfo.GetRegionForSupplementalData(locale, true);
 #pragma warning restore 612, 618
             try
             {
@@ -409,7 +410,7 @@ namespace ICU4N.Util
         /// <param name="locale">The locale for which the measurement system to be retrieved.</param>
         /// <returns>The <see cref="MeasurementSystem"/> used in the locale.</returns>
         /// <stable>ICU 3.0</stable>
-        public static MeasurementSystem GetMeasurementSystem(ULocale locale)
+        public static MeasurementSystem GetMeasurementSystem(UCultureInfo locale)
         {
             UResourceBundle sysBundle = MeasurementTypeBundleForLocale(locale, MEASUREMENT_SYSTEM);
             return (MeasurementSystem)sysBundle.GetInt32();
@@ -424,7 +425,7 @@ namespace ICU4N.Util
         /// <param name="locale">The locale for which the measurement system to be retrieved.</param>
         /// <returns>The paper size used in the locale.</returns>
         /// <stable>ICU 3.0</stable>
-        public static PaperSize GetPaperSize(ULocale locale)
+        public static PaperSize GetPaperSize(UCultureInfo locale)
         {
             UResourceBundle obj = MeasurementTypeBundleForLocale(locale, PAPER_SIZE);
             int[] size = obj.GetInt32Vector();

@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Support.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Numerics;
@@ -225,8 +226,9 @@ namespace ICU4N.Text
             search_.isForwardSearching_ = true;
             search_.reset_ = true;
              */
-            ULocale collLocale = collator.GetLocale(ULocale.VALID_LOCALE);
-            search_.internalBreakIter_ = BreakIterator.GetCharacterInstance(collLocale == null ? ULocale.ROOT : collLocale);
+            UCultureInfo collLocale = collator.ValidCulture;
+            // ICU4N TODO: BreakIterator doesn't recognize UCultureInfo
+            search_.internalBreakIter_ = BreakIterator.GetCharacterInstance(collLocale == null ? UCultureInfo.InvariantCulture : collLocale);
             search_.internalBreakIter_.SetText((CharacterIterator)target.Clone());  // We need to create a clone
 
             Initialize();
@@ -262,7 +264,7 @@ namespace ICU4N.Text
         /// <exception cref="InvalidCastException">Thrown if the collator for the specfied <paramref name="locale"/> is not a <see cref="RuleBasedCollator"/>.</exception>
         /// <stable>ICU 2.0</stable>
         public StringSearch(string pattern, CharacterIterator target, CultureInfo locale)
-            : this(pattern, target, ULocale.ForLocale(locale))
+            : this(pattern, target, locale.ToUCultureInfo())
         {
         }
 
@@ -284,7 +286,7 @@ namespace ICU4N.Text
         /// <seealso cref="RuleBasedCollator"/>
         /// <seealso cref="SearchIterator"/>
         /// <stable>ICU 3.2</stable>
-        public StringSearch(string pattern, CharacterIterator target, ULocale locale)
+        public StringSearch(string pattern, CharacterIterator target, UCultureInfo locale)
             : this(pattern, target, (RuleBasedCollator)Text.Collator.GetInstance(locale), null)
         {
         }
@@ -335,8 +337,8 @@ namespace ICU4N.Text
             collator_ = collator ?? throw new ArgumentNullException(nameof(collator), "Collator can not be null");
             ceMask_ = GetMask(collator_.Strength);
 
-            ULocale collLocale = collator.GetLocale(ULocale.VALID_LOCALE);
-            search_.internalBreakIter_ = BreakIterator.GetCharacterInstance(collLocale ?? ULocale.ROOT);
+            UCultureInfo collLocale = collator.ValidCulture;
+            search_.internalBreakIter_ = BreakIterator.GetCharacterInstance(collLocale ?? UCultureInfo.InvariantCulture);
             search_.internalBreakIter_.SetText((CharacterIterator)search_.Text.Clone());  // We need to create a clone
 
             toShift_ = collator.IsAlternateHandlingShifted;
@@ -357,7 +359,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public string Pattern
         {
-            get { return pattern_.Text; }
+            get => pattern_.Text;
             set
             {
                 if (value == null || value.Length <= 0)
@@ -380,8 +382,8 @@ namespace ICU4N.Text
         //TODO: hoist this to SearchIterator
         public bool IsCanonical
         {
-            get { return search_.isCanonicalMatch_; }
-            set { search_.isCanonicalMatch_ = value; }
+            get => search_.isCanonicalMatch_;
+            set => search_.isCanonicalMatch_ = value;
         }
 
         /// <summary>

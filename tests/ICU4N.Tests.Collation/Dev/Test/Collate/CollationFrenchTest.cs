@@ -110,7 +110,7 @@ namespace ICU4N.Dev.Test.Collate
         public void Init()
         {
             myCollation = Collator.GetInstance(new CultureInfo("fr-CA"));
-            //myCollation = Collator.GetInstance(new ULocale("fr", "CA", ""));
+            //myCollation = Collator.GetInstance(new UCultureInfo("fr_CA"));
         }
 
         // perform tests with strength TERTIARY

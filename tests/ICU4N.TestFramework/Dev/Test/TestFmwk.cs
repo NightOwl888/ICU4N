@@ -1,4 +1,5 @@
-﻿using ICU4N.Util;
+﻿using ICU4N.Globalization;
+using ICU4N.Util;
 using J2N;
 using J2N.Collections;
 using J2N.Text;
@@ -646,7 +647,7 @@ namespace ICU4N.Dev.Test
          *            array of locales names we expect to see, or null
          * @return the length of 'array'
          */
-        protected static int CheckArray(string msg, ULocale[] array, string[] expected)
+        protected static int CheckArray(string msg, UCultureInfo[] array, string[] expected)
         {
             string[] strs = new string[array.Length];
             for (int i = 0; i < array.Length; ++i)

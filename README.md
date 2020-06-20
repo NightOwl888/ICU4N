@@ -22,11 +22,7 @@ This is a port of ICU4J, version 60.1. We have ported about 40% of the code so f
 8. Transliterator
 
 
-There are several other features too numerous to mention that are also functioning, but APIs are currently in flux between releases. There are also some known gaps in conversion between CultureInfo and ULocale. We have over 1600 passing tests, most failures are just due to missing dependencies.
-
-## Partially Functioning
-
-1. ULocale (we recommend using `System.Globalization.CultureInfo` only to set cultures/locales for the time being)
+There are several other features too numerous to mention that are also functioning, but APIs are currently in flux between releases. We have over 1600 passing tests, most failures are just due to missing dependencies.
 
 
 ## NuGet Packages

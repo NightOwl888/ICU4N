@@ -1,6 +1,5 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Support.Text;
-using ICU4N.Util;
 using System;
 
 namespace ICU4N.Text
@@ -32,8 +31,8 @@ namespace ICU4N.Text
         // The following method is not called by anything and can't be reached
         public virtual string Insertion
         {
-            get { return insertion; }
-            set { insertion = value; }
+            get => insertion;
+            set => insertion = value;
         }
         ////CLOVER:ON
 
@@ -49,7 +48,7 @@ namespace ICU4N.Text
         {
             // Defer initialization of BreakIterator because it is slow,
             // typically over 2000 ms.
-            if (bi == null) bi = BreakIterator.GetWordInstance(new ULocale("th_TH"));
+            if (bi == null) bi = BreakIterator.GetWordInstance(new UCultureInfo("th_TH"));
             return bi;
         }
 

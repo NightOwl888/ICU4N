@@ -50,7 +50,6 @@ namespace ICU4N.Impl
             {
                 this.baseName = baseName;
                 this.localeID = localeID;
-                this.ulocale = new ULocale(localeID); // ICU4N TODO: API - Remove
                 this.uculture = new UCultureInfo(localeID);
                 this.loader = loader;
                 this.reader = reader;
@@ -58,7 +57,6 @@ namespace ICU4N.Impl
 
             internal string baseName;
             internal string localeID;
-            internal ULocale ulocale; // ICU4N TODO: API - Remove
             internal UCultureInfo uculture;
             internal Assembly loader;
 
@@ -95,17 +93,17 @@ namespace ICU4N.Impl
         /// 'de_DE\@collation=standard' -> 'de_DE'</param>
         /// <returns>The locale.</returns>
         /// <internal>ICU 3.0</internal>
-        public static ULocale GetFunctionalEquivalent(string baseName, Assembly assembly,
-            string resName, string keyword, ULocale locID,
+        public static UCultureInfo GetFunctionalEquivalent(string baseName, Assembly assembly,
+            string resName, string keyword, UCultureInfo locID,
             bool[] isAvailable, bool omitDefault)
         {
-            string kwVal = locID.GetKeywordValue(keyword);
-            string baseLoc = locID.GetBaseName();
+            locID.Keywords.TryGetValue(keyword, out string kwVal);
+            string baseLoc = locID.Name;
             string defStr = null;
-            ULocale parent = new ULocale(baseLoc);
-            ULocale defLoc = null; // locale where default (found) resource is
+            UCultureInfo parent = new UCultureInfo(baseLoc);
+            UCultureInfo defLoc = null; // locale where default (found) resource is
             bool lookForDefault = false; // true if kwVal needs to be set
-            ULocale fullBase = null; // base locale of found (target) resource
+            UCultureInfo fullBase = null; // base locale of found (target) resource
             int defDepth = 0; // depth of 'default' marker
             int resDepth = 0; // depth of found resource;
 
@@ -123,7 +121,7 @@ namespace ICU4N.Impl
             if (isAvailable != null)
             {
                 isAvailable[0] = false;
-                ULocale[] availableULocales = GetAvailEntry(baseName, assembly).GetULocaleList();
+                UCultureInfo[] availableULocales = GetAvailEntry(baseName, assembly).GetUCultureList();
                 for (int i = 0; i < availableULocales.Length; i++)
                 {
                     if (parent.Equals(availableULocales[i]))
@@ -145,7 +143,7 @@ namespace ICU4N.Impl
                         kwVal = defStr;
                         lookForDefault = false;
                     }
-                    defLoc = r.GetULocale();
+                    defLoc = r.UCulture;
                 }
                 catch (MissingManifestResourceException)
                 {
@@ -159,7 +157,7 @@ namespace ICU4N.Impl
             } while ((r != null) && (defLoc == null));
 
             // Now, search for the named resource
-            parent = new ULocale(baseLoc);
+            parent = new UCultureInfo(baseLoc);
             r = (ICUResourceBundle)UResourceBundle.GetBundleInstance(baseName, parent);
             // determine in which locale (if any) the named resource is located
             do
@@ -169,14 +167,14 @@ namespace ICU4N.Impl
                     ICUResourceBundle irb = (ICUResourceBundle)r.Get(resName);
                     /* UResourceBundle urb = */
                     irb.Get(kwVal);
-                    fullBase = irb.GetULocale();
+                    fullBase = irb.UCulture;
                     // If the get() completed, we have the full base locale
                     // If we fell back to an ancestor of the old 'default',
                     // we need to re calculate the "default" keyword.
                     if ((fullBase != null) && ((resDepth) > defDepth))
                     {
                         defStr = irb.GetString(DEFAULT_TAG);
-                        defLoc = r.GetULocale();
+                        defLoc = r.UCulture;
                         defDepth = resDepth;
                     }
                 }
@@ -197,7 +195,7 @@ namespace ICU4N.Impl
             { // kwVal is not default
               // couldn't find requested resource. Fall back to default.
                 kwVal = defStr; // Fall back to default.
-                parent = new ULocale(baseLoc);
+                parent = new UCultureInfo(baseLoc);
                 r = (ICUResourceBundle)UResourceBundle.GetBundleInstance(baseName, parent);
                 resDepth = 0;
                 // determine in which locale (if any) the named resource is located
@@ -209,11 +207,11 @@ namespace ICU4N.Impl
                         ICUResourceBundle urb = (ICUResourceBundle)irb.Get(kwVal);
 
                         // if we didn't fail before this..
-                        fullBase = r.GetULocale();
+                        fullBase = r.UCulture;
 
                         // If the fetched item (urb) is in a different locale than our outer locale (r/fullBase)
                         // then we are in a 'fallback' situation. treat as a missing resource situation.
-                        if (!fullBase.GetBaseName().Equals(urb.GetULocale().GetBaseName()))
+                        if (!fullBase.Name.Equals(urb.UCulture.Name))
                         {
                             fullBase = null; // fallback condition. Loop and try again.
                         }
@@ -223,7 +221,7 @@ namespace ICU4N.Impl
                         if ((fullBase != null) && ((resDepth) > defDepth))
                         {
                             defStr = irb.GetString(DEFAULT_TAG);
-                            defLoc = r.GetULocale();
+                            defLoc = r.UCulture;
                             defDepth = resDepth;
                         }
                     }
@@ -254,7 +252,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                return new ULocale(fullBase.GetBaseName() + "@" + keyword + "=" + kwVal);
+                return new UCultureInfo(fullBase.Name + "@" + keyword + "=" + kwVal);
             }
         }
 
@@ -269,7 +267,7 @@ namespace ICU4N.Impl
         public static string[] GetKeywordValues(string baseName, string keyword, Assembly assembly) // ICU4N specific - passing in assembly so submodules can override
         {
             ISet<string> keywords = new HashSet<string>();
-            ULocale[] locales = GetAvailEntry(baseName, assembly).GetULocaleList(); // ICU4N specific - passing in assembly so submodules can override
+            UCultureInfo[] locales = GetAvailEntry(baseName, assembly).GetUCultureList(); // ICU4N specific - passing in assembly so submodules can override
             int i;
 
             for (i = 0; i < locales.Length; i++)
@@ -535,37 +533,19 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Get the set of <see cref="ULocale"/>s installed in the specified bundles.
+        /// Get the set of <see cref="UCultureInfo"/>s installed in the specified bundles.
         /// </summary>
         /// <returns>The list of available locales.</returns>
-        public static ULocale[] GetAvailableULocales(string baseName, Assembly assembly) // ICU4N TODO: API - remove
-        {
-            return GetAvailEntry(baseName, assembly).GetULocaleList();
-        }
-
-        /// <summary>
-        /// Get the set of <see cref="ULocale"/>s installed the base bundle.
-        /// </summary>
-        /// <returns>The list of available locales.</returns>
-        public static ULocale[] GetAvailableULocales() // ICU4N TODO: API - remove
-        {
-            return GetAvailableULocales(ICUData.IcuBaseName, IcuDataAssembly);
-        }
-
-        /// <summary>
-        /// Get the set of <see cref="ULocale"/>s installed in the specified bundles.
-        /// </summary>
-        /// <returns>The list of available locales.</returns>
-        public static UCultureInfo[] GetAvailableUCultures(string baseName, Assembly assembly)
+        public static UCultureInfo[] GetAvailableUCultures(string baseName, Assembly assembly) // ICU4N TODO: API - Rename GetUCultures(), add CultureTypes filter
         {
             return GetAvailEntry(baseName, assembly).GetUCultureList();
         }
 
         /// <summary>
-        /// Get the set of <see cref="ULocale"/>s installed the base bundle.
+        /// Get the set of <see cref="UCultureInfo"/>s installed the base bundle.
         /// </summary>
         /// <returns>The list of available locales.</returns>
-        public static UCultureInfo[] GetAvailableUCultures()
+        public static UCultureInfo[] GetAvailableUCultures() // ICU4N TODO: API - Rename GetCultures(), add CultureTypes filter
         {
             return GetAvailableUCultures(ICUData.IcuBaseName, IcuDataAssembly);
         }
@@ -574,9 +554,9 @@ namespace ICU4N.Impl
         /// Get the set of <see cref="CultureInfo"/>s installed in the specified bundles.
         /// </summary>
         /// <returns>The list of available locales.</returns>
-        public static CultureInfo[] GetAvailableLocales(string baseName, Assembly assembly) // ICU4N TODO: API - rename GetAvaliableCultureInfos ?
+        public static CultureInfo[] GetAvailableLocales(string baseName, Assembly assembly) // ICU4N TODO: API - rename GetCultures, add CultureTypes enum
         {
-            return GetAvailEntry(baseName, assembly).GetLocaleList();
+            return GetAvailEntry(baseName, assembly).GetCultureList();
         }
 
         /// <summary>
@@ -585,23 +565,23 @@ namespace ICU4N.Impl
         /// <returns>The list of available locales.</returns>
         public static CultureInfo[] GetAvailableLocales() // ICU4N TODO: API - rename GetAvaliableCultureInfos ?
         {
-            return GetAvailEntry(ICUData.IcuBaseName, IcuDataAssembly).GetLocaleList();
+            return GetAvailEntry(ICUData.IcuBaseName, IcuDataAssembly).GetCultureList();
         }
 
         /// <summary>
-        /// Convert a list of <see cref="ULocale"/>s to a list of <see cref="CultureInfo"/>s.  <see cref="ULocale"/>s with a script code will not be converted
+        /// Convert a list of <see cref="UCultureInfo"/>s to a list of <see cref="CultureInfo"/>s.  <see cref="UCultureInfo"/>s with a script code will not be converted
         /// since they cannot be represented as a <see cref="CultureInfo"/>.  This means that the two lists will <b>not</b> match
         /// one-to-one, and that the returned list might be shorter than the input list.
         /// </summary>
-        /// <param name="ulocales">A list of <see cref="ULocale"/>s to convert to a list of <see cref="CultureInfo"/>s.</param>
+        /// <param name="ulocales">A list of <see cref="UCultureInfo"/>s to convert to a list of <see cref="CultureInfo"/>s.</param>
         /// <returns>The list of converted Locales.</returns>
-        public static CultureInfo[] GetLocaleList(ULocale[] ulocales)
+        public static CultureInfo[] GetCultureList(UCultureInfo[] ulocales)
         {
             List<CultureInfo> list = new List<CultureInfo>(ulocales.Length);
             HashSet<CultureInfo> uniqueSet = new HashSet<CultureInfo>();
             for (int i = 0; i < ulocales.Length; i++)
             {
-                CultureInfo loc = ulocales[i].ToLocale();
+                CultureInfo loc = ulocales[i].ToCultureInfo();
                 if (!uniqueSet.Contains(loc))
                 {
                     list.Add(loc);
@@ -613,24 +593,13 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Returns the locale of this resource bundle. This method can be used after
-        /// a call to <see cref="GetBundle(ICUResourceBundleReader, string, string, Assembly)"/> to determine whether the resource bundle returned
-        /// really corresponds to the requested locale or is a fallback.
-        /// </summary>
-        /// <returns>The locale of this resource bundle.</returns>
-        public override CultureInfo GetLocale() // ICU4N TODO: API - Remove
-        {
-            return GetULocale().ToLocale();
-        }
-
-        /// <summary>
-        /// Returns the locale of this resource bundle. This method can be used after
         /// a call to <see cref="GetBundle(ICUResourceBundleReader, string, string, Assembly)"/>
         /// to determine whether the resource bundle returned
         /// really corresponds to the requested locale or is a fallback.
         /// </summary>
         /// <returns>The locale of this resource bundle.</returns>
-        public override CultureInfo CultureInfo
-            => UCultureInfo.ToCultureInfo();
+        public override CultureInfo Culture
+            => UCulture.ToCultureInfo();
 
         // ========== privates ==========
         private const string ICU_RESOURCE_INDEX = "res_index";
@@ -644,41 +613,7 @@ namespace ICU4N.Impl
         // Flag for enabling/disabling debugging code
         private static readonly bool DEBUG = ICUDebug.Enabled("localedata");
 
-        private static ULocale[] CreateULocaleList(string baseName,
-            Assembly root) // ICU4N TODO: API - Remove this
-        {
-            // the canned list is a subset of all the available .res files, the idea
-            // is we don't export them
-            // all. gotta be a better way to do this, since to add a locale you have
-            // to update this list,
-            // and it's embedded in our binary resources.
-            ICUResourceBundle bundle = (ICUResourceBundle)UResourceBundle.InstantiateBundle(baseName, ICU_RESOURCE_INDEX, root, true);
-
-            bundle = (ICUResourceBundle)bundle.Get(InstalledLocales);
-            int length = bundle.Length;
-            int i = 0;
-            ULocale[] locales = new ULocale[length];
-            using (UResourceBundleEnumerator iter = bundle.GetEnumerator())
-            {
-                iter.Reset();
-                while (iter.MoveNext())
-                {
-                    string locstr = iter.Current.Key;
-                    if (locstr.Equals("root"))
-                    {
-                        locales[i++] = ULocale.ROOT;
-                    }
-                    else
-                    {
-                        locales[i++] = new ULocale(locstr);
-                    }
-                }
-            }
-            bundle = null;
-            return locales;
-        }
-
-        private static UCultureInfo[] CreateCultureList(string baseName,
+        private static UCultureInfo[] CreateUCultureList(string baseName,
             Assembly root)
         {
             // the canned list is a subset of all the available .res files, the idea
@@ -851,7 +786,7 @@ namespace ICU4N.Impl
             }
             // We need to have the root locale in the set, but not as "root".
             set.Remove("root");
-            set.Add(ULocale.ROOT.ToString());  // ""
+            set.Add(UCultureInfo.InvariantCulture.ToString());  // ""
             return (set).AsReadOnly();
         }
 
@@ -868,10 +803,9 @@ namespace ICU4N.Impl
         /// </summary>
         private sealed class AvailEntry
         {
-            private string prefix;
-            private Assembly assembly; // ICU4N specific - renamed loader to assembly
-            private volatile ULocale[] ulocales; // ICU4N TODO: Remove this
-            private volatile UCultureInfo[] uCultureInfos;
+            private readonly string prefix;
+            private readonly Assembly assembly; // ICU4N specific - renamed loader to assembly
+            private volatile UCultureInfo[] uCultures;
             private volatile CultureInfo[] locales;
             private volatile ISet<string> nameSet;
             private volatile ISet<string> fullNameSet;
@@ -882,35 +816,21 @@ namespace ICU4N.Impl
                 this.assembly = assembly;
             }
 
-            internal ULocale[] GetULocaleList() // ICU4N TODO: API - remove
-            {
-                if (ulocales == null)
-                {
-                    lock (this)
-                    {
-                        if (ulocales == null)
-                        {
-                            ulocales = CreateULocaleList(prefix, assembly);
-                        }
-                    }
-                }
-                return ulocales;
-            }
             internal UCultureInfo[] GetUCultureList()
             {
-                if (uCultureInfos == null)
+                if (uCultures == null)
                 {
                     lock (this)
                     {
-                        if (uCultureInfos == null)
+                        if (uCultures == null)
                         {
-                            uCultureInfos = CreateCultureList(prefix, assembly);
+                            uCultures = CreateUCultureList(prefix, assembly);
                         }
                     }
                 }
-                return uCultureInfos;
+                return uCultures;
             }
-            internal CultureInfo[] GetLocaleList()
+            internal CultureInfo[] GetCultureList()
             {
                 if (locales == null)
                 {
@@ -918,8 +838,8 @@ namespace ICU4N.Impl
                     {
                         if (locales == null)
                         {
-                            GetULocaleList();
-                            locales = ICUResourceBundle.GetLocaleList(ulocales);
+                            GetUCultureList();
+                            locales = ICUResourceBundle.GetCultureList(uCultures);
                         }
                     }
                 }
@@ -1310,44 +1230,32 @@ namespace ICU4N.Impl
         {
             if (locale == null)
             {
-                locale = UCultureInfo.CurrentCulture.ToUCultureInfo(); // ICU4N TODO: Remove ToUCultureInfo()
+                locale = UCultureInfo.CurrentCulture;
             }
             return GetBundleInstance(baseName, locale.Name,
-                    root, openType);
-        }
-
-        public static ICUResourceBundle GetBundleInstance(
-            string baseName, ULocale locale, OpenType openType) // ICU4N TODO: API - remove
-        {
-            return GetBundleInstance(baseName, locale,
-                    ICUResourceBundle.IcuDataAssembly, openType);
-        }
-
-        // ICU4N specific overload so we can pass the Assembly from submodules (since 
-        // the main assembly won't see submodules by default).
-        public static ICUResourceBundle GetBundleInstance(
-            string baseName, ULocale locale, Assembly root, OpenType openType) // ICU4N TODO: API - remove
-        {
-            if (locale == null)
-            {
-                locale = ULocale.GetDefault();
-            }
-            return GetBundleInstance(baseName, locale.GetBaseName(),
                     root, openType);
         }
 
         public static ICUResourceBundle GetBundleInstance(string baseName, string localeID,
             Assembly root, OpenType openType)
         {
+            return GetBundleInstance(baseName, localeID, UCultureInfo.CurrentCulture.Name, root, openType);
+        }
+
+        // ICU4N specific - added this as a means to call this within UCultureInfo.CurrentCulture without
+        // infinite recursion.
+        internal static ICUResourceBundle GetBundleInstance(string baseName, string localeID,
+            string defaultID, Assembly root, OpenType openType)
+        {
             if (baseName == null)
             {
                 baseName = ICUData.IcuBaseName;
             }
-            localeID = ULocale.GetBaseName(localeID);
+            localeID = UCultureInfo.GetName(localeID);
             ICUResourceBundle b;
             if (openType == OpenType.LocaleDefaultRoot)
             {
-                b = InstantiateBundle(baseName, localeID, ULocale.GetDefault().GetBaseName(),
+                b = InstantiateBundle(baseName, localeID, defaultID,
                         root, openType);
             }
             else
@@ -1539,20 +1447,13 @@ namespace ICU4N.Impl
             return wholeBundle.baseName;
         }
 
-        public override UCultureInfo UCultureInfo => wholeBundle.uculture;
-
-        public override ULocale GetULocale() // ICU4N TODO: API - Remove
-        {
-            return wholeBundle.ulocale;
-        }
+        public override UCultureInfo UCulture => wholeBundle.uculture;
 
         /// <summary>
         /// Returns true if this is the root bundle, or an item in the root bundle.
         /// </summary>
         public virtual bool IsRoot
-        {
-            get { return string.IsNullOrEmpty(wholeBundle.localeID) || wholeBundle.localeID.Equals("root"); }
-        }
+            => string.IsNullOrEmpty(wholeBundle.localeID) || wholeBundle.localeID.Equals("root");
 
         public override void SetParent(ResourceBundle parent)
         {
@@ -1561,23 +1462,19 @@ namespace ICU4N.Impl
 
         new public ICUResourceBundle Parent // ICU4N: Since the only purpose here is to cast, using the new keyword is fine
         {
-            get { return (ICUResourceBundle)m_parent; }
-            set { this.m_parent = value; }
+            get => (ICUResourceBundle)m_parent;
+            set => this.m_parent = value;
         }
 
 
         public override string Key
-        {
-            get { return m_key; }
-        }
+            => m_key;
 
         /// <summary>
         /// Gets the noFallback flag specified in the loaded bundle.
         /// </summary>
         private bool NoFallback
-        {
-            get { return wholeBundle.reader.NoFallback; }
-        }
+            => wholeBundle.reader.NoFallback;
 
         private static ICUResourceBundle GetBundle(ICUResourceBundleReader reader,
                                                    string baseName, string localeID,

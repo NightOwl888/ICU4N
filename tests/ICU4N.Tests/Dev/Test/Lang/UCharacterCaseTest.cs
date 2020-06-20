@@ -1,10 +1,9 @@
-﻿using ICU4N.Impl;
-using ICU4N.Globalization;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support;
-using ICU4N.Support.Globalization;
 using ICU4N.Support.Text;
 using ICU4N.Text;
-using ICU4N.Util;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
-using J2N.Text;
 
 namespace ICU4N.Dev.Test.Lang
 {
@@ -313,7 +311,7 @@ namespace ICU4N.Dev.Test.Lang
             assertTrue("Case Ignorable check of ASCII apostrophe", isIgnorable);
             assertEquals("Titlecase check",
                     "The Quick Brown Fox Can't Jump Over The Lazy Dogs.",
-                    UChar.ToTitleCase(ULocale.ENGLISH, "THE QUICK BROWN FOX CAN'T JUMP OVER THE LAZY DOGS.", null));
+                    UChar.ToTitleCase(new UCultureInfo("en"), "THE QUICK BROWN FOX CAN'T JUMP OVER THE LAZY DOGS.", null));
         }
 
         [Test]
@@ -325,7 +323,7 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     String test = TITLE_DATA_[i++];
                     String expected = TITLE_DATA_[i++];
-                    ULocale locale = new ULocale(TITLE_DATA_[i++]);
+                    UCultureInfo locale = new UCultureInfo(TITLE_DATA_[i++]);
                     int breakType = int.Parse(TITLE_DATA_[i++], CultureInfo.InvariantCulture);
                     String optionsString = TITLE_DATA_[i++];
                     BreakIterator iter =
@@ -441,23 +439,23 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestDutchTitle()
         {
-            ULocale LOC_DUTCH = new ULocale("nl");
+            UCultureInfo LOC_DUTCH = new UCultureInfo("nl");
             int options = 0;
             options |= UChar.TitleCaseNoLowerCase;
             BreakIterator iter = BreakIterator.GetWordInstance(LOC_DUTCH);
 
             assertEquals("Dutch titlecase check in English",
                     "Ijssel Igloo Ijmuiden",
-                    UChar.ToTitleCase(ULocale.ENGLISH, "ijssel igloo IJMUIDEN", null));
+                    UChar.ToTitleCase(new UCultureInfo("en"), "ijssel igloo IJMUIDEN", null));
 
             assertEquals("Dutch titlecase check in Dutch",
                     "IJssel Igloo IJmuiden",
                     UChar.ToTitleCase(LOC_DUTCH, "ijssel igloo IJMUIDEN", null));
 
-            // Also check the behavior using Java Locale
+            // Also check the behavior using .NET CultureInfo
             assertEquals("Dutch titlecase check in English (Java Locale)",
                     "Ijssel Igloo Ijmuiden",
-                    UChar.ToTitleCase(new CultureInfo("en") /* Locale.ENGLISH */, "ijssel igloo IJMUIDEN", null));
+                    UChar.ToTitleCase(new CultureInfo("en"), "ijssel igloo IJMUIDEN", null));
 
             assertEquals("Dutch titlecase check in Dutch (Java Locale)",
                     "IJssel Igloo IJmuiden",
@@ -637,7 +635,7 @@ namespace ICU4N.Dev.Test.Lang
                             String lang = "";
                             if (locale != null)
                             {
-                                lang = ULocale.GetLanguage(locale.Name);
+                                lang = UCultureInfo.GetLanguage(locale.Name);
                             }
                             if (lang.Equals("tr") || lang.Equals("az"))
                             {
@@ -670,7 +668,7 @@ namespace ICU4N.Dev.Test.Lang
                             String lang = "";
                             if (locale != null)
                             {
-                                lang = ULocale.GetLanguage(locale.Name);
+                                lang = UCultureInfo.GetLanguage(locale.Name);
                             }
                             if (lang.Equals("tr") || lang.Equals("az"))
                             {

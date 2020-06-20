@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Impl.Coll;
 using ICU4N.Support.Text;
 using ICU4N.Util;
@@ -141,7 +142,7 @@ namespace ICU4N.Text
             {
                 throw new ArgumentNullException(nameof(rules), "Collation rules can not be null");
             }
-            validLocale = ULocale.ROOT;
+            validLocale = UCultureInfo.InvariantCulture;
             InternalBuildTailoring(rules);
         }
 
@@ -182,7 +183,7 @@ namespace ICU4N.Text
             }
 
 
-            t.ActualLocale = null;
+            t.ActualCulture = null;
             AdoptTailoring(t);
         }
 
@@ -1700,7 +1701,7 @@ namespace ICU4N.Text
 
         // package private constructors ------------------------------------------
 
-        internal RuleBasedCollator(CollationTailoring t, ULocale vl)
+        internal RuleBasedCollator(CollationTailoring t, UCultureInfo vl)
         {
             data = t.Data;
             settings = (SharedObject.Reference<CollationSettings>)t.Settings.Clone();
@@ -1715,7 +1716,7 @@ namespace ICU4N.Text
             data = t.Data;
             settings = (SharedObject.Reference<CollationSettings>)t.Settings.Clone();
             tailoring = t;
-            validLocale = t.ActualLocale;
+            validLocale = t.ActualCulture;
             actualLocaleIsSameAsValid = false;
         }
 
@@ -1822,61 +1823,79 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// <icu/> Returns the locale that was used to create this object, or null.
+        /// <icu/> Gets the locale that was used to create this object, or <c>null</c>.
+        /// <para/>
+        /// Indicates the locale of the resource containing the data. This is always
+        /// at or above the valid locale. If the valid locale does not contain the
+        /// specific data being requested, then the actual locale will be
+        /// above the valid locale. If the object was not constructed from
+        /// locale data, then the valid locale is <c>null</c>.
+        /// <para/>
         /// This may may differ from the locale requested at the time of
-        /// this object's creation.  For example, if an object is created
+        /// this object's creation. For example, if an object is created
         /// for locale <c>en_US_CALIFORNIA</c>, the actual data may be
         /// drawn from <c>en</c> (the <i>actual</i> locale), and
         /// <c>en_US</c> may be the most specific locale that exists (the
         /// <i>valid</i> locale).
         /// <para/>
-        /// Note: This method will be implemented in ICU 3.0; ICU 2.8
-        /// contains a partial preview implementation.  The * <i>actual</i>
+        /// Note: This property will be implemented in ICU 3.0; ICU 2.8
+        /// contains a partial preview implementation. The * <i>actual</i>
         /// locale is returned correctly, but the <i>valid</i> locale is
         /// not, in most cases.
+        /// <para/>
+        /// The base class method always returns <see cref="UCultureInfo.InvariantCulture"/>
+        /// Subclasses should override it if appropriate.
         /// </summary>
-        /// <param name="type">type of information requested, either 
-        /// <see cref="ULocale.VALID_LOCALE"/> or <see cref="ULocale.ACTUAL_LOCALE"/>.</param>
-        /// <returns>
-        /// the information specified by <i>type</i>, or null if
-        /// this object was not constructed from locale data.
-        /// </returns>
-        /// <seealso cref="ULocale"/>
-        /// <seealso cref="ULocale.VALID_LOCALE"/>
-        /// <seealso cref="ULocale.ACTUAL_LOCALE"/>
-        /// <draft>ICU 53 (retain)</draft>
+        /// <seealso cref="UCultureInfo"/>
+        /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public override ULocale GetLocale(ULocale.Type type)
-        {
-            if (type == ULocale.ACTUAL_LOCALE)
-            {
-                return actualLocaleIsSameAsValid ? validLocale : tailoring.ActualLocale;
-            }
-            else if (type == ULocale.VALID_LOCALE)
-            {
-                return validLocale;
-            }
-            else
-            {
-                throw new ArgumentException("unknown ULocale.Type " + type);
-            }
-        }
+        public override UCultureInfo ActualCulture
+            => actualLocaleIsSameAsValid ? validLocale : tailoring.ActualCulture;
+
+        /// <summary>
+        /// <icu/> Gets the locale that was used to create this object, or <c>null</c>.
+        /// <para/>
+        /// Indicates the most specific locale for which any data exists.
+        /// This is always at or above the requested locale, and at or below
+        /// the actual locale. If the requested locale does not correspond
+        /// to any resource data, then the valid locale will be above the
+        /// requested locale. If the object was not constructed from locale
+        /// data, then the actual locale is <c>null</c>.
+        /// <para/>
+        /// This may may differ from the locale requested at the time of
+        /// this object's creation. For example, if an object is created
+        /// for locale <c>en_US_CALIFORNIA</c>, the actual data may be
+        /// drawn from <c>en</c> (the <i>actual</i> locale), and
+        /// <c>en_US</c> may be the most specific locale that exists (the
+        /// <i>valid</i> locale).
+        /// <para/>
+        /// Note: This property will be implemented in ICU 3.0; ICU 2.8
+        /// contains a partial preview implementation. The * <i>actual</i>
+        /// locale is returned correctly, but the <i>valid</i> locale is
+        /// not, in most cases.
+        /// <para/>
+        /// The base class method always returns <see cref="UCultureInfo.InvariantCulture"/>
+        /// Subclasses should override it if appropriate.
+        /// </summary>
+        /// <seealso cref="UCultureInfo"/>
+        /// <draft>ICU 2.8 (retain)</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public override UCultureInfo ValidCulture
+            => validLocale;
 
         /// <summary>
         /// Set information about the locales that were used to create this
         /// object.  If the object was not constructed from locale data,
         /// both arguments should be set to null.  Otherwise, neither
         /// should be null.  The actual locale must be at the same level or
-        /// less specific than the valid locale.  This method is intended
+        /// less specific than the valid locale. This method is intended
         /// for use by factories or other entities that create objects of
         /// this class.
         /// </summary>
-        /// <param name="valid">the most specific locale containing any resource data, or null</param>
-        /// <param name="actual">the locale containing data used to construct this object, or null</param>
-        /// <seealso cref="ULocale"/>
-        /// <seealso cref="ULocale.VALID_LOCALE"/>
-        /// <seealso cref="ULocale.ACTUAL_LOCALE"/>
-        internal override void SetLocale(ULocale valid, ULocale actual)
+        /// <param name="valid">The most specific locale containing any resource data, or <c>null</c>.</param>
+        /// <param name="actual">The locale containing data used to construct this object, or <c>null</c>.</param>
+        /// <seealso cref="UCultureInfo"/>
+        internal override void SetCulture(UCultureInfo valid, UCultureInfo actual)
         {
             // This method is called
             // by other protected functions that checks and makes sure that
@@ -1885,7 +1904,7 @@ namespace ICU4N.Text
             // Another check we could do is that the actual locale is at
             // the same level or less specific than the valid locale.
             // TODO: Starting with Java 7, use Objects.equals(a, b).
-            if (Utility.ObjectEquals(actual, tailoring.ActualLocale))
+            if (Utility.ObjectEquals(actual, tailoring.ActualCulture))
             {
                 actualLocaleIsSameAsValid = false;
             }
@@ -1902,7 +1921,7 @@ namespace ICU4N.Text
         internal CollationData data;
         internal SharedObject.Reference<CollationSettings> settings;  // reference-counted
         internal CollationTailoring tailoring;  // C++: reference-counted
-        private ULocale validLocale;
+        private UCultureInfo validLocale;
         // Note: No need in Java to track which attributes have been set explicitly.
         // int or EnumSet  explicitlySetAttributes;
 

@@ -1,6 +1,5 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
-using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -26,7 +25,7 @@ namespace ICU4N.Text
         /// <param name="locale">The locale into which to localize the names.</param>
         /// <returns>A <see cref="CurrencyDisplayNames"/>.</returns>
         /// <stable>ICU 4.4</stable>
-        public static CurrencyDisplayNames GetInstance(ULocale locale)
+        public static CurrencyDisplayNames GetInstance(UCultureInfo locale)
         {
             return CurrencyData.Provider.GetInstance(locale, true);
         }
@@ -50,7 +49,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Return an instance of <see cref="CurrencyDisplayNames"/> that provides information
         /// localized for display in the provided locale.  If noSubstitute is false,
-        /// this behaves like <see cref="GetInstance(ULocale)"/>.  Otherwise, 1) if there
+        /// this behaves like <see cref="GetInstance(UCultureInfo)"/>. Otherwise, 1) if there
         /// is no supporting data for the locale at all, there is no fallback through
         /// the default locale or root, and null is returned, and 2) if there is data
         /// for the locale, but not data for the requested ISO code, null is returned
@@ -60,7 +59,7 @@ namespace ICU4N.Text
         /// <param name="noSubstitute">If true, do not return substitute values.</param>
         /// <returns>A <see cref="CurrencyDisplayNames"/>.</returns>
         /// <stable>ICU 49</stable>
-        public static CurrencyDisplayNames GetInstance(ULocale locale, bool noSubstitute)
+        public static CurrencyDisplayNames GetInstance(UCultureInfo locale, bool noSubstitute)
         {
             return CurrencyData.Provider.GetInstance(locale, !noSubstitute);
         }
@@ -80,7 +79,7 @@ namespace ICU4N.Text
         /// <stable>ICU 54</stable>
         public static CurrencyDisplayNames GetInstance(CultureInfo locale, bool noSubstitute)
         {
-            return GetInstance(ULocale.ForLocale(locale), noSubstitute);
+            return GetInstance(locale.ToUCultureInfo(), noSubstitute);
         }
 
         /// <summary>
@@ -88,23 +87,14 @@ namespace ICU4N.Text
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
         public static bool HasData
-        {
-            get { return CurrencyData.Provider.HasData; }
-        }
+            => CurrencyData.Provider.HasData;
 
         /// <summary>
         /// Returns the locale used to determine how to translate the currency names.
-        /// This is not necessarily the same locale passed to <see cref="GetInstance(ULocale)"/>.
+        /// This is not necessarily the same locale passed to <see cref="GetInstance(UCultureInfo)"/>.
         /// </summary>
         /// <stable>ICU 49</stable>
-        public abstract ULocale ULocale { get; } // ICU4N TODO: API Remove
-
-        /// <summary>
-        /// Returns the locale used to determine how to translate the currency names.
-        /// This is not necessarily the same locale passed to <see cref="GetInstance(ULocale)"/>.
-        /// </summary>
-        /// <stable>ICU 49</stable>
-        public abstract UCultureInfo UCultureInfo { get; }
+        public abstract UCultureInfo UCulture { get; }
 
         /// <summary>
         /// Returns the symbol for the currency with the provided ISO code.  If

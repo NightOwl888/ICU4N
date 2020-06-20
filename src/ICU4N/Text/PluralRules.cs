@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using ICU4N.Util;
 using J2N.Collections;
@@ -44,7 +45,7 @@ namespace ICU4N.Text
         /// The final fallback always returns the default rules.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public abstract PluralRules ForLocale(ULocale locale, PluralType type);
+        public abstract PluralRules ForLocale(UCultureInfo locale, PluralType type);
 
         /// <summary>
         /// Utility for getting <see cref="PluralType.Cardinal"/> rules.
@@ -53,7 +54,7 @@ namespace ICU4N.Text
         /// <returns>plural rules.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public PluralRules ForLocale(ULocale locale)
+        public PluralRules ForLocale(UCultureInfo locale)
         {
             return ForLocale(locale, PluralType.Cardinal);
         }
@@ -63,7 +64,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public abstract ULocale[] GetAvailableULocales();
+        public abstract UCultureInfo[] GetAvailableULocales();
 
         /// <summary>
         /// Returns the 'functionally equivalent' locale with respect to plural rules. Calling PluralRules.forLocale with
@@ -78,7 +79,7 @@ namespace ICU4N.Text
         /// <returns>the functionally-equivalent locale</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public abstract ULocale GetFunctionalEquivalent(ULocale locale, bool[] isAvailable);
+        public abstract UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, bool[] isAvailable);
 
         /// <summary>
         /// Returns the default factory.
@@ -95,7 +96,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public abstract bool HasOverride(ULocale locale);
+        public abstract bool HasOverride(UCultureInfo locale);
     }
 
     /// <summary>
@@ -2036,7 +2037,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Provides access to the predefined cardinal-number <see cref="PluralRules"/> for a given
         /// <paramref name="locale"/>.
-        /// Same as <c>ForLocale(ULocale, PluralType.Cardinal)</c>.
+        /// Same as <c>ForLocale(UCultureInfo, PluralType.Cardinal)</c>.
         /// <para/>
         /// ICU defines plural rules for many locales based on CLDR <i>Language Plural Rules</i>.
         /// For these predefined rules, see CLDR page at
@@ -2052,7 +2053,7 @@ namespace ICU4N.Text
         /// rules.
         /// </returns>
         /// <stable>ICU 3.8</stable>
-        public static PluralRules ForLocale(ULocale locale)
+        public static PluralRules ForLocale(UCultureInfo locale)
         {
 #pragma warning disable 612, 618
             return PluralRulesFactory.DefaultFactory.ForLocale(locale, PluralType.Cardinal);
@@ -2080,7 +2081,7 @@ namespace ICU4N.Text
         /// <stable>ICU 54</stable>
         public static PluralRules ForLocale(CultureInfo locale)
         {
-            return ForLocale(ULocale.ForLocale(locale));
+            return ForLocale(locale.ToUCultureInfo());
         }
 
         /// <summary>
@@ -2102,7 +2103,7 @@ namespace ICU4N.Text
         /// rules.
         /// </returns>
         /// <stable>ICU 50</stable>
-        public static PluralRules ForLocale(ULocale locale, PluralType type)
+        public static PluralRules ForLocale(UCultureInfo locale, PluralType type)
         {
 #pragma warning disable 612, 618
             return PluralRulesFactory.DefaultFactory.ForLocale(locale, type);
@@ -2130,7 +2131,7 @@ namespace ICU4N.Text
         /// <stable>ICU 54</stable>
         public static PluralRules ForLocale(CultureInfo locale, PluralType type)
         {
-            return ForLocale(ULocale.ForLocale(locale), type);
+            return ForLocale(locale.ToUCultureInfo(), type);
         }
 
         /// <summary>
@@ -2400,7 +2401,7 @@ namespace ICU4N.Text
         /// <returns>The set of locales for which PluralRules are known, as an array.</returns>
         /// <draft>ICU 4.2 (retain)</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static ULocale[] GetAvailableULocales()
+        public static UCultureInfo[] GetAvailableULocales() // ICU4N TODO: API - Rename GetUCultures() and add type filter
         {
 #pragma warning disable 612, 618
             return PluralRulesFactory.DefaultFactory.GetAvailableULocales();
@@ -2424,7 +2425,7 @@ namespace ICU4N.Text
         /// <returns>The functionally-equivalent locale.</returns>
         /// <draft>ICU 4.2 (retain)</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static ULocale GetFunctionalEquivalent(ULocale locale, bool[] isAvailable)
+        public static UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, bool[] isAvailable) // ICU4N TODO: API - Change to out parameter
         {
 #pragma warning disable 612, 618
             return PluralRulesFactory.DefaultFactory.GetFunctionalEquivalent(locale, isAvailable);

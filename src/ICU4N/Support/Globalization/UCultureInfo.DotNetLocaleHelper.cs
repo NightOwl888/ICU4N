@@ -1,5 +1,4 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -93,7 +92,7 @@ namespace ICU4N.Globalization
             {
                 if (CultureInfo.InvariantCulture.Equals(culture))
                 {
-                    return new UCultureInfo("", culture);
+                    return UCultureInfo.InvariantCulture;
                 }
 
                 var collationName = culture.CompareInfo?.Name;
@@ -284,7 +283,7 @@ namespace ICU4N.Globalization
             /// </summary>
             private static string GetDefaultCalendar(string baseName)
             {
-                var rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBundle, baseName, ICUResourceBundle.IcuDataAssembly);
+                var rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuBundle, baseName, baseName, ICUResourceBundle.IcuDataAssembly, OpenType.LocaleDefaultRoot);
                 return rb.GetStringWithFallback("calendar/default");
             }
 

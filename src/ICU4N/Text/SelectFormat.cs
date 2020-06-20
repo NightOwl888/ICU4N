@@ -147,7 +147,7 @@ namespace ICU4N.Text
     /// // Example:
     /// MessageFormat msgFmt = new MessageFormat("{0} est " +
     ///     "{1, select, female {all&#xE9;e} other {all&#xE9;}} &#xE0; Paris.",
-    ///     new ULocale("fr"));
+    ///     new UCultureInfo("fr"));
     /// object args[] = {"Kirti","female"};
     /// Console.WriteLine(msgFmt.Format(args));
     /// </code>

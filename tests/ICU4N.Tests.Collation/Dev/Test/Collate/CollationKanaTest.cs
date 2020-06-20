@@ -1,4 +1,5 @@
-﻿using ICU4N.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Text;
 using ICU4N.Util;
 using NUnit.Framework;
 using System;
@@ -185,7 +186,7 @@ namespace ICU4N.Dev.Test.Collate
             int result;
             String string1 = new String(tmp1);
             String string2 = new String(tmp2);
-            RuleBasedCollator rb = (RuleBasedCollator)Collator.GetInstance(ULocale.JAPANESE);
+            RuleBasedCollator rb = (RuleBasedCollator)Collator.GetInstance(new UCultureInfo("ja"));
             rb.Strength = (Collator.Quaternary);
             rb.IsAlternateHandlingShifted = (false);
 

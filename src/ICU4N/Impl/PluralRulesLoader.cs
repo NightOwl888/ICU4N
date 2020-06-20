@@ -1,4 +1,5 @@
-﻿using ICU4N.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Collections.Generic.Extensions;
 using J2N.Text;
@@ -21,7 +22,7 @@ namespace ICU4N.Impl
         // lazy init, use getLocaleIdToRulesIdMap to access
         private IDictionary<string, string> localeIdToCardinalRulesId;
         private IDictionary<string, string> localeIdToOrdinalRulesId;
-        private IDictionary<string, ULocale> rulesIdToEquivalentULocale;
+        private IDictionary<string, UCultureInfo> rulesIdToEquivalentULocale;
 #pragma warning disable 612, 618
         private static readonly IDictionary<string, PluralRanges> localeIdToPluralRanges = LoadLocaleIdToPluralRanges();
 #pragma warning restore 612, 618
@@ -43,15 +44,15 @@ namespace ICU4N.Impl
         /// Returns the locales for which we have plurals data. Utility for testing.
         /// </summary>
 #pragma warning disable 672
-        public override ULocale[] GetAvailableULocales()
+        public override UCultureInfo[] GetAvailableULocales() // ICU4N TODO: API - Rename GetUCultures() and add CultureTypes enum filter
 #pragma warning restore 672
         {
             ICollection<string> keys = GetLocaleIdToRulesIdMap(PluralType.Cardinal).Keys;
-            ULocale[] locales = new ULocale[keys.Count];
+            UCultureInfo[] locales = new UCultureInfo[keys.Count];
             int n = 0;
             foreach (var key in keys)
             {
-                locales[n++] = ULocale.CreateCanonical(key);
+                locales[n++] = UCultureInfo.CreateCanonical(key);
             }
             return locales;
         }
@@ -60,12 +61,12 @@ namespace ICU4N.Impl
         /// Returns the functionally equivalent locale.
         /// </summary>
 #pragma warning disable 672
-        public override ULocale GetFunctionalEquivalent(ULocale locale, bool[] isAvailable)
+        public override UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, bool[] isAvailable)
 #pragma warning restore 672
         {
             if (isAvailable != null && isAvailable.Length > 0)
             {
-                string localeId = ULocale.Canonicalize(locale.GetBaseName());
+                string localeId = UCultureInfo.Canonicalize(locale.Name);
                 IDictionary<string, string> idMap = GetLocaleIdToRulesIdMap(PluralType.Cardinal);
                 isAvailable[0] = idMap.ContainsKey(localeId);
             }
@@ -73,14 +74,14 @@ namespace ICU4N.Impl
             string rulesId = GetRulesIdForLocale(locale, PluralType.Cardinal);
             if (rulesId == null || rulesId.Trim().Length == 0)
             {
-                return ULocale.ROOT; // ultimate fallback
+                return UCultureInfo.InvariantCulture; // ultimate fallback
             }
 
-            ULocale result;
+            UCultureInfo result;
             GetRulesIdToEquivalentULocaleMap().TryGetValue(rulesId, out result);
             if (result == null)
             {
-                return ULocale.ROOT; // ultimate fallback
+                return UCultureInfo.InvariantCulture; // ultimate fallback
             }
 
             return result;
@@ -98,7 +99,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns the lazily-constructed map.
         /// </summary>
-        private IDictionary<string, ULocale> GetRulesIdToEquivalentULocaleMap()
+        private IDictionary<string, UCultureInfo> GetRulesIdToEquivalentULocaleMap()
         {
             CheckBuildRulesIdMaps();
             return rulesIdToEquivalentULocale;
@@ -120,7 +121,7 @@ namespace ICU4N.Impl
             {
                 IDictionary<string, string> tempLocaleIdToCardinalRulesId;
                 IDictionary<string, string> tempLocaleIdToOrdinalRulesId;
-                IDictionary<string, ULocale> tempRulesIdToEquivalentULocale;
+                IDictionary<string, UCultureInfo> tempRulesIdToEquivalentULocale;
                 try
                 {
                     UResourceBundle pluralb = GetPluralBundle();
@@ -130,7 +131,7 @@ namespace ICU4N.Impl
                     // sort for convenience of getAvailableULocales
                     tempLocaleIdToCardinalRulesId = new SortedDictionary<string, string>(StringComparer.Ordinal);
                     // not visible
-                    tempRulesIdToEquivalentULocale = new Dictionary<string, ULocale>();
+                    tempRulesIdToEquivalentULocale = new Dictionary<string, UCultureInfo>();
 
                     for (int i = 0; i < localeb.Length; ++i)
                     {
@@ -141,7 +142,7 @@ namespace ICU4N.Impl
 
                         if (!tempRulesIdToEquivalentULocale.ContainsKey(value))
                         {
-                            tempRulesIdToEquivalentULocale[value] = new ULocale(id);
+                            tempRulesIdToEquivalentULocale[value] = new UCultureInfo(id);
                         }
                     }
 
@@ -161,7 +162,7 @@ namespace ICU4N.Impl
                     // dummy so we don't try again
                     tempLocaleIdToCardinalRulesId = new Dictionary<string, string>();
                     tempLocaleIdToOrdinalRulesId = new Dictionary<string, string>();
-                    tempRulesIdToEquivalentULocale = new Dictionary<string, ULocale>();
+                    tempRulesIdToEquivalentULocale = new Dictionary<string, UCultureInfo>();
                 }
 
                 lock (syncLock)
@@ -181,10 +182,10 @@ namespace ICU4N.Impl
         /// rulesId, return null. The rulesId might be the empty string if the rule
         /// is the default rule.
         /// </summary>
-        public virtual string GetRulesIdForLocale(ULocale locale, PluralType type)
+        public virtual string GetRulesIdForLocale(UCultureInfo locale, PluralType type)
         {
             IDictionary<string, string> idMap = GetLocaleIdToRulesIdMap(type);
-            string localeId = ULocale.Canonicalize(locale.GetBaseName());
+            string localeId = UCultureInfo.Canonicalize(locale.Name);
             string rulesId = null;
             while (!idMap.TryGetValue(localeId, out rulesId) || null == rulesId)
             {
@@ -274,7 +275,7 @@ namespace ICU4N.Impl
         /// <see cref="PluralRules.Default"/> is returned.
         /// </summary>
 #pragma warning disable 672
-        public override PluralRules ForLocale(ULocale locale, PluralType type)
+        public override PluralRules ForLocale(UCultureInfo locale, PluralType type)
 #pragma warning restore 672
         {
             string rulesId = GetRulesIdForLocale(locale, type);
@@ -300,9 +301,9 @@ namespace ICU4N.Impl
         /// </summary>
         public static PluralRulesLoader Loader => loader; // ICU4N specific - property accessor for local member
 
-        /// <seealso cref="PluralRulesFactory.HasOverride(ULocale)"/>
+        /// <seealso cref="PluralRulesFactory.HasOverride(UCultureInfo)"/>
 #pragma warning disable 672
-        public override bool HasOverride(ULocale locale)
+        public override bool HasOverride(UCultureInfo locale)
 #pragma warning restore 672
         {
             return false;
@@ -315,11 +316,11 @@ namespace ICU4N.Impl
 
 #pragma warning disable 1591 // No doc comments available
 #pragma warning disable 612, 618
-        public virtual PluralRanges GetPluralRanges(ULocale locale)
+        public virtual PluralRanges GetPluralRanges(UCultureInfo locale)
 #pragma warning restore 612, 618
         {
             // TODO markdavis Fix the bad fallback, here and elsewhere in this file.
-            string localeId = ULocale.Canonicalize(locale.GetBaseName());
+            string localeId = UCultureInfo.Canonicalize(locale.Name);
 #pragma warning disable 612, 618
             PluralRanges result;
 #pragma warning restore 612, 618
@@ -336,7 +337,7 @@ namespace ICU4N.Impl
             return result;
         }
 
-        public virtual bool IsPluralRangesAvailable(ULocale locale)
+        public virtual bool IsPluralRangesAvailable(UCultureInfo locale)
         {
             return GetPluralRanges(locale) == UnknownRange;
         }

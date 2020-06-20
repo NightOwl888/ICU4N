@@ -115,7 +115,7 @@ namespace ICU4N.Dev.Test.Util
             // for the default locale is requested
             try
             {
-                UResourceBundle bundle = UResourceBundle.GetBundleInstance("Dev/Data/TestData", ULocale.GetDefault(), testLoader);
+                UResourceBundle bundle = UResourceBundle.GetBundleInstance("Dev/Data/TestData", UCultureInfo.CurrentCulture, testLoader);
                 if (bundle == null)
                 {
                     Errln("could not create the resource bundle");
@@ -150,7 +150,7 @@ namespace ICU4N.Dev.Test.Util
                     if (temp.Length == 0)
                     {
                         Errln("Failed to get the items from number patterns table in bundle: " +
-                                bundle.GetULocale().GetBaseName());
+                                bundle.UCulture.Name);
                     }
                     //System.out.println("\""+prettify(temp)+"\"");
                 }
@@ -170,7 +170,7 @@ namespace ICU4N.Dev.Test.Util
                     if (temp.Length == 0)
                     {
                         Errln("Failed to get the items from number symbols table in bundle: " +
-                                bundle.GetULocale().GetBaseName());
+                                bundle.UCulture.Name);
                     }
                     // System.out.println("\""+prettify(temp)+"\"");
                 }
@@ -182,10 +182,10 @@ namespace ICU4N.Dev.Test.Util
             }
 
             bundle = UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, "zzz_ZZ_very_very_very_long_bogus_bundle");
-            if (!bundle.GetULocale().Equals(ULocale.GetDefault()))
+            if (!bundle.UCulture.Equals(UCultureInfo.CurrentCulture))
             {
-                Errln("UResourceBundle did not load the default bundle when bundle was not found. Default: " + ULocale.GetDefault() +
-                            ", Bundle locale: " + bundle.GetULocale());
+                Errln("UResourceBundle did not load the default bundle when bundle was not found. Default: " + UCultureInfo.CurrentCulture +
+                            ", Bundle locale: " + bundle.UCulture);
             }
         }
 
@@ -823,7 +823,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void TestLocaleDisplayNames()
         {
-            ULocale[] locales = ULocale.GetAvailableLocales();
+            UCultureInfo[] locales = UCultureInfo.GetCultures();
 
             ISet<string> localCountryExceptions = new HashSet<string>();
             if (logKnownIssue("cldrbug:8903",
@@ -847,11 +847,11 @@ namespace ICU4N.Dev.Test.Util
 
             for (int i = 0; i < locales.Length; ++i)
             {
-                if (!hasLocalizedCountryFor(ULocale.ENGLISH, locales[i]))
+                if (!hasLocalizedCountryFor(new UCultureInfo("en"), locales[i]))
                 {
                     Errln("Could not get English localized country for " + locales[i]);
                 }
-                if (!hasLocalizedLanguageFor(ULocale.ENGLISH, locales[i]))
+                if (!hasLocalizedLanguageFor(new UCultureInfo("en"), locales[i]))
                 {
                     Errln("Could not get English localized language for " + locales[i]);
                 }
@@ -863,25 +863,25 @@ namespace ICU4N.Dev.Test.Util
                     hasLocalizedCountryFor(locales[i], locales[i]);
                 }
                 if (!hasLocalizedLanguageFor(locales[i], locales[i])
-                        && !localLangExceptions.Contains(locales[i].GetLanguage()))
+                        && !localLangExceptions.Contains(locales[i].Language))
                 {
                     Errln("Could not get native localized language for " + locales[i]);
                 }
 
-                Logln(locales[i] + "\t" + locales[i].GetDisplayName(ULocale.ENGLISH) + "\t" + locales[i].GetDisplayName(locales[i]));
+                Logln(locales[i] + "\t" + locales[i].GetDisplayName(new UCultureInfo("en")) + "\t" + locales[i].GetDisplayName(locales[i]));
             }
         }
 
-        private static bool hasLocalizedLanguageFor(ULocale locale, ULocale otherLocale)
+        private static bool hasLocalizedLanguageFor(UCultureInfo locale, UCultureInfo otherLocale)
         {
-            string lang = otherLocale.GetLanguage();
+            string lang = otherLocale.Language;
             string localizedVersion = otherLocale.GetDisplayLanguage(locale);
             return !lang.Equals(localizedVersion);
         }
 
-        private static bool hasLocalizedCountryFor(ULocale locale, ULocale otherLocale)
+        private static bool hasLocalizedCountryFor(UCultureInfo locale, UCultureInfo otherLocale)
         {
-            string country = otherLocale.GetCountry();
+            string country = otherLocale.Country;
             if (country.Equals("")) return true;
             string localizedVersion = otherLocale.GetDisplayCountry(locale);
             return !country.Equals(localizedVersion);
@@ -918,7 +918,7 @@ namespace ICU4N.Dev.Test.Util
             try
             {
                 ICUResourceBundle.GetFunctionalEquivalent(ICUData.IcuBreakIteratorBaseName, assembly, "calendar",
-                              "calendar", new ULocale("ar_EG@calendar=islamic"), new bool[1], true);
+                              "calendar", new UCultureInfo("ar_EG@calendar=islamic"), new bool[1], true);
                 Errln("Err: expected MissingManifestResourceException");
             }
             catch (MissingManifestResourceException t)
@@ -938,13 +938,13 @@ namespace ICU4N.Dev.Test.Util
             for (int i = 0; i < testCases.Length; i += 3)
             {
                 bool expectAvail = T_STR.Equals(testCases[i + 0]);
-                ULocale inLocale = new ULocale(testCases[i + 1]);
-                ULocale expectLocale = new ULocale(testCases[i + 2]);
+                UCultureInfo inLocale = new UCultureInfo(testCases[i + 1]);
+                UCultureInfo expectLocale = new UCultureInfo(testCases[i + 2]);
 
                 Logln(((int)(i / 3)).ToString(CultureInfo.InvariantCulture) + ": " + expectAvail.ToString() + "\t\t" +
                         inLocale.ToString() + "\t\t" + expectLocale.ToString());
 
-                ULocale equivLocale = ICUResourceBundle.GetFunctionalEquivalent(path, cl, resName, keyword, inLocale, isAvail, truncate);
+                UCultureInfo equivLocale = ICUResourceBundle.GetFunctionalEquivalent(path, cl, resName, keyword, inLocale, isAvail, truncate);
                 bool gotAvail = isAvail[0];
 
                 if ((gotAvail != expectAvail) || !equivLocale.Equals(expectLocale))
@@ -1039,9 +1039,7 @@ namespace ICU4N.Dev.Test.Util
 
         private class CoverageStub : UResourceBundle
         {
-            public override ULocale GetULocale() { return ULocale.ROOT; } // ICU4N TODO: API - Remove
-
-            public override UCultureInfo UCultureInfo => UCultureInfo.InvariantCulture;
+            public override UCultureInfo UCulture => UCultureInfo.InvariantCulture;
             protected override string GetLocaleID() { return null; }
             protected internal override string GetBaseName() { return null; }
             public override UResourceBundle Parent { get { return null; } }
@@ -1060,10 +1058,10 @@ namespace ICU4N.Dev.Test.Util
                 Errln("UResourceBundle.GetBundleInstance(String baseName) failed");
             }
             bundle = null;
-            bundle = UResourceBundle.GetBundleInstance(ULocale.GetDefault());
+            bundle = UResourceBundle.GetBundleInstance(UCultureInfo.CurrentCulture);
             if (bundle == null)
             {
-                Errln("UResourceBundle.GetBundleInstance(ULocale) failed");
+                Errln("UResourceBundle.GetBundleInstance(UCultureInfo) failed");
                 return;
             }
             if (new UResourceTypeMismatchException("coverage") == null)
@@ -1072,9 +1070,9 @@ namespace ICU4N.Dev.Test.Util
             }
             CoverageStub stub = new CoverageStub();
 
-            if (!stub.GetLocale().Equals(ULocale.ROOT.ToLocale()))
+            if (!stub.Culture.Equals(CultureInfo.InvariantCulture))
             {
-                Errln("UResourceBundle.getLoclae(Locale) should delegate to (ULocale)");
+                Errln("UResourceBundle.getLoclae(CultureInfo) should delegate to (UCultureInfo)");
             }
         }
         [Test]
@@ -1104,7 +1102,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 Errln("Did not get the expected string for from_en_Latn_US");
             }
-            UResourceBundle bundle1 = UResourceBundle.GetBundleInstance(baseName, new ULocale(locName), testLoader);
+            UResourceBundle bundle1 = UResourceBundle.GetBundleInstance(baseName, new UCultureInfo(locName), testLoader);
             if (!bundle1.Equals(bundle))
             {
                 Errln("Did not get the expected bundle for " + baseName + "." + locName);
@@ -1115,32 +1113,32 @@ namespace ICU4N.Dev.Test.Util
             }
 
             UResourceBundle bundle2 = UResourceBundle.GetBundleInstance(baseName, "en_IN", testLoader);
-            if (!bundle2.GetLocale().ToString().Equals("en"))
+            if (!bundle2.Culture.ToString().Equals("en"))
             {
-                Errln("Did not get the expected fallback locale. Expected: en Got: " + bundle2.GetLocale().ToString());
+                Errln("Did not get the expected fallback locale. Expected: en Got: " + bundle2.Culture.ToString());
             }
             UResourceBundle bundle3 = UResourceBundle.GetBundleInstance(baseName, "te_IN", testLoader);
-            if (!bundle3.GetLocale().ToString().Equals("te"))
+            if (!bundle3.Culture.ToString().Equals("te"))
             {
-                Errln("Did not get the expected fallback locale. Expected: te Got: " + bundle2.GetLocale().ToString());
+                Errln("Did not get the expected fallback locale. Expected: te Got: " + bundle2.Culture.ToString());
             }
             // non-existent bundle .. should return default
             UResourceBundle defaultBundle = UResourceBundle.GetBundleInstance(baseName, "hi_IN", testLoader);
-            ULocale defaultLocale = ULocale.GetDefault();
-            if (!defaultBundle.GetULocale().Equals(defaultLocale))
+            UCultureInfo defaultLocale = UCultureInfo.CurrentCulture;
+            if (!defaultBundle.UCulture.Equals(defaultLocale))
             {
                 Errln("Did not get the default bundle for non-existent bundle");
             }
             // non-existent bundle, non-existent default locale
             // so return the root bundle.
-            ULocale.SetDefault(ULocale.CANADA_FRENCH);
-            UResourceBundle root = UResourceBundle.GetBundleInstance(baseName, "hi_IN", testLoader);
-            if (!root.GetULocale().ToString().Equals(""))
+            using (var context = new ThreadCultureChange("fr_CA", "fr_CA"))
             {
-                Errln("Did not get the root bundle for non-existent default bundle for non-existent bundle");
-            }
-            //reset the default
-            ULocale.SetDefault(defaultLocale);
+                UResourceBundle root = UResourceBundle.GetBundleInstance(baseName, "hi_IN", testLoader);
+                if (!root.UCulture.ToString().Equals(""))
+                {
+                    Errln("Did not get the root bundle for non-existent default bundle for non-existent bundle");
+                }
+            } //reset the default
             using (var keys = bundle.GetKeys().GetEnumerator())
             {
                 int i = 0;
@@ -1165,7 +1163,7 @@ namespace ICU4N.Dev.Test.Util
         {
             try
             {
-                ULocale loc = new ULocale("en_US");
+                UCultureInfo loc = new UCultureInfo("en_US");
                 ICUResourceBundle b = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, loc);
                 ICUResourceBundle b1 = b.GetWithFallback("calendar/hebrew/monthNames/format/abbreviated");
                 if (b1 != null)
@@ -1241,11 +1239,11 @@ namespace ICU4N.Dev.Test.Util
             try
             {
                 UResourceBundle rb1
-                    = UResourceBundle.GetBundleInstance("com.ibm.icu.dev.data.resources.TestMessages", ULocale.GetDefault(), testLoader);
+                    = UResourceBundle.GetBundleInstance("com.ibm.icu.dev.data.resources.TestMessages", UCultureInfo.CurrentCulture, testLoader);
                 assertEquals("bundleContainer in TestMessages", "TestMessages.class", rb1.GetString("bundleContainer"));
 
                 UResourceBundle rb2
-                    = UResourceBundle.GetBundleInstance("com.ibm.icu.dev.data.resources.testmessages", ULocale.GetDefault(), testLoader);
+                    = UResourceBundle.GetBundleInstance("com.ibm.icu.dev.data.resources.testmessages", UCultureInfo.CurrentCulture, testLoader);
                 assertEquals("bundleContainer in testmessages", "testmessages.properties", rb2.GetString("bundleContainer"));
             }
             catch (Exception t)
@@ -1259,7 +1257,7 @@ namespace ICU4N.Dev.Test.Util
         public void TestUResourceBundleCoverage()
         {
             CultureInfo locale = null;
-            ULocale ulocale = null;
+            UCultureInfo ulocale = null;
             string baseName = null;
             UResourceBundle rb1, rb2, rb3, rb4, rb5, rb6, rb7;
 

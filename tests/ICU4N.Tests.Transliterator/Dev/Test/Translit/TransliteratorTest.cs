@@ -2772,12 +2772,12 @@ namespace ICU4N.Dev.Test.Translit
                 }
 
                 // Cover getDisplayName(String)
-                ULocale save = ULocale.GetDefault();
-                ULocale.SetDefault(ULocale.US);
-                String name2 = Transliterator.GetDisplayName(t.ID);
-                if (!name.Equals(name2))
-                    Errln("FAIL: getDisplayName with default locale failed");
-                ULocale.SetDefault(save);
+                using (new ThreadCultureChange("en_US", "en_US"))
+                {
+                    String name2 = Transliterator.GetDisplayName(t.ID);
+                    if (!name.Equals(name2))
+                        Errln("FAIL: getDisplayName with default locale failed");
+                }
             }
         }
 
@@ -3060,7 +3060,7 @@ namespace ICU4N.Dev.Test.Translit
             {
                 String s = UTF16.ValueOf(i);
 
-                String lower = UChar.ToLower(ULocale.ROOT, s);
+                String lower = UChar.ToLower(UCultureInfo.InvariantCulture, s);
                 assertEquals("Lowercase", lower, toLower.Transform(s));
 
                 String casefold = UChar.FoldCase(s, true);
@@ -3075,11 +3075,11 @@ namespace ICU4N.Dev.Test.Translit
                     // at the start of a word.
                     // The title Transliterator is far below feature parity with the
                     // UCharacter and CaseMap titlecasing functions.
-                    String title = UChar.ToTitleCase(ULocale.ROOT, s, null);
+                    String title = UChar.ToTitleCase(UCultureInfo.InvariantCulture, s, null);
                     assertEquals("Title", title, toTitle.Transform(s));
                 }
 
-                String upper = UChar.ToUpper(ULocale.ROOT, s);
+                String upper = UChar.ToUpper(UCultureInfo.InvariantCulture, s);
                 assertEquals("Upper", upper, toUpper.Transform(s));
             }
         }

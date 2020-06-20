@@ -1,7 +1,4 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
-using ICU4N.Util;
 using J2N.Text;
 using System;
 using System.Collections;
@@ -1291,11 +1288,11 @@ namespace ICU4N.Globalization
         [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
         internal static readonly int CodeLimit = 178;
 
-        private static int[] GetCodesFromLocale(ULocale locale)
+        private static int[] GetCodesFromLocale(UCultureInfo locale)
         {
             // Multi-script languages, equivalent to the LocaleScript data
             // that we used to load from locale resource bundles.
-            string lang = locale.GetLanguage();
+            string lang = locale.Language;
             if (lang.Equals("ja"))
             {
                 return new int[] { UScript.Katakana, UScript.Hiragana, UScript.Han };
@@ -1304,7 +1301,7 @@ namespace ICU4N.Globalization
             {
                 return new int[] { UScript.Hangul, UScript.Han };
             }
-            string script = locale.GetScript();
+            string script = locale.Script;
             if (lang.Equals("zh") && script.Equals("Hant"))
             {
                 return new int[] { UScript.Han, UScript.Bopomofo };
@@ -1329,14 +1326,14 @@ namespace ICU4N.Globalization
         /// Helper function to find the code from locale.
         /// </summary>
         /// <param name="locale">The locale.</param>
-        private static int[] FindCodeFromLocale(ULocale locale)
+        private static int[] FindCodeFromLocale(UCultureInfo locale)
         {
             int[] result = GetCodesFromLocale(locale);
             if (result != null)
             {
                 return result;
             }
-            ULocale likely = ULocale.AddLikelySubtags(locale);
+            UCultureInfo likely = UCultureInfo.AddLikelySubtags(locale);
             return GetCodesFromLocale(likely);
         }
 
@@ -1350,7 +1347,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.4</stable>
         public static int[] GetCode(CultureInfo locale)
         {
-            return FindCodeFromLocale(ULocale.ForLocale(locale));
+            return FindCodeFromLocale(locale.ToUCultureInfo());
         }
 
         /// <summary>
@@ -1358,10 +1355,10 @@ namespace ICU4N.Globalization
         /// Returns <see cref="UScript.Malayalam"/> given "Malayam" OR "Mlym".
         /// Returns <see cref="UScript.Latin"/> given "en" OR "en_US"
         /// </summary>
-        /// <param name="locale"><see cref="ULocale"/>.</param>
+        /// <param name="locale"><see cref="UCultureInfo"/>.</param>
         /// <returns>The script codes array. null if the the code cannot be found.</returns>
         /// <stable>ICU 3.0.</stable>
-        public static int[] GetCode(ULocale locale)
+        public static int[] GetCode(UCultureInfo locale)
         {
             return FindCodeFromLocale(locale);
         }
@@ -1390,7 +1387,7 @@ namespace ICU4N.Globalization
                 }
                 triedCode = true;
             }
-            int[] scripts = FindCodeFromLocale(new ULocale(nameOrAbbrOrLocale));
+            int[] scripts = FindCodeFromLocale(new UCultureInfo(nameOrAbbrOrLocale));
             if (scripts != null)
             {
                 return scripts;

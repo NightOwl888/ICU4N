@@ -1,7 +1,6 @@
 ﻿using ICU4N.Dev.Test;
 using ICU4N.Dev.Test.Util;
 using ICU4N.Support.Collections;
-using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Text;
 using NUnit.Framework;
@@ -144,117 +143,116 @@ namespace ICU4N.Globalization
             bool Unregister(object key);
         }
 
-        /////**
-        //// * Use reflection to call getLocale() on the given object to
-        //// * determine both the valid and the actual locale.  Verify these
-        //// * for correctness.
-        //// */
-        ////internal void checkObject(String requestedLocale, Object obj,
-        ////        String expReqValid, String expValidActual)
-        ////{
-        ////    Type[] getLocaleParams = new Type[] { typeof(ULocale.Type) };
-        ////    try
-        ////    {
-        ////        Type cls = obj.GetType();
-        ////        MethodInfo getLocale = cls.GetMethod("GetLocale", getLocaleParams); // ICU4N TODO: API - it would probably make sense to name this similarly to .NET so we can reuse this
-        ////        ULocale valid = (ULocale)getLocale.Invoke(obj, new Object[] {
-        ////            ULocale.VALID_LOCALE });
-        ////        ULocale actual = (ULocale)getLocale.Invoke(obj, new Object[] {
-        ////            ULocale.ACTUAL_LOCALE });
-        ////        checklocs(cls.Name, requestedLocale,
-        ////                valid.ToLocale(), actual.ToLocale(),
-        ////                expReqValid, expValidActual);
-        ////    }
+        /**
+         * Use reflection to call getLocale() on the given object to
+         * determine both the valid and the actual locale.  Verify these
+         * for correctness.
+         */
+        internal void checkObject(String requestedLocale, Object obj,
+                String expReqValid, String expValidActual)
+        {
+            try
+            {
+                Type cls = obj.GetType();
+                PropertyInfo validProperty = cls.GetProperty("ValidCulture");
+                UCultureInfo valid = (UCultureInfo)validProperty.GetValue(obj);
+                PropertyInfo actualProperty = cls.GetProperty("ActualCulture");
+                UCultureInfo actual = (UCultureInfo)actualProperty.GetValue(obj);
 
-        ////    // Make the following exceptions _specific_ -- do not
-        ////    // catch(Exception), since that will catch the exception
-        ////    // that Errln throws.
-        ////    catch (MissingMethodException e1)
-        ////    {
-        ////        // no longer an error, Currency has no getLocale
-        ////        // Errln("FAIL: reflection failed: " + e1);
-        ////    }
-        ////    catch (MethodAccessException e2)
-        ////    {
-        ////        Errln("FAIL: reflection failed: " + e2);
-        ////    }
-        ////    catch (InvalidOperationException e3)
-        ////    {
-        ////        Errln("FAIL: reflection failed: " + e3);
-        ////    }
-        ////    catch (ArgumentException e4)
-        ////    {
-        ////        Errln("FAIL: reflection failed: " + e4);
-        ////    }
-        ////    catch (TargetInvocationException e5)
-        ////    {
-        ////        // no longer an error, Currency has no getLocale
-        ////        // Errln("FAIL: reflection failed: " + e5);
-        ////    }
-        ////}
+                checklocs(cls.Name, requestedLocale,
+                        valid.ToCultureInfo(), actual.ToCultureInfo(),
+                        expReqValid, expValidActual);
+            }
 
-        /////**
-        //// * Verify the correct getLocale() behavior for the given service.
-        //// * @param requestedLocale the locale to request.  This MUST BE
-        //// * FAKE.  In other words, it should be something like
-        //// * en_US_FAKEVARIANT so this method can verify correct fallback
-        //// * behavior.
-        //// * @param svc a factory object that can create the object to be
-        //// * tested.  This isn't necessary here (one could just pass in the
-        //// * object) but is required for the overload of this method that
-        //// * takes a Registrar.
-        //// */
-        ////internal void checkService(String requestedLocale, IServiceFacade svc)
-        ////{
-        ////    checkService(requestedLocale, svc, null, null);
-        ////}
+            // Make the following exceptions _specific_ -- do not
+            // catch(Exception), since that will catch the exception
+            // that Errln throws.
+            catch (MissingMethodException e1)
+            {
+                // no longer an error, Currency has no getLocale
+                // Errln("FAIL: reflection failed: " + e1);
+            }
+            catch (MethodAccessException e2)
+            {
+                Errln("FAIL: reflection failed: " + e2);
+            }
+            catch (InvalidOperationException e3)
+            {
+                Errln("FAIL: reflection failed: " + e3);
+            }
+            catch (ArgumentException e4)
+            {
+                Errln("FAIL: reflection failed: " + e4);
+            }
+            catch (TargetInvocationException e5)
+            {
+                // no longer an error, Currency has no getLocale
+                // Errln("FAIL: reflection failed: " + e5);
+            }
+        }
 
-        /////**
-        //// * Verify the correct getLocale() behavior for the given service.
-        //// * @param requestedLocale the locale to request.  This MUST BE
-        //// * FAKE.  In other words, it should be something like
-        //// * en_US_FAKEVARIANT so this method can verify correct fallback
-        //// * behavior.
-        //// * @param svc a factory object that can create the object to be
-        //// * tested.
-        //// * @param sub an object that can be used to retrieve a subobject
-        //// * which should also be tested.  May be null.
-        //// * @param reg an object that supplies the registration and
-        //// * unregistration functionality to be tested.  May be null.
-        //// */
-        ////internal void checkService(String requestedLocale, IServiceFacade svc,
-        ////        ISubObject sub, IRegistrar reg)
-        ////{
-        ////    UCultureInfo req = new UCultureInfo(requestedLocale);
-        ////    Object obj = svc.Create(req);
-        ////    checkObject(requestedLocale, obj, "gt", "ge");
-        ////    if (sub != null)
-        ////    {
-        ////        Object subobj = sub.Get(obj);
-        ////        checkObject(requestedLocale, subobj, "gt", "ge");
-        ////    }
-        ////    if (reg != null)
-        ////    {
-        ////        Logln("Info: Registering service");
-        ////        Object key = reg.Register(req, obj);
-        ////        Object objReg = svc.Create(req);
-        ////        checkObject(requestedLocale, objReg, "eq", "eq");
-        ////        if (sub != null)
-        ////        {
-        ////            Object subobj = sub.Get(obj);
-        ////            // Assume subobjects don't come from services, so
-        ////            // their metadata should be structured normally.
-        ////            checkObject(requestedLocale, subobj, "gt", "ge");
-        ////        }
-        ////        Logln("Info: Unregistering service");
-        ////        if (!reg.Unregister(key))
-        ////        {
-        ////            Errln("FAIL: unregister failed");
-        ////        }
-        ////        Object objUnreg = svc.Create(req);
-        ////        checkObject(requestedLocale, objUnreg, "gt", "ge");
-        ////    }
-        ////}
+        /**
+         * Verify the correct getLocale() behavior for the given service.
+         * @param requestedLocale the locale to request.  This MUST BE
+         * FAKE.  In other words, it should be something like
+         * en_US_FAKEVARIANT so this method can verify correct fallback
+         * behavior.
+         * @param svc a factory object that can create the object to be
+         * tested.  This isn't necessary here (one could just pass in the
+         * object) but is required for the overload of this method that
+         * takes a Registrar.
+         */
+        internal void checkService(String requestedLocale, IServiceFacade svc)
+        {
+            checkService(requestedLocale, svc, null, null);
+        }
+
+        /**
+         * Verify the correct getLocale() behavior for the given service.
+         * @param requestedLocale the locale to request.  This MUST BE
+         * FAKE.  In other words, it should be something like
+         * en_US_FAKEVARIANT so this method can verify correct fallback
+         * behavior.
+         * @param svc a factory object that can create the object to be
+         * tested.
+         * @param sub an object that can be used to retrieve a subobject
+         * which should also be tested.  May be null.
+         * @param reg an object that supplies the registration and
+         * unregistration functionality to be tested.  May be null.
+         */
+        internal void checkService(String requestedLocale, IServiceFacade svc,
+                ISubObject sub, IRegistrar reg)
+        {
+            UCultureInfo req = new UCultureInfo(requestedLocale);
+            Object obj = svc.Create(req);
+            checkObject(requestedLocale, obj, "gt", "ge");
+            if (sub != null)
+            {
+                Object subobj = sub.Get(obj);
+                checkObject(requestedLocale, subobj, "gt", "ge");
+            }
+            if (reg != null)
+            {
+                Logln("Info: Registering service");
+                Object key = reg.Register(req, obj);
+                Object objReg = svc.Create(req);
+                checkObject(requestedLocale, objReg, "eq", "eq");
+                if (sub != null)
+                {
+                    Object subobj = sub.Get(obj);
+                    // Assume subobjects don't come from services, so
+                    // their metadata should be structured normally.
+                    checkObject(requestedLocale, subobj, "gt", "ge");
+                }
+                Logln("Info: Unregistering service");
+                if (!reg.Unregister(key))
+                {
+                    Errln("FAIL: unregister failed");
+                }
+                Object objUnreg = svc.Create(req);
+                checkObject(requestedLocale, objUnreg, "gt", "ge");
+            }
+        }
         private const int LOCALE_SIZE = 9;
         private static readonly string[][] rawData2 = new string[][]{
                 /* language code */
@@ -470,13 +468,13 @@ namespace ICU4N.Globalization
 
             string loc, buf, buf1;
             string[] testTitles = {
-                    "ULocale.getLanguage()",
-                    "ULocale.getScript()",
-                    "ULocale.getCountry()",
-                    "ULocale.getVariant()",
-                    "name",
-                    "ULocale.GetFullName()",
-                    "canonicalize()",
+                    "UCultureInfo.Language",
+                    "UCultureInfo.Script",
+                    "UCultureInfo.Country",
+                    "UCultureInfo.Variant",
+                    "Name",
+                    "UCultureInfo.FullName",
+                    "Canonicalize()",
             };
             UCultureInfo uloc;
 
@@ -617,79 +615,79 @@ namespace ICU4N.Globalization
                 buff = UCultureInfo.GetThreeLetterISOLanguageName(locale);
                 if (buff.CompareToOrdinal(tests[i][1]) != 0)
                 {
-                    Errln("FAIL: ULocale.getISO3Language(" + locale + ")==" +
+                    Errln("FAIL: UCultureInfo.GetThreeLetterISOLanguageName(" + locale + ")==" +
                             buff + ",\t expected " + tests[i][1]);
                 }
                 else
                 {
-                    Logln("   ULocale.getISO3Language(" + locale + ")==" + buff);
+                    Logln("   UCultureInfo.GetThreeLetterISOLanguageName(" + locale + ")==" + buff);
                 }
 
                 buff1 = uloc.ThreeLetterISOLanguageName;
                 if (buff1.CompareToOrdinal(tests[i][1]) != 0)
                 {
-                    Errln("FAIL: ULocale.getISO3Language(" + locale + ")==" +
+                    Errln("FAIL: UCultureInfo.ThreeLetterISOLanguageName(" + locale + ")==" +
                             buff + ",\t expected " + tests[i][1]);
                 }
                 else
                 {
-                    Logln("   ULocale.getISO3Language(" + locale + ")==" + buff);
+                    Logln("   UCultureInfo.ThreeLetterISOLanguageName(" + locale + ")==" + buff);
                 }
 
                 buff = UCultureInfo.GetLanguage(locale);
                 if (buff.CompareToOrdinal(tests[i][2]) != 0)
                 {
-                    Errln("FAIL: ULocale.getLanguage(" + locale + ")==" +
+                    Errln("FAIL: UCultureInfo.GetLanguage(" + locale + ")==" +
                             buff + ",\t expected " + tests[i][2]);
                 }
                 else
                 {
-                    Logln("   ULocale.getLanguage(" + locale + ")==" + buff);
+                    Logln("   UCultureInfo.GetLanguage(" + locale + ")==" + buff);
                 }
 
                 buff = UCultureInfo.GetThreeLetterISOCountryName(locale);
                 if (buff.CompareToOrdinal(tests[i][3]) != 0)
                 {
-                    Errln("FAIL: ULocale.getISO3Country(" + locale + ")==" +
+                    Errln("FAIL: UCultureInfo.GetThreeLetterISOCountryName(" + locale + ")==" +
                             buff + ",\t expected " + tests[i][3]);
                 }
                 else
                 {
-                    Logln("   ULocale.getISO3Country(" + locale + ")==" + buff);
+                    Logln("   UCultureInfo.GetThreeLetterISOCountryName(" + locale + ")==" + buff);
                 }
 
                 buff1 = uloc.ThreeLetterISOCountryName;
                 if (buff1.CompareToOrdinal(tests[i][3]) != 0)
                 {
-                    Errln("FAIL: ULocale.getISO3Country(" + locale + ")==" +
+                    Errln("FAIL: UCultureInfo.ThreeLetterISOCountryName (" + locale + ")==" +
                             buff + ",\t expected " + tests[i][3]);
                 }
                 else
                 {
-                    Logln("   ULocale.getISO3Country(" + locale + ")==" + buff);
+                    Logln("   UCultureInfo.ThreeLetterISOCountryName (" + locale + ")==" + buff);
                 }
 
                 buff = UCultureInfo.GetCountry(locale);
                 if (buff.CompareToOrdinal(tests[i][4]) != 0)
                 {
-                    Errln("FAIL: ULocale.getCountry(" + locale + ")==" +
+                    Errln("FAIL: UCultureInfo.GetCountry(" + locale + ")==" +
                             buff + ",\t expected " + tests[i][4]);
                 }
                 else
                 {
-                    Logln("   ULocale.getCountry(" + locale + ")==" + buff);
+                    Logln("   UCultureInfo.GetCountry(" + locale + ")==" + buff);
                 }
             }
 
             if (UCultureInfo.GetLanguage("iw_IL").CompareToOrdinal(UCultureInfo.GetLanguage("he_IL")) == 0)
             {
-                Errln("he,iw ULocale.getLanguage mismatch");
+                Errln("he,iw UCultureInfo.GetLanguage mismatch");
             }
 
             String buff2 = UCultureInfo.GetLanguage("kok_IN");
             if (buff2.CompareToOrdinal("kok") != 0)
             {
-                Errln("ULocale.getLanguage(\"kok\") failed. Expected: kok Got: " + buff2);
+                Errln("UCultureInfo.GetLanguage(\"kok\") failed. Expected: kok Got: " + buff2);
             }
         }
 
@@ -810,17 +808,17 @@ namespace ICU4N.Globalization
                     String level2 = UCultureInfo.Canonicalize(source);
                     if (!level2.Equals(level2Expected))
                     {
-                        Errln("ULocale.GetFullName error for: '" + source +
+                        Errln("UCultureInfo.Canonicalize error for: '" + source +
                                 "' expected: '" + level2Expected + "' but got: '" + level2 + "'");
                     }
                     else
                     {
-                        Logln("Ulocale.Canonicalize for: '" + source + "' returned: '" + level2 + "'");
+                        Logln("UCultureInfo.Canonicalize for: '" + source + "' returned: '" + level2 + "'");
                     }
                 }
                 else
                 {
-                    Logln("ULocale.Canonicalize skipped: '" + source + "'");
+                    Logln("UCultureInfo.Canonicalize skipped: '" + source + "'");
                 }
             }
         }
@@ -828,12 +826,12 @@ namespace ICU4N.Globalization
         [Test]
         public void TestGetAvailable()
         {
-            ULocale[] locales = ULocale.GetAvailableLocales();
+            UCultureInfo[] locales = UCultureInfo.GetCultures();
             if (locales.Length < 10)
             {
                 Errln("Did not get the correct result from getAvailableLocales");
             }
-            if (!locales[locales.Length - 1].GetName().Equals("zu_ZA"))
+            if (!locales[locales.Length - 1].FullName.Equals("zu_ZA"))
             {
                 Errln("Did not get the expected result");
             }
@@ -1129,7 +1127,7 @@ namespace ICU4N.Globalization
                     }
                 }
 
-                Logln("Covering APIs with signature displayXXX(String, ULocale)\n");
+                Logln("Covering APIs with signature displayXXX(String, UCultureInfo)\n");
                 for (j = 0; j < LOCALE_SIZE; j++)
                 {
                     String testLocale = (rawData2[NAME][j]);
@@ -1166,7 +1164,7 @@ namespace ICU4N.Globalization
             UCultureInfo loc5 = (UCultureInfo)loc3.Clone();
             if (!loc5.Equals(loc3))
             {
-                Errln("ULocale.clone should get the same ULocale");
+                Errln("ULocale.clone should get the same UCultureInfo");
             }
             UCultureInfo.GetISOCountries(); // To check the result ?!
         }
@@ -1806,8 +1804,8 @@ namespace ICU4N.Globalization
 
             for (int i = 0; i < basic_maximize_data.Length; i++)
             {
-                ULocale org = new ULocale(basic_maximize_data[i][0]);
-                ULocale res = ULocale.AddLikelySubtags(org);
+                UCultureInfo org = new UCultureInfo(basic_maximize_data[i][0]);
+                UCultureInfo res = UCultureInfo.AddLikelySubtags(org);
                 String exp = basic_maximize_data[i][1];
                 if (exp.Length == 0)
                 {
@@ -3951,8 +3949,8 @@ namespace ICU4N.Globalization
 
                 if (maximal.Length > 0)
                 {
-                    ULocale org = new ULocale(maximal);
-                    ULocale res = ULocale.MinimizeSubtags(org);
+                    UCultureInfo org = new UCultureInfo(maximal);
+                    UCultureInfo res = UCultureInfo.MinimizeSubtags(org);
                     String exp = full_data[i][2];
                     if (exp.Length == 0)
                     {
@@ -3989,8 +3987,7 @@ namespace ICU4N.Globalization
 #else
                 typeof(ICUResourceBundleTest).Assembly;
 #endif
-            // ICU4N TODO: Change GetBundleInstance to use UCultureInfo
-            UResourceBundle bundle = UResourceBundle.GetBundleInstance("Dev/Data/TestData", ULocale.ROOT, testLoader);
+            UResourceBundle bundle = UResourceBundle.GetBundleInstance("Dev/Data/TestData", UCultureInfo.InvariantCulture, testLoader);
 
             testExpect = VersionInfo.GetInstance(bundle.GetString("ExpectCLDRVersionAtLeast"));
             testCurrent = VersionInfo.GetInstance(bundle.GetString("CurrentCLDRVersion"));
@@ -4163,40 +4160,38 @@ namespace ICU4N.Globalization
                 }
             }
 
-            // ICU4N TODO: Complete implementation
+            // Use locale builder to check errors
+            for (int i = 0; i < langtag_to_locale.Length; i++)
+            {
+                String tag = (String)langtag_to_locale[i][0];
+                UCultureInfo expected = new UCultureInfo((String)langtag_to_locale[i][1]);
+                int errorIdx = ((int?)langtag_to_locale[i][2]).Value;
 
-            //// Use locale builder to check errors
-            //for (int i = 0; i < langtag_to_locale.Length; i++)
-            //{
-            //    String tag = (String)langtag_to_locale[i][0];
-            //    ULocale expected = new ULocale((String)langtag_to_locale[i][1]);
-            //    int errorIdx = ((int?)langtag_to_locale[i][2]).Value;
+                try
+                {
+                    UCultureInfoBuilder bld = new UCultureInfoBuilder();
+                    bld.SetLanguageTag(tag);
+                    UCultureInfo loc = bld.Build();
 
-            //    try
-            //    {
-            //        Builder bld = new Builder();
-            //        bld.SetLanguageTag(tag);
-            //        ULocale loc = bld.Build();
-
-            //        if (!loc.Equals(expected))
-            //        {
-            //            Errln("FAIL: forLanguageTag returned locale [" + loc + "] for language tag [" + tag
-            //                    + "] - expected: [" + expected + "]");
-            //        }
-            //        if (errorIdx != NOERROR.Value)
-            //        {
-            //            Errln("FAIL: Builder.setLanguageTag should throw an exception for input tag [" + tag + "]");
-            //        }
-            //    }
-            //    catch (IllformedLocaleException ifle)
-            //    {
-            //        if (ifle.ErrorIndex != errorIdx)
-            //        {
-            //            Errln("FAIL: Builder.setLanguageTag returned error index " + ifle.ErrorIndex
-            //                    + " for input language tag [" + tag + "] expected: " + errorIdx);
-            //        }
-            //    }
-            //}
+                    if (!loc.Equals(expected))
+                    {
+                        Errln("FAIL: forLanguageTag returned locale [" + loc + "] for language tag [" + tag
+                                + "] - expected: [" + expected + "]");
+                    }
+                    if (errorIdx != NOERROR.Value)
+                    {
+                        Errln("FAIL: UCultureInfoBuilder.setLanguageTag should throw an exception for input tag [" + tag + "]");
+                    }
+                }
+                catch (IllformedLocaleException ifle)
+                {
+                    if (ifle.ErrorIndex != errorIdx)
+                    {
+                        Errln("FAIL: UCultureInfoBuilder.setLanguageTag returned error index " + ifle.ErrorIndex
+                                + " for input language tag [" + tag + "] expected: " + errorIdx);
+                    }
+                }
+            }
         }
 
         /*
@@ -4223,7 +4218,7 @@ namespace ICU4N.Globalization
             // Testing static String getFallback(String)
             string[][] TESTIDS =
                     {
-                new string[]{"en_US", "en", "", ""},    // ULocale.getFallback("") should return ""
+                new string[]{"en_US", "en", "", ""},    // UCultureInfo.GetParent("") should return ""
                 new string[]{"EN_us_Var", "en_US", "en", ""},   // Case is always normalized
                 new string[]{"de_DE@collation=phonebook", "de@collation=phonebook", "@collation=phonebook", "@collation=phonebook"},    // Keyword is preserved
                 new string[]{"en__POSIX", "en", ""},    // Trailing empty segment should be truncated
@@ -4236,11 +4231,11 @@ namespace ICU4N.Globalization
                 for (int i = 1; i < chain.Length; i++)
                 {
                     String fallback = UCultureInfo.GetParent(chain[i - 1]);
-                    assertEquals("getFallback(\"" + chain[i - 1] + "\")", chain[i], fallback);
+                    assertEquals("GetParent(\"" + chain[i - 1] + "\")", chain[i], fallback);
                 }
             }
 
-            // Testing ULocale getFallback()
+            // Testing UCultureInfo GetParent()
             UCultureInfo[][] TESTLOCALES =
                 {
                 new UCultureInfo[]{new UCultureInfo("en_US"), new UCultureInfo("en"), UCultureInfo.InvariantCulture, null},
@@ -4564,7 +4559,7 @@ namespace ICU4N.Globalization
 
             CultureInfo orgDefault = UCultureInfo.CurrentCulture;
 
-            // Setting a category default won't change default ULocale
+            // Setting a category default won't change default UCultureInfo
             UCultureInfo uJaJp = new UCultureInfo("ja_JP");
             UCultureInfo uDeDePhonebook = new UCultureInfo("de_DE@collation=phonebook");
 
@@ -4649,7 +4644,7 @@ namespace ICU4N.Globalization
         [Test]
         public void TestComparable()
         {
-            // Test strings used for creating ULocale objects.
+            // Test strings used for creating UCultureInfo objects.
             // This list contains multiple different strings creating
             // multiple equivalent locales.
             string[] localeStrings = {
@@ -4716,13 +4711,13 @@ namespace ICU4N.Globalization
                 }
             }
 
-            // Make sure ULocale objects can be sorted by the Java collection
+            // Make sure UCultureInfo objects can be sorted by the Java collection
             // framework class without providing a Comparator, and equals/compareTo
             // are consistent.
 
             // The sorted locale list created from localeStrings above.
             // Duplicated locales are removed and locale string is normalized
-            // (by the ULocale constructor).
+            // (by the UCultureInfo constructor).
             String[] sortedLocaleStrings = {
                     "",
                     "abc_DEF_GHI_JKL_OPQ",
@@ -4921,7 +4916,7 @@ namespace ICU4N.Globalization
                     new UCultureInfo[]{ new UCultureInfo("zh_Hant_TW"),     new UCultureInfo("zh_Hant_TW")},
             };
 
-            // When two ULocales are equal, results of ULocale#toLocale() must be
+            // When two UCultureInfo are equal, results of UCultureInfo.ToCultureInfo() must be
             // also equal.
             foreach (UCultureInfo[] pair in LOCALES)
             {
@@ -4931,7 +4926,7 @@ namespace ICU4N.Globalization
                 }
                 else
                 {
-                    // This could happen when the definition of ULocale constant is changed.
+                    // This could happen when the definition of UCultureInfo constant is changed.
                     // When it happens, it could be a mistake. So we use Errln below.
                     // If we change the definitioin for a legitimate reason, then the hardcoded
                     // test data above should be reviewed and updated.

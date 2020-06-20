@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Text;
@@ -292,7 +293,7 @@ namespace ICU4N.Impl
         internal const int AddToForward = (1 << 1);
 
         public SimpleFilteredSentenceBreakIteratorBuilder(CultureInfo loc)
-            : this(ULocale.ForLocale(loc))
+            : this(loc.ToUCultureInfo())
         {
         }
 
@@ -300,7 +301,7 @@ namespace ICU4N.Impl
         /// Create <see cref="SimpleFilteredSentenceBreakIteratorBuilder"/> using given locale.
         /// </summary>
         /// <param name="loc">The locale to get filtered iterators.</param>
-        public SimpleFilteredSentenceBreakIteratorBuilder(ULocale loc)
+        public SimpleFilteredSentenceBreakIteratorBuilder(UCultureInfo loc)
 #pragma warning disable 612, 618
             : base()
 #pragma warning restore 612, 618

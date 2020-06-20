@@ -11,6 +11,13 @@ namespace ICU4N.Impl
 {
     public class ICUCurrencyDisplayInfoProvider : ICurrencyDisplayInfoProvider
     {
+        private static readonly Assembly IcuDataAssembly =
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly;
+#else
+            typeof(ICUCurrencyDisplayInfoProvider).Assembly;
+#endif
+
         public ICUCurrencyDisplayInfoProvider()
         {
         }
@@ -28,20 +35,15 @@ namespace ICU4N.Impl
             if (instance == null || !culture.Equals(instance.culture) || instance.fallback != withFallback)
             {
                 ICUResourceBundle rb;
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                Assembly assembly = typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly;
-#else
-                Assembly assembly = typeof(ICUCurrencyDisplayInfoProvider).Assembly;
-#endif
                 if (withFallback)
                 {
-                    rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, culture, assembly, OpenType.LocaleDefaultRoot);
+                    rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, culture, IcuDataAssembly, OpenType.LocaleDefaultRoot);
                 }
                 else
                 {
                     try
                     {
-                        rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, culture, assembly, OpenType.LocaleOnly);
+                        rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, culture, IcuDataAssembly, OpenType.LocaleOnly);
                     }
                     catch (MissingManifestResourceException)
                     {
@@ -54,44 +56,7 @@ namespace ICU4N.Impl
             return instance;
         }
 
-        public virtual CurrencyDisplayInfo GetInstance(ULocale locale, bool withFallback) // ICU4N TODO: Remove
-        {
-            // Make sure the locale is non-null (this can happen during deserialization):
-            if (locale == null) { locale = ULocale.ROOT; }
-            ICUCurrencyDisplayInfo instance = currencyDisplayInfoCache;
-            if (instance == null || !locale.Equals(instance.locale) || instance.fallback != withFallback)
-            {
-                ICUResourceBundle rb;
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                Assembly assembly = typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly;
-#else
-                Assembly assembly = typeof(ICUCurrencyDisplayInfoProvider).Assembly;
-#endif
-                if (withFallback)
-                {
-                    rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, locale, assembly, OpenType.LocaleDefaultRoot);
-                }
-                else
-                {
-                    try
-                    {
-                        rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, locale, assembly, OpenType.LocaleOnly);
-                    }
-                    catch (MissingManifestResourceException)
-                    {
-                        return null;
-                    }
-                }
-                instance = new ICUCurrencyDisplayInfo(locale, rb, withFallback);
-                currencyDisplayInfoCache = instance;
-            }
-            return instance;
-        }
-
-        public virtual bool HasData
-        {
-            get { return true; }
-        }
+        public virtual bool HasData => true;
 
         /// <summary>
         /// This class performs data loading for currencies and keeps data in lightweight cache.
@@ -99,7 +64,6 @@ namespace ICU4N.Impl
         internal class ICUCurrencyDisplayInfo : CurrencyDisplayInfo
         {
             internal readonly UCultureInfo culture;
-            internal readonly ULocale locale; // ICU4N TODO: API - Remove
             internal readonly bool fallback;
             private readonly ICUResourceBundle rb;
 
@@ -177,21 +141,8 @@ namespace ICU4N.Impl
                 this.rb = rb;
             }
 
-            public override UCultureInfo UCultureInfo
-                => rb.UCultureInfo;
-
-
-            public ICUCurrencyDisplayInfo(ULocale locale, ICUResourceBundle rb, bool fallback) // ICU4N TODO: API Remove
-            {
-                this.locale = locale;
-                this.fallback = fallback;
-                this.rb = rb;
-            }
-
-            public override ULocale ULocale // ICU4N TODO: API Remove
-            {
-                get { return rb.GetULocale(); }
-            }
+            public override UCultureInfo UCulture
+                => rb.UCulture;
 
             public override string GetName(string isoCode)
             {

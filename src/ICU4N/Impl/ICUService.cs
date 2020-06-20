@@ -1,13 +1,11 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Support.Collections;
-using ICU4N.Util;
 using J2N.Collections.Generic.Extensions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using Category = ICU4N.Util.ULocale.Category;
 
 namespace ICU4N.Impl
 {
@@ -435,12 +433,12 @@ namespace ICU4N.Impl
         private IDictionary<string, IServiceFactory> idcache;
 
         /// <summary>
-        /// Convenience override for <see cref="GetDisplayName(string, ULocale)"/> that
+        /// Convenience override for <see cref="GetDisplayName(string, UCultureInfo)"/> that
         /// uses the current default locale.
         /// </summary>
         public virtual string GetDisplayName(string id)
         {
-            return GetDisplayName(id, ULocale.GetDefault(Category.DISPLAY));
+            return GetDisplayName(id, UCultureInfo.CurrentUICulture);
         }
 
         /// <summary>
@@ -448,7 +446,7 @@ namespace ICU4N.Impl
         /// If there is no directly supported id corresponding to this id, return
         /// null.
         /// </summary>
-        public virtual string GetDisplayName(string id, ULocale locale)
+        public virtual string GetDisplayName(string id, UCultureInfo locale)
         {
             IDictionary<string, IServiceFactory> m = GetVisibleIDMap();
             IServiceFactory f = m.Get(id);
@@ -471,48 +469,48 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Convenience override of <see cref="GetDisplayNames(ULocale, IComparer{string}, string)"/> that
+        /// Convenience override of <see cref="GetDisplayNames(UCultureInfo, IComparer{string}, string)"/> that
         /// uses the current default Locale as the locale, null as
         /// the comparer, and null for the matchID.
         /// </summary>
         public virtual IDictionary<string, string> GetDisplayNames()
         {
-            ULocale locale = ULocale.GetDefault(Category.DISPLAY);
+            UCultureInfo locale = UCultureInfo.CurrentUICulture;
             return GetDisplayNames(locale, (IComparer<string>)null, null);
         }
 
         /// <summary>
-        /// Convenience override of <see cref="GetDisplayNames(ULocale, IComparer{string}, string)"/> that
+        /// Convenience override of <see cref="GetDisplayNames(UCultureInfo, IComparer{string}, string)"/> that
         /// uses null for the comparer, and null for the matchID.
         /// </summary>
-        public virtual IDictionary<string, string> GetDisplayNames(ULocale locale)
+        public virtual IDictionary<string, string> GetDisplayNames(UCultureInfo locale)
         {
             return GetDisplayNames(locale, (IComparer<string>)null, null);
         }
 
         /// <summary>
-        /// Convenience override of <see cref="GetDisplayNames(ULocale, IComparer{string}, string)"/> that
+        /// Convenience override of <see cref="GetDisplayNames(UCultureInfo, IComparer{string}, string)"/> that
         /// uses null for the matchID, thus returning all display names.
         /// </summary>
-        public virtual IDictionary<string, string> GetDisplayNames(ULocale locale, CompareInfo com)
+        public virtual IDictionary<string, string> GetDisplayNames(UCultureInfo locale, CompareInfo com)
         {
             return GetDisplayNames(locale, com.AsComparer(), null);
         }
 
         /// <summary>
-        /// Convenience override of <see cref="GetDisplayNames(ULocale, IComparer{string}, string)"/> that
+        /// Convenience override of <see cref="GetDisplayNames(UCultureInfo, IComparer{string}, string)"/> that
         /// uses null for the matchID, thus returning all display names.
         /// </summary>
-        public virtual IDictionary<string, string> GetDisplayNames(ULocale locale, IComparer<string> com)
+        public virtual IDictionary<string, string> GetDisplayNames(UCultureInfo locale, IComparer<string> com)
         {
             return GetDisplayNames(locale, com, null);
         }
 
         /// <summary>
-        /// Convenience override of <see cref="GetDisplayNames(ULocale, IComparer{string}, string)"/> that
+        /// Convenience override of <see cref="GetDisplayNames(UCultureInfo, IComparer{string}, string)"/> that
         /// uses null for the comparator.
         /// </summary>
-        public virtual IDictionary<string, string> GetDisplayNames(ULocale locale, string matchID)
+        public virtual IDictionary<string, string> GetDisplayNames(UCultureInfo locale, string matchID)
         {
             return GetDisplayNames(locale, (IComparer<string>)null, matchID);
         }
@@ -527,7 +525,7 @@ namespace ICU4N.Impl
         /// those in the set.  The display names are sorted based on the
         /// comparer provided.
         /// </summary>
-        public virtual IDictionary<string, string> GetDisplayNames(ULocale locale, CompareInfo com, string matchID)
+        public virtual IDictionary<string, string> GetDisplayNames(UCultureInfo locale, CompareInfo com, string matchID)
         {
             return GetDisplayNames(locale, com.AsComparer(), matchID);
         }
@@ -542,7 +540,7 @@ namespace ICU4N.Impl
         /// those in the set.  The display names are sorted based on the
         /// comparer provided.
         /// </summary>
-        public virtual IDictionary<string, string> GetDisplayNames(ULocale locale, IComparer<string> com, string matchID)
+        public virtual IDictionary<string, string> GetDisplayNames(UCultureInfo locale, IComparer<string> com, string matchID)
         {
             SortedDictionary<string, string> dncache = null;
             LocaleRef reference = dnref;
@@ -606,11 +604,11 @@ namespace ICU4N.Impl
         // locale, comparator, and corresponding map.
         private class LocaleRef
         {
-            private readonly ULocale locale;
+            private readonly UCultureInfo locale;
             private readonly SortedDictionary<string, string> dnCache;
             private readonly IComparer<string> com;
 
-            internal LocaleRef(SortedDictionary<string, string> dnCache, ULocale locale, IComparer<string> com)
+            internal LocaleRef(SortedDictionary<string, string> dnCache, UCultureInfo locale, IComparer<string> com)
             {
                 this.locale = locale;
                 this.com = com;
@@ -618,7 +616,7 @@ namespace ICU4N.Impl
             }
 
 
-            internal virtual SortedDictionary<string, string> Get(ULocale loc, IComparer<string> comp)
+            internal virtual SortedDictionary<string, string> Get(UCultureInfo loc, IComparer<string> comp)
             {
                 SortedDictionary<string, string> m = dnCache;
                 if (m != null &&
@@ -997,8 +995,8 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Update the result IDs (not descriptors) to reflect the IDs
-        /// this factory handles.  This function and <see cref="GetDisplayName(string, ULocale)"/> are
-        /// used to support <see cref="ICUService.GetDisplayNames(ULocale, IComparer{string}, string)"/>.  Basically, the
+        /// this factory handles.  This function and <see cref="GetDisplayName(string, UCultureInfo)"/> are
+        /// used to support <see cref="ICUService.GetDisplayNames(UCultureInfo, IComparer{string}, string)"/>.  Basically, the
         /// factory has to determine which IDs it will permit to be
         /// available, and of those, which it will provide localized
         /// display names for.  In most cases this reflects the IDs that
@@ -1012,7 +1010,7 @@ namespace ICU4N.Impl
         /// not visible or not defined by the factory, return null.
         /// If locale is null, return id unchanged.
         /// </summary>
-        string GetDisplayName(string id, ULocale locale);
+        string GetDisplayName(string id, UCultureInfo locale);
     }
 
     /// <summary>
@@ -1091,7 +1089,7 @@ namespace ICU4N.Impl
         /// otherwise returns null.  (This default implementation has
         /// no localized id information.)
         /// </summary>
-        public virtual string GetDisplayName(string identifier, ULocale locale)
+        public virtual string GetDisplayName(string identifier, UCultureInfo locale)
         {
             return (visible && id.Equals(identifier)) ? identifier : null;
         }

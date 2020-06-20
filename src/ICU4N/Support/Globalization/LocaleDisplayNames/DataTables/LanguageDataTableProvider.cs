@@ -15,8 +15,6 @@ namespace ICU4N.Globalization
     /// <draft>ICU 60</draft>
     public abstract class LanguageDataTableProvider : ILanguageDataTableProvider
     {
-        private readonly Assembly assembly;
-
         /// <summary>
         /// Initializes an instance of <see cref="LanguageDataTableProvider"/> with the <see cref="Assembly"/>
         /// where the resources reside.
@@ -25,8 +23,14 @@ namespace ICU4N.Globalization
         /// <draft>ICU 60</draft>
         protected LanguageDataTableProvider(Assembly assembly)
         {
-            this.assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
+            Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
         }
+
+        /// <summary>
+        /// The assembly where the resource files can be located.
+        /// </summary>
+        /// <draft>ICU 60</draft>
+        public Assembly Assembly { get; private set; }
 
         /// <summary>
         /// Indicates whether data is available from this provider.
@@ -46,7 +50,7 @@ namespace ICU4N.Globalization
         /// <draft>ICU 60</draft>
         public virtual IDataTable GetDataTable(CultureInfo culture, bool nullIfNotFound)
         {
-            return new ICUDataTable(ICUData.IcuLanguageBaseName, culture, assembly, nullIfNotFound);
+            return new ICUDataTable(ICUData.IcuLanguageBaseName, culture, Assembly, nullIfNotFound);
         }
     }
 }

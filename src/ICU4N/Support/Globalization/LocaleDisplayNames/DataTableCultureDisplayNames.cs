@@ -569,7 +569,7 @@ namespace ICU4N.Globalization
             foreach (CultureInfo culture in cultures)
             {
                 var locOriginal = culture.ToUCultureInfo();
-                builder.SetLocale(locOriginal); // verify well-formed. We do this here so that we consistently throw exception
+                builder.SetCulture(locOriginal); // verify well-formed. We do this here so that we consistently throw exception
                 UCultureInfo loc = UCultureInfo.AddLikelySubtags(locOriginal);
                 UCultureInfo @base = new UCultureInfo(loc.Language);
                 if (!baseToLocales.TryGetValue(@base, out ISet<UCultureInfo> locales) || locales == null)
@@ -606,7 +606,7 @@ namespace ICU4N.Globalization
                     bool hasRegions = regions.Count > 1;
                     foreach (UCultureInfo locale in values)
                     {
-                        UCultureInfoBuilder modified = builder.SetLocale(locale);
+                        UCultureInfoBuilder modified = builder.SetCulture(locale);
                         if (!hasScripts)
                         {
                             modified.SetScript("");

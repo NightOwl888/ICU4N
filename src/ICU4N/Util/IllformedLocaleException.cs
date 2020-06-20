@@ -1,12 +1,13 @@
-﻿using System;
+﻿using ICU4N.Globalization;
+using System;
 
 namespace ICU4N.Util
 {
     /// <summary>
-    /// Thrown by methods in <see cref="ULocale"/> and <see cref="ULocale.Builder"/> to
+    /// Thrown by methods in <see cref="UCultureInfo"/> and <see cref="UCultureInfoBuilder"/> to
     /// indicate that an argument is not a well-formed BCP 47 tag.
     /// </summary>
-    /// <seealso cref="ULocale"/>
+    /// <seealso cref="UCultureInfo"/>
     /// <stable>ICU 4.2</stable>
 #if FEATURE_SERIALIZABLE_EXCEPTIONS
     [Serializable]

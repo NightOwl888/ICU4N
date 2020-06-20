@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support.Text;
 using ICU4N.Util;
 using J2N.Text;
@@ -612,7 +613,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public static BreakIterator GetWordInstance()
         {
-            return GetWordInstance(ULocale.GetDefault());
+            return GetWordInstance(UCultureInfo.CurrentCulture);
         }
 
         /// <summary>
@@ -626,7 +627,7 @@ namespace ICU4N.Text
         public static BreakIterator GetWordInstance(CultureInfo where)
         {
 #pragma warning disable 612, 618
-            return GetBreakInstance(ULocale.ForLocale(where), KIND_WORD);
+            return GetBreakInstance(where.ToUCultureInfo(), KIND_WORD);
 #pragma warning restore 612, 618
         }
 
@@ -634,12 +635,12 @@ namespace ICU4N.Text
         /// <summary>
         /// Returns a new instance of <see cref="BreakIterator"/> that locates word boundaries.
         /// </summary>
-        /// <param name="where">A <see cref="ULocale"/> specifying the language of the text to be
+        /// <param name="where">A <see cref="UCultureInfo"/> specifying the language of the text to be
         /// analyzed.</param>
         /// <returns>An instance of <see cref="BreakIterator"/> that locates word boundaries.</returns>
         /// <exception cref="ArgumentNullException">If <paramref name="where"/> is null.</exception>
         /// <stable>ICU 3.2</stable>
-        public static BreakIterator GetWordInstance(ULocale where)
+        public static BreakIterator GetWordInstance(UCultureInfo where)
         {
 #pragma warning disable 612, 618
             return GetBreakInstance(where, KIND_WORD);
@@ -656,7 +657,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public static BreakIterator GetLineInstance()
         {
-            return GetLineInstance(ULocale.GetDefault());
+            return GetLineInstance(UCultureInfo.CurrentCulture);
         }
 
         /// <summary>
@@ -671,7 +672,7 @@ namespace ICU4N.Text
         public static BreakIterator GetLineInstance(CultureInfo where)
         {
 #pragma warning disable 612, 618
-            return GetBreakInstance(ULocale.ForLocale(where), KIND_LINE);
+            return GetBreakInstance(where.ToUCultureInfo(), KIND_LINE);
 #pragma warning restore 612, 618
         }
 
@@ -680,12 +681,12 @@ namespace ICU4N.Text
         /// Returns a new instance of <see cref="BreakIterator"/> that locates legal line-
         /// wrapping positions.
         /// </summary>
-        /// <param name="where">A <see cref="ULocale"/> specifying the language of the text being broken.</param>
+        /// <param name="where">A <see cref="UCultureInfo"/> specifying the language of the text being broken.</param>
         /// <returns>A new instance of <see cref="BreakIterator"/> that locates legal
         /// line-wrapping positions.</returns>
         /// <exception cref="ArgumentNullException">If <paramref name="where"/> is null.</exception>
         /// <stable>ICU 3.2</stable>
-        public static BreakIterator GetLineInstance(ULocale where)
+        public static BreakIterator GetLineInstance(UCultureInfo where)
         {
 #pragma warning disable 612, 618
             return GetBreakInstance(where, KIND_LINE);
@@ -702,7 +703,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public static BreakIterator GetCharacterInstance()
         {
-            return GetCharacterInstance(ULocale.GetDefault());
+            return GetCharacterInstance(UCultureInfo.CurrentCulture);
         }
 
         /// <summary>
@@ -717,7 +718,7 @@ namespace ICU4N.Text
         public static BreakIterator GetCharacterInstance(CultureInfo where)
         {
 #pragma warning disable 612, 618
-            return GetBreakInstance(ULocale.ForLocale(where), KIND_CHARACTER);
+            return GetBreakInstance(where.ToUCultureInfo(), KIND_CHARACTER);
 #pragma warning restore 612, 618
         }
 
@@ -726,12 +727,12 @@ namespace ICU4N.Text
         /// Returns a new instance of <see cref="BreakIterator"/> that locates logical-character
         /// boundaries.
         /// </summary>
-        /// <param name="where">A <see cref="ULocale"/> specifying the language of the text being analyzed.</param>
+        /// <param name="where">A <see cref="UCultureInfo"/> specifying the language of the text being analyzed.</param>
         /// <returns>A new instance of <see cref="BreakIterator"/> that locates logical-character
         /// boundaries.</returns>
         /// <exception cref="ArgumentNullException">If <paramref name="where"/> is null.</exception>
         /// <stable>ICU 3.2</stable>
-        public static BreakIterator GetCharacterInstance(ULocale where)
+        public static BreakIterator GetCharacterInstance(UCultureInfo where)
         {
 #pragma warning disable 612, 618
             return GetBreakInstance(where, KIND_CHARACTER);
@@ -747,7 +748,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public static BreakIterator GetSentenceInstance()
         {
-            return GetSentenceInstance(ULocale.GetDefault());
+            return GetSentenceInstance(UCultureInfo.CurrentCulture);
         }
 
         /// <summary>
@@ -760,7 +761,7 @@ namespace ICU4N.Text
         public static BreakIterator GetSentenceInstance(CultureInfo where)
         {
 #pragma warning disable 612, 618
-            return GetBreakInstance(ULocale.ForLocale(where), KIND_SENTENCE);
+            return GetBreakInstance(where.ToUCultureInfo(), KIND_SENTENCE);
 #pragma warning restore 612, 618
         }
 
@@ -768,11 +769,11 @@ namespace ICU4N.Text
         /// <summary>
         /// Returns a new instance of <see cref="BreakIterator"/> that locates sentence boundaries.
         /// </summary>
-        /// <param name="where">A <see cref="ULocale"/> specifying the language of the text being analyzed.</param>
+        /// <param name="where">A <see cref="UCultureInfo"/> specifying the language of the text being analyzed.</param>
         /// <returns>A new instance of <see cref="BreakIterator"/> that locates sentence boundaries.</returns>
         /// <exception cref="ArgumentNullException">If <paramref name="where"/> is null.</exception>
         /// <stable>ICU 3.2</stable>
-        public static BreakIterator GetSentenceInstance(ULocale where)
+        public static BreakIterator GetSentenceInstance(UCultureInfo where)
         {
 #pragma warning disable 612, 618
             return GetBreakInstance(where, KIND_SENTENCE);
@@ -791,7 +792,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public static BreakIterator GetTitleInstance()
         {
-            return GetTitleInstance(ULocale.GetDefault());
+            return GetTitleInstance(UCultureInfo.CurrentCulture);
         }
 
         /// <icu/>
@@ -808,7 +809,7 @@ namespace ICU4N.Text
         public static BreakIterator GetTitleInstance(CultureInfo where)
         {
 #pragma warning disable 612, 618
-            return GetBreakInstance(ULocale.ForLocale(where), KIND_TITLE);
+            return GetBreakInstance(where.ToUCultureInfo(), KIND_TITLE);
 #pragma warning restore 612, 618
         }
 
@@ -817,13 +818,13 @@ namespace ICU4N.Text
         /// Returns a new instance of <see cref="BreakIterator"/> that locates title boundaries.
         /// The iterator returned locates title boundaries as described for
         /// Unicode 3.2 only. For Unicode 4.0 and above title boundary iteration,
-        /// please use Word Boundary iterator. <see cref="GetWordInstance(ULocale)"/>
+        /// please use Word Boundary iterator. <see cref="GetWordInstance(UCultureInfo)"/>
         /// </summary>
-        /// <param name="where">A <see cref="ULocale"/> specifying the language of the text being analyzed.</param>
+        /// <param name="where">A <see cref="UCultureInfo"/> specifying the language of the text being analyzed.</param>
         /// <returns>A new instance of <see cref="BreakIterator"/> that locates title boundaries.</returns>
         /// <exception cref="ArgumentNullException">If <paramref name="where"/> is null.</exception>
         /// <stable>ICU 3.2</stable>
-        public static BreakIterator GetTitleInstance(ULocale where)
+        public static BreakIterator GetTitleInstance(UCultureInfo where)
         {
 #pragma warning disable 612, 618
             return GetBreakInstance(where, KIND_TITLE);
@@ -847,7 +848,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.4</stable>
         public static object RegisterInstance(BreakIterator iter, CultureInfo locale, int kind)
         {
-            return RegisterInstance(iter, ULocale.ForLocale(locale), kind);
+            return RegisterInstance(iter, locale.ToUCultureInfo(), kind);
         }
 
         /// <icu/>
@@ -861,11 +862,11 @@ namespace ICU4N.Text
         /// BreakIterator.GetXYZInstance(where) to avoid undefined behavior.
         /// </summary>
         /// <param name="iter">The <see cref="BreakIterator"/> instance to adopt.</param>
-        /// <param name="locale">The <see cref="ULocale"/> for which this instance is to be registered.</param>
+        /// <param name="locale">The <see cref="UCultureInfo"/> for which this instance is to be registered.</param>
         /// <param name="kind">The type of iterator for which this instance is to be registered.</param>
         /// <returns>A registry key that can be used to unregister this instance.</returns>
         /// <stable>ICU 3.2</stable>
-        public static object RegisterInstance(BreakIterator iter, ULocale locale, int kind)
+        public static object RegisterInstance(BreakIterator iter, UCultureInfo locale, int kind)
         {
             // If the registered object matches the one in the cache, then
             // flush the cached object.
@@ -891,7 +892,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="key">The registry key returned by a previous call to 
         /// <see cref="RegisterInstance(BreakIterator, CultureInfo, int)"/>
-        /// or <see cref="RegisterInstance(BreakIterator, ULocale, int)"/>.</param>
+        /// or <see cref="RegisterInstance(BreakIterator, UCultureInfo, int)"/>.</param>
         /// <returns>true if the iterator for the key was successfully unregistered.</returns>
         /// <stable>ICU 2.4</stable>
         public static bool Unregister(object key)
@@ -933,7 +934,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal static BreakIterator GetBreakInstance(ULocale where, int kind) // ICU4N specific - changed obsolete API from public to internal so we don't have to refactor kind
+        internal static BreakIterator GetBreakInstance(UCultureInfo where, int kind) // ICU4N specific - changed obsolete API from public to internal so we don't have to refactor kind
         {
             if (where == null)
             {
@@ -981,31 +982,31 @@ namespace ICU4N.Text
         /// <summary>
         /// Returns a list of locales for which <see cref="BreakIterator"/>s can be used.
         /// </summary>
-        /// <returns>An array of <see cref="ULocale"/>s.  All of the locales in the array can
+        /// <returns>An array of <see cref="UCultureInfo"/>s.  All of the locales in the array can
         /// be used when creating a <see cref="BreakIterator"/>.</returns>
         /// <draft>ICU 3.2 (retain)</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static ULocale[] GetAvailableULocales()
+        public static UCultureInfo[] GetAvailableULocales()
         {
             lock (syncLock)
             {
                 // to avoid linking ICULocaleData
-                return GetShim().GetAvailableULocales();
+                return GetShim().GetAvailableUCultures();
             }
         }
 
         private sealed class BreakIteratorCache
         {
             private BreakIterator iter;
-            private ULocale where;
+            private UCultureInfo where;
 
-            internal BreakIteratorCache(ULocale where, BreakIterator iter)
+            internal BreakIteratorCache(UCultureInfo where, BreakIterator iter)
             {
                 this.where = where;
                 this.iter = (BreakIterator)iter.Clone();
             }
 
-            internal ULocale Locale
+            internal UCultureInfo Locale
             {
                 get { return where; }
             }
@@ -1018,11 +1019,11 @@ namespace ICU4N.Text
 
         internal abstract class BreakIteratorServiceShim
         {
-            public abstract object RegisterInstance(BreakIterator iter, ULocale l, int k);
-            public abstract bool Unregister(Object key);
-            public abstract CultureInfo[] GetAvailableCultures();  // ICU4N specific - renamed from GetAvailableLocales()
-            public abstract ULocale[] GetAvailableULocales();
-            public abstract BreakIterator CreateBreakIterator(ULocale l, int k);
+            public abstract object RegisterInstance(BreakIterator iter, UCultureInfo l, int k);
+            public abstract bool Unregister(object key);
+            public abstract CultureInfo[] GetAvailableCultures();  // ICU4N TODO: API - Rename GetCultures(), add CultureTypes enum
+            public abstract UCultureInfo[] GetAvailableUCultures();  // ICU4N TODO: API - Rename GetUCultures(), add CultureTypes enum
+            public abstract BreakIterator CreateBreakIterator(UCultureInfo l, int k);
         }
 
         private static BreakIteratorServiceShim shim;
@@ -1036,7 +1037,6 @@ namespace ICU4N.Text
             {
                 try
                 {
-                    //Class <?> cls = Class.forName("com.ibm.icu.text.BreakIteratorFactory");
                     Type cls = Type.GetType("ICU4N.Text.BreakIteratorFactory, ICU4N"); // ICU4N TODO: API Set BreakIteratorFactory statically on BreakIterator abstract class so it can be injected (this won't allow external injection)
                     shim = (BreakIteratorServiceShim)Activator.CreateInstance(cls);
                 }
@@ -1058,54 +1058,82 @@ namespace ICU4N.Text
             return shim;
         }
 
-        // -------- BEGIN ULocale boilerplate --------
+        // -------- BEGIN UCultureInfo boilerplate --------
 
-        /// <icu/>
         /// <summary>
-        /// Returns the locale that was used to create this object, or null.
+        /// <icu/> Gets the locale that was used to create this object, or <c>null</c>.
+        /// <para/>
+        /// Indicates the locale of the resource containing the data. This is always
+        /// at or above the valid locale. If the valid locale does not contain the
+        /// specific data being requested, then the actual locale will be
+        /// above the valid locale. If the object was not constructed from
+        /// locale data, then the valid locale is <c>null</c>.
+        /// <para/>
         /// This may may differ from the locale requested at the time of
-        /// this object's creation.  For example, if an object is created
+        /// this object's creation. For example, if an object is created
         /// for locale <c>en_US_CALIFORNIA</c>, the actual data may be
         /// drawn from <c>en</c> (the <i>actual</i> locale), and
-        /// <tt>en_US</tt> may be the most specific locale that exists (the
+        /// <c>en_US</c> may be the most specific locale that exists (the
         /// <i>valid</i> locale).
         /// <para/>
-        /// Note: The <i>actual</i> locale is returned correctly, but the <i>valid</i>
-        /// locale is not, in most cases.
+        /// Note: This property will be implemented in ICU 3.0; ICU 2.8
+        /// contains a partial preview implementation. The * <i>actual</i>
+        /// locale is returned correctly, but the <i>valid</i> locale is
+        /// not, in most cases.
+        /// <para/>
+        /// The base class method always returns <see cref="UCultureInfo.InvariantCulture"/>
+        /// Subclasses should override it if appropriate.
         /// </summary>
-        /// <param name="type">Type of information requested, either 
-        /// <see cref="ULocale.VALID_LOCALE"/>
-        /// or <see cref="ULocale.ACTUAL_LOCALE"/>.</param>
-        /// <returns>The information specified by <i>type</i>, or null if
-        /// this object was not constructed from locale data.</returns>
-        /// <seealso cref="ULocale"/>
-        /// <seealso cref="ULocale.VALID_LOCALE"/>
-        /// <seealso cref="ULocale.ACTUAL_LOCALE"/>
+        /// <seealso cref="UCultureInfo"/>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UCultureInfo ActualCulture
+            => actualLocale;
+
+        /// <summary>
+        /// <icu/> Gets the locale that was used to create this object, or <c>null</c>.
+        /// <para/>
+        /// Indicates the most specific locale for which any data exists.
+        /// This is always at or above the requested locale, and at or below
+        /// the actual locale. If the requested locale does not correspond
+        /// to any resource data, then the valid locale will be above the
+        /// requested locale. If the object was not constructed from locale
+        /// data, then the actual locale is <c>null</c>.
+        /// <para/>
+        /// This may may differ from the locale requested at the time of
+        /// this object's creation. For example, if an object is created
+        /// for locale <c>en_US_CALIFORNIA</c>, the actual data may be
+        /// drawn from <c>en</c> (the <i>actual</i> locale), and
+        /// <c>en_US</c> may be the most specific locale that exists (the
+        /// <i>valid</i> locale).
+        /// <para/>
+        /// Note: This property will be implemented in ICU 3.0; ICU 2.8
+        /// contains a partial preview implementation. The * <i>actual</i>
+        /// locale is returned correctly, but the <i>valid</i> locale is
+        /// not, in most cases.
+        /// <para/>
+        /// The base class method always returns <see cref="UCultureInfo.InvariantCulture"/>
+        /// Subclasses should override it if appropriate.
+        /// </summary>
+        /// <seealso cref="UCultureInfo"/>
         /// <draft>ICU 2.8 (retain)</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public ULocale GetLocale(ULocale.Type type)
-        {
-            return type == ULocale.ACTUAL_LOCALE ?
-                this.actualLocale : this.validLocale;
-        }
+        public virtual UCultureInfo ValidCulture
+            => validLocale;
 
         /// <summary>
         /// Set information about the locales that were used to create this
         /// object.  If the object was not constructed from locale data,
         /// both arguments should be set to null.  Otherwise, neither
         /// should be null.  The actual locale must be at the same level or
-        /// less specific than the valid locale.  This method is intended
+        /// less specific than the valid locale. This method is intended
         /// for use by factories or other entities that create objects of
         /// this class.
         /// </summary>
-        /// <param name="valid">The most specific locale containing any resource
-        /// data, or null.</param>
-        /// <param name="actual">The locale containing data used to construct this
-        /// object, or null.</param>
-        /// <seealso cref="ULocale"/>
-        /// <seealso cref="ULocale.VALID_LOCALE"/>
-        /// <seealso cref="ULocale.ACTUAL_LOCALE"/>
-        internal void SetLocale(ULocale valid, ULocale actual)
+        /// <param name="valid">The most specific locale containing any resource data, or <c>null</c>.</param>
+        /// <param name="actual">The locale containing data used to construct this object, or <c>null</c>.</param>
+        /// <seealso cref="UCultureInfo"/>
+        internal virtual void SetCulture(UCultureInfo valid, UCultureInfo actual)
         {
             // Change the following to an assertion later
             if ((valid == null) != (actual == null))
@@ -1123,16 +1151,16 @@ namespace ICU4N.Text
         /// <summary>
         /// The most specific locale containing any resource data, or null.
         /// </summary>
-        /// <seealso cref="ULocale"/>
-        private ULocale validLocale;
+        /// <seealso cref="UCultureInfo"/>
+        private UCultureInfo validLocale;
 
         /// <summary>
         /// The locale containing data used to construct this object, or
         /// null.
         /// </summary>
-        /// <seealso cref="ULocale"/>
-        private ULocale actualLocale;
+        /// <seealso cref="UCultureInfo"/>
+        private UCultureInfo actualLocale;
 
-        // -------- END ULocale boilerplate --------
+        // -------- END UCultureInfo boilerplate --------
     }
 }

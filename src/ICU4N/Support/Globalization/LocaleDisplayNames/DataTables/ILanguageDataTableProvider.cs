@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Reflection;
 
 namespace ICU4N.Globalization
 {
@@ -10,6 +11,12 @@ namespace ICU4N.Globalization
     /// <draft>ICU 60</draft>
     public interface ILanguageDataTableProvider
     {
+        /// <summary>
+        /// The assembly where the resource files can be located.
+        /// </summary>
+        /// <draft>ICU 60</draft>
+        Assembly Assembly { get; }
+
         /// <summary>
         /// Indicates whether data is available from this provider.
         /// If this returns <c>false</c>, a fallback provider will be used.

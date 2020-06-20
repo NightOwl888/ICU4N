@@ -51,7 +51,7 @@ namespace ICU4N.Impl
 
     /// <summary>
     /// Casing locale types for <see cref="UCaseProperties.GetCaseLocale(string)"/>,
-    /// <see cref="UCaseProperties.GetCaseLocale(CultureInfo)"/> and <see cref="UCaseProperties.GetCaseLocale(ULocale)"/>.
+    /// <see cref="UCaseProperties.GetCaseLocale(CultureInfo)"/> and <see cref="UCaseProperties.GetCaseLocale(UCultureInfo)"/>.
     /// </summary>
     public enum CaseLocale
     {
@@ -751,9 +751,9 @@ namespace ICU4N.Impl
         {
             return GetCaseLocale(locale.TwoLetterISOLanguageName);
         }
-        public static CaseLocale GetCaseLocale(ULocale locale)
+        public static CaseLocale GetCaseLocale(UCultureInfo locale)
         {
-            return GetCaseLocale(locale.GetLanguage());
+            return GetCaseLocale(locale.Language);
         }
         /// <summary>Accepts both 2- and 3-letter language subtags.</summary>
         private static CaseLocale GetCaseLocale(string language)

@@ -1,5 +1,6 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Impl.Locale;
+using ICU4N.Util;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,6 @@ using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnicodeLocaleExtensionClass = ICU4N.Impl.Locale.UnicodeLocaleExtension;
-using UResourceBundle = ICU4N.Util.UResourceBundle;
 
 namespace ICU4N.Globalization
 {
@@ -479,7 +479,46 @@ namespace ICU4N.Globalization
             return new LocaleIDParser(localeID).GetCountry();
         }
 
-        // ICU4N specific - removed deprecated getRegionForSupplementalData method
+        /**
+         * {@icu} Get the region to use for supplemental data lookup.
+         * Uses
+         * (1) any region specified by locale tag "rg"; if none then
+         * (2) any unicode_region_tag in the locale ID; if none then
+         * (3) if inferRegion is TRUE, the region suggested by
+         *     getLikelySubtags on the localeID.
+         * If no region is found, returns empty string ""
+         *
+         * @param locale
+         *     The locale (includes any keywords) from which
+         *     to get the region to use for supplemental data.
+         * @param inferRegion
+         *     If TRUE, will try to infer region from other
+         *     locale elements if not found any other way.
+         * @return
+         *     string with region to use ("" if none found).
+         * @internal ICU 57
+         * @deprecated This API is ICU internal only.
+         */
+        [Obsolete("This API is ICU internal only.")]
+        internal static string GetRegionForSupplementalData(
+            UCultureInfo locale, bool inferRegion) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
+        {
+            if (locale.Keywords.TryGetValue("rg", out string region) && region != null && region.Length == 6)
+            {
+                string regionUpper = AsciiUtil.ToUpper(region);
+                if (regionUpper.EndsWith("ZZZZ", StringComparison.Ordinal))
+                {
+                    return regionUpper.Substring(0, 2 - 0); // ICU4N: Checked 2nd parameter
+                }
+            }
+            region = locale.Country;
+            if (region.Length == 0 && inferRegion)
+            {
+                UCultureInfo maximized = AddLikelySubtags(locale);
+                region = maximized.Country;
+            }
+            return region;
+        }
 
         /// <summary>
         /// Returns the variant code for this locale, which might be the empty string.
@@ -2809,7 +2848,7 @@ namespace ICU4N.Globalization
         * Returns a well-formed IETF BCP 47 language tag representing
         * this locale.
         *
-        * <para/>If this <code>ULocale</code> has a language, script, country, or
+        * <para/>If this <code>UCultureInfo</code> has a language, script, country, or
         * variant that does not satisfy the IETF BCP 47 language tag
         * syntax requirements, this method handles these fields as
         * described below:
@@ -2943,7 +2982,7 @@ namespace ICU4N.Globalization
          *
          * <para/>If the specified language tag contains any ill-formed subtags,
          * the first such subtag and all following subtags are ignored.  Compare
-         * to {@link ULocale.Builder#setLanguageTag} which throws an exception
+         * to <see cref="UCultureInfoBuilder.SetLanguageTag(string)"/> which throws an exception
          * in this case.
          *
          * <para/>The following <b>conversions</b> are performed:
@@ -2957,14 +2996,14 @@ namespace ICU4N.Globalization
          * empty, the private use subtag is discarded:
          *
          * <pre>
-         *     ULocale loc;
-         *     loc = ULocale.forLanguageTag("en-US-x-lvariant-icu4j);
-         *     loc.getVariant(); // returns "ICU4J"
-         *     loc.getExtension('x'); // returns null
+         *     UCultureInfo loc;
+         *     loc = UCultureInfo.GetCultureInfoByIetfLanguageTag("en-US-x-lvariant-icu4n);
+         *     loc.Variant; // returns "ICU4N"
+         *     loc.Extensions.TryGetValue("x", out string _); // returns false/null
          *
-         *     loc = Locale.forLanguageTag("de-icu4j-x-URP-lvariant-Abc-Def");
-         *     loc.getVariant(); // returns "ICU4J_ABC_DEF"
-         *     loc.getExtension('x'); // returns "urp"
+         *     loc = CultureInfo.GetCultureInfoByIetfLanguageTag("de-icu4n-x-URP-lvariant-Abc-Def");
+         *     loc.Variant; // returns "ICU4N_ABC_DEF"
+         *     loc.Extensions.TryGetValue("x", out string _); // returns "urp"
          * </pre></li>
          *
          * <li>When the languageTag argument contains an extlang subtag,
@@ -2972,8 +3011,8 @@ namespace ICU4N.Globalization
          * language subtag and other extlang subtags are ignored:
          *
          * <pre>
-         *     ULocale.forLanguageTag("ar-aao").getLanguage(); // returns "aao"
-         *     ULocale.forLanguageTag("en-abc-def-us").toString(); // returns "abc_US"
+         *     UCultureInfo.GetCultureInfoByIetfLanguageTag("ar-aao").Language; // returns "aao"
+         *     UCultureInfo.GetCultureInfoByIetfLanguageTag("en-abc-def-us").ToString(); // returns "abc_US"
          * </pre></li>
          *
          * <li>Case is normalized. Language is normalized to lower case,
@@ -3042,7 +3081,7 @@ namespace ICU4N.Globalization
          * @return The locale that best represents the language tag.
          * @throws NullPointerException if <code>languageTag</code> is <code>null</code>
          * @see #toLanguageTag()
-         * @see ULocale.Builder#setLanguageTag(string)
+         * @see UCultureInfoBuilder.SetLanguageTag(string)
          *
          * @stable ICU 4.2
          */

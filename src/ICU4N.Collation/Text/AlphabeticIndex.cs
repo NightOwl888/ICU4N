@@ -1,8 +1,6 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support.Collections;
 using ICU4N.Util;
 using J2N;
-using J2N.Collections;
 using J2N.Collections.Generic.Extensions;
 using J2N.Numerics;
 using J2N.Text;
@@ -48,7 +46,7 @@ namespace ICU4N.Text
     /// <para/>
     /// <em>Note:</em> If you expect to have a lot of ASCII or Latin characters
     /// as well as characters from the user's language,
-    /// then it is a good idea to call <see cref="AddLabels(ULocale[])"/> with <see cref="ULocale.ENGLISH"/>.
+    /// then it is a good idea to call <see cref="AddLabels(UCultureInfo[])"/> with <c>new UCultureInfo("en")</c>.
     /// <h2>Direct Use</h2>
     /// The following shows an example of building an index directly.
     /// The "show..." methods below are just to illustrate usage.
@@ -185,7 +183,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="locale">The locale for the index.</param>
         /// <stable>ICU 4.8</stable>
-        public AlphabeticIndex(ULocale locale)
+        public AlphabeticIndex(UCultureInfo locale)
             : this(locale, null)
         {
         }
@@ -196,7 +194,7 @@ namespace ICU4N.Text
         /// <param name="locale">The locale for the index.</param>
         /// <stable>ICU 4.8</stable>
         public AlphabeticIndex(CultureInfo locale)
-            : this(ULocale.ForLocale(locale), null)
+            : this(locale.ToUCultureInfo(), null)
         {
         }
 
@@ -220,9 +218,9 @@ namespace ICU4N.Text
         /// <summary>
         /// Internal constructor containing implementation used by public constructors.
         /// </summary>
-        private AlphabeticIndex(ULocale locale, RuleBasedCollator collator)
+        private AlphabeticIndex(UCultureInfo locale, RuleBasedCollator collator)
         {
-            collatorOriginal = collator != null ? collator : (RuleBasedCollator)Text.Collator.GetInstance(locale);
+            collatorOriginal = collator ?? (RuleBasedCollator)Text.Collator.GetInstance(locale);
             // ICU4N specific - we neeed to initialize RecordComparer in the constructor, since it 
             // references a local variable that is initialized above.
             recordComparer = new RecordComparer(collatorOriginal);
@@ -288,9 +286,9 @@ namespace ICU4N.Text
         /// <param name="additions">Additional characters to add to the index, such as those in Swedish.</param>
         /// <returns>This, for chaining.</returns>
         /// <stable>ICU 4.8</stable>
-        public AlphabeticIndex<T> AddLabels(params ULocale[] additions)
+        public AlphabeticIndex<T> AddLabels(params UCultureInfo[] additions)
         {
-            foreach (ULocale addition in additions)
+            foreach (UCultureInfo addition in additions)
             {
                 AddIndexExemplars(addition);
             }
@@ -308,7 +306,7 @@ namespace ICU4N.Text
         {
             foreach (var addition in additions)
             {
-                AddIndexExemplars(ULocale.ForLocale(addition));
+                AddIndexExemplars(addition.ToUCultureInfo());
             }
             buckets = null;
             return this;
@@ -541,7 +539,7 @@ namespace ICU4N.Text
         /// This method is called to get the index exemplars. Normally these come from the <paramref name="locale"/> directly,
         /// but if they aren't available, we have to synthesize them.
         /// </summary>
-        private void AddIndexExemplars(ULocale locale)
+        private void AddIndexExemplars(UCultureInfo locale)
         {
             UnicodeSet exemplars = LocaleData.GetExemplarSet(locale, 0, ExemplarSetType.Index);
             if (exemplars != null)

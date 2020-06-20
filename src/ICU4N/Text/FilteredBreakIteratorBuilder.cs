@@ -1,5 +1,5 @@
-﻿using ICU4N.Impl;
-using ICU4N.Util;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using System;
 using System.Globalization;
 
@@ -49,7 +49,7 @@ namespace ICU4N.Text
         /// <returns>The new builder.</returns>
         /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static FilteredBreakIteratorBuilder GetInstance(ULocale where)
+        public static FilteredBreakIteratorBuilder GetInstance(UCultureInfo where)
         {
             return new SimpleFilteredSentenceBreakIteratorBuilder(where);
         }

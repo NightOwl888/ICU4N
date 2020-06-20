@@ -1,7 +1,7 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Impl.Coll;
 using ICU4N.Support;
-using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
@@ -1091,13 +1091,13 @@ namespace ICU4N.Dev.Test.Collate
             prevLocales.Add("root@collation=standard");
 
             long[] ces;
-            ULocale[] locales = Collator.GetAvailableULocales();
+            UCultureInfo[] locales = Collator.GetAvailableULocales();
             String localeID = "root";
             int locIdx = 0;
 
-            for (; locIdx < locales.Length; localeID = locales[locIdx++].GetName())
+            for (; locIdx < locales.Length; localeID = locales[locIdx++].FullName)
             {
-                ULocale locale = new ULocale(localeID);
+                UCultureInfo locale = new UCultureInfo(localeID);
                 String[] types = Collator.GetKeywordValuesForLocale("collation", locale, false);
                 for (int typeIdx = 0; typeIdx < types.Length; ++typeIdx)
                 {
@@ -1107,16 +1107,16 @@ namespace ICU4N.Dev.Test.Collate
                         Errln("Collator.getKeywordValuesForLocale(" + localeID +
                                 ") returns private collation keyword: " + type);
                     }
-                    ULocale localeWithType = locale.SetKeywordValue("collation", type);
+                    UCultureInfo localeWithType = locale.SetKeywordValue("collation", type);
                     Collator coll = Collator.GetInstance(localeWithType);
-                    ULocale actual = coll.GetLocale(ULocale.ACTUAL_LOCALE);
-                    if (prevLocales.Contains(actual.GetName()))
+                    UCultureInfo actual = coll.ActualCulture;
+                    if (prevLocales.Contains(actual.FullName))
                     {
                         continue;
                     }
-                    prevLocales.Add(actual.GetName());
-                    Logln("TestTailoredElements(): requested " + localeWithType.GetName()
-                            + " -> actual " + actual.GetName());
+                    prevLocales.Add(actual.FullName);
+                    Logln("TestTailoredElements(): requested " + localeWithType.FullName
+                            + " -> actual " + actual.FullName);
                     if (!(coll is RuleBasedCollator))
                     {
                         continue;
@@ -1603,19 +1603,19 @@ namespace ICU4N.Dev.Test.Collate
 
         private void SetRootCollator()
         {
-            coll = Collator.GetInstance(ULocale.ROOT);
+            coll = Collator.GetInstance(UCultureInfo.InvariantCulture);
         }
 
         private void SetLocaleCollator()
         {
             coll = null;
-            ULocale locale = null;
+            UCultureInfo locale = null;
             if (fileLine.Length > 9)
             {
                 String localeID = fileLine.Substring(9); // "@ locale <langTag>"
                 try
                 {
-                    locale = new ULocale(localeID);  // either locale ID or language tag
+                    locale = new UCultureInfo(localeID);  // either locale ID or language tag
                 }
                 catch (IllformedLocaleException e)
                 {
@@ -1629,7 +1629,7 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
 
-            Logln("creating a collator for locale ID " + locale.GetName());
+            Logln("creating a collator for locale ID " + locale.FullName);
             try
             {
                 coll = Collator.GetInstance(locale);

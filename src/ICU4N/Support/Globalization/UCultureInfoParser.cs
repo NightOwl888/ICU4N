@@ -1,27 +1,25 @@
 ﻿using ICU4N.Impl.Locale;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Globalization
 {
     /**
-     * <code>Builder</code> is used to build instances of <code>ULocale</code>
-     * from values configured by the setters.  Unlike the <code>ULocale</code>
+     * <code>Builder</code> is used to build instances of <code>UCultureInfo</code>
+     * from values configured by the setters.  Unlike the <code>UCultureInfo</code>
      * constructors, the <code>Builder</code> checks if a value configured by a
-     * setter satisfies the syntax requirements defined by the <code>ULocale</code>
-     * class.  A <code>ULocale</code> object created by a <code>Builder</code> is
+     * setter satisfies the syntax requirements defined by the <code>UCultureInfo</code>
+     * class.  A <code>UCultureInfo</code> object created by a <code>Builder</code> is
      * well-formed and can be transformed to a well-formed IETF BCP 47 language tag
      * without losing information.
      *
-     * <para/><b>Note:</b> The <code>ULocale</code> class does not provide any
+     * <para/><b>Note:</b> The <code>UCultureInfo</code> class does not provide any
      * syntactic restrictions on variant, while BCP 47 requires each variant
      * subtag to be 5 to 8 alphanumerics or a single numeric followed by 3
      * alphanumerics.  The method <code>setVariant</code> throws
      * <code>IllformedLocaleException</code> for a variant that does not satisfy
      * this restriction. If it is necessary to support such a variant, use a
-     * ULocale constructor.  However, keep in mind that a <code>ULocale</code>
+     * UCultureInfo constructor.  However, keep in mind that a <code>UCultureInfo</code>
      * object created this way might lose the variant information when
      * transformed to a BCP 47 language tag.
      *
@@ -29,14 +27,14 @@ namespace ICU4N.Globalization
      * with the <code>Builder</code>.
      * <blockquote>
      * <pre>
-     *     ULocale aLocale = new Builder().setLanguage("sr").setScript("Latn").setRegion("RS").build();
+     *     UCultureInfo aLocale = new UCultureInfoBuilder().SetLanguage("sr").SetScript("Latn").SetRegion("RS").Build();
      * </pre>
      * </blockquote>
      *
-     * <para/>Builders can be reused; <code>clear()</code> resets all
+     * <para/>Builders can be reused; <code>Clear()</code> resets all
      * fields to their default values.
      *
-     * @see ULocale#toLanguageTag()
+     * @see UCultureInfo.IetfLanguageTag
      *
      * @stable ICU 4.2
      */
@@ -77,7 +75,7 @@ namespace ICU4N.Globalization
          *
          * @stable ICU 4.2
          */
-        public UCultureInfoBuilder SetLocale(UCultureInfo locale)
+        public UCultureInfoBuilder SetCulture(UCultureInfo locale)
         {
             try
             {
@@ -95,17 +93,17 @@ namespace ICU4N.Globalization
          * language tag.  Discards the existing state.  Null and the
          * empty string cause the builder to be reset, like {@link
          * #clear}.  Grandfathered tags (see {@link
-         * ULocale#forLanguageTag}) are converted to their canonical
+         * UCultureInfo.GetCultureInfoByIetfLanguageTag(string)}) are converted to their canonical
          * form before being processed.  Otherwise, the language tag
-         * must be well-formed (see {@link ULocale}) or an exception is
-         * thrown (unlike <code>ULocale.forLanguageTag</code>, which
+         * must be well-formed (see {@link UCultureInfo}) or an exception is
+         * thrown (unlike <code>UCultureInfo.GetCultureInfoByIetfLanguageTag(string)</code>, which
          * just discards ill-formed and following portions of the
          * tag).
          *
          * @param languageTag the language tag
          * @return This builder.
          * @throws IllformedLocaleException if <code>languageTag</code> is ill-formed
-         * @see ULocale#forLanguageTag(string)
+         * @see UCultureInfo.GetCultureInfoByIetfLanguageTag(string)
          *
          * @stable ICU 4.2
          */
@@ -214,9 +212,9 @@ namespace ICU4N.Globalization
          * <para/><b>Note:</b> This method checks if <code>variant</code>
          * satisfies the IETF BCP 47 variant subtag's syntax requirements,
          * and normalizes the value to lowercase letters.  However,
-         * the <code>ULocale</code> class does not impose any syntactic
+         * the <code>UCultureInfo</code> class does not impose any syntactic
          * restriction on variant.  To set such a variant,
-         * use a ULocale constructor.
+         * use a UCultureInfo constructor.
          *
          * @param variant the variant
          * @return This builder.
@@ -242,13 +240,13 @@ namespace ICU4N.Globalization
          * empty string, the extension is removed.  Otherwise, the extension
          * must be well-formed or an exception is thrown.
          *
-         * <para/><b>Note:</b> The key {@link ULocale#UNICODE_LOCALE_EXTENSION
-         * UNICODE_LOCALE_EXTENSION} ('u') is used for the Unicode locale extension.
+         * <para/><b>Note:</b> The key {@link UCultureInfo.UnicodeLocaleExtension
+         * } ('u') is used for the Unicode locale extension.
          * Setting a value for this key replaces any existing Unicode locale key/type
          * pairs with those defined in the extension.
          *
-         * <para/><b>Note:</b> The key {@link ULocale#PRIVATE_USE_EXTENSION
-         * PRIVATE_USE_EXTENSION} ('x') is used for the private use code. To be
+         * <para/><b>Note:</b> The key {@link UCultureInfo.PrivateUseExtension
+         * } ('x') is used for the private use code. To be
          * well-formed, the value for this key needs only to have subtags of one to
          * eight alphanumeric characters, not two to eight as in the general case.
          *
@@ -257,7 +255,7 @@ namespace ICU4N.Globalization
          * @return This builder.
          * @throws IllformedLocaleException if <code>key</code> is illegal
          * or <code>value</code> is ill-formed
-         * @see #setUnicodeLocaleKeyword(string, string)
+         * @see #SetUnicodeLocaleKeyword(string, string)
          *
          * @stable ICU 4.2
          */
@@ -392,10 +390,10 @@ namespace ICU4N.Globalization
         }
 
         /**
-         * Returns an instance of <code>ULocale</code> created from the fields set
+         * Returns an instance of <code>UCultureInfo</code> created from the fields set
          * on this builder.
          *
-         * @return a new Locale
+         * @return a new CultureInfo
          *
          * @stable ICU 4.4
          */

@@ -551,7 +551,7 @@ namespace ICU4N.Impl.Locale
         //
         // Note:    The key-type data is currently read from ICU resource bundle keyTypeData.res.
         //          In future, we may import the data into code like below directly from CLDR to
-        //          avoid cyclic dependency between ULocale and UResourceBundle. For now, the code
+        //          avoid cyclic dependency between UCultureInfo and UResourceBundle. For now, the code
         //          below is just for proof of concept, and commented out.
         //
 

@@ -2529,11 +2529,11 @@ namespace ICU4N
             return UCaseProperties.GetCaseLocale(locale);
         }
 
-        private static CaseLocale GetCaseLocale(ULocale locale)
+        private static CaseLocale GetCaseLocale(UCultureInfo locale)
         {
             if (locale == null)
             {
-                locale = ULocale.GetDefault();
+                locale = UCultureInfo.CurrentCulture;
             }
             return UCaseProperties.GetCaseLocale(locale);
         }
@@ -2555,11 +2555,11 @@ namespace ICU4N
         /// Returns the uppercase version of the argument <paramref name="str"/>.
         /// Casing is dependent on the argument <paramref name="locale"/>.
         /// </summary>
-        /// <param name="locale"><see cref="ULocale"/> which <paramref name="str"/> is to be converted in.</param>
+        /// <param name="locale"><see cref="UCultureInfo"/> which <paramref name="str"/> is to be converted in.</param>
         /// <param name="str">Source string to be performed on.</param>
         /// <returns>Uppercase version of the argument <paramref name="str"/>.</returns>
         /// <stable>ICU 3.2</stable>
-        public static string ToUpper(ULocale locale, string str)
+        public static string ToUpper(UCultureInfo locale, string str)
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), 0, str);
         }
@@ -2581,11 +2581,11 @@ namespace ICU4N
         /// Returns the lowercase version of the argument <paramref name="str"/>.
         /// Casing is dependent on the argument <paramref name="locale"/>.
         /// </summary>
-        /// <param name="locale"><see cref="ULocale"/> which <paramref name="str"/> is to be converted in.</param>
+        /// <param name="locale"><see cref="UCultureInfo"/> which <paramref name="str"/> is to be converted in.</param>
         /// <param name="str">Source string to be performed on.</param>
         /// <returns>Lowercase version of the argument <paramref name="str"/>.</returns>
         /// <stable>ICU 3.2</stable>
-        public static string ToLower(ULocale locale, string str)
+        public static string ToLower(UCultureInfo locale, string str)
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), 0, str);
         }
@@ -2634,13 +2634,13 @@ namespace ICU4N
         /// <para/>
         /// Casing is dependent on the argument <paramref name="locale"/>.
         /// </remarks>
-        /// <param name="locale"><see cref="ULocale"/> which <paramref name="str"/> is to be converted in.</param>
+        /// <param name="locale"><see cref="UCultureInfo"/> which <paramref name="str"/> is to be converted in.</param>
         /// <param name="str">Source string to be performed on.</param>
         /// <param name="titleIter">Break iterator to determine the positions in which
         /// the character should be title cased.</param>
         /// <returns>Lowercase version of the argument <paramref name="str"/>.</returns>
         /// <stable>ICU 3.2</stable>
-        public static string ToTitleCase(ULocale locale, string str,
+        public static string ToTitleCase(UCultureInfo locale, string str,
             BreakIterator titleIter)
         {
             return ToTitleCase(locale, str, titleIter, 0);
@@ -2662,7 +2662,7 @@ namespace ICU4N
         /// <para/>
         /// Casing is dependent on the argument <paramref name="locale"/>.
         /// </remarks>
-        /// <param name="locale"><see cref="ULocale"/> which <paramref name="str"/> is to be converted in.</param>
+        /// <param name="locale"><see cref="UCultureInfo"/> which <paramref name="str"/> is to be converted in.</param>
         /// <param name="str">Source string to be performed on.</param>
         /// <param name="titleIter">Break iterator to determine the positions in which
         /// the character should be title cased.</param>
@@ -2671,12 +2671,12 @@ namespace ICU4N
         /// <stable>ICU 3.8</stable>
         /// <seealso cref="TitleCaseNoLowerCase"/>
         /// <seealso cref="TitleCaseNoBreakAdjustment"/>
-        public static string ToTitleCase(ULocale locale, string str,
+        public static string ToTitleCase(UCultureInfo locale, string str,
             BreakIterator titleIter, int options) // ICU4N TODO: API - make options into [Flags] enum
         {
             if (titleIter == null && locale == null)
             {
-                locale = ULocale.GetDefault();
+                locale = UCultureInfo.CurrentCulture;
             }
             titleIter = CaseMapImpl.GetTitleBreakIterator(locale, options, titleIter);
             titleIter.SetText(str);
@@ -2739,10 +2739,10 @@ namespace ICU4N
         /// <returns>The modified string, or the original if no modifications were necessary.</returns>
         /// <internal/>
         [Obsolete("ICU internal only")]
-        public static string ToTitleFirst(ULocale locale, string str)
+        public static string ToTitleFirst(UCultureInfo locale, string str)
         {
             // TODO: Remove this function. Inline it where it is called in CLDR.
-            return TO_TITLE_WHOLE_STRING_NO_LOWERCASE.Apply(locale.ToLocale(), null, str);
+            return TO_TITLE_WHOLE_STRING_NO_LOWERCASE.Apply(locale.ToCultureInfo(), null, str);
         }
 
         private static readonly TitleCaseMap TO_TITLE_WHOLE_STRING_NO_LOWERCASE =
@@ -2765,7 +2765,7 @@ namespace ICU4N
         /// <para/>
         /// Casing is dependent on the argument <paramref name="locale"/>.
         /// </remarks>
-        /// <param name="locale"><see cref="ULocale"/> which <paramref name="str"/> is to be converted in.</param>
+        /// <param name="locale"><see cref="UCultureInfo"/> which <paramref name="str"/> is to be converted in.</param>
         /// <param name="str">Source string to be performed on.</param>
         /// <param name="titleIter">Break iterator to determine the positions in which
         /// the character should be title cased.</param>

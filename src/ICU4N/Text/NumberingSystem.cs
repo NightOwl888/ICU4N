@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Util;
 using J2N;
 using System;
@@ -104,19 +105,18 @@ namespace ICU4N.Text
         /// <stable>ICU 4.2</stable>
         public static NumberingSystem GetInstance(CultureInfo inLocale)
         {
-            return GetInstance(ULocale.ForLocale(inLocale));
+            return GetInstance(inLocale.ToUCultureInfo());
         }
 
         /// <summary>
-        /// Returns the default numbering system for the specified <see cref="ULocale"/>.
+        /// Returns the default numbering system for the specified <see cref="UCultureInfo"/>.
         /// </summary>
         /// <stable>ICU 4.2</stable>
-        public static NumberingSystem GetInstance(ULocale locale)
+        public static NumberingSystem GetInstance(UCultureInfo locale)
         {
             // Check for @numbers
             bool nsResolved = true;
-            string numbersKeyword = locale.GetKeywordValue("numbers");
-            if (numbersKeyword != null)
+            if (locale.Keywords.TryGetValue("numbers", out string numbersKeyword) && numbersKeyword != null)
             {
                 foreach (string keyword in OTHER_NS_KEYWORDS)
                 {
@@ -146,7 +146,7 @@ namespace ICU4N.Text
             }
 
             // Attempt to get the numbering system from the cache
-            string baseName = locale.GetBaseName();
+            string baseName = locale.Name;
             // TODO: Caching by locale+numbersKeyword could yield a large cache.
             // Try to load for each locale the mappings from OTHER_NS_KEYWORDS and default
             // to real numbering system names; can we get those from supplemental data?
@@ -158,10 +158,10 @@ namespace ICU4N.Text
 
         internal class LocaleLookupData
         {
-            public readonly ULocale locale;
+            public readonly UCultureInfo locale;
             public readonly string numbersKeyword;
 
-            internal LocaleLookupData(ULocale locale, string numbersKeyword)
+            internal LocaleLookupData(UCultureInfo locale, string numbersKeyword)
             {
                 this.locale = locale;
                 this.numbersKeyword = numbersKeyword;
@@ -170,7 +170,7 @@ namespace ICU4N.Text
 
         internal static NumberingSystem LookupInstanceByLocale(LocaleLookupData localeLookupData)
         {
-            ULocale locale = localeLookupData.locale;
+            UCultureInfo locale = localeLookupData.locale;
             ICUResourceBundle rb;
             try
             {
@@ -222,13 +222,13 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns the default numbering system for the default <see cref="ULocale.Category.FORMAT"/>
+        /// Returns the default numbering system for the default <see cref="UCultureInfo.CurrentCulture"/>
         /// </summary>
-        /// <seealso cref="ULocale.Category.FORMAT"/>
+        /// <seealso cref="UCultureInfo.CurrentCulture"/>
         /// <stable>ICU 4.2</stable>
         public static NumberingSystem GetInstance()
         {
-            return GetInstance(ULocale.GetDefault(ULocale.Category.FORMAT));
+            return GetInstance(UCultureInfo.CurrentCulture);
         }
 
         /// <summary>

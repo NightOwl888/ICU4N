@@ -5,23 +5,11 @@ using System;
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// Static utility functions for probing resource tables, used by <see cref="ULocale"/> and
-    /// <see cref="Text.LocaleDisplayNames"/>.
+    /// Static utility functions for probing resource tables, used by <see cref="UCultureInfo"/> and
+    /// <see cref="CultureDisplayNames"/>.
     /// </summary>
-    public class ICUResourceTableAccess
+    public static class ICUResourceTableAccess
     {
-        /// <summary>
-        /// Utility to fetch locale display data from resource bundle tables.  Convenience
-        /// wrapper for <see cref="GetTableString(ICUResourceBundle, string, string, string, string)"/>.
-        /// </summary>
-        public static string GetTableString(string path, ULocale locale, string tableName,
-                string itemName, string defaultValue) // ICU4N TODO: API - Remove
-        {
-            ICUResourceBundle bundle = (ICUResourceBundle)UResourceBundle.
-                GetBundleInstance(path, locale.GetBaseName());
-            return GetTableString(bundle, tableName, null, itemName, defaultValue);
-        }
-
         /// <summary>
         /// Utility to fetch locale display data from resource bundle tables.  Convenience
         /// wrapper for <see cref="GetTableString(ICUResourceBundle, string, string, string, string)"/>.
@@ -100,7 +88,7 @@ namespace ICU4N.Impl
                         fallbackLocale = "root";
                     }
 
-                    if (fallbackLocale.Equals(table.GetULocale().GetName()))
+                    if (fallbackLocale.Equals(table.UCulture.FullName))
                     {
                         return defaultValue;
                     }

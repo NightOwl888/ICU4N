@@ -1,8 +1,10 @@
 ﻿// Port of text.LocaleDisplayNamesImpl.DataTables from ICU4J
 // In .NET we use an interface to determine which data we are loading (so they cannot be plugged in to the wrong place).
 
+using ICU4N.Impl;
 using System;
 using System.Globalization;
+using System.Reflection;
 
 namespace ICU4N.Globalization
 {
@@ -10,6 +12,11 @@ namespace ICU4N.Globalization
     {
         private const string InstancePropertyMethodName = "get_Instance";
         private readonly ILanguageDataTableProvider defaultDataTableProvider = Load(DataTableCultureDisplayNames.DefaultLanguageDataTableProvider);
+
+        public Assembly Assembly => defaultDataTableProvider != null
+            ? defaultDataTableProvider.Assembly
+            : ICUResourceBundle.IcuDataAssembly;
+
         public bool HasData => defaultDataTableProvider != null && defaultDataTableProvider.HasData;
 
         public IDataTable GetDataTable(CultureInfo culture, bool nullIfNotFound)

@@ -1,4 +1,5 @@
-﻿using ICU4N.Util;
+﻿using ICU4N.Globalization;
+using ICU4N.Util;
 using J2N.IO;
 using System;
 using System.IO;
@@ -28,18 +29,18 @@ namespace ICU4N.Impl.Coll
                 {
                     UResourceBundle rootBundle = UResourceBundle.GetBundleInstance(
                         // ICU4N specific - passing in the current assembly to load resources from.
-                        ICUData.IcuCollationBaseName, ULocale.ROOT, CollationData.IcuDataAssembly);
+                        ICUData.IcuCollationBaseName, UCultureInfo.InvariantCulture, CollationData.IcuDataAssembly);
                     rootRules = rootBundle.GetString("UCARules");
                 }
             }
         }
 
         // C++: static void appendRootRules(UnicodeString &s)
-        public static string RootRules
+        public static string RootRules // ICU4N TODO: API - Change to InvariantRules?
         {
             get
             {
-                LoadRootRules();
+                LoadRootRules(); // ICU4N TODO: Use LazyInitializer
                 return rootRules;
             }
         }
@@ -72,7 +73,7 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        internal static string LoadRules(ULocale locale, string collationType)
+        internal static string LoadRules(UCultureInfo locale, string collationType)
         {
             UResourceBundle bundle = UResourceBundle.GetBundleInstance(
                     // ICU4N specific - passing in the current assembly to load resources from.
@@ -83,12 +84,12 @@ namespace ICU4N.Impl.Coll
             return rules;
         }
 
-        private static UResourceBundle FindWithFallback(UResourceBundle table, String entryName)
+        private static UResourceBundle FindWithFallback(UResourceBundle table, string entryName)
         {
             return ((ICUResourceBundle)table).FindWithFallback(entryName);
         }
 
-        public static CollationTailoring LoadTailoring(ULocale locale, out ULocale outValidLocale)
+        public static CollationTailoring LoadTailoring(UCultureInfo locale, out UCultureInfo outValidLocale)
         {
 
             // Java porting note: ICU4J getWithFallback/getStringWithFallback currently does not
@@ -96,10 +97,10 @@ namespace ICU4N.Impl.Coll
             // For now, collation resources does not contain such data, so the code below should work fine.
 
             CollationTailoring root = CollationRoot.Root;
-            string localeName = locale.GetName();
+            string localeName = locale.FullName;
             if (localeName.Length == 0 || localeName.Equals("root"))
             {
-                outValidLocale = ULocale.ROOT;
+                outValidLocale = UCultureInfo.InvariantCulture;
                 return root;
             }
 
@@ -110,22 +111,22 @@ namespace ICU4N.Impl.Coll
                         ICUData.IcuCollationBaseName, locale,
                         // ICU4N specific - need to pass in this assembly
                         // name for the resources to be resolved here.
-                        CollationData.IcuDataAssembly, 
+                        CollationData.IcuDataAssembly,
                         OpenType.LocaleRoot);
             }
             catch (MissingManifestResourceException)
             {
-                outValidLocale = ULocale.ROOT;
+                outValidLocale = UCultureInfo.InvariantCulture;
                 return root;
             }
 
-            ULocale validLocale = bundle.GetULocale();
+            UCultureInfo validLocale = bundle.UCulture;
             // Normalize the root locale. See
             // http://bugs.icu-project.org/trac/ticket/10715
-            string validLocaleName = validLocale.GetName();
+            string validLocaleName = validLocale.FullName;
             if (validLocaleName.Length == 0 || validLocaleName.Equals("root"))
             {
-                validLocale = ULocale.ROOT;
+                validLocale = UCultureInfo.InvariantCulture;
             }
             outValidLocale = validLocale;
 
@@ -145,7 +146,7 @@ namespace ICU4N.Impl.Coll
             }
 
             // Fetch the collation type from the locale ID and the default type from the data.
-            string type = locale.GetKeywordValue("collation");
+            locale.Keywords.TryGetValue("collation", out string type);
             string defaultType = "standard";
 
             string defT = ((ICUResourceBundle)collations).FindStringWithFallback("default");
@@ -201,21 +202,23 @@ namespace ICU4N.Impl.Coll
             }
 
             // Is this the same as the root collator? If so, then use that instead.
-            ULocale actualLocale = data.GetULocale();
-            // http://bugs.icu-project.org/trac/ticket/10715 ICUResourceBundle(root).getULocale() != ULocale.ROOT
-            // Therefore not just if (actualLocale.equals(ULocale.ROOT) && type.equals("standard")) {
-            string actualLocaleName = actualLocale.GetName();
+            UCultureInfo actualLocale = data.UCulture;
+            // http://bugs.icu-project.org/trac/ticket/10715 ICUResourceBundle(root).UCulture != UCultureInfo.InvariantCulture
+            // Therefore not just if (actualLocale.Equals(UCultureInfo.InvariantCulture) && type.Equals("standard")) {
+            string actualLocaleName = actualLocale.FullName;
             if (actualLocaleName.Length == 0 || actualLocaleName.Equals("root"))
             {
-                actualLocale = ULocale.ROOT;
+                actualLocale = UCultureInfo.InvariantCulture;
                 if (type.Equals("standard"))
                 {
                     return root;
                 }
             }
 
-            CollationTailoring t = new CollationTailoring(root.Settings);
-            t.ActualLocale = actualLocale;
+            CollationTailoring t = new CollationTailoring(root.Settings)
+            {
+                ActualCulture = actualLocale
+            };
 
             // deserialize
             UResourceBundle binary = data.Get("%%CollationBin");
@@ -256,8 +259,7 @@ namespace ICU4N.Impl.Coll
             {
                 // Opening a bundle for the actual locale should always succeed.
                 UResourceBundle actualBundle = UResourceBundle.GetBundleInstance(
-                        // ICU4N specific - passing in the current assembly to load resources from.
-                        ICUData.IcuCollationBaseName, actualLocale, CollationData.IcuDataAssembly);
+                        ICUData.IcuCollationBaseName, actualLocale);
                 defT = ((ICUResourceBundle)actualBundle).FindStringWithFallback("collations/default");
                 if (defT != null)
                 {
@@ -267,7 +269,7 @@ namespace ICU4N.Impl.Coll
 
             if (!type.Equals(defaultType))
             {
-                t.ActualLocale = t.ActualLocale.SetKeywordValue("collation", type);
+                t.ActualCulture = t.ActualCulture.SetKeywordValue("collation", type);
             }
 
             // if (typeFallback) {

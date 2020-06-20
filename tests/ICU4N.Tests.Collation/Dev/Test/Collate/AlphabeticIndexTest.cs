@@ -1,10 +1,7 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
-using ICU4N.Support.Collections;
 using ICU4N.Text;
-using ICU4N.Util;
 using J2N;
-using J2N.Collections;
 using J2N.Text;
 using NUnit.Framework;
 using System;
@@ -144,7 +141,7 @@ namespace ICU4N.Dev.Test.Collate
         //        String[] keywords = Collator.getKeywords();
         //        System.out.println(Arrays.asList(keywords));
         //        String locale = "zh";
-        //        ULocale ulocale = new ULocale(locale);
+        //        UCultureInfo ulocale = new UCultureInfo(locale);
         //        for (String keyword : keywords) {
         //            List<String> values = Arrays.asList(Collator.getKeywordValuesForLocale(keyword, ulocale, false));
         //            List<String> allValues = Arrays.asList(Collator.getKeywordValues(keyword));
@@ -156,10 +153,10 @@ namespace ICU4N.Dev.Test.Collate
         //    }
         //
         //    private void checkKeyword(String locale, String collationValue, boolean shouldExist) {
-        //        final ULocale base = new ULocale(locale);
-        //        final ULocale desired = new ULocale(locale + "@collation=" + collationValue);
+        //        final UCultureInfo base = new UCultureInfo(locale);
+        //        final UCultureInfo desired = new UCultureInfo(locale + "@collation=" + collationValue);
         //        Collator foo = Collator.getInstance(desired);
-        //        ULocale actual = foo.getLocale(ULocale.ACTUAL_LOCALE);
+        //        UCultureInfo actual = foo.ActualCulture;
         //        if (shouldExist) {
         //            assertEquals("actual should match desired", desired, actual);
         //        } else {
@@ -192,7 +189,7 @@ namespace ICU4N.Dev.Test.Collate
                 };
             foreach (String[] test in tests)
             {
-                AlphabeticIndex<int> alphabeticIndex = new AlphabeticIndex<int>(new ULocale(test[0]));
+                AlphabeticIndex<int> alphabeticIndex = new AlphabeticIndex<int>(new UCultureInfo(test[0]));
                 String probe = test[1];
                 String expectedLabel = test[2];
                 alphabeticIndex.AddRecord(probe, 1);
@@ -288,7 +285,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestBuckets()
         {
-            ULocale additionalLocale = ULocale.ENGLISH;
+            UCultureInfo additionalLocale = new UCultureInfo("en");
 
             foreach (String[] pair in localeAndIndexCharactersLists)
             {
@@ -300,10 +297,10 @@ namespace ICU4N.Dev.Test.Collate
         public void TestEmpty()
         {
             // just verify that it doesn't blow up.
-            List<ULocale> locales = new List<ULocale>(); // new LinkedHashSet<ULocale>();
-            locales.Add(ULocale.ROOT);
-            locales.AddRange(ULocale.GetAvailableLocales());
-            foreach (ULocale locale in locales)
+            List<UCultureInfo> locales = new List<UCultureInfo>(); // new LinkedHashSet<ULocale>();
+            locales.Add(UCultureInfo.InvariantCulture);
+            locales.AddRange(UCultureInfo.GetCultures());
+            foreach (UCultureInfo locale in locales)
             {
                 try
                 {
@@ -316,7 +313,7 @@ namespace ICU4N.Dev.Test.Collate
                 }
                 catch (Exception e)
                 {
-                    Errln("Exception when creating AlphabeticIndex for:\t" + locale.ToLanguageTag());
+                    Errln("Exception when creating AlphabeticIndex for:\t" + locale.IetfLanguageTag);
                     Errln(e.ToString());
                 }
             }
@@ -343,22 +340,22 @@ namespace ICU4N.Dev.Test.Collate
         public void TestInflow()
         {
             object[][] tests = {
-                new object[] {0, ULocale.ENGLISH},
-                new object[] {0, ULocale.ENGLISH, new ULocale("el")},
-                new object[] {1, ULocale.ENGLISH, new ULocale("ru")},
-                new object[] {0, ULocale.ENGLISH, new ULocale("el"), new UnicodeSet("[\u2C80]"), new ULocale("ru")},
-                new object[] {0, ULocale.ENGLISH},
-                new object[] {2, ULocale.ENGLISH, new ULocale("ru"), ULocale.JAPANESE},
+                new object[] {0, new UCultureInfo("en")},
+                new object[] {0, new UCultureInfo("en"), new UCultureInfo("el")},
+                new object[] {1, new UCultureInfo("en"), new UCultureInfo("ru")},
+                new object[] {0, new UCultureInfo("en"), new UCultureInfo("el"), new UnicodeSet("[\u2C80]"), new UCultureInfo("ru")},
+                new object[] {0, new UCultureInfo("en")},
+                new object[] {2, new UCultureInfo("en"), new UCultureInfo("ru"), new UCultureInfo("ja")},
         };
             foreach (Object[] test in tests)
             {
                 int expected = (int)test[0];
-                AlphabeticIndex<double> alphabeticIndex = new AlphabeticIndex<double>((ULocale)test[1]);
+                AlphabeticIndex<double> alphabeticIndex = new AlphabeticIndex<double>((UCultureInfo)test[1]);
                 for (int i = 2; i < test.Length; ++i)
                 {
-                    if (test[i] is ULocale)
+                    if (test[i] is UCultureInfo)
                     {
-                        alphabeticIndex.AddLabels((ULocale)test[i]);
+                        alphabeticIndex.AddLabels((UCultureInfo)test[i]);
                     }
                     else
                     {
@@ -377,12 +374,12 @@ namespace ICU4N.Dev.Test.Collate
                 if (expected != counter.Get(BucketLabelType.Inflow))
                 {
                     // for debugging
-                    AlphabeticIndex<Double> indexCharacters2 = new AlphabeticIndex<double>((ULocale)test[1]);
+                    AlphabeticIndex<Double> indexCharacters2 = new AlphabeticIndex<double>((UCultureInfo)test[1]);
                     for (int i = 2; i < test.Length; ++i)
                     {
-                        if (test[i] is ULocale)
+                        if (test[i] is UCultureInfo)
                         {
-                            indexCharacters2.AddLabels((ULocale)test[i]);
+                            indexCharacters2.AddLabels((UCultureInfo)test[i]);
                         }
                         else
                         {
@@ -396,10 +393,10 @@ namespace ICU4N.Dev.Test.Collate
             }
         }
 
-        private void CheckBuckets(string localeString, string[] test, ULocale additionalLocale, string testBucket, params string[] items)
+        private void CheckBuckets(string localeString, string[] test, UCultureInfo additionalLocale, string testBucket, params string[] items)
         {
             StringBuilder UI = new StringBuilder();
-            ULocale desiredLocale = new ULocale(localeString);
+            UCultureInfo desiredLocale = new UCultureInfo(localeString);
 
             // Create a simple index where the values for the strings are Integers, and add the strings
             AlphabeticIndex<int> index = new AlphabeticIndex<int>(desiredLocale).AddLabels(additionalLocale);
@@ -415,8 +412,8 @@ namespace ICU4N.Dev.Test.Collate
             IList<string> labels = index.GetBucketLabels();
             var immIndex = index.BuildImmutableIndex();
 
-            Logln(desiredLocale + "\t" + desiredLocale.GetDisplayName(ULocale.ENGLISH) + " - " + desiredLocale.GetDisplayName(desiredLocale) + "\t"
-                    + index.Collator.GetLocale(ULocale.ACTUAL_LOCALE));
+            Logln(desiredLocale + "\t" + desiredLocale.GetDisplayName(new UCultureInfo("en")) + " - " + desiredLocale.GetDisplayName(desiredLocale) + "\t"
+                    + index.Collator.ActualCulture);
             UI.Length = (0);
             UI.Append(desiredLocale + "\t");
             bool showAll = true;
@@ -566,7 +563,7 @@ namespace ICU4N.Dev.Test.Collate
         {
             foreach (String[] localeAndIndexCharacters in localeAndIndexCharactersLists)
             {
-                ULocale locale = new ULocale(localeAndIndexCharacters[0]);
+                UCultureInfo locale = new UCultureInfo(localeAndIndexCharacters[0]);
                 String expectedIndexCharacters = "\u2026:" + localeAndIndexCharacters[1] + ":\u2026";
                 ICollection<string> alphabeticIndex = new AlphabeticIndex<string>(locale).GetBucketLabels();
 
@@ -596,7 +593,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestBasics()
         {
-            ULocale[] list = ULocale.GetAvailableLocales();
+            UCultureInfo[] list = UCultureInfo.GetCultures();
             // get keywords combinations
             // don't bother with multiple combinations at this point
             List<object> keywords = new List<object>();
@@ -614,14 +611,14 @@ namespace ICU4N.Dev.Test.Collate
                 {
                     string localeString = list[i].ToString();
                     if (!KEY_LOCALES.Contains(localeString)) continue; // TODO change in exhaustive
-                    ULocale locale = new ULocale(localeString + collationValue);
+                    UCultureInfo locale = new UCultureInfo(localeString + collationValue);
                     if (collationValue.Length > 0 && !Collator.GetFunctionalEquivalent("collation", locale).Equals(locale))
                     {
                         //Logln("Skipping " + locale);
                         continue;
                     }
 
-                    if (locale.GetCountry().Length != 0)
+                    if (locale.Country.Length != 0)
                     {
                         continue;
                     }
@@ -639,7 +636,7 @@ namespace ICU4N.Dev.Test.Collate
                     {
                         mainCharString = mainCharString.Substring(0, 500) + "..."; // ICU4N: Checked 2nd parameter
                     }
-                    Logln(mainChars.Count + "\t" + locale + "\t" + locale.GetDisplayName(ULocale.ENGLISH));
+                    Logln(mainChars.Count + "\t" + locale + "\t" + locale.GetDisplayName(new UCultureInfo("en")));
                     Logln("Index:\t" + mainCharString);
                     if (!isUnihan && mainChars.Count > 100)
                     {
@@ -655,7 +652,7 @@ namespace ICU4N.Dev.Test.Collate
         {
             foreach (String localeString in new String[] { "zh" })
             { // KEY_LOCALES, new String[] {"zh"}
-                ULocale ulocale = new ULocale(localeString);
+                UCultureInfo ulocale = new UCultureInfo(localeString);
                 AlphabeticIndex<Double> alphabeticIndex = new AlphabeticIndex<Double>(ulocale).AddLabels(new CultureInfo("en") /* Locale.ENGLISH */);
                 RuleBasedCollator collator = alphabeticIndex.Collator;
                 String[][] tests;
@@ -752,8 +749,8 @@ namespace ICU4N.Dev.Test.Collate
         public void TestFirstScriptCharacters()
         {
             ICollection<String> firstCharacters =
-                    new AlphabeticIndex<string>(ULocale.ENGLISH).GetFirstCharactersInScripts();
-            ICollection<String> expectedFirstCharacters = FirstStringsInScript((RuleBasedCollator)Collator.GetInstance(ULocale.ROOT));
+                    new AlphabeticIndex<string>(new UCultureInfo("en")).GetFirstCharactersInScripts();
+            ICollection<String> expectedFirstCharacters = FirstStringsInScript((RuleBasedCollator)Collator.GetInstance(UCultureInfo.InvariantCulture));
             ISet<String> diff = new SortedSet<String>(firstCharacters, StringComparer.Ordinal);
             diff.ExceptWith(expectedFirstCharacters);
             assertTrue("First Characters contains unexpected ones: " + diff, diff.Count == 0);
@@ -846,7 +843,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestZZZ()
         {
             //            int x = 3;
-            //            AlphabeticIndex index = new AlphabeticIndex(ULocale.ENGLISH);
+            //            AlphabeticIndex index = new AlphabeticIndex(new UCultureInfo("en"));
             //            UnicodeSet additions = new UnicodeSet();
             //            additions.add(0x410).add(0x415);  // Cyrillic
             //            // additions.add(0x391).add(0x393);     // Greek
@@ -860,13 +857,13 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestSimplified()
         {
-            CheckBuckets("zh", simplifiedNames, ULocale.ENGLISH, "W", "\u897f");
+            CheckBuckets("zh", simplifiedNames, new UCultureInfo("en"), "W", "\u897f");
         }
 
         [Test]
         public void TestTraditional()
         {
-            CheckBuckets("zh_Hant", traditionalNames, ULocale.ENGLISH, "\u4e9f", "\u5357\u9580");
+            CheckBuckets("zh_Hant", traditionalNames, new UCultureInfo("en"), "\u4e9f", "\u5357\u9580");
         }
 
         internal static readonly String[] SimpleTests = {
@@ -1008,7 +1005,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestHaniFirst()
         {
-            RuleBasedCollator coll = (RuleBasedCollator)Collator.GetInstance(ULocale.ROOT);
+            RuleBasedCollator coll = (RuleBasedCollator)Collator.GetInstance(UCultureInfo.InvariantCulture);
             coll.SetReorderCodes(UScript.Han);
             AlphabeticIndex<object> index = new AlphabeticIndex<object>(coll);
             assertEquals("getBucketCount()", 1, index.BucketCount);   // ... (underflow only)
@@ -1033,7 +1030,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestPinyinFirst()
         {
-            RuleBasedCollator coll = (RuleBasedCollator)Collator.GetInstance(ULocale.CHINESE);
+            RuleBasedCollator coll = (RuleBasedCollator)Collator.GetInstance(new UCultureInfo("zh"));
             coll.SetReorderCodes(UScript.Han);
             AlphabeticIndex<object> index = new AlphabeticIndex<object>(coll);
             assertEquals("getBucketCount()", 28, index.BucketCount);   // ... A-Z ...
@@ -1058,7 +1055,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestSchSt()
         {
-            AlphabeticIndex<object> index = new AlphabeticIndex<object>(ULocale.GERMAN);
+            AlphabeticIndex<object> index = new AlphabeticIndex<object>(new UCultureInfo("de"));
             index.AddLabels(new UnicodeSet("[Æ{Sch*}{St*}]"));
             // ... A Æ B-R S Sch St T-Z ...
             var immIndex = index.BuildImmutableIndex();
@@ -1102,7 +1099,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestNoLabels()
         {
-            RuleBasedCollator coll = (RuleBasedCollator)Collator.GetInstance(ULocale.ROOT);
+            RuleBasedCollator coll = (RuleBasedCollator)Collator.GetInstance(UCultureInfo.InvariantCulture);
             AlphabeticIndex<int> index = new AlphabeticIndex<int>(coll);
             index.AddRecord("\u897f", 0);
             index.AddRecord("i", 0);
@@ -1120,7 +1117,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestChineseZhuyin()
         {
-            AlphabeticIndex<object> index = new AlphabeticIndex<object>(ULocale.ForLanguageTag("zh-u-co-zhuyin"));
+            AlphabeticIndex<object> index = new AlphabeticIndex<object>(UCultureInfo.GetCultureInfoByIetfLanguageTag("zh-u-co-zhuyin"));
             var immIndex = index.BuildImmutableIndex();
             assertEquals("getBucketCount()", 38, immIndex.BucketCount);  // ... ㄅ ㄆ ㄇ ㄈ ㄉ -- ㄩ ...
             assertEquals("label 1", "ㄅ", immIndex.GetBucket(1).Label);
@@ -1133,7 +1130,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestJapaneseKanji()
         {
-            AlphabeticIndex<object> index = new AlphabeticIndex<object>(ULocale.JAPANESE);
+            AlphabeticIndex<object> index = new AlphabeticIndex<object>(new UCultureInfo("ja"));
             ImmutableIndex<object> immIndex = index.BuildImmutableIndex();
             // There are no index characters for Kanji in the Japanese standard collator.
             // They should all go into the overflow bucket.
@@ -1150,7 +1147,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestFrozenCollator()
         {
             // Ticket #9472
-            RuleBasedCollator coll = (RuleBasedCollator)Collator.GetInstance(new ULocale("da"));
+            RuleBasedCollator coll = (RuleBasedCollator)Collator.GetInstance(new UCultureInfo("da"));
             coll.Strength = (Collator.Identical);
             coll.Freeze();
             // The AlphabeticIndex constructor used to throw an exception
@@ -1164,7 +1161,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestChineseUnihan()
         {
-            AlphabeticIndex<object> index = new AlphabeticIndex<object>(new ULocale("zh-u-co-unihan"));
+            AlphabeticIndex<object> index = new AlphabeticIndex<object>(new UCultureInfo("zh-u-co-unihan"));
             index.SetMaxLabelCount(500);  // ICU 54 default is 99.
             assertEquals("getMaxLabelCount()", 500, index.MaxLabelCount);  // code coverage
             ImmutableIndex<object> immIndex = index.BuildImmutableIndex();
@@ -1194,9 +1191,9 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestAddLabels_Locale()
         {
-            AlphabeticIndex<string> ulocaleIndex = new AlphabeticIndex<String>(ULocale.CANADA);
+            AlphabeticIndex<string> ulocaleIndex = new AlphabeticIndex<String>(new UCultureInfo("en_CA"));
             AlphabeticIndex<string> localeIndex = new AlphabeticIndex<String>(new CultureInfo("en-CA") /* Locale.CANADA */);
-            ulocaleIndex.AddLabels(ULocale.SIMPLIFIED_CHINESE);
+            ulocaleIndex.AddLabels(new UCultureInfo("zh_Hans") /* ULocale.SIMPLIFIED_CHINESE */);
             localeIndex.AddLabels(new CultureInfo("zh-Hans") /*  Locale.SIMPLIFIED_CHINESE */);
             assertEquals("getBucketLables() results of ulocaleIndex and localeIndex differ",
                     ulocaleIndex.GetBucketLabels(), localeIndex.GetBucketLabels());
@@ -1206,14 +1203,14 @@ namespace ICU4N.Dev.Test.Collate
         public void TestGetRecordCount_empty()
         {
             assertEquals("Record count of empty index not 0", 0,
-                    new AlphabeticIndex<String>(ULocale.CANADA).RecordCount);
+                    new AlphabeticIndex<String>(new UCultureInfo("en_CA")).RecordCount);
         }
 
         [Test]
         public void TestGetRecordCount_withRecords()
         {
             assertEquals("Record count of index with one record not 1", 1,
-                    new AlphabeticIndex<String>(ULocale.CANADA).AddRecord("foo", null).RecordCount);
+                    new AlphabeticIndex<String>(new UCultureInfo("en_CA")).AddRecord("foo", null).RecordCount);
         }
 
         /**
@@ -1223,8 +1220,8 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestFlowLabels()
         {
-            AlphabeticIndex<string> index = new AlphabeticIndex<string>(ULocale.ENGLISH)
-                    .AddLabels(ULocale.ForLanguageTag("ru"));
+            AlphabeticIndex<string> index = new AlphabeticIndex<string>(new UCultureInfo("en"))
+                    .AddLabels(UCultureInfo.GetCultureInfoByIetfLanguageTag("ru"));
             index.SetUnderflowLabel("underflow");
             index.SetOverflowLabel("overflow");
             index.SetInflowLabel("inflow");

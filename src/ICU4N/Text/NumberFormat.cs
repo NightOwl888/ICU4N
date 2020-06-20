@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Util;
@@ -490,7 +491,7 @@ namespace ICU4N.Text
         //Bug 4408066 [Richard/GCL]
         public static NumberFormat GetInstance()
         {
-            return GetInstance(ULocale.GetDefault(ULocale.Category.FORMAT), NumberFormatStyle.NumberStyle);
+            return GetInstance(UCultureInfo.CurrentCulture, NumberFormatStyle.NumberStyle);
         }
 
         /**
@@ -502,7 +503,7 @@ namespace ICU4N.Text
          */
         public static NumberFormat GetInstance(CultureInfo inLocale)
         {
-            return GetInstance(ULocale.ForLocale(inLocale), NumberFormatStyle.NumberStyle);
+            return GetInstance(inLocale.ToUCultureInfo(), NumberFormatStyle.NumberStyle);
         }
 
         /**
@@ -512,7 +513,7 @@ namespace ICU4N.Text
          * Exactly which one is locale-dependent.
          * @stable ICU 3.2
          */
-        public static NumberFormat GetInstance(ULocale inLocale)
+        public static NumberFormat GetInstance(UCultureInfo inLocale)
         {
             return GetInstance(inLocale, NumberFormatStyle.NumberStyle);
         }
@@ -525,7 +526,7 @@ namespace ICU4N.Text
          */
         public static NumberFormat GetInstance(NumberFormatStyle style)
         {
-            return GetInstance(ULocale.GetDefault(ULocale.Category.FORMAT), style);
+            return GetInstance(UCultureInfo.CurrentCulture, style);
         }
 
         /**
@@ -536,7 +537,7 @@ namespace ICU4N.Text
          */
         public static NumberFormat GetInstance(CultureInfo inLocale, NumberFormatStyle style)
         {
-            return GetInstance(ULocale.ForLocale(inLocale), style);
+            return GetInstance(inLocale.ToUCultureInfo(), style);
         }
 
 
@@ -547,7 +548,7 @@ namespace ICU4N.Text
          */
         public static NumberFormat GetNumberInstance()
         {
-            return GetInstance(ULocale.GetDefault(ULocale.Category.FORMAT), NumberFormatStyle.NumberStyle);
+            return GetInstance(UCultureInfo.CurrentCulture, NumberFormatStyle.NumberStyle);
         }
 
         /**
@@ -556,14 +557,14 @@ namespace ICU4N.Text
          */
         public static NumberFormat GetNumberInstance(CultureInfo inLocale)
         {
-            return GetInstance(ULocale.ForLocale(inLocale), NumberFormatStyle.NumberStyle);
+            return GetInstance(inLocale.ToUCultureInfo(), NumberFormatStyle.NumberStyle);
         }
 
         /**
          * {@icu} Returns a general-purpose number format for the specified locale.
          * @stable ICU 3.2
          */
-        public static NumberFormat GetNumberInstance(ULocale inLocale)
+        public static NumberFormat GetNumberInstance(UCultureInfo inLocale)
         {
             return GetInstance(inLocale, NumberFormatStyle.NumberStyle);
         }
@@ -583,7 +584,7 @@ namespace ICU4N.Text
         //Bug 4408066 [Richard/GCL]
         public static NumberFormat GetIntegerInstance()
         {
-            return GetInstance(ULocale.GetDefault(ULocale.Category.FORMAT), NumberFormatStyle.IntegerStyle);
+            return GetInstance(UCultureInfo.CurrentCulture, NumberFormatStyle.IntegerStyle);
         }
 
         /**
@@ -601,7 +602,7 @@ namespace ICU4N.Text
         //Bug 4408066 [Richard/GCL]
         public static NumberFormat GetIntegerInstance(CultureInfo inLocale)
         {
-            return GetInstance(ULocale.ForLocale(inLocale), NumberFormatStyle.IntegerStyle);
+            return GetInstance(inLocale.ToUCultureInfo(), NumberFormatStyle.IntegerStyle);
         }
 
         /**
@@ -616,7 +617,7 @@ namespace ICU4N.Text
          * @return a number format for integer values
          * @stable ICU 3.2
          */
-        public static NumberFormat GetIntegerInstance(ULocale inLocale)
+        public static NumberFormat GetIntegerInstance(UCultureInfo inLocale)
         {
             return GetInstance(inLocale, NumberFormatStyle.IntegerStyle);
         }
@@ -629,7 +630,7 @@ namespace ICU4N.Text
          */
         public static NumberFormat GetCurrencyInstance()
         {
-            return GetInstance(ULocale.GetDefault(ULocale.Category.FORMAT), NumberFormatStyle.CurrencyStyle);
+            return GetInstance(UCultureInfo.CurrentCulture, NumberFormatStyle.CurrencyStyle);
         }
 
         /**
@@ -639,7 +640,7 @@ namespace ICU4N.Text
          */
         public static NumberFormat GetCurrencyInstance(CultureInfo inLocale)
         {
-            return GetInstance(ULocale.ForLocale(inLocale), NumberFormatStyle.CurrencyStyle);
+            return GetInstance(inLocale.ToUCultureInfo(), NumberFormatStyle.CurrencyStyle);
         }
 
         /**
@@ -647,7 +648,7 @@ namespace ICU4N.Text
          * @return a number format for currency
          * @stable ICU 3.2
          */
-        public static NumberFormat GetCurrencyInstance(ULocale inLocale)
+        public static NumberFormat GetCurrencyInstance(UCultureInfo inLocale)
         {
             return GetInstance(inLocale, NumberFormatStyle.CurrencyStyle);
         }
@@ -660,7 +661,7 @@ namespace ICU4N.Text
          */
         public static NumberFormat GetPercentInstance()
         {
-            return GetInstance(ULocale.GetDefault(ULocale.Category.FORMAT), NumberFormatStyle.PercentStyle);
+            return GetInstance(UCultureInfo.CurrentCulture, NumberFormatStyle.PercentStyle);
         }
 
         /**
@@ -670,7 +671,7 @@ namespace ICU4N.Text
          */
         public static NumberFormat GetPercentInstance(CultureInfo inLocale)
         {
-            return GetInstance(ULocale.ForLocale(inLocale), NumberFormatStyle.PercentStyle);
+            return GetInstance(inLocale.ToUCultureInfo(), NumberFormatStyle.PercentStyle);
         }
 
         /**
@@ -678,7 +679,7 @@ namespace ICU4N.Text
          * @return a number format for percents
          * @stable ICU 3.2
          */
-        public static NumberFormat GetPercentInstance(ULocale inLocale)
+        public static NumberFormat GetPercentInstance(UCultureInfo inLocale)
         {
             return GetInstance(inLocale, NumberFormatStyle.PercentStyle);
         }
@@ -691,7 +692,7 @@ namespace ICU4N.Text
          */
         public static NumberFormat GetScientificInstance()
         {
-            return GetInstance(ULocale.GetDefault(ULocale.Category.FORMAT), NumberFormatStyle.ScientificStyle);
+            return GetInstance(UCultureInfo.CurrentCulture, NumberFormatStyle.ScientificStyle);
         }
 
         /**
@@ -701,7 +702,7 @@ namespace ICU4N.Text
          */
         public static NumberFormat GetScientificInstance(CultureInfo inLocale)
         {
-            return GetInstance(ULocale.ForLocale(inLocale), NumberFormatStyle.ScientificStyle);
+            return GetInstance(inLocale.ToUCultureInfo(), NumberFormatStyle.ScientificStyle);
         }
 
         /**
@@ -709,7 +710,7 @@ namespace ICU4N.Text
          * @return a scientific number format
          * @stable ICU 3.2
          */
-        public static NumberFormat GetScientificInstance(ULocale inLocale)
+        public static NumberFormat GetScientificInstance(UCultureInfo inLocale)
         {
             return GetInstance(inLocale, NumberFormatStyle.ScientificStyle);
         }
@@ -722,11 +723,11 @@ namespace ICU4N.Text
         // shim so we can build without service code
         internal abstract class NumberFormatShim
         {
-            internal abstract CultureInfo[] GetAvailableLocales();
-            internal abstract ULocale[] GetAvailableULocales();
+            internal abstract CultureInfo[] GetAvailableLocales(); // ICU4N TODO: API - Rename GetCultures() and add CultureTypes enum
+            internal abstract UCultureInfo[] GetAvailableULocales(); // ICU4N TODO: API - Rename GetCultures() and add CultureTypes enum
             internal abstract object RegisterFactory(NumberFormatFactory f);
             internal abstract bool Unregister(object k);
-            internal abstract NumberFormat CreateInstance(ULocale l, NumberFormatStyle k);
+            internal abstract NumberFormat CreateInstance(UCultureInfo l, NumberFormatStyle k);
         }
 
         private static NumberFormatShim shim;
@@ -766,7 +767,7 @@ namespace ICU4N.Text
          * @return the available locales
          * @stable ICU 2.0
          */
-        public static CultureInfo[] GetAvailableLocales()
+        public static CultureInfo[] GetAvailableLocales() // ICU4N TODO: Rename GetCultures() and add CultureTypes filter
         {
             if (shim == null)
             {
@@ -781,11 +782,11 @@ namespace ICU4N.Text
          * @draft ICU 3.2 (retain)
          * @provisional This API might change or be removed in a future release.
          */
-        public static ULocale[] GetAvailableULocales()
+        public static UCultureInfo[] GetAvailableULocales() // ICU4N TODO: Rename GetUCultures() and add CultureTypes filter
         {
             if (shim == null)
             {
-                return ICUResourceBundle.GetAvailableULocales();
+                return ICUResourceBundle.GetAvailableUCultures();
             }
             return GetShim().GetAvailableULocales();
         }
@@ -1158,7 +1159,7 @@ namespace ICU4N.Text
          *                                   CASHCURRENCYSTYLE, STANDARDCURRENCYSTYLE.
          * @stable ICU 4.2
          */
-        public static NumberFormat GetInstance(ULocale desiredLocale, NumberFormatStyle choice)
+        public static NumberFormat GetInstance(UCultureInfo desiredLocale, NumberFormatStyle choice)
         {
             if (choice < NumberFormatStyle.NumberStyle || choice > NumberFormatStyle.StandardCurrencyStyle)
             {
@@ -1176,7 +1177,7 @@ namespace ICU4N.Text
 
         // =======================privates===============================
         // Hook for service
-        internal static NumberFormat CreateInstance(ULocale desiredLocale, int choice) // ICU4N note: choice is type NumberFormatStyle
+        internal static NumberFormat CreateInstance(UCultureInfo desiredLocale, int choice) // ICU4N note: choice is type NumberFormatStyle
         {
             // ICU4N TODO: Implementation
             throw new NotImplementedException("CreateInstance is not yet ported");
@@ -1239,7 +1240,7 @@ namespace ICU4N.Text
             //        nsRuleSetGroup = nsDesc.Substring(firstSlash + 1, lastSlash - (firstSlash + 1)); // ICU4N: Corrected 2nd arg
             //        nsRuleSetName = nsDesc.Substring(lastSlash + 1);
 
-            //        nsLoc = new ULocale(nsLocID);
+            //        nsLoc = new UCultureInfo(nsLocID);
             //        if (nsRuleSetGroup.Equals("SpelloutRules"))
             //        {
             //            desiredRulesType = RuleBasedNumberFormat.SPELLOUT;
@@ -1301,7 +1302,7 @@ namespace ICU4N.Text
         [Obsolete("ICU 3.4 subclassers should override GetPattern(ULocale, int) instead of this method.")]
         protected static string GetPattern(CultureInfo forLocale, NumberFormatStyle choice)
         {
-            return GetPattern(ULocale.ForLocale(forLocale), choice);
+            return GetPattern(forLocale.ToUCultureInfo(), choice);
         }
 
         /**
@@ -1311,7 +1312,7 @@ namespace ICU4N.Text
          * @return the pattern
          * @stable ICU 3.2
          */
-        protected static string GetPattern(ULocale forLocale, NumberFormatStyle choice)
+        protected static string GetPattern(UCultureInfo forLocale, NumberFormatStyle choice)
         {
 #pragma warning disable 612, 618
             return GetPatternForStyle(forLocale, choice);
@@ -1327,7 +1328,7 @@ namespace ICU4N.Text
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
-        public static string GetPatternForStyle(ULocale forLocale, NumberFormatStyle choice)
+        public static string GetPatternForStyle(UCultureInfo forLocale, NumberFormatStyle choice)
         {
             NumberingSystem ns = NumberingSystem.GetInstance(forLocale);
             string nsName = ns.Name;
@@ -1344,7 +1345,7 @@ namespace ICU4N.Text
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
-        public static string GetPatternForStyleAndNumberingSystem(ULocale forLocale, string nsName, NumberFormatStyle choice)
+        public static string GetPatternForStyleAndNumberingSystem(UCultureInfo forLocale, string nsName, NumberFormatStyle choice)
         {
             /* for ISOCURRENCYSTYLE and PLURALCURRENCYSTYLE,
              * the pattern is the same as the pattern of CURRENCYSTYLE
@@ -1360,8 +1361,8 @@ namespace ICU4N.Text
                     patternKey = "decimalFormat";
                     break;
                 case NumberFormatStyle.CurrencyStyle:
-                    string cfKeyValue = forLocale.GetKeywordValue("cf");
-                    patternKey = (cfKeyValue != null && cfKeyValue.Equals("account")) ?
+                    patternKey = (forLocale.Keywords.TryGetValue("cf", out string cfKeyValue)
+                        && cfKeyValue != null && cfKeyValue.Equals("account")) ?
                             "accountingFormat" : "currencyFormat";
                     break;
                 case NumberFormatStyle.CashCurrencyStyle:
@@ -1763,8 +1764,8 @@ namespace ICU4N.Text
     /// locales already supported by ICU.
     /// <para/>
     /// <b>Note:</b> as of ICU4J 3.2, the default API for <see cref="NumberFormatFactory"/> uses
-    /// <see cref="ULocale"/> instead of <see cref="CultureInfo"/>.  Instead of overriding <see cref="CreateFormat(CultureInfo, int)"/>,
-    /// new implementations should override <see cref="CreateFormat(ULocale, int)"/>.  Note that
+    /// <see cref="UCultureInfo"/> instead of <see cref="CultureInfo"/>. Instead of overriding <see cref="CreateFormat(CultureInfo, int)"/>,
+    /// new implementations should override <see cref="CreateFormat(UCultureInfo, int)"/>. Note that
     /// one of these two methods <b>MUST</b> be overridden or else an infinite
     /// loop will occur.
     /// </summary>
@@ -1829,9 +1830,9 @@ namespace ICU4N.Text
         /// <param name="formatType">the type of format</param>
         /// <returns>The <see cref="NumberFormat"/>, or null.</returns>
         /// <stable>ICU 3.2</stable>
-        public virtual NumberFormat CreateFormat(ULocale loc, int formatType)
+        public virtual NumberFormat CreateFormat(UCultureInfo loc, int formatType)
         {
-            return CreateFormat(loc.ToLocale(), formatType);
+            return CreateFormat(loc.ToCultureInfo(), formatType);
         }
 
         /// <summary>
@@ -1839,7 +1840,7 @@ namespace ICU4N.Text
         /// is not supported, return null.  If the locale is supported, but
         /// the type is not provided by this service, return null.  Otherwise
         /// return an appropriate instance of <see cref="NumberFormat"/>.
-        /// <b>Note:</b> as of ICU4J 3.2, <see cref="CreateFormat(ULocale, int)"/> should be
+        /// <b>Note:</b> as of ICU4J 3.2, <see cref="CreateFormat(UCultureInfo, int)"/> should be
         /// overridden instead of this method.  This method is no longer
         /// abstract and delegates to that method.
         /// </summary>
@@ -1849,7 +1850,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.6</stable>
         public virtual NumberFormat CreateFormat(CultureInfo loc, int formatType)
         {
-            return CreateFormat(ULocale.ForLocale(loc), formatType);
+            return CreateFormat(loc.ToUCultureInfo(), formatType);
         }
 
         /// <stable>ICU 2.6</stable>
@@ -1883,7 +1884,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.6</stable>
         public SimpleNumberFormatFactory(CultureInfo locale, bool visible)
         {
-            localeNames = new string[] { ULocale.ForLocale(locale).GetBaseName() };
+            localeNames = new string[] { locale.ToUCultureInfo().Name };
             this.visible = visible;
         }
 
@@ -1891,7 +1892,7 @@ namespace ICU4N.Text
         /// Constructs a <see cref="SimpleNumberFormatFactory"/> with the given locale.
         /// </summary>
         /// <stable>ICU 3.2</stable>
-        public SimpleNumberFormatFactory(ULocale locale)
+        public SimpleNumberFormatFactory(UCultureInfo locale)
             : this(locale, true)
         {
         }
@@ -1901,10 +1902,10 @@ namespace ICU4N.Text
         /// visibility.
         /// </summary>
         /// <stable>ICU 3.2</stable>
-        public SimpleNumberFormatFactory(ULocale locale, bool visible)
+        public SimpleNumberFormatFactory(UCultureInfo locale, bool visible)
         {
             //localeNames = Collections.singleton(locale.getBaseName());
-            localeNames = new string[] { locale.GetBaseName() };
+            localeNames = new string[] { locale.Name };
             this.visible = visible;
         }
 

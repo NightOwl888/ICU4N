@@ -11,6 +11,7 @@ using System.Threading;
 using StringBuffer = System.Text.StringBuilder;
 using J2N.Collections;
 using J2N.Collections.Generic.Extensions;
+using ICU4N.Globalization;
 
 namespace ICU4N.Dev.Test.Util
 {
@@ -42,39 +43,39 @@ namespace ICU4N.Dev.Test.Util
         }
 
         /**
-         * Convenience override of getDisplayNames(ULocale, Comparator, string) that
-         * uses the current default ULocale as the locale, the default collator for
+         * Convenience override of getDisplayNames(UCultureInfo, Comparator, string) that
+         * uses the current default UCultureInfo as the locale, the default collator for
          * the locale as the comparator to sort the display names, and null for
          * the matchID.
          */
         public IDictionary<string, string> GetDisplayNames(ICUService service)
         {
-            ULocale locale = ULocale.GetDefault();
+            UCultureInfo locale = UCultureInfo.CurrentCulture;
             //Collator col = Collator.getInstance(locale.toLocale());
-            CompareInfo col = CompareInfo.GetCompareInfo(locale.ToLocale().Name);
+            CompareInfo col = CompareInfo.GetCompareInfo(locale.ToCultureInfo().Name);
             return service.GetDisplayNames(locale, col, null);
         }
 
         /**
-         * Convenience override of getDisplayNames(ULocale, Comparator, string) that
+         * Convenience override of getDisplayNames(UCultureInfo, Comparer, string) that
          * uses the default collator for the locale as the comparator to
          * sort the display names, and null for the matchID.
          */
-        public IDictionary<string, string> GetDisplayNames(ICUService service, ULocale locale)
+        public IDictionary<string, string> GetDisplayNames(ICUService service, UCultureInfo locale)
         {
             //Collator col = Collator.getInstance(locale.toLocale());
-            CompareInfo col = CompareInfo.GetCompareInfo(locale.ToLocale().Name);
+            CompareInfo col = CompareInfo.GetCompareInfo(locale.ToCultureInfo().Name);
             return service.GetDisplayNames(locale, col, null);
         }
         /**
-         * Convenience override of getDisplayNames(ULocale, Comparator, string) that
+         * Convenience override of getDisplayNames(UCultureInfo, Comparer, string) that
          * uses the default collator for the locale as the comparator to
          * sort the display names.
          */
-        public IDictionary<string, string> GetDisplayNames(ICUService service, ULocale locale, string matchID)
+        public IDictionary<string, string> GetDisplayNames(ICUService service, UCultureInfo locale, string matchID)
         {
             //Collator col = Collator.getInstance(locale.toLocale());
-            CompareInfo col = CompareInfo.GetCompareInfo(locale.ToLocale().Name);
+            CompareInfo col = CompareInfo.GetCompareInfo(locale.ToCultureInfo().Name);
             return service.GetDisplayNames(locale, col, matchID);
         }
 
@@ -95,11 +96,11 @@ namespace ICU4N.Dev.Test.Util
         private class AnonymousFactory : IServiceFactory
         {
             private readonly Func<ICUServiceKey, ICUService, object> create;
-            private readonly Func<string, ULocale, string> getDisplayName;
+            private readonly Func<string, UCultureInfo, string> getDisplayName;
             private readonly Action<IDictionary<string, IServiceFactory>> updateVisibleIds;
 
             public AnonymousFactory(Func<ICUServiceKey, ICUService, object> create,
-                Func<string, ULocale, string> getDisplayName, Action<IDictionary<string, IServiceFactory>> updateVisibleIds)
+                Func<string, UCultureInfo, string> getDisplayName, Action<IDictionary<string, IServiceFactory>> updateVisibleIds)
             {
                 this.create = create;
                 this.getDisplayName = getDisplayName;
@@ -108,10 +109,10 @@ namespace ICU4N.Dev.Test.Util
 
             public object Create(ICUServiceKey key, ICUService service)
             {
-                return create != null ? create(key, service) : new ULocale(key.CurrentID);
+                return create != null ? create(key, service) : new UCultureInfo(key.CurrentID);
             }
 
-            public string GetDisplayName(string id, ULocale locale)
+            public string GetDisplayName(string id, UCultureInfo locale)
             {
                 return getDisplayName != null ? getDisplayName(id, locale) : string.Empty;
             }
@@ -238,7 +239,7 @@ namespace ICU4N.Dev.Test.Util
             //    @Override
             //    public object create(Key key, ICUService unusedService)
             //    {
-            //        return new ULocale(key.currentID());
+            //        return new UCultureInfo(key.currentID());
             //    }
 
             //    @Override
@@ -247,7 +248,7 @@ namespace ICU4N.Dev.Test.Util
             //    }
 
             //    @Override
-            //        public string getDisplayName(string id, ULocale l)
+            //        public string getDisplayName(string id, UCultureInfo l)
             //    {
             //        return null;
             //    }
@@ -255,16 +256,16 @@ namespace ICU4N.Dev.Test.Util
 
             {
                 // an anonymous factory than handles all ids
-                IServiceFactory factory = new AnonymousFactory(null, null, null);
+                IServiceFactory factory = new AnonymousFactory(null, (Func<string, UCultureInfo, string>)null, null);
                 service.RegisterFactory(factory);
 
                 // anonymous factory will still handle the id
-                result = service.Get(ULocale.US.ToString());
-                confirmEqual("21) locale", result, ULocale.US);
+                result = service.Get(new UCultureInfo("en_US").ToString());
+                confirmEqual("21) locale", result, new UCultureInfo("en_US"));
 
                 // still normalizes id
                 result = service.Get("EN_US_BAR");
-                confirmEqual("22) locale", result, new ULocale("en_US_BAR"));
+                confirmEqual("22) locale", result, new UCultureInfo("en_US_BAR"));
 
                 // we can override for particular ids
                 service.RegisterObject(singleton3, "en_US_BAR");
@@ -305,7 +306,7 @@ namespace ICU4N.Dev.Test.Util
 
             // iterate over the display names
             {
-                var dids = GetDisplayNames(service, ULocale.GERMANY);
+                var dids = GetDisplayNames(service, new UCultureInfo("de"));
                 var iter = dids.GetEnumerator();
                 int count = 0;
                 while (iter.MoveNext())
@@ -322,7 +323,7 @@ namespace ICU4N.Dev.Test.Util
             confirmIdentical("27) get display name", service.GetDisplayName("en_US_VALLEY_GEEK"), null);
 
             {
-                string name = service.GetDisplayName("en_US_SURFER_DUDE", ULocale.US);
+                string name = service.GetDisplayName("en_US_SURFER_DUDE", new UCultureInfo("en_US"));
                 confirmEqual("28) get display name", name, "English (United States, SURFER_DUDE)");
             }
 
@@ -359,11 +360,11 @@ namespace ICU4N.Dev.Test.Util
                 if (gal != null)
                 {
                     Logln("actual id: " + actualID[0]);
-                    string displayName = service.GetDisplayName(actualID[0], ULocale.US);
+                    string displayName = service.GetDisplayName(actualID[0], new UCultureInfo("en_US"));
                     Logln("found actual: " + gal + " with display name: " + displayName);
                     confirmBoolean("30) found display name for actual", displayName != null);
 
-                    displayName = service.GetDisplayName(id, ULocale.US);
+                    displayName = service.GetDisplayName(id, new UCultureInfo("en_US"));
                     Logln("found query: " + gal + " with display name: " + displayName);
                     // this is no longer a bug, we want to return display names for anything
                     // that a factory handles.  since we handle it, we should return a display
@@ -380,11 +381,11 @@ namespace ICU4N.Dev.Test.Util
                 string bozo = (string)service.Get(id, actualID);
                 if (bozo != null)
                 {
-                    string displayName = service.GetDisplayName(actualID[0], ULocale.US);
+                    string displayName = service.GetDisplayName(actualID[0], new UCultureInfo("en_US"));
                     Logln("found actual: " + bozo + " with display name: " + displayName);
                     confirmBoolean("32) found display name for actual", displayName != null);
 
-                    displayName = service.GetDisplayName(id, ULocale.US);
+                    displayName = service.GetDisplayName(id, new UCultureInfo("en_US"));
                     Logln("found actual: " + bozo + " with display name: " + displayName);
                     // see above and jb3549
                     // confirmBoolean("33) found display name for query", displayName == null);
@@ -471,31 +472,23 @@ namespace ICU4N.Dev.Test.Util
             // list only the spanish display names for es, spanish collation order
             // since we're using the default Key, only "es" is matched
             {
-                Logln("display names: " + GetDisplayNames(service, new ULocale("es"), "es"));
+                Logln("display names: " + GetDisplayNames(service, new UCultureInfo("es"), "es"));
             }
 
             // list the display names in reverse order
             {
                 Logln("display names in reverse order: " +
-                    service.GetDisplayNames(ULocale.US, new AnonymousComparer<object>(compare: (lhs, rhs) =>
+                    service.GetDisplayNames(new UCultureInfo("en_US"), new AnonymousComparer<object>(compare: (lhs, rhs) =>
                     {
                         return -StringComparer.OrdinalIgnoreCase.Compare((string)lhs, (string)rhs);
                     })));
-                //                  service.GetDisplayNames(ULocale.US, new Comparator()
-                //{
-                //    @Override
-                //                        public int compare(object lhs, object rhs)
-                //    {
-                //        return -string.CASE_INSENSITIVE_ORDER.compare((string)lhs, (string)rhs);
-                //    }
-                //}));
             }
 
             // get all the display names of these resources
             // this should be fast since the display names were cached.
             {
                 Logln("service display names for de_DE");
-                var names = GetDisplayNames(service, new ULocale("de_DE"));
+                var names = GetDisplayNames(service, new UCultureInfo("de_DE"));
                 StringBuffer buf = new StringBuffer("{");
                 var iter = names.GetEnumerator();
                 while (iter.MoveNext())
@@ -525,7 +518,7 @@ namespace ICU4N.Dev.Test.Util
                 {
                     string idName = idNames[i];
                     buf.Append("\n  --- " + idName + " ---");
-                    var names = GetDisplayNames(service, new ULocale(idName));
+                    var names = GetDisplayNames(service, new UCultureInfo(idName));
                     var iter = names.GetEnumerator();
                     while (iter.MoveNext())
                     {
@@ -653,7 +646,7 @@ namespace ICU4N.Dev.Test.Util
                 this.factoryID = factoryID + ": ";
             }
 
-            protected override object HandleCreate(ULocale loc, int kind, ICUService service)
+            protected override object HandleCreate(UCultureInfo loc, int kind, ICUService service)
             {
                 return factoryID + loc.ToString();
             }
@@ -708,8 +701,8 @@ namespace ICU4N.Dev.Test.Util
         }
         }
 
-        public string getDisplayName(string id, ULocale locale) {
-        return factoryID + new ULocale(id).GetDisplayName(locale);
+        public string getDisplayName(string id, UCultureInfo locale) {
+        return factoryID + new UCultureInfo(id).GetDisplayName(locale);
         }
         }
         */
@@ -737,7 +730,7 @@ namespace ICU4N.Dev.Test.Util
                 return supportedIDs;
             }
 
-            public override string GetDisplayName(string id, ULocale locale)
+            public override string GetDisplayName(string id, UCultureInfo locale)
             {
                 string prefix = "";
                 string suffix = "";
@@ -793,17 +786,17 @@ namespace ICU4N.Dev.Test.Util
         public void TestLocale()
         {
             ICULocaleService service = new ICULocaleService("test locale");
-            service.RegisterObject("root", ULocale.ROOT);
+            service.RegisterObject("root", UCultureInfo.InvariantCulture);
             service.RegisterObject("german", "de");
-            service.RegisterObject("german_Germany", ULocale.GERMANY);
+            service.RegisterObject("german_Germany", new UCultureInfo("de_DE"));
             service.RegisterObject("japanese", "ja");
-            service.RegisterObject("japanese_Japan", ULocale.JAPAN);
+            service.RegisterObject("japanese_Japan", new UCultureInfo("ja_JP"));
 
             object target = service.Get("de_US");
             confirmEqual("test de_US", "german", target);
 
-            ULocale de = new ULocale("de");
-            ULocale de_US = new ULocale("de_US");
+            UCultureInfo de = new UCultureInfo("de");
+            UCultureInfo de_US = new UCultureInfo("de_US");
 
             target = service.Get(de_US);
             confirmEqual("test de_US 2", "german", target);
@@ -814,7 +807,7 @@ namespace ICU4N.Dev.Test.Util
             target = service.Get(de_US, 1234);
             confirmEqual("test de_US 4", "german", target);
 
-            ULocale[] actualReturn = new ULocale[1];
+            UCultureInfo[] actualReturn = new UCultureInfo[1];
             target = service.Get(de_US, actualReturn);
             confirmEqual("test de_US 5", "german", target);
             confirmEqual("test de_US 6", actualReturn[0], de);
@@ -843,7 +836,7 @@ namespace ICU4N.Dev.Test.Util
             LocaleKey lkey = LocaleKey.CreateWithCanonicalFallback("en", null, 1234);
             Logln("lkey prefix: " + lkey.Prefix);
             Logln("lkey descriptor: " + lkey.GetCurrentDescriptor());
-            Logln("lkey current locale: " + lkey.GetCurrentLocale());
+            Logln("lkey current locale: " + lkey.GetCurrentCulture());
 
             lkey.Fallback();
             Logln("lkey descriptor 2: " + lkey.GetCurrentDescriptor());
@@ -854,18 +847,18 @@ namespace ICU4N.Dev.Test.Util
             target = service.Get("za_PPP");
             confirmEqual("test zappp", "root", target);
 
-            ULocale loc = ULocale.GetDefault();
-            ULocale.SetDefault(ULocale.JAPANESE);
-            target = service.Get("za_PPP");
-            confirmEqual("test with ja locale", "japanese", target);
-
-            var ids = service.GetVisibleIDs();
-            for (var iter = ids.GetEnumerator(); iter.MoveNext();)
+            ICollection<string> ids;
+            using (new ThreadCultureChange("ja", "ja"))
             {
-                Logln("id: " + iter.Current);
-            }
+                target = service.Get("za_PPP");
+                confirmEqual("test with ja locale", "japanese", target);
 
-            ULocale.SetDefault(loc);
+                ids = service.GetVisibleIDs();
+                for (var iter = ids.GetEnumerator(); iter.MoveNext();)
+                {
+                    Logln("id: " + iter.Current);
+                }
+            }
             ids = service.GetVisibleIDs();
             for (var iter = ids.GetEnumerator(); iter.MoveNext();)
             {
@@ -875,7 +868,7 @@ namespace ICU4N.Dev.Test.Util
             target = service.Get("za_PPP");
             confirmEqual("test with en locale", "root", target);
 
-            ULocale[] locales = service.GetAvailableULocales();
+            UCultureInfo[] locales = service.GetUCultures();
             confirmIdentical("test available locales", locales.Length, 6);
             Logln("locales: ");
             for (int i = 0; i < locales.Length; ++i)
@@ -885,7 +878,7 @@ namespace ICU4N.Dev.Test.Util
             Logln(" ");
 
             service.RegisterFactory(new ICUResourceBundleFactory());
-            target = service.Get(ULocale.JAPAN);
+            target = service.Get(new UCultureInfo("ja_JP"));
 
             {
                 int n = 0;
@@ -901,7 +894,7 @@ namespace ICU4N.Dev.Test.Util
             // since we're using locale keys, we should get all and only the es locales
             // hmmm, the default toString function doesn't print in sorted order for TreeMap
             {
-                var map = service.GetDisplayNames(ULocale.US,
+                var map = service.GetDisplayNames(new UCultureInfo("en_US"),
                     new AnonymousComparer<object>(compare: (lhs, rhs) =>
                     {
                         return -StringComparer.OrdinalIgnoreCase.Compare((string)lhs, (string)rhs);
@@ -943,7 +936,7 @@ namespace ICU4N.Dev.Test.Util
                 result["greeting"] = this;
             }
 
-            public string GetDisplayName(string id, ULocale locale)
+            public string GetDisplayName(string id, UCultureInfo locale)
             {
                 return "wrap '" + id + "'";
             }
@@ -993,7 +986,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 Errln("threw wrong exception" + e);
             }
-            Logln(sf.GetDisplayName("object", null));
+            Logln(sf.GetDisplayName("object", (UCultureInfo)null));
 
             // ICUService
             ICUService service = new ICUService();
@@ -1099,14 +1092,14 @@ namespace ICU4N.Dev.Test.Util
             LocaleKeyFactory lkf = new LKFSubclass(false);
             Logln("lkf: " + lkf);
             Logln("obj: " + lkf.Create(lkey, null));
-            Logln(lkf.GetDisplayName("foo", null));
-            Logln(lkf.GetDisplayName("bar", null));
+            Logln(lkf.GetDisplayName("foo", (UCultureInfo)null));
+            Logln(lkf.GetDisplayName("bar", (UCultureInfo)null));
             lkf.UpdateVisibleIDs(new Dictionary<string, IServiceFactory>());
 
             LocaleKeyFactory invisibleLKF = new LKFSubclass(false);
             Logln("obj: " + invisibleLKF.Create(lkey, null));
-            Logln(invisibleLKF.GetDisplayName("foo", null));
-            Logln(invisibleLKF.GetDisplayName("bar", null));
+            Logln(invisibleLKF.GetDisplayName("foo", (UCultureInfo)null));
+            Logln(invisibleLKF.GetDisplayName("bar", (UCultureInfo)null));
             invisibleLKF.UpdateVisibleIDs(new Dictionary<string, IServiceFactory>());
 
             // ResourceBundleFactory

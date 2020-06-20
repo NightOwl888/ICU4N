@@ -1,7 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Support.Collections;
 using ICU4N.Text;
-using ICU4N.Util;
 using J2N.Collections.Generic.Extensions;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,6 @@ namespace ICU4N.Impl
     public interface ICurrencyDisplayInfoProvider
     {
         CurrencyDisplayInfo GetInstance(UCultureInfo locale, bool withFallback);
-        CurrencyDisplayInfo GetInstance(ULocale locale, bool withFallback);
         bool HasData { get; }
     }
 
@@ -156,12 +154,7 @@ namespace ICU4N.Impl
             get { return new Dictionary<string, string>().AsReadOnly(); }
         }
 
-        public override ULocale ULocale // ICU4N TODO: API - Remove
-        {
-            get { return ULocale.ROOT; }
-        }
-
-        public override UCultureInfo UCultureInfo
+        public override UCultureInfo UCulture
             => UCultureInfo.InvariantCulture;
 
         public override IDictionary<string, string> GetUnitPatterns()
@@ -221,11 +214,6 @@ namespace ICU4N.Impl
             public bool HasData => false;
 
             public CurrencyDisplayInfo GetInstance(UCultureInfo locale, bool withFallback)
-            {
-                return DefaultCurrencyDisplayInfo.GetWithFallback(withFallback);
-            }
-
-            public CurrencyDisplayInfo GetInstance(ULocale locale, bool withFallback) // ICU4N TODO: API - remove
             {
                 return DefaultCurrencyDisplayInfo.GetWithFallback(withFallback);
             }

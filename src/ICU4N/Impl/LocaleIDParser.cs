@@ -1,11 +1,9 @@
 ﻿using ICU4N.Impl.Locale;
 using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
 using J2N.Collections.Generic.Extensions;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace ICU4N.Impl
@@ -710,18 +708,7 @@ namespace ICU4N.Impl
             return new string(id, start, index - start).Trim(); // leave case alone
         }
 
-        private class KeyComparer : IComparer<string>
-        {
-            public int Compare(string lhs, string rhs)
-            {
-                return lhs.CompareToOrdinal(rhs);
-            }
-        }
-
-        private IComparer<string> GetKeyComparer()
-        {
-            return new KeyComparer();
-        }
+        private static IComparer<string> KeyComparer { get; } = StringComparer.OrdinalIgnoreCase;
 
         /// <summary>
         /// Returns a map of the keywords and values, or null if there are none.
@@ -769,7 +756,7 @@ namespace ICU4N.Impl
                         }
                         if (m == null)
                         {
-                            m = new SortedDictionary<string, string>(GetKeyComparer());
+                            m = new SortedDictionary<string, string>(KeyComparer);
                         }
                         else if (m.ContainsKey(key))
                         {
@@ -779,7 +766,7 @@ namespace ICU4N.Impl
                         m[key] = value;
                     } while (Next() == ITEM_SEPARATOR);
                 }
-                keywords = m ?? new Dictionary<string, string>();
+                keywords = m ?? new Dictionary<string, string>().AsReadOnly();
             }
 
             return keywords;
@@ -877,8 +864,10 @@ namespace ICU4N.Impl
                     if (value != null)
                     {
                         // force new map
-                        keywords = new SortedDictionary<string, string>(GetKeyComparer());
-                        keywords[keywordName] = value.Trim();
+                        keywords = new SortedDictionary<string, string>(KeyComparer)
+                        {
+                            [keywordName] = value.Trim()
+                        };
                     }
                 }
                 else
@@ -895,7 +884,7 @@ namespace ICU4N.Impl
                             if (m.Count == 0)
                             {
                                 // force new map
-                                keywords = new Dictionary<string, string>();
+                                keywords = new Dictionary<string, string>().AsReadOnly();
                             }
                         }
                     }

@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Text;
@@ -6,6 +7,7 @@ using J2N.Threading;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using StringBuffer = System.Text.StringBuilder;
@@ -42,7 +44,7 @@ namespace ICU4N.Dev.Test.Rbbi
                };
             String text = new String(ctext);
 
-            ULocale locale = ULocale.CreateCanonical("th");
+            UCultureInfo locale = UCultureInfo.CreateCanonical("th");
             BreakIterator b = BreakIterator.GetWordInstance(locale);
 
             b.SetText(text);
@@ -78,7 +80,7 @@ namespace ICU4N.Dev.Test.Rbbi
             int[] expectedLineResult = {
                3, 6, 11, 15, 17, 20, 22
        };
-            BreakIterator brk = BreakIterator.GetWordInstance(new ULocale("th"));
+            BreakIterator brk = BreakIterator.GetWordInstance(new UCultureInfo("th"));
             brk.SetText(new String(text2));
             position = index = 0;
             while ((position = brk.Next()) != BreakIterator.Done && position < text2.Length)
@@ -89,7 +91,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 }
             }
 
-            brk = BreakIterator.GetLineInstance(new ULocale("th"));
+            brk = BreakIterator.GetLineInstance(new UCultureInfo("th"));
             brk.SetText(new String(text2));
             position = index = 0;
             while ((position = brk.Next()) != BreakIterator.Done && position < text2.Length)
@@ -118,10 +120,10 @@ namespace ICU4N.Dev.Test.Rbbi
         internal class TBItem
         {
             private int type;
-            private ULocale locale;
+            private UCultureInfo locale;
             private String text;
             private int[] expectOffsets;
-            internal TBItem(int typ, ULocale loc, String txt, int[] eOffs)
+            internal TBItem(int typ, UCultureInfo loc, String txt, int[] eOffs)
             {
                 type = typ;
                 locale = loc;
@@ -225,10 +227,10 @@ namespace ICU4N.Dev.Test.Rbbi
             //                                29,     32, 33, 35, 37, 38,     40, 41 };
 
             TBItem[] tests = {
-            new TBItem(BreakIterator.KIND_SENTENCE,  new ULocale("el"),          elSentText,   elSentTOffsets   ),
-            new TBItem(BreakIterator.KIND_SENTENCE, ULocale.ROOT, elSentText, elSentROffsets   ),
-            new TBItem(BreakIterator.KIND_CHARACTER, new ULocale("th"),          thCharText,   thCharTOffsets   ),
-            new TBItem(BreakIterator.KIND_CHARACTER, ULocale.ROOT, thCharText, thCharTOffsets   ),
+            new TBItem(BreakIterator.KIND_SENTENCE,  new UCultureInfo("el"),          elSentText,   elSentTOffsets   ),
+            new TBItem(BreakIterator.KIND_SENTENCE, UCultureInfo.InvariantCulture, elSentText, elSentROffsets   ),
+            new TBItem(BreakIterator.KIND_CHARACTER, new UCultureInfo("th"),          thCharText,   thCharTOffsets   ),
+            new TBItem(BreakIterator.KIND_CHARACTER, UCultureInfo.InvariantCulture, thCharText, thCharTOffsets   ),
         };
             for (int iTest = 0; iTest < tests.Length; iTest++)
             {
@@ -526,7 +528,7 @@ namespace ICU4N.Dev.Test.Rbbi
             for (int breakKind = BreakIterator.KIND_CHARACTER; breakKind <= BreakIterator.KIND_TITLE; ++breakKind)
             {
                 RuleBasedBreakIterator bi =
-                        (RuleBasedBreakIterator)BreakIterator.GetBreakInstance(ULocale.ENGLISH, breakKind);
+                        (RuleBasedBreakIterator)BreakIterator.GetBreakInstance(new UCultureInfo("en"), breakKind);
                 bi.SetText(s);
                 int lastb = -1;
                 for (int b = bi.First(); b != BreakIterator.Done; b = bi.Next())
@@ -547,7 +549,7 @@ namespace ICU4N.Dev.Test.Rbbi
             // finds a break within the decomposition.
 
             String crasherString = "\u3325\u4a16";
-            BreakIterator iter = BreakIterator.GetWordInstance(ULocale.ENGLISH);
+            BreakIterator iter = BreakIterator.GetWordInstance(new UCultureInfo("en"));
             iter.SetText(crasherString);
             iter.First();
             int pos = 0;
@@ -561,19 +563,19 @@ namespace ICU4N.Dev.Test.Rbbi
         [Test]
         public void TestBug12519()
         {
-            RuleBasedBreakIterator biEn = (RuleBasedBreakIterator)BreakIterator.GetWordInstance(ULocale.ENGLISH);
-            RuleBasedBreakIterator biFr = (RuleBasedBreakIterator)BreakIterator.GetWordInstance(ULocale.FRANCE);
-            assertEquals("", ULocale.ENGLISH, biEn.GetLocale(ULocale.VALID_LOCALE));
-            assertEquals("", ULocale.FRENCH, biFr.GetLocale(ULocale.VALID_LOCALE));
+            RuleBasedBreakIterator biEn = (RuleBasedBreakIterator)BreakIterator.GetWordInstance(new UCultureInfo("en"));
+            RuleBasedBreakIterator biFr = (RuleBasedBreakIterator)BreakIterator.GetWordInstance(new UCultureInfo("fr_FR"));
+            assertEquals("", new UCultureInfo("en"), biEn.ValidCulture);
+            assertEquals("", new UCultureInfo("fr"), biFr.ValidCulture);
             assertEquals("Locales do not participate in BreakIterator equality.", biEn, biFr);
 
             RuleBasedBreakIterator cloneEn = (RuleBasedBreakIterator)biEn.Clone();
             assertEquals("", biEn, cloneEn);
-            assertEquals("", ULocale.ENGLISH, cloneEn.GetLocale(ULocale.VALID_LOCALE));
+            assertEquals("", new UCultureInfo("en"), cloneEn.ValidCulture);
 
             RuleBasedBreakIterator cloneFr = (RuleBasedBreakIterator)biFr.Clone();
             assertEquals("", biFr, cloneFr);
-            assertEquals("", ULocale.FRENCH, cloneFr.GetLocale(ULocale.VALID_LOCALE));
+            assertEquals("", new UCultureInfo("fr"), cloneFr.ValidCulture);
         }
     }
 }

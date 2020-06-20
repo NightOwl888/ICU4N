@@ -1,9 +1,7 @@
-﻿using ICU4N.Impl;
-using ICU4N.Support.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Text;
-using ICU4N.Util;
 using J2N;
-using J2N.Collections;
 using J2N.Text;
 using NUnit.Framework;
 using System;
@@ -34,7 +32,7 @@ namespace ICU4N.Dev.Test.Rbbi
             internal int[] expectedBreaks = new int[4000];
             internal int[] srcLine = new int[4000];
             internal int[] srcCol = new int[4000];
-            internal ULocale currentLocale = new ULocale("en_US");
+            internal UCultureInfo currentLocale = new UCultureInfo("en_US");
         }
 
 
@@ -217,7 +215,7 @@ namespace ICU4N.Dev.Test.Rbbi
                                 }
                                 String localeName = testString.Substring(charIdx + 6, closeIndex - (charIdx + 6)); // ICU4N: Corrected 2nd parameter
                                 localeName = localeName.Trim();
-                                tp.currentLocale = new ULocale(localeName);
+                                tp.currentLocale = new UCultureInfo(localeName);
                                 charIdx = closeIndex + 1;
                                 break;
                             }

@@ -1,4 +1,5 @@
-﻿using ICU4N.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Text;
 using NUnit.Framework;
@@ -290,7 +291,7 @@ namespace ICU4N.Dev.Test.Util
         {
             string pattern = "{0} don't can''t '{5}''}{a' again '}'{1} to the '{end";
             SimpleFormatter spf = SimpleFormatter.Compile(pattern);
-            MessageFormat mf = new MessageFormat(pattern, ULocale.ROOT);
+            MessageFormat mf = new MessageFormat(pattern, UCultureInfo.InvariantCulture);
             String expected = "X don't can't {5}'}{a again }Y to the {end";
             assertEquals("MessageFormat", expected, mf.Format(new Object[] { "X", "Y" }));
             assertEquals("SimpleFormatter", expected, spf.Format("X", "Y"));
