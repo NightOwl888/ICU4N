@@ -3220,7 +3220,7 @@ namespace ICU4N.Globalization
                 // other extensions are at the same level.
                 // e.g. @a=ext-for-aa;calendar=japanese;m=ext-for-mm;x=priv-use
 
-                SortedDictionary<string, string> kwds = new SortedDictionary<string, string>();
+                SortedDictionary<string, string> kwds = new SortedDictionary<string, string>(StringComparer.Ordinal);
                 foreach (char key in extKeys)
                 {
                     Extension ext = exts.GetExtension(key);
