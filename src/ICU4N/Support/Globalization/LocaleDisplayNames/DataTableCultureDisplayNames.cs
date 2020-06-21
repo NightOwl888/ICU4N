@@ -1,17 +1,16 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Impl.Locale;
+using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Resources;
 using System.Text;
 using System.Threading;
-using BreakIterator = ICU4N.Text.BreakIterator;
-using CaseMap = ICU4N.Text.CaseMap;
-using TitleCaseMap = ICU4N.Text.TitleCaseMap;
 
 // Port of impl.LocaleDisplayNamesImpl from ICU4J
 
@@ -52,7 +51,7 @@ namespace ICU4N.Globalization
         private readonly char formatReplaceCloseParen;
         private readonly CurrencyDisplayInfo currencyDisplayInfo;
 
-        //private static readonly Cache cache = new Cache();
+        // ICU4N: Removed static GetInstance() method and moved the cache to the DefaultCultureDisplayNamesFactory
 
         /// <summary>
         /// Capitalization context usage types for locale display names
@@ -101,12 +100,7 @@ namespace ICU4N.Globalization
                     culture, null, s, new StringBuilder(), null).ToString();
         }
 
-        // ICU4N TODO: We need to work out what to do with this - I am not sure this needs to be public and/or static
-        //new public static CultureDisplayNames GetInstance(CultureInfo culture, DisplayContextOptions options)
-        //{
-        //    // ICU4N: Switched to using ReaderWriterLockSlim instead of lock (cache)
-        //    return cache.Get(culture.ToUCultureInfo(), options);
-        //}
+        // ICU4N: Removed static GetInstance() method and moved the cache to the DefaultCultureDisplayNamesFactory
 
         private sealed class CapitalizationContextSink : ResourceSink
         {
@@ -570,63 +564,61 @@ namespace ICU4N.Globalization
 
             List<UiListItem> result = new List<UiListItem>();
 
-            // ICU4N TODO: Finish implementation (missing UCultureInfo.Builder dependency)
-
-            //            IDictionary<UCultureInfo, ISet<UCultureInfo>> baseToLocales = new Dictionary<UCultureInfo, ISet<UCultureInfo>>();
-            //            UCultureInfo.Builder builder = new UCultureInfo.Builder();
-            //            foreach (ULocale locOriginal in localeSet)
-            //            {
-            //                builder.SetLocale(locOriginal); // verify well-formed. We do this here so that we consistently throw exception
-            //                UCultureInfo loc = UCultureInfo.AddLikelySubtags(locOriginal);
-            //                UCultureInfo @base = new UCultureInfo(loc.Language);
-            //                ISet<ULocale> locales = baseToLocales.Get(@base);
-            //                if (locales == null)
-            //                {
-            //                    baseToLocales[@base] = locales = new HashSet<UCultureInfo>();
-            //                }
-            //                locales.Add(loc);
-            //            }
-            //            foreach (var entry in baseToLocales)
-            //            {
-            //                UCultureInfo @base = entry.Key;
-            //                ISet<UCultureInfo> values = entry.Value;
-            //                if (values.Count == 1)
-            //                {
-            //                    ULocale locale = values.First();
-            //#pragma warning disable 612, 618
-            //                    result.Add(NewRow(UCultureInfo.MinimizeSubtags(locale, UCultureInfo.Minimize.FavorScript), capContext));
-            //#pragma warning restore 612, 618
-            //                }
-            //                else
-            //                {
-            //                    ISet<string> scripts = new HashSet<string>();
-            //                    ISet<string> regions = new HashSet<string>();
-            //                    // need the follow two steps to make sure that unusual scripts or regions are displayed
-            //                    ULocale maxBase = UCultureInfo.AddLikelySubtags(@base);
-            //                    scripts.Add(maxBase.Script);
-            //                    regions.Add(maxBase.Country);
-            //                    foreach (ULocale locale in values)
-            //                    {
-            //                        scripts.Add(locale.Script);
-            //                        regions.Add(locale.Country);
-            //                    }
-            //                    bool hasScripts = scripts.Count > 1;
-            //                    bool hasRegions = regions.Count > 1;
-            //                    foreach (UCultureInfo locale in values)
-            //                    {
-            //                        UCultureInfo.Builder modified = builder.SetLocale(locale);
-            //                        if (!hasScripts)
-            //                        {
-            //                            modified.SetScript("");
-            //                        }
-            //                        if (!hasRegions)
-            //                        {
-            //                            modified.SetRegion("");
-            //                        }
-            //                        result.Add(NewRow(modified.Build(), capContext));
-            //                    }
-            //                }
-            //            }
+            IDictionary<UCultureInfo, ISet<UCultureInfo>> baseToLocales = new Dictionary<UCultureInfo, ISet<UCultureInfo>>();
+            UCultureInfoBuilder builder = new UCultureInfoBuilder();
+            foreach (CultureInfo culture in cultures)
+            {
+                var locOriginal = culture.ToUCultureInfo();
+                builder.SetLocale(locOriginal); // verify well-formed. We do this here so that we consistently throw exception
+                UCultureInfo loc = UCultureInfo.AddLikelySubtags(locOriginal);
+                UCultureInfo @base = new UCultureInfo(loc.Language);
+                if (!baseToLocales.TryGetValue(@base, out ISet<UCultureInfo> locales) || locales == null)
+                {
+                    baseToLocales[@base] = locales = new HashSet<UCultureInfo>();
+                }
+                locales.Add(loc);
+            }
+            foreach (var entry in baseToLocales)
+            {
+                UCultureInfo @base = entry.Key;
+                ISet<UCultureInfo> values = entry.Value;
+                if (values.Count == 1)
+                {
+                    UCultureInfo locale = values.First();
+#pragma warning disable 612, 618
+                    result.Add(NewRow(UCultureInfo.MinimizeSubtags(locale, UCultureInfo.Minimize.FavorScript), capContext));
+#pragma warning restore 612, 618
+                }
+                else
+                {
+                    ISet<string> scripts = new HashSet<string>();
+                    ISet<string> regions = new HashSet<string>();
+                    // need the follow two steps to make sure that unusual scripts or regions are displayed
+                    UCultureInfo maxBase = UCultureInfo.AddLikelySubtags(@base);
+                    scripts.Add(maxBase.Script);
+                    regions.Add(maxBase.Country);
+                    foreach (UCultureInfo locale in values)
+                    {
+                        scripts.Add(locale.Script);
+                        regions.Add(locale.Country);
+                    }
+                    bool hasScripts = scripts.Count > 1;
+                    bool hasRegions = regions.Count > 1;
+                    foreach (UCultureInfo locale in values)
+                    {
+                        UCultureInfoBuilder modified = builder.SetLocale(locale);
+                        if (!hasScripts)
+                        {
+                            modified.SetScript("");
+                        }
+                        if (!hasRegions)
+                        {
+                            modified.SetRegion("");
+                        }
+                        result.Add(NewRow(modified.Build(), capContext));
+                    }
+                }
+            }
             result.Sort(comparer);
             return result;
         }
@@ -676,43 +668,6 @@ namespace ICU4N.Globalization
             return b;
         }
 
-        //private class Cache
-        //{
-        //    private UCultureInfo locale;
-        //    private DisplayContextOptions displayContextOptions;
-        //    private CultureDisplayNames cache;
-        //    private readonly ReaderWriterLockSlim syncLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-
-        //    public CultureDisplayNames Get(UCultureInfo locale, DisplayContextOptions displayContextOptions)
-        //    {
-        //        syncLock.EnterUpgradeableReadLock();
-        //        try
-        //        {
-        //            if (!(this.displayContextOptions == displayContextOptions && locale.Equals(this.locale)))
-        //            {
-        //                syncLock.EnterWriteLock();
-        //                try
-        //                {
-        //                    if (!(this.displayContextOptions == displayContextOptions && locale.Equals(this.locale)))
-        //                    {
-        //                        this.locale = locale;
-        //                        this.displayContextOptions = displayContextOptions.Freeze();
-        //                        this.cache = new DataTableCultureDisplayNames(locale, displayContextOptions);
-        //                    }
-        //                }
-        //                finally
-        //                {
-        //                    syncLock.ExitWriteLock();
-        //                }
-        //            }
-
-        //            return cache;
-        //        }
-        //        finally
-        //        {
-        //            syncLock.ExitUpgradeableReadLock();
-        //        }
-        //    }
-        //}
+        // ICU4N: Removed static GetInstance() method and moved the cache to the DefaultCultureDisplayNamesFactory
     }
 }
