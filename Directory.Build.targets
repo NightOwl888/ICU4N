@@ -8,8 +8,8 @@
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('netstandard')) Or $(TargetFramework.StartsWith('netcoreapp')) ">
     
     <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
-    <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_ASYNCLOCAL</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER</DefineConstants>
 
     <DebugType>portable</DebugType>
   </PropertyGroup>
@@ -22,6 +22,8 @@
     <DefineConstants>$(DefineConstants);FEATURE_MICROSOFT_EXTENSIONS_CACHING</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_READONLYDICTIONARY</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_REGEX_MATCHTIMEOUT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_TASK_ASYNC_AWAIT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_TASK_RUN</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TYPEDWEAKREFERENCE</DefineConstants>
     
   </PropertyGroup>
@@ -59,6 +61,8 @@
     <DefineConstants>$(DefineConstants);FEATURE_MICROSOFT_EXTENSIONS_CACHING</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_READONLYDICTIONARY</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_REGEX_MATCHTIMEOUT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_TASK_ASYNC_AWAIT</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_TASK_RUN</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TYPEDWEAKREFERENCE</DefineConstants>
 
   </PropertyGroup>
