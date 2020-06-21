@@ -75,7 +75,8 @@ namespace ICU4N.Impl.Coll
         internal static string LoadRules(ULocale locale, string collationType)
         {
             UResourceBundle bundle = UResourceBundle.GetBundleInstance(
-                    ICUData.IcuCollationBaseName, locale);
+                    // ICU4N specific - passing in the current assembly to load resources from.
+                    ICUData.IcuCollationBaseName, locale, CollationData.IcuDataAssembly);
             UResourceBundle data = ((ICUResourceBundle)bundle).GetWithFallback(
                     "collations/" + ASCII.ToLower(collationType));
             string rules = data.GetString("Sequence");
@@ -255,7 +256,8 @@ namespace ICU4N.Impl.Coll
             {
                 // Opening a bundle for the actual locale should always succeed.
                 UResourceBundle actualBundle = UResourceBundle.GetBundleInstance(
-                        ICUData.IcuCollationBaseName, actualLocale);
+                        // ICU4N specific - passing in the current assembly to load resources from.
+                        ICUData.IcuCollationBaseName, actualLocale, CollationData.IcuDataAssembly);
                 defT = ((ICUResourceBundle)actualBundle).FindStringWithFallback("collations/default");
                 if (defT != null)
                 {
