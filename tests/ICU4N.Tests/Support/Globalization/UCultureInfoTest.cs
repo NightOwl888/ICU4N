@@ -4537,7 +4537,7 @@ namespace ICU4N.Globalization
         }
 
         [Test]
-        //[Ignore("Run this to find gaps in cultures between platforms")]
+        [Ignore("Run this to find gaps in cultures between platforms")]
         // ICU4N specific - make sure all ICU cultures will convert to .NET cultures without exceptions
         public void TestToCultureInfo_AllCultures()
         {
