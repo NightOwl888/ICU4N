@@ -1,6 +1,7 @@
 ﻿// Port of text.DisplayContext of ICU4J to DisplayContextOptions and enum properties
 
 using ICU4N.Util;
+using System;
 
 namespace ICU4N.Globalization
 {
@@ -12,30 +13,67 @@ namespace ICU4N.Globalization
     // similar to ICU4J's implementation.
     public class DisplayContextOptions : IFreezable<DisplayContextOptions>
     {
+        private Capitalization capitalization = Capitalization.None;
+        private DialectHandling dialectHandling = DialectHandling.StandardNames;
+        private DisplayLength displayLength = DisplayLength.Full;
+        private SubstituteHandling substituteHandling = SubstituteHandling.Substitute;
+
         /// <summary>
         /// Capitalization of a date, date symbol, or display name based on context.
         /// </summary>
         /// <draft>ICU 60</draft>
-        public Capitalization Capitalization { get; set; } = Capitalization.None;
+        public Capitalization Capitalization
+        {
+            get => capitalization;
+            set
+            {
+                if (IsFrozen) throw new NotSupportedException("Attempt to modify frozen object");
+                capitalization = value;
+            }
+        }
 
         /// <summary>
         /// Dialect handling for locale display names.
         /// </summary>
         /// <draft>ICU 60</draft>
-        public DialectHandling DialectHandling { get; set; } = DialectHandling.StandardNames;
+        public DialectHandling DialectHandling
+        {
+            get => dialectHandling;
+            set
+            {
+                if (IsFrozen) throw new NotSupportedException("Attempt to modify frozen object");
+                dialectHandling = value;
+            }
+        }
 
         /// <summary>
         /// Display length of locale names.
         /// </summary>
         /// <draft>ICU 60</draft>
-        public DisplayLength DisplayLength { get; set; } = DisplayLength.Full;
+        public DisplayLength DisplayLength
+        {
+            get => displayLength;
+            set
+            {
+                if (IsFrozen) throw new NotSupportedException("Attempt to modify frozen object");
+                displayLength = value;
+            }
+        }
 
         /// <summary>
         /// Fallback substitute handling of localized text
         /// when the underlying data set does not contain the value.
         /// </summary>
         /// <draft>ICU 60</draft>
-        public SubstituteHandling SubstituteHandling { get; set; } = SubstituteHandling.Substitute;
+        public SubstituteHandling SubstituteHandling
+        {
+            get => substituteHandling;
+            set
+            {
+                if (IsFrozen) throw new NotSupportedException("Attempt to modify frozen object");
+                substituteHandling = value;
+            }
+        }
 
         /// <summary>
         /// Makes the current instance immutable.
@@ -84,7 +122,7 @@ namespace ICU4N.Globalization
         {
             unchecked
             {
-                int hashCode = 0;
+                int hashCode = 31;
                 hashCode = (hashCode * 397) * Capitalization.GetHashCode();
                 hashCode = (hashCode * 397) * DialectHandling.GetHashCode();
                 hashCode = (hashCode * 397) * DisplayLength.GetHashCode();
