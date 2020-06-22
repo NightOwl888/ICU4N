@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using JCG = J2N.Collections.Generic;
 
 // Port of text.LocaleDisplayNames from ICU4J
 
@@ -341,7 +342,7 @@ namespace ICU4N.Globalization
 
             public override IList<UiListItem> GetUiListCompareWholeItems(ICollection<CultureInfo> cultures, IComparer<UiListItem> comparator)
             {
-                return new List<UiListItem>();
+                return new JCG.List<UiListItem>();
             }
         }
     }

@@ -71,7 +71,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 55</stable>
         public bool Equals(UiListItem other)
         {
-            if (this == other)
+            if (ReferenceEquals(this, other))
                 return true;
 
             return NameInDisplayLocale.Equals(other.NameInDisplayLocale)

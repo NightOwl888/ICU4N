@@ -6,9 +6,8 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
-
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Dev.Test.Util
 {
@@ -338,9 +337,8 @@ namespace ICU4N.Dev.Test.Util
 
             foreach (String[][] test in tests)
             {
-                // ICU4N TODO: LinkedHashSet needed ?
-                var list = new List<CultureInfo>(); // LinkedHashSet<ULocale>();
-                List<UiListItem> expected = new List<UiListItem>();
+                var list = new JCG.LinkedHashSet<CultureInfo>();
+                IList<UiListItem> expected = new JCG.List<UiListItem>();
                 foreach (String item in test[0])
                 {
                     list.Add(new UCultureInfo(item));
@@ -351,7 +349,7 @@ namespace ICU4N.Dev.Test.Util
                     expected.Add(new UiListItem(new UCultureInfo(rawRow[2]), new UCultureInfo(rawRow[3]), rawRow[0], rawRow[1]));
                 }
                 IList<UiListItem> newList = names.GetUiList(list, false, collator);
-                if (!expected.SequenceEqual(newList))
+                if (!expected.Equals(newList)) // J2N's List compares the list contents
                 {
                     if (expected.Count != newList.Count)
                     {
