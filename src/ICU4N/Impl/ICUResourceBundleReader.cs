@@ -1784,7 +1784,8 @@ namespace ICU4N.Impl
             {
                 if (localeName.Length == 0)
                 {
-                    localeName = UCultureInfo.CurrentCulture.ToString();
+                    //return localeName = UCultureInfo.CurrentCulture.ToString();
+                    return /*localeName =*/ UCultureInfo.CurrentCultureFullName; //UCultureInfo.CurrentCulture.ToString();
                 }
                 return localeName + ICU_RESOURCE_SUFFIX;
             }

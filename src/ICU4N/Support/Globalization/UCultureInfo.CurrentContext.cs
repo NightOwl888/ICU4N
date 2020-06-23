@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ICU4N.Impl;
+using System;
 using System.Globalization;
 #if !FEATURE_ASYNCLOCAL
 using System.Runtime.Remoting.Messaging;
@@ -74,6 +75,46 @@ namespace ICU4N.Globalization
         private static UCultureInfo GetCurrentUICulture()
         {
             return CultureInfo.CurrentUICulture.ToUCultureInfo();
+        }
+
+        // This is used to get the base name without doing a call to ToUCultureInfo().
+        // Doing so would lead to infinite recursion.
+        internal static string CurrentCultureBaseName
+        {
+            get
+            {
+                UCultureInfo? current =
+#if FEATURE_ASYNCLOCAL
+                    s_currentThreadCulture ??
+#else
+                    CallContext.LogicalGetData(CurrentCultureLogicalCallContextName) as UCultureInfo ??
+#endif
+                        s_DefaultThreadCurrentCulture;
+
+                if (current != null)
+                    return current.Name;
+                else
+                    return new LocaleIDParser(CultureInfo.CurrentCulture.Name).GetBaseName();
+            }
+        }
+
+        internal static string CurrentCultureFullName
+        {
+            get
+            {
+                UCultureInfo? current =
+#if FEATURE_ASYNCLOCAL
+                    s_currentThreadCulture ??
+#else
+                    CallContext.LogicalGetData(CurrentCultureLogicalCallContextName) as UCultureInfo ??
+#endif
+                        s_DefaultThreadCurrentCulture;
+
+                if (current != null)
+                    return current.FullName;
+                else
+                    return new LocaleIDParser(CultureInfo.CurrentCulture.Name).GetFullName();
+            }
         }
 
         // For now, we are simply tracking the current culture of the .NET platform and

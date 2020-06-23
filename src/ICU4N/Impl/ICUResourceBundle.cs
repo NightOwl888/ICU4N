@@ -1239,7 +1239,7 @@ namespace ICU4N.Impl
         public static ICUResourceBundle GetBundleInstance(string baseName, string localeID,
             Assembly root, OpenType openType)
         {
-            return GetBundleInstance(baseName, localeID, UCultureInfo.CurrentCulture.Name, root, openType);
+            return GetBundleInstance(baseName, localeID, UCultureInfo.CurrentCultureBaseName /*UCultureInfo.CurrentCulture.Name*/, root, openType);
         }
 
         // ICU4N specific - added this as a means to call this within UCultureInfo.CurrentCulture without
