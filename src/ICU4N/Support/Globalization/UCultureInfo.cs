@@ -43,6 +43,11 @@ namespace ICU4N.Globalization
         // ICU4N: This corresponds to the ROOT in ICU4J
         public new static UCultureInfo InvariantCulture { get; } = new UCultureInfo("", CultureInfo.InvariantCulture);
 
+        /// <summary>
+        /// Gets the English culture. We cache it statically to optimize the <see cref="EnglishName"/> property.
+        /// </summary>
+        private static readonly UCultureInfo English = new UCultureInfo("en", new CultureInfo("en"));
+
         private readonly bool isInvariantCulture;
         private readonly bool isNeutralCulture;
 
