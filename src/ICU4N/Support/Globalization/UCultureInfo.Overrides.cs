@@ -25,7 +25,10 @@ namespace ICU4N.Globalization
         public override string DisplayName => GetDisplayNameInternal(this, CurrentUICulture);
 
         /// <inheritdoc/>
-        public override string EnglishName => isInvariantCulture ? CultureInfo.InvariantCulture.EnglishName : GetDisplayName(localeID, new UCultureInfo("en"));
+        public override string EnglishName
+            => isInvariantCulture
+                ? CultureInfo.InvariantCulture.EnglishName
+                : GetDisplayName(localeID, English);
 
 #if FEATURE_CULTUREINFO_IETFLANGUAGETAG
         public new string IetfLanguageTag
