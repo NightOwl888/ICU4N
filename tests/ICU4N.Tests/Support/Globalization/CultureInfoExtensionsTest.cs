@@ -12,7 +12,7 @@ namespace ICU4N.Globalization
             var cultures = CultureInfoUtil.GetAllCultures();
             foreach (var culture in cultures)
             {
-                Assert.IsNotNull(culture.ToUCultureInfo().culture);
+                Assert.IsNotNull(culture.ToUCultureInfo().Culture);
             }
         }
 

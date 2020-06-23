@@ -9,6 +9,7 @@ using System.Linq;
 using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using UnicodeLocaleExtensionClass = ICU4N.Impl.Locale.UnicodeLocaleExtension;
 
 namespace ICU4N.Globalization
@@ -29,7 +30,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// The closest match for the current UCultureInfo as a CultureInfo
         /// </summary>
-        internal readonly CultureInfo culture; // internal for testing
+        private CultureInfo culture;
 
         // Used in both UCultureInfo and LocaleIDParser, so moved up here.
         private const char Underscore = '_';
@@ -178,7 +179,7 @@ namespace ICU4N.Globalization
             bool hasCountry = parts[country].Length > 0;
             bool hasVariant = parts[variant].Length > 0;
 
-            this.isNeutralCulture = hasLanguage && !(hasScript || hasCountry || hasVariant);
+            this.isNeutralCulture = hasLanguage && !(hasCountry || hasVariant);
         }
 
         /// <summary>
@@ -210,7 +211,6 @@ namespace ICU4N.Globalization
         public UCultureInfo(string name)
             : this(GetFullName(name), null)
         {
-            this.culture = DotNetLocaleHelper.ToCultureInfo(this);
         }
 
         /// <summary>
@@ -265,10 +265,14 @@ namespace ICU4N.Globalization
             //if (culture == null)
             //    culture = DotNetLocaleHelper.ToCultureInfo(this);
 
-            return culture;
+            return Culture;
         }
 
-
+        internal CultureInfo Culture
+            // We cache the value, but it isn't a problem if 2 threads
+            // each get their own instance, as they will have the same data.
+            //=> culture ??= DotNetLocaleHelper.ToCultureInfo(this);
+            => LazyInitializer.EnsureInitialized(ref culture, () => DotNetLocaleHelper.ToCultureInfo(this));
 
 
         /// <summary>
