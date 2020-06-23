@@ -8,16 +8,16 @@ namespace ICU4N.Globalization
     public partial class UCultureInfo
     {
         /// <inheritdoc/>
-        public override Calendar Calendar => isInvariantCulture ? CultureInfo.InvariantCulture.Calendar : Culture.Calendar;
+        public override Calendar Calendar => isInvariantCulture ? CultureInfo.InvariantCulture.Calendar : culture.Calendar;
 
         /// <inheritdoc/>
-        public override CompareInfo CompareInfo => isInvariantCulture ? CultureInfo.InvariantCulture.CompareInfo : Culture.CompareInfo;
+        public override CompareInfo CompareInfo => isInvariantCulture ? CultureInfo.InvariantCulture.CompareInfo : culture.CompareInfo;
 
         /// <inheritdoc/>
         public override DateTimeFormatInfo DateTimeFormat
         {
-            get => Culture.DateTimeFormat;
-            set => Culture.DateTimeFormat = value;
+            get => culture.DateTimeFormat;
+            set => culture.DateTimeFormat = value;
         }
 
         /// <inheritdoc/>
@@ -56,7 +56,7 @@ namespace ICU4N.Globalization
 
 #if FEATURE_CULTUREINFO_KEYBOARDLAYOUTID
         /// <inheritdoc/>
-        public override int KeyboardLayoutId => Culture.KeyboardLayoutId;
+        public override int KeyboardLayoutId => culture.KeyboardLayoutId;
 #endif
 #if FEATURE_CULTUREINFO_LCID
         /// <inheritdoc/>
@@ -80,12 +80,12 @@ namespace ICU4N.Globalization
         /// <inheritdoc/>
         public override NumberFormatInfo NumberFormat
         {
-            get => Culture.NumberFormat;
-            set => Culture.NumberFormat = value;
+            get => culture.NumberFormat;
+            set => culture.NumberFormat = value;
         }
 
         /// <inheritdoc/>
-        public override Calendar[] OptionalCalendars => isInvariantCulture ? CultureInfo.InvariantCulture.OptionalCalendars : Culture.OptionalCalendars;
+        public override Calendar[] OptionalCalendars => isInvariantCulture ? CultureInfo.InvariantCulture.OptionalCalendars : culture.OptionalCalendars;
 
         /// <summary>
         /// Returns the fallback locale (parent) for this locale. If this locale is root,
@@ -95,7 +95,7 @@ namespace ICU4N.Globalization
         public override CultureInfo Parent => GetParent() ?? UCultureInfo.InvariantCulture;
 
         /// <inheritdoc/>
-        public override TextInfo TextInfo => isInvariantCulture ? base.TextInfo : Culture.TextInfo;
+        public override TextInfo TextInfo => isInvariantCulture ? base.TextInfo : culture.TextInfo;
 
         /// <summary>
         /// Returns a three-letter abbreviation for the language. If language is
@@ -109,7 +109,7 @@ namespace ICU4N.Globalization
         /// If the three-letter language abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
 #if FEATURE_CULTUREINFO_THREELETTERISOLANGUAGENAME
-        public override string ThreeLetterISOLanguageName
+        public override string ThreeLetterISOLanguageName     
 #else
         public string ThreeLetterISOLanguageName
 #endif
@@ -118,7 +118,7 @@ namespace ICU4N.Globalization
 
 #if FEATURE_CULTUREINFO_THREELETTERWINDOWSLANGUAGENAME
         /// <inheritdoc/>
-        public override string ThreeLetterWindowsLanguageName => Culture?.ThreeLetterWindowsLanguageName; // Windows API
+        public override string ThreeLetterWindowsLanguageName => culture?.ThreeLetterWindowsLanguageName; // Windows API
 #endif
 
         /// <inheritdoc/>
@@ -239,7 +239,7 @@ namespace ICU4N.Globalization
 
             // Special case - compare against invariant culture
             if (isInvariantCulture)
-                return UCultureInfo.InvariantCulture.Equals(value) || CultureInfo.InvariantCulture.Equals(value);
+                return base.Equals(value);
 
             if (value is UCultureInfo uCulture)
                 return localeID.Equals(uCulture.localeID);
@@ -256,7 +256,7 @@ namespace ICU4N.Globalization
         {
             // Special case - compare against invariant culture
             if (isInvariantCulture)
-                return CultureInfo.InvariantCulture.GetHashCode();
+                return base.GetHashCode();
 
             return localeID.GetHashCode();
         }
@@ -270,7 +270,7 @@ namespace ICU4N.Globalization
         // to request something other than DateTimeFormatInfo or NumberFormatInfo.
         public override object GetFormat(Type formatType)
         {
-            return Culture.GetFormat(formatType);
+            return culture.GetFormat(formatType);
         }
 
         /// <summary>
