@@ -4573,13 +4573,15 @@ namespace ICU4N.Globalization
 
             //ULocale.SetDefault(Category.DISPLAY, uJaJp);
             //ULocale.SetDefault(Category.FORMAT, uDeDePhonebook);
-#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
+//#if FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER
+//            UCultureInfo.CurrentUICulture = uJaJp;
+//            UCultureInfo.CurrentCulture = uDeDePhonebook;
+//#else
+//            System.Threading.Thread.CurrentThread.CurrentUICulture = uJaJp;
+//            System.Threading.Thread.CurrentThread.CurrentCulture = uDeDePhonebook;
+//#endif
             UCultureInfo.CurrentUICulture = uJaJp;
             UCultureInfo.CurrentCulture = uDeDePhonebook;
-#else
-            System.Threading.Thread.CurrentThread.CurrentUICulture = uJaJp;
-            System.Threading.Thread.CurrentThread.CurrentCulture = uDeDePhonebook;
-#endif
 
             //if (!UCultureInfo.CurrentCulture.Equals(orgDefault))
             //{
