@@ -337,7 +337,7 @@ namespace ICU4N.Dev.Test.Util
 
             foreach (String[][] test in tests)
             {
-                var list = new JCG.LinkedHashSet<CultureInfo>();
+                var list = new JCG.LinkedHashSet<UCultureInfo>();
                 IList<UiListItem> expected = new JCG.List<UiListItem>();
                 foreach (String item in test[0])
                 {
@@ -383,7 +383,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 try
                 {
-                    ISet<CultureInfo> supported = new HashSet<CultureInfo> { new UCultureInfo(malformed) }; //Collections.singleton(new UCultureInfo(malformed));
+                    ISet<UCultureInfo> supported = new HashSet<UCultureInfo> { new UCultureInfo(malformed) }; //Collections.singleton(new UCultureInfo(malformed));
                     names.GetUiList(supported, false, collator);
                     assertNull("Failed to detect bogus locale «" + malformed + "»", supported);
                 }

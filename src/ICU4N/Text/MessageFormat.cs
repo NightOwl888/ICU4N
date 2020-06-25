@@ -423,7 +423,7 @@ namespace ICU4N.Text
         /// <stable>ICU 3.0</stable>
         public virtual void SetCulture(CultureInfo locale) // ICU4N TODO: API - In general, formatters in .NET should be unaware of the culture unless it is explictly passed to the Format() method. Need to rework this.
         {
-            SetCulture((CultureInfo)locale.ToUCultureInfo());
+            SetCulture(locale.ToUCultureInfo());
         }
 
         /// <summary>

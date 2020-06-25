@@ -85,7 +85,7 @@ namespace ICU4N.Globalization
         // For now, we are simply tracking the current culture of the .NET platform and
         // converting it to UCultureInfo, unless CurrentCulture or DefaultThreadCurrentCulture is explicitly
         // set, which will override the default tracking behavior.
-        public new static UCultureInfo CurrentCulture
+        public /*new*/ static UCultureInfo CurrentCulture
         {
             get
             {
@@ -121,7 +121,7 @@ namespace ICU4N.Globalization
         // For now, we are simply tracking the current UI culture of the .NET platform and
         // converting it to UCultureInfo, unless CurrentCulture or DefaultThreadCurrentUICulture is explicitly
         // set, which will override the default tracking behavior.
-        public new static UCultureInfo CurrentUICulture
+        public /*new*/ static UCultureInfo CurrentUICulture
         {
             get
             {
@@ -162,7 +162,7 @@ namespace ICU4N.Globalization
         public static UCultureInfo InstalledUICulture => s_userDefaultCulture ?? InitializeUserDefaultCulture();
 #endif
 
-        public new static UCultureInfo? DefaultThreadCurrentCulture
+        public /*new*/ static UCultureInfo? DefaultThreadCurrentCulture
         {
             get => s_DefaultThreadCurrentCulture;
             set =>
@@ -171,7 +171,7 @@ namespace ICU4N.Globalization
                 s_DefaultThreadCurrentCulture = value;
         }
 
-        public new static UCultureInfo? DefaultThreadCurrentUICulture
+        public /*new*/ static UCultureInfo? DefaultThreadCurrentUICulture
         {
             get => s_DefaultThreadCurrentUICulture;
             set

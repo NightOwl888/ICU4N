@@ -97,7 +97,7 @@ namespace ICU4N.Globalization
         private static string ToTitleWholeStringNoLowercase(UCultureInfo culture, string s)
         {
             return ToTitleWholeStringNoLower.Apply(
-                    culture, null, s, new StringBuilder(), null).ToString();
+                    culture.ToCultureInfo(), null, s, new StringBuilder(), null).ToString();
         }
 
         // ICU4N: Removed static GetInstance() method and moved the cache to the DefaultCultureDisplayNamesFactory
@@ -214,7 +214,7 @@ namespace ICU4N.Globalization
                 capitalizationBrkIter = BreakIterator.GetSentenceInstance(locale);
             }
 
-            this.currencyDisplayInfo = CurrencyData.Provider.GetInstance(locale.ToUCultureInfo(), false);
+            this.currencyDisplayInfo = CurrencyData.Provider.GetInstance(locale, false);
         }
 
         public override UCultureInfo Culture => locale;
@@ -238,9 +238,9 @@ namespace ICU4N.Globalization
             return name;
         }
 
-        public override string GetLocaleDisplayName(CultureInfo locale)
+        public override string GetLocaleDisplayName(UCultureInfo locale)
         {
-            return GetLocaleDisplayNameInternal(locale.ToUCultureInfo());
+            return GetLocaleDisplayNameInternal(locale);
         }
 
         public override string GetLocaleDisplayName(string localeId)
@@ -558,7 +558,7 @@ namespace ICU4N.Globalization
             return GetKeyValueDisplayName(key, value, false);
         }
 
-        public override IList<UiListItem> GetUiListCompareWholeItems(ICollection<CultureInfo> cultures, IComparer<UiListItem> comparer)
+        public override IList<UiListItem> GetUiListCompareWholeItems(ICollection<UCultureInfo> cultures, IComparer<UiListItem> comparer)
         {
             Capitalization capContext = displayContextOptions.Capitalization;
 
@@ -566,9 +566,8 @@ namespace ICU4N.Globalization
 
             IDictionary<UCultureInfo, ISet<UCultureInfo>> baseToLocales = new Dictionary<UCultureInfo, ISet<UCultureInfo>>();
             UCultureInfoBuilder builder = new UCultureInfoBuilder();
-            foreach (CultureInfo culture in cultures)
+            foreach (var locOriginal in cultures)
             {
-                var locOriginal = culture.ToUCultureInfo();
                 builder.SetCulture(locOriginal); // verify well-formed. We do this here so that we consistently throw exception
                 UCultureInfo loc = UCultureInfo.AddLikelySubtags(locOriginal);
                 UCultureInfo @base = new UCultureInfo(loc.Language);

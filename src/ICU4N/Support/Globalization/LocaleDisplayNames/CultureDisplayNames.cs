@@ -39,7 +39,19 @@ namespace ICU4N.Globalization
 
         // factory methods
         /// <summary>
-        /// Convenience overload of <see cref="GetInstance(CultureInfo, DialectHandling)"/> that specifies
+        /// Convenience overload of <see cref="GetInstance(UCultureInfo, DialectHandling)"/> that specifies
+        /// <see cref="DialectHandling.StandardNames"/> dialect handling.
+        /// </summary>
+        /// <param name="locale">The display locale.</param>
+        /// <returns>A <see cref="CultureDisplayNames"/> instance.</returns>
+        /// <draft>ICU 60</draft>
+        public static CultureDisplayNames GetInstance(UCultureInfo locale)
+        {
+            return GetInstance(locale, DialectHandling.StandardNames);
+        }
+
+        /// <summary>
+        /// Convenience overload of <see cref="GetInstance(UCultureInfo, DialectHandling)"/> that specifies
         /// <see cref="DialectHandling.StandardNames"/> dialect handling.
         /// </summary>
         /// <param name="locale">The display locale.</param>
@@ -47,11 +59,12 @@ namespace ICU4N.Globalization
         /// <draft>ICU 60</draft>
         public static CultureDisplayNames GetInstance(CultureInfo locale)
         {
-            return GetInstance(locale, DialectHandling.StandardNames);
+            return GetInstance(locale.ToUCultureInfo(), DialectHandling.StandardNames);
         }
 
         /// <summary>
-        /// Returns an instance of <see cref="CultureDisplayNames"/> that returns names formatted for the provided <paramref name="locale"/>,
+        /// Convenience overload of <see cref="GetInstance(UCultureInfo, DialectHandling)"/> that
+        /// returns names formatted for the provided <paramref name="locale"/>,
         /// using the provided <paramref name="dialectHandling"/>.
         /// </summary>
         /// <param name="locale">The display locale.</param>
@@ -60,9 +73,23 @@ namespace ICU4N.Globalization
         /// <draft>ICU 60</draft>
         public static CultureDisplayNames GetInstance(CultureInfo locale, DialectHandling dialectHandling)
         {
+            return GetInstance(locale.ToUCultureInfo(), dialectHandling);
+        }
+
+        /// <summary>
+        /// Returns an instance of <see cref="CultureDisplayNames"/> that
+        /// returns names formatted for the provided <paramref name="locale"/>,
+        /// using the provided <paramref name="dialectHandling"/>.
+        /// </summary>
+        /// <param name="locale">The display locale.</param>
+        /// <param name="dialectHandling">How to select names for locales.</param>
+        /// <returns>A <see cref="CultureDisplayNames"/> instance.</returns>
+        /// <draft>ICU 60</draft>
+        public static CultureDisplayNames GetInstance(UCultureInfo locale, DialectHandling dialectHandling)
+        {
             CultureDisplayNames result = null;
             var options = new DisplayContextOptions { DialectHandling = dialectHandling }.Freeze();
-            var culture = locale.ToUCultureInfo();
+            var culture = locale; //.ToUCultureInfo();
             if (cultureDisplayNamesFactory != null)
             {
                 result = cultureDisplayNamesFactory.GetCultureDisplayNames(culture, options);
@@ -75,17 +102,18 @@ namespace ICU4N.Globalization
         }
 
         /// <summary>
-        /// Returns an instance of <see cref="CultureDisplayNames"/> that returns names formatted for the provided <paramref name="locale"/>,
+        /// Returns an instance of <see cref="CultureDisplayNames"/> that
+        /// returns names formatted for the provided <paramref name="locale"/>,
         /// using the provided <see cref="DisplayContextOptions"/> settings.
         /// </summary>
         /// <param name="locale">The display locale.</param>
         /// <param name="options">One or more context settings (e.g. for dialect handling, capitalization, etc.)</param>
         /// <returns>A <see cref="CultureDisplayNames"/> instance.</returns>
         /// <draft>ICU 60</draft>
-        public static CultureDisplayNames GetInstance(CultureInfo locale, DisplayContextOptions options)
+        public static CultureDisplayNames GetInstance(UCultureInfo locale, DisplayContextOptions options)
         {
             CultureDisplayNames result = null;
-            var culture = locale.ToUCultureInfo();
+            var culture = locale; //.ToUCultureInfo();
             options = options.Freeze();
             if (cultureDisplayNamesFactory != null)
             {
@@ -98,11 +126,25 @@ namespace ICU4N.Globalization
             return result;
         }
 
+        /// <summary>
+        /// Returns an instance of <see cref="CultureDisplayNames"/> that
+        /// returns names formatted for the provided <paramref name="locale"/>,
+        /// using the provided <see cref="DisplayContextOptions"/> settings.
+        /// </summary>
+        /// <param name="locale">The display locale.</param>
+        /// <param name="options">One or more context settings (e.g. for dialect handling, capitalization, etc.)</param>
+        /// <returns>A <see cref="CultureDisplayNames"/> instance.</returns>
+        /// <draft>ICU 60</draft>
+        public static CultureDisplayNames GetInstance(CultureInfo locale, DisplayContextOptions options)
+        {
+            return GetInstance(locale.ToUCultureInfo(), options);
+        }
+
         // getters for state
 
         /// <summary>
         /// Gets the locale used to determine the display names. This is not necessarily the same
-        /// locale passed to <see cref="GetInstance(CultureInfo)"/>.
+        /// locale passed to <see cref="GetInstance(UCultureInfo)"/>.
         /// </summary>
         /// <returns>The display locale.</returns>
         /// <draft>ICU 60</draft>
@@ -126,7 +168,7 @@ namespace ICU4N.Globalization
         /// <param name="locale">The locale whose display name to return.</param>
         /// <returns>The display name of the provided <paramref name="locale"/>.</returns>
         /// <draft>ICU 60</draft>
-        public abstract string GetLocaleDisplayName(CultureInfo locale);
+        public abstract string GetLocaleDisplayName(UCultureInfo locale);
 
         /// <summary>
         /// Returns the display name of the provided <paramref name="localeId"/>.
@@ -228,7 +270,7 @@ namespace ICU4N.Globalization
         /// <returns>An ordered list of <see cref="UiListItem"/>s.</returns>
         /// <exception cref="CultureNotFoundException">If any of the locales in <paramref name="cultures"/> are malformed.</exception>
         /// <draft>ICU 60</draft>
-        public virtual IList<UiListItem> GetUiList(ICollection<CultureInfo> cultures, bool inSelf, IComparer<string> collator) // ICU4N specific - changed from IComparer<object> to IComparer<string>
+        public virtual IList<UiListItem> GetUiList(ICollection<UCultureInfo> cultures, bool inSelf, IComparer<string> collator) // ICU4N specific - changed from IComparer<object> to IComparer<string>
         {
             return GetUiListCompareWholeItems(cultures, UiListItem.GetComparer(collator, inSelf));
         }
@@ -246,21 +288,21 @@ namespace ICU4N.Globalization
         /// <returns>An ordered list of <see cref="UiListItem"/>s.</returns>
         /// <exception cref="CultureNotFoundException">If any of the locales in <paramref name="cultures"/> are malformed.</exception>
         /// <draft>ICU 60</draft>
-        public virtual IList<UiListItem> GetUiList(ICollection<CultureInfo> cultures, bool inSelf, CompareInfo collator) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
+        public virtual IList<UiListItem> GetUiList(ICollection<UCultureInfo> cultures, bool inSelf, CompareInfo collator) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
         {
             return GetUiListCompareWholeItems(cultures, UiListItem.GetComparer(collator, inSelf));
         }
 
         /// <summary>
         /// Return a list of information used to construct a UI list of locale names, providing more access to control the sorting.
-        /// Normally use <see cref="GetUiList(ICollection{CultureInfo}, bool, IComparer{string})"/> instead.
+        /// Normally use <see cref="GetUiList(ICollection{UCultureInfo}, bool, IComparer{string})"/> instead.
         /// </summary>
         /// <param name="cultures">A list of locales to present in a UI list. The casing uses the settings in the <see cref="CultureDisplayNames"/> instance.</param>
         /// <param name="comparer">How to sort the UiListItems in the result.</param>
         /// <returns>An ordered list of <see cref="UiListItem"/>s.</returns>
         /// <exception cref="CultureNotFoundException">If any of the locales in <paramref name="cultures"/> are malformed.</exception>
         /// <draft>ICU 60</draft>
-        public abstract IList<UiListItem> GetUiListCompareWholeItems(ICollection<CultureInfo> cultures, IComparer<UiListItem> comparer);
+        public abstract IList<UiListItem> GetUiListCompareWholeItems(ICollection<UCultureInfo> cultures, IComparer<UiListItem> comparer);
 
         // ICU4N specific - de-nested UiListItem
 
@@ -295,9 +337,9 @@ namespace ICU4N.Globalization
 
             public override DisplayContextOptions DisplayContextOptions => options;
 
-            public override string GetLocaleDisplayName(CultureInfo locale)
+            public override string GetLocaleDisplayName(UCultureInfo locale)
             {
-                return locale.ToUCultureInfo().FullName;
+                return locale.FullName;
             }
 
             public override string GetLocaleDisplayName(string localeId)
@@ -340,7 +382,7 @@ namespace ICU4N.Globalization
                 return value;
             }
 
-            public override IList<UiListItem> GetUiListCompareWholeItems(ICollection<CultureInfo> cultures, IComparer<UiListItem> comparator)
+            public override IList<UiListItem> GetUiListCompareWholeItems(ICollection<UCultureInfo> cultures, IComparer<UiListItem> comparator)
             {
                 return new JCG.List<UiListItem>();
             }

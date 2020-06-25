@@ -1763,8 +1763,8 @@ namespace ICU4N.Impl
         /// <para/>
         /// This is used when fallback to another language is not desired
         /// and the root locale is not generally useful.
-        /// For example, <see cref="Util.LocaleData.NoSubstitute"/>
-        /// or currency display names for <see cref="Text.LocaleDisplayNames"/>.
+        /// For example, <see cref="LocaleData.NoSubstitute"/>
+        /// or currency display names for <see cref="CultureDisplayNames"/>.
         /// </summary>
         LocaleOnly,
         /// <summary>

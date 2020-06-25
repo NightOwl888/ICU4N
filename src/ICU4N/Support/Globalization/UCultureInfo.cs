@@ -13,10 +13,15 @@ using UnicodeLocaleExtensionClass = ICU4N.Impl.Locale.UnicodeLocaleExtension;
 
 namespace ICU4N.Globalization
 {
+
+    // ICU4N: Ideally, we would make this into a subclass of CultureInfo, however
+    // many of the exposed types such as TextInfo, DateTimeFormatInfo, NumberFormatInfo
+    // have no (good) way to be extended. For now, we are keeping the API similar, but
+    // not making this a subclass.
 #if FEATURE_CULTUREINFO_SERIALIZABLE
     [Serializable]
 #endif
-    public partial class UCultureInfo : CultureInfo, IComparable<UCultureInfo>
+    public sealed partial class UCultureInfo : /*CultureInfo,*/ IComparable<UCultureInfo>
 #if FEATURE_CLONEABLE
         , ICloneable
 #endif
@@ -44,7 +49,7 @@ namespace ICU4N.Globalization
         /// Gets the <see cref="UCultureInfo"/> object that is culture-independent (invariant).
         /// </summary>
         // ICU4N: This corresponds to the ROOT in ICU4J
-        public new static UCultureInfo InvariantCulture { get; } = new UCultureInfo("", CultureInfo.InvariantCulture);
+        public static UCultureInfo InvariantCulture { get; } = new UCultureInfo("", CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Gets the English culture. We cache it statically to optimize the <see cref="EnglishName"/> property.
@@ -169,7 +174,7 @@ namespace ICU4N.Globalization
         /// <param name="name"></param>
         /// <param name="culture"></param>
         private UCultureInfo(string name, CultureInfo culture)
-            : base(name: "")
+            //: base(name: "")
         {
             this.localeID = name;
             this.culture = culture;
@@ -426,7 +431,7 @@ namespace ICU4N.Globalization
         /// or a lowercase ISO 639 code.
         /// </summary>
         /// <seealso cref="DisplayLanguage"/>
-        /// <seealso cref="GetDisplayLanguage(CultureInfo)"/>
+        /// <seealso cref="GetDisplayLanguage(UCultureInfo)"/>
         /// <stable>ICU4N 60</stable>
         public string Language => Base.Language;
 
@@ -438,7 +443,7 @@ namespace ICU4N.Globalization
         /// <param name="localeID"></param>
         /// <returns></returns>
         /// <seealso cref="DisplayLanguage"/>
-        /// <seealso cref="GetDisplayLanguage(CultureInfo)"/>
+        /// <seealso cref="GetDisplayLanguage(UCultureInfo)"/>
         /// <stable>ICU4N 60</stable>
         public static string GetLanguage(string localeID)
         {
@@ -449,7 +454,7 @@ namespace ICU4N.Globalization
         /// Returns the script code for this locale, which might be the empty string.
         /// </summary>
         /// <seealso cref="DisplayScript"/>
-        /// <seealso cref="GetDisplayScript(CultureInfo)"/>
+        /// <seealso cref="GetDisplayScript(UCultureInfo)"/>
         /// <stable>ICU4N 60</stable>
         public string Script => Base.Script;
 
@@ -460,7 +465,7 @@ namespace ICU4N.Globalization
         /// <param name="localeID"></param>
         /// <returns></returns>
         /// <seealso cref="DisplayScript"/>
-        /// <seealso cref="GetDisplayScript(CultureInfo)"/>
+        /// <seealso cref="GetDisplayScript(UCultureInfo)"/>
         /// <stable>ICU4N 60</stable>
         public static string GetScript(string localeID)
         {
@@ -472,7 +477,7 @@ namespace ICU4N.Globalization
         /// or an uppercase ISO 3166 2-letter code.
         /// </summary>
         /// <seealso cref="DisplayCountry"/>
-        /// <seealso cref="GetDisplayCountry(CultureInfo)"/>
+        /// <seealso cref="GetDisplayCountry(UCultureInfo)"/>
         /// <stable>ICU4N 60</stable>
         public string Country => Base.Region;
 
@@ -483,7 +488,7 @@ namespace ICU4N.Globalization
         /// <param name="localeID"></param>
         /// <returns></returns>
         /// <seealso cref="DisplayCountry"/>
-        /// <seealso cref="GetDisplayCountry(CultureInfo)"/>
+        /// <seealso cref="GetDisplayCountry(UCultureInfo)"/>
         /// <stable>ICU4N 60</stable>
         public static string GetCountry(string localeID)
         {
@@ -535,7 +540,7 @@ namespace ICU4N.Globalization
         /// Returns the variant code for this locale, which might be the empty string.
         /// </summary>
         /// <seealso cref="DisplayVariant"/>
-        /// <seealso cref="GetDisplayVariant(CultureInfo)"/>
+        /// <seealso cref="GetDisplayVariant(UCultureInfo)"/>
         /// <stable>ICU4N 60</stable>
         public string Variant => Base.Variant;
 
@@ -546,7 +551,7 @@ namespace ICU4N.Globalization
         /// <param name="localeID"></param>
         /// <returns></returns>
         /// <seealso cref="DisplayVariant"/>
-        /// <seealso cref="GetDisplayVariant(CultureInfo)"/>
+        /// <seealso cref="GetDisplayVariant(UCultureInfo)"/>
         /// <stable>ICU4N 60</stable>
         public static string GetVariant(string localeID)
         {
@@ -633,7 +638,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <stable>ICU 3.0</stable>
         // ICU4N specific: Renamed from Name (and BaseName was renamed to Name, since it does not contain keywords the same as .NET).
-        public virtual string FullName => localeID; // always normalized
+        public string FullName => localeID; // always normalized
 
         /// <summary>
         /// Gets the shortest length subtag's size.
@@ -1007,7 +1012,7 @@ namespace ICU4N.Globalization
         /// <param name="displayLocale">The locale in which to display the name.</param>
         /// <returns>The localized language name.</returns>
         /// <stable>ICU 3.0</stable>
-        public string GetDisplayLanguage(CultureInfo displayLocale)
+        public string GetDisplayLanguage(UCultureInfo displayLocale)
         {
             return GetDisplayLanguageInternal(this, displayLocale, false);
         }
@@ -1034,7 +1039,7 @@ namespace ICU4N.Globalization
          * @return the localized language name.
          * @stable ICU 3.0
          */
-        public static string GetDisplayLanguage(string localeID, CultureInfo displayLocale)
+        public static string GetDisplayLanguage(string localeID, UCultureInfo displayLocale)
         {
             return GetDisplayLanguageInternal(new UCultureInfo(localeID), displayLocale, false);
         }
@@ -1057,7 +1062,7 @@ namespace ICU4N.Globalization
          * @return the localized language name.
          * @stable ICU 4.4
          */
-        public string GetDisplayLanguageWithDialect(CultureInfo displayLocale)
+        public string GetDisplayLanguageWithDialect(UCultureInfo displayLocale)
         {
             return GetDisplayLanguageInternal(this, displayLocale, true);
         }
@@ -1086,12 +1091,12 @@ namespace ICU4N.Globalization
          * @return the localized language name.
          * @stable ICU 4.4
          */
-        public static string GetDisplayLanguageWithDialect(string localeID, CultureInfo displayLocale)
+        public static string GetDisplayLanguageWithDialect(string localeID, UCultureInfo displayLocale)
         {
             return GetDisplayLanguageInternal(new UCultureInfo(localeID), displayLocale, true);
         }
 
-        private static string GetDisplayLanguageInternal(UCultureInfo locale, CultureInfo displayLocale,
+        private static string GetDisplayLanguageInternal(UCultureInfo locale, UCultureInfo displayLocale,
                 bool useDialect)
         {
             string lang = useDialect ? locale.Name : locale.Language;
@@ -1124,7 +1129,7 @@ namespace ICU4N.Globalization
          * @return the localized script name.
          * @stable ICU 3.0
          */
-        public string GetDisplayScript(CultureInfo displayLocale)
+        public string GetDisplayScript(UCultureInfo displayLocale)
         {
             return GetDisplayScriptInternal(this, displayLocale);
         }
@@ -1137,7 +1142,7 @@ namespace ICU4N.Globalization
          * @deprecated This API is ICU internal only.
          */
         //[Obsolete("This API is ICU internal only.")]
-        internal string GetDisplayScriptInContext(CultureInfo displayLocale)
+        internal string GetDisplayScriptInContext(UCultureInfo displayLocale)
         {
             return GetDisplayScriptInContextInternal(this, displayLocale);
         }
@@ -1176,7 +1181,7 @@ namespace ICU4N.Globalization
          * @return the localized script name.
          * @stable ICU 3.0
          */
-        public static string GetDisplayScript(string localeID, CultureInfo displayLocale)
+        public static string GetDisplayScript(string localeID, UCultureInfo displayLocale)
         {
             return GetDisplayScriptInternal(new UCultureInfo(localeID), displayLocale);
         }
@@ -1189,19 +1194,19 @@ namespace ICU4N.Globalization
          * @deprecated This API is ICU internal only.
          */
         //[Obsolete("This API is ICU internal only.")]
-        internal static string GetDisplayScriptInContext(string localeID, CultureInfo displayLocale)
+        internal static string GetDisplayScriptInContext(string localeID, UCultureInfo displayLocale)
         {
             return GetDisplayScriptInContextInternal(new UCultureInfo(localeID), displayLocale);
         }
 
         // displayLocaleID is canonical, localeID need not be since parsing will fix this.
-        private static string GetDisplayScriptInternal(UCultureInfo locale, CultureInfo displayLocale)
+        private static string GetDisplayScriptInternal(UCultureInfo locale, UCultureInfo displayLocale)
         {
             return CultureDisplayNames.GetInstance(displayLocale)
                     .GetScriptDisplayName(locale.Script);
         }
 
-        private static string GetDisplayScriptInContextInternal(UCultureInfo locale, CultureInfo displayLocale)
+        private static string GetDisplayScriptInContextInternal(UCultureInfo locale, UCultureInfo displayLocale)
         {
 #pragma warning disable 612, 618
             return CultureDisplayNames.GetInstance(displayLocale)
@@ -1229,7 +1234,7 @@ namespace ICU4N.Globalization
          * @return the localized country name.
          * @stable ICU 3.0
          */
-        public string GetDisplayCountry(CultureInfo displayLocale)
+        public string GetDisplayCountry(UCultureInfo displayLocale)
         {
             return GetDisplayCountryInternal(this, displayLocale);
         }
@@ -1259,13 +1264,13 @@ namespace ICU4N.Globalization
          * @return the localized country name.
          * @stable ICU 3.0
          */
-        public static string GetDisplayCountry(string localeID, CultureInfo displayLocale)
+        public static string GetDisplayCountry(string localeID, UCultureInfo displayLocale)
         {
             return GetDisplayCountryInternal(new UCultureInfo(localeID), displayLocale);
         }
 
         // displayLocaleID is canonical, localeID need not be since parsing will fix this.
-        private static string GetDisplayCountryInternal(UCultureInfo locale, CultureInfo displayLocale)
+        private static string GetDisplayCountryInternal(UCultureInfo locale, UCultureInfo displayLocale)
         {
             return CultureDisplayNames.GetInstance(displayLocale)
                     .GetRegionDisplayName(locale.Country);
@@ -1286,7 +1291,7 @@ namespace ICU4N.Globalization
          * @return the localized variant name.
          * @stable ICU 3.0
          */
-        public string GetDisplayVariant(CultureInfo displayLocale)
+        public string GetDisplayVariant(UCultureInfo displayLocale)
         {
             return GetDisplayVariantInternal(this, displayLocale);
         }
@@ -1312,12 +1317,12 @@ namespace ICU4N.Globalization
          * @return the localized variant name.
          * @stable ICU 3.0
          */
-        public static string GetDisplayVariant(string localeID, CultureInfo displayLocale)
+        public static string GetDisplayVariant(string localeID, UCultureInfo displayLocale)
         {
             return GetDisplayVariantInternal(new UCultureInfo(localeID), displayLocale);
         }
 
-        private static string GetDisplayVariantInternal(UCultureInfo locale, CultureInfo displayLocale)
+        private static string GetDisplayVariantInternal(UCultureInfo locale, UCultureInfo displayLocale)
         {
             return CultureDisplayNames.GetInstance(displayLocale)
                     .GetVariantDisplayName(locale.Variant);
@@ -1325,7 +1330,7 @@ namespace ICU4N.Globalization
 
 
         /// <summary>
-        /// <icu/> Returns a keyword localized for display in the <see cref="CultureInfo.CurrentUICulture"/> locale.
+        /// <icu/> Returns a keyword localized for display in the <see cref="UCultureInfo.CurrentUICulture"/> locale.
         /// </summary>
         /// <param name="keyword">The keyword to be displayed.</param>
         /// <returns>The localized keyword name.</returns>
@@ -1356,27 +1361,27 @@ namespace ICU4N.Globalization
         /// <icu/> Returns a keyword localized for display in the specified locale.
         /// </summary>
         /// <param name="keyword">The keyword to be displayed.</param>
-        /// <param name="displayLocale">The <see cref="System.Globalization.CultureInfo"/> in which to display the keyword.</param>
+        /// <param name="displayLocale">The <see cref="UCultureInfo"/> in which to display the keyword.</param>
         /// <returns>The localized keyword name.</returns>
         /// <seealso cref="GetKeywords(string)"/>
         /// <seealso cref="Keywords"/>
         /// <stable>ICU 3.0</stable>
-        public static string GetDisplayKeyword(string keyword, CultureInfo displayLocale)
+        public static string GetDisplayKeyword(string keyword, UCultureInfo displayLocale)
         {
             return GetDisplayKeywordInternal(keyword, displayLocale);
         }
 
-        private static string GetDisplayKeywordInternal(string keyword, CultureInfo displayLocale)
+        private static string GetDisplayKeywordInternal(string keyword, UCultureInfo displayLocale)
         {
             return CultureDisplayNames.GetInstance(displayLocale).GetKeyDisplayName(keyword);
         }
 
         /// <summary>
-        /// <icu/> Returns a keyword value localized for display in the <see cref="CultureInfo.CurrentUICulture"/> locale.
+        /// <icu/> Returns a keyword value localized for display in the <see cref="UCultureInfo.CurrentUICulture"/> locale.
         /// </summary>
         /// <param name="keyword">The keyword whose value is to be displayed.</param>
         /// <returns>The localized value name.</returns>
-        /// <seealso cref="CultureInfo.CurrentUICulture"/>
+        /// <seealso cref="UCultureInfo.CurrentUICulture"/>
         /// <seealso cref="GetKeywords(string)"/>
         /// <seealso cref="Keywords"/>
         /// <stable>ICU 3.0</stable>
@@ -1394,7 +1399,7 @@ namespace ICU4N.Globalization
         /// <seealso cref="GetKeywords(string)"/>
         /// <seealso cref="Keywords"/>
         /// <stable>ICU 3.0</stable>
-        public string GetDisplayKeywordValue(string keyword, CultureInfo displayLocale)
+        public string GetDisplayKeywordValue(string keyword, UCultureInfo displayLocale)
         {
             return GetDisplayKeywordValueInternal(this, keyword, displayLocale);
         }
@@ -1423,20 +1428,20 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <param name="localeID">The id of the locale whose keyword value is to be displayed.</param>
         /// <param name="keyword">The keyword whose value is to be displayed.</param>
-        /// <param name="displayLocale">The <see cref="System.Globalization.CultureInfo"/> in which to display the value.</param>
+        /// <param name="displayLocale">The <see cref="UCultureInfo"/> in which to display the value.</param>
         /// <returns>The localized value name.</returns>
         /// <seealso cref="GetKeywords(string)"/>
         /// <seealso cref="Keywords"/>
         /// <stable>ICU 3.0</stable>
         public static string GetDisplayKeywordValue(string localeID, string keyword,
-                CultureInfo displayLocale)
+                UCultureInfo displayLocale)
         {
             return GetDisplayKeywordValueInternal(new UCultureInfo(localeID), keyword, displayLocale);
         }
 
         // displayLocaleID is canonical, localeID need not be since parsing will fix this.
         private static string GetDisplayKeywordValueInternal(UCultureInfo locale, string keyword,
-                CultureInfo displayLocale)
+                UCultureInfo displayLocale)
         {
             keyword = AsciiUtil.ToLower(keyword.Trim());
             locale.Keywords.TryGetValue(keyword, out string value);
@@ -1453,7 +1458,7 @@ namespace ICU4N.Globalization
  * @return the localized locale name.
  * @stable ICU 3.0
  */
-        public string GetDisplayName(CultureInfo displayLocale)
+        public string GetDisplayName(UCultureInfo displayLocale)
         {
             return GetDisplayNameInternal(this, displayLocale);
         }
@@ -1479,12 +1484,12 @@ namespace ICU4N.Globalization
          * @return the localized locale name.
          * @stable ICU 3.0
          */
-        public static string GetDisplayName(string localeID, CultureInfo displayLocale)
+        public static string GetDisplayName(string localeID, UCultureInfo displayLocale)
         {
             return GetDisplayNameInternal(new UCultureInfo(localeID), displayLocale);
         }
 
-        private static string GetDisplayNameInternal(UCultureInfo locale, CultureInfo displayLocale)
+        private static string GetDisplayNameInternal(UCultureInfo locale, UCultureInfo displayLocale)
         {
             return CultureDisplayNames.GetInstance(displayLocale).GetLocaleDisplayName(locale);
         }
@@ -1506,7 +1511,7 @@ namespace ICU4N.Globalization
          * @return the localized locale name.
          * @stable ICU 4.4
          */
-        public string GetDisplayNameWithDialect(CultureInfo displayLocale)
+        public string GetDisplayNameWithDialect(UCultureInfo displayLocale)
         {
             return GetDisplayNameWithDialectInternal(this, displayLocale);
         }
@@ -1535,12 +1540,12 @@ namespace ICU4N.Globalization
          * @return the localized locale name.
          * @stable ICU 4.4
          */
-        public static string GetDisplayNameWithDialect(string localeID, CultureInfo displayLocale)
+        public static string GetDisplayNameWithDialect(string localeID, UCultureInfo displayLocale)
         {
             return GetDisplayNameWithDialectInternal(new UCultureInfo(localeID), displayLocale);
         }
 
-        private static string GetDisplayNameWithDialectInternal(UCultureInfo locale, CultureInfo displayLocale)
+        private static string GetDisplayNameWithDialectInternal(UCultureInfo locale, UCultureInfo displayLocale)
         {
             return CultureDisplayNames.GetInstance(displayLocale, DialectHandling.DialectNames)
                     .GetLocaleDisplayName(locale);
@@ -3096,7 +3101,7 @@ namespace ICU4N.Globalization
          *
          * @stable ICU 4.2
          */
-        new public static UCultureInfo GetCultureInfoByIetfLanguageTag(string languageTag) // ICU4N specific - renamed from ForLanguageTag to match .NET
+        /*new*/ public static UCultureInfo GetCultureInfoByIetfLanguageTag(string languageTag) // ICU4N specific - renamed from ForLanguageTag to match .NET
         {
             if (languageTag == null)
                 throw new ArgumentNullException(nameof(languageTag));
@@ -3233,7 +3238,7 @@ namespace ICU4N.Globalization
         /// <returns>The well-formed legacy type, or <c>null</c> if the specified
         /// keyword value cannot be mapped to a well-formed legacy
         /// type.</returns>
-        /// <seealso cref="ToUnicodeLocaleType(string)"/>
+        /// <seealso cref="ToUnicodeLocaleType(string, string)"/>
         /// <stable>ICU 54</stable>
         public static string ToLegacyType(string keyword, string value)
         {

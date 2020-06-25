@@ -558,7 +558,7 @@ namespace ICU4N.Globalization
         [Test]
         public void TestUldnWithGarbage()
         {
-            CultureDisplayNames ldn = CultureDisplayNames.GetInstance(new CultureInfo("en-US"), DialectHandling.DialectNames);
+            CultureDisplayNames ldn = CultureDisplayNames.GetInstance(new CultureInfo("en-US"),  DialectHandling.DialectNames);
             String badLocaleID = "english (United States) [w";
             String expectedResult = "english [united states] [w"; // case changed from input
             String result = ldn.GetLocaleDisplayName(badLocaleID);
@@ -1072,7 +1072,7 @@ namespace ICU4N.Globalization
                     UCultureInfo.GetDisplayScript("zh-Hans", "de"));
         }
 
-        private bool checkName(String name, String language, String script, String country, String variant, CultureInfo dl)
+        private bool checkName(String name, String language, String script, String country, String variant, UCultureInfo dl)
         {
             if (!checkInclusion(dl, name, language, "language"))
             {
@@ -1093,7 +1093,7 @@ namespace ICU4N.Globalization
             return true;
         }
 
-        private bool checkInclusion(CultureInfo dl, String name, String substring, String substringName)
+        private bool checkInclusion(UCultureInfo dl, String name, String substring, String substringName)
         {
             if (substring.Length > 0 && name.IndexOf(substring, StringComparison.Ordinal) == -1)
             {
@@ -4565,7 +4565,7 @@ namespace ICU4N.Globalization
         {
             CultureInfo backupDefault = CultureInfo.CurrentCulture;
 
-            CultureInfo orgDefault = UCultureInfo.CurrentCulture;
+            UCultureInfo orgDefault = UCultureInfo.CurrentCulture;
 
             // Setting a category default won't change default UCultureInfo
             UCultureInfo uJaJp = new UCultureInfo("ja_JP");
@@ -4599,8 +4599,8 @@ namespace ICU4N.Globalization
             // Setting ULocale default will overrides category defaults
             UCultureInfo uFrFr = new UCultureInfo("fr_FR");
 
-            UCultureInfo.DotNetLocaleHelper.CurrentCulture = uFrFr;
-            UCultureInfo.DotNetLocaleHelper.CurrentUICulture = uFrFr; // ICU4N: .NET dosen't automatically set both values, you have to do it explicitly
+            //UCultureInfo.DotNetLocaleHelper.CurrentCulture = uFrFr;
+            //UCultureInfo.DotNetLocaleHelper.CurrentUICulture = uFrFr; // ICU4N: .NET dosen't automatically set both values, you have to do it explicitly
 
             if (!UCultureInfo.CurrentUICulture.Equals(uFrFr))
             {

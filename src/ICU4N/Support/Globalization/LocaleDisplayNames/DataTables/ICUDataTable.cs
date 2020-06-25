@@ -11,11 +11,11 @@ namespace ICU4N.Globalization
     {
         private readonly ICUResourceBundle bundle;
 
-        public ICUDataTable(string path, CultureInfo culture, Assembly assembly, bool nullIfNotFound)
+        public ICUDataTable(string path, UCultureInfo culture, Assembly assembly, bool nullIfNotFound)
             : base(nullIfNotFound)
         {
             this.bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(
-                    path, culture.ToUCultureInfo().Name, assembly);
+                    path, culture.Name, assembly);
         }
 
         public override CultureInfo CultureInfo => bundle.Culture;

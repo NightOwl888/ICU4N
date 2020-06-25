@@ -17,7 +17,7 @@ namespace ICU4N.Globalization
     /// </code>
     /// <para/>
     /// Unlike <see cref="J2N.Globalization.CultureContext"/>, this class utilizes <see cref="UCultureInfo"/>
-    /// instead of <see cref="CultureInfo"/>.
+    /// instead of <see cref="System.Globalization.CultureInfo"/>.
     /// </summary>
     internal class ThreadCultureChange : IDisposable
     {

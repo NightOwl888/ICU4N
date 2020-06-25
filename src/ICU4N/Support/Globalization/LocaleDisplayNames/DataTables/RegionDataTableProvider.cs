@@ -50,7 +50,7 @@ namespace ICU4N.Globalization
         /// that is passed in will be returned.</param>
         /// <returns>The table data.</returns>
         /// <draft>ICU 60</draft>
-        public virtual IDataTable GetDataTable(CultureInfo culture, bool nullIfNotFound)
+        public virtual IDataTable GetDataTable(UCultureInfo culture, bool nullIfNotFound)
         {
             return new ICUDataTable(ICUData.IcuRegionBaseName, culture, Assembly, nullIfNotFound);
         }

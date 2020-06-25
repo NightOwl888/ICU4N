@@ -1,40 +1,39 @@
 ﻿using ICU4N.Impl.Locale;
 using System;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace ICU4N.Globalization
 {
     public partial class UCultureInfo
     {
 
-        new public UCultureTypes CultureTypes => isNeutralCulture ? UCultureTypes.NeutralCultures : UCultureTypes.SpecificCultures;
+        /*new*/ public UCultureTypes CultureTypes => isNeutralCulture ? UCultureTypes.NeutralCultures : UCultureTypes.SpecificCultures;
 
-        /// <inheritdoc/>
-        public override Calendar Calendar => isInvariantCulture ? CultureInfo.InvariantCulture.Calendar : culture.Calendar;
+        ///// <inheritdoc/>
+        //public override Calendar Calendar => isInvariantCulture ? CultureInfo.InvariantCulture.Calendar : culture.Calendar;
 
-        /// <inheritdoc/>
-        public override CompareInfo CompareInfo => isInvariantCulture ? CultureInfo.InvariantCulture.CompareInfo : culture.CompareInfo;
+        ///// <inheritdoc/>
+        //public override CompareInfo CompareInfo => isInvariantCulture ? CultureInfo.InvariantCulture.CompareInfo : culture.CompareInfo;
 
-        /// <inheritdoc/>
-        public override DateTimeFormatInfo DateTimeFormat
-        {
-            get => culture.DateTimeFormat;
-            set => culture.DateTimeFormat = value;
-        }
+        ///// <inheritdoc/>
+        //public override DateTimeFormatInfo DateTimeFormat
+        //{
+        //    get => culture.DateTimeFormat;
+        //    set => culture.DateTimeFormat = value;
+        //}
 
         /// <inheritdoc/>
         // ICU4N TODO: Use InstalledUICulture for display name to mimic .NET?
-        public override string DisplayName => GetDisplayNameInternal(this, CurrentUICulture);
+        public /*override*/ string DisplayName => GetDisplayNameInternal(this, CurrentUICulture);
 
         /// <inheritdoc/>
-        public override string EnglishName
+        public /*override*/ string EnglishName
             => isInvariantCulture
                 ? CultureInfo.InvariantCulture.EnglishName
                 : GetDisplayName(localeID, English);
 
 #if FEATURE_CULTUREINFO_IETFLANGUAGETAG
-        public new string IetfLanguageTag
+        public /*new*/ string IetfLanguageTag
 #else
         public string IetfLanguageTag
 #endif
@@ -57,20 +56,20 @@ namespace ICU4N.Globalization
         }
 
         /// <inheritdoc/>
-        public override bool IsNeutralCulture => isNeutralCulture;
+        public /*override*/ bool IsNeutralCulture => isNeutralCulture;
 
 
-#if FEATURE_CULTUREINFO_KEYBOARDLAYOUTID
-        /// <inheritdoc/>
-        public override int KeyboardLayoutId => culture.KeyboardLayoutId;
-#endif
-#if FEATURE_CULTUREINFO_LCID
-        /// <inheritdoc/>
-        // ICU4N: According to the document at
-        // https://docs.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-localenametolcid
-        // the LCID is always 0x1000 when returning a CLDR culture.
-        public override int LCID => isInvariantCulture ? CultureInfo.InvariantCulture.LCID : 0x1000;
-#endif
+//#if FEATURE_CULTUREINFO_KEYBOARDLAYOUTID
+//        /// <inheritdoc/>
+//        public override int KeyboardLayoutId => culture.KeyboardLayoutId;
+//#endif
+//#if FEATURE_CULTUREINFO_LCID
+//        /// <inheritdoc/>
+//        // ICU4N: According to the document at
+//        // https://docs.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-localenametolcid
+//        // the LCID is always 0x1000 when returning a CLDR culture.
+//        public /*override*/ int LCID => isInvariantCulture ? CultureInfo.InvariantCulture.LCID : 0x1000;
+//#endif
 
         /// <summary>
         /// <icu/> Returns the (normalized) base name for this locale,
@@ -78,30 +77,30 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <stable>ICU 3.0</stable>
         // ICU4N specific: This was named getBaseName() in ICU4J
-        public override string Name => GetName(localeID); // always normalized
+        public /*override*/ string Name => GetName(localeID); // always normalized
 
         /// <inheritdoc/>
-        public override string NativeName => isInvariantCulture ? CultureInfo.InvariantCulture.NativeName : GetDisplayName(localeID, localeID);
+        public /*override*/ string NativeName => isInvariantCulture ? CultureInfo.InvariantCulture.NativeName : GetDisplayName(localeID, localeID);
 
-        /// <inheritdoc/>
-        public override NumberFormatInfo NumberFormat
-        {
-            get => culture.NumberFormat;
-            set => culture.NumberFormat = value;
-        }
+        ///// <inheritdoc/>
+        //public override NumberFormatInfo NumberFormat
+        //{
+        //    get => culture.NumberFormat;
+        //    set => culture.NumberFormat = value;
+        //}
 
-        /// <inheritdoc/>
-        public override Calendar[] OptionalCalendars => isInvariantCulture ? CultureInfo.InvariantCulture.OptionalCalendars : culture.OptionalCalendars;
+        ///// <inheritdoc/>
+        //public override Calendar[] OptionalCalendars => isInvariantCulture ? CultureInfo.InvariantCulture.OptionalCalendars : culture.OptionalCalendars;
 
         /// <summary>
         /// Returns the fallback locale (parent) for this locale. If this locale is root,
-        /// returns <c>null</c>.
+        /// returns <see cref="UCultureInfo.InvariantCulture"/>.
         /// </summary>
         /// <stable>ICU 3.2</stable>
-        public override CultureInfo Parent => GetParent() ?? UCultureInfo.InvariantCulture;
+        public /*override*/ UCultureInfo Parent => GetParent() ?? UCultureInfo.InvariantCulture;
 
-        /// <inheritdoc/>
-        public override TextInfo TextInfo => isInvariantCulture ? base.TextInfo : culture.TextInfo;
+        ///// <inheritdoc/>
+        //public override TextInfo TextInfo => isInvariantCulture ? base.TextInfo : culture.TextInfo;
 
         /// <summary>
         /// Returns a three-letter abbreviation for the language. If language is
@@ -115,7 +114,7 @@ namespace ICU4N.Globalization
         /// If the three-letter language abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
 #if FEATURE_CULTUREINFO_THREELETTERISOLANGUAGENAME
-        public override string ThreeLetterISOLanguageName     
+        public /*override*/ string ThreeLetterISOLanguageName     
 #else
         public string ThreeLetterISOLanguageName
 #endif
@@ -124,18 +123,18 @@ namespace ICU4N.Globalization
 
 #if FEATURE_CULTUREINFO_THREELETTERWINDOWSLANGUAGENAME
         /// <inheritdoc/>
-        public override string ThreeLetterWindowsLanguageName => culture?.ThreeLetterWindowsLanguageName; // Windows API
+        public /*override*/ string ThreeLetterWindowsLanguageName => culture?.ThreeLetterWindowsLanguageName; // Windows API
 #endif
 
         /// <inheritdoc/>
-        public override string TwoLetterISOLanguageName
+        public /*override*/ string TwoLetterISOLanguageName
             => GetTwoLetterISOLanguageName(localeID); // ISO 639-1
 
         /// <summary>
         /// Refreshes cached culture-related information.
         /// This is to cover the <see cref="ToCultureInfo"/> API.
         /// </summary>
-        public new void ClearCachedData()
+        public /*new*/ void ClearCachedData()
         {
             // this.culture = null;
             baseLocale = null;
@@ -170,7 +169,7 @@ namespace ICU4N.Globalization
         // smaller name, ala RFC4647, if we can't find a bigger name.
         // That doesn't help with things like "zh" though, so the approach
         // is of questionable value
-        public new static UCultureInfo CreateSpecificCulture(string name)
+        public /*new*/ static UCultureInfo CreateSpecificCulture(string name)
         {
             UCultureInfo culture;
 
@@ -224,7 +223,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <returns>This object.</returns>
         /// <stable>ICU 3.0</stable>
-        public override object Clone()
+        public /*override*/ object Clone()
         {
             return this; // ICU4N TODO: UCultureInfo is not immutable, so we will need a real clone implementation
         }
@@ -267,17 +266,17 @@ namespace ICU4N.Globalization
             return localeID.GetHashCode();
         }
 
-        /// <inheritdoc/>
-        // ICU4N: Unfortunately, when DateTimeFormatInfo or NumberFormatInfo
-        // are requested here, the return type must match because internally .NET
-        // will try to cast to the type that was requested. This means there is no
-        // way to customize the default string.Format() method for numeric and date
-        // types without either wrapping those arguments in custom IFormattable types
-        // to request something other than DateTimeFormatInfo or NumberFormatInfo.
-        public override object GetFormat(Type formatType)
-        {
-            return culture.GetFormat(formatType);
-        }
+        ///// <inheritdoc/>
+        //// ICU4N: Unfortunately, when DateTimeFormatInfo or NumberFormatInfo
+        //// are requested here, the return type must match because internally .NET
+        //// will try to cast to the type that was requested. This means there is no
+        //// way to customize the default string.Format() method for numeric and date
+        //// types without either wrapping those arguments in custom IFormattable types
+        //// to request something other than DateTimeFormatInfo or NumberFormatInfo.
+        //public override object GetFormat(Type formatType)
+        //{
+        //    return culture.GetFormat(formatType);
+        //}
 
         /// <summary>
         /// Returns a string representation of this object.

@@ -33,6 +33,6 @@ namespace ICU4N.Globalization
         /// that is passed in will be returned.</param>
         /// <returns>The table data.</returns>
         /// <draft>ICU 60</draft>
-        IDataTable GetDataTable(CultureInfo culture, bool nullIfNotFound);
+        IDataTable GetDataTable(UCultureInfo culture, bool nullIfNotFound);
     }
 }

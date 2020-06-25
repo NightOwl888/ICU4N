@@ -19,7 +19,7 @@ namespace ICU4N.Globalization
 
         public bool HasData => defaultDataTableProvider != null && defaultDataTableProvider.HasData;
 
-        public IDataTable GetDataTable(CultureInfo culture, bool nullIfNotFound)
+        public IDataTable GetDataTable(UCultureInfo culture, bool nullIfNotFound)
         {
             if (HasData)
                 return defaultDataTableProvider.GetDataTable(culture, nullIfNotFound);

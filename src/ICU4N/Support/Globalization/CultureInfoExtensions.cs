@@ -24,8 +24,8 @@ namespace ICU4N.Globalization
             if (culture == null)
                 return null;
 
-            if (culture is UCultureInfo uCulture)
-                return uCulture;
+            //if (culture is UCultureInfo uCulture)
+            //    return uCulture;
 
             return uCultureInfoCache.GetOrAdd(culture, (key) => UCultureInfo.DotNetLocaleHelper.ToUCultureInfo(key));
         }
