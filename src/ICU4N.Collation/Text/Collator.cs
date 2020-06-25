@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Resources;
-using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: De-nest?
 
 namespace ICU4N.Text
 {
@@ -223,8 +222,8 @@ namespace ICU4N.Text
     /// Collator instances may be registered instead.
     /// <para/>
     /// <b>Note:</b> as of ICU4N 3.2, the default API for <see cref="CollatorFactory"/> uses
-    /// <see cref="ULocale"/> instead of <see cref="CultureInfo"/>.  Instead of overriding <see cref="CreateCollator(CultureInfo)"/>,
-    /// new implementations should override <see cref="CreateCollator(ULocale)"/>.  Note that
+    /// <see cref="UCultureInfo"/> instead of <see cref="CultureInfo"/>.  Instead of overriding <see cref="CreateCollator(CultureInfo)"/>,
+    /// new implementations should override <see cref="CreateCollator(UCultureInfo)"/>. Note that
     /// one of these two methods <b>MUST</b> be overridden or else an infinite
     /// loop will occur.
     /// </summary>
@@ -234,7 +233,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Return true if this factory will be visible.  Default is true.
         /// If not visible, the locales supported by this factory will not
-        /// be listed by <see cref="Collator.GetAvailableLocales()"/>.
+        /// be listed by <see cref="Collator.GetCultures(UCultureTypes)"/>.
         /// <para/>
         /// true if this factory is visible.
         /// </summary>
@@ -254,9 +253,9 @@ namespace ICU4N.Text
         /// <param name="loc">the locale for which this collator is to be created.</param>
         /// <returns>the newly created collator.</returns>
         /// <stable>ICU 3.2</stable>
-        public virtual Collator CreateCollator(ULocale loc)
+        public virtual Collator CreateCollator(UCultureInfo loc)
         {
-            return CreateCollator(loc.ToLocale());
+            return CreateCollator(loc.ToCultureInfo());
         }
 
         /// <summary>
@@ -264,16 +263,16 @@ namespace ICU4N.Text
         /// is not supported, return null.
         /// <para/>
         /// <b>Note:</b> as of ICU4J 3.2, implementations should override
-        /// createCollator(ULocale) instead of this method, and inherit this
+        /// <see cref="CreateCollator(UCultureInfo)"/> instead of this method, and inherit this
         /// method's implementation.  This method is no longer abstract
-        /// and instead delegates to createCollator(ULocale).
+        /// and instead delegates to <see cref="CreateCollator(UCultureInfo)"/>.
         /// </summary>
         /// <param name="loc">the locale for which this collator is to be created.</param>
         /// <returns>the newly created collator.</returns>
         /// <stable>ICU 2.6</stable>
         public virtual Collator CreateCollator(CultureInfo loc)
         {
-            return CreateCollator(ULocale.ForLocale(loc));
+            return CreateCollator(loc.ToUCultureInfo());
         }
 
         /// <summary>
@@ -286,7 +285,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.6</stable>
         public virtual string GetDisplayName(CultureInfo objectLocale, CultureInfo displayLocale)
         {
-            return Collator.GetDisplayName(ULocale.ForLocale(objectLocale), ULocale.ForLocale(displayLocale));
+            return Collator.GetDisplayName(objectLocale.ToUCultureInfo(), displayLocale.ToUCultureInfo());
         }
 
         /// <summary>
@@ -297,12 +296,12 @@ namespace ICU4N.Text
         /// <param name="displayLocale">the locale for which the display name of the collator should be localized</param>
         /// <returns>the display name</returns>
         /// <stable>ICU 3.2</stable>
-        public virtual string GetDisplayName(ULocale objectLocale, ULocale displayLocale)
+        public virtual string GetDisplayName(UCultureInfo objectLocale, UCultureInfo displayLocale)
         {
             if (Visible)
             {
                 ICollection<string> supported = GetSupportedLocaleIDs();
-                string name = objectLocale.GetBaseName();
+                string name = objectLocale.Name;
                 if (supported.Contains(name))
                 {
                     return objectLocale.GetDisplayName(displayLocale);
@@ -740,7 +739,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static Collator GetInstance() // ICU4N TODO: API - make this method's return type generic to eliminate casting with RuleBasedCollator
         {
-            return GetInstance(ULocale.GetDefault());
+            return GetInstance(UCultureInfo.CurrentCulture);
         }
 
         /// <summary>
@@ -759,13 +758,13 @@ namespace ICU4N.Text
 
         internal abstract class ServiceShim
         {
-            internal abstract Collator GetInstance(ULocale l);
-            internal abstract object RegisterInstance(Collator c, ULocale l);
+            internal abstract Collator GetInstance(UCultureInfo l);
+            internal abstract object RegisterInstance(Collator c, UCultureInfo l);
             internal abstract object RegisterFactory(CollatorFactory f);
             internal abstract bool Unregister(object k);
-            internal abstract CultureInfo[] GetAvailableLocales(); // TODO remove
-            internal abstract ULocale[] GetAvailableULocales();
-            internal abstract string GetDisplayName(ULocale ol, ULocale dl);
+            internal abstract CultureInfo[] GetCultures(UCultureTypes types); // TODO remove // ICU4N: Renamed from GetAvailableLocales
+            internal abstract UCultureInfo[] GetUCultures(UCultureTypes types); // ICU4N: Renamed from GetAvailableULocales
+            internal abstract string GetDisplayName(UCultureInfo ol, UCultureInfo dl);
         }
 
         private static ServiceShim shim;
@@ -876,31 +875,27 @@ namespace ICU4N.Text
         /// <param name="loc"></param>
         /// <param name="coll"></param>
         /// <param name="rbc"></param>
-        private static void SetAttributesFromKeywords(ULocale loc, Collator coll, RuleBasedCollator rbc)
+        private static void SetAttributesFromKeywords(UCultureInfo loc, Collator coll, RuleBasedCollator rbc)
         {
             // Check for collation keywords that were already deprecated
             // before any were supported in createInstance() (except for "collation").
-            string value = loc.GetKeywordValue("colHiraganaQuaternary");
-            if (value != null)
+            if (loc.Keywords.TryGetValue("colHiraganaQuaternary", out string value) && value != null)
             {
                 throw new NotSupportedException("locale keyword kh/colHiraganaQuaternary");
             }
-            value = loc.GetKeywordValue("variableTop");
-            if (value != null)
+            if (loc.Keywords.TryGetValue("variableTop", out value) && value != null)
             {
                 throw new NotSupportedException("locale keyword vt/variableTop");
             }
             // Parse known collation keywords, ignore others.
-            value = loc.GetKeywordValue("colStrength");
-            if (value != null)
+            if (loc.Keywords.TryGetValue("colStrength", out value) && value != null)
             {
                 // Note: Not supporting typo "quarternary" because it was never supported in locale IDs.
                 int strength = GetInt32Value("colStrength", value,
                         "primary", "secondary", "tertiary", "quaternary", "identical");
                 coll.Strength = strength <= (int)CollationStrength.Quaternary ? (CollationStrength)strength : CollationStrength.Identical;
             }
-            value = loc.GetKeywordValue("colBackwards");
-            if (value != null)
+            if (loc.Keywords.TryGetValue("colBackwards", out value) && value != null)
             {
                 if (rbc != null)
                 {
@@ -912,8 +907,7 @@ namespace ICU4N.Text
                             "locale keyword kb/colBackwards only settable for RuleBasedCollator");
                 }
             }
-            value = loc.GetKeywordValue("colCaseLevel");
-            if (value != null)
+            if (loc.Keywords.TryGetValue("colCaseLevel", out value) && value != null)
             {
                 if (rbc != null)
                 {
@@ -925,8 +919,7 @@ namespace ICU4N.Text
                             "locale keyword kb/colBackwards only settable for RuleBasedCollator");
                 }
             }
-            value = loc.GetKeywordValue("colCaseFirst");
-            if (value != null)
+            if (loc.Keywords.TryGetValue("colCaseFirst", out value) && value != null)
             {
                 if (rbc != null)
                 {
@@ -951,8 +944,7 @@ namespace ICU4N.Text
                             "locale keyword kf/colCaseFirst only settable for RuleBasedCollator");
                 }
             }
-            value = loc.GetKeywordValue("colAlternate");
-            if (value != null)
+            if (loc.Keywords.TryGetValue("colAlternate", out value) && value != null)
             {
                 if (rbc != null)
                 {
@@ -965,14 +957,12 @@ namespace ICU4N.Text
                             "locale keyword ka/colAlternate only settable for RuleBasedCollator");
                 }
             }
-            value = loc.GetKeywordValue("colNormalization");
-            if (value != null)
+            if (loc.Keywords.TryGetValue("colNormalization", out value) && value != null)
             {
                 coll.Decomposition = GetYesOrNo("colNormalization", value) ?
                         NormalizationMode.CanonicalDecomposition : NormalizationMode.NoDecomposition;
             }
-            value = loc.GetKeywordValue("colNumeric");
-            if (value != null)
+            if (loc.Keywords.TryGetValue("colNumeric", out value) && value != null)
             {
                 if (rbc != null)
                 {
@@ -984,8 +974,7 @@ namespace ICU4N.Text
                             "locale keyword kn/colNumeric only settable for RuleBasedCollator");
                 }
             }
-            value = loc.GetKeywordValue("colReorder");
-            if (value != null)
+            if (loc.Keywords.TryGetValue("colReorder", out value) && value != null)
             {
 #pragma warning disable 612, 618
                 int[] codes = new int[UScript.CodeLimit + ReorderCodes.Limit - ReorderCodes.First];
@@ -1024,8 +1013,7 @@ namespace ICU4N.Text
                 System.Array.Copy(codes, 0, args, 0, codesLength);
                 coll.SetReorderCodes(args);
             }
-            value = loc.GetKeywordValue("kv");
-            if (value != null)
+            if (loc.Keywords.TryGetValue("kv", out value) && value != null)
             {
                 coll.MaxVariable = GetReorderCode("kv", value);
             }
@@ -1053,15 +1041,15 @@ namespace ICU4N.Text
         /// <seealso cref="GetInstance(CultureInfo)"/>
         /// <seealso cref="GetInstance()"/>
         /// <stable>ICU 3.0</stable>
-        public static Collator GetInstance(ULocale locale) // ICU4N TODO: API - make this method's return type generic to eliminate casting with RuleBasedCollator
+        public static Collator GetInstance(UCultureInfo locale) // ICU4N TODO: API - make this method's return type generic to eliminate casting with RuleBasedCollator
         {
             // fetching from service cache is faster than instantiation
             if (locale == null)
             {
-                locale = ULocale.GetDefault();
+                locale = UCultureInfo.CurrentCulture;
             }
             Collator coll = GetShim().GetInstance(locale);
-            if (!locale.GetName().Equals(locale.GetBaseName()))
+            if (!locale.FullName.Equals(locale.Name))
             {  // any keywords?
                 SetAttributesFromKeywords(locale, coll,
                         (coll is RuleBasedCollator) ? (RuleBasedCollator)coll : null);
@@ -1075,7 +1063,7 @@ namespace ICU4N.Text
         /// For some languages, multiple collation types are available;
         /// for example, "de-u-co-phonebk".
         /// Starting with ICU 54, collation attributes can be specified via locale keywords as well,
-        /// in the old locale extension syntax ("el@colCaseFirst=upper", only with <see cref="ULocale"/>)
+        /// in the old locale extension syntax ("el@colCaseFirst=upper", only with <see cref="UCultureInfo"/>)
         /// or in language tag syntax ("el-u-kf-upper").
         /// See <a href="http://userguide.icu-project.org/collation/api">User Guide: Collation API</a>.
         /// </summary>
@@ -1093,7 +1081,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static Collator GetInstance(CultureInfo locale) // ICU4N TODO: API - make this method's return type generic to eliminate casting with RuleBasedCollator
         {
-            return GetInstance(ULocale.ForLocale(locale));
+            return GetInstance(locale.ToUCultureInfo());
         }
 
         /// <summary>
@@ -1108,7 +1096,7 @@ namespace ICU4N.Text
         /// <param name="locale">the locale for which this is the default collator</param>
         /// <returns>an object that can be used to unregister the registered collator.</returns>
         /// <stable>ICU 3.2</stable>
-        public static object RegisterInstance(Collator collator, ULocale locale)
+        public static object RegisterInstance(Collator collator, UCultureInfo locale)
         {
             return GetShim().RegisterInstance(collator, locale);
         }
@@ -1129,9 +1117,9 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// <icu/> Unregisters a collator previously registered using <see cref="RegisterInstance(Collator, ULocale)"/>.
+        /// <icu/> Unregisters a collator previously registered using <see cref="RegisterInstance(Collator, UCultureInfo)"/>.
         /// </summary>
-        /// <param name="registryKey">the object previously returned by <see cref="RegisterInstance(Collator, ULocale)"/>.</param>
+        /// <param name="registryKey">the object previously returned by <see cref="RegisterInstance(Collator, UCultureInfo)"/>.</param>
         /// <returns>true if the collator was successfully unregistered.</returns>
         /// <stable>ICU 2.6</stable>
         public static bool Unregister(object registryKey)
@@ -1147,41 +1135,47 @@ namespace ICU4N.Text
         /// Returns the set of locales, as <see cref="CultureInfo"/> objects, for which collators
         /// are installed.  Note that <see cref="CultureInfo"/> objects do not support RFC 3066.
         /// </summary>
+        /// <param name="types">A bitwise combination of the enumeration values that filter the cultures to retrieve.</param>
         /// <returns>
         /// the list of locales in which collators are installed.
         /// This list includes any that have been registered, in addition to
         /// those that are installed with ICU4N.
         /// </returns>
         /// <stable>ICU 2.4</stable>
-        public static CultureInfo[] GetAvailableLocales() // ICU4N TODO: API - rename GetAvailableCultures()
+        public static CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
             // TODO make this wrap getAvailableULocales later
             if (shim == null)
             {
-                return ICUResourceBundle.GetAvailableLocales(
-                    ICUData.IcuCollationBaseName, CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */);
+                return ICUResourceBundle.GetCultures(
+                    ICUData.IcuCollationBaseName,
+                    CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */,
+                    types);
             }
-            return shim.GetAvailableLocales();
+            return shim.GetCultures(types);
         }
 
         /// <summary>
-        /// <icu/> Returns the set of locales, as <see cref="ULocale"/> objects, for which collators
-        /// are installed.  <see cref="ULocale"/> objects support RFC 3066.
+        /// <icu/> Returns the set of locales, as <see cref="UCultureInfo"/> objects, for which collators
+        /// are installed.  <see cref="UCultureInfo"/> objects support RFC 3066.
         /// </summary>
+        /// <param name="types">A bitwise combination of the enumeration values that filter the cultures to retrieve.</param>
         /// <returns>
         /// the list of locales in which collators are installed.
         /// This list includes any that have been registered, in addition to
         /// those that are installed with ICU4N.
         /// </returns>
         /// <stable>ICU 3.0</stable>
-        public static ULocale[] GetAvailableULocales()
+        public static UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableULocales
         {
             if (shim == null)
             {
-                return ICUResourceBundle.GetAvailableULocales(
-                    ICUData.IcuCollationBaseName, CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */);
+                return ICUResourceBundle.GetUCultures(
+                    ICUData.IcuCollationBaseName,
+                    CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */,
+                    types);
             }
-            return shim.GetAvailableULocales();
+            return shim.GetUCultures(types);
         }
 
         /// <summary>
@@ -1241,7 +1235,7 @@ namespace ICU4N.Text
         /// input locale alone.
         /// </summary>
         /// <param name="key">
-        /// one of the keys supported by this service.  For now, only
+        /// one of the keys supported by this service. For now, only
         /// "collation" is supported.
         /// </param>
         /// <param name="locale">the locale</param>
@@ -1251,7 +1245,7 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>An array of string values for the given key and the locale.</returns>
         /// <stable>ICU 4.2</stable>
-        public static string[] GetKeywordValuesForLocale(string key, ULocale locale,
+        public static string[] GetKeywordValuesForLocale(string key, UCultureInfo locale,
                                                                bool commonlyUsed)
         {
             // Note: The parameter commonlyUsed is not used.
@@ -1327,8 +1321,8 @@ namespace ICU4N.Text
         /// must have length &gt;= 1.</param>
         /// <returns>the locale</returns>
         /// <stable>ICU 3.0</stable>
-        public static ULocale GetFunctionalEquivalent(string keyword,
-                                                            ULocale locID,
+        public static UCultureInfo GetFunctionalEquivalent(string keyword,
+                                                            UCultureInfo locID,
                                                             bool[] isAvailable)
         {
             return ICUResourceBundle.GetFunctionalEquivalent(BASE, CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */, RESOURCE,
@@ -1343,10 +1337,10 @@ namespace ICU4N.Text
         /// <param name="keyword">a particular keyword as enumerated by <see cref="Keywords"/>.</param>
         /// <param name="locID">The requested locale</param>
         /// <returns>the locale</returns>
-        /// <seealso cref="GetFunctionalEquivalent(string, ULocale, bool[])"/>
+        /// <seealso cref="GetFunctionalEquivalent(string, UCultureInfo, bool[])"/>
         /// <stable>ICU 3.0</stable>
-        public static ULocale GetFunctionalEquivalent(string keyword,
-                                                            ULocale locID)
+        public static UCultureInfo GetFunctionalEquivalent(string keyword,
+                                                            UCultureInfo locID)
         {
             return GetFunctionalEquivalent(keyword, locID, null);
         }
@@ -1361,8 +1355,8 @@ namespace ICU4N.Text
         /// <stable>ICU 2.6</stable>
         public static string GetDisplayName(CultureInfo objectLocale, CultureInfo displayLocale)
         {
-            return GetShim().GetDisplayName(ULocale.ForLocale(objectLocale),
-                                            ULocale.ForLocale(displayLocale));
+            return GetShim().GetDisplayName(objectLocale.ToUCultureInfo(),
+                                            displayLocale.ToUCultureInfo());
         }
 
         /// <summary>
@@ -1373,34 +1367,34 @@ namespace ICU4N.Text
         /// <param name="displayLocale">the locale for the collator's display name</param>
         /// <returns>the display name</returns>
         /// <stable>ICU 3.2</stable>
-        public static string GetDisplayName(ULocale objectLocale, ULocale displayLocale)
+        public static string GetDisplayName(UCultureInfo objectLocale, UCultureInfo displayLocale)
         {
             return GetShim().GetDisplayName(objectLocale, displayLocale);
         }
 
         /// <summary>
         /// <icu/> Returns the name of the collator for the objectLocale, localized for the
-        /// default <c>DISPLAY</c> locale.
+        /// <see cref="UCultureInfo.CurrentUICulture"/> locale.
         /// </summary>
         /// <param name="objectLocale">the locale of the collator</param>
         /// <returns>the display name</returns>
-        /// <seealso cref="ULocale.Category.DISPLAY"/>
+        /// <seealso cref="UCultureInfo.CurrentUICulture"/>
         /// <stable>ICU 2.6</stable>
         public static string GetDisplayName(CultureInfo objectLocale)
         {
-            return GetShim().GetDisplayName(ULocale.ForLocale(objectLocale), ULocale.GetDefault(Category.DISPLAY));
+            return GetShim().GetDisplayName(objectLocale.ToUCultureInfo(), UCultureInfo.CurrentUICulture);
         }
 
         /// <summary>
-        /// <icu/> Returns the name of the collator for the objectLocale, localized for the
-        /// default <c>DISPLAY</c> locale.
+        /// <icu/> Returns the name of the collator for the <paramref name="objectLocale"/>, localized for the
+        /// <see cref="UCultureInfo.CurrentUICulture"/> locale.
         /// </summary>
         /// <param name="objectLocale">the locale of the collator</param>
         /// <returns>the display name</returns>
         /// <stable>ICU 3.2</stable>
-        public static string GetDisplayName(ULocale objectLocale)
+        public static string GetDisplayName(UCultureInfo objectLocale)
         {
-            return GetShim().GetDisplayName(objectLocale, ULocale.GetDefault(Category.DISPLAY));
+            return GetShim().GetDisplayName(objectLocale, UCultureInfo.CurrentUICulture);
         }
 
         // ICU4N specific - combined getStrength() and setStrength() into a property named Strength
@@ -1708,60 +1702,85 @@ namespace ICU4N.Text
 
         private static readonly bool DEBUG = ICUDebug.Enabled("collator");
 
-        // -------- BEGIN ULocale boilerplate --------
-
+        // -------- BEGIN UCultureInfo boilerplate --------
 
         /// <summary>
-        /// <icu/> Returns the locale that was used to create this object, or null.
+        /// <icu/> Gets the locale that was used to create this object, or <c>null</c>.
+        /// <para/>
+        /// Indicates the locale of the resource containing the data. This is always
+        /// at or above the valid locale. If the valid locale does not contain the
+        /// specific data being requested, then the actual locale will be
+        /// above the valid locale. If the object was not constructed from
+        /// locale data, then the valid locale is <c>null</c>.
+        /// <para/>
         /// This may may differ from the locale requested at the time of
-        /// this object's creation.  For example, if an object is created
+        /// this object's creation. For example, if an object is created
         /// for locale <c>en_US_CALIFORNIA</c>, the actual data may be
         /// drawn from <c>en</c> (the <i>actual</i> locale), and
         /// <c>en_US</c> may be the most specific locale that exists (the
         /// <i>valid</i> locale).
         /// <para/>
-        /// Note: This method will be implemented in ICU 3.0; ICU 2.8
-        /// contains a partial preview implementation.  The * <i>actual</i>
+        /// Note: This property will be implemented in ICU 3.0; ICU 2.8
+        /// contains a partial preview implementation. The * <i>actual</i>
         /// locale is returned correctly, but the <i>valid</i> locale is
         /// not, in most cases.
         /// <para/>
-        /// The base class method always returns <see cref="ULocale.ROOT"/>
+        /// The base class method always returns <see cref="UCultureInfo.InvariantCulture"/>
         /// Subclasses should override it if appropriate.
         /// </summary>
-        /// <param name="type">type of information requested, either 
-        /// <see cref="ULocale.VALID_LOCALE"/> or <see cref="ULocale.ACTUAL_LOCALE"/>.</param>
-        /// <returns>
-        /// the information specified by <i>type</i>, or null if
-        /// this object was not constructed from locale data.
-        /// </returns>
-        /// <seealso cref="ULocale"/>
-        /// <seealso cref="ULocale.VALID_LOCALE"/>
-        /// <seealso cref="ULocale.ACTUAL_LOCALE"/>
+        /// <seealso cref="UCultureInfo"/>
         /// <draft>ICU 2.8 (retain)</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual ULocale GetLocale(ULocale.Type type)
-        {
-            return ULocale.ROOT;
-        }
+        public virtual UCultureInfo ActualCulture
+            => UCultureInfo.InvariantCulture;
+
+        /// <summary>
+        /// <icu/> Gets the locale that was used to create this object, or <c>null</c>.
+        /// <para/>
+        /// Indicates the most specific locale for which any data exists.
+        /// This is always at or above the requested locale, and at or below
+        /// the actual locale. If the requested locale does not correspond
+        /// to any resource data, then the valid locale will be above the
+        /// requested locale. If the object was not constructed from locale
+        /// data, then the actual locale is <c>null</c>.
+        /// <para/>
+        /// This may may differ from the locale requested at the time of
+        /// this object's creation. For example, if an object is created
+        /// for locale <c>en_US_CALIFORNIA</c>, the actual data may be
+        /// drawn from <c>en</c> (the <i>actual</i> locale), and
+        /// <c>en_US</c> may be the most specific locale that exists (the
+        /// <i>valid</i> locale).
+        /// <para/>
+        /// Note: This property will be implemented in ICU 3.0; ICU 2.8
+        /// contains a partial preview implementation. The * <i>actual</i>
+        /// locale is returned correctly, but the <i>valid</i> locale is
+        /// not, in most cases.
+        /// <para/>
+        /// The base class method always returns <see cref="UCultureInfo.InvariantCulture"/>
+        /// Subclasses should override it if appropriate.
+        /// </summary>
+        /// <seealso cref="UCultureInfo"/>
+        /// <draft>ICU 2.8 (retain)</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UCultureInfo ValidCulture
+            => UCultureInfo.InvariantCulture;
 
         /// <summary>
         /// Set information about the locales that were used to create this
         /// object.  If the object was not constructed from locale data,
         /// both arguments should be set to null.  Otherwise, neither
         /// should be null.  The actual locale must be at the same level or
-        /// less specific than the valid locale.  This method is intended
+        /// less specific than the valid locale. This method is intended
         /// for use by factories or other entities that create objects of
         /// this class.
         /// <para/>
         /// The base class method does nothing. Subclasses should override it if appropriate.
         /// </summary>
-        /// <param name="valid">the most specific locale containing any resource data, or null</param>
-        /// <param name="actual">the locale containing data used to construct this object, or null</param>
-        /// <seealso cref="ULocale"/>
-        /// <seealso cref="ULocale.VALID_LOCALE"/>
-        /// <seealso cref="ULocale.ACTUAL_LOCALE"/>
-        internal virtual void SetLocale(ULocale valid, ULocale actual) { }
+        /// <param name="valid">The most specific locale containing any resource data, or <c>null</c>.</param>
+        /// <param name="actual">The locale containing data used to construct this object, or <c>null</c>.</param>
+        /// <seealso cref="UCultureInfo"/>
+        internal virtual void SetCulture(UCultureInfo valid, UCultureInfo actual) { }
 
-        // -------- END ULocale boilerplate --------
+        // -------- END UCultureInfo boilerplate --------
     }
 }

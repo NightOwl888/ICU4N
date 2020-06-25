@@ -1,9 +1,8 @@
-﻿using ICU4N.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Text;
 using ICU4N.Util;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace ICU4N.Impl.Coll
 {
@@ -103,7 +102,7 @@ namespace ICU4N.Impl.Coll
         private UResourceBundle rulesResource;
         // The locale is null (C++: bogus) when built from rules or constructed from a binary blob.
         // It can then be set by the service registration code which is thread-safe.
-        private ULocale actualLocale = ULocale.ROOT;
+        private UCultureInfo actualCulture = UCultureInfo.InvariantCulture;
         // UCA version u.v.w & rules version r.s.t.q:
         // version[0]: builder version (runtime version is mixed in at runtime)
         // version[1]: bits 7..3=u, bits 2..0=v
@@ -124,50 +123,50 @@ namespace ICU4N.Impl.Coll
 
         internal CollationData OwnedData
         {
-            get { return ownedData; }
-            set { ownedData = value; }
+            get => ownedData;
+            set => ownedData = value;
         }
 
         internal Trie2_32 Trie
         {
-            get { return trie; }
-            set { trie = value; }
+            get => trie;
+            set => trie = value;
         }
 
         internal UnicodeSet UnsafeBackwardSet
         {
-            get { return unsafeBackwardSet; }
-            set { unsafeBackwardSet = value; }
+            get => unsafeBackwardSet;
+            set => unsafeBackwardSet = value;
         }
 
         public CollationData Data
         {
-            get { return data; }
-            set { data = value; }
+            get => data;
+            set => data = value;
         }
 
         public SharedObject.Reference<CollationSettings> Settings
         {
-            get { return settings; }
-            set { settings = value; }
+            get => settings;
+            set => settings = value;
         }
 
-        public ULocale ActualLocale
+        public UCultureInfo ActualCulture
         {
-            get { return actualLocale; }
-            set { actualLocale = value; }
+            get => actualCulture;
+            set => actualCulture = value;
         }
 
         public int Version
         {
-            get { return version; }
-            set { version = value; }
+            get => version;
+            set => version = value;
         }
 
         public IDictionary<int, int> MaxExpansions
         {
-            get { return maxExpansions; }
-            set { maxExpansions = value; }
+            get => maxExpansions;
+            set => maxExpansions = value;
         }
     }
 }

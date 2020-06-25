@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Text;
@@ -383,7 +384,7 @@ namespace ICU4N.Dev.Test.Rbbi
         [Test]
         public void TestRuleStatus()
         {
-            BreakIterator bi = BreakIterator.GetWordInstance(ULocale.ENGLISH);
+            BreakIterator bi = BreakIterator.GetWordInstance(new UCultureInfo("en"));
 
             bi.SetText("# ");
             assertEquals(null, bi.Next(), 1);

@@ -1,6 +1,5 @@
-﻿using ICU4N.Impl;
-using ICU4N.Globalization;
-using ICU4N.Util;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using System.Text;
 
 namespace ICU4N.Text
@@ -24,13 +23,13 @@ namespace ICU4N.Text
         {
             Transliterator.RegisterFactory(_ID, new Transliterator.Factory(getInstance: (id) =>
             {
-                return new TitlecaseTransliterator(ULocale.US);
+                return new TitlecaseTransliterator(new UCultureInfo("en_US"));
             }));
 
             RegisterSpecialInverse("Title", "Lower", false);
         }
 
-        private readonly ULocale locale;
+        private readonly UCultureInfo locale;
 
         private readonly UCaseProperties csp;
         private ReplaceableContextEnumerator iter;
@@ -40,7 +39,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Constructs a transliterator.
         /// </summary>
-        public TitlecaseTransliterator(ULocale loc)
+        public TitlecaseTransliterator(UCultureInfo loc)
             : base(_ID, null)
         {
             locale = loc;

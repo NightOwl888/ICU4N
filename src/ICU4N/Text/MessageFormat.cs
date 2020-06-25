@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Util;
@@ -356,11 +357,11 @@ namespace ICU4N.Text
     /// <author>Markus Scherer</author>
     /// <stable>ICU 3.0</stable>
     /// 
-    // ICU4N TODO: API - Rework this class to eliminate member dependency on CultureInfo/ULocale and
+    // ICU4N TODO: API - Rework this class to eliminate member dependency on CultureInfo/UCultureInfo and
     // set it up to pass locale through Format/Parse/ApplyPattern methods as parameter overloads like what is
     // done in .NET, and make the default behavior use the CultureInfo.CurrentCulture for overloads that do
     // not accept the parameter. This class has no culture specific behavior, so there is no reason to
-    // hold onto a reference of CultureInfo/ULocale
+    // hold onto a reference of CultureInfo/UCultureInfo
     // After doing so, we need to update the docs above. We should try to ensure that our MessageFormat
     // is actually thread safe, rather than going the original route.
     internal class MessageFormat : UFormat // ICU4N: Marked internal until implementation is completed
@@ -369,17 +370,17 @@ namespace ICU4N.Text
         //internal static readonly long serialVersionUID = 7136212545847378652L;
 
         /// <summary>
-        /// Constructs a <see cref="MessageFormat"/> for the default <see cref="Util.ULocale.Category.FORMAT"/> locale and the
+        /// Constructs a <see cref="MessageFormat"/> for the default <see cref="UCultureInfo.CurrentCulture"/> locale and the
         /// specified pattern.
         /// Sets the locale and calls <see cref="ApplyPattern(string)"/> with <paramref name="pattern"/>.
         /// </summary>
         /// <param name="pattern">The pattern for this message format.</param>
         /// <exception cref="ArgumentException">If the pattern is invalid.</exception>
-        /// <seealso cref="Util.ULocale.Category.FORMAT"/>
+        /// <seealso cref="UCultureInfo.CurrentCulture"/>
         /// <stable>ICU 3.0</stable>
         public MessageFormat(string pattern)
         {
-            this.ulocale = Util.ULocale.GetDefault(Util.ULocale.Category.FORMAT);
+            this.uCulure = UCultureInfo.CurrentCulture;
             ApplyPattern(pattern);
         }
 
@@ -392,8 +393,8 @@ namespace ICU4N.Text
         /// <param name="locale">The <see cref="CultureInfo"/> for this message format.</param>
         /// <exception cref="ArgumentException">If the pattern is invalid.</exception>
         /// <stable>ICU 3.0</stable>
-        public MessageFormat(string pattern, CultureInfo locale) // ICU4N TODO: API - rework when we convert ULocale to UCultureInfo
-            : this(pattern, Util.ULocale.ForLocale(locale))
+        public MessageFormat(string pattern, CultureInfo locale) // ICU4N TODO: API - rework to pass in culture in transient methods instead of fields
+            : this(pattern, locale.ToUCultureInfo())
         {
         }
 
@@ -403,12 +404,12 @@ namespace ICU4N.Text
         /// Sets the locale and calls <see cref="ApplyPattern(string)"/> with <paramref name="pattern"/>.
         /// </summary>
         /// <param name="pattern">The pattern for this message format.</param>
-        /// <param name="locale">The <see cref="Util.ULocale"/> for this message format.</param>
+        /// <param name="locale">The <see cref="UCultureInfo"/> for this message format.</param>
         /// <exception cref="ArgumentException">If the pattern is invalid.</exception>
         /// <stable>ICU 3.2</stable>
-        public MessageFormat(string pattern, ULocale locale) // ICU4N TODO: API - rework when we convert ULocale to UCultureInfo
+        public MessageFormat(string pattern, UCultureInfo locale) // ICU4N TODO: API - In general, formatters in .NET should be unaware of the culture unless it is explictly passed to the Format() method. Need to rework this.
         {
-            this.ulocale = locale;
+            this.uCulure = locale;
             ApplyPattern(pattern);
         }
 
@@ -420,26 +421,26 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="locale">The locale to be used when creating or comparing subformats.</param>
         /// <stable>ICU 3.0</stable>
-        public virtual void SetLocale(CultureInfo locale) // ICU4N TODO: API - rework when we convert ULocale to UCultureInfo
+        public virtual void SetCulture(CultureInfo locale) // ICU4N TODO: API - In general, formatters in .NET should be unaware of the culture unless it is explictly passed to the Format() method. Need to rework this.
         {
-            SetLocale(Util.ULocale.ForLocale(locale));
+            SetCulture(locale.ToUCultureInfo());
         }
 
         /// <summary>
-        /// Sets the <see cref="Util.ULocale"/> to be used for creating argument <see cref="Formatter"/> objects.
+        /// Sets the <see cref="UCultureInfo"/> to be used for creating argument <see cref="Formatter"/> objects.
         /// This affects subsequent calls to the <see cref="ApplyPattern(string)"/>
         /// method as well as to the <c>Format</c> and
         /// <see cref="FormatToCharacterIterator(object)"/> methods.
         /// </summary>
         /// <param name="locale">The locale to be used when creating or comparing subformats.</param>
         /// <stable>ICU 3.2</stable>
-        public virtual void SetLocale(ULocale locale) // ICU4N TODO: API - rework when we convert ULocale to UCultureInfo
+        public virtual void SetCulture(UCultureInfo locale) // ICU4N TODO: API - rework to pass in culture in transient methods instead of fields
         {
             /* Save the pattern, and then reapply so that */
             /* we pick up any changes in locale specific */
             /* elements */
             string existingPattern = ToPattern();                       /*ibm.3550*/
-            this.ulocale = locale;
+            this.uCulure = locale;
 
             // ICU4N TODO: Stock formatters and providers
             //// Invalidate all stock formatters. They are no longer valid since
@@ -455,20 +456,18 @@ namespace ICU4N.Text
         /// Gets the <see cref="CultureInfo"/> that's used when creating or comparing subformats.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public virtual CultureInfo Locale // ICU4N TODO: API - rework when we convert ULocale to UCultureInfo
+        public virtual CultureInfo Culture // ICU4N TODO: API - rework to pass in culture in transient methods instead of fields
         {
-            get { return ulocale.ToLocale(); }
+            get => uCulure.ToCultureInfo();
         }
 
         /// <summary>
-        /// <icu/> Gets the <see cref="Util.ULocale"/> that's used when creating argument <see cref="Formatter"/> objects.
-        /// It is the <see cref="Util.ULocale"/> used when creating or comparing subformats.
+        /// <icu/> Gets the <see cref="UCultureInfo"/> that's used when creating argument <see cref="Formatter"/> objects.
+        /// It is the <see cref="UCultureInfo"/> used when creating or comparing subformats.
         /// </summary>
         /// <stable>ICU 3.2</stable>
-        public virtual ULocale ULocale // ICU4N TODO: API - rework when we convert ULocale to UCultureInfo
-        {
-            get { return ulocale; }
-        }
+        public virtual UCultureInfo UCulture // ICU4N TODO: API - rework to pass culture in transient methods instead of fields
+            => uCulure;
 
         /// <summary>
         /// Sets the pattern used by this message format.
@@ -1663,7 +1662,7 @@ namespace ICU4N.Text
             if (obj == null || GetType() != obj.GetType())
                 return false;
             MessageFormat other = (MessageFormat)obj;
-            return Utility.ObjectEquals(ulocale, other.ULocale)
+            return Utility.ObjectEquals(uCulure, other.UCulture)
                     && Utility.ObjectEquals(msgPattern, other.msgPattern)
                     && Utility.ObjectEquals(cachedFormatters, other.cachedFormatters)
                     && Utility.ObjectEquals(customFormatArgStarts, other.customFormatArgStarts);
@@ -1697,7 +1696,7 @@ namespace ICU4N.Text
 #if FEATURE_SERIALIZABLE
         [NonSerialized]
 #endif
-        private ULocale ulocale;
+        private UCultureInfo uCulure;
 
         /// <summary>
         /// The <see cref="MessagePattern"/> which contains the parsed structure of the pattern string.
@@ -1762,7 +1761,7 @@ namespace ICU4N.Text
         {
             if (stockNumberFormatter == null)
             {
-                stockNumberFormatter = NumberFormat.GetInstance(ulocale);
+                stockNumberFormatter = NumberFormat.GetInstance(uCulure);
             }
             return stockNumberFormatter;
         }
@@ -1896,7 +1895,7 @@ namespace ICU4N.Text
                         if (subMsgString.IndexOf('{') >= 0 ||
                                 (subMsgString.IndexOf('\'') >= 0 && !msgPattern.JdkAposMode))
                         {
-                            MessageFormat subMsgFormat = new MessageFormat(subMsgString, ulocale);
+                            MessageFormat subMsgFormat = new MessageFormat(subMsgString, uCulure);
                             subMsgFormat.Format(0, null, args, argsMap, dest, null);
                         }
                         else if (dest.Attributes == null)
@@ -2075,7 +2074,7 @@ namespace ICU4N.Text
             }
             if (subMsgString.IndexOf('{') >= 0)
             {
-                MessageFormat subMsgFormat = new MessageFormat("", ulocale);
+                MessageFormat subMsgFormat = new MessageFormat("", uCulure);
                 subMsgFormat.ApplyPattern(subMsgString, ApostropheMode.DoubleRequired);
                 subMsgFormat.Format(0, null, args, argsMap, dest, null);
             }
@@ -2402,7 +2401,7 @@ namespace ICU4N.Text
             {
                 if (rules == null)
                 {
-                    rules = PluralRules.ForLocale(msgFormat.ULocale, type);
+                    rules = PluralRules.ForLocale(msgFormat.UCulture, type);
                 }
                 // Select a sub-message according to how the number is formatted,
                 // which is specified in the selected sub-message.
@@ -2526,19 +2525,19 @@ namespace ICU4N.Text
                     switch (FindKeyword(style, modifierList))
                     {
                         case MODIFIER_EMPTY:
-                            newFormat = NumberFormat.GetInstance(ulocale);
+                            newFormat = NumberFormat.GetInstance(uCulure);
                             break;
                         case MODIFIER_CURRENCY:
-                            newFormat = NumberFormat.GetCurrencyInstance(ulocale);
+                            newFormat = NumberFormat.GetCurrencyInstance(uCulure);
                             break;
                         case MODIFIER_PERCENT:
-                            newFormat = NumberFormat.GetPercentInstance(ulocale);
+                            newFormat = NumberFormat.GetPercentInstance(uCulure);
                             break;
                         case MODIFIER_INTEGER:
-                            newFormat = NumberFormat.GetIntegerInstance(ulocale);
+                            newFormat = NumberFormat.GetIntegerInstance(uCulure);
                             break;
                         default: // pattern
-                            newFormat = NumberFormat.GetInstance(ulocale);
+                            newFormat = NumberFormat.GetInstance(uCulure);
                             // ICU4N TODO: Finish implementation
                             //newFormat = new DecimalFormat(style,
                             //        new DecimalFormatSymbols(ulocale));
@@ -2727,7 +2726,7 @@ namespace ICU4N.Text
             //        //@in.defaultReadObject();
             //// ICU 4.8 custom deserialization.
             //String languageTag = (String)@in.readObject();
-            //ulocale = ULocale.forLanguageTag(languageTag);
+            //ulocale = UCultureInfo.GetCultureInfoByIetfLanguageTag(languageTag);
             //        MessagePattern.ApostropheMode aposMode = (MessagePattern.ApostropheMode)in.readObject();
             //        if (msgPattern == null || aposMode != msgPattern.getApostropheMode()) {
             //            msgPattern = new MessagePattern(aposMode);

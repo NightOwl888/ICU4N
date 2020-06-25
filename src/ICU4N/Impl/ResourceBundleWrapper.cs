@@ -1,4 +1,5 @@
-﻿using ICU4N.Util;
+﻿using ICU4N.Globalization;
+using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -90,15 +91,11 @@ namespace ICU4N.Impl
             return bundle.GetType().FullName.Replace('.', '/');
         }
 
-        public override ULocale GetULocale()
-        {
-            return new ULocale(localeID);
-        }
+        public override UCultureInfo UCulture
+            => new UCultureInfo(localeID);
 
         new public UResourceBundle Parent
-        {
-            get { return (UResourceBundle)m_parent; }
-        }
+            => (UResourceBundle)m_parent;
 
         // Flag for enabling/disabling debugging code
         private static readonly bool DEBUG = ICUDebug.Enabled("resourceBundleWrapper");
@@ -118,7 +115,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                b = InstantiateBundle(baseName, localeID, ULocale.GetDefault().GetBaseName(),
+                b = InstantiateBundle(baseName, localeID, UCultureInfo.CurrentCulture.Name,
                         root, disableFallback);
             }
             if (b == null)

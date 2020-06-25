@@ -1,4 +1,5 @@
-﻿using ICU4N.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Collections;
 using J2N.Collections.Generic.Extensions;
@@ -18,36 +19,36 @@ namespace ICU4N.Dev.Test.Collate
         public void TestRegister()
         {
             // register a singleton
-            Collator frcol = Collator.GetInstance(ULocale.FRANCE);
-            Collator uscol = Collator.GetInstance(ULocale.US);
+            Collator frcol = Collator.GetInstance(new UCultureInfo("fr_FR"));
+            Collator uscol = Collator.GetInstance(new UCultureInfo("en_US"));
 
             { // try override en_US collator
-                Object key = Collator.RegisterInstance(frcol, ULocale.US);
-                Collator ncol = Collator.GetInstance(ULocale.US);
+                Object key = Collator.RegisterInstance(frcol, new UCultureInfo("en_US"));
+                Collator ncol = Collator.GetInstance(new UCultureInfo("en_US"));
                 if (!frcol.Equals(ncol))
                 {
                     Errln("register of french collator for en_US failed");
                 }
 
                 // coverage
-                Collator test = Collator.GetInstance(ULocale.GERMANY); // CollatorFactory.handleCreate
-                if (!test.GetLocale(ULocale.VALID_LOCALE).Equals(ULocale.GERMAN))
+                Collator test = Collator.GetInstance(new UCultureInfo("de_DE")); // CollatorFactory.handleCreate
+                if (!test.ValidCulture.Equals(new UCultureInfo("de")))
                 {
-                    Errln("Collation from Germany is really " + test.GetLocale(ULocale.VALID_LOCALE));
+                    Errln("Collation from Germany is really " + test.ValidCulture);
                 }
 
                 if (!Collator.Unregister(key))
                 {
                     Errln("failed to unregister french collator");
                 }
-                ncol = Collator.GetInstance(ULocale.US);
+                ncol = Collator.GetInstance(new UCultureInfo("en_US"));
                 if (!uscol.Equals(ncol))
                 {
                     Errln("collator after unregister does not match original");
                 }
             }
 
-            ULocale fu_FU = new ULocale("fu_FU_FOO");
+            UCultureInfo fu_FU = new UCultureInfo("fu_FU_FOO");
 
             { // try create collator for new locale
                 Collator fucol = Collator.GetInstance(fu_FU);
@@ -58,7 +59,7 @@ namespace ICU4N.Dev.Test.Collate
                     Errln("register of fr collator for fu_FU failed");
                 }
 
-                ULocale[] locales = Collator.GetAvailableULocales();
+                UCultureInfo[] locales = Collator.GetUCultures(UCultureTypes.AllCultures);
                 bool found = false;
                 for (int i = 0; i < locales.Length; ++i)
                 {
@@ -112,7 +113,7 @@ namespace ICU4N.Dev.Test.Collate
 
             {
                 // coverage after return to default
-                ULocale[] locales = Collator.GetAvailableULocales();
+                UCultureInfo[] locales = Collator.GetUCultures(UCultureTypes.AllCultures);
 
                 for (int i = 0; i < locales.Length; ++i)
                 {
@@ -123,28 +124,28 @@ namespace ICU4N.Dev.Test.Collate
                     }
                 }
 
-                Collator ncol = Collator.GetInstance(ULocale.US);
-                if (!ncol.GetLocale(ULocale.VALID_LOCALE).Equals(ULocale.US))
+                Collator ncol = Collator.GetInstance(new UCultureInfo("en_US"));
+                if (!ncol.ValidCulture.Equals(new UCultureInfo("en_US")))
                 {
-                    Errln("Collation from US is really " + ncol.GetLocale(ULocale.VALID_LOCALE));
+                    Errln("Collation from US is really " + ncol.ValidCulture);
                 }
             }
         }
 
         private class CollatorInfo
         {
-            internal ULocale locale;
+            internal UCultureInfo locale;
             internal Collator collator;
             internal IDictionary<object, object> displayNames; // locale -> string
 
-            internal CollatorInfo(ULocale locale, Collator collator, IDictionary<object, object> displayNames)
+            internal CollatorInfo(UCultureInfo locale, Collator collator, IDictionary<object, object> displayNames)
             {
                 this.locale = locale;
                 this.collator = collator;
                 this.displayNames = displayNames;
             }
 
-            internal string GetDisplayName(ULocale displayLocale)
+            internal string GetDisplayName(UCultureInfo displayLocale)
             {
                 string name = null;
                 if (displayNames != null)
@@ -174,14 +175,14 @@ namespace ICU4N.Dev.Test.Collate
                 }
             }
 
-            public override Collator CreateCollator(ULocale loc)
+            public override Collator CreateCollator(UCultureInfo loc)
             {
                 if (map.TryGetValue(loc, out object cio) && cio is CollatorInfo ci && ci != null)
                     return ci.collator;
                 return null;
             }
 
-            public override String GetDisplayName(ULocale objectLocale, ULocale displayLocale)
+            public override String GetDisplayName(UCultureInfo objectLocale, UCultureInfo displayLocale)
             {
                 if (map.TryGetValue(objectLocale, out object cio) && cio is CollatorInfo ci && ci != null)
                     return ci.GetDisplayName(displayLocale);
@@ -203,7 +204,7 @@ namespace ICU4N.Dev.Test.Collate
                     {
                         while (iter.MoveNext())
                         {
-                            ULocale locale = (ULocale)iter.Current;
+                            UCultureInfo locale = (UCultureInfo)iter.Current;
                             String id = locale.ToString();
                             set.Add(id);
                         }
@@ -223,12 +224,12 @@ namespace ICU4N.Dev.Test.Collate
                 this.@delegate = @delegate;
             }
 
-            public override Collator CreateCollator(ULocale loc)
+            public override Collator CreateCollator(UCultureInfo loc)
             {
                 return @delegate.CreateCollator(loc);
             }
 
-            // use CollatorFactory getDisplayName(ULocale, ULocale) for coverage
+            // use CollatorFactory GetDisplayName(UCultureInfo, UCultureInfo) for coverage
 
             public override ICollection<string> GetSupportedLocaleIDs()
             {
@@ -240,26 +241,26 @@ namespace ICU4N.Dev.Test.Collate
         public void TestRegisterFactory()
         {
 
-            ULocale fu_FU = new ULocale("fu_FU");
-            ULocale fu_FU_FOO = new ULocale("fu_FU_FOO");
+            UCultureInfo fu_FU = new UCultureInfo("fu_FU");
+            UCultureInfo fu_FU_FOO = new UCultureInfo("fu_FU_FOO");
 
             IDictionary<object, object> fuFUNames = new Dictionary<object, object>
             {
                 { fu_FU, "ze leetle bunny Fu-Fu" },
                 { fu_FU_FOO, "zee leetel bunny Foo-Foo" },
-                { ULocale.US, "little bunny Foo Foo" }
+                { new UCultureInfo("en_US"), "little bunny Foo Foo" }
             };
 
-            Collator frcol = Collator.GetInstance(ULocale.FRANCE);
+            Collator frcol = Collator.GetInstance(new UCultureInfo("fr_FR"));
             /* Collator uscol = */
-            Collator.GetInstance(ULocale.US);
-            Collator gecol = Collator.GetInstance(ULocale.GERMANY);
-            Collator jpcol = Collator.GetInstance(ULocale.JAPAN);
+            Collator.GetInstance(new UCultureInfo("en_US"));
+            Collator gecol = Collator.GetInstance(new UCultureInfo("de_DE"));
+            Collator jpcol = Collator.GetInstance(new UCultureInfo("ja_JP"));
             Collator fucol = Collator.GetInstance(fu_FU);
 
             CollatorInfo[] info = {
-                new CollatorInfo(ULocale.US, frcol, null),
-                new CollatorInfo(ULocale.FRANCE, gecol, null),
+                new CollatorInfo(new UCultureInfo("en_US"), frcol, null),
+                new CollatorInfo(new UCultureInfo("fr_FR"), gecol, null),
                 new CollatorInfo(fu_FU, jpcol, fuFUNames),
             };
             TestFactory factory = null;
@@ -287,10 +288,10 @@ namespace ICU4N.Dev.Test.Collate
                 Logln("*** default name: " + name);
                 Collator.Unregister(key);
 
-                ULocale bar_BAR = new ULocale("bar_BAR");
+                UCultureInfo bar_BAR = new UCultureInfo("bar_BAR");
                 Collator col = Collator.GetInstance(bar_BAR);
-                ULocale valid = col.GetLocale(ULocale.VALID_LOCALE);
-                String validName = valid.GetName();
+                UCultureInfo valid = col.ValidCulture;
+                String validName = valid.FullName;
                 if (validName.Length != 0 && !validName.Equals("root"))
                 {
                     Errln("Collation from bar_BAR is really \"" + validName + "\" but should be root");
@@ -304,7 +305,7 @@ namespace ICU4N.Dev.Test.Collate
 
                 int n2 = checkAvailable("after registerFactory");
 
-                Collator ncol = Collator.GetInstance(ULocale.US);
+                Collator ncol = Collator.GetInstance(new UCultureInfo("en_US"));
                 if (!frcol.Equals(ncol))
                 {
                     Errln("frcoll for en_US failed");
@@ -316,7 +317,7 @@ namespace ICU4N.Dev.Test.Collate
                     Errln("jpcol for fu_FU_FOO failed, got: " + ncol);
                 }
 
-                ULocale[] locales = Collator.GetAvailableULocales();
+                UCultureInfo[] locales = Collator.GetUCultures(UCultureTypes.AllCultures);
                 bool found = false;
                 for (int i = 0; i < locales.Length; ++i)
                 {
@@ -366,13 +367,13 @@ namespace ICU4N.Dev.Test.Collate
          */
         internal int checkAvailable(String msg)
         {
-            CultureInfo[] locs = Collator.GetAvailableLocales();
+            CultureInfo[] locs = Collator.GetCultures(UCultureTypes.AllCultures);
             if (!assertTrue("getAvailableLocales != null", locs != null)) return -1;
             CheckArray(msg, locs, null);
-            ULocale[] ulocs = Collator.GetAvailableULocales();
+            UCultureInfo[] ulocs = Collator.GetUCultures(UCultureTypes.AllCultures);
             if (!assertTrue("getAvailableULocales != null", ulocs != null)) return -1;
             CheckArray(msg, ulocs, null);
-            // This is not true because since ULocale objects with script code cannot be
+            // This is not true because since UCultureInfo objects with script code cannot be
             // converted to Locale objects
             //assertTrue("getAvailableLocales().Length == getAvailableULocales().Length", locs.Length == ulocs.Length);
             return locs.Length;
@@ -399,8 +400,8 @@ namespace ICU4N.Dev.Test.Collate
             CheckArray("getKeywordValues", kwval, KWVAL);
 
             bool[] isAvailable = new bool[1];
-            ULocale equiv = Collator.GetFunctionalEquivalent(KW[0],
-                                                             new ULocale("de"),
+            UCultureInfo equiv = Collator.GetFunctionalEquivalent(KW[0],
+                                                             new UCultureInfo("de"),
                                                              isAvailable);
             if (assertTrue("getFunctionalEquivalent(de)!=null", equiv != null))
             {
@@ -410,7 +411,7 @@ namespace ICU4N.Dev.Test.Collate
                        isAvailable[0] == true);
 
             equiv = Collator.GetFunctionalEquivalent(KW[0],
-                                                     new ULocale("de_DE"),
+                                                     new UCultureInfo("de_DE"),
                                                      isAvailable);
             if (assertTrue("getFunctionalEquivalent(de_DE)!=null", equiv != null))
             {
@@ -419,7 +420,7 @@ namespace ICU4N.Dev.Test.Collate
             assertTrue("getFunctionalEquivalent(de_DE).isAvailable==false",
                        isAvailable[0] == false);
 
-            equiv = Collator.GetFunctionalEquivalent(KW[0], new ULocale("zh_Hans"));
+            equiv = Collator.GetFunctionalEquivalent(KW[0], new UCultureInfo("zh_Hans"));
             if (assertTrue("getFunctionalEquivalent(zh_Hans)!=null", equiv != null))
             {
                 assertEquals("getFunctionalEquivalent(zh_Hans)", "zh", equiv.ToString());
@@ -466,10 +467,10 @@ namespace ICU4N.Dev.Test.Collate
             for (int i = 0; i < DATA_COUNT; i++)
             {
                 bool[] isAvailable = new bool[1];
-                ULocale input = new ULocale(DATA[(i * 3) + 0]);
-                ULocale expect = new ULocale(DATA[(i * 3) + 1]);
+                UCultureInfo input = new UCultureInfo(DATA[(i * 3) + 0]);
+                UCultureInfo expect = new UCultureInfo(DATA[(i * 3) + 1]);
                 bool expectAvailable = DATA[(i * 3) + 2].Equals("t");
-                ULocale actual = Collator.GetFunctionalEquivalent(kw[0], input, isAvailable);
+                UCultureInfo actual = Collator.GetFunctionalEquivalent(kw[0], input, isAvailable);
                 if (!actual.Equals(expect) || (expectAvailable != isAvailable[0]))
                 {
                     Errln("#" + i + ": Collator.getFunctionalEquivalent(" + input + ")=" + actual + ", avail " + isAvailable[0] + ", " +
@@ -502,7 +503,7 @@ namespace ICU4N.Dev.Test.Collate
         //                        String[] values = Collator.getKeywordValues(keywords[i]);
         //                        for (int j = 0; j < Collator.getKeywordValues(keywords[i]).Length;++j) {
         //                                ULocale other = Collator.getFunctionalEquivalent(keywords[i],
-        //                                        new ULocale(locales[k] + "@" + keywords[i] + "=" + values[j]),
+        //                                        new UCultureInfo(locales[k] + "@" + keywords[i] + "=" + values[j]),
         //                                        isAvailable);
         //                                if (isAvailable[0] && !other.Equals(base)) {
         //                                        logln("\t" + keywords[i] + "=" + values[j] + ";\t" + base + ";\t" + other);
@@ -549,7 +550,7 @@ namespace ICU4N.Dev.Test.Collate
             for (int i = 0; i < PREFERRED.Length; i++)
             {
                 String locale = PREFERRED[i][0];
-                ULocale loc = new ULocale(locale);
+                UCultureInfo loc = new UCultureInfo(locale);
                 String[] expected = PREFERRED[i];
                 String[] pref = Collator.GetKeywordValuesForLocale("collation", loc, true);
                 for (int j = 1; j < expected.Length; ++j)

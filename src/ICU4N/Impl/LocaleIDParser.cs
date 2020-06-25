@@ -1,10 +1,10 @@
-﻿using ICU4N.Impl.Locale;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl.Locale;
 using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
+using J2N.Collections.Generic.Extensions;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace ICU4N.Impl
@@ -12,7 +12,7 @@ namespace ICU4N.Impl
     /// <summary>
     /// Utility class to parse and normalize locale ids (including POSIX style)
     /// </summary>
-    public sealed class LocaleIDParser
+    public sealed class LocaleIDParser // ICU4N TODO: Move to Globalization namespace
     {
         /// <summary>
         /// Char array representing the locale ID.
@@ -55,6 +55,16 @@ namespace ICU4N.Impl
 
         public LocaleIDParser(string localeID, bool canonicalize)
         {
+            Reset(localeID, canonicalize);
+        }
+
+        public void Reset(string localeID)
+        {
+            Reset(localeID, false);
+        }
+
+        public void Reset(string localeID, bool canonicalize)
+        {
             id = localeID.ToCharArray();
             index = 0;
             buffer = new StringBuilder(id.Length + 5);
@@ -77,9 +87,9 @@ namespace ICU4N.Impl
             buffer.Append(c);
         }
 
-        private void AddSeparator()
+        private void AddSeparator(char separator = UNDERSCORE)
         {
-            Append(UNDERSCORE);
+            Append(separator);
         }
 
         /// <summary>
@@ -257,7 +267,7 @@ namespace ICU4N.Impl
         /// in the buffer (this may be equal to the buffer length, if there is no
         /// script).
         /// </summary>
-        private int ParseScript()
+        private int ParseScript(char separator = UNDERSCORE)
         {
             if (!AtTerminator())
             {
@@ -271,7 +281,7 @@ namespace ICU4N.Impl
                 {
                     if (firstPass)
                     {
-                        AddSeparator();
+                        AddSeparator(separator);
                         Append(AsciiUtil.ToUpper(c));
                         firstPass = false;
                     }
@@ -329,7 +339,7 @@ namespace ICU4N.Impl
         /// and IDSeparator.  Return the start of the country code in the buffer.
         /// </summary>
         /// <returns></returns>
-        private int ParseCountry()
+        private int ParseCountry(char separator = UNDERSCORE)
         {
             if (!AtTerminator())
             {
@@ -344,7 +354,7 @@ namespace ICU4N.Impl
                     if (firstPass)
                     { // first, add hyphen
                         hadCountry = true; // we have a country, let variant parsing know
-                        AddSeparator();
+                        AddSeparator(separator);
                         ++oldBlen; // increment past hyphen
                         firstPass = false;
                     }
@@ -439,7 +449,7 @@ namespace ICU4N.Impl
         /// Note:  since it was decided that we want an option to not handle POSIX ids, this
         /// becomes a bit more complex.
         /// </remarks>
-        private int ParseVariant()
+        private int ParseVariant(char separator = UNDERSCORE)
         {
             int oldBlen = buffer.Length;
 
@@ -481,10 +491,10 @@ namespace ICU4N.Impl
                         needSeparator = false;
                         if (firstPass && !hadCountry)
                         { // no country, we'll need two
-                            AddSeparator();
+                            AddSeparator(separator);
                             ++oldBlen; // for sure
                         }
-                        AddSeparator();
+                        AddSeparator(separator);
                         if (firstPass)
                         { // only for the first separator
                             ++oldBlen;
@@ -550,17 +560,18 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Returns the language, script, country, and variant as separate strings.
+        /// Returns the language, script, country, and variant as separate strings
+        /// in a <see cref="LocaleID"/> structure.
         /// </summary>
-        public string[] GetLanguageScriptCountryVariant()
+        public LocaleID GetLocaleID()
         {
             Reset();
-            return new string[] {
-                GetString(ParseLanguage()),
-                GetString(ParseScript()),
-                GetString(ParseCountry()),
-                GetString(ParseVariant())
-            };
+            return new LocaleID(
+                language: GetString(ParseLanguage()),
+                script: GetString(ParseScript()),
+                country: GetString(ParseCountry()),
+                variant: GetString(ParseVariant())
+            );
         }
 
         public void SetBaseName(string baseName)
@@ -568,7 +579,7 @@ namespace ICU4N.Impl
             this.baseName = baseName;
         }
 
-        public void ParseBaseName()
+        public void ParseBaseName(char separator = UNDERSCORE)
         {
             if (baseName != null)
             {
@@ -578,17 +589,26 @@ namespace ICU4N.Impl
             {
                 Reset();
                 ParseLanguage();
-                ParseScript();
-                ParseCountry();
-                ParseVariant();
+                ParseScript(separator);
+                ParseCountry(separator);
+                ParseVariant(separator);
 
-                // catch unwanted trailing underscore after country if there was no variant
+                // catch unwanted trailing underscore or hyphen after country if there was no variant
                 int len = buffer.Length;
-                if (len > 0 && buffer[len - 1] == UNDERSCORE)
+                if (len > 0 && (buffer[len - 1] == UNDERSCORE || buffer[len - 1] == HYPHEN))
                 {
                     //buffer.DeleteCharAt(len - 1);
                     buffer.Remove(len - 1, 1);
                 }
+            }
+        }
+
+        private void RemoveLeadingSeparator(char separator = UNDERSCORE)
+        {
+            int len = buffer.Length;
+            if (len > 0 && (buffer[0] == separator))
+            {
+                buffer.Remove(0, 1);
             }
         }
 
@@ -607,10 +627,26 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
+        /// Returns the normalized base form of the locale id using hyphen as the
+        /// separator, for compatibility with <see cref="System.Globalization.CultureInfo.Name"/>.
+        /// Does not include keywords.
+        /// </summary>
+        public string GetName()
+        {
+            if (baseName != null)
+            {
+                return baseName;
+            }
+            ParseBaseName(HYPHEN);
+            RemoveLeadingSeparator(HYPHEN);
+            return GetString(0);
+        }
+
+        /// <summary>
         /// Returns the normalized full form of the locale id.  The full
         /// form includes keywords if they are present.
         /// </summary>
-        public string GetName()
+        public string GetFullName()
         {
             ParseBaseName();
             ParseKeywords();
@@ -684,24 +720,20 @@ namespace ICU4N.Impl
             return new string(id, start, index - start).Trim(); // leave case alone
         }
 
-        private class KeyComparer : IComparer<string>
-        {
-            public int Compare(string lhs, string rhs)
-            {
-                return lhs.CompareToOrdinal(rhs);
-            }
-        }
-
-        private IComparer<string> GetKeyComparer()
-        {
-            return new KeyComparer();
-        }
+        private static IComparer<string> KeyComparer { get; } = StringComparer.OrdinalIgnoreCase;
 
         /// <summary>
         /// Returns a map of the keywords and values, or null if there are none.
         /// </summary>
-        public IDictionary<string, string> GetKeywordMap()
-        {
+#if FEATURE_READONLYDICTIONARY
+        public IReadOnlyDictionary<string, string> Keywords
+#else
+        public IDictionary<string, string> Keywords
+#endif
+            => GetKeywords().AsReadOnly();
+
+        private IDictionary<string, string> GetKeywords()
+        { 
             if (keywords == null)
             {
                 IDictionary<string, string> m = null;
@@ -736,7 +768,7 @@ namespace ICU4N.Impl
                         }
                         if (m == null)
                         {
-                            m = new SortedDictionary<string, string>(GetKeyComparer());
+                            m = new SortedDictionary<string, string>(KeyComparer);
                         }
                         else if (m.ContainsKey(key))
                         {
@@ -746,7 +778,7 @@ namespace ICU4N.Impl
                         m[key] = value;
                     } while (Next() == ITEM_SEPARATOR);
                 }
-                keywords = m != null ? m : new Dictionary<string, string>();
+                keywords = m ?? new Dictionary<string, string>().AsReadOnly();
             }
 
             return keywords;
@@ -758,7 +790,7 @@ namespace ICU4N.Impl
         private int ParseKeywords()
         {
             int oldBlen = buffer.Length;
-            var m = GetKeywordMap();
+            var m = GetKeywords();
             if (m.Count > 0)
             {
                 bool first = true;
@@ -779,22 +811,13 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Returns an iterator over the keywords, or null if we have an empty map.
-        /// </summary>
-        public IEnumerator<string> GetKeywords()
-        {
-            IDictionary<string, string> m = GetKeywordMap();
-            return !m.Any() ? null : m.Keys.GetEnumerator();
-        }
-
-        /// <summary>
         /// Returns the value for the named keyword, or null if the keyword is not
         /// present.
         /// </summary>
         public string GetKeywordValue(string keywordName)
         {
-            var m = GetKeywordMap();
-            return !m.Any() ? null : m.Get(AsciiUtil.ToLower(keywordName.Trim()));
+            var m = GetKeywords();
+            return m.Count == 0 ? null : m.Get(AsciiUtil.ToLower(keywordName.Trim()));
         }
 
         /// <summary>
@@ -847,14 +870,16 @@ namespace ICU4N.Impl
                         throw new ArgumentException("value must not be empty");
                     }
                 }
-                var m = GetKeywordMap();
-                if (!m.Any())
+                var m = GetKeywords();
+                if (m.Count == 0)
                 { // it is EMPTY_MAP
                     if (value != null)
                     {
                         // force new map
-                        keywords = new SortedDictionary<string, string>(GetKeyComparer());
-                        keywords[keywordName] = value.Trim();
+                        keywords = new SortedDictionary<string, string>(KeyComparer)
+                        {
+                            [keywordName] = value.Trim()
+                        };
                     }
                 }
                 else
@@ -868,10 +893,10 @@ namespace ICU4N.Impl
                         else
                         {
                             m.Remove(keywordName);
-                            if (!m.Any())
+                            if (m.Count == 0)
                             {
                                 // force new map
-                                keywords = new Dictionary<string, string>();
+                                keywords = new Dictionary<string, string>().AsReadOnly();
                             }
                         }
                     }

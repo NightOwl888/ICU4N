@@ -4150,7 +4150,7 @@ namespace ICU4N.Text
             {
                 UCaseProperties csp = UCaseProperties.Instance;
                 UnicodeSet foldSet = new UnicodeSet(this);
-                ULocale root = ULocale.ROOT;
+                UCultureInfo root = UCultureInfo.InvariantCulture;
 
                 // start with input set to guarantee inclusion
                 // CASE: remove strings because the strings will actually be reduced (folded);

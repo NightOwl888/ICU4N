@@ -1,4 +1,5 @@
-﻿using ICU4N.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Text;
 using J2N;
 using J2N.Numerics;
 using NUnit.Framework;
@@ -30,7 +31,7 @@ namespace ICU4N.Dev.Test.Collate
             CollationKey key2;
 
 
-            CultureInfo[] locales = Collator.GetAvailableLocales();
+            CultureInfo[] locales = Collator.GetCultures(UCultureTypes.AllCultures);
 
             RuleBasedCollator localeCollator;
             RuleBasedCollator ruleCollator;

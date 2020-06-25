@@ -1,6 +1,6 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Impl.Coll;
-using ICU4N.Util;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Resources;
@@ -9,7 +9,7 @@ namespace ICU4N.Text
 {
     internal sealed class CollatorServiceShim : Collator.ServiceShim
     {
-        internal override Collator GetInstance(ULocale locale)
+        internal override Collator GetInstance(UCultureInfo locale)
         {
             // use service cache, it's faster than instantiation
             //          if (service.isDefault()) {
@@ -17,7 +17,7 @@ namespace ICU4N.Text
             //          }
             //try
             //{
-            ULocale[] actualLoc = new ULocale[1];
+            var actualLoc = new UCultureInfo[1];
             Collator coll = (Collator)service.Get(locale, actualLoc);
             if (coll == null)
             {
@@ -36,12 +36,12 @@ namespace ICU4N.Text
             //}
         }
 
-        internal override object RegisterInstance(Collator collator, ULocale locale)
+        internal override object RegisterInstance(Collator collator, UCultureInfo locale)
         {
             // Set the collator locales while registering so that getInstance()
             // need not guess whether the collator's locales are already set properly
             // (as they are by the data loader).
-            collator.SetLocale(locale, locale);
+            collator.SetCulture(locale, locale);
             return service.RegisterObject(collator, locale);
         }
 
@@ -55,15 +55,15 @@ namespace ICU4N.Text
                 this.@delegate = fctry;
             }
 
-            protected override object HandleCreate(ULocale loc, int kind, ICUService srvc)
+            protected override object HandleCreate(UCultureInfo loc, int kind, ICUService srvc)
             {
                 object coll = @delegate.CreateCollator(loc);
                 return coll;
             }
 
-            public override string GetDisplayName(string id, ULocale displayLocale)
+            public override string GetDisplayName(string id, UCultureInfo displayLocale)
             {
-                ULocale objectLocale = new ULocale(id);
+                UCultureInfo objectLocale = new UCultureInfo(id);
                 return @delegate.GetDisplayName(objectLocale, displayLocale);
             }
 
@@ -83,40 +83,44 @@ namespace ICU4N.Text
             return service.UnregisterFactory((IServiceFactory)registryKey);
         }
 
-        internal override CultureInfo[] GetAvailableLocales()
+        internal override CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
             // TODO rewrite this to just wrap getAvailableULocales later
             CultureInfo[] result;
             if (service.IsDefault)
             {
-                result = ICUResourceBundle.GetAvailableLocales(ICUData.IcuCollationBaseName,
-                        ICUResourceBundle.IcuDataAssembly);
+                result = ICUResourceBundle.GetCultures(
+                    ICUData.IcuCollationBaseName,
+                    CollationData.IcuDataAssembly,
+                    types);
             }
             else
             {
-                result = service.GetAvailableLocales();
+                result = service.GetCultures(types);
             }
             return result;
         }
 
-        internal override ULocale[] GetAvailableULocales()
+        internal override UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableULocales
         {
-            ULocale[] result;
+            UCultureInfo[] result;
             if (service.IsDefault)
             {
-                result = ICUResourceBundle.GetAvailableULocales(ICUData.IcuCollationBaseName,
-                        ICUResourceBundle.IcuDataAssembly);
+                result = ICUResourceBundle.GetUCultures(
+                    ICUData.IcuCollationBaseName,
+                    CollationData.IcuDataAssembly,
+                    types);
             }
             else
             {
-                result = service.GetAvailableULocales();
+                result = service.GetUCultures(types);
             }
             return result;
         }
 
-        internal override string GetDisplayName(ULocale objectLocale, ULocale displayLocale)
+        internal override string GetDisplayName(UCultureInfo objectLocale, UCultureInfo displayLocale)
         {
-            string id = objectLocale.GetName();
+            string id = objectLocale.FullName;
             return service.GetDisplayName(id, displayLocale);
         }
 
@@ -129,7 +133,7 @@ namespace ICU4N.Text
                 {
                 }
 
-                protected override object HandleCreate(ULocale uloc, int kind, ICUService srvc)
+                protected override object HandleCreate(UCultureInfo uloc, int kind, ICUService srvc)
                 {
                     return CollatorServiceShim.MakeInstance(uloc);
                 }
@@ -144,7 +148,7 @@ namespace ICU4N.Text
             }
 
             /// <summary>
-            /// <see cref="MakeInstance(ULocale)"/> returns an appropriate <see cref="Collator"/> for any locale.
+            /// <see cref="MakeInstance(UCultureInfo)"/> returns an appropriate <see cref="Collator"/> for any locale.
             /// It falls back to root if there is no specific data.
             /// <para/>
             /// Without this override, the service code would fall back to the default locale
@@ -166,7 +170,7 @@ namespace ICU4N.Text
                 }
                 try
                 {
-                    return MakeInstance(ULocale.ROOT);
+                    return MakeInstance(UCultureInfo.InvariantCulture);
                 }
                 catch (MissingManifestResourceException)
                 {
@@ -177,15 +181,13 @@ namespace ICU4N.Text
         }
 
         // Ported from C++ Collator::makeInstance().
-        internal static Collator MakeInstance(ULocale desiredLocale)
+        internal static Collator MakeInstance(UCultureInfo desiredLocale)
         {
-            //Output<ULocale> validLocale = new Output<ULocale>(ULocale.ROOT);
-            ULocale validLocale = ULocale.ROOT;
             CollationTailoring t =
-                CollationLoader.LoadTailoring(desiredLocale, out validLocale);
+                CollationLoader.LoadTailoring(desiredLocale, out UCultureInfo validLocale);
             return new RuleBasedCollator(t, validLocale);
         }
 
-        private static ICULocaleService service = new CService();
+        private static readonly ICULocaleService service = new CService();
     }
 }

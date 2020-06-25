@@ -1,5 +1,4 @@
-﻿using ICU4N.Impl;
-using ICU4N.Support;
+﻿using ICU4N.Globalization;
 using ICU4N.Support.Collections;
 using ICU4N.Util;
 using System;
@@ -12,6 +11,13 @@ namespace ICU4N.Impl
 {
     public class ICUCurrencyDisplayInfoProvider : ICurrencyDisplayInfoProvider
     {
+        private static readonly Assembly IcuDataAssembly =
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly;
+#else
+            typeof(ICUCurrencyDisplayInfoProvider).Assembly;
+#endif
+
         public ICUCurrencyDisplayInfoProvider()
         {
         }
@@ -21,51 +27,43 @@ namespace ICU4N.Impl
         /// </summary>
         private volatile ICUCurrencyDisplayInfo currencyDisplayInfoCache = null;
 
-        public virtual CurrencyDisplayInfo GetInstance(ULocale locale, bool withFallback)
+        public virtual CurrencyDisplayInfo GetInstance(UCultureInfo culture, bool withFallback)
         {
             // Make sure the locale is non-null (this can happen during deserialization):
-            if (locale == null) { locale = ULocale.ROOT; }
+            if (culture == null) { culture = UCultureInfo.InvariantCulture; }
             ICUCurrencyDisplayInfo instance = currencyDisplayInfoCache;
-            if (instance == null || !instance.locale.Equals(locale) || instance.fallback != withFallback)
+            if (instance == null || !culture.Equals(instance.culture) || instance.fallback != withFallback)
             {
                 ICUResourceBundle rb;
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                Assembly assembly = typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly;
-#else
-                Assembly assembly = typeof(ICUCurrencyDisplayInfoProvider).Assembly;
-#endif
                 if (withFallback)
                 {
-                    rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, locale, assembly, OpenType.LocaleDefaultRoot);
+                    rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, culture, IcuDataAssembly, OpenType.LocaleDefaultRoot);
                 }
                 else
                 {
                     try
                     {
-                        rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, locale, assembly, OpenType.LocaleOnly);
+                        rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, culture, IcuDataAssembly, OpenType.LocaleOnly);
                     }
                     catch (MissingManifestResourceException)
                     {
                         return null;
                     }
                 }
-                instance = new ICUCurrencyDisplayInfo(locale, rb, withFallback);
+                instance = new ICUCurrencyDisplayInfo(culture, rb, withFallback);
                 currencyDisplayInfoCache = instance;
             }
             return instance;
         }
 
-        public virtual bool HasData
-        {
-            get { return true; }
-        }
+        public virtual bool HasData => true;
 
         /// <summary>
         /// This class performs data loading for currencies and keeps data in lightweight cache.
         /// </summary>
         internal class ICUCurrencyDisplayInfo : CurrencyDisplayInfo
         {
-            internal readonly ULocale locale;
+            internal readonly UCultureInfo culture;
             internal readonly bool fallback;
             private readonly ICUResourceBundle rb;
 
@@ -136,17 +134,15 @@ namespace ICU4N.Impl
             /// START PUBLIC API ///
             ////////////////////////
 
-            public ICUCurrencyDisplayInfo(ULocale locale, ICUResourceBundle rb, bool fallback)
+            public ICUCurrencyDisplayInfo(UCultureInfo culture, ICUResourceBundle rb, bool fallback)
             {
-                this.locale = locale;
+                this.culture = culture;
                 this.fallback = fallback;
                 this.rb = rb;
             }
 
-            public override ULocale ULocale
-            {
-                get { return rb.GetULocale(); }
-            }
+            public override UCultureInfo UCulture
+                => rb.UCulture;
 
             public override string GetName(string isoCode)
             {

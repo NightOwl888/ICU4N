@@ -1,16 +1,15 @@
-﻿using ICU4N.Util;
+﻿using ICU4N.Globalization;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 
 namespace ICU4N.Impl
 {
     /// <summary>
     /// A class to hold utility functions missing from java.util.Locale.
     /// </summary>
-    public class LocaleUtility // ICU4N TODO: Evaluate the need for this class, or whether a subclass of CultureInfo can serve as an all-inclusive ULocale object (possibly named UCultureInfo)
+     // ICU4N TODO: Move to Globalization namespace ?
+    public class LocaleUtility // ICU4N TODO: Evaluate the need for this class, or whether UCultureInfo can serve as an all-inclusive culture object
     {
         /**
          * A helper function to convert a string of the form
@@ -210,10 +209,13 @@ namespace ICU4N.Impl
  */
         public static CultureInfo Fallback(CultureInfo loc)
         {
-            if (loc.Equals(CultureInfo.InvariantCulture))
-            {
+            if (CultureInfo.InvariantCulture.Equals(loc))
                 return null;
-            }
+
+            //if (CultureInfo.InvariantCulture.Equals(loc.Parent))
+            //    return null;
+
+            //return loc.Parent;
 
 #if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
             // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
@@ -221,29 +223,70 @@ namespace ICU4N.Impl
             // ignore these.
             if (loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
             {
-                return CultureInfo.InvariantCulture;
+                return null;
             }
 #endif
             // ICU4N: We use the original ICU fallback scheme rather than
             // simply using loc.Parent.
 
+            var parser = new LocaleIDParser(loc.Name);
+
             // Split the locale into parts and remove the rightmost part
-            string[] parts = loc.Name.Split('-');
-            if (parts.Length == 1)
+            const int language = 0;
+            const int country = 1;
+            const int variant = 2;
+
+            string[] parts = new string[] { parser.GetLanguage(), parser.GetCountry(), parser.GetVariant() };
+            int i;
+            for (i = 2; i >= 0; --i)
+            {
+                if (parts[i].Length != 0)
+                {
+                    parts[i] = "";
+                    break;
+                }
+            }
+            if (i < 0)
             {
                 return null; // All parts were empty
             }
-            string culture = parts[0];
-            for (int i = 1; i < parts.Length - 1; i++)
-            {
-                culture += '-' + parts[i];
-            }
-            return new CultureInfo(culture);
+            return new CultureInfo(
+                parts[language] +
+                (parts[country].Length > 0 ? '-' + parts[country] : "") +
+                (parts[variant].Length > 0 ? '-' + parts[variant] : ""));
+
+
+            //if (parts.Length == 1)
+            //{
+            //    return null; // All parts were empty
+            //}
+            //string culture = parts[0];
+            //for (int i = 1; i < parts.Length - 1; i++)
+            //{
+            //    culture += '-' + parts[i];
+            //}
+            //return new CultureInfo(culture);
+
+
+
+
+            //            // Split the locale into parts and remove the rightmost part
+            //            string[] parts = loc.Name.Split('-');
+            //            if (parts.Length == 1)
+            //            {
+            //                return null; // All parts were empty
+            //            }
+            //            string culture = parts[0];
+            //            for (int i = 1; i < parts.Length - 1; i++)
+            //            {
+            //                culture += '-' + parts[i];
+            //            }
+            //            return new CultureInfo(culture);
         }
 
-        public static CultureInfo Fallback(ULocale locale)
+        public static CultureInfo Fallback(UCultureInfo locale)
         {
-            return Fallback(locale.GetName());
+            return Fallback(locale.FullName);
         }
 
         /// <summary>

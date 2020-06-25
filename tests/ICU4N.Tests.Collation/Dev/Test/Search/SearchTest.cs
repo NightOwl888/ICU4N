@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using NUnit.Framework;
@@ -2507,7 +2508,7 @@ namespace ICU4N.Dev.Test.Search
             foreach (TUSCItem tuscItem in tuscItems)
             {
                 String localeString = tuscItem.getLocaleString();
-                ULocale uloc = new ULocale(localeString);
+                UCultureInfo uloc = new UCultureInfo(localeString);
                 RuleBasedCollator col = null;
                 try
                 {

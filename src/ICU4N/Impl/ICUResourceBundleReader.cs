@@ -1,4 +1,5 @@
-﻿using ICU4N.Support;
+﻿using ICU4N.Globalization;
+using ICU4N.Support;
 using ICU4N.Util;
 using J2N;
 using J2N.Collections.Concurrent;
@@ -1783,7 +1784,7 @@ namespace ICU4N.Impl
             {
                 if (localeName.Length == 0)
                 {
-                    return localeName = ULocale.GetDefault().ToString();
+                    localeName = UCultureInfo.CurrentCulture.ToString();
                 }
                 return localeName + ICU_RESOURCE_SUFFIX;
             }

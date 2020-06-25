@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Support.Text;
 using ICU4N.Util;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace ICU4N.Impl
 {
     public class ICULocaleService : ICUService
     {
-        private ULocale fallbackLocale;
+        private UCultureInfo fallbackLocale;
         private string fallbackLocaleName;
 
         /// <summary>
@@ -29,30 +30,31 @@ namespace ICU4N.Impl
         {
         }
 
+
         /// <summary>
         /// Convenience override for callers using locales.  This calls
-        /// <see cref="Get(ULocale, int, ULocale[])"/> with <see cref="LocaleKey.KindAny"/>
+        /// <see cref="Get(UCultureInfo, int, UCultureInfo[])"/> with <see cref="LocaleKey.KindAny"/>
         /// for kind and null for actualReturn.
         /// </summary>
-        public virtual object Get(ULocale locale) // ICU4N TODO: API - Use indexer?
+        public virtual object Get(UCultureInfo locale) // ICU4N TODO: API - Use indexer? // ICU4N TODO: API Remove
         {
             return Get(locale, LocaleKey.KindAny, null);
         }
 
         /// <summary>
         /// Convenience override for callers using locales.  This calls
-        /// <see cref="Get(ULocale, int, ULocale[])"/> with a null actualReturn.
+        /// <see cref="Get(UCultureInfo, int, UCultureInfo[])"/> with a null actualReturn.
         /// </summary>
-        public virtual object Get(ULocale locale, int kind)
+        public virtual object Get(UCultureInfo locale, int kind) // ICU4N TODO: API Remove
         {
             return Get(locale, kind, null);
         }
 
         /// <summary>
         /// Convenience override for callers using locales.  This calls
-        /// <see cref="Get(ULocale, int, ULocale[])"/> with <see cref="LocaleKey.KindAny"/> for kind.
+        /// <see cref="Get(UCultureInfo, int, UCultureInfo[])"/> with <see cref="LocaleKey.KindAny"/> for kind.
         /// </summary>
-        public virtual object Get(ULocale locale, ULocale[] actualReturn)
+        public virtual object Get(UCultureInfo locale, UCultureInfo[] actualReturn) // ICU4N TODO: API Remove
         {
             return Get(locale, LocaleKey.KindAny, actualReturn);
         }
@@ -62,13 +64,13 @@ namespace ICU4N.Impl
         /// <see cref="CreateKey(string, int)"/> to create a key, calls 
         /// <see cref="ICUService.GetKey(ICUServiceKey)"/>, and then
         /// if <paramref name="actualReturn"/> is not null, returns the actualResult from
-        /// <see cref="ICUService.GetKey(ICUServiceKey)"/> (stripping any prefix) into a <see cref="ULocale"/>.
+        /// <see cref="ICUService.GetKey(ICUServiceKey)"/> (stripping any prefix) into a <see cref="UCultureInfo"/>.
         /// </summary>
         /// <param name="locale"></param>
         /// <param name="kind"></param>
         /// <param name="actualReturn"></param>
         /// <returns></returns>
-        public virtual object Get(ULocale locale, int kind, ULocale[] actualReturn)
+        public virtual object Get(UCultureInfo locale, int kind, UCultureInfo[] actualReturn) // ICU4N TODO: API Remove
         {
             ICUServiceKey key = CreateKey(locale, kind);
             if (actualReturn == null)
@@ -85,37 +87,101 @@ namespace ICU4N.Impl
                 {
                     temp[0] = temp[0].Substring(n + 1);
                 }
-                actualReturn[0] = new ULocale(temp[0]);
+                actualReturn[0] = new UCultureInfo(temp[0]);
             }
             return result;
         }
 
+
+        ///// <summary>
+        ///// Convenience override for callers using locales.  This calls
+        ///// <see cref="Get(UCultureInfo, int, out UCultureInfo)"/> with <see cref="LocaleKey.KindAny"/> for kind.
+        ///// </summary>
+        //public virtual object Get(UCultureInfo locale) // ICU4N TODO: API - Use indexer?
+        //{
+        //    return Get(locale, LocaleKey.KindAny);
+        //}
+
+        ///// <summary>
+        ///// Convenience override for callers using locales.  This calls
+        ///// <see cref="Get(UCultureInfo, int, out UCultureInfo)"/> with <see cref="LocaleKey.KindAny"/> for kind.
+        ///// </summary>
+        //public virtual object Get(UCultureInfo locale, out UCultureInfo actualResult)
+        //{
+        //    return Get(locale, LocaleKey.KindAny, out actualResult);
+        //}
+
+        ///// <summary>
+        ///// Convenience override for callers using locales. This uses
+        ///// <see cref="CreateKey(string, int)"/> to create a key, and returns the result of
+        ///// <see cref="ICUService.GetKey(ICUServiceKey)"/>.
+        ///// </summary>
+        ///// <param name="locale"></param>
+        ///// <param name="kind"></param>
+        ///// <returns></returns>
+        //public virtual object Get(UCultureInfo locale, int kind)
+        //{
+        //    ICUServiceKey key = CreateKey(locale, kind);
+        //    return GetKey(key);
+        //}
+
+        ///// <summary>
+        ///// Convenience override for callers using locales.  This uses
+        ///// <see cref="CreateKey(string, int)"/> to create a key, calls 
+        ///// <see cref="ICUService.GetKey(ICUServiceKey)"/>, and then
+        ///// returns the <paramref name="actualResult"/> from
+        ///// <see cref="ICUService.GetKey(ICUServiceKey)"/> (stripping any prefix)
+        ///// into a <see cref="UCultureInfo"/>.
+        ///// </summary>
+        ///// <param name="locale"></param>
+        ///// <param name="kind"></param>
+        ///// <param name="actualResult"></param>
+        ///// <returns></returns>
+        //public virtual object Get(UCultureInfo locale, int kind, out UCultureInfo actualResult)
+        //{
+        //    actualResult = null;
+        //    ICUServiceKey key = CreateKey(locale, kind);
+
+        //    string[] temp = new string[1];
+        //    object result = GetKey(key, temp);
+        //    if (result != null)
+        //    {
+        //        int n = temp[0].IndexOf('/');
+        //        if (n >= 0)
+        //        {
+        //            temp[0] = temp[0].Substring(n + 1);
+        //        }
+        //        actualResult = new UCultureInfo(temp[0]);
+        //    }
+        //    return result;
+        //}
+
         /// <summary>
         /// Convenience override for callers using locales.  This calls
-        /// <see cref="RegisterObject(object, ULocale, int, bool)"/>
+        /// <see cref="RegisterObject(object, UCultureInfo, int, bool)"/>
         /// passing <see cref="LocaleKey.KindAny"/> for the kind, and true for the visibility.
         /// </summary>
-        public virtual IServiceFactory RegisterObject(object obj, ULocale locale)
+        public virtual IServiceFactory RegisterObject(object obj, UCultureInfo locale)
         {
             return RegisterObject(obj, locale, LocaleKey.KindAny, true);
         }
 
         /// <summary>
         /// Convenience override for callers using locales.  This calls
-        /// <see cref="RegisterObject(object, ULocale, int, bool)"/>
+        /// <see cref="RegisterObject(object, UCultureInfo, int, bool)"/>
         /// passing <see cref="LocaleKey.KindAny"/> for the kind.
         /// </summary>
-        public virtual IServiceFactory RegisterObject(object obj, ULocale locale, bool visible)
+        public virtual IServiceFactory RegisterObject(object obj, UCultureInfo locale, bool visible)
         {
             return RegisterObject(obj, locale, LocaleKey.KindAny, visible);
         }
 
         /// <summary>
         /// Convenience function for callers using locales.  This calls
-        /// <see cref="RegisterObject(object, ULocale, int, bool)"/>
+        /// <see cref="RegisterObject(object, UCultureInfo, int, bool)"/>
         /// passing true for the visibility.
         /// </summary>
-        public virtual IServiceFactory RegisterObject(object obj, ULocale locale, int kind)
+        public virtual IServiceFactory RegisterObject(object obj, UCultureInfo locale, int kind)
         {
             return RegisterObject(obj, locale, kind, true);
         }
@@ -124,7 +190,7 @@ namespace ICU4N.Impl
         /// Convenience function for callers using locales.  This instantiates
         /// a <see cref="SimpleLocaleKeyFactory"/>, and registers the factory.
         /// </summary>
-        public virtual IServiceFactory RegisterObject(object obj, ULocale locale, int kind, bool visible)
+        public virtual IServiceFactory RegisterObject(object obj, UCultureInfo locale, int kind, bool visible)
         {
             IServiceFactory factory = new SimpleLocaleKeyFactory(obj, locale, kind, visible);
             return RegisterFactory(factory);
@@ -134,34 +200,50 @@ namespace ICU4N.Impl
         /// Convenience method for callers using locales.  This returns the standard
         /// <see cref="CultureInfo"/> list, built from the <see cref="ICollection{T}"/> of visible ids.
         /// </summary>
-        public virtual CultureInfo[] GetAvailableLocales() // ICU4N TODO: API - rename GetAvailableCultures()? Need this to be consistent across the API
+        public virtual CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
-            // TODO make this wrap getAvailableULocales later
-            ICollection<string> visIDs = GetVisibleIDs();
-            CultureInfo[] locales = new CultureInfo[visIDs.Count];
-            int n = 0;
-            foreach (string id in visIDs)
-            {
-                CultureInfo loc = LocaleUtility.GetLocaleFromName(id);
-                locales[n++] = loc;
-            }
-            return locales;
+            return GetCultures(types, (id) => LocaleUtility.GetLocaleFromName(id));
         }
 
         /// <summary>
         /// Convenience method for callers using locales.  This returns the standard
-        /// <see cref="ULocale"/> list, built from the <see cref="ICollection{T}"/> of visible ids.
+        /// <see cref="UCultureInfo"/> list, built from the <see cref="ICollection{T}"/> of visible ids.
         /// </summary>
-        public virtual ULocale[] GetAvailableULocales() // ICU4N TODO: API - rename GetUCultures (just like CultureInfo) - consider adding a CultureTypes filter
+        public virtual UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableULocales
+        {
+            return GetCultures(types, (id) => new UCultureInfo(id));
+        }
+
+        private T[] GetCultures<T>(UCultureTypes types, Func<string, T> factory)
         {
             ICollection<string> visIDs = GetVisibleIDs();
-            ULocale[] locales = new ULocale[visIDs.Count];
-            int n = 0;
-            foreach (string id in visIDs)
+            
+            if (types == UCultureTypes.AllCultures)
             {
-                locales[n++] = new ULocale(id);
+                int n = 0;
+                var locales = new T[visIDs.Count];
+                foreach (string id in visIDs)
+                    locales[n++] = factory(id);
+                return locales;
             }
-            return locales;
+            else
+            {
+                List<T> locales = new List<T>(visIDs.Count);
+                var parser = new LocaleIDParser(string.Empty);
+                foreach (string id in visIDs)
+                {
+                    // Filter the culture type before allocating the object
+                    parser.Reset(id);
+                    bool isNeutralCulture = parser.GetLocaleID().IsNeutralCulture;
+                    if (isNeutralCulture && types.HasFlag(UCultureTypes.NeutralCultures)
+                        || (!isNeutralCulture && types.HasFlag(UCultureTypes.SpecificCultures)))
+                    {
+                        locales.Add(factory(id));
+                    }
+                }
+
+                return locales.ToArray();
+            }
         }
 
         // ICU4N specific - de-nested LocaleKey
@@ -178,7 +260,7 @@ namespace ICU4N.Impl
         /// </summary>
         public virtual string ValidateFallbackLocale()
         {
-            ULocale loc = ULocale.GetDefault();
+            UCultureInfo loc = UCultureInfo.CurrentCulture;
             if (loc != fallbackLocale)
             {
                 lock (this)
@@ -186,7 +268,7 @@ namespace ICU4N.Impl
                     if (loc != fallbackLocale)
                     {
                         fallbackLocale = loc;
-                        fallbackLocaleName = loc.GetBaseName();
+                        fallbackLocaleName = loc.Name;
                         ClearServiceCache();
                     }
                 }
@@ -204,7 +286,7 @@ namespace ICU4N.Impl
             return LocaleKey.CreateWithCanonicalFallback(id, ValidateFallbackLocale(), kind);
         }
 
-        public virtual ICUServiceKey CreateKey(ULocale l, int kind)
+        public virtual ICUServiceKey CreateKey(UCultureInfo l, int kind)
         {
             return LocaleKey.CreateWithCanonical(l, ValidateFallbackLocale(), kind);
         }
@@ -251,20 +333,20 @@ namespace ICU4N.Impl
             {
                 return null;
             }
-            string canonicalPrimaryID = ULocale.GetName(primaryID);
+            string canonicalPrimaryID = UCultureInfo.GetFullName(primaryID);
             return new LocaleKey(primaryID, canonicalPrimaryID, canonicalFallbackID, kind);
         }
 
         /// <summary>
         /// Create a <see cref="LocaleKey"/> with canonical primary and fallback IDs.
         /// </summary>
-        public static LocaleKey CreateWithCanonical(ULocale locale, string canonicalFallbackID, int kind)
+        public static LocaleKey CreateWithCanonical(UCultureInfo locale, string canonicalFallbackID, int kind)
         {
             if (locale == null)
             {
                 return null;
             }
-            string canonicalPrimaryID = locale.GetName();
+            string canonicalPrimaryID = locale.FullName;
             return new LocaleKey(canonicalPrimaryID, canonicalPrimaryID, canonicalFallbackID, kind);
         }
 
@@ -369,25 +451,25 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Convenience method to return the locale corresponding to the (canonical) original ID.
+        /// Convenience method to return the <see cref="UCultureInfo"/> corresponding to the (canonical) original ID.
         /// </summary>
-        public virtual ULocale GetCanonicalLocale() // ICU4N specific - added "Get"
+        public virtual UCultureInfo GetCanonicalCulture() // ICU4N specific - added "Get"
         {
-            return new ULocale(primaryID);
+            return new UCultureInfo(primaryID);
         }
 
         /// <summary>
-        /// Convenience method to return the ulocale corresponding to the (canonical) currentID.
+        /// Convenience method to return the <see cref="UCultureInfo"/> corresponding to the (canonical) currentID.
         /// </summary>
-        public virtual ULocale GetCurrentLocale() // ICU4N specific - added "Get"
+        public virtual UCultureInfo GetCurrentCulture() // ICU4N specific - added "Get"
         {
             if (varstart == -1)
             {
-                return new ULocale(currentID);
+                return new UCultureInfo(currentID);
             }
             else
             {
-                return new ULocale(currentID + primaryID.Substring(varstart));
+                return new UCultureInfo(currentID + primaryID.Substring(varstart));
             }
         }
 
@@ -471,7 +553,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Implement superclass abstract method.  This checks the <see cref="ICUServiceKey.CurrentID"/>
         /// against the supported IDs, and passes the canonicalLocale and
-        /// <see cref="LocaleKey.Kind"/> to <see cref="HandleCreate(ULocale, int, ICUService)"/> (which subclasses must implement).
+        /// <see cref="LocaleKey.Kind"/> to <see cref="HandleCreate(UCultureInfo, int, ICUService)"/> (which subclasses must implement).
         /// </summary>
         public virtual object Create(ICUServiceKey key, ICUService service)
         {
@@ -480,7 +562,7 @@ namespace ICU4N.Impl
                 LocaleKey lkey = (LocaleKey)key;
                 int kind = lkey.Kind;
 
-                ULocale uloc = lkey.GetCurrentLocale();
+                UCultureInfo uloc = lkey.GetCurrentCulture();
                 return HandleCreate(uloc, kind, service);
             }
             else
@@ -521,10 +603,7 @@ namespace ICU4N.Impl
             }
         }
 
-        /// <summary>
-        /// Return a localized name for the locale represented by id.
-        /// </summary>
-        public virtual string GetDisplayName(string id, ULocale locale)
+        public virtual string GetDisplayName(string id, UCultureInfo locale)
         {
             // assume if the user called this on us, we must have handled some fallback of this id
             //          if (isSupportedID(id)) {
@@ -532,7 +611,7 @@ namespace ICU4N.Impl
             {
                 return id;
             }
-            ULocale loc = new ULocale(id);
+            UCultureInfo loc = new UCultureInfo(id);
             return loc.GetDisplayName(locale);
             //              }
             //          return null;
@@ -543,7 +622,7 @@ namespace ICU4N.Impl
         /// Utility method used by <see cref="Create(ICUServiceKey, ICUService)"/>.  Subclasses can
         /// implement this instead of <see cref="Create(ICUServiceKey, ICUService)"/>.
         /// </summary>
-        protected virtual object HandleCreate(ULocale loc, int kind, ICUService service)
+        protected virtual object HandleCreate(UCultureInfo loc, int kind, ICUService service)
         {
             return null;
         }
@@ -595,16 +674,16 @@ namespace ICU4N.Impl
         private readonly int kind;
 
         // TODO: remove when we no longer need this
-        public SimpleLocaleKeyFactory(object obj, ULocale locale, int kind, bool visible)
+        public SimpleLocaleKeyFactory(object obj, UCultureInfo locale, int kind, bool visible)
             : this(obj, locale, kind, visible, null)
         {
         }
 
-        public SimpleLocaleKeyFactory(object obj, ULocale locale, int kind, bool visible, string name)
+        public SimpleLocaleKeyFactory(object obj, UCultureInfo locale, int kind, bool visible, string name)
             : base(visible, name)
         {
             this.obj = obj;
-            this.id = locale.GetBaseName();
+            this.id = locale.Name;
             this.kind = kind;
         }
 
@@ -663,7 +742,7 @@ namespace ICU4N.Impl
     /// A <see cref="LocaleKeyFactory"/> that creates a service based on the ICU locale data.
     /// This is a base class for most ICU factories.  Subclasses instantiate it
     /// with a constructor that takes a bundle name, which determines the supported
-    /// IDs.  Subclasses then override <see cref="HandleCreate(ULocale, int, ICUService)"/> to create the actual service
+    /// IDs.  Subclasses then override <see cref="HandleCreate(UCultureInfo, int, ICUService)"/> to create the actual service
     /// object.  The default implementation returns a <see cref="System.Resources.ResourceManager"/>.
     /// </summary>
     public class ICUResourceBundleFactory : LocaleKeyFactory // ICU4N TODO: API Rename ICUResourceManagerFactory ?
@@ -712,7 +791,7 @@ namespace ICU4N.Impl
         /// Create the service.  The default implementation returns the resource bundle
         /// for the locale, ignoring kind, and service.
         /// </summary>
-        protected override object HandleCreate(ULocale loc, int kind, ICUService service)
+        protected override object HandleCreate(UCultureInfo loc, int kind, ICUService service)
         {
             return ICUResourceBundle.GetBundleInstance(bundleName, loc, Assembly);
         }

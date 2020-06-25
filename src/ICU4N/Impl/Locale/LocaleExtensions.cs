@@ -14,6 +14,11 @@ namespace ICU4N.Impl.Locale
     {
         private IDictionary<char, Extension> _map;
         private string _id;
+#if FEATURE_READONLYDICTIONARY
+        private volatile IReadOnlyDictionary<char, string> _extensions;
+#else
+        private volatile IDictionary<char, string> _extensions;
+#endif
 
         private static readonly IDictionary<char, Extension> EmptyMap =
             new JCG.SortedDictionary<char, Extension>().AsReadOnly();
@@ -113,7 +118,7 @@ namespace ICU4N.Impl.Locale
 
                 if (hasUKeywords)
                 {
-                    ukmap = new JCG.SortedDictionary<string, string>();
+                    ukmap = new JCG.SortedDictionary<string, string>(StringComparer.Ordinal);
                     foreach (var kwd in ukeywords)
                     {
                         string key = AsciiUtil.ToLower(kwd.Key.Value);
@@ -145,19 +150,37 @@ namespace ICU4N.Impl.Locale
 
         public virtual Extension GetExtension(char key)
         {
-            Extension result;
-            _map.TryGetValue(AsciiUtil.ToLower(key), out result);
+            _map.TryGetValue(AsciiUtil.ToLower(key), out Extension result);
             return result;
         }
 
         public virtual string GetExtensionValue(char key)
         {
-            Extension ext;
-            if (!_map.TryGetValue(AsciiUtil.ToLower(key), out ext) || ext == null)
+            if (!_map.TryGetValue(AsciiUtil.ToLower(key), out Extension ext) || ext == null)
             {
                 return null;
             }
             return ext.Value;
+        }
+
+        // ICU4N specific - Expose the dictionary so it can be on the public API of UCultureInfo
+#if FEATURE_READONLYDICTIONARY
+        public virtual IReadOnlyDictionary<char, string> Extensions
+#else
+        public virtual IDictionary<char, string> Extensions
+#endif
+        {
+            get
+            {
+                if (_extensions == null)
+                {
+                    var extensions = new JCG.SortedDictionary<char, string>();
+                    foreach (var key in _map.Keys)
+                        extensions[key] = GetExtensionValue(key);
+                    _extensions = extensions.AsReadOnly();
+                }
+                return _extensions;
+            }
         }
 
         public virtual ISet<string> UnicodeLocaleAttributes
@@ -166,7 +189,7 @@ namespace ICU4N.Impl.Locale
             {
                 if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out Extension ext) || ext == null)
                 {
-                    return new JCG.HashSet<string>();
+                    return new JCG.HashSet<string>().AsReadOnly();
                 }
                 Debug.Assert(ext is UnicodeLocaleExtension);
                 return ((UnicodeLocaleExtension)ext).UnicodeLocaleAttributes;
@@ -179,10 +202,28 @@ namespace ICU4N.Impl.Locale
             {
                 if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out Extension ext) || ext == null)
                 {
-                    return new JCG.HashSet<string>();
+                    return new JCG.HashSet<string>().AsReadOnly();
                 }
                 Debug.Assert(ext is UnicodeLocaleExtension);
                 return ((UnicodeLocaleExtension)ext).UnicodeLocaleKeys;
+            }
+        }
+
+        // ICU4N specific - Expose the dictionary so it can be on the public API of UCultureInfo
+#if FEATURE_READONLYDICTIONARY
+        public virtual IReadOnlyDictionary<string, string> UnicodeLocales
+#else
+        public virtual IDictionary<string, string> UnicodeLocales
+#endif
+        {
+            get
+            {
+                if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out Extension ext) || ext == null)
+                {
+                    return new JCG.Dictionary<string, string>().AsReadOnly();
+                }
+                Debug.Assert(ext is UnicodeLocaleExtension);
+                return ((UnicodeLocaleExtension)ext).UnicodeLocales;
             }
         }
 

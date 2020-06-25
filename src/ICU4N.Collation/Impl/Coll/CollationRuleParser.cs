@@ -1,7 +1,5 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support.Text;
 using ICU4N.Text;
-using ICU4N.Util;
 using J2N;
 using J2N.Text;
 using System;
@@ -798,10 +796,10 @@ namespace ICU4N.Impl.Coll
                 else if (raw.Equals("import"))
                 {
                     // BCP 47 language tag -> ICU locale ID
-                    ULocale localeID;
+                    UCultureInfo localeID;
                     try
                     {
-                        localeID = new ULocale.Builder().SetLanguageTag(v).Build();
+                        localeID = new UCultureInfoBuilder().SetLanguageTag(v).Build();
                     }
                     catch (Exception e)
                     {
@@ -809,16 +807,16 @@ namespace ICU4N.Impl.Coll
                         return;
                     }
                     // localeID minus all keywords
-                    string baseID = localeID.GetBaseName();
+                    string baseID = localeID.Name;
                     // @collation=type, or length=0 if not specified
-                    string collationType = localeID.GetKeywordValue("collation");
+                    localeID.Keywords.TryGetValue("collation", out string collationType);
                     if (importer == null)
                     {
                         SetParseError("[import langTag] is not supported");
                     }
                     else
                     {
-                        String importedRules;
+                        string importedRules;
                         try
                         {
                             importedRules =

@@ -308,7 +308,7 @@ namespace ICU4N.Dev.Test.Translit
         {
             try
             {
-                UnicodeSet exemplars = LocaleData.GetExemplarSet(new ULocale("zh"), 0);
+                UnicodeSet exemplars = LocaleData.GetExemplarSet(new UCultureInfo("zh"), 0);
                 // create string with all chars
                 StringBuffer b = new StringBuffer();
                 for (UnicodeSetIterator it = new UnicodeSetIterator(exemplars); it.Next();)

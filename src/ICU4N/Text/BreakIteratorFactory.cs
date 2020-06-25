@@ -1,6 +1,6 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support.Text;
-using ICU4N.Util;
 using J2N.IO;
 using System;
 using System.Globalization;
@@ -13,7 +13,7 @@ namespace ICU4N.Text
     internal sealed class BreakIteratorFactory : BreakIterator.BreakIteratorServiceShim
     {
 
-        public override object RegisterInstance(BreakIterator iter, ULocale locale, int kind)
+        public override object RegisterInstance(BreakIterator iter, UCultureInfo locale, int kind)
         {
             iter.SetText(new StringCharacterIterator(""));
             return service.RegisterObject(iter, locale, kind);
@@ -28,40 +28,40 @@ namespace ICU4N.Text
             return service.UnregisterFactory((IServiceFactory)key);
         }
 
-        public override CultureInfo[] GetAvailableCultures()
+        public override CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
             if (service == null)
             {
-                return ICUResourceBundle.GetAvailableLocales();
+                return ICUResourceBundle.GetCultures(types);
             }
             else
             {
-                return service.GetAvailableLocales();
+                return service.GetCultures(types);
             }
         }
 
-        public override ULocale[] GetAvailableULocales()
+        public override UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
             if (service == null)
             {
-                return ICUResourceBundle.GetAvailableULocales();
+                return ICUResourceBundle.GetUCultures(types);
             }
             else
             {
-                return service.GetAvailableULocales();
+                return service.GetUCultures(types);
             }
         }
 
-        public override BreakIterator CreateBreakIterator(ULocale locale, int kind)
+        public override BreakIterator CreateBreakIterator(UCultureInfo locale, int kind)
         {
-            // TODO: convert to ULocale when service switches over
+            // TODO: convert to UCultureInfo when service switches over
             if (service.IsDefault)
             {
                 return CreateBreakInstance(locale, kind);
             }
-            ULocale[] actualLoc = new ULocale[1];
+            UCultureInfo[] actualLoc = new UCultureInfo[1];
             BreakIterator iter = (BreakIterator)service.Get(locale, kind, actualLoc);
-            iter.SetLocale(actualLoc[0], actualLoc[0]); // services make no distinction between actual & valid
+            iter.SetCulture(actualLoc[0], actualLoc[0]); // services make no distinction between actual & valid
             return iter;
         }
 
@@ -78,7 +78,7 @@ namespace ICU4N.Text
             }
 
             /// <summary>
-            /// <see cref="CreateBreakInstance(ULocale, int)"/> returns an appropriate <see cref="BreakIterator"/> for any locale.
+            /// <see cref="CreateBreakInstance(UCultureInfo, int)"/> returns an appropriate <see cref="BreakIterator"/> for any locale.
             /// It falls back to root if there is no specific data.
             /// <para/>
             /// Without this override, the service code would fall back to the default locale
@@ -93,7 +93,7 @@ namespace ICU4N.Text
 
         internal class RBBreakIteratorFactory : ICUResourceBundleFactory
         {
-            protected override object HandleCreate(ULocale loc, int kind, ICUService srvc)
+            protected override object HandleCreate(UCultureInfo loc, int kind, ICUService srvc)
             {
                 return CreateBreakInstance(loc, kind);
             }
@@ -112,7 +112,7 @@ namespace ICU4N.Text
         };
 
 
-        private static BreakIterator CreateBreakInstance(ULocale locale, int kind)
+        private static BreakIterator CreateBreakInstance(UCultureInfo locale, int kind)
         {
 
             RuleBasedBreakIterator iter = null;
@@ -127,7 +127,7 @@ namespace ICU4N.Text
             string typeKeyExt = null;
             if (kind == BreakIterator.KIND_LINE)
             {
-                string lbKeyValue = locale.GetKeywordValue("lb");
+                locale.Keywords.TryGetValue("lb", out string lbKeyValue);
                 if (lbKeyValue != null && (lbKeyValue.Equals("strict") || lbKeyValue.Equals("normal") || lbKeyValue.Equals("loose")))
                 {
                     typeKeyExt = "_" + lbKeyValue;
@@ -162,17 +162,16 @@ namespace ICU4N.Text
                 Assert.Fail(e);
             }
             // TODO: Determine valid and actual locale correctly.
-            ULocale uloc = ULocale.ForLocale(rb.GetLocale());
-            iter.SetLocale(uloc, uloc);
+            UCultureInfo uloc = rb.Culture.ToUCultureInfo();
+            iter.SetCulture(uloc, uloc);
             iter.BreakType = kind;
 
             // filtered break
             if (kind == BreakIterator.KIND_SENTENCE)
             {
-                string ssKeyword = locale.GetKeywordValue("ss");
-                if (ssKeyword != null && ssKeyword.Equals("standard"))
+                if (locale.Keywords.TryGetValue("ss", out string ssKeyword) && ssKeyword != null && ssKeyword.Equals("standard"))
                 {
-                    ULocale @base = new ULocale(locale.GetBaseName());
+                    UCultureInfo @base = new UCultureInfo(locale.Name);
                     return FilteredBreakIteratorBuilder.GetInstance(@base).WrapIteratorWithFilter(iter);
                 }
             }

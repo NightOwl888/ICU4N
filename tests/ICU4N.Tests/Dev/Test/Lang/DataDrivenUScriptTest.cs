@@ -1,6 +1,4 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support.Collections;
-using ICU4N.Util;
 using NUnit.Framework;
 using System;
 using System.Collections;
@@ -40,22 +38,22 @@ namespace ICU4N.Dev.Test.Lang
             {
                 get
                 {
-                    yield return new TestCaseData(new ULocale("en"), UScript.Latin);
-                    yield return new TestCaseData(new ULocale("en_US"), UScript.Latin);
-                    yield return new TestCaseData(new ULocale("sr"), UScript.Cyrillic);
-                    yield return new TestCaseData(new ULocale("ta"), UScript.Tamil);
-                    yield return new TestCaseData(new ULocale("te_IN"), UScript.Telugu);
-                    yield return new TestCaseData(new ULocale("hi"), UScript.Devanagari);
-                    yield return new TestCaseData(new ULocale("he"), UScript.Hebrew);
-                    yield return new TestCaseData(new ULocale("ar"), UScript.Arabic);
-                    yield return new TestCaseData(new ULocale("abcde"), UScript.InvalidCode);
-                    yield return new TestCaseData(new ULocale("abcde_cdef"), UScript.InvalidCode);
-                    yield return new TestCaseData(new ULocale("iw"), UScript.Hebrew);
+                    yield return new TestCaseData(new UCultureInfo("en"), UScript.Latin);
+                    yield return new TestCaseData(new UCultureInfo("en_US"), UScript.Latin);
+                    yield return new TestCaseData(new UCultureInfo("sr"), UScript.Cyrillic);
+                    yield return new TestCaseData(new UCultureInfo("ta"), UScript.Tamil);
+                    yield return new TestCaseData(new UCultureInfo("te_IN"), UScript.Telugu);
+                    yield return new TestCaseData(new UCultureInfo("hi"), UScript.Devanagari);
+                    yield return new TestCaseData(new UCultureInfo("he"), UScript.Hebrew);
+                    yield return new TestCaseData(new UCultureInfo("ar"), UScript.Arabic);
+                    yield return new TestCaseData(new UCultureInfo("abcde"), UScript.InvalidCode);
+                    yield return new TestCaseData(new UCultureInfo("abcde_cdef"), UScript.InvalidCode);
+                    yield return new TestCaseData(new UCultureInfo("iw"), UScript.Hebrew);
                 }
             }
 
             [Test, TestCaseSource(typeof(LocaleGetCodeTest), "TestData")]
-            public void TestLocaleGetCode(ULocale testLocaleName, int expected)
+            public void TestLocaleGetCode(UCultureInfo testLocaleName, int expected)
             {
                 int[] code = UScript.GetCode(testLocaleName);
                 if (code == null)
@@ -72,44 +70,44 @@ namespace ICU4N.Dev.Test.Lang
                             + testLocaleName);
                 }
 
-                ULocale defaultLoc = ULocale.GetDefault();
-                ULocale esperanto = new ULocale("eo_DE");
-                ULocale.SetDefault(esperanto);
-                code = UScript.GetCode(esperanto);
-                if (code != null)
+                UCultureInfo esperanto = new UCultureInfo("eo_DE");
+                using (new ThreadCultureChange(esperanto, esperanto))
                 {
-                    if (code[0] != UScript.Latin)
+                    code = UScript.GetCode(esperanto);
+                    if (code != null)
                     {
-                        Errln("Did not get the expected script code for Esperanto");
+                        if (code[0] != UScript.Latin)
+                        {
+                            Errln("Did not get the expected script code for Esperanto");
+                        }
+                    }
+                    else
+                    {
+                        Warnln("Could not load the locale data.");
                     }
                 }
-                else
-                {
-                    Warnln("Could not load the locale data.");
-                }
-                ULocale.SetDefault(defaultLoc);
 
                 // Should work regardless of whether we have locale data for the language.
                 AssertEqualScripts("tg script: Cyrl", // Tajik
-                        new int[] { UScript.Cyrillic }, UScript.GetCode(new ULocale("tg")));
+                        new int[] { UScript.Cyrillic }, UScript.GetCode(new UCultureInfo("tg")));
                 AssertEqualScripts("xsr script: Deva", // Sherpa
-                        new int[] { UScript.Devanagari }, UScript.GetCode(new ULocale("xsr")));
+                        new int[] { UScript.Devanagari }, UScript.GetCode(new UCultureInfo("xsr")));
 
                 // Multi-script languages.
                 AssertEqualScripts("ja scripts: Kana Hira Hani",
-                        new int[] { UScript.Katakana, UScript.Hiragana, UScript.Han }, UScript.GetCode(ULocale.JAPANESE));
+                        new int[] { UScript.Katakana, UScript.Hiragana, UScript.Han }, UScript.GetCode(new UCultureInfo("ja")));
                 AssertEqualScripts("ko scripts: Hang Hani", new int[] { UScript.Hangul, UScript.Han },
-                        UScript.GetCode(ULocale.KOREAN));
-                AssertEqualScripts("zh script: Hani", new int[] { UScript.Han }, UScript.GetCode(ULocale.CHINESE));
+                        UScript.GetCode(new UCultureInfo("ko")));
+                AssertEqualScripts("zh script: Hani", new int[] { UScript.Han }, UScript.GetCode(new UCultureInfo("zh")));
                 AssertEqualScripts("zh-Hant scripts: Hani Bopo", new int[] { UScript.Han, UScript.Bopomofo },
-                        UScript.GetCode(ULocale.TRADITIONAL_CHINESE));
+                        UScript.GetCode(new UCultureInfo("zh_Hant")));
                 AssertEqualScripts("zh-TW scripts: Hani Bopo", new int[] { UScript.Han, UScript.Bopomofo },
-                        UScript.GetCode(ULocale.TAIWAN));
+                        UScript.GetCode(new UCultureInfo("zh_Hant_TW")));
 
                 // Ambiguous API, but this probably wants to return Latin rather than Rongorongo (Roro).
                 AssertEqualScripts("ro-RO script: Latn", new int[] { UScript.Latin }, UScript.GetCode("ro-RO")); // String
                                                                                                                  // not
-                                                                                                                 // ULocale
+                                                                                                                 // UCultureInfo
             }
         }
 

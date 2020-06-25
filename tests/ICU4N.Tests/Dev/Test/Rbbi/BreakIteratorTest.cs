@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
@@ -355,20 +356,28 @@ namespace ICU4N.Dev.Test.Rbbi
         
         public void TestGetAvailableLocales()
         {
-            CultureInfo[] locList = BreakIterator.GetAvailableCultures();
+            CultureInfo[] locList = BreakIterator.GetCultures(UCultureTypes.AllCultures);
 
             if (locList.Length == 0)
-                Errln("getAvailableLocales() returned an empty list!");
+                Errln("GetCultures() returned an empty list!");
             // I have no idea how to test this function...
 
-            ULocale[] ulocList = BreakIterator.GetAvailableULocales();
+            UCultureInfo[] ulocList = BreakIterator.GetUCultures(UCultureTypes.AllCultures);
             if (ulocList.Length == 0)
             {
-                Errln("getAvailableULocales() returned an empty list!");
+                Errln("GetUCultures() returned an empty list!");
             }
             else
             {
-                Logln("getAvailableULocales() returned " + ulocList.Length + " locales");
+                Logln("GetUCultures() returned " + ulocList.Length + " locales");
+            }
+            foreach (var specificCulture in BreakIterator.GetCultures(UCultureTypes.SpecificCultures))
+            {
+                assertFalse($"Expected a specific culture, got '{specificCulture.Name}'", specificCulture.IsNeutralCulture);
+            }
+            foreach (var neutralCulture in BreakIterator.GetCultures(UCultureTypes.NeutralCultures))
+            {
+                assertTrue($"Expected a neutral culture, got '{neutralCulture.Name}'", neutralCulture.IsNeutralCulture);
             }
         }
 
@@ -436,9 +445,9 @@ namespace ICU4N.Dev.Test.Rbbi
         [Test]
         public void TestT5615()
         {
-            ULocale[] ulocales = BreakIterator.GetAvailableULocales();
+            UCultureInfo[] ulocales = BreakIterator.GetUCultures(UCultureTypes.AllCultures);
             int type = 0;
-            ULocale loc = null;
+            UCultureInfo loc = null;
             try
             {
                 for (int i = 0; i < ulocales.Length; i++)
@@ -467,7 +476,7 @@ namespace ICU4N.Dev.Test.Rbbi
         [Test]
         public void TestFilteredJapanese()
         {
-            ULocale loc = ULocale.JAPANESE;
+            UCultureInfo loc = new UCultureInfo("ja");
             BreakIterator brk = FilteredBreakIteratorBuilder
                     .GetInstance(loc)
                     .WrapIteratorWithFilter(BreakIterator.GetSentenceInstance(loc));
@@ -485,7 +494,7 @@ namespace ICU4N.Dev.Test.Rbbi
         public void TestNullLocale()
         {
             CultureInfo loc = null;
-            ULocale uloc = null;
+            UCultureInfo uloc = null;
 
             BreakIterator brk;
 
@@ -493,13 +502,13 @@ namespace ICU4N.Dev.Test.Rbbi
             try
             {
                 brk = BreakIterator.GetCharacterInstance(loc);
-                Errln("getCharacterInstance((Locale)null) did not throw NPE.");
+                Errln("GetCharacterInstance((CultureInfo)null) did not throw NPE.");
             }
             catch (ArgumentNullException e) { /* OK */ }
             try
             {
                 brk = BreakIterator.GetCharacterInstance(uloc);
-                Errln("getCharacterInstance((ULocale)null) did not throw NPE.");
+                Errln("GetCharacterInstance((UCultureInfo)null) did not throw NPE.");
             }
             catch (ArgumentNullException e) { /* OK */ }
 
@@ -507,13 +516,13 @@ namespace ICU4N.Dev.Test.Rbbi
             try
             {
                 brk = BreakIterator.GetLineInstance(loc);
-                Errln("getLineInstance((Locale)null) did not throw NPE.");
+                Errln("GetLineInstance((CultureInfo)null) did not throw NPE.");
             }
             catch (ArgumentNullException e) { /* OK */ }
             try
             {
                 brk = BreakIterator.GetLineInstance(uloc);
-                Errln("getLineInstance((ULocale)null) did not throw NPE.");
+                Errln("GetLineInstance((UCultureInfo)null) did not throw NPE.");
             }
             catch (ArgumentNullException e) { /* OK */ }
 
@@ -521,13 +530,13 @@ namespace ICU4N.Dev.Test.Rbbi
             try
             {
                 brk = BreakIterator.GetSentenceInstance(loc);
-                Errln("getSentenceInstance((Locale)null) did not throw NPE.");
+                Errln("GetSentenceInstance((CultureInfo)null) did not throw NPE.");
             }
             catch (ArgumentNullException e) { /* OK */ }
             try
             {
                 brk = BreakIterator.GetSentenceInstance(uloc);
-                Errln("getSentenceInstance((ULocale)null) did not throw NPE.");
+                Errln("GetSentenceInstance((UCultureInfo)null) did not throw NPE.");
             }
             catch (ArgumentNullException e) { /* OK */ }
 
@@ -535,13 +544,13 @@ namespace ICU4N.Dev.Test.Rbbi
             try
             {
                 brk = BreakIterator.GetTitleInstance(loc);
-                Errln("getTitleInstance((Locale)null) did not throw NPE.");
+                Errln("GetTitleInstance((CultureInfo)null) did not throw NPE.");
             }
             catch (ArgumentNullException e) { /* OK */ }
             try
             {
                 brk = BreakIterator.GetTitleInstance(uloc);
-                Errln("getTitleInstance((ULocale)null) did not throw NPE.");
+                Errln("GetTitleInstance((UCultureInfo)null) did not throw NPE.");
             }
             catch (ArgumentNullException e) { /* OK */ }
 
@@ -549,13 +558,13 @@ namespace ICU4N.Dev.Test.Rbbi
             try
             {
                 brk = BreakIterator.GetWordInstance(loc);
-                Errln("getWordInstance((Locale)null) did not throw NPE.");
+                Errln("GetWordInstance((CultureInfo)null) did not throw NPE.");
             }
             catch (ArgumentNullException e) { /* OK */ }
             try
             {
                 brk = BreakIterator.GetWordInstance(uloc);
-                Errln("getWordInstance((ULocale)null) did not throw NPE.");
+                Errln("GetWordInstance((UCultureInfo)null) did not throw NPE.");
             }
             catch (ArgumentNullException e) { /* OK */ }
         }
@@ -637,7 +646,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             {
                 Logln("Constructing English builder\n");
-                builder = FilteredBreakIteratorBuilder.GetInstance(ULocale.ENGLISH);
+                builder = FilteredBreakIteratorBuilder.GetInstance(new UCultureInfo("en"));
 
                 Logln("Constructing base BI\n");
                 baseBI = BreakIterator.GetSentenceInstance(new CultureInfo("en"));
@@ -661,7 +670,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             {
                 Logln("Constructing English builder\n");
-                builder = FilteredBreakIteratorBuilder.GetInstance(ULocale.ENGLISH);
+                builder = FilteredBreakIteratorBuilder.GetInstance(new UCultureInfo("en"));
 
                 Logln("Constructing base BI\n");
                 baseBI = BreakIterator.GetSentenceInstance(new CultureInfo("en"));
@@ -677,7 +686,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             {
                 Logln("Constructing English @ss=standard\n");
-                filteredBI = BreakIterator.GetSentenceInstance(ULocale.ForLanguageTag("en-US-u-ss-standard"));
+                filteredBI = BreakIterator.GetSentenceInstance(UCultureInfo.GetCultureInfoByIetfLanguageTag("en-US-u-ss-standard"));
 
                 if (filteredBI != null)
                 {
@@ -687,27 +696,27 @@ namespace ICU4N.Dev.Test.Rbbi
 
             {
                 Logln("Constructing Afrikaans @ss=standard - should be == default\n");
-                filteredBI = BreakIterator.GetSentenceInstance(ULocale.ForLanguageTag("af-u-ss-standard"));
+                filteredBI = BreakIterator.GetSentenceInstance(UCultureInfo.GetCultureInfoByIetfLanguageTag("af-u-ss-standard"));
 
                 assertDefaultBreakBehavior(filteredBI, text);
             }
 
             {
                 Logln("Constructing Japanese @ss=standard - should be == default\n");
-                filteredBI = BreakIterator.GetSentenceInstance(ULocale.ForLanguageTag("ja-u-ss-standard"));
+                filteredBI = BreakIterator.GetSentenceInstance(UCultureInfo.GetCultureInfoByIetfLanguageTag("ja-u-ss-standard"));
 
                 assertDefaultBreakBehavior(filteredBI, text);
             }
             {
                 Logln("Constructing tfg @ss=standard - should be == default\n");
-                filteredBI = BreakIterator.GetSentenceInstance(ULocale.ForLanguageTag("tfg-u-ss-standard"));
+                filteredBI = BreakIterator.GetSentenceInstance(UCultureInfo.GetCultureInfoByIetfLanguageTag("tfg-u-ss-standard"));
 
                 assertDefaultBreakBehavior(filteredBI, text);
             }
 
             {
                 Logln("Constructing French builder");
-                builder = FilteredBreakIteratorBuilder.GetInstance(ULocale.FRENCH);
+                builder = FilteredBreakIteratorBuilder.GetInstance(new UCultureInfo("fr"));
 
                 Logln("Constructing base BI\n");
                 baseBI = BreakIterator.GetSentenceInstance(new CultureInfo("fr"));

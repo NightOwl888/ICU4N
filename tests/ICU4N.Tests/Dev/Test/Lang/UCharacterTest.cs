@@ -3343,9 +3343,9 @@ namespace ICU4N.Dev.Test.Lang
                 UChar.ToTitleCase(new CultureInfo(locale[i]), "", null);
             }
 
-            // Calls the function "String toTitleCase(ULocale locale, String str, BreakIterator titleIter, int options)"
+            // Calls the function "string ToTitleCase(UCultureInfo locale, string str, BreakIterator titleIter, int options)"
             // Tests when "if (locale == null)" is true
-            UChar.ToTitleCase((ULocale)null, "", null, 0);
+            UChar.ToTitleCase(locale:(UCultureInfo)null, str: "", titleIter: null, options: 0);
 
             // TODO: Tests when "if(index==BreakIterator.Done || index>srcLength)" is true
             // TODO: Tests when "while((c=iter.nextCaseMapCP())>=0 && UCaseProps.NONE==gCsp.getType(c))" is false
@@ -3372,7 +3372,7 @@ namespace ICU4N.Dev.Test.Lang
         }
         /*
          * The following method tests
-         *      public static String toUpperCase(ULocale locale, String str)
+         *      public static string ToUpperCase(UCultureInfo locale, string str)
          */
         [Test]
         public void TestToUpperCase()
@@ -3382,7 +3382,7 @@ namespace ICU4N.Dev.Test.Lang
 
         /*
          * The following method tests
-         *      public static String toLowerCase(ULocale locale, String str)
+         *      public static string ToLowerCase(UCultureInfo locale, string str)
          */
         [Test]
         public void TestToLowerCase()
@@ -3394,7 +3394,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UChar.ToLower((ULocale)null, cases[i]);
+                    UChar.ToLower((UCultureInfo)null, cases[i]);
                 }
                 catch (Exception e)
                 {

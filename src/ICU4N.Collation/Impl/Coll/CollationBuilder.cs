@@ -21,7 +21,7 @@ namespace ICU4N.Impl.Coll
 
             public string GetRules(string localeID, string collationType)
             {
-                return CollationLoader.LoadRules(new ULocale(localeID), collationType);
+                return CollationLoader.LoadRules(new UCultureInfo(localeID), collationType);
             }
         }
 

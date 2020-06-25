@@ -1,4 +1,5 @@
-﻿using ICU4N.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Text;
 using ICU4N.Util;
 using NUnit.Framework;
 using System;
@@ -45,7 +46,7 @@ namespace ICU4N.Dev.Test.Collate
         [SetUp]
         public void Init()
         {
-            myCollation = Collator.GetInstance(new ULocale("fi_FI@collation=standard"));
+            myCollation = Collator.GetInstance(new UCultureInfo("fi_FI@collation=standard"));
         }
 
 

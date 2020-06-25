@@ -15,10 +15,10 @@ namespace ICU4N.Impl.Locale
         //
         // static fields
         //
-        public static readonly string Separator = "-";
-        public static readonly string Private_Use = "x";
-        public static string Undetermined = "und";
-        public static readonly string PrivateUse_Variant_Prefix = "lvariant";
+        public const string Separator = "-";
+        public const string Private_Use = "x";
+        public const string Undetermined = "und";
+        public const string PrivateUse_Variant_Prefix = "lvariant";
 
         //
         // Language subtag fields
@@ -456,10 +456,10 @@ namespace ICU4N.Impl.Locale
         {
             LanguageTag tag = new LanguageTag();
 
-            string language = baseLocale.GetLanguage();
-            string script = baseLocale.GetScript();
-            string region = baseLocale.GetRegion();
-            string variant = baseLocale.GetVariant();
+            string language = baseLocale.Language;
+            string script = baseLocale.Script;
+            string region = baseLocale.Region;
+            string variant = baseLocale.Variant;
 
             bool hasSubtag = false;
 

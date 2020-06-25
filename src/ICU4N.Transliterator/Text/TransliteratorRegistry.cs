@@ -112,12 +112,12 @@ namespace ICU4N.Text
                     if (script == UScript.InvalidCode)
                     {
                         // ICU4N specific - CultureInfo doesn't support IANA culture names, so we use ULocale instead.
-                        ULocale toploc = new ULocale(top);
+                        UCultureInfo toploc = new UCultureInfo(top);
 
                         //CultureInfo toploc = LocaleUtility.GetLocaleFromName(top);
-                        res = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuTransliteratorBaseName, toploc, Transliterator.ICU_DATA_CLASS_LOADER);
+                        res = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuTransliteratorBaseName, toploc, Transliterator.IcuDataAssembly);
                         // Make sure we got the bundle we wanted; otherwise, don't use it
-                        if (res != null && LocaleUtility.IsFallbackOf(res.GetULocale().ToString(), top))
+                        if (res != null && LocaleUtility.IsFallbackOf(res.UCulture.ToString(), top))
                         {
                             isSpecLocale = true;
                         }
@@ -215,7 +215,7 @@ namespace ICU4N.Text
             public virtual ResourceBundle GetBundle()
             {
                 if (res != null &&
-                    res.GetULocale().ToString().Equals(spec))
+                    res.UCulture.ToString().Equals(spec))
                 {
                     return res;
                 }

@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Util;
@@ -68,7 +69,7 @@ namespace ICU4N.Text
     /// <para/>
     /// This discussion assumes that you use <see cref="PluralFormat"/> with
     /// a predefined set of plural rules. You can create one using one of
-    /// the constructors that takes a <see cref="ULocale"/> object. To
+    /// the constructors that takes a <see cref="UCultureInfo"/> object. To
     /// specify the message pattern, you can either pass it to the
     /// constructor or set it explicitly using the
     /// <see cref="ApplyPattern(string)"/> method. The <see cref="Format(double)"/>
@@ -137,7 +138,7 @@ namespace ICU4N.Text
         /// plural rules (if they were not defined explicitely).
         /// </summary>
         /// <serial/>
-        private ULocale ulocale = null;
+        private UCultureInfo ulocale = null;
 
         /// <summary>
         /// The plural rules used for plural selection.
@@ -184,14 +185,14 @@ namespace ICU4N.Text
         private double offset = 0;
 
         /// <summary>
-        /// Creates a new cardinal-number <see cref="PluralFormat"/> for the default <see cref="ULocale.Category.FORMAT"/> locale.
+        /// Creates a new cardinal-number <see cref="PluralFormat"/> for the default <see cref="UCultureInfo.CurrentCulture"/> locale.
         /// This locale will be used to get the set of plural rules and for standard
         /// number formatting.
         /// </summary>
         /// <stable>ICU 3.8</stable>
         public PluralFormat()
         {
-            Init(null, PluralType.Cardinal, ULocale.GetDefault(ULocale.Category.FORMAT), null);
+            Init(null, PluralType.Cardinal, UCultureInfo.CurrentCulture, null);
         }
 
         /// <summary>
@@ -201,7 +202,7 @@ namespace ICU4N.Text
         /// rules for this locale. This locale will also be used for standard
         /// number formatting.</param>
         /// <stable>ICU 3.8</stable>
-        public PluralFormat(ULocale ulocale)
+        public PluralFormat(UCultureInfo ulocale)
         {
             Init(null, PluralType.Cardinal, ulocale, null);
         }
@@ -215,21 +216,21 @@ namespace ICU4N.Text
         /// number formatting.</param>
         /// <stable>ICU 54</stable>
         public PluralFormat(CultureInfo locale)
-            : this(ULocale.ForLocale(locale))
+            : this(locale.ToUCultureInfo())
         {
         }
 
         /// <summary>
         /// Creates a new cardinal-number <see cref="PluralFormat"/> for a given set of rules.
-        /// The standard number formatting will be done using the default <see cref="ULocale.Category.FORMAT"/> locale.
+        /// The standard number formatting will be done using the default <see cref="UCultureInfo.CurrentCulture"/> locale.
         /// </summary>
         /// <param name="rules">defines the behavior of the <see cref="PluralFormat"/>
         /// object.</param>
-        /// <seealso cref="ULocale.Category.FORMAT"/>
+        /// <seealso cref="UCultureInfo.CurrentCulture"/>
         /// <stable>ICU 3.8</stable>
         public PluralFormat(PluralRules rules)
         {
-            Init(rules, PluralType.Cardinal, ULocale.GetDefault(ULocale.Category.FORMAT), null);
+            Init(rules, PluralType.Cardinal, UCultureInfo.CurrentCulture, null);
         }
 
         /// <summary>
@@ -241,7 +242,7 @@ namespace ICU4N.Text
         /// <param name="rules">defines the behavior of the <see cref="PluralFormat"/>
         /// object.</param>
         /// <stable>ICU 3.8</stable>
-        public PluralFormat(ULocale ulocale, PluralRules rules)
+        public PluralFormat(UCultureInfo ulocale, PluralRules rules)
         {
             Init(rules, PluralType.Cardinal, ulocale, null);
         }
@@ -256,7 +257,7 @@ namespace ICU4N.Text
         /// object.</param>
         /// <stable>ICU 54</stable>
         public PluralFormat(CultureInfo locale, PluralRules rules)
-            : this(ULocale.ForLocale(locale), rules)
+            : this(locale.ToUCultureInfo(), rules)
         {
         }
 
@@ -268,7 +269,7 @@ namespace ICU4N.Text
         /// locale.</param>
         /// <param name="type">The plural type (e.g., cardinal or ordinal).</param>
         /// <stable>ICU 50</stable>
-        public PluralFormat(ULocale ulocale, PluralType type)
+        public PluralFormat(UCultureInfo ulocale, PluralType type)
         {
             Init(null, type, ulocale, null);
         }
@@ -282,22 +283,22 @@ namespace ICU4N.Text
         /// <param name="type">The plural type (e.g., cardinal or ordinal).</param>
         /// <stable>ICU 54</stable>
         public PluralFormat(CultureInfo locale, PluralType type)
-            : this(ULocale.ForLocale(locale), type)
+            : this(locale.ToUCultureInfo(), type)
         {
         }
 
         /// <summary>
         /// Creates a new cardinal-number <see cref="PluralFormat"/> for a given pattern string.
-        /// The default <see cref="ULocale.Category.FORMAT"/> locale will be used to get the set of plural rules and for
+        /// The default <see cref="UCultureInfo.CurrentCulture"/> locale will be used to get the set of plural rules and for
         /// standard number formatting.
         /// </summary>
         /// <param name="pattern">the pattern for this <see cref="PluralFormat"/>.</param>
         /// <exception cref="ArgumentException">if the pattern is invalid.</exception>
-        /// <seealso cref="ULocale.Category.FORMAT"/>
+        /// <seealso cref="UCultureInfo.CurrentCulture"/>
         /// <stable>ICU 3.8</stable>
         public PluralFormat(string pattern)
         {
-            Init(null, PluralType.Cardinal, ULocale.GetDefault(ULocale.Category.FORMAT), null);
+            Init(null, PluralType.Cardinal, UCultureInfo.CurrentCulture, null);
             ApplyPattern(pattern);
         }
 
@@ -313,7 +314,7 @@ namespace ICU4N.Text
         /// <param name="pattern">the pattern for this <see cref="PluralFormat"/>.</param>
         /// <exception cref="ArgumentException">if the pattern is invalid.</exception>
         /// <stable>ICU 3.8</stable>
-        public PluralFormat(ULocale ulocale, string pattern)
+        public PluralFormat(UCultureInfo ulocale, string pattern)
         {
             Init(null, PluralType.Cardinal, ulocale, null);
             ApplyPattern(pattern);
@@ -322,7 +323,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Creates a new cardinal-number <see cref="PluralFormat"/> for a given set of rules and a
         /// pattern.
-        /// The standard number formatting will be done using the default <see cref="ULocale.Category.FORMAT"/> locale.
+        /// The standard number formatting will be done using the default <see cref="UCultureInfo.CurrentCulture"/> locale.
         /// </summary>
         /// <param name="rules">defines the behavior of the <see cref="PluralFormat"/>
         /// object.</param>
@@ -331,7 +332,7 @@ namespace ICU4N.Text
         /// <stable>ICU 3.8</stable>
         public PluralFormat(PluralRules rules, string pattern)
         {
-            Init(rules, PluralType.Cardinal, ULocale.GetDefault(ULocale.Category.FORMAT), null);
+            Init(rules, PluralType.Cardinal, UCultureInfo.CurrentCulture, null);
             ApplyPattern(pattern);
         }
 
@@ -347,7 +348,7 @@ namespace ICU4N.Text
         /// <param name="pattern">the pattern for this <see cref="PluralFormat"/>.</param>
         /// <exception cref="ArgumentException">if the pattern is invalid.</exception>
         /// <stable>ICU 3.8</stable>
-        public PluralFormat(ULocale ulocale, PluralRules rules, string pattern)
+        public PluralFormat(UCultureInfo ulocale, PluralRules rules, string pattern)
         {
             Init(rules, PluralType.Cardinal, ulocale, null);
             ApplyPattern(pattern);
@@ -364,7 +365,7 @@ namespace ICU4N.Text
         /// <param name="pattern">the pattern for this <see cref="PluralFormat"/>.</param>
         /// <exception cref="ArgumentException">if the pattern is invalid.</exception>
         /// <stable>ICU 50</stable>
-        public PluralFormat(ULocale ulocale, PluralType type, string pattern)
+        public PluralFormat(UCultureInfo ulocale, PluralType type, string pattern)
         {
             Init(null, type, ulocale, null);
             ApplyPattern(pattern);
@@ -381,7 +382,7 @@ namespace ICU4N.Text
         /// <param name="pattern">the pattern for this <see cref="PluralFormat"/>.</param>
         /// <param name="numberFormat">The number formatter to use.</param>
         /// <exception cref="ArgumentException">If the pattern is invalid.</exception>
-        internal PluralFormat(ULocale ulocale, PluralType type, string pattern, NumberFormat numberFormat)
+        internal PluralFormat(UCultureInfo ulocale, PluralType type, string pattern, NumberFormat numberFormat)
         {
             Init(null, type, ulocale, numberFormat);
             ApplyPattern(pattern);
@@ -400,10 +401,10 @@ namespace ICU4N.Text
          *   <code>numberFormat</code>: a <code>NumberFormat</code> for the locale
          *                              <code>ulocale</code>.
          */
-        private void Init(PluralRules rules, PluralType type, ULocale locale, NumberFormat numberFormat)
+        private void Init(PluralRules rules, PluralType type, UCultureInfo locale, NumberFormat numberFormat)
         {
             ulocale = locale;
-            pluralRules = (rules == null) ? PluralRules.ForLocale(ulocale, type)
+            pluralRules = (rules == null) ? PluralRules.ForLocale(ulocale, type) // ICU4N TODO: Make extension method for UCultureInfo.GetPluralRules(PluralType)..?
                                           : rules;
             pluralRulesWrapper = new PluralSelectorAdapter(pluralRules); // ICU4N: Have to pass a reference to pluralRules in the constructor
             ResetPattern();
@@ -767,7 +768,7 @@ namespace ICU4N.Text
         /// <returns>nothing because this method is not yet implemented.</returns>
         /// <exception cref="InvalidOperationException">will always be thrown by this method.</exception>
         /// <stable>ICU 3.8</stable>
-        public override object ParseObject(String source, ParsePosition pos)
+        public override object ParseObject(string source, ParsePosition pos)
         {
             throw new InvalidOperationException();
         }
@@ -869,21 +870,21 @@ namespace ICU4N.Text
         /// i.e., a pattern that was applied previously will be removed,
         /// and the NumberFormat is set to the default number format for
         /// the locale.  The resulting format behaves the same as one
-        /// constructed from <see cref="PluralFormat(ULocale, PluralType)"/>
+        /// constructed from <see cref="PluralFormat(UCultureInfo, PluralType)"/>
         /// with <see cref="PluralType.Cardinal"/>.
         /// </summary>
-        /// <param name="ulocale">The <see cref="ULocale"/> used to configure the
+        /// <param name="ulocale">The <see cref="UCultureInfo"/> used to configure the
         /// formatter. If <paramref name="ulocale"/> is <c>null</c>, the
-        /// default <see cref="ULocale.Category.FORMAT"/> locale will be used.
+        /// default <see cref="UCultureInfo.CurrentCulture"/> locale will be used.
         /// </param>
-        /// <seealso cref="ULocale.Category.FORMAT"/>
+        /// <seealso cref="UCultureInfo.CurrentCulture"/>
         [Obsolete("ICU 50 This method clears the pattern and might create a different kind of " +
                 "PluralRules instance; use one of the constructors to create a new instance instead.")]
-        public virtual void SetLocale(ULocale ulocale)
+        public virtual void SetCulture(UCultureInfo ulocale) // ICU4N TODO: API - In general, formatters in .NET should be unaware of the culture unless it is explictly passed to the Format() method. Need to rework this.
         {
             if (ulocale == null)
             {
-                ulocale = ULocale.GetDefault(ULocale.Category.FORMAT);
+                ulocale = UCultureInfo.CurrentCulture;
             }
             Init(null, PluralType.Cardinal, ulocale, null);
         }

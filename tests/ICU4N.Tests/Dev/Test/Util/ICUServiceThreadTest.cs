@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support;
 using ICU4N.Util;
 using J2N.Text;
@@ -31,11 +32,11 @@ namespace ICU4N.Dev.Test.Util
         private class TestFactory : ICUSimpleFactory
         {
             internal TestFactory(string id)
-            : base(new ULocale(id), id, true)
+            : base(new UCultureInfo(id), id, true)
             {
             }
 
-            public override string GetDisplayName(string idForDisplay, ULocale locale)
+            public override string GetDisplayName(string idForDisplay, UCultureInfo locale)
             {
                 return (visible && idForDisplay.Equals(this.id)) ? "(" + locale.ToString() + ") " + idForDisplay : null;
             }
@@ -46,11 +47,11 @@ namespace ICU4N.Dev.Test.Util
             }
         }
         /**
-         * Convenience override of getDisplayNames(ULocale, Comparator, string) that
+         * Convenience override of getDisplayNames(UCultureInfo, Comparer, string) that
          * uses the default collator for the locale as the comparator to
          * sort the display names, and null for the matchID.
          */
-        public static IDictionary<string, string> GetDisplayNames(ICUService service, ULocale locale)
+        public static IDictionary<string, string> GetDisplayNames(ICUService service, UCultureInfo locale)
         {
             //Collator col;
             //try
@@ -65,7 +66,7 @@ namespace ICU4N.Dev.Test.Util
             CompareInfo col;
             try
             {
-                col = CompareInfo.GetCompareInfo(locale.ToLocale().ToString());
+                col = CompareInfo.GetCompareInfo(locale.ToCultureInfo().ToString());
             }
             catch (MissingManifestResourceException e)
             {
@@ -315,9 +316,9 @@ namespace ICU4N.Dev.Test.Util
 
         internal class GetDisplayThread : TestThread
         {
-            internal ULocale locale;
+            internal UCultureInfo locale;
 
-            internal GetDisplayThread(string name, ICUService service, long delay, ULocale locale)
+            internal GetDisplayThread(string name, ICUService service, long delay, UCultureInfo locale)
                 : base("DIS " + name, service, delay)
             {
 
@@ -472,7 +473,7 @@ namespace ICU4N.Dev.Test.Util
                 new GetDisplayThread("[" + locale + "]",
                                      StableService(),
                                      0,
-                                     new ULocale(locale)).Start();
+                                     new UCultureInfo(locale)).Start();
             }
             RunThreads();
             if (PRINTSTATS) Console.Out.WriteLine(stableService.Stats());
@@ -556,7 +557,7 @@ namespace ICU4N.Dev.Test.Util
                 new GetDisplayThread("[" + locale + "]",
                                      StableService(),
                                      500,
-                                     new ULocale(locale)).Start();
+                                     new UCultureInfo(locale)).Start();
             }
 
             new UnregisterFactoryThread("", service, 500).Start();

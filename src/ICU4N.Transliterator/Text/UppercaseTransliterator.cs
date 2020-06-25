@@ -24,11 +24,11 @@ namespace ICU4N.Text
         {
             Transliterator.RegisterFactory(_ID, new Transliterator.Factory(getInstance: (id) =>
             {
-                return new UppercaseTransliterator(ULocale.US);
+                return new UppercaseTransliterator(new UCultureInfo("en_US"));
             }));
         }
 
-        private readonly ULocale locale;
+        private readonly UCultureInfo locale;
 
         private readonly UCaseProperties csp;
         private ReplaceableContextEnumerator iter;
@@ -38,7 +38,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Constructs a transliterator.
         /// </summary>
-        public UppercaseTransliterator(ULocale loc)
+        public UppercaseTransliterator(UCultureInfo loc)
                 : base(_ID, null)
         {
             locale = loc;

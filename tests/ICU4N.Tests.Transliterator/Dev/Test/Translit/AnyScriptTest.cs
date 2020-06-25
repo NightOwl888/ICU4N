@@ -1,6 +1,5 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Text;
-using ICU4N.Util;
 using NUnit.Framework;
 using System;
 using StringBuffer = System.Text.StringBuilder;
@@ -58,8 +57,8 @@ namespace ICU4N.Dev.Test.Translit
                     }
 
                     String scriptName = UScript.GetName(script);  // long name
-                    ULocale locale = new ULocale(scriptName);
-                    if (locale.GetLanguage().Equals("new") || locale.GetLanguage().Equals("pau"))
+                    UCultureInfo locale = new UCultureInfo(scriptName);
+                    if (locale.Language.Equals("new") || locale.Language.Equals("pau"))
                     {
                         if (logKnownIssue("11171",
                                 "long script name loosely looks like a locale ID with a known likely script"))
@@ -142,8 +141,8 @@ namespace ICU4N.Dev.Test.Translit
 
                     if (UScript.TryGetName(script, out string scriptName))
                     {
-                        ULocale locale = new ULocale(scriptName);
-                        if (locale.GetLanguage().Equals("new") || locale.GetLanguage().Equals("pau"))
+                        UCultureInfo locale = new UCultureInfo(scriptName);
+                        if (locale.Language.Equals("new") || locale.Language.Equals("pau"))
                         {
                             if (logKnownIssue("11171",
                                     "long script name loosely looks like a locale ID with a known likely script"))

@@ -6,7 +6,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using J2N.Text;
 
 namespace ICU4N.Dev.Test.Format
 {
@@ -476,7 +475,7 @@ namespace ICU4N.Dev.Test.Format
             Logln("text for parsing: \"" + forParsing + "\"");
             if (!objs[0].ToString().Equals("z"))
                 Errln("argument0: \"" + objs[0] + "\"");
-            mf.SetLocale(new CultureInfo("en-us"));
+            mf.SetCulture(new CultureInfo("en-us"));
             mf.ApplyPattern("{0,number,#.##}, {0,number,#.#}");
             Object[] oldobjs = { 3.1415d };
             String result = mf.Format(oldobjs);
@@ -912,7 +911,7 @@ namespace ICU4N.Dev.Test.Format
                 Logln("text for parsing: \"" + forParsing + "\"");
                 if (!objs.Get(argName).ToString().Equals("z"))
                     Errln("argument0: \"" + objs.Get(argName) + "\"");
-                mf.SetLocale(new CultureInfo("en-us"));
+                mf.SetCulture(new CultureInfo("en-us"));
                 mf.ApplyPattern("{" + argName + ",number,#.##}, {" + argName + ",number,#.#}");
                 var oldobjs = new Dictionary<string, object>();
                 oldobjs[argName] = 3.1415d;
@@ -986,13 +985,13 @@ namespace ICU4N.Dev.Test.Format
         //    MessageFormat format1 = null;
         //    MessageFormat format2 = null;
 
-        //    format1 = new MessageFormat("", ULocale.GERMAN);
+        //    format1 = new MessageFormat("", new UCultureInfo("de"));
         //    format2 = serializeAndDeserialize(format1);
         //    assertEquals("MessageFormats (empty pattern) before and after serialization are not equal", format1, format2);
 
         //    format1.ApplyPattern("ab{1}cd{0,number}ef{3,date}gh");
         //    format1.setFormat(2, null);
-        //    format1.setFormatByArgumentIndex(1, NumberFormat.GetInstance(ULocale.ENGLISH));
+        //    format1.setFormatByArgumentIndex(1, NumberFormat.GetInstance(new UCultureInfo("en")));
         //    format2 = serializeAndDeserialize(format1);
         //    assertEquals("MessageFormats (with custom formats) before and after serialization are not equal", format1, format2);
         //    assertEquals(

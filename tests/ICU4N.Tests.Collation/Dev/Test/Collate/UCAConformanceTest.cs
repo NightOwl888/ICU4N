@@ -25,7 +25,7 @@ namespace ICU4N.Dev.Test.Collate
         [SetUp]
         public void init()
         {
-            UCA = (RuleBasedCollator)Collator.GetInstance(ULocale.ROOT);
+            UCA = (RuleBasedCollator)Collator.GetInstance(UCultureInfo.InvariantCulture);
             comparer = new UTF16.StringComparer(true, false, UTF16.StringComparer.FoldCaseDefault);
         }
 

@@ -1,18 +1,17 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N.Text;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
-using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: De-nest ?
-using StringBuffer = System.Text.StringBuilder;
-using System.Collections.Concurrent;
 using SingleID = ICU4N.Text.TransliteratorIDParser.SingleID;
-using J2N.Text;
+using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
@@ -428,7 +427,7 @@ namespace ICU4N.Text
     public abstract class Transliterator : IStringTransform
     {
         // ICU4N specific - need to use the current assembly for resources
-        public static readonly Assembly ICU_DATA_CLASS_LOADER =
+        public static readonly Assembly IcuDataAssembly =
 #if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
             typeof(Transliterator).GetTypeInfo().Assembly;
 #else
@@ -1247,14 +1246,14 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns a name for this transliterator that is appropriate for
-        /// display to the user in the default <see cref="CultureInfo.CurrentUICulture"/>.
+        /// display to the user in the default <see cref="UCultureInfo.CurrentUICulture"/>.
         /// See <see cref="GetDisplayName(string, CultureInfo)"/> for details.
         /// </summary>
-        /// <seealso cref="ULocale.Category.DISPLAY"/>
+        /// <seealso cref="UCultureInfo.CurrentUICulture"/>
         /// <stable>ICU 2.0</stable>
         public static string GetDisplayName(string ID)
         {
-            return GetDisplayName(ID, ULocale.GetDefault(Category.DISPLAY));
+            return GetDisplayName(ID, UCultureInfo.CurrentUICulture);
         }
 
         /// <summary>
@@ -1273,13 +1272,13 @@ namespace ICU4N.Text
         /// entire ID forms the only string.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="inLocale">The <see cref="ULocale"/> in which the display name should be
+        /// <param name="inLocale">The <see cref="CultureInfo"/> in which the display name should be
         /// localized.</param>
         /// <seealso cref="MessageFormat"/>
         /// <stable>ICU 2.0</stable>
         public static string GetDisplayName(string id, CultureInfo inLocale)
         {
-            return GetDisplayName(id, ULocale.ForLocale(inLocale));
+            return GetDisplayName(id, inLocale.ToUCultureInfo());
         }
 
         /// <summary>
@@ -1298,11 +1297,11 @@ namespace ICU4N.Text
         /// entire ID forms the only string.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="inLocale">The <see cref="ULocale"/> in which the display name should be
+        /// <param name="inLocale">The <see cref="UCultureInfo"/> in which the display name should be
         /// localized.</param>
         /// <seealso cref="MessageFormat"/>
         /// <stable>ICU 3.2</stable>
-        public static string GetDisplayName(string id, ULocale inLocale)
+        public static string GetDisplayName(string id, UCultureInfo inLocale)
         {
 
             // Resource bundle containing display name keys and the
@@ -1313,7 +1312,7 @@ namespace ICU4N.Text
 
             ICUResourceBundle bundle = (ICUResourceBundle)UResourceBundle.
                 // ICU4N specific - we need to pass the current assembly to load the resource data
-                GetBundleInstance(ICUData.IcuTransliteratorBaseName, inLocale, ICU_DATA_CLASS_LOADER);
+                GetBundleInstance(ICUData.IcuTransliteratorBaseName, inLocale, IcuDataAssembly);
 
             // Normalize the ID
             string[] stv = TransliteratorIDParser.IDtoSTV(id);
@@ -1388,7 +1387,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public UnicodeFilter Filter
         {
-            get { return filter; }
+            get => filter;
             set
             {
                 if (value == null)
@@ -2079,7 +2078,7 @@ namespace ICU4N.Text
              */
             UResourceBundle bundle, transIDs, colBund;
             // ICU4N specific - we must pass this assembly so the resources are loaded from here
-            bundle = UResourceBundle.GetBundleInstance(ICUData.IcuTransliteratorBaseName, ROOT, ICU_DATA_CLASS_LOADER);
+            bundle = UResourceBundle.GetBundleInstance(ICUData.IcuTransliteratorBaseName, ROOT, IcuDataAssembly);
             transIDs = bundle.Get(RB_RULE_BASED_IDS);
 
             int row, maxRows;

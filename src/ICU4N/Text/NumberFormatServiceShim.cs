@@ -1,31 +1,29 @@
-﻿using ICU4N.Impl;
-using ICU4N.Util;
-using System;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Resources;
-using static ICU4N.Impl.ICULocaleService;
 
 namespace ICU4N.Text
 {
     internal class NumberFormatServiceShim : NumberFormat.NumberFormatShim
     {
-        internal override CultureInfo[] GetAvailableLocales()
+        internal override CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
             if (service.IsDefault)
             {
-                return ICUResourceBundle.GetAvailableLocales();
+                return ICUResourceBundle.GetCultures(types);
             }
-            return service.GetAvailableLocales();
+            return service.GetCultures(types);
         }
 
-        internal override ULocale[] GetAvailableULocales()
+        internal override UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableULocales
         {
             if (service.IsDefault)
             {
-                return ICUResourceBundle.GetAvailableULocales();
+                return ICUResourceBundle.GetUCultures(types);
             }
-            return service.GetAvailableULocales();
+            return service.GetUCultures(types);
         }
 
         private sealed class NFFactory : LocaleKeyFactory
@@ -47,7 +45,7 @@ namespace ICU4N.Text
                 }
 
                 LocaleKey lkey = (LocaleKey)key;
-                object result = @delegate.CreateFormat(lkey.GetCanonicalLocale(), lkey.Kind);
+                object result = @delegate.CreateFormat(lkey.GetCanonicalCulture(), lkey.Kind);
                 if (result == null)
                 {
                     result = srvc.GetKey(key, null, this);
@@ -71,7 +69,7 @@ namespace ICU4N.Text
             return service.UnregisterFactory((IServiceFactory)registryKey);
         }
 
-        internal override NumberFormat CreateInstance(ULocale desiredLocale, NumberFormatStyle choice)
+        internal override NumberFormat CreateInstance(UCultureInfo desiredLocale, NumberFormatStyle choice)
         {
 
             // use service cache
@@ -79,7 +77,7 @@ namespace ICU4N.Text
             //              return NumberFormat.createInstance(desiredLocale, choice);
             //          }
 
-            ULocale[] actualLoc = new ULocale[1];
+            UCultureInfo[] actualLoc = new UCultureInfo[1];
             NumberFormat fmt = (NumberFormat)service.Get(desiredLocale, (int)choice,
                                                          actualLoc);
             if (fmt == null)
@@ -98,14 +96,14 @@ namespace ICU4N.Text
             //    fmt.SetCurrency(Currency.GetInstance(desiredLocale));
             //}
 
-            ULocale uloc = actualLoc[0];
-            fmt.SetLocale(uloc, uloc); // services make no distinction between actual & valid
+            UCultureInfo uloc = actualLoc[0];
+            fmt.SetCulture(uloc, uloc); // services make no distinction between actual & valid
             return fmt;
         }
 
         internal class RBNumberFormatFactory : ICUResourceBundleFactory
         {
-            protected override object HandleCreate(ULocale loc, int kind, ICUService srvc)
+            protected override object HandleCreate(UCultureInfo loc, int kind, ICUService srvc)
             {
                 return NumberFormat.CreateInstance(loc, kind);
             }

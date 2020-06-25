@@ -1,8 +1,7 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support;
-using ICU4N.Support.Text;
 using ICU4N.Text;
-using ICU4N.Util;
 using J2N;
 using J2N.Text;
 using J2N.Threading;
@@ -389,7 +388,7 @@ namespace ICU4N.Dev.Test.Rbbi
             {
                 if (keyword.Equals("locale"))
                 {
-                    fLocale = new ULocale(value);
+                    fLocale = new UCultureInfo(value);
                     return true;
                 }
                 if (keyword.Equals("type"))
@@ -564,7 +563,7 @@ namespace ICU4N.Dev.Test.Rbbi
             internal List<CharClass> fCharClassList;     // Char Classes, same contents as fCharClasses values,
 
             internal UnicodeSet fDictionarySet;     // Dictionary set, empty if none is defined.
-            internal ULocale fLocale;
+            internal UCultureInfo fLocale;
             internal int fType;              // BreakItererator.KIND_WORD, etc.
 
 

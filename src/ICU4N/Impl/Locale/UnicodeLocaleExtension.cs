@@ -11,7 +11,7 @@ namespace ICU4N.Impl.Locale
         public const char Singleton = 'u';
 
         private static readonly JCG.SortedSet<string> EMPTY_SORTED_SET = new JCG.SortedSet<string>(StringComparer.Ordinal);
-        private static readonly JCG.SortedDictionary<string, string> EMPTY_SORTED_MAP = new JCG.SortedDictionary<string, string>(StringComparer.Ordinal);
+        private static readonly JCG.SortedDictionary<string, string> EMPTY_SORTED_MAP = new JCG.SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         private JCG.SortedSet<string> _attributes = EMPTY_SORTED_SET;
         private JCG.SortedDictionary<string, string> _keywords = EMPTY_SORTED_MAP;
@@ -23,7 +23,7 @@ namespace ICU4N.Impl.Locale
         {
             return new UnicodeLocaleExtension
             {
-                _keywords = new JCG.SortedDictionary<string, string>(StringComparer.Ordinal)
+                _keywords = new JCG.SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 {
                     ["ca"] = "japanese"
                 },
@@ -34,7 +34,7 @@ namespace ICU4N.Impl.Locale
         {
             return new UnicodeLocaleExtension
             {
-                _keywords = new JCG.SortedDictionary<string, string>(StringComparer.Ordinal)
+                _keywords = new JCG.SortedDictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 {
                     ["nu"] = "thai"
                 },
@@ -82,15 +82,20 @@ namespace ICU4N.Impl.Locale
             }
         }
 
-        public virtual ISet<string> UnicodeLocaleAttributes => _attributes.AsReadOnly();
+        public virtual ISet<string> UnicodeLocaleAttributes => _attributes.AsReadOnly(); // ICU4N TODO: API Make return type IReadOnlyCollection ?
 
-        public virtual ICollection<string> UnicodeLocaleKeys => _keywords.Keys.AsReadOnly();
+        public virtual ICollection<string> UnicodeLocaleKeys => _keywords.Keys.AsReadOnly(); // ICU4N TODO: API Make return type IReadOnlyCollection
 
+#if FEATURE_READONLYDICTIONARY
+        public virtual IReadOnlyDictionary<string, string> UnicodeLocales
+#else
+        public virtual IDictionary<string, string> UnicodeLocales
+#endif
+            => _keywords.AsReadOnly();
 
         public virtual string GetUnicodeLocaleType(string unicodeLocaleKey)
         {
-            string result;
-            _keywords.TryGetValue(unicodeLocaleKey, out result);
+            _keywords.TryGetValue(unicodeLocaleKey, out string result);
             return result;
         }
 

@@ -1,15 +1,13 @@
-﻿using ICU4N.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Text;
 using ICU4N.Util;
-using J2N.Collections;
 using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Dev.Test.Util
 {
@@ -17,14 +15,14 @@ namespace ICU4N.Dev.Test.Util
     {
         public class ServiceFacade : IServiceFacade
         {
-            private readonly Func<ULocale, object> create;
+            private readonly Func<UCultureInfo, object> create;
 
-            public ServiceFacade(Func<ULocale, object> create)
+            public ServiceFacade(Func<UCultureInfo, object> create)
             {
                 this.create = create;
             }
 
-            public object Create(ULocale req)
+            public object Create(UCultureInfo req)
             {
                 return create(req);
             }
@@ -32,16 +30,16 @@ namespace ICU4N.Dev.Test.Util
 
         public class Registrar : IRegistrar
         {
-            private readonly Func<ULocale, object, object> register;
+            private readonly Func<UCultureInfo, object, object> register;
             private readonly Func<object, bool> unregister;
 
-            public Registrar(Func<ULocale, object, object> register, Func<object, bool> unregister)
+            public Registrar(Func<UCultureInfo, object, object> register, Func<object, bool> unregister)
             {
                 this.register = register;
                 this.unregister = unregister;
             }
 
-            public object Register(ULocale loc, object prototype)
+            public object Register(UCultureInfo loc, object prototype)
             {
                 return register != null ? register(loc, prototype) : null;
             }
@@ -75,7 +73,7 @@ namespace ICU4N.Dev.Test.Util
          */
         internal interface IServiceFacade
         {
-            Object Create(ULocale requestedLocale);
+            Object Create(UCultureInfo requestedLocale);
         }
 
         /**
@@ -93,7 +91,7 @@ namespace ICU4N.Dev.Test.Util
          */
         internal interface IRegistrar
         {
-            Object Register(ULocale loc, Object prototype);
+            Object Register(UCultureInfo loc, Object prototype);
             bool Unregister(Object key);
         }
 
@@ -173,20 +171,19 @@ namespace ICU4N.Dev.Test.Util
         internal void CheckObject(String requestedLocale, Object obj,
                 String expReqValid, String expValidActual)
         {
-            Type[] getLocaleParams = new Type[] { typeof(ULocale.Type) };
             try
             {
                 Type cls = obj.GetType();
-                MethodInfo getLocale = cls.GetMethod("GetLocale", getLocaleParams);
-                ULocale valid = (ULocale)getLocale.Invoke(obj, new Object[] {
-                    ULocale.VALID_LOCALE });
-                ULocale actual = (ULocale)getLocale.Invoke(obj, new Object[] {
-                    ULocale.ACTUAL_LOCALE });
+                PropertyInfo validProperty = cls.GetProperty("ValidCulture");
+                UCultureInfo valid = (UCultureInfo)validProperty.GetValue(obj, new object[0]);
+                PropertyInfo actualProperty = cls.GetProperty("ActualCulture");
+                UCultureInfo actual = (UCultureInfo)actualProperty.GetValue(obj, new object[0]);
+
                 // ICU4N TODO: If we subclass CultureInfo, we can just
                 // check valid vs actual rather than calling ToLocale() which
                 // changes the case and format of the requestedLocale
                 Checklocs(cls.Name, requestedLocale,
-                        valid.ToLocale(), actual.ToLocale(),
+                        valid.ToCultureInfo(), actual.ToCultureInfo(),
                         expReqValid, expValidActual);
             }
 
@@ -245,7 +242,7 @@ namespace ICU4N.Dev.Test.Util
         internal void CheckService(String requestedLocale, IServiceFacade svc,
                 ISubobject sub, IRegistrar reg)
         {
-            ULocale req = new ULocale(requestedLocale);
+            UCultureInfo req = new UCultureInfo(requestedLocale);
             Object obj = svc.Create(req);
             CheckObject(requestedLocale, obj, "gt", "ge");
             if (sub != null)
@@ -331,31 +328,28 @@ namespace ICU4N.Dev.Test.Util
                             new string[] {"Français (cyrillique, Belgique)", "Français (cyrillique, Belgique)", "fr_Cyrl_BE", "fr_Cyrl_BE"},
                         }
                 };
-            ULocale french = ULocale.FRENCH;
-            LocaleDisplayNames names = LocaleDisplayNames.GetInstance(french,
-                    DisplayContext.CapitalizationForUIListOrMenu);
-            foreach (DisplayContextType type in Enum.GetValues(typeof(DisplayContextType)))
-            {
-                Logln("Contexts: " + names.GetContext(type).ToString());
-            }
+            UCultureInfo french = new UCultureInfo("fr");
+            CultureDisplayNames names = CultureDisplayNames.GetInstance(french,
+                new DisplayContextOptions { Capitalization = Capitalization.UIListOrMenu });
+            Logln("Contexts: " + names.DisplayContextOptions.ToString());
+
             Collator collator = Collator.GetInstance(french);
 
             foreach (String[][] test in tests)
             {
-                // ICU4N TODO: LinkedHashSet needed ?
-                ISet<ULocale> list = new HashSet<ULocale>(); // LinkedHashSet<ULocale>();
-                List<UiListItem> expected = new List<UiListItem>();
+                var list = new JCG.LinkedHashSet<UCultureInfo>();
+                IList<UiListItem> expected = new JCG.List<UiListItem>();
                 foreach (String item in test[0])
                 {
-                    list.Add(new ULocale(item));
+                    list.Add(new UCultureInfo(item));
                 }
                 for (int i = 1; i < test.Length; ++i)
                 {
                     String[] rawRow = test[i];
-                    expected.Add(new UiListItem(new ULocale(rawRow[2]), new ULocale(rawRow[3]), rawRow[0], rawRow[1]));
+                    expected.Add(new UiListItem(new UCultureInfo(rawRow[2]), new UCultureInfo(rawRow[3]), rawRow[0], rawRow[1]));
                 }
                 IList<UiListItem> newList = names.GetUiList(list, false, collator);
-                if (!expected.SequenceEqual(newList))
+                if (!expected.Equals(newList)) // J2N's List compares the list contents
                 {
                     if (expected.Count != newList.Count)
                     {
@@ -380,15 +374,16 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void TestIllformedLocale()
         {
-            ULocale french = ULocale.FRENCH;
+            UCultureInfo french = new UCultureInfo("fr");
             Collator collator = Collator.GetInstance(french);
-            LocaleDisplayNames names = LocaleDisplayNames.GetInstance(french,
-                    DisplayContext.CapitalizationForUIListOrMenu);
+            CultureDisplayNames names = CultureDisplayNames.GetInstance(french,
+                new DisplayContextOptions { Capitalization = Capitalization.UIListOrMenu });
+
             foreach (String malformed in new string[] { "en-a", "$", "ü--a", "en--US" })
             {
                 try
                 {
-                    ISet<ULocale> supported = new HashSet<ULocale> { new ULocale(malformed) }; //Collections.singleton(new ULocale(malformed));
+                    ISet<UCultureInfo> supported = new HashSet<UCultureInfo> { new UCultureInfo(malformed) }; //Collections.singleton(new UCultureInfo(malformed));
                     names.GetUiList(supported, false, collator);
                     assertNull("Failed to detect bogus locale «" + malformed + "»", supported);
                 }

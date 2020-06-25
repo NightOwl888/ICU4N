@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Impl.Coll;
 using ICU4N.Text;
 using ICU4N.Util;
@@ -92,9 +93,9 @@ namespace ICU4N.Dev.Test.Util
             String key = null;
             try
             {
-                bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuCollationBaseName, ULocale.Canonicalize("de__PHONEBOOK"));
+                bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuCollationBaseName, UCultureInfo.Canonicalize("de__PHONEBOOK"));
 
-                if (!bundle.GetULocale().GetName().Equals("de"))
+                if (!bundle.UCulture.FullName.Equals("de"))
                 {
                     Errln("did not get the expected bundle");
                 }
@@ -180,13 +181,13 @@ namespace ICU4N.Dev.Test.Util
             for (int i = 0; i < testCases.Length; i += 3)
             {
                 bool expectAvail = T_STR.Equals(testCases[i + 0]);
-                ULocale inLocale = new ULocale(testCases[i + 1]);
-                ULocale expectLocale = new ULocale(testCases[i + 2]);
+                UCultureInfo inLocale = new UCultureInfo(testCases[i + 1]);
+                UCultureInfo expectLocale = new UCultureInfo(testCases[i + 2]);
 
                 Logln(((int)(i / 3)).ToString(CultureInfo.InvariantCulture) + ": " + expectAvail.ToString() + "\t\t" +
                         inLocale.ToString() + "\t\t" + expectLocale.ToString());
 
-                ULocale equivLocale = ICUResourceBundle.GetFunctionalEquivalent(path, cl, resName, keyword, inLocale, isAvail, truncate);
+                UCultureInfo equivLocale = ICUResourceBundle.GetFunctionalEquivalent(path, cl, resName, keyword, inLocale, isAvail, truncate);
                 bool gotAvail = isAvail[0];
 
                 if ((gotAvail != expectAvail) || !equivLocale.Equals(expectLocale))

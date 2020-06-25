@@ -3,7 +3,6 @@ using ICU4N.Text;
 using J2N.Text;
 using NUnit.Framework;
 using System;
-using J2N.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Support.Text

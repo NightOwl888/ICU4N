@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using J2N.Collections.Generic.Extensions;
 using J2N.IO;
 using System;
@@ -105,17 +106,9 @@ namespace ICU4N.Util
             if (IsResourceFor("curr", baseName))
                 return GetAssemblyFor("ICU4N.Impl.ICUCurrencyDisplayInfoProvider, ICU4N.CurrencyData");
             if (IsResourceFor("lang", baseName))
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                return LocaleDisplayNamesImpl.LangDataTables.impl.GetType().GetTypeInfo().Assembly;
-#else
-                return LocaleDisplayNamesImpl.LangDataTables.impl.GetType().Assembly;
-#endif
+                return DataTableCultureDisplayNames.GetLanguageDataTableProvider().Assembly;
             if (IsResourceFor("region", baseName))
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                return LocaleDisplayNamesImpl.RegionDataTables.impl.GetType().GetTypeInfo().Assembly;
-#else
-                return LocaleDisplayNamesImpl.RegionDataTables.impl.GetType().Assembly;
-#endif
+                return DataTableCultureDisplayNames.GetRegionDataTableProvider().Assembly;
             if (IsResourceFor("translit", baseName))
                 return GetAssemblyFor("ICU4N.Text.Transliterator, ICU4N.Transliterator");
 
@@ -191,20 +184,20 @@ namespace ICU4N.Util
         }
 
         /// <summary>
-        /// <icu/> Creates a UResourceBundle for the locale specified, from which users can extract
+        /// <icu/> Creates a <see cref="UResourceBundle"/> for the locale specified, from which users can extract
         /// resources by using their corresponding keys.
         /// </summary>
         /// <param name="locale">Specifies the locale for which we want to open the resource.
         /// If null the bundle for default locale is opened.</param>
         /// <returns>A resource bundle for the given <paramref name="locale"/>.</returns>
         /// <stable>ICU 3.0</stable>
-        public static UResourceBundle GetBundleInstance(ULocale locale)
+        public static UResourceBundle GetBundleInstance(UCultureInfo locale)
         {
             if (locale == null)
             {
-                locale = ULocale.GetDefault();
+                locale = UCultureInfo.CurrentCulture;
             }
-            return GetBundleInstance(ICUData.IcuBaseName, locale.GetBaseName(),
+            return GetBundleInstance(ICUData.IcuBaseName, locale.Name,
                                      ICUResourceBundle.IcuDataAssembly, false);
         }
 
@@ -222,10 +215,10 @@ namespace ICU4N.Util
             {
                 baseName = ICUData.IcuBaseName;
             }
-            ULocale uloc = ULocale.GetDefault();
+            var uloc = UCultureInfo.CurrentCulture;
             //return GetBundleInstance(baseName, uloc.GetBaseName(), ICUResourceBundle.ICU_DATA_CLASS_LOADER,
             //                         false);
-            return GetBundleInstance(baseName, uloc.GetBaseName(), GetAssembly(baseName),
+            return GetBundleInstance(baseName, uloc.Name, GetAssembly(baseName),
                                      false);
         }
 
@@ -245,11 +238,11 @@ namespace ICU4N.Util
             {
                 baseName = ICUData.IcuBaseName;
             }
-            ULocale uloc = locale == null ? ULocale.GetDefault() : ULocale.ForLocale(locale);
+            UCultureInfo uloc = locale == null ? UCultureInfo.CurrentCulture : locale.ToUCultureInfo();
 
             //return GetBundleInstance(baseName, uloc.GetBaseName(),
             //                         ICUResourceBundle.ICU_DATA_CLASS_LOADER, false);
-            return GetBundleInstance(baseName, uloc.GetBaseName(),
+            return GetBundleInstance(baseName, uloc.Name,
                 GetAssembly(baseName), false);
         }
 
@@ -263,7 +256,7 @@ namespace ICU4N.Util
         /// If null the bundle for default locale is opened.</param>
         /// <returns>A resource bundle for the given <paramref name="baseName"/> and <paramref name="locale"/>.</returns>
         /// <stable>ICU 3.0</stable>
-        public static UResourceBundle GetBundleInstance(string baseName, ULocale locale)
+        public static UResourceBundle GetBundleInstance(string baseName, UCultureInfo locale)
         {
             if (baseName == null)
             {
@@ -271,11 +264,11 @@ namespace ICU4N.Util
             }
             if (locale == null)
             {
-                locale = ULocale.GetDefault();
+                locale = UCultureInfo.CurrentCulture;
             }
             //return GetBundleInstance(baseName, locale.GetBaseName(),
             //                         ICUResourceBundle.ICU_DATA_CLASS_LOADER, false);
-            return GetBundleInstance(baseName, locale.GetBaseName(),
+            return GetBundleInstance(baseName, locale.Name,
                 GetAssembly(baseName), false);
         }
 
@@ -297,8 +290,8 @@ namespace ICU4N.Util
             {
                 baseName = ICUData.IcuBaseName;
             }
-            ULocale uloc = locale == null ? ULocale.GetDefault() : ULocale.ForLocale(locale);
-            return GetBundleInstance(baseName, uloc.GetBaseName(), assembly, false);
+            UCultureInfo uloc = locale == null ? UCultureInfo.CurrentCulture : locale.ToUCultureInfo();
+            return GetBundleInstance(baseName, uloc.Name, assembly, false);
         }
 
         /// <summary>
@@ -316,7 +309,7 @@ namespace ICU4N.Util
         /// <param name="assembly">The assembly to use.</param>
         /// <returns>A resource bundle for the given <paramref name="baseName"/> and <paramref name="locale"/>.</returns>
         /// <stable>ICU 3.8</stable>
-        public static UResourceBundle GetBundleInstance(string baseName, ULocale locale,
+        public static UResourceBundle GetBundleInstance(string baseName, UCultureInfo locale,
                                                         Assembly assembly)
         {
             if (baseName == null)
@@ -325,34 +318,34 @@ namespace ICU4N.Util
             }
             if (locale == null)
             {
-                locale = ULocale.GetDefault();
+                locale = UCultureInfo.CurrentCulture;
             }
-            return GetBundleInstance(baseName, locale.GetBaseName(), assembly, false);
+            return GetBundleInstance(baseName, locale.Name, assembly, false);
         }
 
         /// <summary>
         /// <icu/> Returns the RFC 3066 conformant locale id of this resource bundle.
-        /// This method can be used after a call to <see cref="GetBundleInstance(string)"/> to
+        /// This property can be used after a call to <see cref="GetBundleInstance(string)"/> to
         /// determine whether the resource bundle returned really
         /// corresponds to the requested locale or is a fallback.
         /// </summary>
         /// <returns>The locale of this resource bundle.</returns>
         /// <stable>ICU 3.0</stable>
-        public abstract ULocale GetULocale();
+        public abstract UCultureInfo UCulture { get; }
 
         /// <summary>
         /// <icu/> Returns the localeID.
         /// </summary>
         /// <returns>The string representation of the localeID.</returns>
         /// <stable>ICU 3.0</stable>
-        protected abstract string GetLocaleID();
+        protected abstract string GetLocaleID(); // ICU4N TODO: API - change to property
 
         /// <summary>
         /// <icu/> Returns the base name of the resource bundle.
         /// </summary>
         /// <returns>The string representation of the base name.</returns>
         /// <stable>ICU 3.0</stable>
-        protected internal abstract string GetBaseName();
+        protected internal abstract string GetBaseName(); // ICU4N TODO: API - change to property
 
         /// <summary>
         /// <icu/> Gets the parent bundle, as <see cref="UResourceBundle"/>.
@@ -368,10 +361,8 @@ namespace ICU4N.Util
         /// </summary>
         /// <returns>The locale of this resource bundle.</returns>
         /// <stable>ICU 3.0</stable>
-        public override CultureInfo GetLocale() // ICU4N TODO: API - rename GetCulture()
-        {
-            return GetULocale().ToLocale();
-        }
+        public override CultureInfo Culture
+            => UCulture.ToCultureInfo();
 
         private enum RootType { Missing, ICU, DotNet }
 
@@ -1075,8 +1066,8 @@ namespace ICU4N.Util
 
         public virtual ResourceBundle Parent
         {
-            get { return m_parent; }
-            set { m_parent = value; }
+            get => m_parent;
+            set => m_parent = value;
         }
 
         public virtual void SetParent(ResourceBundle parent)
@@ -1084,8 +1075,7 @@ namespace ICU4N.Util
             this.m_parent = parent;
         }
 
-        public abstract CultureInfo GetLocale();
-
+        public abstract CultureInfo Culture { get; }
 
         public object GetObject(string key)
         {
