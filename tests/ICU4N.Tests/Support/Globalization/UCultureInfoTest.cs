@@ -155,9 +155,9 @@ namespace ICU4N.Globalization
             {
                 Type cls = obj.GetType();
                 PropertyInfo validProperty = cls.GetProperty("ValidCulture");
-                UCultureInfo valid = (UCultureInfo)validProperty.GetValue(obj);
+                UCultureInfo valid = (UCultureInfo)validProperty.GetValue(obj, new object[0]);
                 PropertyInfo actualProperty = cls.GetProperty("ActualCulture");
-                UCultureInfo actual = (UCultureInfo)actualProperty.GetValue(obj);
+                UCultureInfo actual = (UCultureInfo)actualProperty.GetValue(obj, new object[0]);
 
                 checklocs(cls.Name, requestedLocale,
                         valid.ToCultureInfo(), actual.ToCultureInfo(),

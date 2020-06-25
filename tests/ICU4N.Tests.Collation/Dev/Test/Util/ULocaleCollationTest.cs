@@ -175,9 +175,9 @@ namespace ICU4N.Dev.Test.Util
             {
                 Type cls = obj.GetType();
                 PropertyInfo validProperty = cls.GetProperty("ValidCulture");
-                UCultureInfo valid = (UCultureInfo)validProperty.GetValue(obj);
+                UCultureInfo valid = (UCultureInfo)validProperty.GetValue(obj, new object[0]);
                 PropertyInfo actualProperty = cls.GetProperty("ActualCulture");
-                UCultureInfo actual = (UCultureInfo)actualProperty.GetValue(obj);
+                UCultureInfo actual = (UCultureInfo)actualProperty.GetValue(obj, new object[0]);
 
                 // ICU4N TODO: If we subclass CultureInfo, we can just
                 // check valid vs actual rather than calling ToLocale() which
