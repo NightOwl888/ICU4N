@@ -4970,7 +4970,8 @@ namespace ICU4N.Globalization
 
         [TestCase("de_DE", "de")]
         [TestCase("en", "en")]
-        [TestCase("", "iv")]
+        //[TestCase("", "iv")]
+        [TestCase("", null)] // ICU4N TODO: ICU behaves differently than .NET in this regard
         public void TestTwoLetterISOLanguageName(string name, string expected)
         {
             Assert.AreEqual(expected, new UCultureInfo(name).TwoLetterISOLanguageName);
