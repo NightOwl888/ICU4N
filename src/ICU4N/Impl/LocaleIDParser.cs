@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl.Locale;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl.Locale;
 using ICU4N.Support.Collections;
 using J2N.Collections.Generic.Extensions;
 using J2N.Text;
@@ -549,17 +550,18 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Returns the language, script, country, and variant as separate strings.
+        /// Returns the language, script, country, and variant as separate strings
+        /// in a <see cref="LocaleID"/> structure.
         /// </summary>
-        public string[] GetLanguageScriptCountryVariant()
+        public LocaleID GetLocaleID()
         {
             Reset();
-            return new string[] {
-                GetString(ParseLanguage()),
-                GetString(ParseScript()),
-                GetString(ParseCountry()),
-                GetString(ParseVariant())
-            };
+            return new LocaleID(
+                language: GetString(ParseLanguage()),
+                script: GetString(ParseScript()),
+                country: GetString(ParseCountry()),
+                variant: GetString(ParseVariant())
+            );
         }
 
         public void SetBaseName(string baseName)
