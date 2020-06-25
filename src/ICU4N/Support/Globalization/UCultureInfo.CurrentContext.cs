@@ -11,8 +11,10 @@ namespace ICU4N.Globalization
 {
     public partial class UCultureInfo
     {
-        //// Get the current user default culture. This one is almost always used, so we create it by default.
-        //private static volatile UCultureInfo/*?*/ s_userDefaultCulture;
+#if FEATURE_CULTUREINFO_INSTALLEDUICULTURE
+        // Get the current user default culture. This one is almost always used, so we create it by default.
+        private static volatile UCultureInfo? s_userDefaultCulture;
+#endif
 
         //// The culture used in the user interface. This is mostly used to load correct localized resources.
         //private static volatile UCultureInfo/*?*/ s_userDefaultUICulture;
@@ -44,11 +46,13 @@ namespace ICU4N.Globalization
         private const string CurrentUICultureLogicalCallContextName = "_icu_CurrentThreadUICulture";
 #endif
 
-        //private static UCultureInfo InitializeUserDefaultCulture()
-        //{
-        //    Interlocked.CompareExchange(ref s_userDefaultCulture, GetUserDefaultCulture(), null);
-        //    return s_userDefaultCulture!;
-        //}
+#if FEATURE_CULTUREINFO_INSTALLEDUICULTURE
+        private static UCultureInfo InitializeUserDefaultCulture()
+        {
+            Interlocked.CompareExchange(ref s_userDefaultCulture, GetUserDefaultCulture(), null);
+            return s_userDefaultCulture!;
+        }
+#endif
 
         //private static UCultureInfo InitializeUserDefaultUICulture()
         //{
@@ -56,10 +60,12 @@ namespace ICU4N.Globalization
         //    return s_userDefaultUICulture!;
         //}
 
-        //internal static UCultureInfo GetUserDefaultCulture()
-        //{
-        //    // Native call
-        //}
+#if FEATURE_CULTUREINFO_INSTALLEDUICULTURE
+        internal static UCultureInfo GetUserDefaultCulture()
+        {
+            return CultureInfo.InstalledUICulture.ToUCultureInfo();
+        }
+#endif
 
         //private static UCultureInfo GetUserDefaultUICulture()
         //{
@@ -151,6 +157,10 @@ namespace ICU4N.Globalization
 #endif
             }
         }
+
+#if FEATURE_CULTUREINFO_INSTALLEDUICULTURE
+        public static UCultureInfo InstalledUICulture => s_userDefaultCulture ?? InitializeUserDefaultCulture();
+#endif
 
         public new static UCultureInfo? DefaultThreadCurrentCulture
         {

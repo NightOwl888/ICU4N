@@ -55,6 +55,44 @@ namespace ICU4N.Globalization
         }
 #endif
 
+        [Test]
+        public void TestCurrentCulture()
+        {
+            var newCulture = new UCultureInfo(UCultureInfo.CurrentCulture.Name.Equals("ja_JP", StringComparison.OrdinalIgnoreCase) ? "ar_SA" : "ja_JP");
+            using (new ThreadCultureChange(newCulture))
+            {
+                Assert.AreEqual(UCultureInfo.CurrentCulture, newCulture);
+            }
+
+            newCulture = new UCultureInfo("de_DE@collation=phonebook");
+            using (new ThreadCultureChange(newCulture))
+            {
+                Assert.AreEqual(UCultureInfo.CurrentCulture, newCulture);
+                Assert.AreEqual("de_DE@collation=phonebook", newCulture.ToString());
+            }
+        }
         
+        [Test] // ICU4N TODO: We need to allow this scenario to reset back to tracking the current culture
+        public void TestCurrentCulture_Set_Null_ThrowsArgumentNullException()
+        {
+            Assert.Throws<ArgumentNullException>(() => UCultureInfo.CurrentCulture = null);
+        }
+
+        [Test]
+        public void TestCurrentUICulture()
+        {
+            var newUICulture = new UCultureInfo(UCultureInfo.CurrentUICulture.Name.Equals("ja_JP", StringComparison.OrdinalIgnoreCase) ? "ar_SA" : "ja_JP");
+            using (new ThreadCultureChange(UCultureInfo.CurrentCulture, newUICulture))
+            {
+                Assert.AreEqual(UCultureInfo.CurrentUICulture, newUICulture);
+            }
+
+            newUICulture = new UCultureInfo("de_DE@collation=phonebook");
+            using (new ThreadCultureChange(UCultureInfo.CurrentCulture, newUICulture))
+            {
+                Assert.AreEqual(UCultureInfo.CurrentUICulture, newUICulture);
+                Assert.AreEqual("de_DE@collation=phonebook", newUICulture.ToString());
+            }
+        }
     }
 }

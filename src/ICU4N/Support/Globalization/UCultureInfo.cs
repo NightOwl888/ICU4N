@@ -17,6 +17,9 @@ namespace ICU4N.Globalization
     [Serializable]
 #endif
     public partial class UCultureInfo : CultureInfo, IComparable<UCultureInfo>
+#if FEATURE_CLONEABLE
+        , ICloneable
+#endif
     {
         private static readonly CacheBase<string, string> nameCache = new SoftCache<string, string>();
 

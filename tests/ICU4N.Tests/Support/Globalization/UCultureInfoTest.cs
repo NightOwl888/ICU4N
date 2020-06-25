@@ -4500,7 +4500,7 @@ namespace ICU4N.Globalization
             yield return new TestCaseData(new CultureWithCalendar("th-TH", new GregorianCalendar()), "th_TH@calendar=gregorian");
         }
 
-        [Test, TestCaseSource("GetCultureInfoData")]
+        [Test, TestCaseSource(nameof(GetCultureInfoData))]
         public void TestToUCultureInfo(CultureInfo culture, string fullName)
         {
             assertEquals($"ToUCultureInfo() with {culture}", fullName, culture.ToUCultureInfo().FullName);
@@ -4941,6 +4941,83 @@ namespace ICU4N.Globalization
                     Errln("Error: " + pair[0] + " is not equal to " + pair[1]);
                 }
             }
+        }
+
+
+
+        // From System.Globalization
+
+        [TestCase("en_US", "en")]
+        [TestCase("en", "")]
+        [TestCase("", "")]
+        public void TestParent(string name, string expectedParentName)
+        {
+            UCultureInfo culture = new UCultureInfo(name);
+            Assert.AreEqual(new UCultureInfo(expectedParentName), culture.Parent);
+        }
+
+        [Test]
+        [Ignore("ICU4N TODO: Differs from .NET behavior")]
+        public void TestParent_ParentChain()
+        {
+            UCultureInfo myExpectParentCulture = new UCultureInfo("uz_Cyrl_UZ");
+            Assert.AreEqual("uz_Cyrl", myExpectParentCulture.Parent.Name);
+            Assert.AreEqual("uz", myExpectParentCulture.Parent.Parent.Name);
+            Assert.AreEqual("", myExpectParentCulture.Parent.Parent.Parent.Name);
+        }
+
+        [TestCase("de_DE", "de")]
+        [TestCase("en", "en")]
+        [TestCase("", "iv")]
+        public void TestTwoLetterISOLanguageName(string name, string expected)
+        {
+            Assert.AreEqual(expected, new UCultureInfo(name).TwoLetterISOLanguageName);
+        }
+
+        public static IEnumerable<object[]> NativeName_TestData()
+        {
+            yield return new object[] { UCultureInfo.CurrentCulture.Name, UCultureInfo.CurrentCulture.NativeName };
+            yield return new object[] { "en_US", "English (United States)" };
+            yield return new object[] { "en_CA", "English (Canada)" };
+        }
+
+        [Test, TestCaseSource(nameof(NativeName_TestData))]
+        public void TestNativeName(string name, string expected)
+        {
+            UCultureInfo myTestCulture = new UCultureInfo(name);
+            Assert.AreEqual(expected, myTestCulture.NativeName);
+        }
+
+        [TestCase("en_US")]
+        [TestCase("en")]
+        [TestCase("")]
+        public void TestGetHashCode(string name)
+        {
+            // The only guarantee that can be made about HashCodes is that they will be the same across calls
+            UCultureInfo culture = new UCultureInfo(name);
+            Assert.AreEqual(culture.GetHashCode(), culture.GetHashCode());
+        }
+
+        public static IEnumerable<object[]> Equals_TestData()
+        {
+            UCultureInfo frFRCulture = new UCultureInfo("fr_FR");
+            yield return new object[] { frFRCulture, frFRCulture.Clone(), true };
+            yield return new object[] { frFRCulture, frFRCulture, true };
+            yield return new object[] { new UCultureInfo("en"), new UCultureInfo("en"), true };
+            yield return new object[] { new UCultureInfo("en_US"), new UCultureInfo("en_US"), true };
+            yield return new object[] { UCultureInfo.InvariantCulture, UCultureInfo.InvariantCulture, true };
+            yield return new object[] { UCultureInfo.InvariantCulture, new UCultureInfo(""), true };
+
+            yield return new object[] { new UCultureInfo("en"), new UCultureInfo("en_US"), false };
+            yield return new object[] { new UCultureInfo("en_US"), new UCultureInfo("fr_FR"), false };
+            yield return new object[] { new UCultureInfo("en_US"), null, false };
+        }
+
+        [Theory]
+        [TestCaseSource(nameof(Equals_TestData))]
+        public void TestEquals(UCultureInfo culture, object value, bool expected)
+        {
+            Assert.AreEqual(expected, culture.Equals(value));
         }
 
 

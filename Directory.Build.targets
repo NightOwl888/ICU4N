@@ -38,6 +38,7 @@
 
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_GETCULTURES</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_IETFLANGUAGETAG</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_INSTALLEDUICULTURE</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_KEYBOARDLAYOUTID</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_LCID</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_THREELETTERISOLANGUAGENAME</DefineConstants>
