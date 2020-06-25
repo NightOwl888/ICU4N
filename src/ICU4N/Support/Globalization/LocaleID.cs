@@ -6,6 +6,9 @@ namespace ICU4N.Globalization
     /// <summary>
     /// A struct used for passing around parts of a locale identifier.
     /// </summary>
+#if FEATURE_CULTUREINFO_SERIALIZABLE
+    [Serializable]
+#endif
     public struct LocaleID : IEquatable<LocaleID>
     {
         private readonly string language;
