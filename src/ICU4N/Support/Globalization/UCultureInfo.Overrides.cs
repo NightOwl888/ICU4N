@@ -97,7 +97,11 @@ namespace ICU4N.Globalization
         /// returns <see cref="UCultureInfo.InvariantCulture"/>.
         /// </summary>
         /// <stable>ICU 3.2</stable>
-        public /*override*/ UCultureInfo Parent => GetParent() ?? UCultureInfo.InvariantCulture;
+        // ICU4N TODO: .NET compatibility tests don't pass.
+        // Need to work out if GetFallback() (the original name of GetParent()) is indeed
+        // the equivalent of CultureInfo.Parent or if it a different opertion that also
+        // needs to be on the public API.
+        internal /*override*/ UCultureInfo Parent => GetParent() ?? UCultureInfo.InvariantCulture;
 
         ///// <inheritdoc/>
         //public override TextInfo TextInfo => isInvariantCulture ? base.TextInfo : culture.TextInfo;
