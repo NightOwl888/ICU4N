@@ -243,8 +243,8 @@ namespace ICU4N.Globalization
                 return true;
 
             // Special case - compare against invariant culture
-            if (isInvariantCulture)
-                return base.Equals(value);
+            if (isInvariantCulture && value is CultureInfo culture)
+                return CultureInfo.InvariantCulture.Equals(culture);
 
             if (value is UCultureInfo uCulture)
                 return localeID.Equals(uCulture.localeID);
@@ -261,7 +261,7 @@ namespace ICU4N.Globalization
         {
             // Special case - compare against invariant culture
             if (isInvariantCulture)
-                return base.GetHashCode();
+                return CultureInfo.InvariantCulture.GetHashCode();
 
             return localeID.GetHashCode();
         }
