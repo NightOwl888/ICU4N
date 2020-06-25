@@ -93,6 +93,7 @@ namespace ICU4N.Dev.Test
         public virtual void TestInitialize()
         {
             this.CurrentCulture = defaultLocale;
+            UCultureInfo.CurrentCulture = defaultLocale.ToUCultureInfo();
 
             //TimeZone.setDefault(defaultTimeZone);
 
