@@ -1473,7 +1473,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestGetAll()
         {
-            CultureInfo[] list = Collator.GetAvailableLocales();
+            CultureInfo[] list = Collator.GetCultures(UCultureTypes.AllCultures);
             int errorCount = 0;
             for (int i = 0; i < list.Length; ++i)
             {

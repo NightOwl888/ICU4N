@@ -48,8 +48,9 @@ namespace ICU4N.Globalization
         /// </summary>
         private static readonly UCultureInfo English = new UCultureInfo("en", new CultureInfo("en"));
 
-        private readonly bool isInvariantCulture;
+        private readonly LocaleID localeIdentifier;
         private readonly bool isNeutralCulture;
+        private readonly bool isInvariantCulture;
 
         /// <summary>
         /// Cache the locale data container fields.
@@ -170,20 +171,11 @@ namespace ICU4N.Globalization
             this.localeID = name;
             this.culture = culture;
 
-            this.isInvariantCulture = localeID != null && localeID.Length == 0 || localeID.Equals("root");
+            this.localeIdentifier = new LocaleIDParser(localeID ?? string.Empty).GetLocaleID();
 
-            var parser = new LocaleIDParser(localeID ?? string.Empty);
-            const int language = 0;
-            const int script = 1;
-            const int country = 2;
-            const int variant = 3;
-            string[] parts = parser.GetLanguageScriptCountryVariant();
-            bool hasLanguage = parts[language].Length > 0;
-            bool hasScript = parts[script].Length > 0;
-            bool hasCountry = parts[country].Length > 0;
-            bool hasVariant = parts[variant].Length > 0;
-
-            this.isNeutralCulture = hasLanguage && !(hasScript || hasCountry || hasVariant);
+            // NOTE: Invariant culture is not neutral
+            this.isNeutralCulture = localeIdentifier.IsNeutralCulture;
+            this.isInvariantCulture = localeIdentifier.IsInvariantCulture;
         }
 
         /// <summary>
@@ -381,11 +373,22 @@ namespace ICU4N.Globalization
         /// <icunote/> Unlike the <see cref="System.Globalization.CultureInfo"/> API, this
         /// returns an array of <see cref="UCultureInfo"/>s, not <see cref="System.Globalization.CultureInfo"/>s.
         /// </summary>
+        /// <param name="types"></param>
         /// <returns>Returns a list of all installed locales.</returns>
         /// <stable>ICU 3.0</stable>
-        public static UCultureInfo[] GetCultures() // ICU4N TODO: Work out how to add an enumeration to filter cultures...similar to CultureTypes enum
+        public static UCultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
-            return ICUResourceBundle.GetAvailableUCultures();
+            return ICUResourceBundle.GetUCultures(types);
+        }
+
+        internal bool IsMatch(UCultureTypes types)
+        {
+#if FEATURE_CULTUREINFO_GETCULTURES
+            return ((int)CultureTypes & (int)types) != 0;
+#else
+            return isNeutralCulture && types.HasFlag(UCultureTypes.NeutralCultures)
+                || !isNeutralCulture && types.HasFlag(UCultureTypes.SpecificCultures);
+#endif
         }
 
         /// <summary>
@@ -1686,40 +1689,40 @@ namespace ICU4N.Globalization
         /// <icu/> Based on an HTTP formatted list of acceptable cultures, determine an available
         /// locale for the user. <paramref name="isFallback"/> will be <c>true</c> if a
         /// fallback culture (one not in the <paramref name="acceptLanguageList"/>) was returned.
-        /// The return value will be one of the cultures in <see cref="UCultureInfo.GetCultures()"/>, or
+        /// The return value will be one of the cultures in <see cref="UCultureInfo.GetCultures(UCultureTypes)"/>, or
         /// <see cref="CultureInfo.InvariantCulture"/> if an invariant culture was used as a fallback
-        /// (because nothing else in <see cref="UCultureInfo.GetCultures()"/> matched). No
+        /// (because nothing else in <see cref="UCultureInfo.GetCultures(UCultureTypes)"/> matched). No
         /// <see cref="UCultureInfo"/> in <paramref name="acceptLanguageList"/> should be <c>null</c>;
         /// behavior is undefined in this case.
         /// </summary>
         /// <param name="acceptLanguageList">List in HTTP "Accept-Language:" format of acceptable cultures.</param>
         /// <param name="isFallback">Returns the fallback status.</param>
-        /// <returns>One of the cultures from the <see cref="UCultureInfo.GetCultures()"/> list, or <c>null</c> if none match.</returns>
+        /// <returns>One of the cultures from the <see cref="UCultureInfo.GetCultures(UCultureTypes)"/> list, or <c>null</c> if none match.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="acceptLanguageList"/> is <c>null</c>.</exception>
         /// <stable>ICU 3.4</stable>
         public static UCultureInfo AcceptLanguage(string acceptLanguageList, out bool isFallback)
         {
-            return AcceptLanguage(acceptLanguageList, UCultureInfo.GetCultures(), out isFallback);
+            return AcceptLanguage(acceptLanguageList, UCultureInfo.GetCultures(UCultureTypes.AllCultures), out isFallback);
         }
 
         /// <summary>
         /// <icu/> Based on an ordered list of acceptable cultures, determine an available
         /// culture for the user. <paramref name="isFallback"/> will be <c>true</c> if a
         /// fallback culture (one not in the <paramref name="acceptLanguageList"/>) was returned.
-        /// The return value will be one of the cultures in <see cref="UCultureInfo.GetCultures()"/>, or
+        /// The return value will be one of the cultures in <see cref="UCultureInfo.GetCultures(UCultureTypes)"/>, or
         /// <see cref="CultureInfo.InvariantCulture"/> if an invariant culture was used as a fallback
-        /// (because nothing else in <see cref="UCultureInfo.GetCultures()"/> matched). No
+        /// (because nothing else in <see cref="UCultureInfo.GetCultures(UCultureTypes)"/> matched). No
         /// <see cref="UCultureInfo"/> in <paramref name="acceptLanguageList"/> should be <c>null</c>;
         /// behavior is undefined in this case.
         /// </summary>
         /// <param name="acceptLanguageList">Ordered list of acceptable cultures (preferred are listed first).</param>
         /// <param name="isFallback">Returns the fallback status.</param>
-        /// <returns>One of the cultures from the <see cref="UCultureInfo.GetCultures()"/> list, or <c>null</c> if none match.</returns>
+        /// <returns>One of the cultures from the <see cref="UCultureInfo.GetCultures(UCultureTypes)"/> list, or <c>null</c> if none match.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="acceptLanguageList"/> is <c>null</c>.</exception>
         /// <stable>ICU 3.4</stable>
         public static UCultureInfo AcceptLanguage(IList<UCultureInfo> acceptLanguageList, out bool isFallback)
         {
-            return AcceptLanguage(acceptLanguageList, UCultureInfo.GetCultures(), out isFallback);
+            return AcceptLanguage(acceptLanguageList, UCultureInfo.GetCultures(UCultureTypes.AllCultures), out isFallback);
         }
 
         private class CultureAcceptLanguageQ : IComparable<CultureAcceptLanguageQ>

@@ -38,7 +38,7 @@ namespace ICU4N.Dev.Test.Util
         [SetUp]
         public void Init()
         {
-            available = UCultureInfo.GetCultures();
+            available = UCultureInfo.GetCultures(UCultureTypes.AllCultures);
             for (int i = 0; i < available.Length; i++)
             {
                 availableMap[available[i].ToString()] = "";

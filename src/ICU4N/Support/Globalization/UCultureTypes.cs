@@ -5,7 +5,7 @@ using System.Text;
 namespace ICU4N.Globalization
 {
     /// <summary>
-    /// Defines the types of culture lists that can be retrieved using the <see cref="UCultureInfo.GetUCultures(UCultureTypes)"/> method.
+    /// Defines the types of culture lists that can be retrieved using the <see cref="UCultureInfo.GetCultures(UCultureTypes)"/> method.
     /// <para/>
     /// This enumeration has a <see cref="FlagsAttribute"/> attribute that allows a bitwise combination of its member values.
     /// </summary>

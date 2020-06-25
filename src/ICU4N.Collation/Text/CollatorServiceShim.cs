@@ -83,33 +83,37 @@ namespace ICU4N.Text
             return service.UnregisterFactory((IServiceFactory)registryKey);
         }
 
-        internal override CultureInfo[] GetAvailableLocales()
+        internal override CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
             // TODO rewrite this to just wrap getAvailableULocales later
             CultureInfo[] result;
             if (service.IsDefault)
             {
-                result = ICUResourceBundle.GetAvailableLocales(ICUData.IcuCollationBaseName,
-                    CollationData.IcuDataAssembly);
+                result = ICUResourceBundle.GetCultures(
+                    ICUData.IcuCollationBaseName,
+                    CollationData.IcuDataAssembly,
+                    types);
             }
             else
             {
-                result = service.GetAvailableLocales();
+                result = service.GetCultures(types);
             }
             return result;
         }
 
-        internal override UCultureInfo[] GetAvailableULocales() // ICU4N TODO: API - Rename GetUCultures, add CultureTypes filter
+        internal override UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableULocales
         {
             UCultureInfo[] result;
             if (service.IsDefault)
             {
-                result = ICUResourceBundle.GetAvailableUCultures(ICUData.IcuCollationBaseName,
-                        CollationData.IcuDataAssembly);
+                result = ICUResourceBundle.GetUCultures(
+                    ICUData.IcuCollationBaseName,
+                    CollationData.IcuDataAssembly,
+                    types);
             }
             else
             {
-                result = service.GetUCultures();
+                result = service.GetUCultures(types);
             }
             return result;
         }

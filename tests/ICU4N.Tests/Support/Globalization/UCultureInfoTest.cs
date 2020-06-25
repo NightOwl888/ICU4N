@@ -826,7 +826,7 @@ namespace ICU4N.Globalization
         [Test]
         public void TestGetAvailable()
         {
-            UCultureInfo[] locales = UCultureInfo.GetCultures();
+            UCultureInfo[] locales = UCultureInfo.GetCultures(UCultureTypes.AllCultures);
             if (locales.Length < 10)
             {
                 Errln("Did not get the correct result from getAvailableLocales");
@@ -834,6 +834,14 @@ namespace ICU4N.Globalization
             if (!locales[locales.Length - 1].FullName.Equals("zu_ZA"))
             {
                 Errln("Did not get the expected result");
+            }
+            foreach (var specificCulture in UCultureInfo.GetCultures(UCultureTypes.SpecificCultures))
+            {
+                assertFalse($"Expected a specific culture, got '{specificCulture.Name}'", specificCulture.IsNeutralCulture);
+            }
+            foreach (var neutralCulture in UCultureInfo.GetCultures(UCultureTypes.NeutralCultures))
+            {
+                assertTrue($"Expected a neutral culture, got '{neutralCulture.Name}'", neutralCulture.IsNeutralCulture);
             }
         }
 
@@ -863,7 +871,7 @@ namespace ICU4N.Globalization
         {
             // consistency check, also check that all data is available
             {
-                UCultureInfo[] locales = UCultureInfo.GetCultures();
+                UCultureInfo[] locales = UCultureInfo.GetCultures(UCultureTypes.AllCultures);
                 for (int i = 0; i < locales.Length; ++i)
                 {
                     UCultureInfo l = locales[i];
@@ -1631,9 +1639,9 @@ namespace ICU4N.Globalization
         {
             AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage((string)null, out bool _));
             AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage((IList<UCultureInfo>)null, out bool _));
-            AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage((string)null, UCultureInfo.GetCultures(), out bool _));
+            AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage((string)null, UCultureInfo.GetCultures(UCultureTypes.AllCultures), out bool _));
             AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage("zh-hant-cn", null, out bool _));
-            AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage((IList<UCultureInfo>)null, UCultureInfo.GetCultures(), out bool _));
+            AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage((IList<UCultureInfo>)null, UCultureInfo.GetCultures(UCultureTypes.AllCultures), out bool _));
             AssertThrows<ArgumentNullException>(() => UCultureInfo.AcceptLanguage(new UCultureInfo[] { new UCultureInfo("en_US") }, null, out bool _));
         }
 
@@ -4536,7 +4544,7 @@ namespace ICU4N.Globalization
         // ICU4N specific - make sure all ICU cultures will convert to .NET cultures without exceptions
         public void TestToCultureInfo_AllCultures()
         {
-            var locales = UCultureInfo.GetCultures();
+            var locales = UCultureInfo.GetCultures(UCultureTypes.AllCultures);
             var unknownCultures = new J2N.Collections.Generic.Dictionary<CultureInfo, string>();
             
 

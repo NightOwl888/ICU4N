@@ -970,12 +970,12 @@ namespace ICU4N.Text
         /// <returns>An array of <see cref="CultureInfo"/>s.  All of the locales in the array can
         /// be used when creating a <see cref="BreakIterator"/>.</returns>
         /// <stable>ICU 2.6</stable>
-        public static CultureInfo[] GetAvailableCultures() // ICU4N specific - renamed from GetAvailableLocales()
+        public static CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
             lock (syncLock)
             {
                 // to avoid linking ICULocaleData
-                return GetShim().GetAvailableCultures();
+                return GetShim().GetCultures(types);
             }
         }
 
@@ -986,12 +986,12 @@ namespace ICU4N.Text
         /// be used when creating a <see cref="BreakIterator"/>.</returns>
         /// <draft>ICU 3.2 (retain)</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static UCultureInfo[] GetAvailableULocales()
+        public static UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
             lock (syncLock)
             {
                 // to avoid linking ICULocaleData
-                return GetShim().GetAvailableUCultures();
+                return GetShim().GetUCultures(types);
             }
         }
 
@@ -1021,8 +1021,8 @@ namespace ICU4N.Text
         {
             public abstract object RegisterInstance(BreakIterator iter, UCultureInfo l, int k);
             public abstract bool Unregister(object key);
-            public abstract CultureInfo[] GetAvailableCultures();  // ICU4N TODO: API - Rename GetCultures(), add CultureTypes enum
-            public abstract UCultureInfo[] GetAvailableUCultures();  // ICU4N TODO: API - Rename GetUCultures(), add CultureTypes enum
+            public abstract CultureInfo[] GetCultures(UCultureTypes types); // ICU4N: Renamed from GetAvailableLocales
+            public abstract UCultureInfo[] GetUCultures(UCultureTypes types); // ICU4N: Renamed from GetAvailableLocales
             public abstract BreakIterator CreateBreakIterator(UCultureInfo l, int k);
         }
 

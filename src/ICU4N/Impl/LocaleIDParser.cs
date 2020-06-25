@@ -55,6 +55,16 @@ namespace ICU4N.Impl
 
         public LocaleIDParser(string localeID, bool canonicalize)
         {
+            Reset(localeID, canonicalize);
+        }
+
+        public void Reset(string localeID)
+        {
+            Reset(localeID, false);
+        }
+
+        public void Reset(string localeID, bool canonicalize)
+        {
             id = localeID.ToCharArray();
             index = 0;
             buffer = new StringBuilder(id.Length + 5);

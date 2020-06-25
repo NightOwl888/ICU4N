@@ -200,34 +200,50 @@ namespace ICU4N.Impl
         /// Convenience method for callers using locales.  This returns the standard
         /// <see cref="CultureInfo"/> list, built from the <see cref="ICollection{T}"/> of visible ids.
         /// </summary>
-        public virtual CultureInfo[] GetAvailableLocales() // ICU4N TODO: API - rename GetCultures()? Need this to be consistent across the API
+        public virtual CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
-            // TODO make this wrap getAvailableULocales later
-            ICollection<string> visIDs = GetVisibleIDs();
-            CultureInfo[] locales = new CultureInfo[visIDs.Count];
-            int n = 0;
-            foreach (string id in visIDs)
-            {
-                CultureInfo loc = LocaleUtility.GetLocaleFromName(id);
-                locales[n++] = loc;
-            }
-            return locales;
+            return GetCultures(types, (id) => LocaleUtility.GetLocaleFromName(id));
         }
 
         /// <summary>
         /// Convenience method for callers using locales.  This returns the standard
         /// <see cref="UCultureInfo"/> list, built from the <see cref="ICollection{T}"/> of visible ids.
         /// </summary>
-        public virtual UCultureInfo[] GetUCultures() // ICU4N TODO: API - consider adding a CultureTypes filter
+        public virtual UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableULocales
+        {
+            return GetCultures(types, (id) => new UCultureInfo(id));
+        }
+
+        private T[] GetCultures<T>(UCultureTypes types, Func<string, T> factory)
         {
             ICollection<string> visIDs = GetVisibleIDs();
-            UCultureInfo[] locales = new UCultureInfo[visIDs.Count];
-            int n = 0;
-            foreach (string id in visIDs)
+            
+            if (types == UCultureTypes.AllCultures)
             {
-                locales[n++] = new UCultureInfo(id);
+                int n = 0;
+                var locales = new T[visIDs.Count];
+                foreach (string id in visIDs)
+                    locales[n++] = factory(id);
+                return locales;
             }
-            return locales;
+            else
+            {
+                List<T> locales = new List<T>(visIDs.Count);
+                var parser = new LocaleIDParser(string.Empty);
+                foreach (string id in visIDs)
+                {
+                    // Filter the culture type before allocating the object
+                    parser.Reset(id);
+                    bool isNeutralCulture = parser.GetLocaleID().IsNeutralCulture;
+                    if (isNeutralCulture && types.HasFlag(UCultureTypes.NeutralCultures)
+                        || (!isNeutralCulture && types.HasFlag(UCultureTypes.SpecificCultures)))
+                    {
+                        locales.Add(factory(id));
+                    }
+                }
+
+                return locales.ToArray();
+            }
         }
 
         // ICU4N specific - de-nested LocaleKey

@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Globalization;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using J2N;
 using NUnit.Framework;
@@ -946,7 +947,7 @@ namespace ICU4N.Dev.Test.Collate
             // try to instantiate one for every locale available on the system
             // in order to prevent this sort of bug from cropping up in the future
             //
-            CultureInfo[] locales = Collator.GetAvailableLocales();
+            CultureInfo[] locales = Collator.GetCultures(UCultureTypes.AllCultures);
 
             for (int i = 0; i < locales.Length; i += 1)
             {

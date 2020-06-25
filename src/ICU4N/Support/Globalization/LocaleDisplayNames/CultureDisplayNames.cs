@@ -220,7 +220,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <param name="cultures">A list of locales to present in a UI list. The casing uses the settings in the <see cref="CultureDisplayNames"/> instance.</param>
         /// <param name="inSelf">
-        /// If <c>true</c>, compares the <see cref=""/>nameInSelf, otherwise the nameInDisplayLocale.
+        /// If <c>true</c>, compares the <see cref="UiListItem.NameInSelf"/>, otherwise the <see cref="UiListItem.NameInDisplayLocale"/>.
         /// Set depending on which field (displayLocale vs self) is to show up in the UI.
         /// If both are to show up in the UI, then it should be the one used for the primary sort order.
         /// </param>
@@ -238,7 +238,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <param name="cultures">A list of locales to present in a UI list. The casing uses the settings in the <see cref="CultureDisplayNames"/> instance.</param>
         /// <param name="inSelf">
-        /// If true, compares the nameInSelf, otherwise the nameInDisplayLocale.
+        /// If <c>true</c>, compares the <see cref="UiListItem.NameInSelf"/>, otherwise the <see cref="UiListItem.NameInDisplayLocale"/>.
         /// Set depending on which field (displayLocale vs self) is to show up in the UI.
         /// If both are to show up in the UI, then it should be the one used for the primary sort order.
         /// </param>
