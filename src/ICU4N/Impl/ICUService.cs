@@ -388,7 +388,9 @@ namespace ICU4N.Impl
 
             if (fallbackKey != null)
             {
-                ISet<string> temp = new HashSet<string>(/*result.Count*/);
+                // ICU4N: We don't need the overhead of HashSet here, since we are pulling
+                // keys from a dictionary.
+                var temp = new List<string>(result.Count);
                 foreach (string id in result)
                 {
                     if (fallbackKey.IsFallbackOf(id))
