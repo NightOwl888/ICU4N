@@ -59,7 +59,7 @@ namespace ICU4N.Dev.Test.Collate
                     Errln("register of fr collator for fu_FU failed");
                 }
 
-                UCultureInfo[] locales = Collator.GetAvailableULocales();
+                UCultureInfo[] locales = Collator.GetUCultures(UCultureTypes.AllCultures);
                 bool found = false;
                 for (int i = 0; i < locales.Length; ++i)
                 {
@@ -113,7 +113,7 @@ namespace ICU4N.Dev.Test.Collate
 
             {
                 // coverage after return to default
-                UCultureInfo[] locales = Collator.GetAvailableULocales();
+                UCultureInfo[] locales = Collator.GetUCultures(UCultureTypes.AllCultures);
 
                 for (int i = 0; i < locales.Length; ++i)
                 {
@@ -317,7 +317,7 @@ namespace ICU4N.Dev.Test.Collate
                     Errln("jpcol for fu_FU_FOO failed, got: " + ncol);
                 }
 
-                UCultureInfo[] locales = Collator.GetAvailableULocales();
+                UCultureInfo[] locales = Collator.GetUCultures(UCultureTypes.AllCultures);
                 bool found = false;
                 for (int i = 0; i < locales.Length; ++i)
                 {
@@ -367,10 +367,10 @@ namespace ICU4N.Dev.Test.Collate
          */
         internal int checkAvailable(String msg)
         {
-            CultureInfo[] locs = Collator.GetAvailableLocales();
+            CultureInfo[] locs = Collator.GetCultures(UCultureTypes.AllCultures);
             if (!assertTrue("getAvailableLocales != null", locs != null)) return -1;
             CheckArray(msg, locs, null);
-            UCultureInfo[] ulocs = Collator.GetAvailableULocales();
+            UCultureInfo[] ulocs = Collator.GetUCultures(UCultureTypes.AllCultures);
             if (!assertTrue("getAvailableULocales != null", ulocs != null)) return -1;
             CheckArray(msg, ulocs, null);
             // This is not true because since UCultureInfo objects with script code cannot be

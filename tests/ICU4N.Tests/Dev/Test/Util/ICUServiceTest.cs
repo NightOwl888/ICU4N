@@ -868,7 +868,7 @@ namespace ICU4N.Dev.Test.Util
             target = service.Get("za_PPP");
             confirmEqual("test with en locale", "root", target);
 
-            UCultureInfo[] locales = service.GetUCultures();
+            UCultureInfo[] locales = service.GetUCultures(UCultureTypes.AllCultures);
             confirmIdentical("test available locales", locales.Length, 6);
             Logln("locales: ");
             for (int i = 0; i < locales.Length; ++i)

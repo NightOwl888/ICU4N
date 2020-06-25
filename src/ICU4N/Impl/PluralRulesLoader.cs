@@ -44,7 +44,7 @@ namespace ICU4N.Impl
         /// Returns the locales for which we have plurals data. Utility for testing.
         /// </summary>
 #pragma warning disable 672
-        public override UCultureInfo[] GetAvailableULocales() // ICU4N TODO: API - Rename GetUCultures() and add CultureTypes enum filter
+        public override UCultureInfo[] GetUCultures() // ICU4N: Renamed from GetAvailableLocales // ICU4N TODO: API Add UCultureTypes enum ?
 #pragma warning restore 672
         {
             ICollection<string> keys = GetLocaleIdToRulesIdMap(PluralType.Cardinal).Keys;

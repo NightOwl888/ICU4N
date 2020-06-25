@@ -356,20 +356,28 @@ namespace ICU4N.Dev.Test.Rbbi
         
         public void TestGetAvailableLocales()
         {
-            CultureInfo[] locList = BreakIterator.GetAvailableCultures();
+            CultureInfo[] locList = BreakIterator.GetCultures(UCultureTypes.AllCultures);
 
             if (locList.Length == 0)
-                Errln("getAvailableLocales() returned an empty list!");
+                Errln("GetCultures() returned an empty list!");
             // I have no idea how to test this function...
 
-            UCultureInfo[] ulocList = BreakIterator.GetAvailableULocales();
+            UCultureInfo[] ulocList = BreakIterator.GetUCultures(UCultureTypes.AllCultures);
             if (ulocList.Length == 0)
             {
-                Errln("getAvailableULocales() returned an empty list!");
+                Errln("GetUCultures() returned an empty list!");
             }
             else
             {
-                Logln("getAvailableULocales() returned " + ulocList.Length + " locales");
+                Logln("GetUCultures() returned " + ulocList.Length + " locales");
+            }
+            foreach (var specificCulture in BreakIterator.GetCultures(UCultureTypes.SpecificCultures))
+            {
+                assertFalse($"Expected a specific culture, got '{specificCulture.Name}'", specificCulture.IsNeutralCulture);
+            }
+            foreach (var neutralCulture in BreakIterator.GetCultures(UCultureTypes.NeutralCultures))
+            {
+                assertTrue($"Expected a neutral culture, got '{neutralCulture.Name}'", neutralCulture.IsNeutralCulture);
             }
         }
 
@@ -437,7 +445,7 @@ namespace ICU4N.Dev.Test.Rbbi
         [Test]
         public void TestT5615()
         {
-            UCultureInfo[] ulocales = BreakIterator.GetAvailableULocales();
+            UCultureInfo[] ulocales = BreakIterator.GetUCultures(UCultureTypes.AllCultures);
             int type = 0;
             UCultureInfo loc = null;
             try

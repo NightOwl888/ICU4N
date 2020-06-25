@@ -1,4 +1,5 @@
 ﻿using J2N.Collections.Concurrent;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -53,6 +54,16 @@ namespace ICU4N.Globalization
                     ^ (!(obj.Calendar is null) ? obj.Calendar.GetHashCode() : 31)
                     ^ (!(obj.DateTimeFormat is null) && !(obj.DateTimeFormat.Calendar is null) ? obj.DateTimeFormat.Calendar.GetHashCode() : 31);
             }
+        }
+
+        internal static bool IsMatch(this CultureInfo culture, UCultureTypes types)
+        {
+#if FEATURE_CULTUREINFO_GETCULTURES
+            return ((int)culture.CultureTypes & (int)types) != 0;
+#else
+            return culture.IsNeutralCulture && types.HasFlag(UCultureTypes.NeutralCultures)
+                || !culture.IsNeutralCulture && types.HasFlag(UCultureTypes.SpecificCultures);
+#endif
         }
 
         ///// <summary>

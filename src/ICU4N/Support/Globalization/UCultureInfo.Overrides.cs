@@ -7,6 +7,9 @@ namespace ICU4N.Globalization
 {
     public partial class UCultureInfo
     {
+
+        new public UCultureTypes CultureTypes => isNeutralCulture ? UCultureTypes.NeutralCultures : UCultureTypes.SpecificCultures;
+
         /// <inheritdoc/>
         public override Calendar Calendar => isInvariantCulture ? CultureInfo.InvariantCulture.Calendar : culture.Calendar;
 
@@ -54,7 +57,7 @@ namespace ICU4N.Globalization
         }
 
         /// <inheritdoc/>
-        public override bool IsNeutralCulture => isInvariantCulture ? CultureInfo.InvariantCulture.IsNeutralCulture : isNeutralCulture;
+        public override bool IsNeutralCulture => isNeutralCulture;
 
 
 #if FEATURE_CULTUREINFO_KEYBOARDLAYOUTID
@@ -66,7 +69,7 @@ namespace ICU4N.Globalization
         // ICU4N: According to the document at
         // https://docs.microsoft.com/en-us/windows/win32/api/winnls/nf-winnls-localenametolcid
         // the LCID is always 0x1000 when returning a CLDR culture.
-        public override int LCID => isInvariantCulture ? base.LCID : 0x1000;
+        public override int LCID => isInvariantCulture ? CultureInfo.InvariantCulture.LCID : 0x1000;
 #endif
 
         /// <summary>

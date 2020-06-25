@@ -1091,7 +1091,7 @@ namespace ICU4N.Dev.Test.Collate
             prevLocales.Add("root@collation=standard");
 
             long[] ces;
-            UCultureInfo[] locales = Collator.GetAvailableULocales();
+            UCultureInfo[] locales = Collator.GetUCultures(UCultureTypes.AllCultures);
             String localeID = "root";
             int locIdx = 0;
 

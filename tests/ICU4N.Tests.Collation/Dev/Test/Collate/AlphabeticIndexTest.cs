@@ -299,7 +299,7 @@ namespace ICU4N.Dev.Test.Collate
             // just verify that it doesn't blow up.
             List<UCultureInfo> locales = new List<UCultureInfo>(); // new LinkedHashSet<ULocale>();
             locales.Add(UCultureInfo.InvariantCulture);
-            locales.AddRange(UCultureInfo.GetCultures());
+            locales.AddRange(UCultureInfo.GetCultures(UCultureTypes.AllCultures));
             foreach (UCultureInfo locale in locales)
             {
                 try
@@ -593,7 +593,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestBasics()
         {
-            UCultureInfo[] list = UCultureInfo.GetCultures();
+            UCultureInfo[] list = UCultureInfo.GetCultures(UCultureTypes.AllCultures);
             // get keywords combinations
             // don't bother with multiple combinations at this point
             List<object> keywords = new List<object>();

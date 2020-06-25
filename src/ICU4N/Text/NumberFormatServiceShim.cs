@@ -1,32 +1,29 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
-using ICU4N.Util;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Resources;
-using static ICU4N.Impl.ICULocaleService;
 
 namespace ICU4N.Text
 {
     internal class NumberFormatServiceShim : NumberFormat.NumberFormatShim
     {
-        internal override CultureInfo[] GetAvailableLocales() // ICU4N TODO: API - Rename GetCultures() and add CultureTypes enum
+        internal override CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
             if (service.IsDefault)
             {
-                return ICUResourceBundle.GetAvailableLocales();
+                return ICUResourceBundle.GetCultures(types);
             }
-            return service.GetAvailableLocales();
+            return service.GetCultures(types);
         }
 
-        internal override UCultureInfo[] GetAvailableULocales() // ICU4N TODO: API - Rename GetUCultures() and add CultureTypes enum
+        internal override UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableULocales
         {
             if (service.IsDefault)
             {
-                return ICUResourceBundle.GetAvailableUCultures();
+                return ICUResourceBundle.GetUCultures(types);
             }
-            return service.GetUCultures();
+            return service.GetUCultures(types);
         }
 
         private sealed class NFFactory : LocaleKeyFactory

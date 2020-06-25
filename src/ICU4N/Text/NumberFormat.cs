@@ -723,8 +723,8 @@ namespace ICU4N.Text
         // shim so we can build without service code
         internal abstract class NumberFormatShim
         {
-            internal abstract CultureInfo[] GetAvailableLocales(); // ICU4N TODO: API - Rename GetCultures() and add CultureTypes enum
-            internal abstract UCultureInfo[] GetAvailableULocales(); // ICU4N TODO: API - Rename GetCultures() and add CultureTypes enum
+            internal abstract CultureInfo[] GetCultures(UCultureTypes types); // ICU4N: Renamed from GetAvailableLocales
+            internal abstract UCultureInfo[] GetUCultures(UCultureTypes types); // ICU4N: Renamed from GetAvailableULocales
             internal abstract object RegisterFactory(NumberFormatFactory f);
             internal abstract bool Unregister(object k);
             internal abstract NumberFormat CreateInstance(UCultureInfo l, NumberFormatStyle k);
@@ -767,13 +767,13 @@ namespace ICU4N.Text
          * @return the available locales
          * @stable ICU 2.0
          */
-        public static CultureInfo[] GetAvailableLocales() // ICU4N TODO: Rename GetCultures() and add CultureTypes filter
+        public static CultureInfo[] GetCultures(UCultureTypes types)
         {
             if (shim == null)
             {
-                return ICUResourceBundle.GetAvailableLocales();
+                return ICUResourceBundle.GetCultures(types);
             }
-            return GetShim().GetAvailableLocales();
+            return GetShim().GetCultures(types);
         }
 
         /**
@@ -782,13 +782,13 @@ namespace ICU4N.Text
          * @draft ICU 3.2 (retain)
          * @provisional This API might change or be removed in a future release.
          */
-        public static UCultureInfo[] GetAvailableULocales() // ICU4N TODO: Rename GetUCultures() and add CultureTypes filter
+        public static UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableULocales
         {
             if (shim == null)
             {
-                return ICUResourceBundle.GetAvailableUCultures();
+                return ICUResourceBundle.GetUCultures(types);
             }
-            return GetShim().GetAvailableULocales();
+            return GetShim().GetUCultures(types);
         }
 
         /// <summary>

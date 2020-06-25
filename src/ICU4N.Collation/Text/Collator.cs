@@ -233,7 +233,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Return true if this factory will be visible.  Default is true.
         /// If not visible, the locales supported by this factory will not
-        /// be listed by <see cref="Collator.GetAvailableLocales()"/>.
+        /// be listed by <see cref="Collator.GetCultures(UCultureTypes)"/>.
         /// <para/>
         /// true if this factory is visible.
         /// </summary>
@@ -762,8 +762,8 @@ namespace ICU4N.Text
             internal abstract object RegisterInstance(Collator c, UCultureInfo l);
             internal abstract object RegisterFactory(CollatorFactory f);
             internal abstract bool Unregister(object k);
-            internal abstract CultureInfo[] GetAvailableLocales(); // TODO remove // ICU4N TODO: API - Rename GetCultures(), add CultureTypes enum
-            internal abstract UCultureInfo[] GetAvailableULocales(); // ICU4N TODO: API - Rename GetUCultures(), add CultureTypes enum
+            internal abstract CultureInfo[] GetCultures(UCultureTypes types); // TODO remove // ICU4N: Renamed from GetAvailableLocales
+            internal abstract UCultureInfo[] GetUCultures(UCultureTypes types); // ICU4N: Renamed from GetAvailableULocales
             internal abstract string GetDisplayName(UCultureInfo ol, UCultureInfo dl);
         }
 
@@ -1135,41 +1135,47 @@ namespace ICU4N.Text
         /// Returns the set of locales, as <see cref="CultureInfo"/> objects, for which collators
         /// are installed.  Note that <see cref="CultureInfo"/> objects do not support RFC 3066.
         /// </summary>
+        /// <param name="types">A bitwise combination of the enumeration values that filter the cultures to retrieve.</param>
         /// <returns>
         /// the list of locales in which collators are installed.
         /// This list includes any that have been registered, in addition to
         /// those that are installed with ICU4N.
         /// </returns>
         /// <stable>ICU 2.4</stable>
-        public static CultureInfo[] GetAvailableLocales() // ICU4N TODO: API - rename GetCultures() and add CultureTypes enum
+        public static CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
             // TODO make this wrap getAvailableULocales later
             if (shim == null)
             {
-                return ICUResourceBundle.GetAvailableLocales(
-                    ICUData.IcuCollationBaseName, CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */);
+                return ICUResourceBundle.GetCultures(
+                    ICUData.IcuCollationBaseName,
+                    CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */,
+                    types);
             }
-            return shim.GetAvailableLocales();
+            return shim.GetCultures(types);
         }
 
         /// <summary>
         /// <icu/> Returns the set of locales, as <see cref="UCultureInfo"/> objects, for which collators
         /// are installed.  <see cref="UCultureInfo"/> objects support RFC 3066.
         /// </summary>
+        /// <param name="types">A bitwise combination of the enumeration values that filter the cultures to retrieve.</param>
         /// <returns>
         /// the list of locales in which collators are installed.
         /// This list includes any that have been registered, in addition to
         /// those that are installed with ICU4N.
         /// </returns>
         /// <stable>ICU 3.0</stable>
-        public static UCultureInfo[] GetAvailableULocales() // ICU4N TODO: API - Rename GetUCultures() and add CultureTypes enum
+        public static UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableULocales
         {
             if (shim == null)
             {
-                return ICUResourceBundle.GetAvailableUCultures(
-                    ICUData.IcuCollationBaseName, CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */);
+                return ICUResourceBundle.GetUCultures(
+                    ICUData.IcuCollationBaseName,
+                    CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */,
+                    types);
             }
-            return shim.GetAvailableULocales();
+            return shim.GetUCultures(types);
         }
 
         /// <summary>

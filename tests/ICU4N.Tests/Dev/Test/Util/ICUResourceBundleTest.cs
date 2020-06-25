@@ -823,7 +823,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void TestLocaleDisplayNames()
         {
-            UCultureInfo[] locales = UCultureInfo.GetCultures();
+            UCultureInfo[] locales = UCultureInfo.GetCultures(UCultureTypes.AllCultures);
 
             ISet<string> localCountryExceptions = new HashSet<string>();
             if (logKnownIssue("cldrbug:8903",

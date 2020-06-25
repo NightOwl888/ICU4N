@@ -1,7 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
 using ICU4N.Support.Text;
-using ICU4N.Util;
 using J2N.IO;
 using System;
 using System.Globalization;
@@ -29,27 +28,27 @@ namespace ICU4N.Text
             return service.UnregisterFactory((IServiceFactory)key);
         }
 
-        public override CultureInfo[] GetAvailableCultures()
+        public override CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
             if (service == null)
             {
-                return ICUResourceBundle.GetAvailableLocales();
+                return ICUResourceBundle.GetCultures(types);
             }
             else
             {
-                return service.GetAvailableLocales();
+                return service.GetCultures(types);
             }
         }
 
-        public override UCultureInfo[] GetAvailableUCultures()
+        public override UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
             if (service == null)
             {
-                return ICUResourceBundle.GetAvailableUCultures();
+                return ICUResourceBundle.GetUCultures(types);
             }
             else
             {
-                return service.GetUCultures();
+                return service.GetUCultures(types);
             }
         }
 

@@ -121,10 +121,10 @@ namespace ICU4N.Impl
             if (isAvailable != null)
             {
                 isAvailable[0] = false;
-                UCultureInfo[] availableULocales = GetAvailEntry(baseName, assembly).GetUCultureList();
-                for (int i = 0; i < availableULocales.Length; i++)
+                UCultureInfo[] availableUCultures = GetAvailEntry(baseName, assembly).GetUCultureList(UCultureTypes.AllCultures);
+                for (int i = 0; i < availableUCultures.Length; i++)
                 {
-                    if (parent.Equals(availableULocales[i]))
+                    if (parent.Equals(availableUCultures[i]))
                     {
                         isAvailable[0] = true;
                         break;
@@ -267,7 +267,7 @@ namespace ICU4N.Impl
         public static string[] GetKeywordValues(string baseName, string keyword, Assembly assembly) // ICU4N specific - passing in assembly so submodules can override
         {
             ISet<string> keywords = new HashSet<string>();
-            UCultureInfo[] locales = GetAvailEntry(baseName, assembly).GetUCultureList(); // ICU4N specific - passing in assembly so submodules can override
+            UCultureInfo[] locales = GetAvailEntry(baseName, assembly).GetUCultureList(UCultureTypes.AllCultures); // ICU4N specific - passing in assembly so submodules can override
             int i;
 
             for (i = 0; i < locales.Length; i++)
@@ -517,7 +517,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="bundlePrefix">The prefix of the resource bundles to use.</param>
         /// <param name="assembly"></param>
-        public static ISet<String> GetFullLocaleNameSet(string bundlePrefix, Assembly assembly)
+        public static ISet<string> GetFullLocaleNameSet(string bundlePrefix, Assembly assembly)
         {
             return GetAvailEntry(bundlePrefix, assembly).GetFullLocaleNameSet();
         }
@@ -535,37 +535,70 @@ namespace ICU4N.Impl
         /// <summary>
         /// Get the set of <see cref="UCultureInfo"/>s installed in the specified bundles.
         /// </summary>
+        /// <param name="baseName">The base name.</param>
+        /// <param name="assembly">The <see cref="Assembly"/> to scan for cultures.</param>
+        /// <param name="types">A bitwise combination of the enumeration values that filter the cultures to retrieve.</param>
         /// <returns>The list of available locales.</returns>
-        public static UCultureInfo[] GetAvailableUCultures(string baseName, Assembly assembly) // ICU4N TODO: API - Rename GetUCultures(), add CultureTypes filter
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="types"/> specifies an invalid combination of <see cref="UCultureTypes"/> values.</exception>
+        public static UCultureInfo[] GetUCultures(string baseName, Assembly assembly, UCultureTypes types) // ICU4N: Renamed from GetAvailableULocales
         {
-            return GetAvailEntry(baseName, assembly).GetUCultureList();
+            // Validate flags
+            if ((int)types <= 0 || ((int)types & (int)~(UCultureTypes.NeutralCultures | UCultureTypes.SpecificCultures)) != 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(types),
+                    $"Values are between {UCultureTypes.NeutralCultures} and {UCultureTypes.SpecificCultures}, inclusive.");
+            }
+
+            return GetAvailEntry(baseName, assembly).GetUCultureList(types);
         }
 
         /// <summary>
         /// Get the set of <see cref="UCultureInfo"/>s installed the base bundle.
         /// </summary>
+        /// <param name="types">A bitwise combination of the enumeration values that filter the cultures to retrieve.</param>
         /// <returns>The list of available locales.</returns>
-        public static UCultureInfo[] GetAvailableUCultures() // ICU4N TODO: API - Rename GetCultures(), add CultureTypes filter
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="types"/> specifies an invalid combination of <see cref="UCultureTypes"/> values.</exception>
+        public static UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableULocales
         {
-            return GetAvailableUCultures(ICUData.IcuBaseName, IcuDataAssembly);
+            return GetUCultures(ICUData.IcuBaseName, IcuDataAssembly, types);
         }
 
         /// <summary>
         /// Get the set of <see cref="CultureInfo"/>s installed in the specified bundles.
         /// </summary>
+        /// <param name="baseName">The base name.</param>
+        /// <param name="assembly">The <see cref="Assembly"/> to scan for cultures.</param>
+        /// <param name="types">A bitwise combination of the enumeration values that filter the cultures to retrieve.</param>
         /// <returns>The list of available locales.</returns>
-        public static CultureInfo[] GetAvailableLocales(string baseName, Assembly assembly) // ICU4N TODO: API - rename GetCultures, add CultureTypes enum
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="types"/> specifies an invalid combination of <see cref="UCultureTypes"/> values.</exception>
+        public static CultureInfo[] GetCultures(string baseName, Assembly assembly, UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
-            return GetAvailEntry(baseName, assembly).GetCultureList();
+            // Validate flags
+            if ((int)types <= 0 || ((int)types & (int)~(UCultureTypes.NeutralCultures | UCultureTypes.SpecificCultures)) != 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(types),
+                    $"Values are between {UCultureTypes.NeutralCultures} and {UCultureTypes.SpecificCultures}, inclusive.");
+            }
+
+            return GetAvailEntry(baseName, assembly).GetCultureList(types);
         }
 
         /// <summary>
         /// Get the set of <see cref="CultureInfo"/>s installed the base bundle.
         /// </summary>
+        /// <param name="types">A bitwise combination of the enumeration values that filter the cultures to retrieve.</param>
         /// <returns>The list of available locales.</returns>
-        public static CultureInfo[] GetAvailableLocales() // ICU4N TODO: API - rename GetAvaliableCultureInfos ?
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="types"/> specifies an invalid combination of <see cref="UCultureTypes"/> values.</exception>
+        public static CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableLocales
         {
-            return GetAvailEntry(ICUData.IcuBaseName, IcuDataAssembly).GetCultureList();
+            // Validate flags
+            if ((int)types <= 0 || ((int)types & (int)~(UCultureTypes.NeutralCultures | UCultureTypes.SpecificCultures)) != 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(types),
+                    $"Values are between {UCultureTypes.NeutralCultures} and {UCultureTypes.SpecificCultures}, inclusive.");
+            }
+
+            return GetAvailEntry(ICUData.IcuBaseName, IcuDataAssembly).GetCultureList(types);
         }
 
         /// <summary>
@@ -575,7 +608,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="ulocales">A list of <see cref="UCultureInfo"/>s to convert to a list of <see cref="CultureInfo"/>s.</param>
         /// <returns>The list of converted Locales.</returns>
-        public static CultureInfo[] GetCultureList(UCultureInfo[] ulocales)
+        public static CultureInfo[] GetCultureList(UCultureInfo[] ulocales) // ICU4N: Since this list is cached in AvailEntry, we don't need to put a filter on it here
         {
             List<CultureInfo> list = new List<CultureInfo>(ulocales.Length);
             HashSet<CultureInfo> uniqueSet = new HashSet<CultureInfo>();
@@ -816,7 +849,7 @@ namespace ICU4N.Impl
                 this.assembly = assembly;
             }
 
-            internal UCultureInfo[] GetUCultureList()
+            internal UCultureInfo[] GetUCultureList(UCultureTypes types)
             {
                 if (uCultures == null)
                 {
@@ -828,9 +861,9 @@ namespace ICU4N.Impl
                         }
                     }
                 }
-                return uCultures;
+                return types == UCultureTypes.AllCultures ? uCultures : uCultures.Where(c => c.IsMatch(types)).ToArray();
             }
-            internal CultureInfo[] GetCultureList()
+            internal CultureInfo[] GetCultureList(UCultureTypes types)
             {
                 if (locales == null)
                 {
@@ -838,12 +871,13 @@ namespace ICU4N.Impl
                     {
                         if (locales == null)
                         {
-                            GetUCultureList();
+                            // ICU4N: Skip the LINQ query here
+                            GetUCultureList(UCultureTypes.AllCultures);
                             locales = ICUResourceBundle.GetCultureList(uCultures);
                         }
                     }
                 }
-                return locales;
+                return types == UCultureTypes.AllCultures ? locales : locales.Where(c => c.IsMatch(types)).ToArray();
             }
             internal ISet<string> GetLocaleNameSet()
             {

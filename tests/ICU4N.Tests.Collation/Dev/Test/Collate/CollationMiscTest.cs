@@ -102,7 +102,7 @@ namespace ICU4N.Dev.Test.Collate
             }
 
             Logln("Testing locales, number of cases = " + noCases);
-            CultureInfo[] loc = Collator.GetAvailableLocales();
+            CultureInfo[] loc = Collator.GetCultures(UCultureTypes.AllCultures);
             for (int i = 0; i < loc.Length; i++)
             {
                 if (hasCollationElements(loc[i]))
@@ -1777,7 +1777,7 @@ namespace ICU4N.Dev.Test.Collate
                 // not serious enough to run this
                 return;
             }
-            CultureInfo[] locale = Collator.GetAvailableLocales();
+            CultureInfo[] locale = Collator.GetCultures(UCultureTypes.AllCultures);
             String prevrule = null;
             for (int i = 0; i < locale.Length; i++)
             {
@@ -2486,7 +2486,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestJB5298()
         {
-            UCultureInfo[] locales = Collator.GetAvailableULocales();
+            UCultureInfo[] locales = Collator.GetUCultures(UCultureTypes.AllCultures);
             Logln("Number of collator locales returned : " + locales.Length);
             // double-check keywords
             String[] keywords = Collator.Keywords.ToArray();
