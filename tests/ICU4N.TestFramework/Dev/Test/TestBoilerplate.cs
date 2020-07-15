@@ -183,11 +183,11 @@ namespace ICU4N.Dev.Test
             ISet<T> temp;
             TestFmwk.Errln("Values differ:");
             TestFmwk.Errln("UnicodeMap - HashMap");
-            temp = new JCG.SortedSet<T>(values1, GenericComparer.NaturalComparer<T>() /*JCG.Comparer<T>.Default*/);
+            temp = new JCG.SortedSet<T>(values1, JCG.Comparer<T>.Default);
             temp.ExceptWith(values2);
             TestFmwk.Errln(Show(temp));
             TestFmwk.Errln("HashMap - UnicodeMap");
-            temp = new JCG.SortedSet<T>(values2, GenericComparer.NaturalComparer<T>() /*JCG.Comparer<T>.Default*/);
+            temp = new JCG.SortedSet<T>(values2, JCG.Comparer<T>.Default);
             temp.ExceptWith(values1);
             TestFmwk.Errln(Show(temp));
             return false;
