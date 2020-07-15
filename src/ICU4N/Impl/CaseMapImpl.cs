@@ -180,8 +180,8 @@ namespace ICU4N.Impl
     {
         // ICU4N: De-nested StringContextIterator
 
-        public const int TitleCaseWholeString = 0x20;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
-        public const int TitleCaseSentences = 0x40;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
+        public const int TitleCaseWholeString = 0x20;  // ICU4N TODO: API Change to [Flags] enum
+        public const int TitleCaseSentences = 0x40;  // ICU4N TODO: API Change to [Flags] enum
 
         /// <summary>
         /// Bit mask for the titlecasing iterator options bit field.
@@ -192,7 +192,7 @@ namespace ICU4N.Impl
         /// <internal/>
         private const int TITLECASE_ITERATOR_MASK = 0xe0;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
 
-        public const int TitleCaseAdjustToCased = 0x400;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
+        public const int TitleCaseAdjustToCased = 0x400;  // ICU4N TODO: API Change to [Flags] enum
 
         /// <summary>
         /// Bit mask for the titlecasing index adjustment options bit set.
