@@ -21,6 +21,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "azure-templates", "azure-templates", "{9A05917A-65A5-4E17-9A1E-8F180D557028}"
 	ProjectSection(SolutionItems) = preProject
 		build\azure-templates\build-pack-and-publish-libraries.yml = build\azure-templates\build-pack-and-publish-libraries.yml
+		build\azure-templates\gitversioning-increment-and-persist-versions.yml = build\azure-templates\gitversioning-increment-and-persist-versions.yml
 		build\azure-templates\publish-nuget-packages.yml = build\azure-templates\publish-nuget-packages.yml
 		build\azure-templates\publish-test-results-for-target-frameworks.yml = build\azure-templates\publish-test-results-for-target-frameworks.yml
 		build\azure-templates\publish-test-results-for-test-projects.yml = build\azure-templates\publish-test-results-for-test-projects.yml

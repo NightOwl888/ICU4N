@@ -5,7 +5,7 @@
     <MicrosoftExtensionsCachingMemoryPackageReferenceVersion_NETSTANDARD1_3>1.1.2</MicrosoftExtensionsCachingMemoryPackageReferenceVersion_NETSTANDARD1_3>
     <MicrosoftExtensionsCachingMemoryPackageReferenceVersion_NET4_5_1>1.1.2</MicrosoftExtensionsCachingMemoryPackageReferenceVersion_NET4_5_1>
     <MicrosoftNETTestSdkPackageReferenceVersion>16.1.1</MicrosoftNETTestSdkPackageReferenceVersion>
-    <NerdBankGitVersioningPackageReferenceVersion>[2.3.183]</NerdBankGitVersioningPackageReferenceVersion>
+    <NerdBankGitVersioningPackageReferenceVersion>[3.0.28]</NerdBankGitVersioningPackageReferenceVersion>
     <NETStandardLibrary20PackageReferenceVersion>2.0.3</NETStandardLibrary20PackageReferenceVersion>
     <NUnitPackageReferenceVersion>3.12.0</NUnitPackageReferenceVersion>
     <NUnit3TestAdapterPackageReferenceVersion>3.13.0</NUnit3TestAdapterPackageReferenceVersion>
