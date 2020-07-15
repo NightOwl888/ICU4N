@@ -1,10 +1,9 @@
-﻿namespace ICU4N.Impl
+﻿namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
 {
     /// <summary>
     /// Utilities for mapping between old and new language, country, and other
     /// locale ID related names.
     /// </summary>
-     // ICU4N TODO: Move to Globalization namespace
     public static class LocaleIDs // ICU4N specific - marked static, since there are no instance methods or fields
     {
         /// <summary>

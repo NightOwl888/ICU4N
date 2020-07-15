@@ -1,5 +1,4 @@
-﻿using ICU4N.Globalization;
-using ICU4N.Impl.Locale;
+﻿using ICU4N.Impl.Locale;
 using ICU4N.Support.Collections;
 using J2N.Collections.Generic.Extensions;
 using J2N.Text;
@@ -7,12 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ICU4N.Impl
+namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 {
     /// <summary>
     /// Utility class to parse and normalize locale ids (including POSIX style)
     /// </summary>
-    public sealed class LocaleIDParser // ICU4N TODO: Move to Globalization namespace
+    public sealed class LocaleIDParser
     {
         /// <summary>
         /// Char array representing the locale ID.

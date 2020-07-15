@@ -1,9 +1,8 @@
-﻿using ICU4N.Globalization;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 
-namespace ICU4N.Impl
+namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 {
     /// <summary>
     /// A class to hold utility functions missing from java.util.Locale.
