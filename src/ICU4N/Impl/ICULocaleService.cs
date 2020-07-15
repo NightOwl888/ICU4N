@@ -1,10 +1,7 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support.Text;
-using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -30,131 +27,67 @@ namespace ICU4N.Impl
         {
         }
 
-
         /// <summary>
         /// Convenience override for callers using locales.  This calls
-        /// <see cref="Get(UCultureInfo, int, UCultureInfo[])"/> with <see cref="LocaleKey.KindAny"/>
-        /// for kind and null for actualReturn.
+        /// <see cref="Get(UCultureInfo, int, out UCultureInfo)"/> with <see cref="LocaleKey.KindAny"/> for kind.
         /// </summary>
-        public virtual object Get(UCultureInfo locale) // ICU4N TODO: API - Use indexer? // ICU4N TODO: API Remove
+        public virtual object Get(UCultureInfo locale) // ICU4N TODO: API - Use indexer?
         {
-            return Get(locale, LocaleKey.KindAny, null);
+            return Get(locale, LocaleKey.KindAny);
         }
 
         /// <summary>
         /// Convenience override for callers using locales.  This calls
-        /// <see cref="Get(UCultureInfo, int, UCultureInfo[])"/> with a null actualReturn.
+        /// <see cref="Get(UCultureInfo, int, out UCultureInfo)"/> with <see cref="LocaleKey.KindAny"/> for kind.
         /// </summary>
-        public virtual object Get(UCultureInfo locale, int kind) // ICU4N TODO: API Remove
+        public virtual object Get(UCultureInfo locale, out UCultureInfo actualResult)
         {
-            return Get(locale, kind, null);
+            return Get(locale, LocaleKey.KindAny, out actualResult);
         }
 
         /// <summary>
-        /// Convenience override for callers using locales.  This calls
-        /// <see cref="Get(UCultureInfo, int, UCultureInfo[])"/> with <see cref="LocaleKey.KindAny"/> for kind.
+        /// Convenience override for callers using locales. This uses
+        /// <see cref="CreateKey(string, int)"/> to create a key, and returns the result of
+        /// <see cref="ICUService.GetKey(ICUServiceKey)"/>.
         /// </summary>
-        public virtual object Get(UCultureInfo locale, UCultureInfo[] actualReturn) // ICU4N TODO: API Remove
+        /// <param name="locale"></param>
+        /// <param name="kind"></param>
+        /// <returns></returns>
+        public virtual object Get(UCultureInfo locale, int kind)
         {
-            return Get(locale, LocaleKey.KindAny, actualReturn);
+            ICUServiceKey key = CreateKey(locale, kind);
+            return GetKey(key);
         }
 
         /// <summary>
         /// Convenience override for callers using locales.  This uses
         /// <see cref="CreateKey(string, int)"/> to create a key, calls 
         /// <see cref="ICUService.GetKey(ICUServiceKey)"/>, and then
-        /// if <paramref name="actualReturn"/> is not null, returns the actualResult from
-        /// <see cref="ICUService.GetKey(ICUServiceKey)"/> (stripping any prefix) into a <see cref="UCultureInfo"/>.
+        /// returns the <paramref name="actualResult"/> from
+        /// <see cref="ICUService.GetKey(ICUServiceKey)"/> (stripping any prefix)
+        /// into a <see cref="UCultureInfo"/>.
         /// </summary>
         /// <param name="locale"></param>
         /// <param name="kind"></param>
-        /// <param name="actualReturn"></param>
+        /// <param name="actualResult"></param>
         /// <returns></returns>
-        public virtual object Get(UCultureInfo locale, int kind, UCultureInfo[] actualReturn) // ICU4N TODO: API Remove
+        public virtual object Get(UCultureInfo locale, int kind, out UCultureInfo actualResult)
         {
+            actualResult = null;
             ICUServiceKey key = CreateKey(locale, kind);
-            if (actualReturn == null)
-            {
-                return GetKey(key);
-            }
 
-            string[] temp = new string[1];
-            object result = GetKey(key, temp);
+            object result = GetKey(key, out string temp);
             if (result != null)
             {
-                int n = temp[0].IndexOf('/');
+                int n = temp.IndexOf('/');
                 if (n >= 0)
                 {
-                    temp[0] = temp[0].Substring(n + 1);
+                    temp = temp.Substring(n + 1);
                 }
-                actualReturn[0] = new UCultureInfo(temp[0]);
+                actualResult = new UCultureInfo(temp);
             }
             return result;
         }
-
-
-        ///// <summary>
-        ///// Convenience override for callers using locales.  This calls
-        ///// <see cref="Get(UCultureInfo, int, out UCultureInfo)"/> with <see cref="LocaleKey.KindAny"/> for kind.
-        ///// </summary>
-        //public virtual object Get(UCultureInfo locale) // ICU4N TODO: API - Use indexer?
-        //{
-        //    return Get(locale, LocaleKey.KindAny);
-        //}
-
-        ///// <summary>
-        ///// Convenience override for callers using locales.  This calls
-        ///// <see cref="Get(UCultureInfo, int, out UCultureInfo)"/> with <see cref="LocaleKey.KindAny"/> for kind.
-        ///// </summary>
-        //public virtual object Get(UCultureInfo locale, out UCultureInfo actualResult)
-        //{
-        //    return Get(locale, LocaleKey.KindAny, out actualResult);
-        //}
-
-        ///// <summary>
-        ///// Convenience override for callers using locales. This uses
-        ///// <see cref="CreateKey(string, int)"/> to create a key, and returns the result of
-        ///// <see cref="ICUService.GetKey(ICUServiceKey)"/>.
-        ///// </summary>
-        ///// <param name="locale"></param>
-        ///// <param name="kind"></param>
-        ///// <returns></returns>
-        //public virtual object Get(UCultureInfo locale, int kind)
-        //{
-        //    ICUServiceKey key = CreateKey(locale, kind);
-        //    return GetKey(key);
-        //}
-
-        ///// <summary>
-        ///// Convenience override for callers using locales.  This uses
-        ///// <see cref="CreateKey(string, int)"/> to create a key, calls 
-        ///// <see cref="ICUService.GetKey(ICUServiceKey)"/>, and then
-        ///// returns the <paramref name="actualResult"/> from
-        ///// <see cref="ICUService.GetKey(ICUServiceKey)"/> (stripping any prefix)
-        ///// into a <see cref="UCultureInfo"/>.
-        ///// </summary>
-        ///// <param name="locale"></param>
-        ///// <param name="kind"></param>
-        ///// <param name="actualResult"></param>
-        ///// <returns></returns>
-        //public virtual object Get(UCultureInfo locale, int kind, out UCultureInfo actualResult)
-        //{
-        //    actualResult = null;
-        //    ICUServiceKey key = CreateKey(locale, kind);
-
-        //    string[] temp = new string[1];
-        //    object result = GetKey(key, temp);
-        //    if (result != null)
-        //    {
-        //        int n = temp[0].IndexOf('/');
-        //        if (n >= 0)
-        //        {
-        //            temp[0] = temp[0].Substring(n + 1);
-        //        }
-        //        actualResult = new UCultureInfo(temp[0]);
-        //    }
-        //    return result;
-        //}
 
         /// <summary>
         /// Convenience override for callers using locales.  This calls

@@ -125,69 +125,101 @@ namespace ICU4N.Impl
         // ICU4N: De-nested SimpleFactory and renamed ICUSimpleFactory
 
         /// <summary>
-        /// Convenience override for <see cref="Get(string, string[])"/>. This uses
+        /// Convenience override for <see cref="Get(string, out string)"/>. This uses
         /// <see cref="CreateKey(string)"/> to create a key for the provided <paramref name="descriptor"/>.
         /// </summary>
-        public virtual object Get(string descriptor) // ICU4N TODO: API Use indexer?
-        {
-            return GetKey(CreateKey(descriptor), null);
-        }
-
-        /// <summary>
-        /// Convenience override for <see cref="GetKey(ICUServiceKey, string[])"/>.  This uses
-        /// <see cref="CreateKey(string)"/> to create a key from the provided <paramref name="descriptor"/>.
-        /// </summary>
-        public virtual object Get(string descriptor, string[] actualReturn) // ICU4N TODO: API Use indexer?
+        public virtual object Get(string descriptor)
         {
             if (descriptor == null)
-            {
-                throw new ArgumentNullException("descriptor must not be null");
-            }
-            return GetKey(CreateKey(descriptor), actualReturn);
+                throw new ArgumentNullException(nameof(descriptor));
+
+            return GetKey(CreateKey(descriptor));
         }
 
         /// <summary>
-        /// Convenience override for <see cref="GetKey(ICUServiceKey, string[])"/>.
+        /// Convenience override for <see cref="GetKey(ICUServiceKey, out string)"/>.  This uses
+        /// <see cref="CreateKey(string)"/> to create a key from the provided <paramref name="descriptor"/>.
+        /// </summary>
+        public virtual object Get(string descriptor, out string actualReturn)
+        {
+            if (descriptor == null)
+                throw new ArgumentNullException(nameof(descriptor));
+
+            return GetKey(CreateKey(descriptor), out actualReturn);
+        }
+
+        /// <summary>
+        /// Convenience override for <see cref="GetKey(ICUServiceKey, out string)"/>.
         /// </summary>
         public virtual object GetKey(ICUServiceKey key)
         {
-            return GetKey(key, null);
+            return GetKey(key, out _);
         }
 
         /// <summary>
-        /// Given a <paramref name="key"/>, return a service object, and, if <paramref name="actualReturn"/>
-        /// is not null, the descriptor with which it was found in the
-        /// first element of <paramref name="actualReturn"/>.  If no service object matches
-        /// this key, return null, and leave <paramref name="actualReturn"/> unchanged.
+        /// Given a <paramref name="key"/>, return a service object, and the descriptor with which
+        /// it was found in the <paramref name="actualReturn"/>. If no service object matches
+        /// this key, return <c>null</c>, and leave <paramref name="actualReturn"/> <c>null</c>.
         /// </summary>
         /// <remarks>
         /// This queries the cache using the <paramref name="key"/>'s descriptor, and if no
         /// object in the cache matches it, tries the <paramref name="key"/> on each
         /// registered factory, in order.  If none generates a service
-        /// object for the key, repeats the process with each fallback of
+        /// object for the <paramref name="key"/>, repeats the process with each fallback of
         /// the <paramref name="key"/>, until either one returns a service object, or the <paramref name="key"/>
         /// has no fallback.
         /// <para/>
-        /// If <paramref name="key"/> is null, just returns null.
+        /// If <paramref name="key"/> is <c>null</c>, just returns <c>null</c>.
         /// </remarks>
-        public virtual object GetKey(ICUServiceKey key, string[] actualReturn)
+        public virtual object GetKey(ICUServiceKey key, out string actualReturn)
         {
-            return GetKey(key, actualReturn, null);
+            return GetKey(key, null, out actualReturn);
         }
 
         // debugging
         // Map hardRef;
 
-        public virtual object GetKey(ICUServiceKey key, string[] actualReturn, IServiceFactory factory)
+        public virtual object GetKey(ICUServiceKey key, IServiceFactory factory)
         {
             if (factories.Count == 0)
             {
-                return HandleDefault(key, actualReturn);
+                return HandleDefault(key, out _);
             }
 
+            var result = GetKeyCacheEntry(key, factory);
+            return (result != null) ? result.service : HandleDefault(key, out _);
+        }
+
+        public virtual object GetKey(ICUServiceKey key, IServiceFactory factory, out string actualReturn)
+        {
+            if (factories.Count == 0)
+            {
+                return HandleDefault(key, out actualReturn);
+            }
+
+            var result = GetKeyCacheEntry(key, factory);
+            if (result != null)
+            {
+                // strip null prefix
+                if (result.actualDescriptor.IndexOf('/') == 0)
+                {
+                    actualReturn = result.actualDescriptor.Substring(1);
+                }
+                else
+                {
+                    actualReturn = result.actualDescriptor;
+                }
+
+                return result.service;
+            }
+
+            return HandleDefault(key, out actualReturn);
+        }
+
+        private CacheEntry GetKeyCacheEntry(ICUServiceKey key, IServiceFactory factory)
+        {
             if (DEBUG) Console.Out.WriteLine("Service: " + m_name + " key: " + key.CanonicalID);
 
-            CacheEntry result = null;
             if (key != null)
             {
                 try
@@ -232,6 +264,8 @@ namespace ICU4N.Impl
                         cacheResult = false;
                     }
 
+
+                    CacheEntry result;
                     //outer:
                     do
                     {
@@ -284,7 +318,7 @@ namespace ICU4N.Impl
                         cacheDescriptorList.Add(currentDescriptor);
 
                     } while (key.Fallback());
-                    outer_break: { }
+                outer_break: { }
 
                     if (result != null)
                     {
@@ -308,22 +342,9 @@ namespace ICU4N.Impl
                             this.cache = cache;
                         }
 
-                        if (actualReturn != null)
-                        {
-                            // strip null prefix
-                            if (result.actualDescriptor.IndexOf('/') == 0)
-                            {
-                                actualReturn[0] = result.actualDescriptor.Substring(1);
-                            }
-                            else
-                            {
-                                actualReturn[0] = result.actualDescriptor;
-                            }
-                        }
-
                         if (DEBUG) Console.Out.WriteLine("found in service: " + m_name);
 
-                        return result.service;
+                        return result;
                     }
                 }
                 finally
@@ -334,8 +355,10 @@ namespace ICU4N.Impl
 
             if (DEBUG) Console.Out.WriteLine("not found in service: " + m_name);
 
-            return HandleDefault(key, actualReturn);
+            return null;
         }
+
+
         private IDictionary<string, CacheEntry> cache;
 
         // Record the actual id for this service in the cache, so we can return it
@@ -355,8 +378,9 @@ namespace ICU4N.Impl
         /// Default handler for this service if no factory in the list
         /// handled the <paramref name="key"/>.
         /// </summary>
-        protected virtual object HandleDefault(ICUServiceKey key, string[] actualIDReturn)
+        protected virtual object HandleDefault(ICUServiceKey key, out string actualIDReturn)
         {
+            actualIDReturn = null;
             return null;
         }
 

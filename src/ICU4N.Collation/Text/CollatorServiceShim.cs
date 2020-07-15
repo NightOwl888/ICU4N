@@ -17,8 +17,7 @@ namespace ICU4N.Text
             //          }
             //try
             //{
-            var actualLoc = new UCultureInfo[1];
-            Collator coll = (Collator)service.Get(locale, actualLoc);
+            Collator coll = (Collator)service.Get(locale, out _);
             if (coll == null)
             {
                 ////CLOVER:OFF
@@ -162,12 +161,9 @@ namespace ICU4N.Text
 
             ////CLOVER:OFF
             // The following method can not be reached by testing
-            protected override object HandleDefault(ICUServiceKey key, string[] actualIDReturn)
+            protected override object HandleDefault(ICUServiceKey key, out string actualIDReturn)
             {
-                if (actualIDReturn != null)
-                {
-                    actualIDReturn[0] = "root";
-                }
+                actualIDReturn = "root";
                 try
                 {
                     return MakeInstance(UCultureInfo.InvariantCulture);

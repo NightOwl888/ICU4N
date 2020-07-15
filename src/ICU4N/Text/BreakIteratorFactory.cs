@@ -59,9 +59,8 @@ namespace ICU4N.Text
             {
                 return CreateBreakInstance(locale, kind);
             }
-            UCultureInfo[] actualLoc = new UCultureInfo[1];
-            BreakIterator iter = (BreakIterator)service.Get(locale, kind, actualLoc);
-            iter.SetCulture(actualLoc[0], actualLoc[0]); // services make no distinction between actual & valid
+            BreakIterator iter = (BreakIterator)service.Get(locale, kind, out UCultureInfo actualLoc);
+            iter.SetCulture(actualLoc, actualLoc); // services make no distinction between actual & valid
             return iter;
         }
 

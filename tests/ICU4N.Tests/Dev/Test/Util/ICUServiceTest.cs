@@ -210,14 +210,13 @@ namespace ICU4N.Dev.Test.Util
             confirmIdentical("13) foo -> null", result, null);
 
             // should find non-canonical strings
-            string[] resultID = new string[1];
-            result = service.Get("EN_us_fOo", resultID);
-            confirmEqual("14) find non-canonical", resultID[0], "en_US_FOO");
+            result = service.Get("EN_us_fOo", out string resultID);
+            confirmEqual("14) find non-canonical", resultID, "en_US_FOO");
 
             // should be able to register non-canonical strings and get them canonicalized
             service.RegisterObject(singleton3, "eN_ca_dUde");
-            result = service.Get("En_Ca_DuDe", resultID);
-            confirmEqual("15) register non-canonical", resultID[0], "en_CA_DUDE");
+            result = service.Get("En_Ca_DuDe", out resultID);
+            confirmEqual("15) register non-canonical", resultID, "en_CA_DUDE");
 
             // should be able to register invisible factories, these will not
             // be visible by default, but if you know the secret password you
@@ -354,13 +353,12 @@ namespace ICU4N.Dev.Test.Util
             // we should get the display name corresponding to the actual id
             // returned by the id we used.
             {
-                string[] actualID = new string[1];
                 string id = "en_us_surfer_gal";
-                string gal = (string)service.Get(id, actualID);
+                string gal = (string)service.Get(id, out string actualID);
                 if (gal != null)
                 {
-                    Logln("actual id: " + actualID[0]);
-                    string displayName = service.GetDisplayName(actualID[0], new UCultureInfo("en_US"));
+                    Logln("actual id: " + actualID);
+                    string displayName = service.GetDisplayName(actualID, new UCultureInfo("en_US"));
                     Logln("found actual: " + gal + " with display name: " + displayName);
                     confirmBoolean("30) found display name for actual", displayName != null);
 
@@ -378,10 +376,10 @@ namespace ICU4N.Dev.Test.Util
 
                 // this should be handled by the 'dude' factory, since it overrides en_US_SURFER.
                 id = "en_US_SURFER_BOZO";
-                string bozo = (string)service.Get(id, actualID);
+                string bozo = (string)service.Get(id, out actualID);
                 if (bozo != null)
                 {
-                    string displayName = service.GetDisplayName(actualID[0], new UCultureInfo("en_US"));
+                    string displayName = service.GetDisplayName(actualID, new UCultureInfo("en_US"));
                     Logln("found actual: " + bozo + " with display name: " + displayName);
                     confirmBoolean("32) found display name for actual", displayName != null);
 
@@ -807,19 +805,16 @@ namespace ICU4N.Dev.Test.Util
             target = service.Get(de_US, 1234);
             confirmEqual("test de_US 4", "german", target);
 
-            UCultureInfo[] actualReturn = new UCultureInfo[1];
-            target = service.Get(de_US, actualReturn);
+            target = service.Get(de_US, out UCultureInfo actualReturn); // ICU4N specific - refactored to out parameter
             confirmEqual("test de_US 5", "german", target);
-            confirmEqual("test de_US 6", actualReturn[0], de);
+            confirmEqual("test de_US 6", actualReturn, de);
 
-            actualReturn[0] = null;
-            target = service.Get(de_US, LocaleKey.KindAny, actualReturn);
-            confirmEqual("test de_US 7", actualReturn[0], de);
+            target = service.Get(de_US, LocaleKey.KindAny, out actualReturn); // ICU4N specific - refactored to out parameter
+            confirmEqual("test de_US 7", actualReturn, de);
 
-            actualReturn[0] = null;
-            target = service.Get(de_US, 1234, actualReturn);
+            target = service.Get(de_US, 1234, out actualReturn); // ICU4N specific - refactored to out parameter
             confirmEqual("test de_US 8", "german", target);
-            confirmEqual("test de_US 9", actualReturn[0], de);
+            confirmEqual("test de_US 9", actualReturn, de);
 
             service.RegisterObject("one/de_US", de_US, 1);
             service.RegisterObject("two/de_US", de_US, 2);
@@ -925,7 +920,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 if (key.CurrentID.Equals(greetingID))
                 {
-                    object previous = serviceArg.GetKey(key, null, this);
+                    object previous = serviceArg.GetKey(key, this);
                     return "A different greeting: \"" + previous + "\"";
                 }
                 return null;
@@ -994,7 +989,7 @@ namespace ICU4N.Dev.Test.Util
 
             try
             {
-                service.Get(null, null);
+                service.Get(null);
                 Errln("didn't throw exception");
             }
             catch (ArgumentNullException e)

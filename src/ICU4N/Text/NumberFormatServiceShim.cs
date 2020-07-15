@@ -48,7 +48,7 @@ namespace ICU4N.Text
                 object result = @delegate.CreateFormat(lkey.GetCanonicalCulture(), lkey.Kind);
                 if (result == null)
                 {
-                    result = srvc.GetKey(key, null, this);
+                    result = srvc.GetKey(key, this);
                 }
                 return result;
             }
@@ -77,9 +77,8 @@ namespace ICU4N.Text
             //              return NumberFormat.createInstance(desiredLocale, choice);
             //          }
 
-            UCultureInfo[] actualLoc = new UCultureInfo[1];
             NumberFormat fmt = (NumberFormat)service.Get(desiredLocale, (int)choice,
-                                                         actualLoc);
+                                                         out UCultureInfo actualLoc);
             if (fmt == null)
             {
                 throw new MissingManifestResourceException("Unable to construct NumberFormat");
@@ -96,7 +95,7 @@ namespace ICU4N.Text
             //    fmt.SetCurrency(Currency.GetInstance(desiredLocale));
             //}
 
-            UCultureInfo uloc = actualLoc[0];
+            UCultureInfo uloc = actualLoc;
             fmt.SetCulture(uloc, uloc); // services make no distinction between actual & valid
             return fmt;
         }

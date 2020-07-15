@@ -352,22 +352,20 @@ namespace ICU4N.Dev.Test.Util
 
         internal class GetThread : TestThread
         {
-            private string[] actualID;
+            private string actualID;
 
             internal GetThread(string name, ICUService service, long delay)
                 : base("GET " + name, service, delay)
             {
-
-                actualID = new string[1];
             }
 
             protected override void Iterate()
             {
                 string id = GetCLV();
-                object o = service.Get(id, actualID);
+                object o = service.Get(id, out actualID);
                 if (o != null)
                 {
-                    TestFmwk.Logln(" id: " + id + " actual: " + actualID[0] + " result: " + o);
+                    TestFmwk.Logln(" id: " + id + " actual: " + actualID + " result: " + o);
                 }
             }
         }
