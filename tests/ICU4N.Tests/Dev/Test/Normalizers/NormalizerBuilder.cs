@@ -1,10 +1,7 @@
-﻿using ICU4N.Support.Collections;
+﻿using J2N.Collections;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test.Normalizers
@@ -58,8 +55,8 @@ namespace ICU4N.Dev.Test.Normalizers
                 IntHashtable canonicalClass = new IntHashtable(0);
                 IntStringHashtable decompose = new IntStringHashtable(null);
                 LongHashtable compose = new LongHashtable(NormalizerData.NOT_COMPOSITE);
-                BitArray isCompatibility = new BitArray(1);
-                BitArray isExcluded = new BitArray(1);
+                BitSet isCompatibility = new BitSet(1);
+                BitSet isExcluded = new BitSet(1);
                 if (fullData)
                 {
                     //Console.Out.WriteLine("Building Normalizer Data from file.");
@@ -91,7 +88,7 @@ namespace ICU4N.Dev.Test.Normalizers
         /**
          * Reads exclusion list and stores the data
          */
-        private static void ReadExclusionList(BitArray isExcluded)
+        private static void ReadExclusionList(BitSet isExcluded)
         {
             if (DEBUG) Console.Out.WriteLine("Reading Exclusions");
 
@@ -113,7 +110,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 // store -1 in the excluded table for each character hit
 
                 int value = int.Parse(line, NumberStyles.HexNumber);
-                isExcluded.SafeSet(value, true);
+                isExcluded.Set(value);
                 //Console.Out.WriteLine("Excluding " + hex(value));
             }
             @in.Dispose();
@@ -125,7 +122,7 @@ namespace ICU4N.Dev.Test.Normalizers
          */
         private static void BuildDecompositionTables(
             IntHashtable canonicalClass, IntStringHashtable decompose,
-            LongHashtable compose, BitArray isCompatibility, BitArray isExcluded)
+            LongHashtable compose, BitSet isCompatibility, BitSet isExcluded)
         {
             if (DEBUG) Console.Out.WriteLine("Reading Unicode Character Database");
             //BufferedReader in = new BufferedReader(new FileReader(UNICODE_DATA), 64*1024);
@@ -190,7 +187,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     string segment = line.Substring(start, end - start); // ICU4N: Corrected 2nd parameter
                     bool compat = segment[0] == '<';
-                    if (compat) isCompatibility.SafeSet(value, true);
+                    if (compat) isCompatibility.Set(value);
                     string decomp = FromHex(segment);
 
                     // a small snippet of code to generate the Applet data
@@ -216,7 +213,7 @@ namespace ICU4N.Dev.Test.Normalizers
                     // only compositions are canonical pairs
                     // skip if script exclusion
 
-                    if (!compat && !isExcluded.SafeGet(value))
+                    if (!compat && !isExcluded.Get(value))
                     {
                         int first = '\u0000';
                         int second = UTF16Util.NextCodePoint(decomp, 0);
@@ -286,7 +283,7 @@ namespace ICU4N.Dev.Test.Normalizers
          * For use in an applet: just load a minimal set of data.
          */
         private static void SetMinimalDecomp(IntHashtable canonicalClass, IntStringHashtable decompose,
-            LongHashtable compose, BitArray isCompatibility, BitArray isExcluded)
+            LongHashtable compose, BitSet isCompatibility, BitSet isExcluded)
         {
             string[] decomposeData = {
                 "\u005E", "\u0020\u0302", "K",
@@ -448,7 +445,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 char value = decomposeData[i][0];
                 string decomp = decomposeData[i + 1];
                 bool compat = decomposeData[i + 2].Equals("K");
-                if (compat) isCompatibility.SafeSet(value, true);
+                if (compat) isCompatibility.Set(value);
                 decompose.Put(value, decomp);
                 if (!compat)
                 {

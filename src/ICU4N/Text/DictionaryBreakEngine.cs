@@ -1,7 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
-using System.Collections;
+using J2N.Collections;
 using System.Diagnostics;
 
 namespace ICU4N.Text
@@ -18,8 +18,8 @@ namespace ICU4N.Text
             // that form a nested sequence.
             private const int POSSIBLE_WORD_LIST_MAX = 20;
             //list of word candidate lengths, in increasing length order
-            private int[] lengths;
-            private int[] count;    // Count of candidates
+            private readonly int[] lengths;
+            private readonly int[] count;    // Count of candidates
             private int prefix;     // The longest match with a dictionary word
             private int offset;     // Offset in the text of these candidates
             private int mark;       // The preferred candidate's offset
@@ -193,7 +193,7 @@ namespace ICU4N.Text
         }
 
         internal UnicodeSet fSet = new UnicodeSet();
-        private BitArray fTypes = new BitArray(32);
+        private readonly BitSet fTypes = new BitSet(32);
 
         /// <param name="breakTypes">The types of break iterators that can use this engine.
         /// For example, <see cref="BreakIterator.KIND_LINE"/>.</param>
@@ -201,13 +201,13 @@ namespace ICU4N.Text
         {
             foreach (int type in breakTypes)
             {
-                fTypes.SafeSet(type, true);
+                fTypes.Set(type);
             }
         }
 
         public virtual bool Handles(int c, int breakType)
         {
-            return fTypes.SafeGet(breakType) &&  // this type can use us
+            return fTypes.Get(breakType) &&  // this type can use us
                     fSet.Contains(c);        // we recognize the character
         }
 

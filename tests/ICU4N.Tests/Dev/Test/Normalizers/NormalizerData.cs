@@ -1,8 +1,4 @@
-﻿using ICU4N.Support.Collections;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+﻿using J2N.Collections;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test.Normalizers
@@ -61,7 +57,7 @@ namespace ICU4N.Dev.Test.Normalizers
         public void GetRecursiveDecomposition(bool canonical, int ch, StringBuffer buffer)
         {
             string decomp = decompose.Get(ch);
-            if (decomp != null && !(canonical && isCompatibility.SafeGet(ch)))
+            if (decomp != null && !(canonical && isCompatibility.Get(ch)))
             {
                 for (int i = 0; i < decomp.Length; i += UTF16Util.CodePointLength(ch))
                 {
@@ -83,7 +79,7 @@ namespace ICU4N.Dev.Test.Normalizers
          * Only accessed by NormalizerBuilder.
          */
         internal NormalizerData(IntHashtable canonicalClass, IntStringHashtable decompose,
-            LongHashtable compose, BitArray isCompatibility, BitArray isExcluded)
+            LongHashtable compose, BitSet isCompatibility, BitSet isExcluded)
         {
             this.canonicalClass = canonicalClass;
             this.decompose = decompose;
@@ -97,7 +93,7 @@ namespace ICU4N.Dev.Test.Normalizers
         */
         internal bool GetExcluded(char ch)
         {
-            return isExcluded.SafeGet(ch);
+            return isExcluded.Get(ch);
         }
 
         /**
@@ -134,13 +130,13 @@ namespace ICU4N.Dev.Test.Normalizers
         /**
         * Tells whether decomposition is canonical or not.
         */
-        private BitArray isCompatibility = new BitArray(1);
+        private BitSet isCompatibility = new BitSet(1);
 
         /**
         * Tells whether character is script-excluded or not.
         * Used only while building, and for testing.
         */
 
-        private BitArray isExcluded = new BitArray(1);
+        private BitSet isExcluded = new BitSet(1);
     }
 }
