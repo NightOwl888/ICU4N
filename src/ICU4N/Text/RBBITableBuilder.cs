@@ -626,7 +626,7 @@ namespace ICU4N.Text
                         {
                             if (U == null)
                             {
-                                U = new JCG.HashSet<RBBINode>();
+                                U = new JCG.HashSet<RBBINode>(p.fFollowPos.Count);
                             }
                             U.UnionWith(p.fFollowPos);
                         }

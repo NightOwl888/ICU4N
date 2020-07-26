@@ -2,13 +2,12 @@
 using ICU4N.Support.Collections;
 using ICU4N.Text;
 using ICU4N.Util;
-using J2N;
-using J2N.Collections;
 using J2N.Collections.Generic.Extensions;
 using J2N.Numerics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using JCG = J2N.Collections.Generic;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Util
@@ -693,7 +692,7 @@ namespace ICU4N.Dev.Util
             {
                 // collect all the current values
                 // retain them in the availableValues
-                ISet<T> temp = new HashSet<T>();
+                ISet<T> temp = new JCG.HashSet<T>(length);
                 for (int i = 0; i < length - 1; ++i)
                 {
                     if (values[i] != null) temp.Add(values[i]);
@@ -741,12 +740,19 @@ namespace ICU4N.Dev.Util
             if (result == null)
             {
                 //result = (U)new LinkedHashSet<T>(availableValues.size());
-                result = new List<T>(availableValues.Count);
+                result = new List<T>(availableValues);
             }
             //result.addAll(availableValues);
             //result.AddRange(availableValues);
-            foreach (var value in availableValues)
-                result.Add(value);
+            else
+            {
+                foreach (var value in availableValues)
+                {
+                    if (!result.Contains(value))
+                        result.Add(value);
+                }
+            }
+
 
             return result;
         }

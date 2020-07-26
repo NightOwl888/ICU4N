@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Impl.Locale
 {
@@ -105,7 +106,7 @@ namespace ICU4N.Impl.Locale
             // Use case insensitive string to prevent duplication
             if (_uattributes == null)
             {
-                _uattributes = new HashSet<CaseInsensitiveString>(/*4*/);
+                _uattributes = new JCG.HashSet<CaseInsensitiveString>(4);
             }
             _uattributes.Add(new CaseInsensitiveString(attribute));
             return this;
@@ -353,7 +354,7 @@ namespace ICU4N.Impl.Locale
 
             if (bcpExtensions != null && bcpExtensions.Count > 0)
             {
-                HashSet<CaseInsensitiveChar> processedExtensions = new HashSet<CaseInsensitiveChar>(/*bcpExtensions.Count*/);
+                var processedExtensions = new JCG.HashSet<CaseInsensitiveChar>(bcpExtensions.Count);
                 foreach (string bcpExt in bcpExtensions)
                 {
                     CaseInsensitiveChar key = new CaseInsensitiveChar(bcpExt[0]);
@@ -512,7 +513,7 @@ namespace ICU4N.Impl.Locale
                         {
                             if (_uattributes == null)
                             {
-                                _uattributes = new HashSet<CaseInsensitiveString>(/*4*/);
+                                _uattributes = new JCG.HashSet<CaseInsensitiveString>(4);
                             }
                             _uattributes.Add(new CaseInsensitiveString(uatr));
                         }
@@ -705,7 +706,7 @@ namespace ICU4N.Impl.Locale
                 }
                 if (_uattributes == null)
                 {
-                    _uattributes = new HashSet<CaseInsensitiveString>(/*4*/);
+                    _uattributes = new JCG.HashSet<CaseInsensitiveString>(4);
                 }
                 _uattributes.Add(new CaseInsensitiveString(itr.Current));
             }

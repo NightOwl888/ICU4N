@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Support.Text
 {
@@ -61,7 +62,7 @@ namespace ICU4N.Support.Text
 
             private AttributedString attrString;
 
-            private HashSet<AttributedCharacterIteratorAttribute> attributesAllowed;
+            private ISet<AttributedCharacterIteratorAttribute> attributesAllowed;
 
             internal AttributedIterator(AttributedString attrString)
             {
@@ -85,8 +86,8 @@ namespace ICU4N.Support.Text
                 this.attrString = attrString;
                 if (attributes != null)
                 {
-                    HashSet<AttributedCharacterIteratorAttribute> set = new HashSet<AttributedCharacterIteratorAttribute>(
-                            /*(attributes.Length * 4 / 3) + 1*/);
+                    var set = new JCG.HashSet<AttributedCharacterIteratorAttribute>(
+                            (attributes.Length * 4 / 3) + 1);
                     for (int i = attributes.Length; --i >= 0;)
                     {
                         set.Add(attributes[i]);
@@ -105,7 +106,7 @@ namespace ICU4N.Support.Text
                 AttributedIterator clone = (AttributedIterator)base.MemberwiseClone();
                 if (attributesAllowed != null)
                 {
-                    clone.attributesAllowed = new HashSet<AttributedCharacterIteratorAttribute>(attributesAllowed);
+                    clone.attributesAllowed = new JCG.HashSet<AttributedCharacterIteratorAttribute>(attributesAllowed);
                 }
                 return clone;
             }
@@ -190,8 +191,8 @@ namespace ICU4N.Support.Text
                     return attrString.attributeMap.Keys;
                 }
 
-                ISet<AttributedCharacterIteratorAttribute> result = new HashSet<AttributedCharacterIteratorAttribute>(
-                        /*(attrString.attributeMap.size() * 4 / 3) + 1*/);
+                ISet<AttributedCharacterIteratorAttribute> result = new JCG.HashSet<AttributedCharacterIteratorAttribute>(
+                        (attrString.attributeMap.Count * 4 / 3) + 1);
                 //Iterator<Map.Entry<Attribute, List<Range>>> it = attrString.attributeMap
                 //        .entrySet().iterator();
                 //while (it.hasNext())
@@ -579,7 +580,7 @@ namespace ICU4N.Support.Text
         /// 1 in <paramref name="iterator"/> or if <paramref name="start"/> &gt; <paramref name="end"/>.</exception>
         public AttributedString(AttributedCharacterIterator iterator, int start,
                 int end, AttributedCharacterIteratorAttribute[] attributes)
-                : this(iterator, start, end, new HashSet<AttributedCharacterIteratorAttribute>(attributes))
+                : this(iterator, start, end, new JCG.HashSet<AttributedCharacterIteratorAttribute>(attributes))
         {
         }
 
