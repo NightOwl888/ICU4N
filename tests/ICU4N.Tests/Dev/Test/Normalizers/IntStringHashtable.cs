@@ -11,12 +11,12 @@ namespace ICU4N.Dev.Test.Normalizers
     /// <author>Mark Davis</author>
     public class IntStringHashtable
     {
-        public IntStringHashtable(String defaultValue)
+        public IntStringHashtable(string defaultValue)
         {
             this.defaultValue = defaultValue;
         }
 
-        public void Put(int key, String value)
+        public void Put(int key, string value)
         {
             if (value == defaultValue)
             {
@@ -28,14 +28,12 @@ namespace ICU4N.Dev.Test.Normalizers
             }
         }
 
-        public String Get(int key)
+        public string Get(int key)
         {
-            String value = table.Get(new Integer(key));
-            if (value == null) return defaultValue;
-            return value;
+            return !table.TryGetValue(key, out string value) || value == null ? defaultValue : value;
         }
 
-        private String defaultValue;
-        private IDictionary<Integer, String> table = new Dictionary<Integer, String>();
+        private readonly string defaultValue;
+        private readonly IDictionary<Integer, string> table = new Dictionary<Integer, string>();
     }
 }

@@ -494,8 +494,7 @@ namespace ICU4N.Text
         public virtual IEnumerable<string> GetAvailableTargets(string source)
         {
             CaseInsensitiveString cisrc = new CaseInsensitiveString(source);
-            var targets = specDAG.Get(cisrc);
-            if (targets != null)
+            if (specDAG.TryGetValue(cisrc, out IDictionary<CaseInsensitiveString, IList<CaseInsensitiveString>> targets) && targets != null)
             {
                 foreach (var id in targets.Keys)
                     yield return id.String;
@@ -511,11 +510,9 @@ namespace ICU4N.Text
         {
             CaseInsensitiveString cisrc = new CaseInsensitiveString(source);
             CaseInsensitiveString citrg = new CaseInsensitiveString(target);
-            var targets = specDAG.Get(cisrc);
-            if (targets != null)
+            if (specDAG.TryGetValue(cisrc, out IDictionary<CaseInsensitiveString, IList<CaseInsensitiveString>> targets) && targets != null)
             {
-                var variants = targets.Get(citrg);
-                if (variants != null)
+                if (targets.TryGetValue(citrg, out IList<CaseInsensitiveString> variants) && variants != null)
                 {
                     foreach (var id in variants)
                         yield return id.String;
@@ -613,14 +610,12 @@ namespace ICU4N.Text
             CaseInsensitiveString cisrc = new CaseInsensitiveString(source);
             CaseInsensitiveString citrg = new CaseInsensitiveString(target);
             CaseInsensitiveString civar = new CaseInsensitiveString(variant);
-            var targets = specDAG.Get(cisrc);
-            if (targets == null)
+            if (!specDAG.TryGetValue(cisrc, out IDictionary<CaseInsensitiveString, IList<CaseInsensitiveString>> targets) || targets == null)
             {
                 targets = new ConcurrentDictionary<CaseInsensitiveString, IList<CaseInsensitiveString>>();
                 specDAG[cisrc] = targets;
             }
-            var variants = targets.Get(citrg);
-            if (variants == null)
+            if (!targets.TryGetValue(citrg, out IList<CaseInsensitiveString> variants) || variants == null)
             {
                 variants = new List<CaseInsensitiveString>();
                 targets[citrg] = variants;
@@ -653,13 +648,11 @@ namespace ICU4N.Text
             CaseInsensitiveString cisrc = new CaseInsensitiveString(source);
             CaseInsensitiveString citrg = new CaseInsensitiveString(target);
             CaseInsensitiveString civar = new CaseInsensitiveString(variant);
-            var targets = specDAG.Get(cisrc);
-            if (targets == null)
+            if (!specDAG.TryGetValue(cisrc, out IDictionary<CaseInsensitiveString, IList<CaseInsensitiveString>> targets) || targets == null)
             {
                 return; // should never happen for valid s-t/v
             }
-            var variants = targets.Get(citrg);
-            if (variants == null)
+            if (!targets.TryGetValue(citrg, out IList<CaseInsensitiveString> variants) || variants == null)
             {
                 return; // should never happen for valid s-t/v
             }

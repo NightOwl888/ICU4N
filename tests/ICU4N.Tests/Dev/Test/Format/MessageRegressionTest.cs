@@ -732,11 +732,12 @@ namespace ICU4N.Dev.Test.Format
                     //     keyIter.hasNext();)
                     //{
                     //    String key = (String)keyIter.next();
-                    foreach (var key in objs.Keys)
+                    // ICU4N: Using KVP instead of explicit lookups is much faster
+                    foreach (var pair in objs)
                     {
-                        if (objs.Get(key) != null && !objs.Get(key).ToString().Equals(paramsMap.Get(key).ToString()))
+                        if (pair.Value != null && !pair.Value.ToString().Equals(paramsMap.Get(pair.Key).ToString()))
                         {
-                            Errln("Parse failed on object " + objs.Get(key) + " with argument name : " + key);
+                            Errln("Parse failed on object " + pair.Value + " with argument name : " + pair.Key);
                         }
                     }
                     tempBuffer = messageFormatter.Format((object)null);
@@ -847,15 +848,16 @@ namespace ICU4N.Dev.Test.Format
                             //{
                             //    String key = (String)keyIter.next();
                             bool first = true;
-                            foreach (var key in objs.Keys)
+                            // ICU4N: Using KVP instead of explicit lookups is much faster
+                            foreach (var pair in objs)
                             {
                                 if (first)
                                     first = false;
                                 else
                                     Log(",");
-                                if (objs.Get(key) != null)
+                                if (pair.Value != null)
                                 {
-                                    Err("\"" + objs.Get(key).ToString() + "\"");
+                                    Err("\"" + pair.Value.ToString() + "\"");
                                 }
                                 else
                                 {

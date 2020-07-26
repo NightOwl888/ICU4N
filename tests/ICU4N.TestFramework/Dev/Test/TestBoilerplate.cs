@@ -194,9 +194,12 @@ namespace ICU4N.Dev.Test
         public static string Show<TKey, TValue>(IDictionary<TKey, TValue> m)
         {
             StringBuilder buffer = new StringBuilder();
-            foreach (var key in m.Keys)
+            foreach (var pair in m)
             {
-                buffer.Append(key + "=>" + m.Get(key) + "\r\n");
+                buffer.Append(pair.Key);
+                buffer.Append("=>");
+                buffer.Append(pair.Value);
+                buffer.Append("\r\n");
             }
             return buffer.ToString();
         }

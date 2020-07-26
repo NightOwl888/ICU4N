@@ -1765,8 +1765,7 @@ namespace ICU4N.Text
         /// <exception cref="IcuArgumentException">If the name is unknown.</exception>
         private void AppendVariableDef(string name, StringBuffer buf)
         {
-            char[] ch = variableNames.Get(name);
-            if (ch == null)
+            if (!variableNames.TryGetValue(name, out char[] ch) || ch == null)
             {
                 // We allow one undefined variable so that variable definition
                 // statements work.  For the first undefined variable we return

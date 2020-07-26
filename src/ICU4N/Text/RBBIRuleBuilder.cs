@@ -52,7 +52,7 @@ namespace ICU4N.Text
         //
         // Status {tag} values.   These structures are common to all of the rule sets (Forward, Reverse, etc.).
         //
-        internal IDictionary<ISet<int>, int?> fStatusSets = new Dictionary<ISet<int>, int?>(); // Status value sets encountered so far.
+        internal IDictionary<ISet<int>, int> fStatusSets = new Dictionary<ISet<int>, int>(); // Status value sets encountered so far.
                                                                                              //  Map Key is the set of values.
                                                                                              //  Map Value is the runtime array index.
 

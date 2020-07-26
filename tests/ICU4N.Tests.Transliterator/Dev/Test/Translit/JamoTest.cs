@@ -513,8 +513,7 @@ namespace ICU4N.Dev.Test.Translit
                     int j = input.IndexOf(')', i + 1);
                     if ((j - i) >= 2 && (j - i) <= 6)
                     { // "(A)", "(IEUNG)"
-                        String jamo = NAME_TO_JAMO.Get(input.Substring(i, (j + 1) - i)); // ICU4N: Corrected 2nd substring parameter
-                        if (jamo != null)
+                        if (NAME_TO_JAMO.TryGetValue(input.Substring(i, (j + 1) - i), out string jamo) && jamo != null) // ICU4N: Corrected 2nd substring parameter
                         {
                             buf.Append(jamo);
                             i = j;
@@ -539,8 +538,7 @@ namespace ICU4N.Dev.Test.Translit
                 char c = input[i];
                 if (c >= 0x1100 && c <= 0x11C2)
                 {
-                    String name = JAMO_TO_NAME.Get(input.Substring(i, 1)); // ICU4N: Corrected 2nd parameter
-                    if (name != null)
+                    if (JAMO_TO_NAME.TryGetValue(input.Substring(i, 1), out string name) && name != null) // ICU4N: Corrected 2nd parameter
                     {
                         buf.Append(name);
                         continue;

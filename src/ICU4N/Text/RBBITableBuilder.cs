@@ -844,9 +844,9 @@ namespace ICU4N.Text
                 ISet<int> s0 = new JCG.SortedSet<int>();
                 int izero = 0;
                 fRB.fStatusSets[s0] = izero;
-                ISet<int> s1 = new JCG.SortedSet<int>();
-                s1.Add(izero);
-                fRB.fStatusSets[s0] = izero;
+                //ISet<int> s1 = new JCG.SortedSet<int>(); // ICU4N: Removed unnecessary collection
+                //s1.Add(izero);
+                //fRB.fStatusSets[s0] = izero; // ICU4N: Removed double-set
             }
 
             //    For each state, check whether the state's status tag values are
@@ -855,8 +855,7 @@ namespace ICU4N.Text
             {
                 RBBIStateDescriptor sd = fDStates[n];
                 ISet<int> statusVals = sd.fTagVals;
-                int? arrayIndexI = fRB.fStatusSets.Get(statusVals);
-                if (arrayIndexI == null)
+                if (!fRB.fStatusSets.TryGetValue(statusVals, out int arrayIndexI))
                 {
                     // This is the first encounter of this set of status values.
                     //   Add them to the statusSets map, This map associates
@@ -872,7 +871,7 @@ namespace ICU4N.Text
                 }
 
                 // Save the runtime array index back into the state descriptor.
-                sd.fTagsIdx = arrayIndexI.Value; // ICU4N NOTE: At this pint the value cannot be null
+                sd.fTagsIdx = arrayIndexI;
             }
         }
 

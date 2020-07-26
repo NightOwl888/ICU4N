@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Support.Collections;
+using ICU4N.Util;
 using J2N.Collections.Generic.Extensions;
 using System;
 using System.Collections.Concurrent;
@@ -271,8 +272,7 @@ namespace ICU4N.Impl
                     {
                         currentDescriptor = key.GetCurrentDescriptor();
                         if (DEBUG) Console.Out.WriteLine(m_name + "[" + NDebug++ + "] looking for: " + currentDescriptor);
-                        result = cache.Get(currentDescriptor);
-                        if (result != null)
+                        if (cache.TryGetValue(currentDescriptor, out result) && result != null)
                         {
                             if (DEBUG) Console.Out.WriteLine(m_name + " found with descriptor: " + currentDescriptor);
                             goto outer_break;
@@ -475,8 +475,7 @@ namespace ICU4N.Impl
         public virtual string GetDisplayName(string id, UCultureInfo locale)
         {
             IDictionary<string, IServiceFactory> m = GetVisibleIDMap();
-            IServiceFactory f = m.Get(id);
-            if (f != null)
+            if (m.TryGetValue(id, out IServiceFactory f) && f != null)
             {
                 return f.GetDisplayName(id, locale);
             }
@@ -484,8 +483,7 @@ namespace ICU4N.Impl
             ICUServiceKey key = CreateKey(id);
             while (key.Fallback())
             {
-                f = m.Get(key.CurrentID);
-                if (f != null)
+                if (m.TryGetValue(key.CurrentID, out f) && f != null)
                 {
                     return f.GetDisplayName(id, locale);
                 }

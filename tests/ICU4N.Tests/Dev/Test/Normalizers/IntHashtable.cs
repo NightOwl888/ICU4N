@@ -1,5 +1,4 @@
 ﻿using ICU4N.Support;
-using ICU4N.Support.Collections;
 using System.Collections.Generic;
 
 namespace ICU4N.Dev.Test.Normalizers
@@ -29,12 +28,10 @@ namespace ICU4N.Dev.Test.Normalizers
 
         public int Get(int key)
         {
-            Integer value = table.Get(new Integer(key));
-            if (value == null) return defaultValue;
-            return value.Value;
+            return !table.TryGetValue(key, out Integer value) || value == null ? defaultValue : value.Value;
         }
 
-        private int defaultValue;
-        private IDictionary<Integer, Integer> table = new Dictionary<Integer, Integer>();
+        private readonly int defaultValue;
+        private readonly IDictionary<Integer, Integer> table = new Dictionary<Integer, Integer>();
     }
 }

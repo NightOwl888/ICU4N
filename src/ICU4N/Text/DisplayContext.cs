@@ -188,8 +188,7 @@ namespace ICU4N.Text
 
         private static DisplayContextImpl GetImpl(this DisplayContext displayContext)
         {
-            var impl = map.Get(displayContext);
-            if (impl == null)
+            if (!map.TryGetValue(displayContext, out DisplayContextImpl impl) || impl == null)
                 throw new ArgumentOutOfRangeException(string.Format("Argument {0} is not a valid DisplayContext value.", (int)displayContext));
             return impl;
         }

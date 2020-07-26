@@ -1589,7 +1589,7 @@ namespace ICU4N.Impl
             {
                 aliasesVisited = new Dictionary<string, string>();
             }
-            if (aliasesVisited.Get(rpath) != null)
+            if (aliasesVisited.TryGetValue(rpath, out string value) && value != null)
             {
                 throw new ArgumentException(
                         "Circular references in the resource bundles");

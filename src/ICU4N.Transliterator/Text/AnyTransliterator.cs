@@ -180,8 +180,7 @@ namespace ICU4N.Text
             }
 
             int key = (int)source;
-            Transliterator t = cache.Get(key);
-            if (!cache.TryGetValue(key, out t) || t == null)
+            if (!cache.TryGetValue(key, out Transliterator t) || t == null)
             {
                 string sourceName = UScript.GetName(source);
                 string id = sourceName + TARGET_SEP + target;
@@ -266,8 +265,7 @@ namespace ICU4N.Text
                         continue;
                     }
 
-                    ISet<string> seenVariants = seen.Get(target);
-                    if (seenVariants == null)
+                    if (!seen.TryGetValue(target, out ISet<string> seenVariants) || seenVariants == null)
                     {
                         seen[target] = seenVariants = new HashSet<string>();
                     }

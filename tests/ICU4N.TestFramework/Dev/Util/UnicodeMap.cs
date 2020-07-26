@@ -638,10 +638,9 @@ namespace ICU4N.Dev.Util
             {
                 foreach (string key in stringMap.Keys)
                 {
-                    T newValue = stringMap.Get(key);
-                    if (value.Equals(newValue))
+                    if (stringMap.TryGetValue(key, out T newValue) && value.Equals(newValue))
                     {
-                        result.Add((string)key);
+                        result.Add(key);
                     }
                 }
             }
@@ -901,9 +900,9 @@ namespace ICU4N.Dev.Util
                 }
                 if (stringMap != null)
                 {
-                    foreach (string s in stringMap.Keys)
+                    foreach (var pair in stringMap)
                     {
-                        result.Append(Utility.Hex(s)).Append("=").Append(stringMap.Get(s).ToString()).Append("\n");
+                        result.Append(Utility.Hex(pair.Key)).Append("=").Append(pair.Value.ToString()).Append("\n");
                     }
                 }
             }
@@ -1056,10 +1055,8 @@ namespace ICU4N.Dev.Util
          */
         public UnicodeMap<T> PutAll(IDictionary<string, T> map)
         {
-            foreach (string key in map.Keys)
-            {
-                Put(key, map.Get(key));
-            }
+            foreach (var pair in map)
+                Put(pair.Key, pair.Value);
             return this;
         }
 

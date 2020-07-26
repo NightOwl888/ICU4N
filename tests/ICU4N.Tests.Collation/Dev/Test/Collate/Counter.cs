@@ -1,5 +1,4 @@
-﻿using ICU4N.Support.Collections;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -63,8 +62,9 @@ namespace ICU4N.Dev.Test.Collate
 
         public Counter<T> Add(T obj, long countValue)
         {
-            RWLong count = map.Get(obj);
-            if (count == null) map[obj] = count = new RWLong();
+            if (!map.TryGetValue(obj, out RWLong count))
+                map[obj] = count = new RWLong();
+
             count.value += countValue;
             return this;
         }
@@ -76,8 +76,7 @@ namespace ICU4N.Dev.Test.Collate
 
         public long Get(T obj)
         {
-            RWLong count = map.Get(obj);
-            return count == null ? 0 : count.value;
+            return !map.TryGetValue(obj, out RWLong count) ? 0 : count.value;
         }
 
         public Counter<T> Clear()
@@ -89,9 +88,9 @@ namespace ICU4N.Dev.Test.Collate
         public long GetTotal()
         {
             long count = 0;
-            foreach (T item in map.Keys)
+            foreach (var pair in map)
             {
-                count += map.Get(item).value;
+                count += pair.Value.value;
             }
             return count;
         }

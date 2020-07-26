@@ -680,8 +680,8 @@ namespace ICU4N.Impl
                     IResourceTable table = value.GetTable();
                     for (int i = 0; table.GetKeyAndValue(i, key, value); i++)
                     {
-                        String pluralKeyword = key.ToString();
-                        if (unitPatterns.Get(pluralKeyword) == null)
+                        string pluralKeyword = key.ToString();
+                        if (!unitPatterns.TryGetValue(pluralKeyword, out string unitPattern) || unitPattern == null)
                         {
                             unitPatterns[pluralKeyword] = value.GetString();
                         }

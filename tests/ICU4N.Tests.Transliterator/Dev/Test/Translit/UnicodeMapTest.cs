@@ -246,13 +246,14 @@ namespace ICU4N.Dev.Test.Translit
                 temp.Clear();
                 return;
             }
-            foreach (String key in stayWithMe.Keys)
+            // ICU4N: looping through pairs instead of doing explicity table lookups is much faster
+            foreach (var pair in stayWithMe)
             {
-                assertEquals("containsKey", stayWithMe.ContainsKey(key), me.ContainsKey(key));
-                Integer value = stayWithMe.Get(key);
-                assertEquals("get", value, me.Get(key));
+                assertEquals("containsKey", stayWithMe.ContainsKey(pair.Key), me.ContainsKey(pair.Key));
+                Integer value = pair.Value;
+                assertEquals("get", value, me.Get(pair.Key));
                 assertEquals("containsValue", stayWithMe.ContainsValue(value), me.ContainsValue(value));
-                int cp = UnicodeSet.GetSingleCodePoint(key);
+                int cp = UnicodeSet.GetSingleCodePoint(pair.Key);
                 if (cp != int.MaxValue)
                 {
                     assertEquals("get", value, me.Get(cp));
@@ -364,8 +365,9 @@ namespace ICU4N.Dev.Test.Translit
         {
             for (int i = 0; i < MODIFY_TEST_LIMIT; ++i)
             {
-                Object unicodeMapValue = unicodeMap.GetValue(i);
-                Object hashMapValue = hashMap.Get(i);
+                // ICU4N: Changed from object to string comparison
+                string unicodeMapValue = unicodeMap.GetValue(i);
+                hashMap.TryGetValue(i, out string hashMapValue);
                 if (unicodeMapValue != hashMapValue)
                 {
                     return false;
@@ -569,12 +571,12 @@ namespace ICU4N.Dev.Test.Translit
             checkMap(map2, localMap);
         }
 
-        public void check(UnicodeMap<String> map1, IDictionary<Integer, String> map2, int counter)
+        public void check(UnicodeMap<string> map1, IDictionary<Integer, string> map2, int counter)
         {
             for (int i = 0; i < LIMIT; ++i)
             {
-                String value1 = map1.GetValue(i);
-                String value2 = map2.Get(new Integer(i));
+                string value1 = map1.GetValue(i);
+                map2.TryGetValue(i, out string value2);
                 if (!UnicodeMap<string>.AreEqual(value1, value2))
                 {
                     Errln(counter + " Difference at " + Utility.Hex(i)

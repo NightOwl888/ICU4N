@@ -4384,7 +4384,7 @@ namespace ICU4N.Globalization
                 foreach (String expKey in expectedKeys)
                 {
                     String type = loc.UnicodeLocales[expKey];
-                    String expType = expectedKeywords.Get(expKey);
+                    String expType = expectedKeywords[expKey];
 
                     if (type == null || !expType.Equals(type))
                     {

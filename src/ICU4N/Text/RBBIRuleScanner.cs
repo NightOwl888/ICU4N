@@ -662,16 +662,12 @@ namespace ICU4N.Text
         //                 If the string is "any", return a set containing all chars.
         //
         //----------------------------------------------------------------------------------------
-        internal virtual void FindSetFor(String s, RBBINode node, UnicodeSet setToAdopt)
+        internal virtual void FindSetFor(string s, RBBINode node, UnicodeSet setToAdopt)
         {
-
-            RBBISetTableEl el;
-
             // First check whether we've already cached a set for this string.
             // If so, just use the cached set in the new node.
             //   delete any set provided by the caller, since we own it.
-            el = fSetTable.Get(s);
-            if (el != null)
+            if (fSetTable.TryGetValue(s, out RBBISetTableEl el) && el != null)
             {
                 node.fLeftChild = el.Val;
                 Assert.Assrt(node.fLeftChild.fType == RBBINode.uset);

@@ -838,8 +838,7 @@ namespace ICU4N.Text
             {
                 return null;
             }
-            string inverseTarget = SPECIAL_INVERSES.Get(new CaseInsensitiveString(specs.Target));
-            if (inverseTarget != null)
+            if (SPECIAL_INVERSES.TryGetValue(new CaseInsensitiveString(specs.Target), out string inverseTarget) && inverseTarget != null)
             {
                 // If the original ID contained "Any-" then make the
                 // special inverse "Any-Foo"; otherwise make it "Foo".

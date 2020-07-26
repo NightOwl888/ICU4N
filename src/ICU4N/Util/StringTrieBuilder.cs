@@ -140,8 +140,7 @@ namespace ICU4N.Util
                 return newNode;
             }
             // BUILDING_SMALL
-            Node oldNode = nodes.Get(newNode);
-            if (oldNode != null)
+            if (nodes.TryGetValue(newNode, out Node oldNode) && oldNode != null)
             {
                 return oldNode;
             }
@@ -165,17 +164,15 @@ namespace ICU4N.Util
             // We always register final values because while ADDING
             // we do not know yet whether we will build fast or small.
             lookupFinalValueNode.SetFinalValue(value);
-            Node oldNode = nodes.Get(lookupFinalValueNode);
-            if (oldNode != null)
+            if (nodes.TryGetValue(lookupFinalValueNode, out Node oldNode) && oldNode != null)
             {
                 return (ValueNode)oldNode;
             }
             ValueNode newNode = new ValueNode(value);
             // If put() returns a non-null value from an equivalent, previously
             // registered node, then get() failed to find that and we will leak newNode.
-            nodes.TryGetValue(newNode, out oldNode);
+            Debug.Assert(!nodes.TryGetValue(newNode, out oldNode) || oldNode == null);
             nodes[newNode] = newNode;
-            Debug.Assert(oldNode == null);
             return newNode;
         }
 

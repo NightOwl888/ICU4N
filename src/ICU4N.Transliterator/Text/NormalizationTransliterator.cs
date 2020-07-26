@@ -147,8 +147,7 @@ namespace ICU4N.Text
             lock (SOURCE_CACHE)
             {
                 //String id = getID();
-                cache = SOURCE_CACHE.Get(norm2);
-                if (cache == null)
+                if (!SOURCE_CACHE.TryGetValue(norm2, out cache) || cache == null)
                 {
                     cache = new SourceTargetUtility(new NormalizingTransform(norm2), norm2);
                     SOURCE_CACHE[norm2] = cache;

@@ -13,7 +13,7 @@ namespace ICU4N.Impl.Locale
 {
     internal static class SpecialTypeExtensions
     {
-        private static IDictionary<KeyTypeData.SpecialType, KeyTypeData.SpecialTypeHandler> map =
+        private static readonly IDictionary<KeyTypeData.SpecialType, KeyTypeData.SpecialTypeHandler> map =
             new Dictionary<KeyTypeData.SpecialType, KeyTypeData.SpecialTypeHandler>
         {
             { KeyTypeData.SpecialType.CODEPOINTS, new KeyTypeData.CodepointsTypeHandler() },
@@ -138,8 +138,7 @@ namespace ICU4N.Impl.Locale
         public static string ToBcpKey(string key)
         {
             key = AsciiUtil.ToLower(key);
-            KeyData keyData = KEYMAP.Get(key);
-            if (keyData != null)
+            if (KEYMAP.TryGetValue(key, out KeyData keyData) && keyData != null)
             {
                 return keyData.BcpId;
             }
@@ -149,8 +148,7 @@ namespace ICU4N.Impl.Locale
         public static string ToLegacyKey(string key)
         {
             key = AsciiUtil.ToLower(key);
-            KeyData keyData = KEYMAP.Get(key);
-            if (keyData != null)
+            if (KEYMAP.TryGetValue(key, out KeyData keyData) && keyData != null)
             {
                 return keyData.LegacyId;
             }
@@ -166,12 +164,10 @@ namespace ICU4N.Impl.Locale
             key = AsciiUtil.ToLower(key);
             type = AsciiUtil.ToLower(type);
 
-            KeyData keyData = KEYMAP.Get(key);
-            if (keyData != null)
+            if (KEYMAP.TryGetValue(key, out KeyData keyData) && keyData != null)
             {
                 isKnownKey = true;
-                Type t = keyData.TypeMap.Get(type);
-                if (t != null)
+                if (keyData.TypeMap.TryGetValue(type, out Type t) && t != null)
                 {
                     return t.bcpId;
                 }
@@ -200,12 +196,10 @@ namespace ICU4N.Impl.Locale
             key = AsciiUtil.ToLower(key);
             type = AsciiUtil.ToLower(type);
 
-            KeyData keyData = KEYMAP.Get(key);
-            if (keyData != null)
+            if (KEYMAP.TryGetValue(key, out KeyData keyData) && keyData != null)
             {
                 isKnownKey = true;
-                Type t = keyData.TypeMap.Get(type);
-                if (t != null)
+                if (keyData.TypeMap.TryGetValue(type, out Type t) && t != null)
                 {
                     return t.legacyId;
                 }
@@ -309,8 +303,7 @@ namespace ICU4N.Impl.Locale
                                     {
                                         from = from.Replace(':', '/');
                                     }
-                                    ISet<string> aliasSet = typeAliasMap.Get(to);
-                                    if (aliasSet == null)
+                                    if (!typeAliasMap.TryGetValue(to, out ISet<string> aliasSet) || aliasSet == null)
                                     {
                                         aliasSet = new JCG.HashSet<string>();
                                         typeAliasMap[to] = aliasSet;
@@ -344,8 +337,7 @@ namespace ICU4N.Impl.Locale
                                     UResourceBundle bcpTypeAliasDataEntry = bcpTypeAliasResItr.Current;
                                     string from = bcpTypeAliasDataEntry.Key;
                                     string to = bcpTypeAliasDataEntry.GetString();
-                                    ISet<string> aliasSet = bcpTypeAliasMap.Get(to);
-                                    if (aliasSet == null)
+                                    if (!bcpTypeAliasMap.TryGetValue(to, out ISet<string> aliasSet) || aliasSet == null)
                                     {
                                         aliasSet = new JCG.HashSet<string>();
                                         bcpTypeAliasMap[to] = aliasSet;
@@ -423,8 +415,7 @@ namespace ICU4N.Impl.Locale
                                 // Also put aliases in the map
                                 if (typeAliasMap != null)
                                 {
-                                    ISet<string> typeAliasSet = typeAliasMap.Get(legacyTypeId);
-                                    if (typeAliasSet != null)
+                                    if (typeAliasMap.TryGetValue(legacyTypeId, out ISet<string> typeAliasSet) && typeAliasSet != null)
                                     {
                                         foreach (string alias in typeAliasSet)
                                         {
@@ -434,8 +425,7 @@ namespace ICU4N.Impl.Locale
                                 }
                                 if (bcpTypeAliasMap != null)
                                 {
-                                    ISet<string> bcpTypeAliasSet = bcpTypeAliasMap.Get(bcpTypeId);
-                                    if (bcpTypeAliasSet != null)
+                                    if (bcpTypeAliasMap.TryGetValue(bcpTypeId, out ISet<string> bcpTypeAliasSet) && bcpTypeAliasSet != null)
                                     {
                                         foreach (string alias in bcpTypeAliasSet)
                                         {
@@ -765,8 +755,7 @@ namespace ICU4N.Impl.Locale
 
         public static bool IsDeprecated(string key, string type)
         {
-            ISet<string> deprecatedTypes = DEPRECATED_KEY_TYPES.Get(key);
-            if (deprecatedTypes == null)
+            if (!DEPRECATED_KEY_TYPES.TryGetValue(key, out ISet<string> deprecatedTypes) || deprecatedTypes == null)
             {
                 return false;
             }

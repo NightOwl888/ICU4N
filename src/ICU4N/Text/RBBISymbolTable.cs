@@ -43,15 +43,13 @@ namespace ICU4N.Text
         //
         public virtual char[] Lookup(string s)
         {
-            RBBISymbolTableEntry el;
             RBBINode varRefNode;
             RBBINode exprNode;
 
             RBBINode usetNode;
-            String retString;
+            string retString;
 
-            el = fHashTable.Get(s);
-            if (el == null)
+            if (!fHashTable.TryGetValue(s, out RBBISymbolTableEntry el) || el == null)
             {
                 return null;
             }
@@ -143,18 +141,12 @@ namespace ICU4N.Text
         //                                  corresponding RBBI Node.  If there is no entry
         //                                  in the table for this name, return NULL.
         //
-        internal virtual RBBINode LookupNode(String key)
+        internal virtual RBBINode LookupNode(string key)
         {
+            if (fHashTable.TryGetValue(key, out RBBISymbolTableEntry el) && el != null)
+                return el.Val;
 
-            RBBINode retNode = null;
-            RBBISymbolTableEntry el;
-
-            el = fHashTable.Get(key);
-            if (el != null)
-            {
-                retNode = el.Val;
-            }
-            return retNode;
+            return null;
         }
 
         //
@@ -165,18 +157,13 @@ namespace ICU4N.Text
         //
         internal virtual void AddEntry(string key, RBBINode val)
         {
-            RBBISymbolTableEntry e;
-            e = fHashTable.Get(key);
-            if (e != null)
+            if (fHashTable.TryGetValue(key, out RBBISymbolTableEntry e) && e != null)
             {
                 fRuleScanner.Error(RBBIRuleBuilder.U_BRK_VARIABLE_REDFINITION);
                 return;
             }
 
-            e = new RBBISymbolTableEntry();
-            e.Key = key;
-            e.Val = val;
-            fHashTable[e.Key]= e;
+            fHashTable[key] = new RBBISymbolTableEntry { Key = key, Val = val };
         }
 
         //

@@ -55,7 +55,7 @@ namespace ICU4N.Dev.Test.Util
                 {
                     UCultureInfo oldLoc = _LOCALES[i][0];
                     UCultureInfo newLoc = _LOCALES[i][1];
-                    if (availableMap.Get(_LOCALES[i][1]) == null)
+                    if (!availableMap.TryGetValue(_LOCALES[i][1], out object value) || value == null)
                     {
                         Logln(_LOCALES[i][1] + " is not available. Skipping!");
                         continue;

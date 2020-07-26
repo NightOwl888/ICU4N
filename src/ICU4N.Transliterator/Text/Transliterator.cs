@@ -1328,8 +1328,7 @@ namespace ICU4N.Text
             }
 
             // Use the registered display name, if any
-            string n = displayNameCache.Get(new CaseInsensitiveString(ID));
-            if (n != null)
+            if (displayNameCache.TryGetValue(new CaseInsensitiveString(ID), out string n) && n != null)
             {
                 return n;
             }

@@ -246,8 +246,7 @@ namespace ICU4N.Impl
 
         public virtual TValue Put(TKey key, TValue value)
         {
-            ISet<TValue> set = data.Get(key);
-            if (set == null)
+            if (!data.TryGetValue(key, out ISet<TValue> set) || set == null)
             {
                 data[key] = set = NewSet();
             }
@@ -257,8 +256,7 @@ namespace ICU4N.Impl
 
         public virtual TValue PutAll(TKey key, ICollection<TValue> values)
         {
-            ISet<TValue> set = data.Get(key);
-            if (set == null)
+            if (!data.TryGetValue(key, out ISet<TValue> set) || set == null)
             {
                 data[key] = set = NewSet();
             }
@@ -333,8 +331,7 @@ namespace ICU4N.Impl
         {
             try
             {
-                ISet<TValue> set = data.Get(key);
-                if (set == null)
+                if (!data.TryGetValue(key, out ISet<TValue> set) || set == null)
                 {
                     return false;
                 }
@@ -385,12 +382,9 @@ namespace ICU4N.Impl
         public virtual Relation<TKey, TValue> AddAllInverted<K>(Relation<TValue, K> source)
                 where K : class, TKey
         {
-            foreach (TValue value in source.data.Keys)
+            foreach (var entry in source)
             {
-                foreach (TKey key in source.data.Get(value))
-                {
-                    Put(key, value);
-                }
+                Put(entry.Value, entry.Key);
             }
             return this;
         }
@@ -417,9 +411,9 @@ namespace ICU4N.Impl
             if (!frozen)
             {
                 // does not handle one level down, so we do that on a case-by-case basis
-                foreach (var key in data.Keys)
+                foreach (var pair in data)
                 {
-                    data[key] = data.Get(key).AsReadOnly();
+                    data[pair.Key] = pair.Value.AsReadOnly();
                 }
                 // now do top level
                 data = data.AsReadOnly();
