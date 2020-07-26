@@ -11,6 +11,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using J2N.Collections.Generic;
 using Random = System.Random;
 using StringBuffer = System.Text.StringBuilder;
 
@@ -226,11 +228,11 @@ namespace ICU4N.Dev.Test
 
             if (GetParams().knownIssues == null)
             {
-                GetParams().knownIssues = new SortedDictionary<string, List<string>>();
+                GetParams().knownIssues = new System.Collections.Generic.SortedDictionary<string, System.Collections.Generic.List<string>>();
             }
-            if (!GetParams().knownIssues.TryGetValue(ticketLink, out List<string> lines) || lines == null)
+            if (!GetParams().knownIssues.TryGetValue(ticketLink, out System.Collections.Generic.List<string> lines) || lines == null)
             {
-                lines = new List<string>();
+                lines = new System.Collections.Generic.List<string>();
                 GetParams().knownIssues[ticketLink] = lines;
             }
             if (!lines.Contains(description))
@@ -446,7 +448,7 @@ namespace ICU4N.Dev.Test
             //internal SecurityManager testSecurityManager;
             //internal SecurityManager originalSecurityManager;
 
-            internal IDictionary<string, List<string>> knownIssues;
+            internal IDictionary<string, System.Collections.Generic.List<string>> knownIssues;
 
             internal IDictionary<string, string> props;
 
@@ -460,7 +462,7 @@ namespace ICU4N.Dev.Test
             {
                 TestParams @params = new TestParams();
                 //Properties props = System.GetProperties();
-                IDictionary<string, string> props = new Dictionary<string, string>();
+                IDictionary<string, string> props = new System.Collections.Generic.Dictionary<string, string>();
                 @params.ParseProperties(props);
                 return @params;
             }
@@ -730,10 +732,31 @@ namespace ICU4N.Dev.Test
             return assertEquals(message, expectedString, actualString);
         }
 
+        protected static bool assertEquals<TKey, TValue>(string message, IDictionary<TKey, TValue> expected, IDictionary<TKey, TValue> actual)
+        {
+            bool result = DictionaryEqualityComparer<TKey, TValue>.Aggressive.Equals(expected, actual);
+            return handleAssert(result, message, StringFor(expected),
+                StringFor(actual));
+        }
+
+        protected static bool assertEquals<T>(string message, IList<T> expected, IList<T> actual)
+        {
+            bool result = ListEqualityComparer<T>.Aggressive.Equals(expected, actual);
+            return handleAssert(result, message, StringFor(expected),
+                StringFor(actual));
+        }
+
+        protected static bool assertEquals<T>(string message, ISet<T> expected, ISet<T> actual)
+        {
+            bool result = SetEqualityComparer<T>.Aggressive.Equals(expected, actual);
+            return handleAssert(result, message, StringFor(expected),
+                StringFor(actual));
+        }
+
         // ICU4N specific overload for optimizing ICollection<T> comparisons
         protected static bool assertEquals<T>(string message, ICollection<T> expected, ICollection<T> actual)
         {
-            bool result = expected == null ? actual == null : StructuralEqualityComparer.Aggressive.Equals(expected, actual);
+            bool result = StructuralEqualityComparer.Aggressive.Equals(expected, actual);
             return handleAssert(result, message, StringFor(expected),
                     StringFor(actual));
         }
@@ -921,8 +944,17 @@ namespace ICU4N.Dev.Test
             //return obj.GetUnicodeCategory().Name + "<" + obj + ">";
         }
 
-        private static readonly Regex METHOD_NAME_REGEX = new Regex(@"at\s+(?<fullyQualifiedMethod>.*\.(?<method>[\w`]+))\(", RegexOptions.Compiled);
-        private static readonly Regex FILE_NAME_REGEX = new Regex(@"(?<=in)\s+(?<filename>.*)", RegexOptions.Compiled);
+#if !FEATURE_STACKTRACE
+        //private static readonly Regex METHOD_NAME_REGEX = new Regex(@"at\s+(?<fullyQualifiedMethod>.*\.(?<method>[\w`]+))\(", RegexOptions.Compiled);
+        //private static readonly Regex FILE_NAME_REGEX = new Regex(@"(?<=in)\s+(?<filename>.*)", RegexOptions.Compiled);
+
+        private static Regex methodNameRegex;
+        private static Regex fileNameRegex;
+        private static Regex MethodNameRegex => LazyInitializer.EnsureInitialized(ref methodNameRegex, () => new Regex(@"at\s+(?<fullyQualifiedMethod>.*\.(?<method>[\w`]+))\(", RegexOptions.Compiled));
+
+        private static Regex FileNameRegex => LazyInitializer.EnsureInitialized(ref fileNameRegex, () => new Regex(@"(?<=in)\s+(?<filename>.*)", RegexOptions.Compiled));
+
+#endif
 
         // Return the source code location of the caller located callDepth frames up the stack.
         // ICU4N NOTE: In order for this to work in .NET Standard 1.x in Release mode, the
@@ -950,14 +982,14 @@ namespace ICU4N.Dev.Test
                     if (line.Contains("TestFmwk.cs") || line.Contains("AbstractTestLog.cs"))
                         continue;
 
-                    var match = METHOD_NAME_REGEX.Match(line);
+                    var match = MethodNameRegex.Match(line);
 
                     if (match.Success)
                     {
                         var methodName = match.Groups["method"].Value;
                         if (methodName.StartsWith("Test", StringComparison.Ordinal) || methodName.StartsWith("test", StringComparison.Ordinal) || methodName.Equals("Main"))
                         {
-                            var matchFileName = FILE_NAME_REGEX.Match(line);
+                            var matchFileName = FileNameRegex.Match(line);
                             if (matchFileName.Success)
                             {
                                 return matchFileName.Groups["filename"].Value;
