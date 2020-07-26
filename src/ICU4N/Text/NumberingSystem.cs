@@ -282,19 +282,14 @@ namespace ICU4N.Text
         /// <stable>ICU 4.2</stable>
         public static string[] GetAvailableNames()
         {
-
             UResourceBundle numberingSystemsInfo = UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, "numberingSystems");
             UResourceBundle nsCurrent = numberingSystemsInfo.Get("numberingSystems");
-            UResourceBundle temp;
 
-            string nsName;
-            IList<string> output = new List<string>();
+            var output = new List<string>();
 
             foreach (var rb in nsCurrent)
             {
-                temp = rb;
-                nsName = temp.Key;
-                output.Add(nsName);
+                output.Add(rb.Key);
             }
             return output.ToArray();
         }

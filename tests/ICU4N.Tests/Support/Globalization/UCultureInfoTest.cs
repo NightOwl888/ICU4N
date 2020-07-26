@@ -2,6 +2,7 @@
 using ICU4N.Dev.Test.Util;
 using ICU4N.Support.Collections;
 using ICU4N.Util;
+using J2N.Collections.Generic.Extensions;
 using J2N.Text;
 using NUnit.Framework;
 using NUnit.Framework.Internal;

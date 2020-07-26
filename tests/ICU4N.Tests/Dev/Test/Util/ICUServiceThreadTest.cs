@@ -1,7 +1,7 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
 using ICU4N.Support;
-using ICU4N.Util;
+using J2N.Collections.Generic.Extensions;
 using J2N.Text;
 using J2N.Threading;
 using NUnit.Framework;

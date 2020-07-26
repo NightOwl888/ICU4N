@@ -4,7 +4,6 @@ using ICU4N.Text;
 using J2N.Collections.Generic;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using JCG = J2N.Collections.Generic;
@@ -32,15 +31,14 @@ namespace ICU4N.Dev.Test
 
         public virtual void Test()
         {
-            IList<T> list = new JCG.List<T>();
+            var list = new JCG.List<T>();
             while (AddTestObject(list))
             {
             }
-            T[] testArray = (T[])list.ToArray();
-            for (int i = 0; i < testArray.Length; ++i)
+            for (int i = 0; i < list.Count; ++i)
             {
                 //logln("Testing " + i);
-                T a = testArray[i];
+                T a = list[i];
                 int aHash = a.GetHashCode();
                 if (a.Equals(null))
                 {
@@ -70,9 +68,9 @@ namespace ICU4N.Dev.Test
                     }
                     CheckEquals(i, -1, a, aHash, b);
                 }
-                for (int j = i; j < testArray.Length; ++j)
+                for (int j = i; j < list.Count; ++j)
                 {
-                    b = testArray[j];
+                    b = list[j];
                     if (a.Equals(b)) CheckEquals(i, j, a, aHash, b);
                 }
             }
