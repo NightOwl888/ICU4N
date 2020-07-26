@@ -204,11 +204,12 @@ namespace ICU4N.Dev.Test
         public static UnicodeSet GetSet(IDictionary<Integer, T> m, T value)
         {
             UnicodeSet result = new UnicodeSet();
-            foreach (var key in m.Keys)
+            // ICU4N: Optimized by looping over the pair instead of doing a separate
+            // value lookup on each loop.
+            foreach (var pair in m)
             {
-                T val = m.Get(key);
-                if (!val.Equals(value)) continue;
-                result.Add(key.Value);
+                if (!pair.Value.Equals(value)) continue;
+                result.Add(pair.Key.Value);
             }
             return result;
         }
