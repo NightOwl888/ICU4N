@@ -312,7 +312,7 @@ namespace ICU4N.Impl.Locale
                                     ISet<string> aliasSet = typeAliasMap.Get(to);
                                     if (aliasSet == null)
                                     {
-                                        aliasSet = new HashSet<string>();
+                                        aliasSet = new JCG.HashSet<string>();
                                         typeAliasMap[to] = aliasSet;
                                     }
                                     aliasSet.Add(from);
@@ -347,7 +347,7 @@ namespace ICU4N.Impl.Locale
                                     ISet<string> aliasSet = bcpTypeAliasMap.Get(to);
                                     if (aliasSet == null)
                                     {
-                                        aliasSet = new HashSet<string>();
+                                        aliasSet = new JCG.HashSet<string>();
                                         bcpTypeAliasMap[to] = aliasSet;
                                     }
                                     aliasSet.Add(from);
@@ -386,7 +386,7 @@ namespace ICU4N.Impl.Locale
                                 {
                                     if (specialTypeSet == null)
                                     {
-                                        specialTypeSet = new HashSet<SpecialType>();
+                                        specialTypeSet = new JCG.HashSet<SpecialType>();
                                     }
                                     specialTypeSet.Add((SpecialType)Enum.Parse(typeof(SpecialType), legacyTypeId, true));
                                     _bcp47Types.Add(legacyTypeId);
@@ -459,7 +459,7 @@ namespace ICU4N.Impl.Locale
             }
         }
 
-        internal static ISet<string> DEPRECATED_KEYS = new HashSet<string>(); // default for no resources
+        internal static ISet<string> DEPRECATED_KEYS = new JCG.HashSet<string>(); // default for no resources
         internal static IDictionary<string, KeyTypeDataValueType> VALUE_TYPES = new Dictionary<string, KeyTypeDataValueType>(); // default for no resources
         internal static IDictionary<string, ISet<string>> DEPRECATED_KEY_TYPES = new Dictionary<string, ISet<string>>(); // default for no resources
 
@@ -483,7 +483,7 @@ namespace ICU4N.Impl.Locale
          */
         private static void GetKeyInfo(UResourceBundle keyInfoRes)
         {
-            ISet<string> _deprecatedKeys = new HashSet<string>();
+            ISet<string> _deprecatedKeys = new JCG.HashSet<string>();
             IDictionary<string, KeyTypeDataValueType> _valueTypes = new JCG.LinkedDictionary<string, KeyTypeDataValueType>();
             foreach (var keyInfoEntry in keyInfoRes)
             {
@@ -631,10 +631,9 @@ namespace ICU4N.Impl.Locale
                     {
                         string from = typeAliasDataEntry[0];
                         string to = typeAliasDataEntry[1];
-                        ISet<string> aliasSet;
-                        if (!typeAliasMap.TryGetValue(to, out aliasSet) || aliasSet == null)
+                        if (!typeAliasMap.TryGetValue(to, out ISet<string> aliasSet) || aliasSet == null)
                         {
-                            aliasSet = new HashSet<string>();
+                            aliasSet = new JCG.HashSet<string>(1);
                             typeAliasMap[to] = aliasSet;
                         }
                         aliasSet.Add(from);
@@ -650,10 +649,9 @@ namespace ICU4N.Impl.Locale
                     {
                         string from = bcpTypeAliasDataEntry[0];
                         string to = bcpTypeAliasDataEntry[1];
-                        ISet<string> aliasSet;
-                        if (!bcpTypeAliasMap.TryGetValue(to, out aliasSet) || aliasSet == null)
+                        if (!bcpTypeAliasMap.TryGetValue(to, out ISet<string> aliasSet) || aliasSet == null)
                         {
-                            aliasSet = new HashSet<string>();
+                            aliasSet = new JCG.HashSet<string>(1);
                             bcpTypeAliasMap[to] = aliasSet;
                         }
                         aliasSet.Add(from);
@@ -679,7 +677,7 @@ namespace ICU4N.Impl.Locale
                             isSpecialType = true;
                             if (specialTypeSet == null)
                             {
-                                specialTypeSet = new HashSet<SpecialType>();
+                                specialTypeSet = new JCG.HashSet<SpecialType>(1);
                             }
                             specialTypeSet.Add(st);
                             break;
@@ -709,16 +707,14 @@ namespace ICU4N.Impl.Locale
                     }
 
                     // Also put aliases in the index
-                    ISet<string> typeAliasSet;
-                    if (typeAliasMap.TryGetValue(legacyTypeId, out typeAliasSet) && typeAliasSet != null)
+                    if (typeAliasMap.TryGetValue(legacyTypeId, out ISet<string> typeAliasSet) && typeAliasSet != null)
                     {
                         foreach (string alias in typeAliasSet)
                         {
                             typeDataMap[AsciiUtil.ToLower(alias)] = t;
                         }
                     }
-                    ISet<string> bcpTypeAliasSet;
-                    if (!bcpTypeAliasMap.TryGetValue(bcpTypeId, out bcpTypeAliasSet) && bcpTypeAliasSet != null)
+                    if (!bcpTypeAliasMap.TryGetValue(bcpTypeId, out ISet<string> bcpTypeAliasSet) && bcpTypeAliasSet != null)
                     {
                         foreach (string alias in bcpTypeAliasSet)
                         {
@@ -730,7 +726,7 @@ namespace ICU4N.Impl.Locale
                 ISet<SpecialType> specialTypes = null;
                 if (specialTypeSet != null)
                 {
-                    specialTypes = new HashSet<SpecialType>(specialTypeSet);
+                    specialTypes = new JCG.HashSet<SpecialType>(specialTypeSet);
                 }
 
                 KeyData keyData = new KeyData(legacyKeyId, bcpKeyId, typeDataMap, specialTypes);

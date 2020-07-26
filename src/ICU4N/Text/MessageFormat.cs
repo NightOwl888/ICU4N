@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using JCG = J2N.Collections.Generic;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -937,7 +938,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.8</stable>
         public virtual ICollection<string> GetArgumentNames() // ICU4N specific - changed from ISet to ICollection
         {
-            ICollection<string> result = new HashSet<string>();
+            ICollection<string> result = new JCG.HashSet<string>();
             for (int partIndex = 0; (partIndex = NextTopLevelArgStart(partIndex)) >= 0;)
             {
                 result.Add(GetArgName(partIndex + 1));
@@ -1618,11 +1619,7 @@ namespace ICU4N.Text
 
             if (customFormatArgStarts != null)
             {
-                other.customFormatArgStarts = new HashSet<int>();
-                foreach (var key in customFormatArgStarts)
-                {
-                    other.customFormatArgStarts.Add(key);
-                }
+                other.customFormatArgStarts = new JCG.HashSet<int>(customFormatArgStarts);
             }
             else
             {
@@ -2810,7 +2807,7 @@ namespace ICU4N.Text
             SetArgStartFormat(argStart, formatter);
             if (customFormatArgStarts == null)
             {
-                customFormatArgStarts = new HashSet<int>();
+                customFormatArgStarts = new JCG.HashSet<int>(1);
             }
             customFormatArgStarts.Add(argStart);
         }

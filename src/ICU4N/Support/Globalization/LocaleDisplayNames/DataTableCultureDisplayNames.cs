@@ -11,6 +11,7 @@ using System.Linq;
 using System.Resources;
 using System.Text;
 using System.Threading;
+using JCG = J2N.Collections.Generic;
 
 // Port of impl.LocaleDisplayNamesImpl from ICU4J
 
@@ -573,7 +574,7 @@ namespace ICU4N.Globalization
                 UCultureInfo @base = new UCultureInfo(loc.Language);
                 if (!baseToLocales.TryGetValue(@base, out ISet<UCultureInfo> locales) || locales == null)
                 {
-                    baseToLocales[@base] = locales = new HashSet<UCultureInfo>();
+                    baseToLocales[@base] = locales = new JCG.HashSet<UCultureInfo>(1);
                 }
                 locales.Add(loc);
             }
@@ -590,8 +591,8 @@ namespace ICU4N.Globalization
                 }
                 else
                 {
-                    ISet<string> scripts = new HashSet<string>();
-                    ISet<string> regions = new HashSet<string>();
+                    ISet<string> scripts = new JCG.HashSet<string>(values.Count + 1);
+                    ISet<string> regions = new JCG.HashSet<string>(values.Count + 1);
                     // need the follow two steps to make sure that unusual scripts or regions are displayed
                     UCultureInfo maxBase = UCultureInfo.AddLikelySubtags(@base);
                     scripts.Add(maxBase.Script);

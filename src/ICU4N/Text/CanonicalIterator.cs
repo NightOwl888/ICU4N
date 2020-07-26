@@ -3,6 +3,7 @@ using J2N;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using JCG = J2N.Collections.Generic;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -205,7 +206,7 @@ namespace ICU4N.Text
             }
 
             // otherwise iterate through the string, and recursively permute all the other characters
-            ISet<string> subpermute = new HashSet<string>();
+            ISet<string> subpermute = new JCG.HashSet<string>();
             int cp;
             for (int i = 0; i < source.Length; i += UTF16.GetCharCount(cp))
             {
@@ -280,9 +281,9 @@ namespace ICU4N.Text
         // we have a segment, in NFD. Find all the strings that are canonically equivalent to it.
         private string[] GetEquivalents(string segment)
         {
-            ISet<string> result = new HashSet<string>();
+            ISet<string> result = new JCG.HashSet<string>();
             ISet<string> basic = GetEquivalents2(segment);
-            ISet<string> permutations = new HashSet<string>();
+            ISet<string> permutations = new JCG.HashSet<string>();
 
             // now get all the permutations
             // add only the ones that are canonically equivalent
@@ -332,7 +333,7 @@ namespace ICU4N.Text
         private ISet<string> GetEquivalents2(string segment)
         {
 
-            ISet<string> result = new HashSet<string>();
+            ISet<string> result = new JCG.HashSet<string>();
 
             if (PROGRESS) Console.Out.WriteLine("Adding: " + Utility.Hex(segment));
 

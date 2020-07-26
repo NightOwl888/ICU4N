@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Text
 {
@@ -2538,8 +2539,8 @@ namespace ICU4N.Text
 
             // Compute if the quick test is insufficient.
 
-            HashSet<Double> subtractedSet = new HashSet<Double>(values);
-            foreach (Double @explicit in explicits)
+            var subtractedSet = new JCG.HashSet<double>(values);
+            foreach (double @explicit in explicits)
             {
                 subtractedSet.Remove(@explicit - offset);
             }

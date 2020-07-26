@@ -1,6 +1,7 @@
 ﻿using ICU4N.Impl;
 using System;
 using System.Collections.Generic;
+using JCG = J2N.Collections.Generic;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -116,8 +117,8 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public IDNAInfo()
         {
-            errors = new HashSet<IDNAError>();
-            labelErrors = new HashSet<IDNAError>();
+            errors = new JCG.HashSet<IDNAError>();
+            labelErrors = new JCG.HashSet<IDNAError>();
             isTransDiff = false;
             isBiDi = false;
             isOkBiDi = true;
