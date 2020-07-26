@@ -98,7 +98,18 @@ namespace ICU4N.Text
                 throw new IndexOutOfRangeException(nameof(offset16));
             }
 
-            char single = source[offset16];
+            // ICU4N: In .NET, the StringBuilder indexer is extremely slow,
+            // so we just get the chars that we are interested in and copy them
+            // to an array.
+
+            int newOffset = offset16 == 0 ? 0 : 1;
+            int newLength = (offset16 == source.Length - 1 ? 1 : 2) + newOffset;
+            char[] source2 = new char[newLength];
+
+            source.CopyTo(offset16 - newOffset, source2, 0, newLength);
+            offset16 = newOffset;
+
+            char single = source2[offset16];
             if (!IsSurrogate(single))
             {
                 return single;
@@ -111,9 +122,9 @@ namespace ICU4N.Text
             if (single <= LeadSurrogateMaxValue)
             {
                 ++offset16;
-                if (source.Length != offset16)
+                if (source2.Length != offset16)
                 {
-                    char trail = source[offset16];
+                    char trail = source2[offset16];
                     if (IsTrailSurrogate(trail))
                         return Character.ToCodePoint(single, trail);
                 }
@@ -124,7 +135,7 @@ namespace ICU4N.Text
                 if (offset16 >= 0)
                 {
                     // single is a trail surrogate so
-                    char lead = source[offset16];
+                    char lead = source2[offset16];
                     if (IsLeadSurrogate(lead))
                     {
                         return Character.ToCodePoint(lead, single);
