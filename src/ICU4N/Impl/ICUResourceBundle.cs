@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Resources;
 using System.Text;
+using JCG = J2N.Collections.Generic;
 using ReaderValue = ICU4N.Impl.ICUResourceBundleReader.ReaderValue;
 
 namespace ICU4N.Impl
@@ -266,7 +267,7 @@ namespace ICU4N.Impl
         /// <internal>ICU 3.0</internal>
         public static string[] GetKeywordValues(string baseName, string keyword, Assembly assembly) // ICU4N specific - passing in assembly so submodules can override
         {
-            ISet<string> keywords = new HashSet<string>();
+            ISet<string> keywords = new JCG.HashSet<string>();
             UCultureInfo[] locales = GetAvailEntry(baseName, assembly).GetUCultureList(UCultureTypes.AllCultures); // ICU4N specific - passing in assembly so submodules can override
             int i;
 
@@ -611,15 +612,11 @@ namespace ICU4N.Impl
         public static CultureInfo[] GetCultureList(UCultureInfo[] ulocales) // ICU4N: Since this list is cached in AvailEntry, we don't need to put a filter on it here
         {
             List<CultureInfo> list = new List<CultureInfo>(ulocales.Length);
-            HashSet<CultureInfo> uniqueSet = new HashSet<CultureInfo>();
             for (int i = 0; i < ulocales.Length; i++)
             {
                 CultureInfo loc = ulocales[i].ToCultureInfo();
-                if (!uniqueSet.Contains(loc))
-                {
+                if (!list.Contains(loc))
                     list.Add(loc);
-                    uniqueSet.Add(loc);
-                }
             }
             return list.ToArray();
         }
@@ -760,7 +757,7 @@ namespace ICU4N.Impl
         private static ISet<string> CreateFullLocaleNameSet(string baseName, Assembly assembly)
         {
             string bn = baseName.EndsWith("/", StringComparison.Ordinal) ? baseName : baseName + "/";
-            ISet<string> set = new HashSet<string>();
+            ISet<string> set = new JCG.HashSet<string>();
             string skipScan = ICUConfig.Get("ICUResourceBundle.SkipRuntimeLocaleResourceScan", "false");
             if (!skipScan.Equals("true", StringComparison.OrdinalIgnoreCase))
             {
@@ -820,14 +817,14 @@ namespace ICU4N.Impl
             // We need to have the root locale in the set, but not as "root".
             set.Remove("root");
             set.Add(UCultureInfo.InvariantCulture.ToString());  // ""
-            return (set).AsReadOnly();
+            return set.AsReadOnly();
         }
 
         private static ISet<string> CreateLocaleNameSet(string baseName, Assembly assembly)
         {
-            HashSet<string> set = new HashSet<string>();
+            var set = new JCG.HashSet<string>();
             AddLocaleIDsFromIndexBundle(baseName, assembly, set);
-            return (set).AsReadOnly();
+            return set.AsReadOnly();
         }
 
         /// <summary>
