@@ -40,5 +40,8 @@ namespace ICU4N.Support
         {
             return Value.ToString(format, provider);
         }
+
+        public static implicit operator double(Double dbl) => dbl.Value;
+        public static implicit operator Double(double value) => new Double(value);
     }
 }

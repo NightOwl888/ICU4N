@@ -42,5 +42,8 @@ namespace ICU4N.Support
                 return 1;
             return this.Value.CompareTo(other.Value);
         }
+
+        public static implicit operator int(Integer integer) => integer.Value;
+        public static implicit operator Integer(int value) => new Integer(value);
     }
 }

@@ -29,5 +29,8 @@ namespace ICU4N.Support
             }
             return Value.Equals(obj);
         }
+
+        public static implicit operator long(Long lng) => lng.Value;
+        public static implicit operator Long(long value) => new Long(value);
     }
 }

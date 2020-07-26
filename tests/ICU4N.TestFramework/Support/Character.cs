@@ -26,5 +26,8 @@ namespace ICU4N.Support
             }
             return Value.Equals(obj);
         }
+
+        public static implicit operator char(Character ch) => ch.Value;
+        public static implicit operator Character(char value) => new Character(value);
     }
 }
