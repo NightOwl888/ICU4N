@@ -260,9 +260,9 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Group use
         /// </summary>
-        private static char[] GROUP_OFFSETS_ =
+        private static readonly char[] GROUP_OFFSETS_ =
                                     new char[UCharacterName.LinesPerGroup + 1];
-        private static char[] GROUP_LENGTHS_ =
+        private static readonly char[] GROUP_LENGTHS_ =
                                     new char[UCharacterName.LinesPerGroup + 1];
 
         /// <summary>
@@ -283,31 +283,28 @@ namespace ICU4N.Globalization
         /// iteration.</returns>
         private bool IterateSingleGroup(ValueEnumeratorElement result, int limit)
         {
-            lock (GROUP_OFFSETS_)
+            lock (GROUP_OFFSETS_) // ICU4N: Removed unnecessary redundant lock
             {
-                lock (GROUP_LENGTHS_)
+                int index = m_name_.GetGroupLengths(m_groupIndex_, GROUP_OFFSETS_,
+                                                    GROUP_LENGTHS_);
+                while (m_current_ < limit)
                 {
-                    int index = m_name_.GetGroupLengths(m_groupIndex_, GROUP_OFFSETS_,
-                                                        GROUP_LENGTHS_);
-                    while (m_current_ < limit)
+                    int offset = UCharacterName.GetGroupOffset(m_current_);
+                    string name = m_name_.GetGroupName(
+                                                index + GROUP_OFFSETS_[offset],
+                                                GROUP_LENGTHS_[offset], (UCharacterNameChoice)m_choice_);
+                    if (string.IsNullOrEmpty(name) &&
+                        m_choice_ == (int)UCharacterNameChoice.ExtendedCharName)
                     {
-                        int offset = UCharacterName.GetGroupOffset(m_current_);
-                        string name = m_name_.GetGroupName(
-                                                  index + GROUP_OFFSETS_[offset],
-                                                  GROUP_LENGTHS_[offset], (UCharacterNameChoice)m_choice_);
-                        if ((name == null || name.Length == 0) &&
-                            m_choice_ == (int)UCharacterNameChoice.ExtendedCharName)
-                        {
-                            name = m_name_.GetExtendedName(m_current_);
-                        }
-                        if (name != null && name.Length > 0)
-                        {
-                            result.Integer = m_current_;
-                            result.Value = name;
-                            return false;
-                        }
-                        ++m_current_;
+                        name = m_name_.GetExtendedName(m_current_);
                     }
+                    if (!string.IsNullOrEmpty(name))
+                    {
+                        result.Integer = m_current_;
+                        result.Value = name;
+                        return false;
+                    }
+                    ++m_current_;
                 }
             }
             return true;
