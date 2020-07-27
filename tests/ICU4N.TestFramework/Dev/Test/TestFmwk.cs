@@ -15,6 +15,7 @@ using System.Threading;
 using J2N.Collections.Generic;
 using Random = System.Random;
 using StringBuffer = System.Text.StringBuilder;
+using ICU4N.Text;
 
 namespace ICU4N.Dev.Test
 {
@@ -749,6 +750,13 @@ namespace ICU4N.Dev.Test
         protected static bool assertEquals<T>(string message, ISet<T> expected, ISet<T> actual)
         {
             bool result = SetEqualityComparer<T>.Aggressive.Equals(expected, actual);
+            return handleAssert(result, message, StringFor(expected),
+                StringFor(actual));
+        }
+
+        protected static bool assertEquals(string message, UnicodeSet expected, UnicodeSet actual)
+        {
+            bool result = expected == null ? actual == null : expected.Equals(actual);
             return handleAssert(result, message, StringFor(expected),
                 StringFor(actual));
         }
