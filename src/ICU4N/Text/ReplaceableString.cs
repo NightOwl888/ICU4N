@@ -1,5 +1,4 @@
-﻿using ICU4N.Support.Text;
-using J2N.Text;
+﻿using J2N.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -18,7 +17,11 @@ namespace ICU4N.Text
     /// <stable>ICU 2.0</stable>
     public class ReplaceableString : IReplaceable
     {
-        private StringBuffer buf;
+        private readonly StringBuffer buf;
+        private bool changed; // ICU4N specific
+        private int previousLength; // ICU4N specific
+        private int previousHashCode; // ICU4N specific
+        private string realized; // ICU4N specific
 
         /// <summary>
         /// Construct a new object with the given initial contents.
@@ -28,6 +31,9 @@ namespace ICU4N.Text
         public ReplaceableString(string str)
         {
             buf = new StringBuffer(str);
+            previousLength = buf.Length;
+            realized = str;
+            previousHashCode = buf.GetHashCode();
         }
 
         /// <summary>
@@ -36,6 +42,15 @@ namespace ICU4N.Text
         /// construction are used as the initial contents.  <em>Note!
         /// Modifications to <paramref name="buf"/> will modify this object, and
         /// vice versa.</em>
+        /// <para/>
+        /// Usage Note: If you are making external changes to a <see cref="StringBuffer"/>
+        /// that is passed into this constructor, it is recommended to call
+        /// <see cref="ReplaceableString.ToString()"/> if the contents of the
+        /// <see cref="StringBuffer"/> changed but the length did not change before
+        /// calling <see cref="ReplaceableString.Char32At(int)"/>. Since the indexer of the
+        /// <see cref="StringBuffer"/> in .NET is slow, the contents are cached internally
+        /// so multiple calls to <see cref="ReplaceableString.Char32At(int)"/> in a row are not expensive.
+        /// <see cref="ReplaceableString.ToString()"/> forces a reload of the cache.
         /// </summary>
         /// <param name="buf">Object to be used as internal storage.</param>
         /// <stable>ICU 2.0</stable>
@@ -60,7 +75,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public override string ToString()
         {
-            return buf.ToString();
+            return RealizeString();
         }
 
         /// <summary>
@@ -103,13 +118,32 @@ namespace ICU4N.Text
         /// with surrogate pairs intermixed.  If the offset of a leading or
         /// trailing code unit of a surrogate pair is given, return the
         /// code point of the surrogate pair.
+        /// <para/>
+        /// Usage Note: If you are making external changes to a <see cref="StringBuffer"/>
+        /// that is passed into the <see cref="ReplaceableString"/> constructor,
+        /// it is recommended to call <see cref="ReplaceableString.ToString()"/> if
+        /// the contents of the <see cref="StringBuffer"/> changed but the length
+        /// did not change before calling this method. Since the indexer of the
+        /// <see cref="StringBuffer"/> in .NET is slow, the contents are cached internally
+        /// so multiple calls to this method in a row are not expensive.
+        /// <see cref="ReplaceableString.ToString()"/> forces a reload of the cache.
         /// </summary>
         /// <param name="offset">An integer between 0 and <see cref="Length"/>-1 inclusive.</param>
         /// <returns>32-bit code point of text at given offset.</returns>
         /// <stable>ICU 2.0</stable>
         public virtual int Char32At(int offset)
         {
-            return UTF16.CharAt(buf, offset);
+            // ICU4N: In .NET, the StringBuilder indexer is extremely slow,
+            // so we realize (cache) a string whenever a change is detected.
+            // GetHashCode() is not a 100% reliable way to determine if the contents
+            // of the StringBuilder have changed but more reliable than Length.
+            // The Length property is a bit cheaper, so we check that first.
+
+            string realizedString = realized;
+            if (realizedString is null || changed || previousLength != buf.Length || previousHashCode != buf.GetHashCode())
+                realizedString = RealizeString();
+
+            return UTF16.CharAt(realizedString, offset);
         }
 
         /// <summary>
@@ -152,6 +186,7 @@ namespace ICU4N.Text
         public virtual void Replace(int startIndex, int count, string text) // ICU4N: Made 2nd parameter into count rather than limit
         {
             buf.Replace(startIndex, count, text);
+            changed = true;
         }
 
         /// <summary>
@@ -168,6 +203,7 @@ namespace ICU4N.Text
         {
             buf.Delete(startIndex, count);
             buf.Insert(startIndex, chars, charsStart, charsLen);
+            changed = true;
         }
 
         /// <summary>
@@ -193,6 +229,7 @@ namespace ICU4N.Text
             //getChars(start, limit, text, 0);
             CopyTo(startIndex, text, 0, length); // ICU4N: Corrected 4th parameter
             Replace(destinationIndex, destinationIndex - destinationIndex, text, 0, length); // ICU4N: Corrected 2nd and 5th Replace parameters
+            changed = true;
         }
 
         /// <summary>
@@ -202,6 +239,21 @@ namespace ICU4N.Text
         public virtual bool HasMetaData
         {
             get { return false; }
+        }
+
+        /// <summary>
+        /// Caches the string from the internal <see cref="StringBuffer"/>
+        /// so when we call <see cref="UTF16.CharAt(string, int)"/>, we can
+        /// use a <see cref="string"/> which is much faster to index over.
+        /// </summary>
+        /// <returns>The realized string.</returns>
+        private string RealizeString() // ICU4N specific
+        {
+            realized = buf.ToString();
+            changed = false;
+            previousLength = buf.Length;
+            previousHashCode = buf.GetHashCode();
+            return realized;
         }
     }
 }
