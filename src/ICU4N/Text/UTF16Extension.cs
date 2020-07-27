@@ -27,17 +27,20 @@ namespace ICU4N.Text
         /// <param name="source">Array of UTF-16 chars</param>
         /// <param name="offset16">UTF-16 offset to the start of the character.</param>
         /// <returns>
-        /// UTF-32 value for the UTF-32 value that contains the char at offset16. The boundaries
+        /// UTF-32 value for the UTF-32 value that contains the char at <paramref name="offset16"/>. The boundaries
         /// of that codepoint are the same as in <c>Bounds32()</c>.
         /// </returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown if offset16 is out of bounds.</exception>
+        /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is out of bounds.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
         /// <stable>ICU 2.1</stable>
         public static int CharAt(string source, int offset16)
         {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
             if (offset16 < 0 || offset16 >= source.Length)
-            {
                 throw new IndexOutOfRangeException(nameof(offset16));
-            }
+
 
             char single = source[offset16];
             if (!IsSurrogate(single))
@@ -86,17 +89,19 @@ namespace ICU4N.Text
         /// <param name="source">Array of UTF-16 chars</param>
         /// <param name="offset16">UTF-16 offset to the start of the character.</param>
         /// <returns>
-        /// UTF-32 value for the UTF-32 value that contains the char at offset16. The boundaries
+        /// UTF-32 value for the UTF-32 value that contains the char at <paramref name="offset16"/>. The boundaries
         /// of that codepoint are the same as in <c>Bounds32()</c>.
         /// </returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown if offset16 is out of bounds.</exception>
+        /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is out of bounds.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
         /// <stable>ICU 2.1</stable>
         public static int CharAt(StringBuilder source, int offset16)
         {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
             if (offset16 < 0 || offset16 >= source.Length)
-            {
                 throw new IndexOutOfRangeException(nameof(offset16));
-            }
 
             // ICU4N: In .NET, the StringBuilder indexer is extremely slow,
             // so we just get the chars that we are interested in and copy them
@@ -104,12 +109,12 @@ namespace ICU4N.Text
 
             int newOffset = offset16 == 0 ? 0 : 1;
             int newLength = (offset16 == source.Length - 1 ? 1 : 2) + newOffset;
-            char[] source2 = new char[newLength];
+            char[] newSource = new char[newLength];
 
-            source.CopyTo(offset16 - newOffset, source2, 0, newLength);
+            source.CopyTo(offset16 - newOffset, newSource, 0, newLength);
             offset16 = newOffset;
 
-            char single = source2[offset16];
+            char single = newSource[offset16];
             if (!IsSurrogate(single))
             {
                 return single;
@@ -122,9 +127,9 @@ namespace ICU4N.Text
             if (single <= LeadSurrogateMaxValue)
             {
                 ++offset16;
-                if (source2.Length != offset16)
+                if (newSource.Length != offset16)
                 {
-                    char trail = source2[offset16];
+                    char trail = newSource[offset16];
                     if (IsTrailSurrogate(trail))
                         return Character.ToCodePoint(single, trail);
                 }
@@ -135,7 +140,7 @@ namespace ICU4N.Text
                 if (offset16 >= 0)
                 {
                     // single is a trail surrogate so
-                    char lead = source2[offset16];
+                    char lead = newSource[offset16];
                     if (IsLeadSurrogate(lead))
                     {
                         return Character.ToCodePoint(lead, single);
@@ -156,17 +161,20 @@ namespace ICU4N.Text
         /// <param name="source">Array of UTF-16 chars</param>
         /// <param name="offset16">UTF-16 offset to the start of the character.</param>
         /// <returns>
-        /// UTF-32 value for the UTF-32 value that contains the char at offset16. The boundaries
+        /// UTF-32 value for the UTF-32 value that contains the char at <paramref name="offset16"/>. The boundaries
         /// of that codepoint are the same as in <c>Bounds32()</c>.
         /// </returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown if offset16 is out of bounds.</exception>
+        /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is out of bounds.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
         /// <stable>ICU 2.1</stable>
         public static int CharAt(char[] source, int offset16)
         {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
             if (offset16 < 0 || offset16 >= source.Length)
-            {
                 throw new IndexOutOfRangeException(nameof(offset16));
-            }
+
 
             char single = source[offset16];
             if (!IsSurrogate(single))
@@ -215,17 +223,20 @@ namespace ICU4N.Text
         /// <param name="source">Array of UTF-16 chars</param>
         /// <param name="offset16">UTF-16 offset to the start of the character.</param>
         /// <returns>
-        /// UTF-32 value for the UTF-32 value that contains the char at offset16. The boundaries
+        /// UTF-32 value for the UTF-32 value that contains the char at <paramref name="offset16"/>. The boundaries
         /// of that codepoint are the same as in <c>Bounds32()</c>.
         /// </returns>
-        /// <exception cref="IndexOutOfRangeException">Thrown if offset16 is out of bounds.</exception>
+        /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is out of bounds.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
         /// <stable>ICU 2.1</stable>
         public static int CharAt(ICharSequence source, int offset16)
         {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
             if (offset16 < 0 || offset16 >= source.Length)
-            {
                 throw new IndexOutOfRangeException(nameof(offset16));
-            }
+
 
             char single = source[offset16];
             if (!IsSurrogate(single))
@@ -531,5 +542,5 @@ namespace ICU4N.Text
             return strLen == Character.CharCount(codePoint) ? 0 : -1;
         }
 
-	}
+    }
 }
