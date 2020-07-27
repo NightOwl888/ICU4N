@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Threading;
 
 namespace ICU4N.Impl
 {
@@ -79,6 +80,8 @@ namespace ICU4N.Impl
     /// </remarks>
     public class ICUService : ICUNotifier
     {
+        private readonly object syncLock = new object();
+
         /// <summary>
         /// Name used for debugging.
         /// </summary>
@@ -432,9 +435,9 @@ namespace ICU4N.Impl
         /// </summary>
         private IDictionary<string, IServiceFactory> GetVisibleIDMap()
         {
-            lock (this)
-            { // or idcache-only lock?
-                if (idcache == null)
+            if (idcache == null)
+            {
+                LazyInitializer.EnsureInitialized(ref idcache, () =>
                 {
                     try
                     {
@@ -446,14 +449,15 @@ namespace ICU4N.Impl
                             f.UpdateVisibleIDs(mutableMap);
                         }
 
-                        this.idcache = mutableMap.AsReadOnly();
+                        return mutableMap.AsReadOnly();
                     }
                     finally
                     {
                         factoryLock.ReleaseRead();
                     }
-                }
+                });
             }
+
             return idcache;
         }
         private IDictionary<string, IServiceFactory> idcache;
@@ -566,7 +570,7 @@ namespace ICU4N.Impl
         /// </summary>
         public virtual IDictionary<string, string> GetDisplayNames(UCultureInfo locale, IComparer<string> com, string matchID)
         {
-            SortedDictionary<string, string> dncache = null;
+            IDictionary<string, string> dncache = null;
             LocaleRef reference = dnref;
 
             if (reference != null)
@@ -576,25 +580,20 @@ namespace ICU4N.Impl
 
             while (dncache == null)
             {
-                lock (this)
+                lock (syncLock)
                 {
                     if (reference == dnref || dnref == null)
                     {
                         dncache = new SortedDictionary<string, string>(com); // sorted
 
-                        IDictionary<string, IServiceFactory> m = GetVisibleIDMap();
-                        using (var ei = m.GetEnumerator())
+                        foreach (var e in GetVisibleIDMap())
                         {
-                            while (ei.MoveNext())
-                            {
-                                var e = ei.Current;
-                                string id = e.Key;
-                                IServiceFactory f = e.Value;
-                                dncache[f.GetDisplayName(id, locale)] = id;
-                            }
+                            string id = e.Key;
+                            IServiceFactory f = e.Value;
+                            dncache[f.GetDisplayName(id, locale)] = id;
                         }
 
-                        //dncache = dncache.AsReadOnly();
+                        dncache = dncache.AsReadOnly();
                         dnref = new LocaleRef(dncache, locale, com);
                     }
                     else
@@ -613,7 +612,7 @@ namespace ICU4N.Impl
 
             // ICU4N: Rather than copying and then removing the items (which isn't allowed with
             // .NET iterators), we reverse the logic and add the items only if they are fallback.
-            IDictionary<string, string> result = new SortedDictionary<string, string>(dncache.Comparer);
+            IDictionary<string, string> result = new SortedDictionary<string, string>(com);
             foreach (var e in dncache)
             {
                 if (matchKey.IsFallbackOf(e.Value))
@@ -629,10 +628,10 @@ namespace ICU4N.Impl
         private class LocaleRef
         {
             private readonly UCultureInfo locale;
-            private readonly SortedDictionary<string, string> dnCache;
+            private readonly IDictionary<string, string> dnCache;
             private readonly IComparer<string> com;
 
-            internal LocaleRef(SortedDictionary<string, string> dnCache, UCultureInfo locale, IComparer<string> com)
+            internal LocaleRef(IDictionary<string, string> dnCache, UCultureInfo locale, IComparer<string> com)
             {
                 this.locale = locale;
                 this.com = com;
@@ -640,9 +639,9 @@ namespace ICU4N.Impl
             }
 
 
-            internal virtual SortedDictionary<string, string> Get(UCultureInfo loc, IComparer<string> comp)
+            internal virtual IDictionary<string, string> Get(UCultureInfo loc, IComparer<string> comp)
             {
-                SortedDictionary<string, string> m = dnCache;
+                IDictionary<string, string> m = dnCache;
                 if (m != null &&
                     this.locale.Equals(loc) &&
                     (this.com == comp || (this.com != null && this.com.Equals(comp))))
