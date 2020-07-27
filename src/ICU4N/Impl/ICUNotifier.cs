@@ -135,7 +135,7 @@ namespace ICU4N.Impl
         private class NotifyThread : ThreadJob
         {
             private readonly ICUNotifier notifier;
-            private readonly List<IEventListener[]> queue = new List<IEventListener[]>();
+            private readonly Queue<IEventListener[]> queue = new Queue<IEventListener[]>();
 
             internal NotifyThread(ICUNotifier notifier)
             {
@@ -149,7 +149,7 @@ namespace ICU4N.Impl
             {
                 lock (this)
                 {
-                    queue.Add(list);
+                    queue.Enqueue(list);
                     Monitor.Pulse(this);
                 }
             }
@@ -167,20 +167,19 @@ namespace ICU4N.Impl
                     try
                     {
 #endif
-                    lock (this)
-                    {
-                        while (queue.Count == 0)
+                        lock (this)
                         {
-                            Monitor.Wait(this);
+                            while (queue.Count == 0)
+                            {
+                                Monitor.Wait(this);
+                            }
+                            list = queue.Dequeue();
                         }
-                        list = queue[0];
-                        queue.RemoveAt(0);
-                    }
 
-                    for (int i = 0; i < list.Length; ++i)
-                    {
-                        notifier.NotifyListener(list[i]);
-                    }
+                        for (int i = 0; i < list.Length; ++i)
+                        {
+                            notifier.NotifyListener(list[i]);
+                        }
 #if FEATURE_THREADINTERRUPT
                     }
                     catch (ThreadInterruptedException)
