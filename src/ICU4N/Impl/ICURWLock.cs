@@ -95,7 +95,7 @@ namespace ICU4N.Impl
     public class ICUReaderWriterLock
     {
         private readonly ReaderWriterLockSlim rwl = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-
+        private readonly object syncLock = new object();
         private ICUReaderWriterLockStats stats = null;
 
         // ICU4N specific - de-nested Stats and renamed ICUReaderWriterLockStats
@@ -105,7 +105,7 @@ namespace ICU4N.Impl
         /// </summary>
         public virtual ICUReaderWriterLockStats ResetStats()
         {
-            lock (this)
+            lock (syncLock)
             {
                 ICUReaderWriterLockStats result = stats;
                 stats = new ICUReaderWriterLockStats();
@@ -118,7 +118,7 @@ namespace ICU4N.Impl
         /// </summary>
         public virtual ICUReaderWriterLockStats ClearStats()
         {
-            lock (this)
+            lock (syncLock)
             {
                 ICUReaderWriterLockStats result = stats;
                 stats = null;
@@ -131,7 +131,7 @@ namespace ICU4N.Impl
         /// </summary>
         public virtual ICUReaderWriterLockStats GetStats()
         {
-            lock (this)
+            lock (syncLock)
             {
                 return stats == null ? null : new ICUReaderWriterLockStats(stats);
             }
@@ -152,7 +152,7 @@ namespace ICU4N.Impl
         {
             if (stats != null)
             {    // stats is null by default
-                lock (this)
+                lock (syncLock)
                 {
                     stats.ReadCount++;
                     if (rwl.CurrentReadCount > 0)
@@ -198,7 +198,7 @@ namespace ICU4N.Impl
         {
             if (stats != null)
             {    // stats is null by default
-                lock (this)
+                lock (syncLock)
                 {
                     stats.WriterCount++;
                     if (rwl.CurrentReadCount > 0 || rwl.IsWriteLockHeld)
