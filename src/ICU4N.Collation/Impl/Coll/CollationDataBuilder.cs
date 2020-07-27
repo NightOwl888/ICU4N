@@ -1361,7 +1361,9 @@ namespace ICU4N.Impl.Coll
             StringBuilder context = new StringBuilder();
             context.Append((char)(defaultCE32 >> 16)).Append((char)defaultCE32);
             context.Append(trieBuilder.BuildCharSequence(TrieBuilderOption.Small));
-            int index = contexts.IndexOf(context.ToString(), StringComparison.Ordinal);
+            // ICU4N: IndexOf method on StringBuilder is extremely slow, so we call ToString() first,
+            // which generally gets better performance.
+            int index = contexts.ToString().IndexOf(context.ToString(), StringComparison.Ordinal);
             if (index < 0)
             {
                 index = contexts.Length;
