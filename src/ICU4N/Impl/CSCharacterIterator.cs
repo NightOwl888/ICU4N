@@ -116,26 +116,17 @@ namespace ICU4N.Impl
         /// <summary>
         /// Gets the begin index. Returns the index of the first character of the iteration.
         /// </summary>
-        public override int BeginIndex
-        {
-            get { return 0; }
-        }
+        public override int BeginIndex => 0;
 
         /// <summary>
         /// Gets the end index. Returns the index one past the last character of the iteration.
         /// </summary>
-        public override int EndIndex
-        {
-            get { return seq.Length; }
-        }
+        public override int EndIndex => seq.Length;
 
         /// <summary>
         /// Gets the current index.
         /// </summary>
-        public override int Index
-        {
-            get { return index; }
-        }
+        public override int Index => index;
 
 #if FEATURE_CLONEABLE
         /// <summary>

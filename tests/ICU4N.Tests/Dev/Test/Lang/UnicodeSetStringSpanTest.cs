@@ -142,7 +142,7 @@ namespace ICU4N.Dev.Test.Lang
         private class UnicodeSetWithStrings
         {
             private UnicodeSet set;
-            private ICollection<String> setStrings;
+            private ICollection<string> setStrings;
             private int stringsLength;
 
             public UnicodeSetWithStrings(UnicodeSet normalSet)
@@ -152,26 +152,17 @@ namespace ICU4N.Dev.Test.Lang
                 stringsLength = setStrings.Count;
             }
 
-            public UnicodeSet Set
-            {
-                get { return set; }
-            }
+            public UnicodeSet Set => set;
 
-            public virtual bool HasStrings
-            {
-                get { return (stringsLength > 0); }
-            }
+            public virtual bool HasStrings => stringsLength > 0;
 
-            public IEnumerable<String> Strings
-            {
-                get { return setStrings; }
-            }
+            public IEnumerable<string> Strings => setStrings;
         }
 
         // Compare 16-bit Unicode strings (which may be malformed UTF-16)
         // at code point boundaries.
         // That is, each edge of a match must not be in the middle of a surrogate pair.
-        internal static bool Matches16CPB(String s, int start, int limit, String t)
+        internal static bool Matches16CPB(string s, int start, int limit, string t)
         {
             limit -= start;
             int length = t.Length;
@@ -183,7 +174,7 @@ namespace ICU4N.Dev.Test.Lang
         }
 
         // Implement span() with contains() for comparison.
-        private static int ContainsSpanUTF16(UnicodeSetWithStrings set, String s,
+        private static int ContainsSpanUTF16(UnicodeSetWithStrings set, string s,
                 SpanCondition spanCondition)
         {
             UnicodeSet realSet = set.Set;

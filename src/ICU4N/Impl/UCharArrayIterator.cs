@@ -26,19 +26,13 @@ namespace ICU4N.Impl
             this.pos = start;
         }
 
-        public override int Current
-        {
-            get { return pos < limit ? text[pos] : Done; }
-        }
+        public override int Current => pos < limit ? text[pos] : Done;
 
-        public override int Length
-        {
-            get { return limit - start; }
-        }
+        public override int Length => limit - start;
 
         public override int Index
         {
-            get { return pos - start; }
+            get => pos - start;
             set
             {
                 if (value < 0 || value > limit - start)

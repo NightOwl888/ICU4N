@@ -13,27 +13,24 @@
             _errorMsg = null;
         }
 
-        public bool IsError
-        {
-            get { return (_errorIndex >= 0); }
-        }
+        public bool IsError => _errorIndex >= 0;
 
         public int ErrorIndex
         {
-            get { return _errorIndex; }
-            internal set { _errorIndex = value; }
+            get => _errorIndex;
+            internal set => _errorIndex = value;
         }
 
         public int ParseLength
         {
-            get { return _parseLength; }
-            internal set { _parseLength = value; }
+            get => _parseLength;
+            internal set => _parseLength = value;
         }
 
         public string ErrorMessage
         {
-            get { return _errorMsg; }
-            internal set { _errorMsg = value; }
+            get => _errorMsg;
+            internal set => _errorMsg = value;
         }
     }
 }

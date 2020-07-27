@@ -112,10 +112,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns true if this iterator has no more characters to return.
         /// </summary>
-        public virtual bool AtEnd
-        {
-            get { return buf == null && pos.Index == text.Length; }
-        }
+        public virtual bool AtEnd => buf == null && pos.Index == text.Length;
 
         /// <summary>
         /// Returns the next character using the given options, or <see cref="Done"/> if there
@@ -193,18 +190,12 @@ namespace ICU4N.Impl
         /// <see cref="RuleCharacterIteratorOptions.ParseEscapes"/> and the next character was an
         /// escape sequence.
         /// </summary>
-        public virtual bool IsEscaped
-        {
-            get { return isEscaped; }
-        }
+        public virtual bool IsEscaped => isEscaped;
 
         /// <summary>
         /// Returns true if this iterator is currently within a variable expansion.
         /// </summary>
-        public virtual bool InVariable
-        {
-            get { return buf != null; }
-        }
+        public virtual bool InVariable => buf != null;
 
         /// <summary>
         /// Returns an object which, when later passed to <see cref="SetPos(object)"/>, will

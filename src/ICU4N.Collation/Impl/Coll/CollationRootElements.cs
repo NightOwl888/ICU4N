@@ -71,34 +71,26 @@ namespace ICU4N.Impl.Coll
         /// This minus one is the lower limit for tertiaries of tertiary CEs.
         /// </summary>
         public int TertiaryBoundary
-        {
-            get { return ((int)elements[IX_SEC_TER_BOUNDARIES] << 8) & 0xff00; }
-        }
+            => ((int)elements[IX_SEC_TER_BOUNDARIES] << 8) & 0xff00;
 
         /// <summary>
         /// Gets the first assigned tertiary CE.
         /// </summary>
         internal long FirstTertiaryCE
-        {
-            get { return elements[(int)elements[IX_FIRST_TERTIARY_INDEX]] & ~SecondaryTertiaryDeltaFlag; }
-        }
+            => elements[(int)elements[IX_FIRST_TERTIARY_INDEX]] & ~SecondaryTertiaryDeltaFlag;
 
         /// <summary>
         /// Gets the last assigned tertiary CE.
         /// </summary>
         internal long LastTertiaryCE
-        {
-            get { return elements[(int)elements[IX_FIRST_SECONDARY_INDEX] - 1] & ~SecondaryTertiaryDeltaFlag; }
-        }
+            => elements[(int)elements[IX_FIRST_SECONDARY_INDEX] - 1] & ~SecondaryTertiaryDeltaFlag;
 
         /// <summary>
         /// Gets the last common secondary weight.
         /// This is the lower limit for secondaries of primary CEs.
         /// </summary>
         public int LastCommonSecondary
-        {
-            get { return ((int)elements[IX_SEC_TER_BOUNDARIES] >> 16) & 0xff00; }
-        }
+            => ((int)elements[IX_SEC_TER_BOUNDARIES] >> 16) & 0xff00;
 
         /// <summary>
         /// Gets the boundary between secondary weights of primary CEs
@@ -107,41 +99,31 @@ namespace ICU4N.Impl.Coll
         /// This minus one is the lower limit for secondaries of secondary CEs.
         /// </summary>
         public int SecondaryBoundary
-        {
-            get { return ((int)elements[IX_SEC_TER_BOUNDARIES] >> 8) & 0xff00; }
-        }
+            => ((int)elements[IX_SEC_TER_BOUNDARIES] >> 8) & 0xff00;
 
         /// <summary>
         /// Gets the first assigned secondary CE.
         /// </summary>
         internal long FirstSecondaryCE
-        {
-            get { return elements[(int)elements[IX_FIRST_SECONDARY_INDEX]] & ~SecondaryTertiaryDeltaFlag; }
-        }
+            => elements[(int)elements[IX_FIRST_SECONDARY_INDEX]] & ~SecondaryTertiaryDeltaFlag;
 
         /// <summary>
         /// Gets the last assigned secondary CE.
         /// </summary>
         internal long LastSecondaryCE
-        {
-            get { return elements[(int)elements[IX_FIRST_PRIMARY_INDEX] - 1] & ~SecondaryTertiaryDeltaFlag; }
-        }
+            => elements[(int)elements[IX_FIRST_PRIMARY_INDEX] - 1] & ~SecondaryTertiaryDeltaFlag;
 
         /// <summary>
         /// Gets the first assigned primary weight.
         /// </summary>
         internal long FirstPrimary
-        {
-            get { return elements[(int)elements[IX_FIRST_PRIMARY_INDEX]]; }  // step=0: cannot be a range end
-        }
+            => elements[(int)elements[IX_FIRST_PRIMARY_INDEX]]; // step=0: cannot be a range end
 
         /// <summary>
         /// Gets the first assigned primary CE.
         /// </summary>
         internal long FirstPrimaryCE
-        {
-            get { return Collation.MakeCE(FirstPrimary); }
-        }
+            => Collation.MakeCE(FirstPrimary);
 
         /// <summary>
         /// Returns the last root CE with a primary weight before <paramref name="p"/>.

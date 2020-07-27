@@ -124,11 +124,11 @@ namespace ICU4N.Impl
             }
         }
 
-        public bool IsEmpty { get { return str.Length == 0; } }
-        public int Length { get { return str.Length; } }
-        public int LastCC { get { return lastCC; } }
+        public bool IsEmpty => str.Length == 0;
+        public int Length => str.Length;
+        public int LastCC => lastCC;
 
-        public StringBuilder StringBuilder { get { return str; } }
+        public StringBuilder StringBuilder => str;
 
         // ICU4N specific - Equals(ICharSequence s, int start, int limit) moved to Normalizer2ImplExtension.tt
 

@@ -25,10 +25,7 @@ namespace ICU4N.Dev.Test.StringPrep
         public const IDNA2003Options USE_STD3_RULES = IDNA2003Options.UseSTD3Rules; // 0x0002;
         public static readonly NamePrepTransform transform = NamePrepTransform.GetInstance();
 
-        public static bool IsReady
-        {
-            get { return transform.IsReady; }
-        }
+        public static bool IsReady => transform.IsReady;
 
         private static bool StartsWithPrefix(StringBuffer src)
         {

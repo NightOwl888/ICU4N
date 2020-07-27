@@ -108,10 +108,7 @@ namespace ICU4N.Impl
         // ICU4N specific - replaced entrySet() and keyValueSet() by implementing IEnumerable<KeyValuePair<TKey, TValue>,
         // to be closer to how dictionaries are implemented in .NET
 
-        public ICollection<KeyValuePair<TKey, ISet<TValue>>> KeyValues
-        {
-            get { return data; }
-        }
+        public ICollection<KeyValuePair<TKey, ISet<TValue>>> KeyValues => data;
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
@@ -239,10 +236,7 @@ namespace ICU4N.Impl
         //    get { return data.Count == 0; }
         //}
 
-        public virtual ICollection<TKey> Keys
-        {
-            get { return data.Keys; }
-        }
+        public virtual ICollection<TKey> Keys => data.Keys;
 
         public virtual TValue Put(TKey key, TValue value)
         {
@@ -348,15 +342,9 @@ namespace ICU4N.Impl
             }
         }
 
-        public virtual int Count
-        {
-            get { return data.Count; }
-        }
+        public virtual int Count => data.Count;
 
-        public virtual ISet<TValue> Values
-        {
-            get { return GetValues(new JCG.HashSet<TValue>()); }
-        }
+        public virtual ISet<TValue> Values => GetValues(new JCG.HashSet<TValue>());
 
         public virtual C GetValues<C>(C result)
             where C : ICollection<TValue>
@@ -401,10 +389,7 @@ namespace ICU4N.Impl
 
         volatile bool frozen = false;
 
-        public virtual bool IsFrozen
-        {
-            get { return frozen; }
-        }
+        public virtual bool IsFrozen => frozen;
 
         public virtual Relation<TKey, TValue> Freeze()
         {

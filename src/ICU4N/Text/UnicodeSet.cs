@@ -917,10 +917,7 @@ namespace ICU4N.Text
         /// Returns <c>true</c> if this set contains no elements.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        internal virtual bool IsEmpty // ICU4N specific - changed from public to internal (we are using Any() in .NET)
-        {
-            get { return len == 1 && strings.Count == 0; }
-        }
+        internal virtual bool IsEmpty => len == 1 && strings.Count == 0; // ICU4N specific - changed from public to internal (we are using Any() in .NET)
 
         /// <summary>
         /// Implementation of UnicodeMatcher API.  Returns <c>true</c> if
@@ -2214,10 +2211,7 @@ namespace ICU4N.Text
         /// <seealso cref="GetRangeStart(int)"/>
         /// <seealso cref="GetRangeEnd(int)"/>
         /// <stable>ICU 2.0</stable>
-        public virtual int RangeCount
-        {
-            get { return len / 2; }
-        }
+        public virtual int RangeCount => len / 2;
 
         /// <summary>
         /// Iteration method that returns the first character in the
@@ -4234,10 +4228,7 @@ namespace ICU4N.Text
         /// Is this frozen, according to the <see cref="IFreezable{T}"/> interface?
         /// </summary>
         /// <stable>ICU 3.8</stable>
-        public virtual bool IsFrozen
-        {
-            get { return (bmpSet != null || stringSpan != null); }
-        }
+        public virtual bool IsFrozen => (bmpSet != null || stringSpan != null);
 
         /// <summary>
         /// Freeze this class, according to the <see cref="IFreezable{T}"/> interface.
@@ -4348,10 +4339,7 @@ namespace ICU4N.Text
         /// </code>
         /// </remarks>
         /// <stable>ICU 54</stable>
-        public IEnumerable<UnicodeSetEntryRange> Ranges
-        {
-            get { return new EntryRangeEnumerable(this); }
-        }
+        public IEnumerable<UnicodeSetEntryRange> Ranges => new EntryRangeEnumerable(this);
 
         private class EntryRangeEnumerable : IEnumerable<UnicodeSetEntryRange>
         {
@@ -4384,15 +4372,9 @@ namespace ICU4N.Text
                 this.outerInstance = outerInstance;
             }
 
-            public virtual UnicodeSetEntryRange Current
-            {
-                get { return result; }
-            }
+            public virtual UnicodeSetEntryRange Current => result;
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IEnumerator.Current => Current;
 
             public void Dispose()
             {
@@ -4411,10 +4393,7 @@ namespace ICU4N.Text
                 throw new NotSupportedException();
             }
 
-            private bool HasNext
-            {
-                get { return pos < outerInstance.outerInstance.len - 1; }
-            }
+            private bool HasNext => pos < outerInstance.outerInstance.len - 1;
 
             private UnicodeSetEntryRange Next()
             {
@@ -4486,15 +4465,9 @@ namespace ICU4N.Text
                 }
             }
 
-            public virtual string Current
-            {
-                get { return currentElement; }
-            }
+            public virtual string Current => currentElement;
 
-            object IEnumerator.Current
-            {
-                get { return Current; }
-            }
+            object IEnumerator.Current => Current;
 
             public void Dispose()
             {
@@ -4743,10 +4716,7 @@ namespace ICU4N.Text
         /// </code>
         /// </summary>
         /// <stable>ICU 4.4</stable>
-        public virtual ICollection<string> Strings
-        {
-            get { return strings.AsReadOnly(); }
-        }
+        public virtual ICollection<string> Strings => strings.AsReadOnly();
 
         // ICU4N specific - GetSingleCodePoint(ICharSequence s) moved to UnicodeSetExtension.tt
 
@@ -4785,10 +4755,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal static XSymbolTable DefaultXSymbolTable // ICU4N specific - marked internal instead of public, since the functionality is obsolete
-        {
-            get { return XSYMBOL_TABLE; }
-        }
+        internal static XSymbolTable DefaultXSymbolTable => XSYMBOL_TABLE; // ICU4N specific - marked internal instead of public, since the functionality is obsolete
 
         /// <summary>
         /// Set the default symbol table. Null means ordinary processing. For internal use only. Will affect all subsequent parsing

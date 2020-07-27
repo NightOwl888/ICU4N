@@ -96,10 +96,7 @@ namespace ICU4N.Text
         /// <see cref="IReplaceable"/> API.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public virtual int Length
-        {
-            get { return buf.Length; }
-        }
+        public virtual int Length => buf.Length;
 
         /// <summary>
         /// Gets the character at the given position in this object.
@@ -107,10 +104,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="index">Offset into the contents, from 0 to <c><see cref="Length"/> - 1</c></param>
         /// <stable>ICU 2.0</stable>
-        public virtual char this[int index]
-        {
-            get { return buf[index]; }
-        }
+        public virtual char this[int index] => buf[index];
 
         /// <summary>
         /// Return the 32-bit code point at the given 16-bit offset into
@@ -236,10 +230,7 @@ namespace ICU4N.Text
         /// Implements <see cref="IReplaceable"/>
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public virtual bool HasMetaData
-        {
-            get { return false; }
-        }
+        public virtual bool HasMetaData => false;
 
         /// <summary>
         /// Caches the string from the internal <see cref="StringBuffer"/>

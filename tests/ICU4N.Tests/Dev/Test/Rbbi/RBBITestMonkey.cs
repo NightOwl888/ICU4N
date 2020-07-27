@@ -170,10 +170,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 fText = s;
             }
 
-            internal override IList<object> CharClasses
-            {
-                get { return fSets; }
-            }
+            internal override IList<object> CharClasses => fSets;
 
             internal override int Next(int prevPos)
             {
@@ -470,10 +467,7 @@ namespace ICU4N.Dev.Test.Rbbi
             }
 
 
-            internal override IList<object> CharClasses
-            {
-                get { return fSets; }
-            }
+            internal override IList<object> CharClasses => fSets;
 
             internal override void SetText(StringBuffer s)
             {
@@ -1530,13 +1524,7 @@ namespace ICU4N.Dev.Test.Rbbi
             }
 
 
-            internal override IList<object> CharClasses
-            {
-                get { return fSets; }
-            }
-
-
-
+            internal override IList<object> CharClasses => fSets;
         }
 
 
@@ -1623,10 +1611,7 @@ namespace ICU4N.Dev.Test.Rbbi
             }
 
 
-            internal override IList<object> CharClasses
-            {
-                get { return fSets; }
-            }
+            internal override IList<object> CharClasses => fSets;
 
             internal override void SetText(StringBuffer s)
             {

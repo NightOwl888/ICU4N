@@ -38,15 +38,12 @@ namespace ICU4N.Impl
         }
 
         /// <seealso cref="UCharacterIterator.Length"/>
-        public override int Length
-        {
-            get { return (iterator.EndIndex - iterator.BeginIndex); }
-        }
+        public override int Length => (iterator.EndIndex - iterator.BeginIndex);
 
         /// <seealso cref="UCharacterIterator.Index"/>
         public override int Index
         {
-            get { return iterator.Index; }
+            get => iterator.Index;
             set
             {
                 try

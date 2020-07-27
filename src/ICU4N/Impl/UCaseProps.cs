@@ -1139,7 +1139,7 @@ namespace ICU4N.Impl
         /// We use a shared <see cref="StringBuilder"/> to avoid allocating a new one in each call.
         /// We remove its contents each time so that it does not grow large over time.
         /// </summary>
-        public static StringBuilder DummyStringBuilder { get { return dummyStringBuilder; } }
+        public static StringBuilder DummyStringBuilder => dummyStringBuilder;
 
         public bool HasBinaryProperty(int c, UProperty which)
         {

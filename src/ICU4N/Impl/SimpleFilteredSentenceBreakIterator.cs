@@ -224,10 +224,7 @@ namespace ICU4N.Impl
             return InternalPrev(@delegate.Previous());
         }
 
-        public override int Current
-        {
-            get { return @delegate.Current; }
-        }
+        public override int Current => @delegate.Current;
 
         public override bool IsBoundary(int offset)
         {
@@ -267,10 +264,7 @@ namespace ICU4N.Impl
             return @delegate.Last();
         }
 
-        public override CharacterIterator Text
-        {
-            get { return @delegate.Text; }
-        }
+        public override CharacterIterator Text => @delegate.Text;
 
         public override void SetText(CharacterIterator newText)
         {

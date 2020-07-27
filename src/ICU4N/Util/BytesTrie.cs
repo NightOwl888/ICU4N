@@ -178,7 +178,7 @@ namespace ICU4N.Util
         private byte[] bytes;
         private int length;
 
-        internal int Length { get { return length; } }
+        internal int Length => length;
     }
 
     /// <summary>
@@ -387,15 +387,9 @@ namespace ICU4N.Util
         /// Gets the element in the collection at the current position of the enumerator.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public BytesTrieEntry Current
-        {
-            get { return current; }
-        }
+        public BytesTrieEntry Current => current;
 
-        object IEnumerator.Current
-        {
-            get { return current; }
-        }
+        object IEnumerator.Current => current;
 
         /// <summary>
         /// Finds the next (byte sequence, value) pair if there is one.

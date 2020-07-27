@@ -122,10 +122,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Gets the length of the text.
         /// </summary>
-        public override int Length
-        {
-            get { return replaceable.Length; }
-        }
+        public override int Length => replaceable.Length;
 
         /// <summary>
         /// Gets or Sets the current <see cref="currentIndex"/> in text.
@@ -135,7 +132,7 @@ namespace ICU4N.Impl
         ///            supplied. i.e. value is out of bounds.</exception>
         public override int Index
         {
-            get { return currentIndex; }
+            get => currentIndex;
             set
             {
                 if (value < 0 || value > replaceable.Length)

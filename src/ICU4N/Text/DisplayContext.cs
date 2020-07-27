@@ -204,8 +204,8 @@ namespace ICU4N.Text
                 this.value = value;
             }
 
-            public DisplayContextType Type { get { return type; } }
-            public int Value { get { return value; } }
+            public DisplayContextType Type => type;
+            public int Value => value;
         }
     }
 }

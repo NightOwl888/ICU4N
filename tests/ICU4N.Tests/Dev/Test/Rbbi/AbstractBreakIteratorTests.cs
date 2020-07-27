@@ -58,15 +58,9 @@ namespace ICU4N.Dev.Test.Rbbi
                 return Set(offset + 1);
             }
 
-            public override int Current
-            {
-                get { return position; }
-            }
+            public override int Current => position;
 
-            public override CharacterIterator Text
-            {
-                get { return null; }
-            }
+            public override CharacterIterator Text => null;
 
             public override void SetText(CharacterIterator newText)
             {

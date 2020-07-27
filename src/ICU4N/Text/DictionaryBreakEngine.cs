@@ -76,10 +76,7 @@ namespace ICU4N.Text
             }
 
             // Return the longest prefix this candidate location shares with a dictionary word
-            public virtual int LongestPrefix
-            {
-                get { return prefix; }
-            }
+            public virtual int LongestPrefix => prefix;
 
             // Mark the current candidate as the one we like
             public virtual void MarkCurrent()
@@ -110,15 +107,9 @@ namespace ICU4N.Text
                 return result;
             }
 
-            internal virtual int Count
-            {
-                get { return firstIdx - lastIdx; }
-            }
+            internal virtual int Count => firstIdx - lastIdx;
 
-            internal virtual bool IsEmpty
-            {
-                get { return Count == 0; }
-            }
+            internal virtual bool IsEmpty => Count == 0;
 
             private void Grow()
             {

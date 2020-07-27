@@ -351,10 +351,7 @@ namespace ICU4N.Util
         /// <icu/> Gets the parent bundle, as <see cref="UResourceBundle"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        new public virtual UResourceBundle Parent
-        {
-            get { return (UResourceBundle)base.m_parent; }
-        }
+        new public virtual UResourceBundle Parent => (UResourceBundle)base.m_parent;
 
         /// <summary>
         /// Returns the locale of this bundle.
@@ -765,10 +762,7 @@ namespace ICU4N.Util
         /// access individual members of an integer array. It is always returned as a whole.
         /// </summary>
         /// <stable>ICU 3.8</stable>
-        public virtual int Length
-        {
-            get { return 1; }
-        }
+        public virtual int Length => 1;
 
         /**
          * {@icu} Returns the type of a resource.
@@ -779,20 +773,14 @@ namespace ICU4N.Util
          * @return type of the given resource.
          * @stable ICU 3.8
          */
-        public virtual UResourceType Type
-        {
-            get { return UResourceType.None; }
-        }
+        public virtual UResourceType Type => UResourceType.None;
 
         /// <summary>
         /// <icu/> Gets the version number associated with this <see cref="UResourceBundle"/> as an
         /// <see cref="VersionInfo"/> object.
         /// </summary>
         /// <stable>ICU 3.8</stable>
-        public VersionInfo Version
-        {
-            get { return null; }
-        }
+        public VersionInfo Version => null;
 
         /// <summary>
         /// <icu/> Returns the enumerator which iterates over this
@@ -822,10 +810,7 @@ namespace ICU4N.Util
         /// a key - only those that are members of a table. Returns <c>null</c> if it doesn't have a key.
         /// </summary>
         /// <stable>ICU 3.8</stable>
-        public virtual string Key
-        {
-            get { return null; }
-        }
+        public virtual string Key => null;
 
         // ICU4N specific - moved constants to enum named UResourceType and de-nested
 
@@ -966,10 +951,7 @@ namespace ICU4N.Util
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal virtual bool IsTopLevelResource // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
-        {
-            get { return true; }
-        }
+        internal virtual bool IsTopLevelResource => true; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
     }
 
     /// <summary>

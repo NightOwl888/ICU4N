@@ -1218,7 +1218,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public int MaximumContextLength
         {
-            get { return maximumContextLength; }
+            get => maximumContextLength;
             protected set
             {
                 if (value < 0)
@@ -1240,8 +1240,8 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public string ID
         {
-            get { return id; }
-            protected internal set { this.id = value; }
+            get => id;
+            protected internal set => this.id = value;
         }
 
         /// <summary>

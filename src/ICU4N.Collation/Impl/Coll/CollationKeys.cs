@@ -90,20 +90,12 @@ namespace ICU4N.Impl.Coll
         // char *scratch, int scratch_capacity,
         // int *result_capacity);
 
-        public virtual int NumberOfBytesAppended
-        {
-            get { return appended_; }
-        }
+        public virtual int NumberOfBytesAppended => appended_;
 
-        public virtual int RemainingCapacity
-        {
-            get { return /* not used in Java -- ignore_ + */ m_buffer.Length - appended_; }
-        }
+        public virtual int RemainingCapacity /* not used in .NET -- ignore_ + */
+            => m_buffer.Length - appended_;
 
-        public virtual bool Overflowed
-        {
-            get { return appended_ > m_buffer.Length; }
-        }
+        public virtual bool Overflowed => appended_ > m_buffer.Length;
 
         /* not used in .NET -- public boolean IsOk() {
             return true;
@@ -157,15 +149,9 @@ namespace ICU4N.Impl.Coll
                 return ok;
             } */
 
-            internal bool IsEmpty
-            {
-                get { return len == 0; }
-            }
+            internal bool IsEmpty => len == 0;
 
-            internal int Length
-            {
-                get { return len; }
-            }
+            internal int Length => len;
 
             // .NET porting note: .NET uses this instead of C++ operator [] overload
             // uint8_t operator[](int index)

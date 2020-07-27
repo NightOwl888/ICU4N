@@ -84,8 +84,8 @@ namespace ICU4N.Support.Text
         /// </summary>
         public virtual int BeginIndex
         {
-            get { return beginIndex; }
-            set { beginIndex = value; }
+            get => beginIndex;
+            set => beginIndex = value;
         }
 
         /// <summary>
@@ -93,25 +93,19 @@ namespace ICU4N.Support.Text
         /// </summary>
         public virtual int EndIndex
         {
-            get { return endIndex; }
-            set { endIndex = value; }
+            get => endIndex;
+            set => endIndex = value;
         }
 
         /// <summary>
         /// Gets the field which is being identified.
         /// </summary>
-        public virtual int Field
-        {
-            get { return myField; }
-        }
+        public virtual int Field => myField;
 
         /// <summary>
         /// Gets the attribute which is being identified.
         /// </summary>
-        public FormatField FieldAttribute
-        {
-            get => myAttribute;
-        }
+        public FormatField FieldAttribute => myAttribute;
 
         public override int GetHashCode()
         {

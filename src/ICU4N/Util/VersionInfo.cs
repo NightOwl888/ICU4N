@@ -383,37 +383,25 @@ namespace ICU4N.Util
         /// Gets the major version number.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public int Major
-        {
-            get { return (m_version_ >> 24) & LAST_BYTE_MASK_; }
-        }
+        public int Major => (m_version_ >> 24) & LAST_BYTE_MASK_;
 
         /// <summary>
         /// Gets the minor version number.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public int Minor
-        {
-            get { return (m_version_ >> 16) & LAST_BYTE_MASK_; }
-        }
+        public int Minor => (m_version_ >> 16) & LAST_BYTE_MASK_;
 
         /// <summary>
         /// Gets the milli version number.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public int Milli
-        {
-            get { return (m_version_ >> 8) & LAST_BYTE_MASK_; }
-        }
+        public int Milli => (m_version_ >> 8) & LAST_BYTE_MASK_;
 
         /// <summary>
         /// Gets the micro version number.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public int Micro
-        {
-            get { return m_version_ & LAST_BYTE_MASK_; }
-        }
+        public int Micro => m_version_ & LAST_BYTE_MASK_;
 
         /// <summary>
         /// Checks if this version information is equals to the argument version

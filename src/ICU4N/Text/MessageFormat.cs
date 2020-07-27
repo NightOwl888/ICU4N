@@ -458,10 +458,7 @@ namespace ICU4N.Text
         /// Gets the <see cref="CultureInfo"/> that's used when creating or comparing subformats.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public virtual CultureInfo Culture // ICU4N TODO: API - rework to pass in culture in transient methods instead of fields
-        {
-            get => uCulure.ToCultureInfo();
-        }
+        public virtual CultureInfo Culture => uCulure.ToCultureInfo(); // ICU4N TODO: API - rework to pass in culture in transient methods instead of fields
 
         /// <summary>
         /// <icu/> Gets the <see cref="UCultureInfo"/> that's used when creating argument <see cref="Formatter"/> objects.
@@ -1142,10 +1139,7 @@ namespace ICU4N.Text
         /// and false otherwise. See <see cref="MessageFormat"/>.
         /// </summary>
         /// <stable>ICU 3.8</stable>
-        public virtual bool UsesNamedArguments
-        {
-            get { return msgPattern.HasNamedArguments; }
-        }
+        public virtual bool UsesNamedArguments => msgPattern.HasNamedArguments;
 
         // Overrides
 

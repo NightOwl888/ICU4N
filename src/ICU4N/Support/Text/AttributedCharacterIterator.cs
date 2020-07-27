@@ -143,10 +143,7 @@ namespace ICU4N.Support.Text
         /// <summary>
         /// Gets the name of this attribute.
         /// </summary>
-        protected virtual string Name
-        {
-            get { return name; }
-        }
+        protected virtual string Name => name;
 
         /// <summary>
         /// Calculates the hash code for objects of type <see cref="AttributedCharacterIteratorAttribute"/>. It

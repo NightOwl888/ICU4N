@@ -76,8 +76,8 @@ namespace ICU4N.Impl.Coll
 
             internal long this[int index] // ICU4N specific - converted from Get() and Set() methods in Java to .NET indexer
             {
-                get { return buffer[index]; }
-                set { buffer[index] = value; }
+                get => buffer[index];
+                set => buffer[index] = value;
             }
 
             internal long[] GetCEs() { return buffer; }
@@ -85,8 +85,8 @@ namespace ICU4N.Impl.Coll
             private int length = 0;
             public int Length
             {
-                get { return length; }
-                internal set { length = value; }
+                get => length;
+                internal set => length = value;
             }
 
             private long[] buffer = new long[INITIAL_CAPACITY];
@@ -105,9 +105,9 @@ namespace ICU4N.Impl.Coll
                 // The newBuffer is reset by setFirstSkipped().
             }
 
-            internal bool IsEmpty { get { return oldBuffer.Length == 0; } }
+            internal bool IsEmpty => oldBuffer.Length == 0;
 
-            internal bool HasNext { get { return pos < oldBuffer.Length; } }
+            internal bool HasNext => pos < oldBuffer.Length;
 
             // Requires hasNext().
             internal int Next()
@@ -392,10 +392,7 @@ namespace ICU4N.Impl.Coll
             return ceBuffer[--ceBuffer.Length];
         }
 
-        public int CEsLength
-        {
-            get { return ceBuffer.Length; }
-        }
+        public int CEsLength => ceBuffer.Length;
 
         public long GetCE(int i)
         {
@@ -497,10 +494,7 @@ namespace ICU4N.Impl.Coll
         ///         map to their own implicit primary weights (for UTF-16),
         ///         or true if they map to CE(U+FFFD) (for UTF-8)
         /// </summary>
-        protected virtual bool ForbidSurrogateCodePoints
-        {
-            get { return false; }
-        }
+        protected virtual bool ForbidSurrogateCodePoints => false;
 
         protected abstract void ForwardNumCodePoints(int num);
 

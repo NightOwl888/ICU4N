@@ -4442,10 +4442,7 @@ namespace ICU4N.Dev.Test.Translit
                 }
             }
 
-            public String ErrorMessage
-            {
-                get { return errorMsg; }
-            }
+            public String ErrorMessage => errorMsg;
         }
 
         //======================================================================

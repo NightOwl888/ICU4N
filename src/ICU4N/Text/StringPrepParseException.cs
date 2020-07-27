@@ -227,17 +227,11 @@ namespace ICU4N.Text
         /// This method is only used for testing to verify the error.
         /// </summary>
         /// <stable>ICU 3.8</stable>
-        public virtual StringPrepErrorType Error
-        {
-            get { return error; }
-        }
+        public virtual StringPrepErrorType Error => error;
 
         /// <summary>
         /// Gets the line on which the error occurred.
         /// </summary>
-        public virtual int Line // ICU4N specific - FormatException doesn't have a line number
-        {
-            get { return line; }
-        }
+        public virtual int Line => line; // ICU4N specific - FormatException doesn't have a line number
     }
 }

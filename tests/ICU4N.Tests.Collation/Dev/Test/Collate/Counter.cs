@@ -90,10 +90,7 @@ namespace ICU4N.Dev.Test.Collate
             return count;
         }
 
-        public int ItemCount
-        {
-            get { return this.Count; }
-        }
+        public int ItemCount => this.Count;
 
         private class Entry
         {
@@ -169,10 +166,7 @@ namespace ICU4N.Dev.Test.Collate
         //return result;
         //}
 
-        public ICollection<T> Keys
-        {
-            get { return map.Keys; }
-        }
+        public ICollection<T> Keys => map.Keys;
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -189,10 +183,7 @@ namespace ICU4N.Dev.Test.Collate
             return map; // older code was protecting map, but not the integer values.
         }
 
-        public int Count
-        {
-            get { return map.Count; }
-        }
+        public int Count => map.Count;
 
         public override String ToString()
         {

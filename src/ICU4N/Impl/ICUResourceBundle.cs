@@ -1692,8 +1692,8 @@ namespace ICU4N.Impl
         [Obsolete("This API is ICU internal only.")]
         internal ISet<string> TopLevelKeySet // ICU4N specific - marked internal, since the functionality is obsolete
         {
-            get { return wholeBundle.topLevelKeys; }
-            set { wholeBundle.topLevelKeys = value; }
+            get => wholeBundle.topLevelKeys;
+            set => wholeBundle.topLevelKeys = value;
         }
 
         // This is the worker function for the public getKeys().

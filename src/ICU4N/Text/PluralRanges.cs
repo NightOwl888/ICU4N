@@ -326,10 +326,7 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public bool IsFrozen
-        {
-            get { return isFrozen; }
-        }
+        public bool IsFrozen => isFrozen;
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]

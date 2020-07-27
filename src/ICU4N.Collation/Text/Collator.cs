@@ -239,10 +239,7 @@ namespace ICU4N.Text
         /// true if this factory is visible.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public virtual bool Visible
-        {
-            get { return true; }
-        }
+        public virtual bool Visible => true;
 
         /// <summary>
         /// Return an instance of the appropriate collator.  If the locale
@@ -632,8 +629,8 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public virtual CollationStrength Strength
         {
-            get { return CollationStrength.Tertiary; }
-            set { CheckNotFrozen(); }
+            get => CollationStrength.Tertiary;
+            set => CheckNotFrozen();
         }
 
         /// <summary>
@@ -674,8 +671,8 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public virtual NormalizationMode Decomposition
         {
-            get { return NormalizationMode.NoDecomposition; }
-            set { CheckNotFrozen(); }
+            get => NormalizationMode.NoDecomposition;
+            set => CheckNotFrozen();
         }
 
         /// <summary>
@@ -1206,10 +1203,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <seealso cref="GetKeywordValues(string)"/>
         /// <stable>ICU 3.0</stable>
-        public static IList<string> Keywords // ICU4N TODO: Change this back to a method GetKeywords() that returns array - it enumerates the value before returning. // ICU4N specific - changed to IList, since returning Arrays from properties is not recommended by MSDN
-        {
-            get { return KEYWORDS; }
-        }
+        public static IList<string> Keywords => KEYWORDS; // ICU4N TODO: Change this back to a method GetKeywords() that returns array - it enumerates the value before returning. // ICU4N specific - changed to IList, since returning Arrays from properties is not recommended by MSDN
 
         /// <summary>
         /// <icu/> Given a keyword, returns an array of all values for
@@ -1562,8 +1556,8 @@ namespace ICU4N.Text
         /// <stable>ICU 53</stable>
         public virtual int MaxVariable
         {
-            get { return ReorderCodes.Punctuation; }
-            set { throw new NotSupportedException("Needs to be implemented by the subclass."); }
+            get => ReorderCodes.Punctuation;
+            set => throw new NotSupportedException("Needs to be implemented by the subclass.");
         }
 
         /// <summary>
@@ -1668,10 +1662,7 @@ namespace ICU4N.Text
         /// A frozen <see cref="Collator"/> is immutable and thread-safe.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public virtual bool IsFrozen
-        {
-            get { return false; }
-        }
+        public virtual bool IsFrozen => false;
 
         /// <summary>
         /// Freezes the collator.

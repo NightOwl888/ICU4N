@@ -85,9 +85,6 @@ namespace ICU4N.Util
         /// </summary>
         /// <returns>the error index</returns>
         /// <stable>ICU 4.2</stable>
-        public virtual int ErrorIndex
-        {
-            get { return _errIdx; }
-        }
+        public virtual int ErrorIndex => _errIdx;
     }
 }

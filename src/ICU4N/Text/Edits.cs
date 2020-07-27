@@ -59,8 +59,8 @@ namespace ICU4N.Text
 
         private int LastUnit
         {
-            get { return length > 0 ? array[length - 1] : 0xffff; }
-            set { array[length - 1] = (char)value; }
+            get => length > 0 ? array[length - 1] : 0xffff;
+            set => array[length - 1] = (char)value;
         }
 
         /// <summary>
@@ -237,21 +237,21 @@ namespace ICU4N.Text
         /// </summary>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public int LengthDelta { get { return delta; } }
+        public int LengthDelta => delta;
 
         /// <summary>
         /// Returns true if there are any change edits.
         /// </summary>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public bool HasChanges { get { return numChanges != 0; } }
+        public bool HasChanges => numChanges != 0;
 
         /// <summary>
         /// Gets the number of change edits.
         /// </summary>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public int NumberOfChanges { get { return numChanges; } }
+        public int NumberOfChanges => numChanges;
 
         // ICU4N specific - de-nested Iterator and renamed EditsEnumerator
 
@@ -1089,13 +1089,14 @@ namespace ICU4N.Text
         /// </summary>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public bool HasChange { get { return changed; } }
+        public bool HasChange => changed;
+
         /// <summary>
         /// Gets the number of units in the original string which are replaced or remain unchanged.
         /// </summary>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public int OldLength { get { return oldLength_; } }
+        public int OldLength => oldLength_;
 
         /// <summary>
         /// Gets the number of units in the modified string, if <see cref="HasChange"/> is true.
@@ -1103,26 +1104,28 @@ namespace ICU4N.Text
         /// </summary>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public int NewLength { get { return newLength_; } }
+        public int NewLength => newLength_;
 
         /// <summary>
         /// Gets the current index into the source string.
         /// </summary>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public int SourceIndex { get { return srcIndex; } }
+        public int SourceIndex => srcIndex;
+
         /// <summary>
         /// Gets the current index into the replacement-characters-only string,
         /// not counting unchanged spans.
         /// </summary>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public int ReplacementIndex { get { return replIndex; } }
+        public int ReplacementIndex => replIndex;
+
         /// <summary>
         /// Gets the current index into the full destination string.
         /// </summary>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public int DestinationIndex { get { return destIndex; } }
+        public int DestinationIndex => destIndex;
     }
 }

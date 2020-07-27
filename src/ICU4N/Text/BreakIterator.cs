@@ -1006,10 +1006,7 @@ namespace ICU4N.Text
                 this.iter = (BreakIterator)iter.Clone();
             }
 
-            internal UCultureInfo Locale
-            {
-                get { return where; }
-            }
+            internal UCultureInfo Locale => where;
 
             internal BreakIterator CreateBreakInstance()
             {

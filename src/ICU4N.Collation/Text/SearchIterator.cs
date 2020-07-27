@@ -93,10 +93,7 @@ namespace ICU4N.Text
                 this.outerInstance = outerInstance;
             }
 
-            internal CharacterIterator Text
-            {
-                get { return outerInstance.m_targetText; }
-            }
+            internal CharacterIterator Text => outerInstance.m_targetText;
 
             internal void SetTarget(CharacterIterator text)
             {
@@ -117,16 +114,16 @@ namespace ICU4N.Text
 
             internal BreakIterator BreakIterator
             {
-                get { return outerInstance.m_breakIterator; }
-                set { outerInstance.m_breakIterator = value; }
+                get => outerInstance.m_breakIterator;
+                set => outerInstance.m_breakIterator = value;
             }
 
             internal int matchedIndex_;
 
             internal int MatchedLength
             {
-                get { return outerInstance.m_matchLength; }
-                set { outerInstance.m_matchLength = value; }
+                get => outerInstance.m_matchLength;
+                set => outerInstance.m_matchLength = value;
             }
 
             /// <summary>
@@ -288,10 +285,7 @@ namespace ICU4N.Text
         /// <seealso cref="Previous()"/>
         /// <seealso cref="Last()"/>
         /// <stable>ICU 2.0</stable>
-        public virtual int MatchStart
-        {
-            get { return search_.matchedIndex_; }
-        }
+        public virtual int MatchStart => search_.matchedIndex_;
 
         /// <summary>
         /// Gets the current index in the text being searched.
@@ -324,8 +318,8 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual int MatchLength
         {
-            get { return search_.MatchedLength; }
-            protected set { search_.MatchedLength = value; }
+            get => search_.MatchedLength;
+            protected set => search_.MatchedLength = value;
         }
 
         /// <summary>
@@ -338,20 +332,14 @@ namespace ICU4N.Text
         /// <seealso cref="SetBreakIterator(BreakIterator)"/>
         /// <seealso cref="Text.BreakIterator"/>
         /// <stable>ICU 2.0</stable>
-        public virtual BreakIterator BreakIterator
-        {
-            get { return search_.BreakIterator; }
-        }
+        public virtual BreakIterator BreakIterator => search_.BreakIterator;
 
         /// <summary>
         /// Gets the string text to be searched.
         /// </summary>
         /// <stable>ICU 2.0</stable>
         /// <seealso cref="SetTarget(CharacterIterator)"/>
-        public virtual CharacterIterator Target
-        {
-            get { return search_.Text; }
-        }
+        public virtual CharacterIterator Target => search_.Text;
 
         /// <summary>
         /// Returns the text that was matched by the most recent call to 
@@ -528,8 +516,8 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public virtual bool IsOverlapping
         {
-            get { return search_.isOverlap_; }
-            set { search_.isOverlap_ = value; }
+            get => search_.isOverlap_;
+            set => search_.isOverlap_ = value;
         }
 
         //TODO: We may add APIs below to match ICU4C APIs
@@ -742,8 +730,8 @@ namespace ICU4N.Text
         /// <stable>ICU 53</stable>
         public virtual ElementComparisonType ElementComparisonType
         {
-            get { return search_.elementComparisonType_; }
-            set { search_.elementComparisonType_ = value; }
+            get => search_.elementComparisonType_;
+            set => search_.elementComparisonType_ = value;
         }
     }
 

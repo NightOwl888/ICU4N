@@ -2718,7 +2718,7 @@ namespace ICU4N.Text
             /// <stable>ICU 2.4</stable>
             public bool CodePointCompare
             {
-                get { return m_codePointCompare_ == Normalizer.COMPARE_CODE_POINT_ORDER; }
+                get => m_codePointCompare_ == Normalizer.COMPARE_CODE_POINT_ORDER;
                 set
                 {
                     if (value)
@@ -2741,8 +2741,8 @@ namespace ICU4N.Text
             /// <stable>ICU 2.4</stable>
             public bool IgnoreCase 
             {
-                get { return m_ignoreCase_; }
-                set { m_ignoreCase_ = value; }
+                get => m_ignoreCase_;
+                set => m_ignoreCase_ = value;
             }
 
             /// <summary>
@@ -2758,7 +2758,7 @@ namespace ICU4N.Text
             /// <stable>ICU 2.4</stable>
             public int IgnoreCaseOption
             {
-                get { return m_foldCase_; }
+                get => m_foldCase_;
                 set
                 {
                     if (value < FoldCaseDefault || value > FoldCaseExcludeSpecialI)

@@ -135,10 +135,7 @@ namespace ICU4N.Text
                 Reset();
             }
 
-            public virtual bool HasFallback
-            {
-                get { return nextSpec != null; }
-            }
+            public virtual bool HasFallback => nextSpec != null;
 
             public virtual void Reset()
             {
@@ -200,10 +197,7 @@ namespace ICU4N.Text
                 return spec;
             }
 
-            public virtual bool IsLocale
-            {
-                get { return isSpecLocale; }
-            }
+            public virtual bool IsLocale => isSpecLocale;
 
             /// <summary>
             /// Return the ResourceBundle for this spec, at the current
@@ -222,10 +216,7 @@ namespace ICU4N.Text
                 return null;
             }
 
-            public virtual string Top
-            {
-                get { return top; }
-            }
+            public virtual string Top => top;
         }
 
         //----------------------------------------------------------------------

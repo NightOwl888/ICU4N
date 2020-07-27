@@ -626,40 +626,19 @@ namespace ICU4N.Impl.Locale
         // Getter methods for language subtag fields
         //
 
-        public virtual string Language
-        {
-            get { return _language; }
-        }
+        public virtual string Language => _language;
 
-        public virtual IList<string> Extlangs
-        {
-            get { return _extlangs.AsReadOnly(); }
-        }
+        public virtual IList<string> Extlangs => _extlangs.AsReadOnly();
 
-        public virtual string Script
-        {
-            get { return _script; }
-        }
+        public virtual string Script => _script;
 
-        public virtual string Region
-        {
-            get { return _region; }
-        }
+        public virtual string Region => _region;
 
-        public virtual IList<string> Variants
-        {
-            get { return _variants.AsReadOnly(); }
-        }
+        public virtual IList<string> Variants => _variants.AsReadOnly();
 
-        public virtual IList<string> Extensions
-        {
-            get { return _extensions.AsReadOnly(); }
-        }
+        public virtual IList<string> Extensions => _extensions.AsReadOnly();
 
-        public virtual string PrivateUse
-        {
-            get { return _privateuse; }
-        }
+        public virtual string PrivateUse => _privateuse;
 
         //
         // Language subtag syntax checking methods

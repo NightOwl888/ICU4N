@@ -84,10 +84,7 @@ namespace ICU4N.Impl
         /// Determines if this trie has a linear latin 1 array. 
         /// Returns true if this trie has a linear latin 1 array, false otherwise.
         /// </summary>
-        public bool IsLatin1Linear
-        {
-            get { return m_isLatin1Linear_; }
-        }
+        public bool IsLatin1Linear => m_isLatin1Linear_;
 
         /// <summary>
         /// Checks if the argument <see cref="Trie"/> has the same data as this <see cref="Trie"/>.
@@ -398,18 +395,12 @@ namespace ICU4N.Impl
         /// <summary>
         /// Determines if this is a 32 bit trie. Returns true if options specifies this is a 32 bit trie.
         /// </summary>
-        protected bool IsInt32Trie
-        {
-            get { return (m_options_ & HeaderOptionsDataIs32Bit) != 0; }
-        }
+        protected bool IsInt32Trie => (m_options_ & HeaderOptionsDataIs32Bit) != 0;
 
         /// <summary>
         /// Determines if this is a 16 bit trie. Returns true if this is a 16 bit trie.
         /// </summary>
-        protected bool IsCharTrie
-        {
-            get { return (m_options_ & HeaderOptionsDataIs32Bit) == 0; }
-        }
+        protected bool IsCharTrie => (m_options_ & HeaderOptionsDataIs32Bit) == 0;
 
         // private data members --------------------------------------------
 

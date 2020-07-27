@@ -540,10 +540,7 @@ namespace ICU4N.Text
         /// <see cref="Next()"/> will return <see cref="BreakIterator.Done"/>.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public override int Current
-        {
-            get { return (fText != null) ? fPosition : BreakIterator.Done; }
-        }
+        public override int Current => (fText != null) ? fPosition : BreakIterator.Done;
 
         /// <summary>
         /// Gets the status tag from the break rule that determined the most recently
@@ -630,10 +627,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>An iterator over the text being analyzed.</returns>
         /// <stable>ICU 2.0</stable>
-        public override CharacterIterator Text
-        {
-            get { return fText; }
-        }
+        public override CharacterIterator Text => fText;
 
         /// <summary>
         /// Set the iterator to analyze a new piece of text.  This function resets
@@ -661,8 +655,8 @@ namespace ICU4N.Text
         /// </summary>
         internal int BreakType
         {
-            get { return fBreakType; }
-            set { fBreakType = value; }
+            get => fBreakType;
+            set => fBreakType = value;
         }
 
         /// <summary>

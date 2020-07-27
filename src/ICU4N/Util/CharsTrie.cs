@@ -280,15 +280,9 @@ namespace ICU4N.Util
         /// Gets the element in the collection at the current position of the enumerator.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public CharsTrieEntry Current
-        {
-            get { return current; }
-        }
+        public CharsTrieEntry Current => current;
 
-        object IEnumerator.Current
-        {
-            get { return current; }
-        }
+        object IEnumerator.Current => current;
 
         /// <summary>
         /// Finds the next (string, value) pair if there is one.

@@ -318,10 +318,7 @@ namespace ICU4N.Text
         /// <seealso cref="RuleBasedCollator"/>
         /// <seealso cref="SetCollator(RuleBasedCollator)"/>
         /// <stable>ICU 2.0</stable>
-        public RuleBasedCollator Collator
-        {
-            get { return collator_; }
-        }
+        public RuleBasedCollator Collator => collator_;
 
         /// <summary>
         /// Sets the <see cref="RuleBasedCollator"/> to be used for language-specific searching.

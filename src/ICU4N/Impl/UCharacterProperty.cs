@@ -75,14 +75,14 @@ namespace ICU4N.Impl
         /// <summary>
         /// Trie data.
         /// </summary>
-        public Trie2_16 Trie { get { return m_trie_; } }
+        public Trie2_16 Trie => m_trie_;
 
 
         private VersionInfo m_unicodeVersion_;
         /// <summary>
         /// Unicode version.
         /// </summary>
-        public VersionInfo UnicodeVersion { get { return m_unicodeVersion_; } }
+        public VersionInfo UnicodeVersion => m_unicodeVersion_;
 
         /// <summary>
         /// Latin capital letter i with dot above

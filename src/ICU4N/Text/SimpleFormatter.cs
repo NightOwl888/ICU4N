@@ -66,10 +66,7 @@ namespace ICU4N.Text
         /// The max argument number + 1.
         /// </summary>
         /// <stable>ICU 57</stable>
-        public int ArgumentLimit
-        {
-            get { return SimpleFormatterImpl.GetArgumentLimit(compiledPattern); }
-        }
+        public int ArgumentLimit => SimpleFormatterImpl.GetArgumentLimit(compiledPattern);
 
         // ICU4N specific - Format(params ICharSequence[] values) moved to SimpleFormatterExtension.tt
 

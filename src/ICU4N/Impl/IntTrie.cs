@@ -291,18 +291,12 @@ namespace ICU4N.Impl
         /// <param name="index">Value at index will be retrieved.</param>
         /// <returns>32 bit value</returns>
         /// <seealso cref="TrieEnumerator"/>
-        protected internal override sealed int this[int index]
-        {
-            get { return m_data_[index]; }
-        }
+        protected internal override sealed int this[int index] => m_data_[index];
 
         /// <summary>
         /// Gets the default initial 32 bit value.
         /// </summary>
-        protected internal override sealed int InitialValue
-        {
-            get { return m_initialValue_; }
-        }
+        protected internal override sealed int InitialValue => m_initialValue_;
 
         // package private methods -----------------------------------------
 

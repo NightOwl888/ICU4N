@@ -84,10 +84,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public static PluralRulesLoader DefaultFactory
-        {
-            get { return PluralRulesLoader.Loader; }
-        }
+        public static PluralRulesLoader DefaultFactory => PluralRulesLoader.Loader;
 
         /// <summary>
         /// Returns whether or not there are overrides.
@@ -477,61 +474,37 @@ namespace ICU4N.Text
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual double Source
-            {
-                get { return source; }
-            }
+            public virtual double Source => source;
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual int VisibleDecimalDigitCount
-            {
-                get { return visibleDecimalDigitCount; }
-            }
+            public virtual int VisibleDecimalDigitCount => visibleDecimalDigitCount;
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual int VisibleDecimalDigitCountWithoutTrailingZeros
-            {
-                get { return visibleDecimalDigitCountWithoutTrailingZeros; }
-            }
+            public virtual int VisibleDecimalDigitCountWithoutTrailingZeros => visibleDecimalDigitCountWithoutTrailingZeros;
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual long DecimalDigits
-            {
-                get { return decimalDigits; }
-            }
+            public virtual long DecimalDigits => decimalDigits;
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual long DecimalDigitsWithoutTrailingZeros
-            {
-                get { return decimalDigitsWithoutTrailingZeros; }
-            }
+            public virtual long DecimalDigitsWithoutTrailingZeros => decimalDigitsWithoutTrailingZeros;
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual long IntegerValue
-            {
-                get { return integerValue; }
-            }
+            public virtual long IntegerValue => integerValue;
 
             // ICU4N: HasIntegerValue defined below
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual bool IsNegative
-            {
-                get { return isNegative; }
-            }
+            public virtual bool IsNegative => isNegative;
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual int BaseFactor
-            {
-                get { return baseFactor; }
-            }
+            public virtual int BaseFactor => baseFactor;
 
             private const long MAX = (long)1E18;
 
@@ -804,39 +777,24 @@ namespace ICU4N.Text
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual bool HasIntegerValue
-            {
-                get { return hasIntegerValue; }
-            }
+            public virtual bool HasIntegerValue => hasIntegerValue;
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual int Int32Value // ICU4N specific - renamed from intValue()
-            {
-                // TODO Auto-generated method stub
-                get { return Convert.ToInt32(integerValue); }
-            }
+            // TODO Auto-generated method stub
+            public virtual int Int32Value => Convert.ToInt32(integerValue); // ICU4N specific - renamed from intValue()
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual long Int64Value // ICU4N specific - renamed from longValue()
-            {
-                get { return Convert.ToInt64(integerValue); }
-            }
+            public virtual long Int64Value => Convert.ToInt64(integerValue); // ICU4N specific - renamed from longValue()
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual float SingleValue // ICU4N specific - renamed from floatValue()
-            {
-                get { return Convert.ToSingle(source); }
-            }
+            public virtual float SingleValue => Convert.ToSingle(source); // ICU4N specific - renamed from floatValue()
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual double DoubleValue
-            {
-                get { return isNegative ? -source : source; }
-            }
+            public virtual double DoubleValue => isNegative ? -source : source;
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
@@ -861,17 +819,11 @@ namespace ICU4N.Text
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual bool IsNaN
-            {
-                get { return double.IsNaN(source); }
-            }
+            public virtual bool IsNaN => double.IsNaN(source);
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual bool IsInfinity // ICU4N specific - renamed from IsInfinite
-            {
-                get { return double.IsInfinity(source); }
-            }
+            public virtual bool IsInfinity => double.IsInfinity(source); // ICU4N specific - renamed from IsInfinite
         }
 
         // ICU4N specific - de-nested SampleType enum and renamed PluralRulesSampleType
@@ -1069,10 +1021,7 @@ namespace ICU4N.Text
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            internal virtual ICollection<FixedDecimalRange> Samples // ICU4N: Marked internal since it is obsolete anyway
-            {
-                get { return samples; }
-            }
+            internal virtual ICollection<FixedDecimalRange> Samples => samples; // ICU4N: Marked internal since it is obsolete anyway
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
@@ -1783,10 +1732,7 @@ namespace ICU4N.Text
                 return new Rule(keyword, new OrConstraint(constraint, c), integerSamples, decimalSamples);
             }
 
-            public virtual string Keyword
-            {
-                get { return keyword; }
-            }
+            public virtual string Keyword => keyword;
 
 #pragma warning disable 612, 618
             public virtual bool AppliesTo(IFixedDecimal n)
@@ -2220,10 +2166,7 @@ namespace ICU4N.Text
         /// object.  The rule "other" is always present by default.
         /// </summary>
         /// <stable>ICU 3.8</stable>
-        public virtual ICollection<string> Keywords
-        {
-            get { return keywords; }
-        }
+        public virtual ICollection<string> Keywords => keywords;
 
         /// <summary>
         /// Returns the unique value that this <paramref name="keyword"/> matches, or <see cref="NoUniqueValue"/>

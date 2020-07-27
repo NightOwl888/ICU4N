@@ -128,28 +128,19 @@ namespace ICU4N.Support.Text
         /// <para/>
         /// Returns the index of the first character of the iteration.
         /// </summary>
-        public override int BeginIndex
-        {
-            get { return start; }
-        }
+        public override int BeginIndex => start;
 
         /// <summary>
         /// Gets the end index in the source string.
         /// <para/>
         /// Returns the index one past the last character of the iteration.
         /// </summary>
-        public override int EndIndex
-        {
-            get { return end; }
-        }
+        public override int EndIndex => end;
 
         /// <summary>
         /// Gets the current index in the source string.
         /// </summary>
-        public override int Index
-        {
-            get { return offset; }
-        }
+        public override int Index => offset;
 
         public override int GetHashCode()
         {

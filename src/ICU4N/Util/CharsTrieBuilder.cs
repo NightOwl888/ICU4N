@@ -95,17 +95,17 @@ namespace ICU4N.Util
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal override bool MatchNodesCanHaveValues /*const*/ { get { return true; } } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
+        internal override bool MatchNodesCanHaveValues /*const*/ => true; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal override int MaxBranchLinearSubNodeLength /*const*/ { get { return CharsTrie.kMaxBranchLinearSubNodeLength; } } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
+        internal override int MaxBranchLinearSubNodeLength /*const*/ => CharsTrie.kMaxBranchLinearSubNodeLength; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal override int MinLinearMatch /*const*/{ get { return CharsTrie.kMinLinearMatch; } } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
+        internal override int MinLinearMatch /*const*/ => CharsTrie.kMinLinearMatch; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal override int MaxLinearMatchLength /*const*/{ get { return CharsTrie.kMaxLinearMatchLength; } } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
+        internal override int MaxLinearMatchLength /*const*/ => CharsTrie.kMaxLinearMatchLength; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 
         private void EnsureCapacity(int length)
         {

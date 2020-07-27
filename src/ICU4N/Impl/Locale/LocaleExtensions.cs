@@ -143,10 +143,7 @@ namespace ICU4N.Impl.Locale
             }
         }
 
-        public virtual ICollection<char> Keys
-        {
-            get { return _map.Keys.AsReadOnly(); }
-        }
+        public virtual ICollection<char> Keys => _map.Keys.AsReadOnly();
 
         public virtual Extension GetExtension(char key)
         {
@@ -237,10 +234,7 @@ namespace ICU4N.Impl.Locale
             return ((UnicodeLocaleExtension)ext).GetUnicodeLocaleType(AsciiUtil.ToLower(unicodeLocaleKey));
         }
 
-        public virtual bool IsEmpty
-        {
-            get { return _map.Count == 0; }
-        }
+        public virtual bool IsEmpty => _map.Count == 0;
 
         public static bool IsValidKey(char c)
         {
@@ -290,10 +284,7 @@ namespace ICU4N.Impl.Locale
             return _id;
         }
 
-        public virtual string ID
-        {
-            get { return _id; }
-        }
+        public virtual string ID => _id;
 
         public override int GetHashCode()
         {

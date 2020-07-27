@@ -298,7 +298,7 @@ namespace ICU4N.Impl.Coll
             reorderCodes = other.reorderCodes;
         }
 
-        public bool HasReordering { get { return reorderTable != null; } }
+        public bool HasReordering => reorderTable != null;
 
         private static bool ReorderTableHasSplitBytes(byte[] table)
         {
@@ -346,7 +346,7 @@ namespace ICU4N.Impl.Coll
 
         public CollationStrength Strength
         {
-            get { return GetStrength(options); }
+            get => GetStrength(options);
             set
             {
                 int noStrength = options & ~StrengthMask;
@@ -436,10 +436,7 @@ namespace ICU4N.Impl.Coll
             options = noAlternate | (defaultOptions & AlternateMask);
         }
 
-        public bool AlternateHandling
-        {
-            get { return (options & AlternateMask) != 0; }
-        }
+        public bool AlternateHandling => (options & AlternateMask) != 0;
 
         public void SetMaxVariable(int value, int defaultOptions)
         {
@@ -460,10 +457,7 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        public int MaxVariable
-        {
-            get { return (options & MaxVariableMask) >> MaxVariableShift; }
-        }
+        public int MaxVariable => (options & MaxVariableMask) >> MaxVariableShift;
 
         /// <summary>
         /// Include case bits in the tertiary level if caseLevel=off and caseFirst!=off.
@@ -486,20 +480,11 @@ namespace ICU4N.Impl.Coll
             return (options & (CaseLevel | CaseFirstAndUpperMask)) == CaseFirstAndUpperMask;
         }
 
-        public bool DontCheckFCD // ICU4N TODO: API - per MSDN properties should be in the affirmative
-        {
-            get { return (options & CheckFCD) == 0; }
-        }
+        public bool DontCheckFCD => (options & CheckFCD) == 0; // ICU4N TODO: API - per MSDN properties should be in the affirmative
 
-        internal bool HasBackwardSecondary
-        {
-            get { return (options & BackwardSecondary) != 0; }
-        }
+        internal bool HasBackwardSecondary => (options & BackwardSecondary) != 0;
 
-        public bool IsNumeric
-        {
-            get { return (options & Numeric) != 0; }
-        }
+        public bool IsNumeric => (options & Numeric) != 0;
 
         /// <summary>CHECK_FCD etc.</summary>
         private int options = ((int)CollationStrength.Tertiary << StrengthShift) |  // DEFAULT_STRENGTH
@@ -553,32 +538,33 @@ namespace ICU4N.Impl.Coll
 
         public int Options
         {
-            get { return options; }
-            set { options = value; }
+            get => options;
+            set => options = value;
         }
 
         public long VariableTop
         {
-            get { return variableTop; }
-            set { variableTop = value; }
+            get => variableTop;
+            set => variableTop = value;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1819", Justification = "design requires some writable array properties")]
         public byte[] ReorderTable
         {
-            get { return reorderTable; }
-            set { reorderTable = value; }
+            get => reorderTable;
+            set => reorderTable = value;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1819", Justification = "design requires some writable array properties")]
-        public int[] ReorderCodes { get { return reorderCodes; } }
+        public int[] ReorderCodes => reorderCodes;
+
         public int FastLatinOptions
         {
-            get { return fastLatinOptions; }
-            set { fastLatinOptions = value; }
+            get => fastLatinOptions;
+            set => fastLatinOptions = value;
         }
 
         [SuppressMessage("Microsoft.Performance", "CA1819", Justification = "design requires some writable array properties")]
-        public char[] FastLatinPrimaries { get { return fastLatinPrimaries; } }
+        public char[] FastLatinPrimaries => fastLatinPrimaries;
     }
 }

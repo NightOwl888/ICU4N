@@ -771,9 +771,6 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal RuleBasedCollator RuleBasedCollator // ICU4N specific - marked internal instead of public, since the functionality is obsolete
-        {
-            get { return rbc_; }
-        }
+        internal RuleBasedCollator RuleBasedCollator => rbc_; // ICU4N specific - marked internal instead of public, since the functionality is obsolete
     }
 }

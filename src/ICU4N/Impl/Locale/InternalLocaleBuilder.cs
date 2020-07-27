@@ -786,10 +786,7 @@ namespace ICU4N.Impl.Locale
                 _s = s;
             }
 
-            public virtual string Value
-            {
-                get { return _s; }
-            }
+            public virtual string Value => _s;
 
             public override int GetHashCode()
             {
@@ -819,10 +816,7 @@ namespace ICU4N.Impl.Locale
                 _c = c;
             }
 
-            public virtual char Value
-            {
-                get { return _c; }
-            }
+            public virtual char Value => _c;
 
             public override int GetHashCode()
             {

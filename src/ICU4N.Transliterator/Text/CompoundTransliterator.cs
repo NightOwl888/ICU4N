@@ -231,10 +231,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Gets the number of transliterators in this chain.
         /// </summary>
-        public virtual int Count
-        {
-            get { return trans.Length; }
-        }
+        public virtual int Count => trans.Length;
 
 
         /// <summary>

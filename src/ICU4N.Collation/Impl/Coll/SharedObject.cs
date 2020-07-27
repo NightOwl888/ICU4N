@@ -123,7 +123,7 @@ namespace ICU4N.Impl.Coll
                 return c;
             }
 
-            public T ReadOnly { get { return @ref; } }
+            public T ReadOnly => @ref;
 
             /// <summary>
             /// Returns a writable version of the reference.

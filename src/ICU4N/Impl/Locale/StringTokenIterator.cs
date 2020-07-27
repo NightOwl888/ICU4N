@@ -28,25 +28,13 @@ namespace ICU4N.Impl.Locale
             return _token;
         }
 
-        public string Current
-        {
-            get { return _token; }
-        }
+        public string Current => _token;
 
-        public int CurrentStart
-        {
-            get { return _start; }
-        }
+        public int CurrentStart => _start;
 
-        public int CurrentEnd
-        {
-            get { return _end; }
-        }
+        public int CurrentEnd => _end;
 
-        public bool IsDone
-        {
-            get { return _done; }
-        }
+        public bool IsDone => _done;
 
         private string Next()
         {
@@ -78,10 +66,7 @@ namespace ICU4N.Impl.Locale
             return !_done;
         }
 
-        public bool HasNext
-        {
-            get { return (_end < _text.Length); }
-        }
+        public bool HasNext => _end < _text.Length;
 
         public StringTokenEnumerator SetStart(int offset)
         {

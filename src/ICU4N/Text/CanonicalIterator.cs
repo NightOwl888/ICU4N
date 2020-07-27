@@ -55,10 +55,7 @@ namespace ICU4N.Text
         /// NOTE: it is the NFD form of the source originally passed in.
         /// </summary>
         /// <stable>ICU 2.4</stable>
-        public string Source
-        {
-            get { return source; }
-        }
+        public string Source => source;
 
         /// <summary>
         /// Resets the iterator so that one can start again from the beginning.

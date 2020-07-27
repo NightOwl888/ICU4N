@@ -58,10 +58,7 @@ namespace ICU4N.Impl
 
         private sealed class ResourceBinary : ICUResourceBundleImpl
         {
-            public override UResourceType Type
-            {
-                get { return UResourceType.Binary; }
-            }
+            public override UResourceType Type => UResourceType.Binary;
 
             public override ByteBuffer GetBinary()
             {
@@ -79,10 +76,7 @@ namespace ICU4N.Impl
         }
         private sealed class ResourceInt : ICUResourceBundleImpl // ICU4N TODO: API - rename ResourceInt32
         {
-            public override UResourceType Type
-            {
-                get { return UResourceType.Int32; }
-            }
+            public override UResourceType Type => UResourceType.Int32;
 
             public override int GetInt32()
             {
@@ -102,10 +96,7 @@ namespace ICU4N.Impl
         {
             private string value;
 
-            public override UResourceType Type
-            {
-                get { return UResourceType.String; }
-            }
+            public override UResourceType Type => UResourceType.String;
 
             public override string GetString()
             {
@@ -129,10 +120,7 @@ namespace ICU4N.Impl
         }
         private sealed class ResourceIntVector : ICUResourceBundleImpl // ICU4N TODO: API Rename ResourceInt32Vector
         {
-            public override UResourceType Type
-            {
-                get { return UResourceType.Int32Vector; }
-            }
+            public override UResourceType Type => UResourceType.Int32Vector;
 
             public override int[] GetInt32Vector()
             {
@@ -150,10 +138,7 @@ namespace ICU4N.Impl
         {
             protected internal ICUResourceBundleReader.Container value;
 
-            public override int Length
-            {
-                get { return value.Length; }
-            }
+            public override int Length => value.Length;
 
             public override string GetString(int index)
             {
@@ -195,10 +180,7 @@ namespace ICU4N.Impl
         }
         internal class ResourceArray : ResourceContainer
         {
-            public override UResourceType Type
-            {
-                get { return UResourceType.Array; }
-            }
+            public override UResourceType Type => UResourceType.Array;
 
             protected override string[] HandleGetStringArray()
             {
@@ -242,10 +224,8 @@ namespace ICU4N.Impl
         }
         internal class ResourceTable : ResourceContainer
         {
-            public override UResourceType Type
-            {
-                get { return UResourceType.Table; }
-            }
+            public override UResourceType Type => UResourceType.Table;
+
             protected virtual string GetKey(int index)
             {
                 return ((ICUResourceBundleReader.Table)value).GetKey(wholeBundle.reader, index);

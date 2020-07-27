@@ -253,10 +253,7 @@ namespace ICU4N.Impl
         /// Returns true if strings need to be checked (call <see cref="Span(string, int, SpanCondition)"/> here),
         /// false if not (use a BMPSet for best performance).
         /// </summary>
-        public bool NeedsStringSpanUTF16
-        {
-            get { return someRelevant; }
-        }
+        public bool NeedsStringSpanUTF16 => someRelevant;
 
         /// <summary>For fast <see cref="UnicodeSet.Contains(int)"/>.</summary>
         public bool Contains(int c)
@@ -480,10 +477,7 @@ namespace ICU4N.Impl
                 start = length = 0;
             }
 
-            public bool IsEmpty
-            {
-                get { return (length == 0); }
-            }
+            public bool IsEmpty => length == 0;
 
             /// <summary>
             /// Reduces all stored offsets by delta, used when the current position moves by delta.

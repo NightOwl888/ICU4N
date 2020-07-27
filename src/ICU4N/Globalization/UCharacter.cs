@@ -1929,10 +1929,7 @@ namespace ICU4N
         /// Gets the version of Unicode data used.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public static VersionInfo UnicodeVersion
-        {
-            get { return UCharacterProperty.Instance.UnicodeVersion; }
-        }
+        public static VersionInfo UnicodeVersion => UCharacterProperty.Instance.UnicodeVersion;
 
         /// <icu/>
         /// <summary>
@@ -5914,10 +5911,7 @@ namespace ICU4N.Text.Unicode
         /// Gets the type ID of this Unicode block.
         /// </summary>
         /// <stable>ICU 2.4</stable>
-        public int ID
-        {
-            get { return m_id_; }
-        }
+        public int ID => m_id_;
 
         /// <summary>
         /// Returns the name of this <see cref="UnicodeBlock"/>.

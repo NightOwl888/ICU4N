@@ -283,10 +283,7 @@ namespace ICU4N.Text
             /// <summary>
             /// public singleton instance
             /// </summary>
-            public static ModeImpl Instance
-            {
-                get { return instance; }
-            }
+            public static ModeImpl Instance => instance;
         }
         private sealed class NFKDModeImpl
         {
@@ -294,10 +291,7 @@ namespace ICU4N.Text
             /// <summary>
             /// public singleton instance
             /// </summary>
-            public static ModeImpl Instance
-            {
-                get { return instance; }
-            }
+            public static ModeImpl Instance => instance;
         }
         private sealed class NFCModeImpl
         {
@@ -305,10 +299,7 @@ namespace ICU4N.Text
             /// <summary>
             /// public singleton instance
             /// </summary>
-            public static ModeImpl Instance
-            {
-                get { return instance; }
-            }
+            public static ModeImpl Instance => instance;
         }
         private sealed class NFKCModeImpl
         {
@@ -316,10 +307,7 @@ namespace ICU4N.Text
             /// <summary>
             /// public singleton instance
             /// </summary>
-            public static ModeImpl Instance
-            {
-                get { return instance; }
-            }
+            public static ModeImpl Instance => instance;
         }
         private sealed class FCDModeImpl
         {
@@ -327,10 +315,7 @@ namespace ICU4N.Text
             /// <summary>
             /// public singleton instance
             /// </summary>
-            public static ModeImpl Instance
-            {
-                get { return instance; }
-            }
+            public static ModeImpl Instance => instance;
         }
 
         private sealed class Unicode32
@@ -339,10 +324,7 @@ namespace ICU4N.Text
             /// <summary>
             /// public singleton instance
             /// </summary>
-            public static UnicodeSet Instance
-            {
-                get { return instance; }
-            }
+            public static UnicodeSet Instance => instance;
         }
         private sealed class NFD32ModeImpl
         {
@@ -352,10 +334,7 @@ namespace ICU4N.Text
             /// <summary>
             /// public singleton instance
             /// </summary>
-            public static ModeImpl Instance
-            {
-                get { return instance; }
-            }
+            public static ModeImpl Instance => instance;
         }
         private sealed class NFKD32ModeImpl
         {
@@ -365,10 +344,7 @@ namespace ICU4N.Text
             /// <summary>
             /// public singleton instance
             /// </summary>
-            public static ModeImpl Instance
-            {
-                get { return instance; }
-            }
+            public static ModeImpl Instance => instance;
         }
         private sealed class NFC32ModeImpl
         {
@@ -378,10 +354,7 @@ namespace ICU4N.Text
             /// <summary>
             /// public singleton instance
             /// </summary>
-            public static ModeImpl Instance
-            {
-                get { return instance; }
-            }
+            public static ModeImpl Instance => instance;
         }
         private sealed class NFKC32ModeImpl
         {
@@ -391,10 +364,7 @@ namespace ICU4N.Text
             /// <summary>
             /// public singleton instance
             /// </summary>
-            public static ModeImpl Instance
-            {
-                get { return instance; }
-            }
+            public static ModeImpl Instance => instance;
         }
         private sealed class FCD32ModeImpl
         {
@@ -404,10 +374,7 @@ namespace ICU4N.Text
             /// <summary>
             /// public singleton instance
             /// </summary>
-            public static ModeImpl Instance
-            {
-                get { return instance; }
-            }
+            public static ModeImpl Instance => instance;
         }
 
         /// <summary>
@@ -2488,10 +2455,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The current iteration position.</returns>
         [Obsolete("ICU 56")]
-        public int StartIndex
-        {
-            get { return 0; }
-        }
+        public int StartIndex => 0;
 
         /// <summary>
         /// Retrieve the index of the end of the input text.  This is the end index
@@ -2500,10 +2464,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The current iteration position.</returns>
         [Obsolete("ICU 56")]
-        public int EndIndex
-        {
-            get { return text.Length; }
-        }
+        public int EndIndex => text.Length;
 
         //-------------------------------------------------------------------------
         // Iterator attributes
@@ -2657,10 +2618,7 @@ namespace ICU4N.Text
         /// Gets the length of underlying text storage.
         /// </summary>
         [Obsolete("ICU 56")]
-        public int Length
-        {
-            get { return text.Length; }
-        }
+        public int Length => text.Length;
 
         /// <summary>
         /// Returns the text under iteration as a string.

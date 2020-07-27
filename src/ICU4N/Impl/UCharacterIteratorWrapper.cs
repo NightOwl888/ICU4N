@@ -50,10 +50,7 @@ namespace ICU4N.Impl
         /// position is off the end of the text.
         /// </returns>
         /// <seealso cref="Index"/>
-        public override char Current
-        {
-            get { return (char)iterator.Current; }
-        }
+        public override char Current => (char)iterator.Current;
 
         /// <summary>
         /// Increments the iterator's index by one and returns the character
@@ -101,28 +98,18 @@ namespace ICU4N.Impl
         /// <summary>
         /// Gets the start index of the text.
         /// </summary>
-        public override int BeginIndex
-        {
-            //UCharacterIterator always starts from 0
-            get { return 0; }
-        }
+        public override int BeginIndex => 0; // UCharacterIterator always starts from 0
 
         /// <summary>
         /// Gets the end index of the text.  This index is the index of the first
         /// character following the end of the text.
         /// </summary>
-        public override int EndIndex
-        {
-            get { return iterator.Length; }
-        }
+        public override int EndIndex => iterator.Length;
 
         /// <summary>
         /// Gets the current index.
         /// </summary>
-        public override int Index
-        {
-            get { return iterator.Index; }
-        }
+        public override int Index => iterator.Index;
 
         /// <summary>
         /// Create a copy of this iterator.

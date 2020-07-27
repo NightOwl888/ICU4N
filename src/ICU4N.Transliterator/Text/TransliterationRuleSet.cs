@@ -59,10 +59,7 @@ namespace ICU4N.Text
         /// Return the maximum context length.
         /// </summary>
         /// <returns>the length of the longest preceding context.</returns>
-        public virtual int MaximumContextLength
-        {
-            get { return maxContextLength; }
-        }
+        public virtual int MaximumContextLength => maxContextLength;
 
         /// <summary>
         /// Add a rule to this set.  Rules are added in order, and order is

@@ -272,10 +272,7 @@ namespace ICU4N.Dev.Test.Iterator
                 }
             }
 
-            public int Index
-            {
-                get { return i; }
-            }
+            public int Index => i;
 
             private int[] s;
             private int length, i;

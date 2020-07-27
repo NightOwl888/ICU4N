@@ -1765,10 +1765,7 @@ namespace ICU4N.Dev.Test.Collate
                 return null;
             }
 
-            public override bool Visible
-            {
-                get { return false; }
-            }
+            public override bool Visible => false;
         }
 
         /*

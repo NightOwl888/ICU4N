@@ -87,10 +87,7 @@ namespace ICU4N.Dev.Test.StringPrep
                  RandALCat character MUST be the last character of the string.
        */
 
-        public bool IsReady
-        {
-            get { return mapTransform.IsReady; }
-        }
+        public bool IsReady => mapTransform.IsReady;
 
         public StringBuffer Prepare(UCharacterIterator src,
                                            StringPrepOptions options)
@@ -204,10 +201,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 return true;
             }
 
-            internal bool IsReady
-            {
-                get { return isReady; }
-            }
+            internal bool IsReady => isReady;
 
             internal String Transliterate(String text)
             {

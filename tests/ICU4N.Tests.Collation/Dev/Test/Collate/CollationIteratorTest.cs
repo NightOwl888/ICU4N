@@ -768,7 +768,7 @@ namespace ICU4N.Dev.Test.Collate
                 localeString = locStr;
                 offsets = offs;
             }
-            public String LocaleString { get { return localeString; } }
+            public String LocaleString => localeString;
             public int[] GetOffsets() { return offsets; }
         }
 

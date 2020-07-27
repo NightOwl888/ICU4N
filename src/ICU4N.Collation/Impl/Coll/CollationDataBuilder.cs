@@ -105,7 +105,7 @@ namespace ICU4N.Impl.Coll
         /// <summary>
         /// <c>true</c> if this builder has mappings (e.g., <see cref="Add(ICharSequence, ICharSequence, long[], int)"/> has been called)
         /// </summary>
-        internal bool HasMappings { get { return modified; } }
+        internal bool HasMappings => modified;
 
         /// <returns><c>true</c> if c has CEs in this builder.</returns>
         internal bool IsAssigned(int c)
@@ -412,8 +412,8 @@ namespace ICU4N.Impl.Coll
                 Next = -1;
             }
 
-            internal bool HasContext { get { return Context.Length > 1; } }
-            internal int PrefixLength { get { return Context[0]; } }
+            internal bool HasContext => Context.Length > 1;
+            internal int PrefixLength => Context[0];
 
             /// <summary>
             /// "\0" for the first entry for any code point, with its default CE32.
@@ -1507,10 +1507,7 @@ namespace ICU4N.Impl.Coll
                 pos = newOffset;
             }
 
-            public override int Offset
-            {
-                get { return pos; }
-            }
+            public override int Offset => pos;
 
             public override int NextCodePoint()
             {
@@ -1585,15 +1582,10 @@ namespace ICU4N.Impl.Coll
             private int pos;
         }
 
+        // C++ tests !(trie == NULL || utrie2_isFrozen(trie))
+        // but Java Trie2Writable does not have an observable isFrozen() state.
         internal bool IsMutable // ICU4N: In Java, this was protected, but this is a sealed class
-        {
-            get
-            {
-                // C++ tests !(trie == NULL || utrie2_isFrozen(trie))
-                // but Java Trie2Writable does not have an observable isFrozen() state.
-                return trie != null && unsafeBackwardSet != null && !unsafeBackwardSet.IsFrozen;
-            }
-        }
+            => trie != null && unsafeBackwardSet != null && !unsafeBackwardSet.IsFrozen;
 
         /// <summary>
         /// <see cref="Collation.BUILDER_DATA_TAG"/>

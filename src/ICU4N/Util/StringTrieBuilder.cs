@@ -265,7 +265,7 @@ namespace ICU4N.Util
                     Write(builder);
                 }
             }
-            public int Offset /*const*/ { get { return offset; } }
+            public int Offset => offset; /*const*/
 
             protected int offset;
         }
@@ -338,7 +338,7 @@ namespace ICU4N.Util
             protected bool hasValue;
             protected int value;
 
-            internal int Value { get { return value; } }
+            internal int Value => value;
         }
 
         private sealed class IntermediateValueNode : ValueNode

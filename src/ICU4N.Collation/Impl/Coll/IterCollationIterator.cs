@@ -21,10 +21,7 @@ namespace ICU4N.Impl.Coll
             iter.Index = newOffset;
         }
 
-        public override int Offset
-        {
-            get { return iter.Index; }
-        }
+        public override int Offset => iter.Index;
 
         public override int NextCodePoint()
         {

@@ -240,9 +240,7 @@ namespace ICU4N.Text
         /// support <see cref="Transliterator.MaximumContextLength"/>.
         /// </summary>
         public virtual int AnteContextLength
-        {
-            get { return anteContextLength + (((flags & ANCHOR_START) != 0) ? 1 : 0); }
-        }
+            => anteContextLength + (((flags & ANCHOR_START) != 0) ? 1 : 0);
 
         /// <summary>
         /// Internal method.  Returns 8-bit index value for this rule.

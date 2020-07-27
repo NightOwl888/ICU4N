@@ -53,10 +53,7 @@ namespace ICU4N.Text
         /// Gets the <see cref="Text.UnicodeSet"/> used for processing. It is frozen iff the original was.
         /// </summary>
         /// <stable>ICU 54</stable>
-        public virtual UnicodeSet UnicodeSet
-        {
-            get { return unicodeSet; }
-        }
+        public virtual UnicodeSet UnicodeSet => unicodeSet;
 
 
         /// <summary>

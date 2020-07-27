@@ -330,34 +330,22 @@ namespace ICU4N.Impl
         /// <summary>
         /// Return the prefix associated with the kind, or null if the kind is <see cref="KindAny"/>.
         /// </summary>
-        public virtual string Prefix
-        {
-            get { return kind == KindAny ? null : Kind.ToString(CultureInfo.InvariantCulture); }
-        }
+        public virtual string Prefix => kind == KindAny ? null : Kind.ToString(CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Return the kind code associated with this key.
         /// </summary>
-        public virtual int Kind
-        {
-            get { return kind; }
-        }
+        public virtual int Kind => kind;
 
         /// <summary>
         /// Return the (canonical) original ID.
         /// </summary>
-        public override string CanonicalID
-        {
-            get { return primaryID; }
-        }
+        public override string CanonicalID => primaryID;
 
         /// <summary>
         /// Return the (canonical) current ID, or null if no current id.
         /// </summary>
-        public override string CurrentID
-        {
-            get { return currentID; }
-        }
+        public override string CurrentID => currentID;
 
         /// <summary>
         /// Return the (canonical) current descriptor, or null if no current id.

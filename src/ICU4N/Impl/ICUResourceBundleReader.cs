@@ -364,23 +364,13 @@ namespace ICU4N.Impl
             return bytes.GetInt32((1 + i) << 2);
         }
 
-        internal VersionInfo Version
-        {
-            get { return ICUBinary.GetVersionInfoFromCompactInt32(dataVersion); }
-        }
+        internal VersionInfo Version => ICUBinary.GetVersionInfoFromCompactInt32(dataVersion);
 
-        internal int RootResource
-        {
-            get { return rootRes; }
-        }
-        internal bool NoFallback
-        {
-            get { return noFallback; }
-        }
-        internal bool UsesPoolBundle
-        {
-            get { return usesPoolBundle; }
-        }
+        internal int RootResource => rootRes;
+
+        internal bool NoFallback => noFallback;
+
+        internal bool UsesPoolBundle => usesPoolBundle;
 
         internal static UResourceType RES_GET_TYPE(int res)
         {
@@ -986,10 +976,7 @@ namespace ICU4N.Impl
             internal ICUResourceBundleReader reader;
             internal int res;
 
-            public override UResourceType Type
-            {
-                get { return PUBLIC_TYPES[(int)RES_GET_TYPE(res)]; }
-            }
+            public override UResourceType Type => PUBLIC_TYPES[(int)RES_GET_TYPE(res)];
 
             public override string GetString()
             {
@@ -1069,10 +1056,7 @@ namespace ICU4N.Impl
                 return table;
             }
 
-            public override bool IsNoInheritanceMarker
-            {
-                get { return reader.IsNoInheritanceMarker(res); }
-            }
+            public override bool IsNoInheritanceMarker => reader.IsNoInheritanceMarker(res);
 
             public override string[] GetStringArray()
             {
@@ -1143,10 +1127,8 @@ namespace ICU4N.Impl
             protected int size;
             protected int itemsOffset;
 
-            public int Length
-            {
-                get { return size; }
-            }
+            public int Length => size;
+
             internal virtual int GetContainerResource(ICUResourceBundleReader reader, int index)
             {
                 return ICUResourceBundle.ResBogus;

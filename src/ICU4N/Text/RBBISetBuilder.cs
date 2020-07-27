@@ -395,10 +395,7 @@ namespace ICU4N.Text
         //           getNumCharCategories
         //
         //------------------------------------------------------------------------
-        internal virtual int NumCharCategories
-        {
-            get { return fGroupCount + 3; }
-        }
+        internal virtual int NumCharCategories => fGroupCount + 3;
 
 
         //------------------------------------------------------------------------
@@ -406,10 +403,7 @@ namespace ICU4N.Text
         //           sawBOF
         //
         //------------------------------------------------------------------------
-        internal virtual bool SawBOF
-        {
-            get { return fSawBOF; }
-        }
+        internal virtual bool SawBOF => fSawBOF;
 
 
         //------------------------------------------------------------------------

@@ -56,7 +56,7 @@ namespace ICU4N.Impl
         /// </summary>
         internal int m_groupcount_ = 0;
 
-        public int GroupCount { get { return m_groupcount_; } }
+        public int GroupCount => m_groupcount_;
 
         // public methods ---------------------------------------------------
 
@@ -501,10 +501,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Gets the Algorithm range length.
         /// </summary>
-        public int AlgorithmLength
-        {
-            get { return m_algorithm_.Length; }
-        }
+        public int AlgorithmLength => m_algorithm_.Length;
 
         /// <summary>
         /// Gets the start of the range.

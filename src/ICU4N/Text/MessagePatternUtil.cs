@@ -324,10 +324,7 @@ namespace ICU4N.Text
         /// Returns the type of this piece of <see cref="MessageNode"/> contents.
         /// </summary>
         /// <stable>ICU 49</stable>
-        public virtual NodeType Type
-        {
-            get { return type; }
-        }
+        public virtual NodeType Type => type;
 
         /// <stable>ICU 49</stable>
         public override string ToString()
@@ -394,8 +391,8 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual MessagePatternArgType ArgType
         {
-            get { return argType; }
-            internal set { argType = value; }
+            get => argType;
+            internal set => argType = value;
         }
 
         /// <summary>
@@ -404,8 +401,8 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual string Name
         {
-            get { return name; }
-            internal set { name = value; }
+            get => name;
+            internal set => name = value;
         }
 
         /// <summary>
@@ -414,8 +411,8 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual int Number
         {
-            get { return number; }
-            internal set { number = value; }
+            get => number;
+            internal set => number = value;
         }
 
         /// <summary>
@@ -424,8 +421,8 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual string TypeName
         {
-            get { return typeName; }
-            internal set { typeName = value; }
+            get => typeName;
+            internal set => typeName = value;
         }
 
         /// <summary>
@@ -435,8 +432,8 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual string SimpleStyle
         {
-            get { return style; }
-            internal set { style = value; }
+            get => style;
+            internal set => style = value;
         }
 
         /// <summary>
@@ -447,8 +444,8 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual ComplexArgStyleNode ComplexStyle
         {
-            get { return complexStyle; }
-            internal set { complexStyle = value; }
+            get => complexStyle;
+            internal set => complexStyle = value;
         }
 
         /// <stable>ICU 49</stable>
@@ -504,8 +501,8 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual MessagePatternArgType ArgType
         {
-            get { return argType; }
-            internal set { ArgType = value; }
+            get => argType;
+            internal set => ArgType = value;
         }
 
         /// <summary>
@@ -514,8 +511,8 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual bool HasExplicitOffset
         {
-            get { return explicitOffset; }
-            internal set { explicitOffset = value; }
+            get => explicitOffset;
+            internal set => explicitOffset = value;
         }
 
         /// <summary>
@@ -525,8 +522,8 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual double Offset
         {
-            get { return offset; }
-            internal set { offset = value; }
+            get => offset;
+            internal set => offset = value;
         }
 
         /// <summary>
@@ -535,8 +532,8 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual IList<VariantNode> Variants
         {
-            get { return list; }
-            internal set { list = value; }
+            get => list;
+            internal set => list = value;
         }
 
         /// <summary>
@@ -633,18 +630,15 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual string Selector
         {
-            get { return selector; }
-            internal set { selector = value; }
+            get => selector;
+            internal set => selector = value;
         }
 
         /// <summary>
         /// Gets true for choice variants and for plural explicit values
         /// </summary>
         /// <stable>ICU 49</stable>
-        public virtual bool IsSelectorNumeric
-        {
-            get { return numericValue != MessagePattern.NoNumericValue; }
-        }
+        public virtual bool IsSelectorNumeric => numericValue != MessagePattern.NoNumericValue;
 
         /// <summary>
         /// Gets the selector's numeric value, or NO_NUMERIC_VALUE if !isSelectorNumeric()
@@ -652,8 +646,8 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual double SelectorValue
         {
-            get { return numericValue; }
-            internal set { numericValue = value; }
+            get => numericValue;
+            internal set => numericValue = value;
         }
 
         /// <summary>
@@ -662,8 +656,8 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual MessageNode Message
         {
-            get { return msgNode; }
-            internal set { msgNode = value; }
+            get => msgNode;
+            internal set => msgNode = value;
         }
 
         /// <stable>ICU 49</stable>

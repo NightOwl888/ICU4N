@@ -126,15 +126,9 @@ namespace ICU4N.Dev.Test.Translit
                 return Chars.Substring(start, length); // ICU4N: Warning this has .NET semantics, just like string.Substring(int, int)
             }
 
-            public int Length
-            {
-                get { return Chars.Length; }
-            }
+            public int Length => Chars.Length;
 
-            public char this[int offset]
-            {
-                get { return Chars[offset]; }
-            }
+            public char this[int offset] => Chars[offset];
 
             public int Char32At(int offset)
             {
@@ -211,10 +205,7 @@ namespace ICU4N.Dev.Test.Translit
                 Styles.Copy(startIndex, length, destinationIndex);
             }
 
-            public bool HasMetaData
-            {
-                get { return true; }
-            }
+            public bool HasMetaData => true;
 
             internal static readonly bool DEBUG = false;
         }

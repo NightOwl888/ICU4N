@@ -144,15 +144,9 @@ namespace ICU4N.Impl
             return fallback ? isoCode : null;
         }
 
-        public override IDictionary<string, string> SymbolMap
-        {
-            get { return new Dictionary<string, string>().AsReadOnly(); }
-        }
+        public override IDictionary<string, string> SymbolMap => new Dictionary<string, string>().AsReadOnly();
 
-        public override IDictionary<string, string> NameMap
-        {
-            get { return new Dictionary<string, string>().AsReadOnly(); }
-        }
+        public override IDictionary<string, string> NameMap => new Dictionary<string, string>().AsReadOnly();
 
         public override UCultureInfo UCulture
             => UCultureInfo.InvariantCulture;

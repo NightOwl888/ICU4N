@@ -166,10 +166,7 @@ namespace ICU4N.Text
         /// Gets the source string that this <see cref="CollationKey"/> represents.
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        public string SourceString
-        {
-            get { return m_source_; }
-        }
+        public string SourceString => m_source_;
 
         /// <summary>
         /// Duplicates and returns the value of this <see cref="CollationKey"/> as a sequence

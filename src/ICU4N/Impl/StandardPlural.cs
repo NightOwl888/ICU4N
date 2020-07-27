@@ -50,18 +50,12 @@ namespace ICU4N.Impl
         /// Gets an unmodifiable List of all standard plural form constants.
         /// <see cref="IList{T}"/> version of <see cref="StandardPlural"/>.
         /// </summary>
-        public static IList<StandardPlural> Values
-        {
-            get { return values; }
-        }
+        public static IList<StandardPlural> Values => values;
 
         /// <summary>
         /// Gets the number of standard plural forms/categories.
         /// </summary>
-        public static int Count
-        {
-            get { return values.Count; }
-        }
+        public static int Count => values.Count;
 
         /// <summary>
         /// The lowercase CLDR keyword string for the plural form.

@@ -312,39 +312,27 @@ namespace ICU4N.Text
         /// Returns the type of this <see cref="MessagePatternPart"/>.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public MessagePatternPartType Type
-        {
-            get { return type; }
-        }
+        public MessagePatternPartType Type => type;
 
         /// <summary>
         /// Gets the pattern string index associated with this <see cref="MessagePatternPart"/>.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public int Index
-        {
-            get { return index; }
-        }
+        public int Index => index;
 
         /// <summary>
         /// Gets the length of the pattern substring associated with this <see cref="MessagePatternPart"/>.
         /// This is 0 for some parts.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public int Length
-        {
-            get { return length; }
-        }
+        public int Length => length;
 
         /// <summary>
         /// Gets the pattern string limit (exclusive-end) index associated with this <see cref="MessagePatternPart"/>.
         /// Convenience method for <see cref="Index"/> + <see cref="Length"/>.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public int Limit
-        {
-            get { return index + length; }
-        }
+        public int Limit => index + length;
 
         /// <summary>
         /// Gets a value associated with this part.
@@ -353,8 +341,8 @@ namespace ICU4N.Text
         /// <stable>ICU 4.8</stable>
         public short Value
         {
-            get { return value; }
-            internal set { this.value = value; }
+            get => value;
+            internal set => this.value = value;
         }
 
         /// <summary>
@@ -698,48 +686,33 @@ namespace ICU4N.Text
         /// Gets this instance's <see cref="Text.ApostropheMode"/>.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public ApostropheMode ApostropheMode
-        {
-            get { return aposMode; }
-        }
+        public ApostropheMode ApostropheMode => aposMode;
 
         /// <summary>
         /// Gets true if <see cref="ApostropheMode"/> == <see cref="ApostropheMode.DoubleRequired"/>
         /// </summary>
         /// <internal/>
-        internal bool JdkAposMode // ICU4N TODO: API - is this required in .NET?
-        {
-            get { return aposMode == ApostropheMode.DoubleRequired; }
-        }
+        internal bool JdkAposMode => aposMode == ApostropheMode.DoubleRequired; // ICU4N TODO: API - is this required in .NET?
 
         /// <summary>
         /// Gets the parsed pattern string (null if none was parsed).
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public string PatternString
-        {
-            get { return msg; }
-        }
+        public string PatternString => msg;
 
         /// <summary>
         /// Does the parsed pattern have named arguments like {first_name}?
         /// Returns true if the parsed pattern has at least one named argument.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public bool HasNamedArguments
-        {
-            get { return hasArgNames; }
-        }
+        public bool HasNamedArguments => hasArgNames;
 
         /// <summary>
         /// Does the parsed pattern have numbered arguments like {2}?
         /// Returns true if the parsed pattern has at least one numbered argument.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public bool HasNumberedArguments
-        {
-            get { return hasArgNumbers; }
-        }
+        public bool HasNumberedArguments => hasArgNumbers;
 
         /// <stable>ICU 4.8</stable>
         public override string ToString()

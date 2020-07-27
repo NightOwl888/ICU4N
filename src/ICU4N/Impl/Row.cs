@@ -206,10 +206,7 @@ namespace ICU4N.Impl
             return result.Append("]").ToString();
         }
 
-        public virtual bool IsFrozen
-        {
-            get { return frozen; }
-        }
+        public virtual bool IsFrozen => frozen;
 
         public virtual Row<TColumn0, TColumn1, TColumn2, TColumn3, TColumn4> Freeze()
         {

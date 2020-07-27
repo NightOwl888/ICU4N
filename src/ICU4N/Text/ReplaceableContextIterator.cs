@@ -51,10 +51,7 @@ namespace ICU4N.Text
         /// Get the index of where the code point currently being case-mapped starts.
         /// </summary>
         /// <returns>The start index of the current code point.</returns>
-        public virtual int CaseMapCPStart
-        {
-            get { return cpStart; }
-        }
+        public virtual int CaseMapCPStart => cpStart;
 
         /// <summary>
         /// Set the iteration limit for <see cref="NextCaseMapCP()"/> to an index within the string.

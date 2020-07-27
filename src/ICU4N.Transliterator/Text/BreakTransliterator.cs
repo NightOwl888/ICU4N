@@ -324,28 +324,19 @@ namespace ICU4N.Text
             /// Implements <see cref="CharacterIterator.BeginIndex"/> for <see cref="string"/>.
             /// </summary>
             /// <seealso cref="CharacterIterator.BeginIndex"/>
-            public override int BeginIndex
-            {
-                get { return begin; }
-            }
+            public override int BeginIndex => begin;
 
             /// <summary>
             /// Implements <see cref="CharacterIterator.EndIndex"/> for <see cref="string"/>.
             /// </summary>
             /// <seealso cref="CharacterIterator.EndIndex"/>
-            public override int EndIndex
-            {
-                get { return end; }
-            }
+            public override int EndIndex => end;
 
             /// <summary>
             /// Implements <see cref="CharacterIterator.Index"/> for <see cref="string"/>.
             /// </summary>
             /// <seealso cref="CharacterIterator.Index"/>
-            public override int Index
-            {
-                get { return pos; }
-            }
+            public override int Index => pos;
 
             /// <summary>
             /// Compares the equality of two <see cref="ReplaceableCharacterIterator"/> objects.

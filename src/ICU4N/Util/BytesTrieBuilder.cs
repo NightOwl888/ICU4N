@@ -32,8 +32,8 @@ namespace ICU4N.Util
                 s = sequence;
                 len = length;
             }
-            public char this[int i] { get { return (char)(s[i] & 0xff); } }
-            public int Length { get { return len; } }
+            public char this[int i] => (char)(s[i] & 0xff);
+            public int Length => len;
             public ICharSequence Subsequence(int startIndex, int length) { return null; }
 
             bool ICharSequence.HasValue => true;
@@ -136,17 +136,17 @@ namespace ICU4N.Util
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal override bool MatchNodesCanHaveValues /*const*/ { get { return false; } } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
+        internal override bool MatchNodesCanHaveValues /*const*/ => false; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal override int MaxBranchLinearSubNodeLength /*const*/{ get { return BytesTrie.kMaxBranchLinearSubNodeLength; } } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
+        internal override int MaxBranchLinearSubNodeLength /*const*/ => BytesTrie.kMaxBranchLinearSubNodeLength; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal override int MinLinearMatch /*const*/{ get { return BytesTrie.kMinLinearMatch; } } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
+        internal override int MinLinearMatch /*const*/ => BytesTrie.kMinLinearMatch; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal override int MaxLinearMatchLength /*const*/{ get { return BytesTrie.kMaxLinearMatchLength; } } // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
+        internal override int MaxLinearMatchLength /*const*/ => BytesTrie.kMaxLinearMatchLength; // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 
         private void EnsureCapacity(int length)
         {

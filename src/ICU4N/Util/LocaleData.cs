@@ -331,8 +331,8 @@ namespace ICU4N.Util
         /// <stable>ICU 3.4</stable>
         public bool NoSubstitute
         {
-            get { return noSubstitute; }
-            set { noSubstitute = value; }
+            get => noSubstitute;
+            set => noSubstitute = value;
         }
 
         private static readonly string[] DELIMITER_TYPES = {

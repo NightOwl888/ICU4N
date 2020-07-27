@@ -91,9 +91,6 @@ namespace ICU4N.Text
             return numChars;
         }
 
-        public override int Type
-        {
-            get { return DictionaryData.TRIE_TYPE_BYTES; }
-        }
+        public override int Type => DictionaryData.TRIE_TYPE_BYTES;
     }
 }

@@ -129,12 +129,14 @@ namespace ICU4N.Text
         /// Returns true if there were processing errors.
         /// </summary>
         /// <stable>ICU 4.6</stable>
-        public bool HasErrors { get { return errors.Count > 0; } }
+        public bool HasErrors => errors.Count > 0;
+
         /// <summary>
         /// Returns a set indicating IDNA processing errors (modifiable, and not null).
         /// </summary>
         /// <stable>ICU 4.6</stable>
-        public ISet<IDNAError> Errors { get { return errors; } }
+        public ISet<IDNAError> Errors => errors;
+
         /// <summary>
         /// Returns true if transitional and nontransitional processing produce different results.
         /// This is the case when the input label or domain name contains
@@ -151,7 +153,7 @@ namespace ICU4N.Text
         /// </list>
         /// </summary>
         /// <stable>ICU 4.6</stable>
-        public bool IsTransitionalDifferent { get { return isTransDiff; } }
+        public bool IsTransitionalDifferent => isTransDiff;
 
         internal void Reset()
         {

@@ -269,10 +269,7 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal virtual UnicodeSet Set // ICU4N specific - marked internal instead of public, since the functionality is obsolete
-        {
-            get { return set; }
-        }
+        internal virtual UnicodeSet Set => set; // ICU4N specific - marked internal instead of public, since the functionality is obsolete
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]

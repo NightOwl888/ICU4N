@@ -259,10 +259,7 @@ namespace ICU4N.Impl
                 }
                 return ranges.Length;
             }
-            public int Length
-            {
-                get { return ranges.Length; }
-            }
+            public int Length => ranges.Length;
 
             public int CompareTo(Ranges other)
             {

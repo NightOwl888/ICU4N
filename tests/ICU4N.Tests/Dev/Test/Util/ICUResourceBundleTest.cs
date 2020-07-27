@@ -1042,7 +1042,7 @@ namespace ICU4N.Dev.Test.Util
             public override UCultureInfo UCulture => UCultureInfo.InvariantCulture;
             protected override string GetLocaleID() { return null; }
             protected internal override string GetBaseName() { return null; }
-            public override UResourceBundle Parent { get { return null; } }
+            public override UResourceBundle Parent => null;
 
             public override IEnumerable<string> GetKeys() { return null; }
             protected override object HandleGetObject(string aKey) { return null; }

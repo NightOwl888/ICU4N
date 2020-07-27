@@ -82,10 +82,7 @@ namespace ICU4N.Util
         /// TRUE if there are more elements, FALSE if there is no more elements.
         /// </summary>
         /// <stable>ICU 3.8</stable>
-        public virtual bool HasNext
-        {
-            get { return index < size; }
-        }
+        public virtual bool HasNext => index < size;
 
         #region .NET Compatibility
 

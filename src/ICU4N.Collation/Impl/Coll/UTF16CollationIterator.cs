@@ -48,10 +48,7 @@ namespace ICU4N.Impl.Coll
             pos = start + newOffset;
         }
 
-        public override int Offset
-        {
-            get { return pos - start; }
-        }
+        public override int Offset => pos - start;
 
         public virtual void SetText(bool numeric, ICharSequence s, int p)
         {

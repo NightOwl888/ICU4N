@@ -786,10 +786,7 @@ namespace ICU4N.Impl
         /// Return true if the service is in its default state.  The default
         /// implementation returns true if there are no factories registered.
         /// </summary>
-        public virtual bool IsDefault
-        {
-            get { return factories.Count == defaultSize; }
-        }
+        public virtual bool IsDefault => factories.Count == defaultSize;
 
         /// <summary>
         /// Set the default size to the current number of registered factories.
@@ -881,10 +878,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Return the name of this service. This will be the empty string if none was assigned.
         /// </summary>
-        public virtual string Name
-        {
-            get { return m_name; }
-        }
+        public virtual string Name => m_name;
 
         /// <summary>
         /// Returns the result of <c>base.ToString()</c>, appending the name in curly braces.
@@ -934,28 +928,19 @@ namespace ICU4N.Impl
         /// <summary>
         /// Return the original ID used to construct this key.
         /// </summary>
-        public string ID
-        {
-            get { return id; }
-        }
+        public string ID => id;
 
         /// <summary>
         /// Return the canonical version of the original ID.  This implementation
         /// returns the original ID unchanged.
         /// </summary>
-        public virtual string CanonicalID
-        {
-            get { return id; }
-        }
+        public virtual string CanonicalID => id;
 
         /// <summary>
         /// Return the (canonical) current ID.  This implementation
         /// returns the canonical ID.
         /// </summary>
-        public virtual string CurrentID
-        {
-            get { return CanonicalID; }
-        }
+        public virtual string CurrentID => CanonicalID;
 
         /// <summary>
         /// Return the current descriptor.  This implementation returns

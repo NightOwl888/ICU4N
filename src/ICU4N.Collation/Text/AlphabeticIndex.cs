@@ -329,10 +329,7 @@ namespace ICU4N.Text
         /// Get the default label used in the IndexCharacters' locale for underflow, eg the last item in: X Y Z ...
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public string UnderflowLabel
-        {
-            get { return underflowLabel; } // TODO get localized version
-        }
+        public string UnderflowLabel => underflowLabel; // TODO get localized version
 
         /// <summary>
         /// Set the underflowLabel label.
@@ -351,10 +348,7 @@ namespace ICU4N.Text
         /// Get the default label used in the IndexCharacters' locale for overflow, eg the first item in: ... A B C
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public string OverflowLabel
-        {
-            get { return overflowLabel; } // TODO get localized version
-        }
+        public string OverflowLabel => overflowLabel; // TODO get localized version
 
         /// <summary>
         /// Set the inflowLabel label.
@@ -374,20 +368,14 @@ namespace ICU4N.Text
         /// for Latin and Greek are used: X Y Z ... &#x0391; &#x0392; &#x0393;.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public string InflowLabel
-        {
-            get { return inflowLabel; } // TODO get localized version
-        }
+        public string InflowLabel => inflowLabel; // TODO get localized version
 
         /// <summary>
         /// Get the limit on the number of labels in the index. The number of buckets can be slightly larger: see <see cref="BucketCount"/>.
         /// Returns maximum number of labels.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public int MaxLabelCount
-        {
-            get { return maxLabelCount; }
-        }
+        public int MaxLabelCount => maxLabelCount;
 
         /// <summary>
         /// Set a limit on the number of labels in the index. The number of buckets can be slightly larger: see
@@ -790,10 +778,7 @@ namespace ICU4N.Text
         /// Gets the number of records in the index: that is, the total number of distinct &lt;name,data&gt; pairs added with AddRecord(...), over all the buckets.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public int RecordCount
-        {
-            get { return inputList != null ? inputList.Count : 0; }
-        }
+        public int RecordCount => inputList != null ? inputList.Count : 0;
 
         /// <summary>
         /// Return an enumerator over the buckets.
@@ -1088,10 +1073,7 @@ namespace ICU4N.Text
             private readonly IList<Bucket<T>> bucketList;
             private readonly IList<Bucket<T>> immutableVisibleList;
 
-            public IList<Bucket<T>> ImmutableVisibleList
-            {
-                get { return immutableVisibleList; }
-            }
+            public IList<Bucket<T>> ImmutableVisibleList => immutableVisibleList;
 
             internal BucketList(IList<Bucket<T>> bucketList, IList<Bucket<T>> publicBucketList)
             {
@@ -1105,10 +1087,7 @@ namespace ICU4N.Text
                 immutableVisibleList = publicBucketList.AsReadOnly();
             }
 
-            internal int BucketCount
-            {
-                get { return immutableVisibleList.Count; }
-            }
+            internal int BucketCount => immutableVisibleList.Count;
 
             internal int GetBucketIndex(string name, Collator collatorPrimaryOnly) // ICU4N specific - changed name from ICharSequence to string
             {
@@ -1251,10 +1230,7 @@ namespace ICU4N.Text
         /// Gets the number of index buckets and labels, including underflow/inflow/overflow.
         /// </summary>
         /// <stable>ICU 51</stable>
-        public int BucketCount
-        {
-            get { return buckets.BucketCount; }
-        }
+        public int BucketCount => buckets.BucketCount;
 
         /// <summary>
         /// Finds the index bucket for the given name and returns the number of that bucket.
@@ -1324,19 +1300,13 @@ namespace ICU4N.Text
         /// Gets the name.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public virtual string Name
-        {
-            get { return name; }
-        }
+        public virtual string Name => name;
 
         /// <summary>
         /// Gets the data.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public virtual T Data
-        {
-            get { return data; }
-        }
+        public virtual T Data => data;
 
         /// <summary>
         /// Returns <c>name + "=" + data</c>.
@@ -1368,27 +1338,24 @@ namespace ICU4N.Text
 
         // ICU4N specific - de-nested LabelType enum and renamed BucketLabelType
 
-        internal string LowerBoundary
-        {
-            get { return lowerBoundary; }
-        }
+        internal string LowerBoundary => lowerBoundary;
 
         internal Bucket<T> DisplayBucket
         {
-            get { return displayBucket; }
-            set { displayBucket = value; }
+            get => displayBucket;
+            set => displayBucket = value;
         }
 
         internal int DisplayIndex
         {
-            get { return displayIndex; }
-            set { displayIndex = value; }
+            get => displayIndex;
+            set => displayIndex = value;
         }
 
         internal IList<Record<T>> Records
         {
-            get { return records; }
-            set { records = value; }
+            get => records;
+            set => records = value;
         }
 
         /// <summary>
@@ -1409,28 +1376,19 @@ namespace ICU4N.Text
         /// Gets the label for the bucket.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public virtual string Label
-        {
-            get { return label; }
-        }
+        public virtual string Label => label;
 
         /// <summary>
         /// Is a normal, underflow, overflow, or inflow bucket?
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public BucketLabelType LabelType
-        {
-            get { return labelType; }
-        }
+        public BucketLabelType LabelType => labelType;
 
         /// <summary>
         /// Gets the number of records in the bucket.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public virtual int Count
-        {
-            get { return records == null ? 0 : records.Count; }
-        }
+        public virtual int Count => records == null ? 0 : records.Count;
 
         /// <summary>
         /// Enumerator over the records in the bucket.

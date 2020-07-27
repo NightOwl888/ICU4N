@@ -330,26 +330,17 @@ namespace ICU4N.Impl
         internal sealed class NFCSingleton
         {
             private static readonly Norm2AllModesSingleton instance = new Norm2AllModesSingleton("nfc");
-            public static Norm2AllModesSingleton Instance
-            {
-                get { return instance; }
-            }
+            public static Norm2AllModesSingleton Instance => instance;
         }
         internal sealed class NFKCSingleton
         {
             private static readonly Norm2AllModesSingleton instance = new Norm2AllModesSingleton("nfkc");
-            public static Norm2AllModesSingleton Instance
-            {
-                get { return instance; }
-            }
+            public static Norm2AllModesSingleton Instance => instance;
         }
         internal sealed class NFKC_CFSingleton
         {
             private static readonly Norm2AllModesSingleton instance = new Norm2AllModesSingleton("nfkc_cf");
-            public static Norm2AllModesSingleton Instance
-            {
-                get { return instance; }
-            }
+            public static Norm2AllModesSingleton Instance => instance;
         }
     }
 }

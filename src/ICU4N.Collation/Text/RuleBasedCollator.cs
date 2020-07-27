@@ -256,10 +256,7 @@ namespace ICU4N.Text
         /// A frozen <see cref="Collator"/> is immutable and thread-safe.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public override bool IsFrozen
-        {
-            get { return frozenLock != null; }
-        }
+        public override bool IsFrozen => frozenLock != null;
 
         /// <summary>
         /// Freezes the collator.
@@ -337,8 +334,8 @@ namespace ICU4N.Text
         [Obsolete("ICU 50 Implementation detail, cannot be set via API, was removed from implementation.")]
         public bool IsHiraganaQuaternary
         {
-            get { return false; }
-            set { CheckNotFrozen(); }
+            get => false;
+            set => CheckNotFrozen();
         }
 
         /// <summary>
@@ -364,10 +361,7 @@ namespace ICU4N.Text
         /// </summary>
         public bool IsUpperCaseFirst
         {
-            get
-            {
-                return (settings.ReadOnly.GetCaseFirst() == CollationSettings.CaseFirstAndUpperMask);
-            }
+            get => (settings.ReadOnly.GetCaseFirst() == CollationSettings.CaseFirstAndUpperMask);
             set
             {
                 CheckNotFrozen();
@@ -388,10 +382,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public bool IsLowerCaseFirst
         {
-            get
-            {
-                return (settings.ReadOnly.GetCaseFirst() == CollationSettings.CaseFirst);
-            }
+            get => (settings.ReadOnly.GetCaseFirst() == CollationSettings.CaseFirst);
             set
             {
                 CheckNotFrozen();
@@ -525,10 +516,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public bool IsFrenchCollation
         {
-            get
-            {
-                return (settings.ReadOnly.Options & CollationSettings.BackwardSecondary) != 0;
-            }
+            get => (settings.ReadOnly.Options & CollationSettings.BackwardSecondary) != 0;
             set
             {
                 CheckNotFrozen();
@@ -552,10 +540,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public bool IsAlternateHandlingShifted
         {
-            get
-            {
-                return settings.ReadOnly.AlternateHandling;
-            }
+            get => settings.ReadOnly.AlternateHandling;
             set
             {
                 CheckNotFrozen();
@@ -582,10 +567,7 @@ namespace ICU4N.Text
         /// <seealso cref="SetCaseLevelToDefault()"/>
         public bool IsCaseLevel
         {
-            get
-            {
-                return (settings.ReadOnly.Options & CollationSettings.CaseLevel) != 0;
-            }
+            get => (settings.ReadOnly.Options & CollationSettings.CaseLevel) != 0;
             set
             {
                 CheckNotFrozen();
@@ -624,11 +606,9 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public override NormalizationMode Decomposition
         {
-            get
-            {
-                return (settings.ReadOnly.Options & CollationSettings.CheckFCD) != 0 ?
+            get =>
+                (settings.ReadOnly.Options & CollationSettings.CheckFCD) != 0 ?
                     NormalizationMode.CanonicalDecomposition : NormalizationMode.NoDecomposition;
-            }
             set
             {
                 CheckNotFrozen();
@@ -668,10 +648,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public override CollationStrength Strength
         {
-            get
-            {
-                return settings.ReadOnly.Strength;
-            }
+            get => settings.ReadOnly.Strength;
             set
             {
                 CheckNotFrozen();
@@ -698,10 +675,7 @@ namespace ICU4N.Text
         /// <stable>ICU 53</stable>
         public override int MaxVariable
         {
-            get
-            {
-                return ReorderCodes.First + settings.ReadOnly.MaxVariable;
-            }
+            get => ReorderCodes.First + settings.ReadOnly.MaxVariable;
             set
             {
                 // Convert the reorder code into a MaxVariable number, or UCOL_DEFAULT=-1.
@@ -815,10 +789,7 @@ namespace ICU4N.Text
         [Obsolete("ICU 53 Set MaxVariable instead.")]
         public override int VariableTop
         {
-            get
-            {
-                return (int)settings.ReadOnly.VariableTop;
-            }
+            get => (int)settings.ReadOnly.VariableTop;
             set
             {
                 CheckNotFrozen();
@@ -872,10 +843,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public bool IsNumericCollation
         {
-            get
-            {
-                return (settings.ReadOnly.Options & CollationSettings.Numeric) != 0;
-            }
+            get => (settings.ReadOnly.Options & CollationSettings.Numeric) != 0;
             set
             {
                 CheckNotFrozen();
@@ -1182,7 +1150,7 @@ namespace ICU4N.Text
 
             private RawCollationKey key_;
 
-            public RawCollationKey Key { get { return key_; } }
+            public RawCollationKey Key => key_;
         }
 
         private RawCollationKey GetRawCollationKey(ICharSequence source, RawCollationKey key, CollationBuffer buffer)

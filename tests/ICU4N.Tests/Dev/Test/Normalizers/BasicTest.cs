@@ -1365,10 +1365,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
             }
 
-            public int Index
-            {
-                get { return i; }
-            }
+            public int Index => i;
 
             private int[] s;
             private int length, i;

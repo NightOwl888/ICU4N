@@ -474,15 +474,9 @@ namespace ICU4N.Dev.Test.Collate
                 return (pos > 0) ? cp[--pos] : Collation.SentinelCodePoint;
             }
 
-            internal int Length
-            {
-                get { return length; }
-            }
+            internal int Length => length;
 
-            internal int Index
-            {
-                get { return pos; }
-            }
+            internal int Index => pos;
         }
 
         private void CheckFCD(String name, CollationIterator ci, CodePointIterator cpi)

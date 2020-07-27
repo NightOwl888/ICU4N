@@ -949,25 +949,13 @@ namespace ICU4N.Impl
             index = i;
         }
 
-        protected virtual bool HasNext
-        {
-            get { return index < textLength; }
-        }
+        protected virtual bool HasNext => index < textLength;
 
-        protected virtual bool HasPrevious
-        {
-            get { return index > 0; }
-        }
+        protected virtual bool HasPrevious => index > 0;
 
-        public Trie2CharSequenceValues Current
-        {
-            get { return fResults; }
-        }
+        public Trie2CharSequenceValues Current => fResults;
 
-        object IEnumerator.Current
-        {
-            get { return fResults; }
-        }
+        object IEnumerator.Current => fResults;
 
         protected virtual Trie2CharSequenceValues Next()
         {
@@ -1147,20 +1135,11 @@ namespace ICU4N.Impl
             return returnValue;
         }
 
-        private bool HasNext
-        {
-            get { return doingCodePoints && (doLeadSurrogates || nextStart < limitCP) || nextStart < 0xdc00; }
-        }
+        private bool HasNext => doingCodePoints && (doLeadSurrogates || nextStart < limitCP) || nextStart < 0xdc00;
 
-        public virtual Trie2Range Current
-        {
-            get { return current; }
-        }
+        public virtual Trie2Range Current => current;
 
-        object IEnumerator.Current
-        {
-            get { return this.Current; }
-        }
+        object IEnumerator.Current => this.Current;
 
         public virtual bool MoveNext()
         {

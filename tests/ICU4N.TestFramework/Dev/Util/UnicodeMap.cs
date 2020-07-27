@@ -922,8 +922,8 @@ namespace ICU4N.Dev.Util
          */
         public bool ErrorOnReset
         {
-            get { return errorOnReset; }
-            set { errorOnReset = value; }
+            get => errorOnReset;
+            set => errorOnReset = value;
         }
         ///**
         // * Puts the UnicodeMap into a state whereby new mappings are accepted, but changes to old mappings cause an exception.
@@ -938,14 +938,7 @@ namespace ICU4N.Dev.Util
         /* (non-Javadoc)
          * @see com.ibm.icu.dev.test.util.Freezable#isFrozen()
          */
-        public bool IsFrozen
-        {
-            get
-            {
-                // TODO Auto-generated method stub
-                return locked;
-            }
-        }
+        public bool IsFrozen => locked; // TODO Auto-generated method stub
 
         /* (non-Javadoc)
          * @see com.ibm.icu.dev.test.util.Freezable#lock()
@@ -973,10 +966,7 @@ namespace ICU4N.Dev.Util
         /**
          * Get the number of ranges; used for getRangeStart/End. The ranges together cover all of the single-codepoint keys in the UnicodeMap. Other keys can be gotten with getStrings().
          */
-        public int RangeCount
-        {
-            get { return length - 1; }
-        }
+        public int RangeCount => length - 1;
 
         /**
          * Get the start of a range. All code points between start and end are in the UnicodeMap's keyset.
@@ -1045,10 +1035,7 @@ namespace ICU4N.Dev.Util
         /* (non-Javadoc)
          * @see java.util.Map#isEmpty()
          */
-        public bool IsEmpty
-        {
-            get { return Count == 0; }
-        }
+        public bool IsEmpty => Count == 0;
 
         /* (non-Javadoc)
          * @see java.util.Map#putAll(java.util.Map)
