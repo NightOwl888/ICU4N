@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace ICU4N.Impl
 {
@@ -558,16 +559,13 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Builds the canonical-iterator data for this instance.
-        /// This is required before any of <see cref="IsCanonSegmentStarter(int)"/> or
-        /// <see cref="GetCanonStartSet(int, UnicodeSet)"/> are called,
-        /// or else they crash.
         /// </summary>
         /// <returns>This.</returns>
-        public Normalizer2Impl EnsureCanonIterData()
+        public Normalizer2Impl EnsureCanonIterData() // ICU4N: This is not reqired, as it was in ICU4J
         {
-            lock (this)
+            if (canonIterData == null)
             {
-                if (canonIterData == null)
+                LazyInitializer.EnsureInitialized(ref canonIterData, () =>
                 {
                     Trie2Writable newData = new Trie2Writable(0, 0);
                     canonStartSets = new List<UnicodeSet>();
@@ -669,10 +667,11 @@ namespace ICU4N.Impl
                             }
                         }
                     }
-                    canonIterData = newData.ToTrie2_32();
-                }
-                return this;
+                    return newData.ToTrie2_32();
+                });
             }
+
+            return this;
         }
 
         public int GetNorm16(int c) { return normTrie.Get(c); }
@@ -892,28 +891,26 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Returns true if code point <paramref name="c"/> starts a canonical-iterator string segment.
-        /// <b><see cref="EnsureCanonIterData()"/> must have been called before this method,
-        /// or else this method will crash.</b>
         /// </summary>
         /// <param name="c">A Unicode code point.</param>
         /// <returns>true if <paramref name="c"/> starts a canonical-iterator string segment.</returns>
         public bool IsCanonSegmentStarter(int c)
         {
+            EnsureCanonIterData(); // ICU4N: Make this call automatically, so the user doesn't have to bother with it.
             return canonIterData.Get(c) >= 0;
         }
 
         /// <summary>
         /// Returns true if there are characters whose decomposition starts with <paramref name="c"/>.
         /// If so, then the set is cleared and then filled with those characters.
-        /// <b><see cref="EnsureCanonIterData()"/> must have been called before this method,
-        /// or else this method will crash.</b>
         /// </summary>
         /// <param name="c">A Unicode code point.</param>
-        /// <param name="set">A UnicodeSet to receive the characters whose decompositions
+        /// <param name="set">A <see cref="UnicodeSet"/> to receive the characters whose decompositions
         /// start with <paramref name="c"/>, if there are any.</param>
         /// <returns>true if there are characters whose decomposition starts with <paramref name="c"/>.</returns>
         public bool GetCanonStartSet(int c, UnicodeSet set)
         {
+            EnsureCanonIterData(); // ICU4N: Make this call automatically, so the user doesn't have to bother with it.
             int canonValue = canonIterData.Get(c) & ~CANON_NOT_SEGMENT_STARTER;
             if (canonValue == 0)
             {
