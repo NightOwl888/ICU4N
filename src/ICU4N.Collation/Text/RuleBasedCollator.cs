@@ -205,12 +205,9 @@ namespace ICU4N.Text
 
         private void InitMaxExpansions()
         {
-            lock (tailoring)
+            if (tailoring.maxExpansions == null)
             {
-                if (tailoring.MaxExpansions == null)
-                {
-                    tailoring.MaxExpansions = CollationElementIterator.ComputeMaxExpansions(tailoring.Data);
-                }
+                LazyInitializer.EnsureInitialized(ref tailoring.maxExpansions, () => CollationElementIterator.ComputeMaxExpansions(tailoring.Data));
             }
         }
 

@@ -114,7 +114,7 @@ namespace ICU4N.Impl.Coll
         private CollationData ownedData;
         private Trie2_32 trie;
         private UnicodeSet unsafeBackwardSet;
-        private IDictionary<int, int> maxExpansions;
+        internal IDictionary<int, int> maxExpansions;
 
         /*
          * Not Cloneable: A CollationTailoring cannot be copied.
