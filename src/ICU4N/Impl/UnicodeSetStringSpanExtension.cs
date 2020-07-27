@@ -15,6 +15,7 @@ namespace ICU4N.Impl
 {
     public partial class UnicodeSetStringSpan
     {
+        private readonly object syncLock = new object();
 
         /// <summary>
         /// Spans a string.
@@ -112,7 +113,7 @@ namespace ICU4N.Impl
         private int SpanWithStrings(string s, int start, int spanLimit,
             SpanCondition spanCondition)
         {
-            lock (this)
+            lock (syncLock)
             {
                 // Consider strings; they may overlap with the span.
                 int initSize = 0;
@@ -294,7 +295,7 @@ namespace ICU4N.Impl
                             // Match strings from after the next string match.
                         }
                     }
-					int ignoredOutCount;
+                    int ignoredOutCount;
                     int minOffset = offsets.PopMinimum(out ignoredOutCount);
                     pos += minOffset;
                     rest -= minOffset;
@@ -315,7 +316,7 @@ namespace ICU4N.Impl
         private int SpanWithStrings(StringBuilder s, int start, int spanLimit,
             SpanCondition spanCondition)
         {
-            lock (this)
+            lock (syncLock)
             {
                 // Consider strings; they may overlap with the span.
                 int initSize = 0;
@@ -497,7 +498,7 @@ namespace ICU4N.Impl
                             // Match strings from after the next string match.
                         }
                     }
-					int ignoredOutCount;
+                    int ignoredOutCount;
                     int minOffset = offsets.PopMinimum(out ignoredOutCount);
                     pos += minOffset;
                     rest -= minOffset;
@@ -518,7 +519,7 @@ namespace ICU4N.Impl
         private int SpanWithStrings(char[] s, int start, int spanLimit,
             SpanCondition spanCondition)
         {
-            lock (this)
+            lock (syncLock)
             {
                 // Consider strings; they may overlap with the span.
                 int initSize = 0;
@@ -700,7 +701,7 @@ namespace ICU4N.Impl
                             // Match strings from after the next string match.
                         }
                     }
-					int ignoredOutCount;
+                    int ignoredOutCount;
                     int minOffset = offsets.PopMinimum(out ignoredOutCount);
                     pos += minOffset;
                     rest -= minOffset;
@@ -721,7 +722,7 @@ namespace ICU4N.Impl
         private int SpanWithStrings(ICharSequence s, int start, int spanLimit,
             SpanCondition spanCondition)
         {
-            lock (this)
+            lock (syncLock)
             {
                 // Consider strings; they may overlap with the span.
                 int initSize = 0;
@@ -903,7 +904,7 @@ namespace ICU4N.Impl
                             // Match strings from after the next string match.
                         }
                     }
-					int ignoredOutCount;
+                    int ignoredOutCount;
                     int minOffset = offsets.PopMinimum(out ignoredOutCount);
                     pos += minOffset;
                     rest -= minOffset;
@@ -1170,7 +1171,7 @@ namespace ICU4N.Impl
 
         private int SpanContainedAndCount(string s, int start, out int outCount)
         {
-            lock (this)
+            lock (syncLock)
             {
                 // Use offset list to try all possibilities.
                 offsets.SetMaxLength(maxLength16);
@@ -1219,7 +1220,7 @@ namespace ICU4N.Impl
 
         private int SpanContainedAndCount(StringBuilder s, int start, out int outCount)
         {
-            lock (this)
+            lock (syncLock)
             {
                 // Use offset list to try all possibilities.
                 offsets.SetMaxLength(maxLength16);
@@ -1268,7 +1269,7 @@ namespace ICU4N.Impl
 
         private int SpanContainedAndCount(char[] s, int start, out int outCount)
         {
-            lock (this)
+            lock (syncLock)
             {
                 // Use offset list to try all possibilities.
                 offsets.SetMaxLength(maxLength16);
@@ -1317,7 +1318,7 @@ namespace ICU4N.Impl
 
         private int SpanContainedAndCount(ICharSequence s, int start, out int outCount)
         {
-            lock (this)
+            lock (syncLock)
             {
                 // Use offset list to try all possibilities.
                 offsets.SetMaxLength(maxLength16);
@@ -1373,7 +1374,7 @@ namespace ICU4N.Impl
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
         public int SpanBack(string s, int length, SpanCondition spanCondition)
         {
-            lock (this)
+            lock (syncLock)
             {
                 if (spanCondition == SpanCondition.NotContained)
                 {
@@ -1566,7 +1567,7 @@ namespace ICU4N.Impl
                             // Match strings from before the next string match.
                         }
                     }
-					int ignoredOutCount;
+                    int ignoredOutCount;
                     pos -= offsets.PopMinimum(out ignoredOutCount);
                     spanLength = 0; // Match strings from before a string match.
                 }
@@ -1582,7 +1583,7 @@ namespace ICU4N.Impl
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
         public int SpanBack(StringBuilder s, int length, SpanCondition spanCondition)
         {
-            lock (this)
+            lock (syncLock)
             {
                 if (spanCondition == SpanCondition.NotContained)
                 {
@@ -1775,7 +1776,7 @@ namespace ICU4N.Impl
                             // Match strings from before the next string match.
                         }
                     }
-					int ignoredOutCount;
+                    int ignoredOutCount;
                     pos -= offsets.PopMinimum(out ignoredOutCount);
                     spanLength = 0; // Match strings from before a string match.
                 }
@@ -1791,7 +1792,7 @@ namespace ICU4N.Impl
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
         public int SpanBack(char[] s, int length, SpanCondition spanCondition)
         {
-            lock (this)
+            lock (syncLock)
             {
                 if (spanCondition == SpanCondition.NotContained)
                 {
@@ -1984,7 +1985,7 @@ namespace ICU4N.Impl
                             // Match strings from before the next string match.
                         }
                     }
-					int ignoredOutCount;
+                    int ignoredOutCount;
                     pos -= offsets.PopMinimum(out ignoredOutCount);
                     spanLength = 0; // Match strings from before a string match.
                 }
@@ -2000,7 +2001,7 @@ namespace ICU4N.Impl
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
         public int SpanBack(ICharSequence s, int length, SpanCondition spanCondition)
         {
-            lock (this)
+            lock (syncLock)
             {
                 if (spanCondition == SpanCondition.NotContained)
                 {
@@ -2193,68 +2194,68 @@ namespace ICU4N.Impl
                             // Match strings from before the next string match.
                         }
                     }
-					int ignoredOutCount;
+                    int ignoredOutCount;
                     pos -= offsets.PopMinimum(out ignoredOutCount);
                     spanLength = 0; // Match strings from before a string match.
                 }
             }
         }
 
-		// ICU4N specific wrapper method to call SpanNot with no
-		// output count.
+        // ICU4N specific wrapper method to call SpanNot with no
+        // output count.
         private int SpanNot(string s, int start)
         {
             int ignored = 0;
             return SpanNot(s, start, false, out ignored);
         }
 
-		// ICU4N specific wrapper method to call SpanNot with no
-		// output count.
+        // ICU4N specific wrapper method to call SpanNot with no
+        // output count.
         private int SpanNot(StringBuilder s, int start)
         {
             int ignored = 0;
             return SpanNot(s, start, false, out ignored);
         }
 
-		// ICU4N specific wrapper method to call SpanNot with no
-		// output count.
+        // ICU4N specific wrapper method to call SpanNot with no
+        // output count.
         private int SpanNot(char[] s, int start)
         {
             int ignored = 0;
             return SpanNot(s, start, false, out ignored);
         }
 
-		// ICU4N specific wrapper method to call SpanNot with no
-		// output count.
+        // ICU4N specific wrapper method to call SpanNot with no
+        // output count.
         private int SpanNot(ICharSequence s, int start)
         {
             int ignored = 0;
             return SpanNot(s, start, false, out ignored);
         }
 
-		// ICU4N specific wrapper method to call SpanNot with an
-		// output count.
+        // ICU4N specific wrapper method to call SpanNot with an
+        // output count.
         private int SpanNot(string s, int start, out int outCount)
         {
             return SpanNot(s, start, true, out outCount);
         }
 
-		// ICU4N specific wrapper method to call SpanNot with an
-		// output count.
+        // ICU4N specific wrapper method to call SpanNot with an
+        // output count.
         private int SpanNot(StringBuilder s, int start, out int outCount)
         {
             return SpanNot(s, start, true, out outCount);
         }
 
-		// ICU4N specific wrapper method to call SpanNot with an
-		// output count.
+        // ICU4N specific wrapper method to call SpanNot with an
+        // output count.
         private int SpanNot(char[] s, int start, out int outCount)
         {
             return SpanNot(s, start, true, out outCount);
         }
 
-		// ICU4N specific wrapper method to call SpanNot with an
-		// output count.
+        // ICU4N specific wrapper method to call SpanNot with an
+        // output count.
         private int SpanNot(ICharSequence s, int start, out int outCount)
         {
             return SpanNot(s, start, true, out outCount);
@@ -3143,5 +3144,5 @@ namespace ICU4N.Impl
             }
             return set.Contains(c) ? 1 : -1;
         }
-	}
+    }
 }
