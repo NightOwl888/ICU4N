@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 
 namespace ICU4N.Dev.Test.Collate
 {
@@ -34,13 +35,10 @@ namespace ICU4N.Dev.Test.Collate
             // the uniqueCount ensures that two different RWIntegers will always be different
             static int uniqueCount;
             public long value;
-            private int forceUnique;
+            private readonly int forceUnique;
             internal RWLong()
             {
-                lock (typeof(RWLong))
-                { // make thread-safe
-                    forceUnique = uniqueCount++;
-                }
+                forceUnique = Interlocked.Increment(ref uniqueCount) - 1; // make thread-safe
             }
 
             public int CompareTo(RWLong that)
@@ -48,10 +46,7 @@ namespace ICU4N.Dev.Test.Collate
                 if (that.value < value) return -1;
                 if (that.value > value) return 1;
                 if (this == that) return 0;
-                lock (this)
-                { // make thread-safe
-                    if (that.forceUnique < forceUnique) return -1;
-                }
+                if (that.forceUnique < forceUnique) return -1; // ICU4N: forceUnique is read-only so it is safe to read from multiple threads
                 return 1; // the forceUnique values must be different, so this is the only remaining case
             }
             public override string ToString()
