@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Resources;
 using System.Text;
+using System.Threading;
 
 namespace ICU4N.Impl.Coll
 {
@@ -15,7 +16,7 @@ namespace ICU4N.Impl.Coll
     {
         // ICU4N specific - removed private constructor and made class static
 
-        private static volatile string rootRules = null;
+        private static string rootRules = null; // ICU4N specific - made non-volatile and used LazyInitializer
 
         private static void LoadRootRules()
         {
@@ -23,16 +24,13 @@ namespace ICU4N.Impl.Coll
             {
                 return;
             }
-            lock (typeof(CollationLoader))
+            LazyInitializer.EnsureInitialized(ref rootRules, () =>
             {
-                if (rootRules == null)
-                {
-                    UResourceBundle rootBundle = UResourceBundle.GetBundleInstance(
+                UResourceBundle rootBundle = UResourceBundle.GetBundleInstance(
                         // ICU4N specific - passing in the current assembly to load resources from.
                         ICUData.IcuCollationBaseName, UCultureInfo.InvariantCulture, CollationData.IcuDataAssembly);
-                    rootRules = rootBundle.GetString("UCARules");
-                }
-            }
+                return rootBundle.GetString("UCARules");
+            });
         }
 
         // C++: static void appendRootRules(UnicodeString &s)
@@ -40,7 +38,7 @@ namespace ICU4N.Impl.Coll
         {
             get
             {
-                LoadRootRules(); // ICU4N TODO: Use LazyInitializer
+                LoadRootRules();
                 return rootRules;
             }
         }
