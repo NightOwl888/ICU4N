@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Resources;
 using System.Text;
+using System.Threading;
 using JCG = J2N.Collections.Generic;
 using ReaderValue = ICU4N.Impl.ICUResourceBundleReader.ReaderValue;
 
@@ -835,10 +836,10 @@ namespace ICU4N.Impl
         {
             private readonly string prefix;
             private readonly Assembly assembly; // ICU4N specific - renamed loader to assembly
-            private volatile UCultureInfo[] uCultures;
-            private volatile CultureInfo[] locales;
-            private volatile ISet<string> nameSet;
-            private volatile ISet<string> fullNameSet;
+            private UCultureInfo[] uCultures; // ICU4N specific - made non-volatile
+            private CultureInfo[] locales; // ICU4N specific - made non-volatile
+            private ISet<string> nameSet; // ICU4N specific - made non-volatile
+            private ISet<string> fullNameSet; // ICU4N specific - made non-volatile
 
             internal AvailEntry(string prefix, Assembly assembly)
             {
@@ -850,44 +851,33 @@ namespace ICU4N.Impl
             {
                 if (uCultures == null)
                 {
-                    lock (this)
-                    {
-                        if (uCultures == null)
-                        {
-                            uCultures = CreateUCultureList(prefix, assembly);
-                        }
-                    }
+                    LazyInitializer.EnsureInitialized(ref uCultures,
+                        () => CreateUCultureList(prefix, assembly));
                 }
+
                 return types == UCultureTypes.AllCultures ? uCultures : uCultures.Where(c => c.IsMatch(types)).ToArray();
             }
             internal CultureInfo[] GetCultureList(UCultureTypes types)
             {
                 if (locales == null)
                 {
-                    lock (this)
+                    LazyInitializer.EnsureInitialized(ref locales, () =>
                     {
-                        if (locales == null)
-                        {
-                            // ICU4N: Skip the LINQ query here
-                            GetUCultureList(UCultureTypes.AllCultures);
-                            locales = ICUResourceBundle.GetCultureList(uCultures);
-                        }
-                    }
+                        // ICU4N: Skip the LINQ query here
+                        GetUCultureList(UCultureTypes.AllCultures);
+                        return ICUResourceBundle.GetCultureList(uCultures);
+                    });
                 }
+
                 return types == UCultureTypes.AllCultures ? locales : locales.Where(c => c.IsMatch(types)).ToArray();
             }
             internal ISet<string> GetLocaleNameSet()
             {
                 if (nameSet == null)
                 {
-                    lock (this)
-                    {
-                        if (nameSet == null)
-                        {
-                            nameSet = CreateLocaleNameSet(prefix, assembly);
-                        }
-                    }
+                    return LazyInitializer.EnsureInitialized(ref nameSet, () => CreateLocaleNameSet(prefix, assembly));
                 }
+
                 return nameSet;
             }
             internal ISet<string> GetFullLocaleNameSet()
@@ -904,14 +894,10 @@ namespace ICU4N.Impl
                 // to lock.
                 if (fullNameSet == null)
                 {
-                    lock (this)
-                    {
-                        if (fullNameSet == null)
-                        {
-                            fullNameSet = CreateFullLocaleNameSet(prefix, assembly);
-                        }
-                    }
+                    return LazyInitializer.EnsureInitialized(ref fullNameSet,
+                        () => CreateFullLocaleNameSet(prefix, assembly));
                 }
+
                 return fullNameSet;
             }
         }
