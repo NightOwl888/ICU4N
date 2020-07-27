@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace ICU4N.Util
 {
@@ -12,13 +12,10 @@ namespace ICU4N.Util
     /// <stable>ICU 2.6</stable>
     public sealed class VersionInfo : IComparable<VersionInfo>
     {
-        internal static object syncLock = new object();
-
         /// <summary>
         /// Map of singletons
         /// </summary>
-        // ICU4N specific - we need to lock the dictionary externally anyway, so there is no need for ConcurrentDictionary
-        private static readonly IDictionary<int, VersionInfo> MAP_ = new Dictionary<int, VersionInfo>();
+        private static readonly ConcurrentDictionary<int, VersionInfo> MAP_ = new ConcurrentDictionary<int, VersionInfo>();
 
         // public data members -------------------------------------------------
 
@@ -315,33 +312,8 @@ namespace ICU4N.Util
             }
             int key = GetInt32(major, minor, milli, micro);
             int version = key;
-            VersionInfo result;
-            lock (MAP_)
-                MAP_.TryGetValue(key, out result);
-            if (result == null)
-            {
-                result = new VersionInfo(version);
-                VersionInfo tmpvi;
-                lock (MAP_)
-                {
-                    if (!MAP_.TryGetValue(key, out tmpvi) || tmpvi == null)
-                    {
-                        // Put if absent
-                        MAP_[key] = result;
-                    }   
-                }
-                if (tmpvi != null)
-                {
-                    result = tmpvi;
-                }
 
-                //VersionInfo tmpvi = MAP_.putIfAbsent(key, result);
-                //if (tmpvi != null)
-                //{
-                //    result = tmpvi;
-                //}
-            }
-            return result;
+            return MAP_.GetOrAdd(version, (version) => new VersionInfo(version));
         }
 
         /// <summary>
@@ -647,23 +619,20 @@ namespace ICU4N.Util
 
 
         // Moved from TimeZone class
-        private static volatile string TZDATA_VERSION = null;
+        private static string TZDATA_VERSION = null;
 
         internal static string GetTZDataVersion()
         {
             if (TZDATA_VERSION == null)
             {
-                lock (syncLock)
+                return LazyInitializer.EnsureInitialized(ref TZDATA_VERSION, () =>
                 {
-                    if (TZDATA_VERSION == null)
-                    {
-                        UResourceBundle tzbundle = UResourceBundle.GetBundleInstance("Impl/Data/icudt"
+                    UResourceBundle tzbundle = UResourceBundle.GetBundleInstance("Impl/Data/icudt"
 #pragma warning disable 612, 618
-                                + VersionInfo.IcuDataVersionPath, "zoneinfo64");
+                        + VersionInfo.IcuDataVersionPath, "zoneinfo64");
 #pragma warning restore 612, 618
-                        TZDATA_VERSION = tzbundle.GetString("TZVersion");
-                    }
-                }
+                    return tzbundle.GetString("TZVersion");
+                });
             }
             return TZDATA_VERSION;
         }
