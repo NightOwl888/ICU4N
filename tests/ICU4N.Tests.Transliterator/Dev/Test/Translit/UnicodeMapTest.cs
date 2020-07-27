@@ -403,7 +403,7 @@ namespace ICU4N.Dev.Test.Translit
             var random = new Random(12345); // reproducible results
             Logln("Comparing against HashMap");
             UnicodeMap<string> map1 = new UnicodeMap<string>();
-            IDictionary<Integer, string> map2 = new JCG.Dictionary<Integer, string>();
+            IDictionary<int, string> map2 = new JCG.Dictionary<int, string>();
             for (int counter = 0; counter < ITERATIONS; ++counter)
             {
                 int start = random.Next(LIMIT);
@@ -416,7 +416,7 @@ namespace ICU4N.Dev.Test.Translit
                     Console.Out.WriteLine(" debug");
                 }
                 map1.Put(start, value);
-                map2[new Integer(start)] = value;
+                map2[start] = value;
                 check(map1, map2, counter);
             }
             checkNext(map1, map2, LIMIT);
@@ -430,11 +430,11 @@ namespace ICU4N.Dev.Test.Translit
         public void TestUnicodeMapGeneralCategory()
         {
             Logln("Setting General Category");
-            UnicodeMap<String> map1 = new UnicodeMap<string>();
-            IDictionary<Integer, String> map2 = new JCG.Dictionary<Integer, String>();
+            UnicodeMap<string> map1 = new UnicodeMap<string>();
+            IDictionary<int, string> map2 = new JCG.Dictionary<int, string>();
             //Map<Integer, String> map3 = new TreeMap<Integer, String>();
-            map1 = new UnicodeMap<String>();
-            map2 = new JCG.SortedDictionary<Integer, String>();
+            map1 = new UnicodeMap<string>();
+            map2 = new JCG.SortedDictionary<int, string>();
 
             for (int cp = 0; cp <= SET_LIMIT; ++cp)
             {
@@ -449,8 +449,8 @@ namespace ICU4N.Dev.Test.Translit
             Logln("Comparing General Category");
             check(map1, map2, -1);
             Logln("Comparing Values");
-            ISet<String> values1 = new JCG.SortedSet<String>(StringComparer.Ordinal); map1.GetAvailableValues(values1);
-            ISet<String> values2 = new JCG.SortedSet<String>(map2.Values.Distinct(), StringComparer.Ordinal); // ICU4N NOTE: Added Distinct()
+            ISet<string> values1 = new JCG.SortedSet<string>(StringComparer.Ordinal); map1.GetAvailableValues(values1);
+            ISet<string> values2 = new JCG.SortedSet<string>(map2.Values.Distinct(), StringComparer.Ordinal); // ICU4N NOTE: Added Distinct()
             if (!TestBoilerplate<string>.VerifySetsIdentical(this, values1, values2))
             {
                 throw new ArgumentException("Halting");
@@ -539,25 +539,25 @@ namespace ICU4N.Dev.Test.Translit
             assertEquals("", foo1, reverse);
         }
 
-        private void checkNext(UnicodeMap<String> map1, IDictionary<Integer, string> map2, int limit)
+        private void checkNext(UnicodeMap<string> map1, IDictionary<int, string> map2, int limit)
         {
             Logln("Comparing nextRange");
-            IDictionary<Integer, string> localMap = new JCG.SortedDictionary<Integer, string>();
-            UnicodeMapIterator<String> mi = new UnicodeMapIterator<String>(map1);
+            IDictionary<int, string> localMap = new JCG.SortedDictionary<int, string>();
+            UnicodeMapIterator<string> mi = new UnicodeMapIterator<string>(map1);
             while (mi.NextRange())
             {
                 Logln(Utility.Hex(mi.Codepoint) + ".." + Utility.Hex(mi.CodepointEnd) + " => " + mi.Value);
                 for (int i = mi.Codepoint; i <= mi.CodepointEnd; ++i)
                 {
                     //if (i >= limit) continue;
-                    localMap[new Integer(i)] = mi.Value;
+                    localMap[i] = mi.Value;
                 }
             }
             checkMap(map2, localMap);
 
             Logln("Comparing next");
             mi.Reset();
-            localMap = new JCG.SortedDictionary<Integer, string>();
+            localMap = new JCG.SortedDictionary<int, string>();
             //        String lastValue = null;
             while (mi.Next())
             {
@@ -566,12 +566,12 @@ namespace ICU4N.Dev.Test.Translit
                 //                lastValue = mi.value;
                 //            }
                 //if (mi.codepoint >= limit) continue;
-                localMap[new Integer(mi.Codepoint)] = mi.Value;
+                localMap[mi.Codepoint] = mi.Value;
             }
             checkMap(map2, localMap);
         }
 
-        public void check(UnicodeMap<string> map1, IDictionary<Integer, string> map2, int counter)
+        public void check(UnicodeMap<string> map1, IDictionary<int, string> map2, int counter)
         {
             for (int i = 0; i < LIMIT; ++i)
             {
@@ -589,25 +589,25 @@ namespace ICU4N.Dev.Test.Translit
             }
         }
 
-        internal void checkMap(IDictionary<Integer, string> m1, IDictionary<Integer, string> m2)
+        internal void checkMap(IDictionary<int, string> m1, IDictionary<int, string> m2)
         {
-            if (DictionaryEqualityComparer<Integer, string>.Default.Equals(m1, m2)) return;
+            if (DictionaryEqualityComparer<int, string>.Default.Equals(m1, m2)) return;
             StringBuilder buffer = new StringBuilder();
-            ICollection<KeyValuePair<Integer, string>> m1entries = m1;
-            ICollection<KeyValuePair<Integer, string>> m2entries = m2;
+            ICollection<KeyValuePair<int, string>> m1entries = m1;
+            ICollection<KeyValuePair<int, string>> m2entries = m2;
             getEntries("\r\nIn First, and not Second", m1entries, m2entries, buffer, 20);
             getEntries("\r\nIn Second, and not First", m2entries, m1entries, buffer, 20);
             Errln(buffer.ToString());
         }
 
-        private class EntryComparer : IComparer<KeyValuePair<Integer, string>>
+        private class EntryComparer : IComparer<KeyValuePair<int, string>>
         {
-            public int Compare(KeyValuePair<Integer, string> o1, KeyValuePair<Integer, string> o2)
+            public int Compare(KeyValuePair<int, string> o1, KeyValuePair<int, string> o2)
             {
                 //if (o1 == o2) return 0;
                 //if (o1 == null) return -1;
                 //if (o2 == null) return 1;
-                if (ReferenceEquals(o1, 02)) return 0;
+                //if (ReferenceEquals(o1, 02)) return 0;
                 var a = o1;
                 var b = o2;
                 int result = CompareInteger(a.Key, b.Key);
@@ -623,21 +623,21 @@ namespace ICU4N.Dev.Test.Translit
                 return o1.CompareToOrdinal(o2);
             }
 
-            private int CompareInteger(Integer o1, Integer o2)
+            private int CompareInteger(int o1, int o2)
             {
                 if (o1 == o2) return 0;
-                if (o1 == null) return -1;
-                if (o2 == null) return 1;
+                //if (o1 == null) return -1;
+                //if (o2 == null) return 1;
                 return o1.CompareTo(o2);
             }
         }
 
-        static IComparer<KeyValuePair<Integer, String>> ENTRY_COMPARATOR = new EntryComparer();
+        static readonly IComparer<KeyValuePair<int, string>> ENTRY_COMPARATOR = new EntryComparer();
 
 
-        private void getEntries(String title, ICollection<KeyValuePair<Integer, String>> m1entries, ICollection<KeyValuePair<Integer, String>> m2entries, StringBuilder buffer, int limit)
+        private void getEntries(string title, ICollection<KeyValuePair<int, string>> m1entries, ICollection<KeyValuePair<int, string>> m2entries, StringBuilder buffer, int limit)
         {
-            ISet<KeyValuePair<Integer, String>> m1_m2 = new JCG.SortedSet<KeyValuePair<Integer, String>>(ENTRY_COMPARATOR);
+            ISet<KeyValuePair<int, string>> m1_m2 = new JCG.SortedSet<KeyValuePair<int, string>>(ENTRY_COMPARATOR);
             m1_m2.UnionWith(m1entries);
             m1_m2.ExceptWith(m2entries);
             buffer.Append(title + ": " + m1_m2.Count + "\r\n");

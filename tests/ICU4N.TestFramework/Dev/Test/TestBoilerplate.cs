@@ -204,7 +204,7 @@ namespace ICU4N.Dev.Test
             return buffer.ToString();
         }
 
-        public static UnicodeSet GetSet(IDictionary<Integer, T> m, T value)
+        public static UnicodeSet GetSet(IDictionary<int, T> m, T value)
         {
             UnicodeSet result = new UnicodeSet();
             // ICU4N: Optimized by looping over the pair instead of doing a separate
@@ -212,7 +212,7 @@ namespace ICU4N.Dev.Test
             foreach (var pair in m)
             {
                 if (!pair.Value.Equals(value)) continue;
-                result.Add(pair.Key.Value);
+                result.Add(pair.Key);
             }
             return result;
         }
