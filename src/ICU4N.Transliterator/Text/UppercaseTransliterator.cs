@@ -1,7 +1,7 @@
-﻿using ICU4N.Impl;
-using ICU4N.Globalization;
-using ICU4N.Util;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using System.Text;
+using System.Threading;
 
 namespace ICU4N.Text
 {
@@ -11,6 +11,8 @@ namespace ICU4N.Text
     /// </summary>
     internal class UppercaseTransliterator : Transliterator
     {
+        private readonly object syncLock = new object();
+
         /// <summary>
         /// Package accessible ID.
         /// </summary>
@@ -54,7 +56,7 @@ namespace ICU4N.Text
         protected override void HandleTransliterate(IReplaceable text,
                     TransliterationPosition offsets, bool isIncremental)
         {
-            lock (this)
+            lock (syncLock)
             {
                 if (csp == null)
                 {
@@ -124,15 +126,15 @@ namespace ICU4N.Text
         public override void AddSourceTargetSet(UnicodeSet inputFilter, UnicodeSet sourceSet, UnicodeSet targetSet)
 #pragma warning restore 672
         {
-            lock (this)
+            if (sourceTargetUtility == null)
             {
-                if (sourceTargetUtility == null)
+                LazyInitializer.EnsureInitialized(ref sourceTargetUtility, () =>
                 {
-                    sourceTargetUtility = new SourceTargetUtility(new StringTransform(transform: (source) =>
+                    return new SourceTargetUtility(new StringTransform(transform: (source) =>
                     {
                         return UChar.ToUpper(locale, source);
                     }));
-                }
+                });
             }
             sourceTargetUtility.AddSourceTargetSet(this, inputFilter, sourceSet, targetSet);
         }

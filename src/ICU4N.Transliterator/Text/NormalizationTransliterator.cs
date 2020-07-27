@@ -1,9 +1,7 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
 using J2N;
 using J2N.Text;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Text;
 
 namespace ICU4N.Text
@@ -121,7 +119,7 @@ namespace ICU4N.Text
             offsets.Limit = limit;
         }
 
-        internal static readonly IDictionary<Normalizer2, SourceTargetUtility> SOURCE_CACHE = new Dictionary<Normalizer2, SourceTargetUtility>();
+        internal static readonly ConcurrentDictionary<Normalizer2, SourceTargetUtility> SOURCE_CACHE = new ConcurrentDictionary<Normalizer2, SourceTargetUtility>();
 
         // TODO Get rid of this if Normalizer2 becomes a Transform
         internal class NormalizingTransform : ITransform<string, string>
@@ -143,16 +141,7 @@ namespace ICU4N.Text
         public override void AddSourceTargetSet(UnicodeSet inputFilter, UnicodeSet sourceSet, UnicodeSet targetSet)
 #pragma warning restore 672
         {
-            SourceTargetUtility cache;
-            lock (SOURCE_CACHE)
-            {
-                //String id = getID();
-                if (!SOURCE_CACHE.TryGetValue(norm2, out cache) || cache == null)
-                {
-                    cache = new SourceTargetUtility(new NormalizingTransform(norm2), norm2);
-                    SOURCE_CACHE[norm2] = cache;
-                }
-            }
+            SourceTargetUtility cache = SOURCE_CACHE.GetOrAdd(norm2, (norm2) => new SourceTargetUtility(new NormalizingTransform(norm2), norm2));
             cache.AddSourceTargetSet(this, inputFilter, sourceSet, targetSet);
         }
     }

@@ -1,6 +1,7 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Support.Text;
 using System;
+using System.Threading;
 
 namespace ICU4N.Text
 {
@@ -10,6 +11,7 @@ namespace ICU4N.Text
     /// </summary>
     internal class BreakTransliterator : Transliterator
     {
+        private readonly object syncLock = new object();
         private BreakIterator bi;
         private string insertion;
         private int[] boundaries = new int[50];
@@ -36,19 +38,13 @@ namespace ICU4N.Text
         }
         ////CLOVER:ON
 
-        /////CLOVER:OFF
-        //// The following method is not called by anything and can't be reached
-        //public void setInsertion(String insertion)
-        //{
-        //    this.insertion = insertion;
-        //}
-        /////CLOVER:ON
-
         public BreakIterator GetBreakIterator()
         {
             // Defer initialization of BreakIterator because it is slow,
             // typically over 2000 ms.
-            if (bi == null) bi = BreakIterator.GetWordInstance(new UCultureInfo("th_TH"));
+            if (bi == null)
+                return LazyInitializer.EnsureInitialized(ref bi, () => BreakIterator.GetWordInstance(new UCultureInfo("th_TH")));
+
             return bi;
         }
 
@@ -73,7 +69,7 @@ namespace ICU4N.Text
 
         protected override void HandleTransliterate(IReplaceable text, TransliterationPosition pos, bool incremental)
         {
-            lock (this)
+            lock (syncLock)
             {
                 boundaryCount = 0;
                 int boundary = 0;
