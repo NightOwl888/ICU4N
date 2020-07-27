@@ -11,6 +11,7 @@ namespace ICU4N.Impl
     {
         private UCultureInfo fallbackLocale;
         private string fallbackLocaleName;
+        private readonly object syncLock = new object();
 
         /// <summary>
         /// Construct an <see cref="ICULocaleService"/>.
@@ -196,7 +197,7 @@ namespace ICU4N.Impl
             UCultureInfo loc = UCultureInfo.CurrentCulture;
             if (loc != fallbackLocale)
             {
-                lock (this)
+                lock (syncLock)
                 {
                     if (loc != fallbackLocale)
                     {
