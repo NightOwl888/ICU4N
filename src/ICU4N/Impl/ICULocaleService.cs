@@ -1,4 +1,5 @@
 ﻿using ICU4N.Globalization;
+using ICU4N.Support.Collections;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -555,9 +556,7 @@ namespace ICU4N.Impl
         /// otherwise).
         /// </summary>
         protected virtual bool IsSupportedID(string id)
-        {
-            return GetSupportedIDs().Contains(id);
-        }
+            => GetSupportedIDs().Contains(id);
 
         /// <summary>
         /// Return the set of ids that this factory supports (visible or
@@ -565,9 +564,7 @@ namespace ICU4N.Impl
         /// cached if it is expensive to create.
         /// </summary>
         protected virtual ICollection<string> GetSupportedIDs()
-        {
-            return new List<string>();
-        }
+            => Collection.EmptySet<string>();
 
         /// <summary>
         /// For debugging.

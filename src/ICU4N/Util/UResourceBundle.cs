@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using ICU4N.Support.Collections;
 using J2N.Collections.Generic.Extensions;
 using J2N.IO;
 using System;
@@ -751,7 +752,7 @@ namespace ICU4N.Util
         internal override ISet<string> HandleKeySet() // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
 #pragma warning disable 809
         {
-            return new HashSet<string>();
+            return Collection.EmptySet<string>();
         }
 
         /// <summary>

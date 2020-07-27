@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using ICU4N.Support.Collections;
 using J2N.Collections.Generic.Extensions;
 using J2N.Text;
 using System;
@@ -2462,7 +2463,7 @@ namespace ICU4N.Text
 
             if (explicits == null)
             {
-                explicits = new List<double>(); //Collections.emptySet();
+                explicits = Collection.EmptySet<double>();
             }
 
             // Quick check on whether there are multiple elements

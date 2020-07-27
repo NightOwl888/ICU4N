@@ -7,6 +7,7 @@ using System.Text;
 using JCG = J2N.Collections.Generic;
 using CaseInsensitiveChar = ICU4N.Impl.Locale.InternalLocaleBuilder.CaseInsensitiveChar;
 using CaseInsensitiveString = ICU4N.Impl.Locale.InternalLocaleBuilder.CaseInsensitiveString;
+using ICU4N.Support.Collections;
 
 namespace ICU4N.Impl.Locale
 {
@@ -186,7 +187,7 @@ namespace ICU4N.Impl.Locale
             {
                 if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out Extension ext) || ext == null)
                 {
-                    return new JCG.HashSet<string>().AsReadOnly();
+                    return Collection.EmptySet<string>();
                 }
                 Debug.Assert(ext is UnicodeLocaleExtension);
                 return ((UnicodeLocaleExtension)ext).UnicodeLocaleAttributes;
@@ -199,7 +200,7 @@ namespace ICU4N.Impl.Locale
             {
                 if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out Extension ext) || ext == null)
                 {
-                    return new JCG.HashSet<string>().AsReadOnly();
+                    return Collection.EmptySet<string>();
                 }
                 Debug.Assert(ext is UnicodeLocaleExtension);
                 return ((UnicodeLocaleExtension)ext).UnicodeLocaleKeys;
