@@ -19,7 +19,6 @@ namespace ICU4N.Dev.Test.Util
         private const String STANDARD_NAME = "standard";
 
         [Test]
-        [Ignore("ICU4N TOOD: Fix this")]
         public void TestFunctionalEquivalent()
         {
             String[] collCases = {
