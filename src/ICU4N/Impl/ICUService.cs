@@ -992,7 +992,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <remarks>
         /// If the factory supports the key, then it can call
-        /// the service's <see cref="ICUService.GetKey(ICUServiceKey, string[], IServiceFactory)"/> method
+        /// the service's <see cref="ICUService.GetKey(ICUServiceKey, IServiceFactory, out string)"/> method
         /// passing itself as the factory to get the object that
         /// the service would have created prior to the factory's
         /// registration with the service.  This can change the
