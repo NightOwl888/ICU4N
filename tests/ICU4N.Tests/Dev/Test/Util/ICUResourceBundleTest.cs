@@ -1040,8 +1040,8 @@ namespace ICU4N.Dev.Test.Util
         private class CoverageStub : UResourceBundle
         {
             public override UCultureInfo UCulture => UCultureInfo.InvariantCulture;
-            protected override string GetLocaleID() { return null; }
-            protected internal override string GetBaseName() { return null; }
+            protected override string LocaleID => null;
+            protected internal override string BaseName => null;
             public override UResourceBundle Parent => null;
 
             public override IEnumerable<string> GetKeys() { return null; }

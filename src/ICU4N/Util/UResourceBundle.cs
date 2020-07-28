@@ -339,14 +339,14 @@ namespace ICU4N.Util
         /// </summary>
         /// <returns>The string representation of the localeID.</returns>
         /// <stable>ICU 3.0</stable>
-        protected abstract string GetLocaleID(); // ICU4N TODO: API - change to property
+        protected abstract string LocaleID { get; }
 
         /// <summary>
         /// <icu/> Returns the base name of the resource bundle.
         /// </summary>
         /// <returns>The string representation of the base name.</returns>
         /// <stable>ICU 3.0</stable>
-        protected internal abstract string GetBaseName(); // ICU4N TODO: API - change to property
+        protected internal abstract string BaseName { get; }
 
         /// <summary>
         /// <icu/> Gets the parent bundle, as <see cref="UResourceBundle"/>.
@@ -558,7 +558,7 @@ namespace ICU4N.Util
 #pragma warning restore 612, 618
             if (obj == null)
             {
-                string fullName = ICUResourceBundleReader.GetFullName(GetBaseName(), GetLocaleID());
+                string fullName = ICUResourceBundleReader.GetFullName(BaseName, LocaleID);
                 throw new MissingManifestResourceException(
                         "Can't find resource for bundle " + fullName + ", key "
                         + aKey + "Type: " + this.GetType().FullName + " Key: " + aKey);

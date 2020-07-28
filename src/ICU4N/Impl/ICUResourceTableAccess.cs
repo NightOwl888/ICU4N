@@ -94,7 +94,7 @@ namespace ICU4N.Impl
                     }
 
                     bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(
-                            bundle.GetBaseName(), fallbackLocale);
+                            bundle.BaseName, fallbackLocale);
                 }
             }
             catch (Exception)

@@ -125,7 +125,7 @@ namespace ICU4N.Impl.Locale
 
         private class Type
         {
-            internal string legacyId; // ICU4N TODO: API - change to properties
+            internal string legacyId;
             internal string bcpId;
 
             internal Type(string legacyId, string bcpId)

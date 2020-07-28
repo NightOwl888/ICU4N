@@ -81,15 +81,10 @@ namespace ICU4N.Impl
             }
         }
 
-        protected override string GetLocaleID()
-        {
-            return localeID;
-        }
+        protected override string LocaleID => localeID;
 
-        protected internal override string GetBaseName()
-        {
-            return bundle.GetType().FullName.Replace('.', '/');
-        }
+        protected internal override string BaseName
+            => bundle.GetType().FullName.Replace('.', '/');
 
         public override UCultureInfo UCulture
             => new UCultureInfo(localeID);

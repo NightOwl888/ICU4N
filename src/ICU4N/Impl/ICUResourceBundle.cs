@@ -1206,8 +1206,8 @@ namespace ICU4N.Impl
             }
             if (other is ICUResourceBundle o)
             {
-                if (GetBaseName().Equals(o.GetBaseName())
-                        && GetLocaleID().Equals(o.GetLocaleID()))
+                if (BaseName.Equals(o.BaseName)
+                        && LocaleID.Equals(o.LocaleID))
                 {
                     return true;
                 }
@@ -1221,8 +1221,8 @@ namespace ICU4N.Impl
             int hash = 17;
             unchecked // Overflow is fine, just wrap
             {
-                hash = hash * 23 + Utility.CheckHashCode(GetBaseName());
-                hash = hash * 23 + Utility.CheckHashCode(GetLocaleID());
+                hash = hash * 23 + Utility.CheckHashCode(BaseName);
+                hash = hash * 23 + Utility.CheckHashCode(LocaleID);
             }
             return hash;
         }
@@ -1371,7 +1371,7 @@ namespace ICU4N.Impl
                 else
                 {
                     UResourceBundle parent = null;
-                    localeName = b.GetLocaleID();
+                    localeName = b.LocaleID;
                     int i = localeName.LastIndexOf('_');
 
                     // TODO: C++ uresbund.cpp also checks for %%ParentIsRoot. Why not Java?
@@ -1411,7 +1411,7 @@ namespace ICU4N.Impl
                 }
                 if (obj == null)
                 {
-                    string fullName = ICUResourceBundleReader.GetFullName(GetBaseName(), GetLocaleID());
+                    string fullName = ICUResourceBundleReader.GetFullName(BaseName, LocaleID);
                     throw new MissingManifestResourceException(
                             "Can't find resource for bundle " + fullName + ", key "
                                     + aKey + ", type " + this.GetType().FullName);
@@ -1458,15 +1458,9 @@ namespace ICU4N.Impl
             return GetBundle(reader, baseName, localeID, root);
         }
 
-        protected override string GetLocaleID()
-        {
-            return wholeBundle.localeID;
-        }
+        protected override string LocaleID => wholeBundle.localeID;
 
-        protected internal override string GetBaseName()
-        {
-            return wholeBundle.baseName;
-        }
+        protected internal override string BaseName => wholeBundle.baseName;
 
         public override UCultureInfo UCulture => wholeBundle.uculture;
 
