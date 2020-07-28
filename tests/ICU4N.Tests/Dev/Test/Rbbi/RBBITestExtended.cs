@@ -37,7 +37,6 @@ namespace ICU4N.Dev.Test.Rbbi
 
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
         public void TestExtended()
         {
             TestParams tp = new TestParams();
