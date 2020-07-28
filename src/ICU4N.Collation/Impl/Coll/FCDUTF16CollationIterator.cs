@@ -61,8 +61,15 @@ namespace ICU4N.Impl.Coll
 
         public override int GetHashCode()
         {
-            Debug.Assert(false, "hashCode not designed");
-            return 42; // any arbitrary constant will do
+            // ICU4N specific - implemented hash code
+            int hash = 17;
+            unchecked // Overflow is fine, just wrap
+            {
+                hash = hash * 23 + checkDir.GetHashCode();
+                hash = hash * 23 + ((checkDir == 0) ? seq.GetHashCode() ^ rawSeq.GetHashCode() : 0);
+                hash = hash * 23 + ((checkDir != 0 || seq == rawSeq) ? (pos - rawStart).GetHashCode() : (segmentStart - rawStart).GetHashCode() ^ (pos - start).GetHashCode());
+            }
+            return hash;
         }
 
         public override void ResetToOffset(int newOffset)

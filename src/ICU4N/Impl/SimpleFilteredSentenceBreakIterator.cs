@@ -201,11 +201,7 @@ namespace ICU4N.Impl
             return (forwardsPartialTrie.GetHashCode() * 39) + (backwardsTrie.GetHashCode() * 11) + @delegate.GetHashCode();
         }
 
-        public override object Clone()
-        {
-            SimpleFilteredSentenceBreakIterator other = (SimpleFilteredSentenceBreakIterator)base.Clone();
-            return other;
-        }
+        // ICU4N specific: Removed clone, as the cast to SimpleFilteredSentenceBreakIterator when we return object is completely pointless
 
 
         public override int First()

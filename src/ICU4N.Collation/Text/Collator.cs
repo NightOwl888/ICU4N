@@ -587,17 +587,13 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Generates a hash code for this <see cref="Collator"/> object.
-        /// <para/>
-        /// The implementation exists just for consistency with <see cref="Equals(object)"/>
-        /// implementation in this class and does not generate a useful hash code.
-        /// Subclasses should override this implementation.
         /// </summary>
-        /// <returns>a hash code value.</returns>
+        /// <returns>A hash code value.</returns>
         /// <stable>ICU 58</stable>
         public override int GetHashCode()
         {
-            // Dummy return to prevent compile warnings.
-            return 0;
+            // ICU4N specific - implemented hash code
+            return GetType().GetHashCode();
         }
 
         // public setters --------------------------------------------------------

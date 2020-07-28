@@ -8,8 +8,8 @@ namespace ICU4N.Dev.Test.Collate
 {
     public class Counter<T> : IEnumerable<T>, IComparable<Counter<T>>
     {
-        IDictionary<T, RWLong> map;
-        IComparer<T> comparer;
+        readonly IDictionary<T, RWLong> map;
+        readonly IComparer<T> comparer;
 
         public Counter()
             : this(null)
@@ -245,7 +245,7 @@ namespace ICU4N.Dev.Test.Collate
             return map.ContainsKey(key);
         }
 
-        public override bool Equals(Object o)
+        public override bool Equals(object o)
         {
             return map.Equals(o);
         }

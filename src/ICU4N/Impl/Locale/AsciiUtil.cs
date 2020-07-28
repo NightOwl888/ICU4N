@@ -1,5 +1,4 @@
 ﻿using J2N.Text;
-using System;
 using System.Text;
 
 namespace ICU4N.Impl.Locale
@@ -199,8 +198,8 @@ namespace ICU4N.Impl.Locale
     }
     public class AsciiCaseInsensitiveKey // ICU4N specific - renamed from CaseInsensitiveKey
     {
-        private string _key;
-        private int _hash;
+        private readonly string _key;
+        private readonly int _hash;
 
         public AsciiCaseInsensitiveKey(string key)
         {
@@ -208,15 +207,14 @@ namespace ICU4N.Impl.Locale
             _hash = AsciiUtil.ToLower(key).GetHashCode();
         }
 
-        public override bool Equals(Object o)
+        public override bool Equals(object o)
         {
-            if (this == o)
-            {
+            if (ReferenceEquals(this, o))
                 return true;
-            }
-            if (o is AsciiCaseInsensitiveKey) {
-                return AsciiUtil.CaseIgnoreMatch(_key, ((AsciiCaseInsensitiveKey)o)._key);
-            }
+
+            if (o is AsciiCaseInsensitiveKey other)
+                return AsciiUtil.CaseIgnoreMatch(_key, other._key);
+
             return false;
         }
 

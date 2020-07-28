@@ -1,6 +1,5 @@
 ﻿using J2N;
 using J2N.Text;
-using System.Diagnostics;
 
 namespace ICU4N.Impl.Coll
 {
@@ -31,15 +30,18 @@ namespace ICU4N.Impl.Coll
         public override bool Equals(object other)
         {
             if (!base.Equals(other)) { return false; }
-            UTF16CollationIterator o = (UTF16CollationIterator)other;
-            // Compare the iterator state but not the text: Assume that the caller does that.
-            return (pos - start) == (o.pos - o.start);
+            if (other is UTF16CollationIterator o)
+            {
+                // Compare the iterator state but not the text: Assume that the caller does that.
+                return (pos - start) == (o.pos - o.start);
+            }
+            return false;
         }
 
         public override int GetHashCode()
         {
-            Debug.Assert(false, "hashCode not designed");
-            return 42; // any arbitrary constant will do
+            // ICU4N specific - implemented hash code
+            return (pos - start).GetHashCode();
         }
 
         public override void ResetToOffset(int newOffset)

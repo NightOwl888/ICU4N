@@ -2,7 +2,6 @@
 using J2N.Collections;
 using J2N.IO;
 using System;
-using System.Diagnostics;
 
 namespace ICU4N.Impl
 {
@@ -91,29 +90,36 @@ namespace ICU4N.Impl
         /// Attributes are checked but not the index data.
         /// </summary>
         /// <param name="other"><see cref="Trie"/> to check.</param>
-        /// <returns>true if the argument <see cref="Trie"/> has the same data as this <see cref="Trie"/>, false otherwise.</returns>
+        /// <returns><c>true</c> if the argument <see cref="Trie"/> has the same data as this <see cref="Trie"/>, <c>false</c> otherwise.</returns>
         //CLOVER:OFF
         public override bool Equals(object other)
         {
-            if (other == this)
+            if (ReferenceEquals(other, this))
             {
                 return true;
             }
-            if (!(other is Trie))
+            if (other is Trie othertrie)
             {
-                return false;
-            }
-            Trie othertrie = (Trie)other;
-            return m_isLatin1Linear_ == othertrie.m_isLatin1Linear_
+                return m_isLatin1Linear_ == othertrie.m_isLatin1Linear_
                    && m_options_ == othertrie.m_options_
                    && m_dataLength == othertrie.m_dataLength
                    && ArrayEqualityComparer<char>.OneDimensional.Equals(m_index, othertrie.m_index);
+            }
+            return false;
         }
 
         public override int GetHashCode()
         {
-            Debug.Assert(false, "hashCode not designed");
-            return 42;
+            // ICU4N specific - implemented hash code
+            int hash = 17;
+            unchecked // Overflow is fine, just wrap
+            {
+                hash = hash * 23 + m_isLatin1Linear_.GetHashCode();
+                hash = hash * 23 + m_options_.GetHashCode();
+                hash = hash * 23 + m_dataLength.GetHashCode();
+                hash = hash * 23 + ArrayEqualityComparer<char>.OneDimensional.GetHashCode(m_index);
+            }
+            return hash;
         }
         //CLOVER:ON
 

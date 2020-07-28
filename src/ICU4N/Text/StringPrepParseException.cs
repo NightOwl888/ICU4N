@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
@@ -114,36 +113,30 @@ namespace ICU4N.Text
 #endif
 
         /// <summary>
-        /// Compare this ParseException to another and evaluate if they are equal.
+        /// Compare this <see cref="StringPrepParseException"/> to another and evaluate if they are equal.
         /// The comparison works only on the type of error and does not compare
         /// the rules strings, if any, for equality.
         /// </summary>
         /// <param name="other">The exception that this object should be compared to.</param>
-        /// <returns>true if the objects are equal, false if unequal.</returns>
+        /// <returns><c>true</c> if the objects are equal, <c>false</c> if unequal.</returns>
         /// <stable>ICU 2.8</stable>
         public override bool Equals(object other)
         {
-            if (!(other is StringPrepParseException))
-            {
-                return false;
-            }
-            return ((StringPrepParseException)other).error == this.error;
+            if (other is StringPrepParseException otherParseException)
+                return otherParseException.error == this.error;
 
+            return false;
         }
 
         /// <summary>
-        /// Mock implementation of <see cref="GetHashCode()"/>. This implementation always returns a constant
-        /// value. When .NET assertion is enabled, this method triggers an assertion failure.
+        /// Gets a hash code for the current <see cref="StringPrepParseException"/>.
         /// </summary>
-        /// <returns>This API is ICU internal only.</returns>
         /// <internal/>
-#pragma warning disable 809
-        [Obsolete("This API is ICU internal only.")]
+        // [Obsolete("This API is ICU internal only.")] // ICU4N: Not possible for GetHashCode() to be obsolete, since it is required by the framework
         public override int GetHashCode()
-#pragma warning disable 809
         {
-            Debug.Assert(false, "hashCode not designed");
-            return 42;
+            // ICU4N specific - implemented hash code
+            return error.GetHashCode();
         }
 
         /// <summary>
@@ -165,7 +158,7 @@ namespace ICU4N.Text
             return buf.ToString();
         }
 
-        private StringPrepErrorType error;
+        private readonly StringPrepErrorType error;
 
         /// <summary>
         /// The line on which the error occurred.  If the parse engine
@@ -174,19 +167,19 @@ namespace ICU4N.Text
         /// is -1. It will be set to 0 if the code populating this struct is not
         /// using line numbers.
         /// </summary>
-        private int line;
+        private readonly int line;
 
         /// <summary>
         /// Textual context before the error.  Null-terminated.
         /// May be the empty string if not implemented by parser.
         /// </summary>
-        private StringBuffer preContext = new StringBuffer();
+        private readonly StringBuffer preContext = new StringBuffer();
 
         /// <summary>
         /// Textual context after the error.  Null-terminated.
         /// May be the empty string if not implemented by parser.
         /// </summary>
-        private StringBuffer postContext = new StringBuffer();
+        private readonly StringBuffer postContext = new StringBuffer();
 
         private const int PARSE_CONTEXT_LEN = 16;
 
@@ -203,7 +196,7 @@ namespace ICU4N.Text
 
         }
 
-        private void SetPostContext(String str, int pos)
+        private void SetPostContext(string str, int pos)
         {
             SetPostContext(str.ToCharArray(), pos);
         }
@@ -216,7 +209,7 @@ namespace ICU4N.Text
 
         }
 
-        private void SetContext(String str, int pos)
+        private void SetContext(string str, int pos)
         {
             SetPreContext(str, pos);
             SetPostContext(str, pos);

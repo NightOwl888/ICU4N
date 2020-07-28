@@ -2,7 +2,6 @@
 using J2N.Collections;
 using J2N.IO;
 using System;
-using System.Diagnostics;
 
 namespace ICU4N.Impl
 {
@@ -219,12 +218,11 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="other">Other Trie to check.</param>
         /// <returns>true if the argument Trie has the same data as this Trie, false otherwise.</returns>
-        public override bool Equals(Object other)
+        public override bool Equals(object other)
         {
             bool result = base.Equals(other);
-            if (result && other is Int32Trie)
+            if (result && other is Int32Trie othertrie)
             {
-                Int32Trie othertrie = (Int32Trie)other;
                 if (m_initialValue_ != othertrie.m_initialValue_
                     || !ArrayEqualityComparer<int>.OneDimensional.Equals(m_data_, othertrie.m_data_))
                 {
@@ -237,8 +235,8 @@ namespace ICU4N.Impl
 
         public override int GetHashCode()
         {
-            Debug.Assert(false, "hashCode not designed");
-            return 42;
+            // ICU4N specific - implemented hash code
+            return base.GetHashCode() ^ m_initialValue_.GetHashCode();
         }
         ////CLOVER:ON
 

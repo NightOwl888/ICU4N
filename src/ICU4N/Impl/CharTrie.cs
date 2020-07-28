@@ -1,7 +1,6 @@
 ﻿using ICU4N.Text;
 using J2N.IO;
 using System;
-using System.Diagnostics;
 
 namespace ICU4N.Impl
 {
@@ -216,9 +215,8 @@ namespace ICU4N.Impl
         public override bool Equals(object other)
         {
             bool result = base.Equals(other);
-            if (result && other is CharTrie)
+            if (result && other is CharTrie othertrie)
             {
-                CharTrie othertrie = (CharTrie)other;
                 return m_initialValue_ == othertrie.m_initialValue_;
             }
             return false;
@@ -226,8 +224,8 @@ namespace ICU4N.Impl
 
         public override int GetHashCode()
         {
-            Debug.Assert(false, "hashCode not designed");
-            return 42;
+            // ICU4N specific - implemented hash code
+            return base.GetHashCode() ^ m_initialValue_.GetHashCode();
         }
         //CLOVER:ON
 

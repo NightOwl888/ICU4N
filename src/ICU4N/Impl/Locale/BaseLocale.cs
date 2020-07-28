@@ -82,20 +82,18 @@ namespace ICU4N.Impl.Locale
 
         public override bool Equals(object obj)
         {
-            if (this == obj)
+            if (ReferenceEquals(this, obj))
             {
                 return true;
             }
-            if (!(obj is BaseLocale))
+            if (obj is BaseLocale other)
             {
-                return false;
-            }
-            BaseLocale other = (BaseLocale)obj;
-            return GetHashCode() == other.GetHashCode()
-                    && _language.Equals(other._language)
+                return  _language.Equals(other._language) // ICU4N specific - removed GetHashCode() from the comparison, as it is redundant
                     && _script.Equals(other._script)
                     && _region.Equals(other._region)
                     && _variant.Equals(other._variant);
+            }
+            return false;
         }
 
 
@@ -301,10 +299,6 @@ namespace ICU4N.Impl.Locale
 
         private class Cache : LocaleObjectCache<Key, BaseLocale>
         {
-            public Cache()
-            {
-            }
-
             protected override Key NormalizeKey(Key key)
             {
                 return Key.Normalize(key);

@@ -144,7 +144,7 @@ namespace ICU4N.Support.Text
 
         public override int GetHashCode()
         {
-            return str.GetHashCode() + start + end + offset;
+            return str.GetHashCode() ^ start ^ end ^ offset;
         }
 
         /// <summary>

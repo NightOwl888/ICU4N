@@ -1,5 +1,4 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support.Collections;
 using ICU4N.Support.Globalization;
 using ICU4N.Util;
 using J2N;
@@ -1201,13 +1200,12 @@ namespace ICU4N.Impl
 
         public override bool Equals(object other)
         {
-            if (this == other)
+            if (ReferenceEquals(this, other))
             {
                 return true;
             }
-            if (other is ICUResourceBundle)
+            if (other is ICUResourceBundle o)
             {
-                ICUResourceBundle o = (ICUResourceBundle)other;
                 if (GetBaseName().Equals(o.GetBaseName())
                         && GetLocaleID().Equals(o.GetLocaleID()))
                 {
@@ -1219,8 +1217,14 @@ namespace ICU4N.Impl
 
         public override int GetHashCode()
         {
-            Debug.Assert(false, "hashCode not designed");
-            return 42;
+            // ICU4N specific - implemented hash code
+            int hash = 17;
+            unchecked // Overflow is fine, just wrap
+            {
+                hash = hash * 23 + Utility.CheckHashCode(GetBaseName());
+                hash = hash * 23 + Utility.CheckHashCode(GetLocaleID());
+            }
+            return hash;
         }
 
         // ICU4N specific - de-nested OpenType enum

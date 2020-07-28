@@ -1,6 +1,6 @@
-﻿using ICU4N.Support.Text;
-using ICU4N.Util;
+﻿using ICU4N.Util;
 using J2N;
+using J2N.Collections;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
@@ -90,6 +90,11 @@ namespace ICU4N.Impl.Coll
             }
 
             private long[] buffer = new long[INITIAL_CAPACITY];
+
+            public override int GetHashCode() // ICU4N specific
+            {
+                return ArrayEqualityComparer<long>.OneDimensional.GetHashCode(buffer);
+            }
         }
 
         // State of combining marks skipped in discontiguous contraction.
@@ -252,8 +257,16 @@ namespace ICU4N.Impl.Coll
 
         public override int GetHashCode()
         {
-            // Dummy return to prevent compile warnings.
-            return 0;
+            // ICU4N specific - implemented hash code
+            int hash = 17;
+            unchecked // Overflow is fine, just wrap
+            {
+                hash = hash * 23 + cesIndex.GetHashCode();
+                hash = hash * 23 + numCpFwd.GetHashCode();
+                hash = hash * 23 + isNumeric.GetHashCode();
+                hash = hash * 23 + ceBuffer.GetHashCode();
+            }
+            return hash;
         }
 
         /// <summary>

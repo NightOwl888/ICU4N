@@ -779,63 +779,64 @@ namespace ICU4N.Impl.Locale
 
         internal class CaseInsensitiveString
         {
-            private string _s;
+            private readonly string _s;
+            private readonly int _hash;
 
             internal CaseInsensitiveString(string s)
             {
                 _s = s;
+                _hash = AsciiUtil.ToLower(_s).GetHashCode(); // ICU4N specific - cache hash code, since this is an immutable object
             }
 
             public virtual string Value => _s;
 
             public override int GetHashCode()
             {
-                return AsciiUtil.ToLower(_s).GetHashCode();
+                // ICU4N specific - cache hash code, since this is an immutable object
+                return _hash;
             }
 
             public override bool Equals(object obj)
             {
-                if (this == obj)
-                {
+                if (ReferenceEquals(this, obj))
                     return true;
-                }
-                if (!(obj is CaseInsensitiveString))
-                {
-                    return false;
-                }
-                return AsciiUtil.CaseIgnoreMatch(_s, ((CaseInsensitiveString)obj).Value);
+
+                if (obj is CaseInsensitiveString other)
+                    return AsciiUtil.CaseIgnoreMatch(_s, other.Value);
+
+                return false;
             }
         }
 
         internal class CaseInsensitiveChar
         {
-            private char _c;
+            private readonly char _c;
+            private readonly int _hash;
 
             internal CaseInsensitiveChar(char c)
             {
                 _c = c;
+                _hash = AsciiUtil.ToLower(_c);// ICU4N specific - cache hash code, since this is an immutable object
             }
 
             public virtual char Value => _c;
 
             public override int GetHashCode()
             {
-                return AsciiUtil.ToLower(_c);
+                // ICU4N specific - cache hash code, since this is an immutable object
+                return _hash;
             }
 
             public override bool Equals(object obj)
             {
-                if (this == obj)
-                {
+                if (ReferenceEquals(this, obj))
                     return true;
-                }
-                if (!(obj is CaseInsensitiveChar))
-                {
-                    return false;
-                }
-                return _c == AsciiUtil.ToLower(((CaseInsensitiveChar)obj).Value);
-            }
 
+                if (obj is CaseInsensitiveChar other)
+                    return _c == AsciiUtil.ToLower(other.Value);
+
+                return false;
+            }
         }
     }
 }

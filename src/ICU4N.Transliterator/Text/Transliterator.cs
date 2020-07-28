@@ -1,12 +1,10 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
-using ICU4N.Support.Collections;
 using ICU4N.Util;
 using J2N.Text;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
@@ -183,9 +181,8 @@ namespace ICU4N.Text
         /// <stable>ICU 2.6</stable>
         public override bool Equals(object obj)
         {
-            if (obj is TransliterationPosition)
+            if (obj is TransliterationPosition pos)
             {
-                TransliterationPosition pos = (TransliterationPosition)obj;
                 return ContextStart == pos.ContextStart &&
                     ContextLimit == pos.ContextLimit &&
                     Start == pos.Start &&
@@ -195,17 +192,14 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Mock implementation of <see cref="object.GetHashCode()"/>. This implementation always returns a constant
-        /// value. When assertion is enabled, this method triggers an assertion failure.
+        /// Gets a hash code for the current <see cref="TransliterationPosition"/>.
         /// </summary>
         /// <internal/>
-        [Obsolete("This API is ICU internal only.")]
-#pragma warning disable 809
+        //[Obsolete("This API is ICU internal only.")] // ICU4N: Not possible for GetHashCode() to be obsolete, since it is required by the framework
         public override int GetHashCode()
-#pragma warning restore 809
         {
-            Debug.Assert(false, "hashCode not designed");
-            return 42;
+            // ICU4N specific - implemented hash code
+            return ContextStart ^ ContextLimit ^ Start ^ Limit;
         }
 
         /// <summary>

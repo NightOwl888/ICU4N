@@ -726,10 +726,7 @@ namespace ICU4N.Text
         /// Normalizes dir_=1 (just after <see cref="SetOffset(int)"/>) to dir_=0 (just after <see cref="Reset()"/>).
         /// </summary>
         /// <returns></returns>
-        private sbyte NormalizeDir()
-        {
-            return dir_ == 1 ? (sbyte)0 : dir_;
-        }
+        private sbyte NormalizeDir => dir_ == 1 ? (sbyte)0 : dir_;
 
         /// <summary>
         /// Tests that argument object is equals to this <see cref="CollationElementIterator"/>.
@@ -740,7 +737,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public override bool Equals(object that)
         {
-            if (that == this)
+            if (ReferenceEquals(that, this))
             {
                 return true;
             }
@@ -748,7 +745,7 @@ namespace ICU4N.Text
             {
                 return rbc_.Equals(thatceiter.rbc_)
                         && otherHalf_ == thatceiter.otherHalf_
-                        && NormalizeDir() == thatceiter.NormalizeDir()
+                        && NormalizeDir == thatceiter.NormalizeDir
                         && string_.Equals(thatceiter.string_)
                         && iter_.Equals(thatceiter.iter_);
             }
@@ -756,17 +753,23 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Mock implementation of <see cref="object.GetHashCode()"/>. This implementation always returns a constant
-        /// value. When debugging is enabled, this method triggers an assertion failure.
+        /// Gets a hash code representing the current <see cref="CollationElementIterator"/>.
         /// </summary>
         /// <internal/>
-        [Obsolete("This API is ICU internal only.")]
-#pragma warning disable 809
+        //[Obsolete("This API is ICU internal only.")] // ICU4N: Not possible for GetHashCode() to be obsolete, since it is required by the framework
         public override int GetHashCode()
-#pragma warning restore 809
         {
-            Debug.Assert(false, "GetHashCode not designed");
-            return 42;
+            // ICU4N specific - implemented hash code
+            int hash = 17;
+            unchecked // Overflow is fine, just wrap
+            {
+                hash = hash * 23 + rbc_.GetHashCode();
+                hash = hash * 23 + otherHalf_.GetHashCode();
+                hash = hash * 23 + NormalizeDir.GetHashCode();
+                hash = hash * 23 + string_.GetHashCode();
+                hash = hash * 23 + iter_.GetHashCode();
+            }
+            return hash;
         }
 
         /// <internal/>
