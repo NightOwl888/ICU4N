@@ -998,14 +998,11 @@ namespace ICU4N.Text
 
                 TransliteratorParser parser = new TransliteratorParser();
 
-                try
+                if (entry is ResourceEntry re) // ICU4N specific - eliminated the InvalidCastException
                 {
-
-                    ResourceEntry re = (ResourceEntry)entry;
                     parser.Parse(re.Resource, re.Direction);
-
                 }
-                catch (InvalidCastException)
+                else
                 {
                     // If we pull a rule from a locale resource bundle it will
                     // be a LocaleEntry.

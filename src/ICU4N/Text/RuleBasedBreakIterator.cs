@@ -147,9 +147,8 @@ namespace ICU4N.Text
             {
                 return true;
             }
-            try
+            if (that is RuleBasedBreakIterator other) // ICU4N specific - eliminated the InvalidCastException
             {
-                RuleBasedBreakIterator other = (RuleBasedBreakIterator)that;
                 if (fRData != other.fRData && (fRData == null || other.fRData == null))
                 {
                     return false;
@@ -169,10 +168,7 @@ namespace ICU4N.Text
                 }
                 return fPosition == other.fPosition;
             }
-            catch (InvalidCastException)
-            {
-                return false;
-            }
+            return false;
         }
 
         /// <summary>
@@ -197,7 +193,8 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public override int GetHashCode()
         {
-            return fRData.fRuleSource.GetHashCode();
+            // ICU4N specific - eliminated the possibility of a null reference exception here
+            return (fRData?.fRuleSource?.GetHashCode()).GetValueOrDefault();
         }
 
 

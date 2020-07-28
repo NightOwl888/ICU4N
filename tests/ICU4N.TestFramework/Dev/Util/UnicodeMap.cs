@@ -90,9 +90,8 @@ namespace ICU4N.Dev.Util
         public override bool Equals(object other)
         {
             if (other == null) return false;
-            try
+            if (other is UnicodeMap<T> that) // ICU4N specific - eliminated the InvalidCastException
             {
-                UnicodeMap<T> that = (UnicodeMap<T>)other;
                 if (length != that.length) return false;
                 for (int i = 0; i < length - 1; ++i)
                 {
@@ -101,10 +100,7 @@ namespace ICU4N.Dev.Util
                 }
                 return true;
             }
-            catch (InvalidCastException e)
-            {
-                return false;
-            }
+            return false;
         }
 
         public static bool AreEqual(object a, object b)

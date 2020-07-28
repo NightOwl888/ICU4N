@@ -219,18 +219,14 @@ namespace ICU4N.Util
         {
             if (this == other) return true;
             if (other == null) return false;
-            try
+            if (other is ByteArrayWrapper that) // ICU4N specific - eliminated the InvalidCastException
             {
-                ByteArrayWrapper that = (ByteArrayWrapper)other;
                 if (Length != that.Length) return false;
                 for (int i = 0; i < Length; ++i)
                 {
                     if (Bytes[i] != that.Bytes[i]) return false;
                 }
                 return true;
-            }
-            catch (InvalidCastException)
-            {
             }
             return false;
         }

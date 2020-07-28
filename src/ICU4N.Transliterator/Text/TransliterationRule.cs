@@ -615,16 +615,16 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    try
+                    if (matcher is UnicodeSet m) // ICU4N specific - eliminated the InvalidCastException
                     {
-                        if (!filter.ContainsSome((UnicodeSet)matcher))
+                        if (!filter.ContainsSome(m))
                         {
                             return;
                         }
                         matcher.AddMatchSetTo(tempSource);
                     }
-                    catch (InvalidCastException)
-                    { // if the matcher is not a UnicodeSet
+                    else // if the matcher is not a UnicodeSet
+                    {
                         temp.Clear();
                         matcher.AddMatchSetTo(temp);
                         if (!filter.ContainsSome(temp))
