@@ -1,12 +1,15 @@
 ﻿using ICU4N.Globalization;
+using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
+using J2N.Threading;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 using Character = J2N.Character;
 using StringBuffer = System.Text.StringBuilder;
 
@@ -772,6 +775,114 @@ namespace ICU4N.Dev.Test.Rbbi
             assertEquals("1st next", 181, filteredBI.Next());
             assertEquals("1st next", 278, filteredBI.Next());
             filteredBI.First();
+        }
+
+
+
+
+        // ICU4N specific - test for concurrency problems with dictionary-based
+        // breakiterators
+        [Test]
+        public void TestConcurrency()
+        {
+            int numThreads = 8;
+            char[] chars = new char[] {
+                        (char)4160,
+                        (char)4124,
+                        (char)4097,
+                        (char)4177,
+                        (char)4113,
+                        (char)32,
+                        (char)10671,
+                    };
+            string contents = new string(chars);
+
+            var proto = BreakIterator.GetWordInstance(new UCultureInfo("th"));
+
+            var iter = (BreakIterator)proto.Clone();
+            iter.SetText(contents);
+            int br;
+            var breaks = new List<int>();
+            while ((br = iter.Next()) != BreakIterator.Done)
+            {
+                breaks.Add(br);
+            }
+
+
+
+            CountdownEvent startingGun = new CountdownEvent(1);
+            ThreadAnonymousHelper[] threads = new ThreadAnonymousHelper[numThreads];
+            for (int i = 0; i < threads.Length; i++)
+            {
+                threads[i] = new ThreadAnonymousHelper(startingGun, proto, contents, breaks.ToArray());
+
+                threads[i].Start();
+            }
+            startingGun.Signal();
+            for (int i = 0; i < threads.Length; i++)
+            {
+                threads[i].Join();
+            }
+        }
+
+        private class ThreadAnonymousHelper : ThreadJob
+        {
+            private readonly CountdownEvent startingGun;
+            private readonly BreakIterator proto;
+            private readonly string contents;
+            private readonly int[] expected;
+
+            public ThreadAnonymousHelper(CountdownEvent startingGun, BreakIterator proto, string contents, int[] expected)
+            {
+                this.startingGun = startingGun;
+                this.proto = proto;
+                this.contents = contents;
+                this.expected = expected;
+            }
+
+            public override void Run()
+            {
+                try
+                {
+                    startingGun.Wait();
+                    //long tokenCount = 0;
+
+                    var iter = (BreakIterator)proto.Clone();
+
+                    //string contents = "英 เบียร์ ビール ເບຍ abc";
+                    for (int i = 0; i < 1000; i++)
+                    {
+                        
+                        iter.SetText(contents);
+                        int br;
+                        var actual = new List<int>();
+                        while ((br = iter.Next()) != BreakIterator.Done)
+                        {
+                            actual.Add(br);
+                        }
+
+                        Assert.IsTrue(J2N.Collections.ArrayEqualityComparer<int>.OneDimensional.Equals(expected, actual.ToArray()));
+
+
+                        //Tokenizer tokenizer = new ICUTokenizer(new StringReader(contents));
+                        //tokenizer.Reset();
+                        //while (tokenizer.IncrementToken())
+                        //{
+                        //    tokenCount++;
+                        //}
+                        //tokenizer.End();
+
+                        //if (Verbose)
+                        //{
+                        //    System.Console.Out.WriteLine(tokenCount);
+                        //}
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw new Exception(e.Message, e);
+                }
+            }
         }
     }
 }
