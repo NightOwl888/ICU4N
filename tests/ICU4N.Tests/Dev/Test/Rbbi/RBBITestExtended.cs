@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using J2N;
 using J2N.Text;
@@ -486,6 +487,7 @@ namespace ICU4N.Dev.Test.Rbbi
             }
 
             t.bi.SetText(t.dataToBreak.ToString());
+            //t.bi.SetText(new StringCharacterIterator(t.dataToBreak.ToString()));
             //
             //  Run the iterator forward
             //
@@ -675,5 +677,48 @@ namespace ICU4N.Dev.Test.Rbbi
 
         }
 
+        [Test] // ICU4N specific for debugging
+        public void TestEndBreak()
+        {
+            var s = "In the meantime Mr. Weston arrived with his small ship, which he had now recovered. Capt. Gorges, who informed the Sgt. here that one purpose of his going east was to meet with Mr. Weston, took this opportunity to call him to account for some abuses he had to lay to his charge.";
+            var sb = new StringBuilder(s);
+            var expectedBreaks = new int[] { /*0,*/ 20, 84, 90, 181, 278 };
+
+            var bi = BreakIterator.GetSentenceInstance();
+
+            bi.SetText(sb);
+            //bi.SetText(new StringCharacterIterator(s));
+            //bi.SetText(new StringCharacterEnumerator(s));
+            assertEquals(0, bi.First());
+
+            foreach (int expected in expectedBreaks)
+            {
+                assertEquals(expected, bi.Next());
+            }
+
+            assertEquals(BreakIterator.Done, bi.Next());
+        }
+
+        [Test] // ICU4N specific for debugging
+        public void TestEmptyString()
+        {
+            var s = "";
+            var sb = new StringBuilder(s);
+            var expectedBreaks = new int[] { /*0,*/ };
+
+            var bi = BreakIterator.GetSentenceInstance();
+
+            bi.SetText(sb);
+            //bi.SetText(new StringCharacterIterator(s));
+            //bi.SetText(new StringCharacterEnumerator(s));
+            assertEquals(0, bi.First());
+
+            foreach (int expected in expectedBreaks)
+            {
+                assertEquals(expected, bi.Next());
+            }
+
+            assertEquals(BreakIterator.Done, bi.Next());
+        }
     }
 }

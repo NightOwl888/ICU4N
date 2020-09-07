@@ -37,7 +37,7 @@ namespace ICU4N.Support.Text
         public override int BeginIndex => enumerator.StartIndex;
 
         /// <inheritdoc/>
-        public override int EndIndex => enumerator.EndIndex + 1;
+        public override int EndIndex => enumerator.EndIndex + (enumerator.Length > 0 ? 1 : 0);
 
         /// <inheritdoc/>
         public override int Index => enumerator.Index + (pastEnd ? 1 : 0);
@@ -116,10 +116,11 @@ namespace ICU4N.Support.Text
         /// <seealso cref="GetHashCode()"/>
         public override bool Equals(object obj)
         {
-            if (!(obj is CharacterEnumeratorWrapper other))
+            if (!(obj is CharacterEnumeratorWrapper))
             {
                 return false;
             }
+            var other = (CharacterEnumeratorWrapper)obj;
             return pastEnd == other.pastEnd && this.enumerator.Equals(other.Enumerator);
         }
 
