@@ -6,12 +6,12 @@
     <RepositoryUrl>https://github.com/NightOwl888/ICU4N/</RepositoryUrl>
     <PackageProjectUrl>https://github.com/NightOwl888/ICU4N/</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/NightOwl888/ICU4N/master/branding/unicode-icon-128x128.jpg</PackageIconUrl>
-    <PackageIcon>content\unicode-icon-128x128.jpg</PackageIcon>
-    <PackageLicenseFile>content\LICENSE.txt</PackageLicenseFile>
+    <PackageIcon>unicode-icon-128x128.jpg</PackageIcon>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageReleaseNotes>This is an early prerelease. Not all features are fully functional yet, and there may still be some gaps in functionality that haven't been accounted for. See https://github.com/NightOwl888/ICU4N for more info about what is functioning and what is not.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="$(SolutionDir)LICENSE.txt" Pack="true" PackagePath="content"/>
-    <None Include="$(SolutionDir)branding\unicode-icon-128x128.jpg" Pack="true" PackagePath="content"/>
+    <None Include="$(SolutionDir)$(PackageLicenseFile)" Pack="true" PackagePath="$(PackageLicenseFile)"/>
+    <None Include="$(SolutionDir)branding\$(PackageIcon)" Pack="true" PackagePath="$(PackageIcon)"/>
   </ItemGroup>
 </Project>
