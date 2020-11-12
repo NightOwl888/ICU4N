@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="NUnit" Version="$(NUnitPackageReferenceVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="ICU4N.Tests" />
     <InternalsVisibleTo Include="ICU4N.Tests.Transliterator" />
   </ItemGroup>
