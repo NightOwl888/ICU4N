@@ -15,7 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ICU4N.LanguageData\ICU4N.LanguageData.csproj" />
     <ProjectReference Include="..\..\src\ICU4N.Transliterator\ICU4N.Transliterator.csproj" />
-    <ProjectReference Include="..\ICU4N.TestFramework\ICU4N.TestFramework.csproj" />
   </ItemGroup>
 
 </Project>
