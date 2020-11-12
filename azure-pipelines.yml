@@ -17,7 +17,7 @@ name: 'vNext$(rev:.r)' # Format for build number (will be overridden)
 
 variables:
 - name: TestTargetFrameworks
-  value: 'net5.0;netcoreapp2.0;netcoreapp1.0;net451;net40'
+  value: 'net5.0;netcoreapp2.0;net451;net40'
 - name: BinaryArtifactName
   value: 'testbinaries'
 - name: NuGetArtifactName
@@ -119,33 +119,6 @@ stages:
       parameters:
         osName: $(osName)
         testTargetFrameworks: 'netcoreapp2.0'
-        testResultsArtifactName: '$(TestResultsArtifactName)'
-        maximumAllowedFailures: $(maximumAllowedFailures)
-
-  - job: Test_netcoreapp1_0
-    condition: and(succeeded(), ne(variables['RunTests'], 'false'))
-    strategy:
-      matrix:
-        Windows:
-          osName: 'Windows'
-          imageName: 'windows-2019'
-          maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
-        Linux:
-          osName: 'Linux'
-          imageName: 'ubuntu-16.04'
-          maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
-        macOS:
-          osName: 'macOS'
-          imageName: 'macOS-10.14'
-          maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
-    displayName: 'Test netcoreapp1.0 on'
-    pool:
-      vmImage: $(imageName)
-    steps:
-    - template: 'build/azure-templates/run-tests-on-os.yml'
-      parameters:
-        osName: $(osName)
-        testTargetFrameworks: 'netcoreapp1.0'
         testResultsArtifactName: '$(TestResultsArtifactName)'
         maximumAllowedFailures: $(maximumAllowedFailures)
 
