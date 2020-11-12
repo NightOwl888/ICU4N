@@ -1,5 +1,7 @@
 <Project>
   <ItemGroup Label="Test Project Common References">
+    <ProjectReference Include="..\..\src\ICU4N.TestFramework\ICU4N.TestFramework.csproj" />
+
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNETTestSdkPackageReferenceVersion)" />
     <PackageReference Include="NUnit" Version="$(NUnitPackageReferenceVersion)" />
     <PackageReference Include="NUnit3TestAdapter" Version="$(NUnit3TestAdapterPackageReferenceVersion)" />
