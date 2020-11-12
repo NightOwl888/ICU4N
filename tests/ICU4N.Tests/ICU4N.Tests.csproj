@@ -29,14 +29,6 @@
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesSingleValue.32.tri2" />
     <EmbeddedResource Include="Dev\Test\Rbbi\break_rules\*" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Support\Text\UnicodeSetPartialTestExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UnicodeSetPartialTestExtension.tt</DependentUpon>
-    </None>
-  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\src\ICU4N.CurrencyData\ICU4N.CurrencyData.csproj" />
