@@ -100,6 +100,11 @@ namespace ICU4N.Impl
 
         // ICU4N specific - de-nested Stats and renamed ICUReaderWriterLockStats
 
+        ~ICUReaderWriterLock() // ICU4N specific - Added finalizer
+        {
+            rwl?.Dispose();
+        }
+
         /// <summary>
         /// Reset the stats.  Returns existing stats, if any.
         /// </summary>

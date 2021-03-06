@@ -115,6 +115,11 @@ namespace ICU4N.Impl
                 this.reference = CreateReference(initialValue);
             }
 
+            ~SoftValue() // ICU4N specific - Added finalizer
+            {
+                syncLock?.Dispose();
+            }
+
             private SoftReference<TValue> CreateReference(TValue value)
             {
 #if FEATURE_MICROSOFT_EXTENSIONS_CACHING
