@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup Label="NuGet Package Reference Versions">
     <J2NPackageReferenceVersion>2.0.0-beta-0010</J2NPackageReferenceVersion>
-    <MicrosoftExtensionsCachingMemoryPackageReferenceVersion>3.1.1</MicrosoftExtensionsCachingMemoryPackageReferenceVersion>
+    <MicrosoftExtensionsCachingMemoryPackageReferenceVersion>2.0.0</MicrosoftExtensionsCachingMemoryPackageReferenceVersion>
     <MicrosoftExtensionsCachingMemoryPackageReferenceVersion_NET4_5_1>1.1.2</MicrosoftExtensionsCachingMemoryPackageReferenceVersion_NET4_5_1>
     <MicrosoftNETTestSdkPackageReferenceVersion>16.1.1</MicrosoftNETTestSdkPackageReferenceVersion>
     <NerdBankGitVersioningPackageReferenceVersion>[3.3.37]</NerdBankGitVersioningPackageReferenceVersion>
