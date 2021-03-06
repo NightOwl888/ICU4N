@@ -10,8 +10,8 @@ namespace ICU4N.Globalization
     /// </summary>
     public static class CultureInfoExtensions
     {
-        private static readonly LurchTable<CultureInfo, UCultureInfo> uCultureInfoCache
-            = new LurchTable<CultureInfo, UCultureInfo>(LurchTableOrder.Access, limit: 64, comparer: CultureInfoEqualityComparer.Instance);
+        private static readonly LurchTable<CultureInfo, Lazy<UCultureInfo>> uCultureInfoCache
+            = new LurchTable<CultureInfo, Lazy<UCultureInfo>>(LurchTableOrder.Access, limit: 64, comparer: CultureInfoEqualityComparer.Instance);
 
         /// <summary>
         /// <icu/> Returns a <see cref="UCultureInfo"/> object for a <see cref="CultureInfo"/>.
@@ -27,7 +27,8 @@ namespace ICU4N.Globalization
             //if (culture is UCultureInfo uCulture)
             //    return uCulture;
 
-            return uCultureInfoCache.GetOrAdd(culture, (key) => UCultureInfo.DotNetLocaleHelper.ToUCultureInfo(key));
+            var result = uCultureInfoCache.GetOrAdd(culture, (key) => new Lazy<UCultureInfo>(() => UCultureInfo.DotNetLocaleHelper.ToUCultureInfo(key)));
+            return result.Value;
         }
 
         // ICU4N: For now, we are just comparing using CultureInfo.Equals() as well as comparing
