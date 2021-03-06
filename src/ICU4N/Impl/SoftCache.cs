@@ -30,12 +30,13 @@ namespace ICU4N.Impl
     // pass a delegate to the GetOrCreate() method that loads the cache value if it was not previously cached.
     public class SoftCache<TKey, TValue> : CacheBase<TKey, TValue> where TValue : class
     {
-        private readonly ConcurrentDictionary<TKey, object> map = new ConcurrentDictionary<TKey, object>();
+        private readonly ConcurrentDictionary<TKey, Lazy<object>> map = new ConcurrentDictionary<TKey, Lazy<object>>();
 
         /// <inheritdoc/>
         public override TValue GetOrCreate(TKey key, Func<TKey, TValue> valueFactory)
         {
-            object mapValue = map.GetOrAdd(key, (k) =>
+            var mapValue = map.GetOrAdd(key,
+                k => new Lazy<object>(() =>
             {
                 // We had never cached an instance for this key.
 
@@ -43,11 +44,11 @@ namespace ICU4N.Impl
                     return CacheValue<TValue>.GetInstance(null);
 
                 return valueFactory(k) ?? (object)CacheValue<TValue>.GetInstance(null);
-            });
-            if (!(mapValue is CacheValue<TValue> cv))
+            }));
+            if (!(mapValue.Value is CacheValue<TValue> cv))
             {
                 // The value was stored directly.
-                return (TValue)mapValue;
+                return (TValue)mapValue.Value;
             }
             if (cv.IsNull)
             {
