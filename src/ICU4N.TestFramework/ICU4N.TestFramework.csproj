@@ -6,6 +6,10 @@
     <RootNamespace>ICU4N</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Label="NuGet Package Defaults">
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
   <PropertyGroup>
     <NoWarn>$(NoWarn);168;612;618</NoWarn>
   </PropertyGroup>
