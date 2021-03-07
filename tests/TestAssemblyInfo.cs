@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 // ICU4N TODO: Some tests are not always completing, so adding this
 // attribute to explictly fail so the mystery test can be investigated.
 #if !DEBUG
-[assembly: Timeout(60000)]
+[assembly: Timeout(90000)]
 #endif
 
 [assembly: SuppressMessage("Microsoft.Design", "CA1034", Justification = "We don't care about Java-style classes in tests")]
