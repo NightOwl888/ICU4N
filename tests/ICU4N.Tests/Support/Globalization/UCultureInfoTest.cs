@@ -5058,5 +5058,21 @@ namespace ICU4N.Globalization
         //        Assert.AreEqual(expected, actual);
         //    }
         //}
+
+        [Test]
+        [TestCase("zh-TW")]
+        [TestCase("zh-CN")]
+        [TestCase("zh-HK")]
+        [TestCase("zh-MO")]
+        [TestCase("zh-SG")]
+        public void TestChineseCharactersGH29(string cultureName)
+        {
+            // If you're not running Windows in Chinese
+            System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo(cultureName);
+            //var c2 = UCultureInfo.CurrentCulture = new UCultureInfo(cultureName);
+
+            Assert.DoesNotThrow(() => { var _ = UCultureInfo.CurrentCulture; });
+        }
+
     }
 }
