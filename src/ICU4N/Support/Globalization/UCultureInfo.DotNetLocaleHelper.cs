@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 
 namespace ICU4N.Globalization
 {
@@ -12,6 +13,10 @@ namespace ICU4N.Globalization
         /// </summary>
         internal static class DotNetLocaleHelper
         {
+            // Local properties for LazyInitializer
+            private static bool calendarsInitialized;
+            private static object calendarsSyncLock = new object();
+
             /*
              *  Java
              * 6 locales.  When an ICU locale matches <minumum base> with
@@ -74,7 +79,7 @@ namespace ICU4N.Globalization
 
 
 
-            private static readonly IDictionary<Type, string> DOTNET_CALENDARS = new Dictionary<Type, string>
+            private static readonly IDictionary<Type, string> DotNetCalendars = new Dictionary<Type, string>
             {
                 { typeof(GregorianCalendar), "gregorian" },
                 { typeof(JapaneseCalendar), "japanese" },
@@ -86,6 +91,38 @@ namespace ICU4N.Globalization
                 { typeof(TaiwanCalendar), "taiwan" },
                 { typeof(UmAlQuraCalendar), "islamic-umalqura" }
             };
+
+            /// <summary>
+            /// A mapping of ICU baseName to default calendar. Since in .NET the calendar can be set or changed
+            /// in a subclass of CulureInfo, we load the entire list of non-gregorian calendars here so we can
+            /// detect any variant from the ICU default based on the CultureInfo that is presented.
+            /// </summary>
+            private static IDictionary<string, string> IcuNonGregorianDefaultCalendars;
+
+            internal static IDictionary<string, string> LoadNonGregorianDefaultCalendars()
+            {
+                var result = new Dictionary<string, string>(StringComparer.Ordinal);
+                var supportedCultures = UCultureInfo.GetCultures(UCultureTypes.AllCultures);
+                foreach (var culture in supportedCultures)
+                {
+                    var defaultCalendar = GetDefaultCalendarFromBundle(culture.Name);
+                    if (!defaultCalendar.Equals("gregorian", StringComparison.Ordinal))
+                    {
+                        result[culture.Name] = defaultCalendar;
+                    }
+                }
+                return result;
+            }
+
+            static DotNetLocaleHelper()
+            {
+                EnsureInitialized(); 
+            }
+
+            internal static void EnsureInitialized()
+            {
+                LazyInitializer.EnsureInitialized(ref IcuNonGregorianDefaultCalendars, ref calendarsInitialized, ref calendarsSyncLock, LoadNonGregorianDefaultCalendars);
+            }
 
 
             public static UCultureInfo ToUCultureInfo(CultureInfo culture)
@@ -124,17 +161,30 @@ namespace ICU4N.Globalization
                     parser = new LocaleIDParser(name);
                 }
 
-                // Calander formatting info
-                // The user may have set CultureInfo.DateTimeFormat.Calendar explicitly, in which
-                // case it will be different from the CultureInfo.Calendar property. We cover this
-                // by checking both cases.
-                var defaultCalendar = GetDefaultCalendar(parser.GetBaseName());
-                var calendarType = culture.Calendar.GetType();
-                var formattingCalendarType = culture.DateTimeFormat.Calendar.GetType();
-                if (DOTNET_CALENDARS.TryGetValue(calendarType, out string calendar) && calendar != defaultCalendar)
-                    parser.SetKeywordValue("calendar", calendar);
-                else if (DOTNET_CALENDARS.TryGetValue(formattingCalendarType, out string formattingCalendar) && formattingCalendar != defaultCalendar)
-                    parser.SetKeywordValue("calendar", formattingCalendar);
+                // ***********************************************************************************************************************************
+                // * During Initialization - The default calendar is undefined, and implicitly loads the default calendar from the CLDR data.
+                //
+                // * Base Name Match Found in IcuNonGregorianDefaultCalendars - The default calendar is the value in IcuNonGregorianDefaultCalendars.
+                //
+                // * Base Name Match Not Found in IcuNonGregorianDefaultCalendars - The default calendar is "gregorian".
+                //
+                // Calendar is only specified in the locale string if it differs from the ICU default value.
+                // ***********************************************************************************************************************************
+
+                if (calendarsInitialized)
+                {
+                    // Calander formatting info
+                    // The user may have set CultureInfo.DateTimeFormat.Calendar explicitly, in which
+                    // case it will be different from the CultureInfo.Calendar property. We cover this
+                    // by checking both cases.
+                    var defaultCalendar = GetDefaultCalendar(parser.GetBaseName());
+                    var calendarType = culture.Calendar.GetType();
+                    var formattingCalendarType = culture.DateTimeFormat.Calendar.GetType();
+                    if (DotNetCalendars.TryGetValue(calendarType, out string calendar) && !calendar.Equals(defaultCalendar, StringComparison.Ordinal))
+                        parser.SetKeywordValue("calendar", calendar);
+                    else if (DotNetCalendars.TryGetValue(formattingCalendarType, out string formattingCalendar) && !calendar.Equals(formattingCalendar, StringComparison.Ordinal))
+                        parser.SetKeywordValue("calendar", formattingCalendar);
+                }
 
                 // ICU4N TODO: Need to append currency, number
                 // but this isn't important until we provide string formatting support.
@@ -277,11 +327,26 @@ namespace ICU4N.Globalization
             //#endif
             //            }
 
-
             /// <summary>
             /// Gets the default ICU calendar for the <paramref name="baseName"/>.
             /// </summary>
             private static string GetDefaultCalendar(string baseName)
+            {
+                // This method is called during static initialization recursively to load the list of calendars.
+                // During this stage we don't care about the current culture's calendar, as we are loading the default directly
+                // from resources. Once initialized, then we can move on to the real lookup.
+                if (!calendarsInitialized)
+                    return string.Empty; // Use the .NET calendar explicitly, whatever that may be
+
+                // Use gregorian calendar if the name doesn't exist in the database
+                return IcuNonGregorianDefaultCalendars.TryGetValue(baseName, out string result) ? result : "gregorian";
+            }
+
+
+            /// <summary>
+            /// Gets the default ICU calendar for the <paramref name="baseName"/>.
+            /// </summary>
+            private static string GetDefaultCalendarFromBundle(string baseName)
             {
                 var rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuBundle, baseName, baseName, ICUResourceBundle.IcuDataAssembly, OpenType.LocaleDefaultRoot);
                 return rb.GetStringWithFallback("calendar/default");
