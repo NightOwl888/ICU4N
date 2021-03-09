@@ -4,8 +4,8 @@
     <!-- Changing this setting will allow testing on all target frameworks within Visual Studio 2017.
     Note that the main libraries are multi-targeted, so this has no effect on how they are compiled,
     this setting only affects the test projects. -->
-    <!--<TargetFramework>net40</TargetFramework>-->
-    <!--<TargetFramework>net451</TargetFramework>-->
+    <!--<TargetFramework>net452</TargetFramework>-->
+    <!--<TargetFramework>net461</TargetFramework>-->
     <!--<TargetFramework>netcoreapp2.0</TargetFramework>-->
     <!--<TargetFramework>net5.0</TargetFramework>-->
     <TestAllTargetFrameworks>true</TestAllTargetFrameworks>
@@ -13,8 +13,15 @@
     <!-- Allow the build script to pass in the test frameworks to build for.
       This overrides the above TargetFramework setting. 
       ICU4N TODO: Due to a parsing bug, we cannot pass a string with a ; to dotnet msbuild, so passing true as a workaround -->
-    <TargetFrameworks Condition=" '$(TestAllTargetFrameworks)' == 'true' ">net5.0;netcoreapp3.1;net451;net40</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(TestAllTargetFrameworks)' == 'true' ">net5.0;netcoreapp3.1;net461;net452</TargetFrameworks>
     <TargetFramework Condition=" '$(TargetFrameworks)' != '' "></TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Mismatched Target Framework (to override the target framework under test)">
+    <SetTargetFramework></SetTargetFramework>
+    <SetTargetFramework Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">TargetFramework=netstandard2.1</SetTargetFramework>
+    <SetTargetFramework Condition=" '$(TargetFramework)' == 'net452' ">TargetFramework=net40</SetTargetFramework>
+    <SetTargetFramework Condition=" '$(TargetFramework)' == 'net461' ">TargetFramework=net45</SetTargetFramework>
   </PropertyGroup>
   
 </Project>

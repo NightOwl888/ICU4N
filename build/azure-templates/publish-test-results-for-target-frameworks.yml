@@ -46,7 +46,7 @@ steps:
 
 - template: publish-test-results.yml
   parameters:
-    framework: 'net451'
+    framework: 'net461'
     testProjectName: '${{ parameters.testProjectName }}'
     osName: '${{ parameters.osName }}'
     testPlatform: '${{ parameters.testPlatform }}'
@@ -56,7 +56,7 @@ steps:
 
 - template: publish-test-results.yml
   parameters:
-    framework: 'net40'
+    framework: 'net452'
     testProjectName: '${{ parameters.testProjectName }}'
     osName: '${{ parameters.osName }}'
     testPlatform: '${{ parameters.testPlatform }}'
