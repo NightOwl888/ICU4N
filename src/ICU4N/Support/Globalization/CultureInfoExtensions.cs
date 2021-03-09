@@ -13,6 +13,13 @@ namespace ICU4N.Globalization
         private static readonly LurchTable<CultureInfo, Lazy<UCultureInfo>> uCultureInfoCache
             = new LurchTable<CultureInfo, Lazy<UCultureInfo>>(LurchTableOrder.Access, limit: 64, comparer: CultureInfoEqualityComparer.Instance);
 
+        static CultureInfoExtensions()
+        {
+            // ICU4N: We need to ensure the calendar data is loaded before dealing with a Lazy<T> here, as the calendar data requires a call
+            // back to ToUCultureInfo(), which leads to infinite recursion for Chinese cultures that are aliased to lookup calendars.
+            UCultureInfo.DotNetLocaleHelper.EnsureInitialized();
+        }
+
         /// <summary>
         /// <icu/> Returns a <see cref="UCultureInfo"/> object for a <see cref="CultureInfo"/>.
         /// The <see cref="UCultureInfo"/> is canonicalized.
