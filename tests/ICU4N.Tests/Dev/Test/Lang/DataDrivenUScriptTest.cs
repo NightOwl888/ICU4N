@@ -32,7 +32,7 @@ namespace ICU4N.Dev.Test.Lang
             assertEquals(msg, ScriptsToString(expectedScripts), ScriptsToString(actualScripts));
         }
 
-        public class LocaleGetCodeTest
+        public class LocaleGetCodeTest : TestFmwk
         {
             public static IEnumerable TestData
             {
