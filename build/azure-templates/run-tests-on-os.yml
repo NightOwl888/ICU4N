@@ -34,7 +34,7 @@ steps:
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 2.1.811'
   inputs:
-    version: 2.1.807
+    version: 2.1.811
   condition: and(succeeded(), contains('${{ parameters.testTargetFrameworks }}', 'netcoreapp2.'))
 
 - task: UseDotNet@2
