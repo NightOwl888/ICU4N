@@ -78,9 +78,9 @@ steps:
   displayName: 'Parse Test Results File'
 
 - task: PublishTestResults@2
-  displayName: 'Publish Test Results ${{ parameters.testProjectName }},${{ parameters.framework }}'
+  displayName: 'Publish Test Results ${{ parameters.testProjectName }},${{ parameters.framework }},${{ parameters.testPlatform }}'
   inputs:
     testResultsFormat: ${{ parameters.testResultsFormat }}
     testResultsFiles: '$(Build.ArtifactStagingDirectory)/${{ parameters.testResultsArtifactName }}/${{ parameters.osName }}/${{ parameters.framework }}/${{ parameters.testPlatform }}/${{ parameters.testProjectName }}/${{ parameters.testResultsFileName }}'
-    testRunTitle: '${{ parameters.testProjectName }} - ${{ parameters.framework }} - ${{ parameters.testPlatform }} -  ${{ parameters.osName }} | $(TestResults)'
+    testRunTitle: '${{ parameters.testProjectName }} - ${{ parameters.framework }} - ${{ parameters.testPlatform }} - ${{ parameters.osName }} | $(TestResults)'
   condition: and(succeeded(), eq(variables['TestResultsFileExists'], 'true'))
