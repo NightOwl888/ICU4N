@@ -4,10 +4,11 @@ International Components for Unicode
 [![Nuget](https://img.shields.io/nuget/dt/ICU4N)](https://www.nuget.org/packages/ICU4N)
 [![Azure DevOps builds (master)](https://img.shields.io/azure-devops/build/ICU4N/44041e22-bd88-42a2-ad29-ee6859a5010e/1/master)](https://dev.azure.com/ICU4N/ICU4N/_build?definitionId=1&_a=summary)
 [![GitHub](https://img.shields.io/github/license/NightOwl888/ICU4N)](https://github.com/NightOwl888/ICU4N/blob/master/LICENSE.txt)
+[![GitHub Sponsors](https://img.shields.io/badge/-Sponsor-fafbfc?logo=GitHub%20Sponsors)](https://github.com/sponsors/NightOwl888)
 
 ICU4N is a set of .NET libraries providing Unicode and Globalization support for software applications, a .NET port of the popular [ICU4J project](http://site.icu-project.org).
 
-This is a port of ICU4J, version 60.1. We have ported about 40% of the code so far, and it is still a work in progress. Here are some of the major features that are functional:
+This is a port of ICU4J, version 60.1. We have ported about 40% of the code, and while we aren't planning to add any additional features it is still a work in progress. Here are some of the major features that are functional:
 
 ## Functioning
 
@@ -31,7 +32,7 @@ There are several other features too numerous to mention that are also functioni
 Install-Package ICU4N -Pre
 ```
 
-We have setup the project structure similar to ICU4J. Here is a list of the packages available on NuGet:
+We have setup the project structure similar to ICU4J, however this may change in the future. Here is a list of the packages available on NuGet:
 
 - [ICU4N (main package)](https://www.nuget.org/packages/ICU4N/)
 - [ICU4N.Collation](https://www.nuget.org/packages/ICU4N.Collation/)
@@ -40,6 +41,14 @@ We have setup the project structure similar to ICU4J. Here is a list of the pack
 - [ICU4N.RegionData](https://www.nuget.org/packages/ICU4N.RegionData/)
 - [ICU4N.Transliterator](https://www.nuget.org/packages/ICU4N.Transliterator/)
 
+We are looking into the best way to allow end users to be able to provide their own data distributions for smaller deployment artifacts.
+
 ## Documentation
 
-We have converted most of the documentation comments so intellisense works. However, for full API docs the best source at the moment is the [ICU4J API Reference](http://icu-project.org/apiref/icu4j/). There is also a lot of other great info on the ICU project's web site, such as the [Feature Comparison Page](http://site.icu-project.org/charts/comparison).
+We have converted most of the documentation comments so Visual Studio Intellisense works. However, for full API docs the best source at the moment is the [ICU4J API Reference](http://icu-project.org/apiref/icu4j/). There is also a lot of other great info on the ICU project's web site, such as the [Feature Comparison Page](http://site.icu-project.org/charts/comparison).
+
+## Giving Back
+
+If you find this library to be useful, please star us on GitHub and consider a sponsorship so we can continue bringing you great free tools like this one.
+
+[![GitHub Sponsors](https://img.shields.io/badge/-Sponsor-fafbfc?logo=GitHub%20Sponsors)](https://github.com/sponsors/NightOwl888)
