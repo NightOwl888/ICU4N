@@ -662,16 +662,19 @@ namespace ICU4N.Dev.Test
 
         // JUnit-like assertions.
 
+        [DebuggerStepThrough]
         protected static bool assertTrue(string message, bool condition)
         {
             return handleAssert(condition, message, "true", null);
         }
 
+        [DebuggerStepThrough]
         protected static bool assertFalse(string message, bool condition)
         {
             return handleAssert(!condition, message, "false", null);
         }
 
+        [DebuggerStepThrough]
         protected static bool assertEquals(string message, bool expected,
                 bool actual)
         {
@@ -679,6 +682,7 @@ namespace ICU4N.Dev.Test
                     Convert.ToString(expected, CultureInfo.InvariantCulture), Convert.ToString(actual, CultureInfo.InvariantCulture));
         }
 
+        [DebuggerStepThrough]
         protected static bool assertEquals(string message, long expected, long actual)
         {
             return handleAssert(expected == actual, message, 
@@ -687,6 +691,7 @@ namespace ICU4N.Dev.Test
 
         // do NaN and range calculations to precision of float, don't rely on
         // promotion to double
+        [DebuggerStepThrough]
         protected static bool assertEquals(string message, float expected,
                 float actual, double error)
         {
@@ -700,12 +705,14 @@ namespace ICU4N.Dev.Test
 
         // ICU4N specific - The overload that accepts object will not work for
         // floating point numbers, so we need one that accepts no error (delta) value
+        [DebuggerStepThrough]
         protected static bool assertEquals(string message, float expected,
                 float actual)
         {
             return assertEquals(message, expected, actual, 0);
         }
 
+        [DebuggerStepThrough]
         protected static bool assertEquals(string message, double expected,
                 double actual, double error)
         {
@@ -719,12 +726,14 @@ namespace ICU4N.Dev.Test
 
         // ICU4N specific - The overload that accepts object will not work for
         // floating point numbers, so we need one that accepts no error (delta) value
+        [DebuggerStepThrough]
         protected static bool assertEquals(string message, double expected,
                 double actual)
         {
             return assertEquals(message, expected, actual, 0);
         }
 
+        [DebuggerStepThrough]
         protected static bool assertEquals<T>(string message, T[] expected, T[] actual)
         {
             // Use toString on a List to get useful, readable messages
@@ -733,6 +742,7 @@ namespace ICU4N.Dev.Test
             return assertEquals(message, expectedString, actualString);
         }
 
+        [DebuggerStepThrough]
         protected static bool assertEquals<TKey, TValue>(string message, IDictionary<TKey, TValue> expected, IDictionary<TKey, TValue> actual)
         {
             bool result = DictionaryEqualityComparer<TKey, TValue>.Aggressive.Equals(expected, actual);
@@ -740,6 +750,7 @@ namespace ICU4N.Dev.Test
                 StringFor(actual));
         }
 
+        [DebuggerStepThrough]
         protected static bool assertEquals<T>(string message, IList<T> expected, IList<T> actual)
         {
             bool result = ListEqualityComparer<T>.Aggressive.Equals(expected, actual);
@@ -747,6 +758,7 @@ namespace ICU4N.Dev.Test
                 StringFor(actual));
         }
 
+        [DebuggerStepThrough]
         protected static bool assertEquals<T>(string message, ISet<T> expected, ISet<T> actual)
         {
             bool result = SetEqualityComparer<T>.Aggressive.Equals(expected, actual);
@@ -754,6 +766,7 @@ namespace ICU4N.Dev.Test
                 StringFor(actual));
         }
 
+        [DebuggerStepThrough]
         protected static bool assertEquals(string message, UnicodeSet expected, UnicodeSet actual)
         {
             bool result = expected == null ? actual == null : expected.Equals(actual);
@@ -762,6 +775,7 @@ namespace ICU4N.Dev.Test
         }
 
         // ICU4N specific overload for optimizing ICollection<T> comparisons
+        [DebuggerStepThrough]
         protected static bool assertEquals<T>(string message, ICollection<T> expected, ICollection<T> actual)
         {
             bool result = StructuralEqualityComparer.Aggressive.Equals(expected, actual);
@@ -770,6 +784,7 @@ namespace ICU4N.Dev.Test
         }
 
         // ICU4N specific overload for handling ICharSequence
+        [DebuggerStepThrough]
         internal static bool assertEquals(string message, ICharSequence expected, object actual)
         {
             bool result = expected == null ? actual == null : expected.Equals(actual);
@@ -778,6 +793,7 @@ namespace ICU4N.Dev.Test
         }
 
         // ICU4N specific overload for handling ICharSequence
+        [DebuggerStepThrough]
         internal static bool assertEquals(string message, object expected, ICharSequence actual)
         {
             bool result = expected == null ? actual == null : actual.Equals(expected);
@@ -785,6 +801,7 @@ namespace ICU4N.Dev.Test
                     StringFor(actual));
         }
 
+        [DebuggerStepThrough]
         protected static bool assertEquals(string message, object expected, object actual)
         {
             if (expected is ICharSequence)
@@ -798,6 +815,7 @@ namespace ICU4N.Dev.Test
         }
 
         // ICU4N specific overload for optimizing ICollection<T> comparisons
+        [DebuggerStepThrough]
         protected static bool assertNotEquals<T>(string message, ICollection<T> expected,
             ICollection<T> actual)
         {
@@ -807,6 +825,7 @@ namespace ICU4N.Dev.Test
         }
 
         // ICU4N specific overload for handling ICharSequence
+        [DebuggerStepThrough]
         internal static bool assertNotEquals(string message, ICharSequence expected,
             object actual)
         {
@@ -817,6 +836,7 @@ namespace ICU4N.Dev.Test
         }
 
         // ICU4N specific overload for handling ICharSequence
+        [DebuggerStepThrough]
         internal static bool assertNotEquals(string message, object expected,
             ICharSequence actual)
         {
@@ -825,6 +845,7 @@ namespace ICU4N.Dev.Test
                     StringFor(actual), "not equal to", true);
         }
 
+        [DebuggerStepThrough]
         protected static bool assertNotEquals(string message, object expected,
                 object actual)
         {
@@ -833,12 +854,14 @@ namespace ICU4N.Dev.Test
                     StringFor(actual), "not equal to", true);
         }
 
+        [DebuggerStepThrough]
         protected bool assertSame(string message, object expected, object actual)
         {
             return handleAssert(expected == actual, message, StringFor(expected),
                     StringFor(actual), "==", false);
         }
 
+        [DebuggerStepThrough]
         protected static bool assertNotSame(string message, object expected,
                 object actual)
         {
@@ -846,11 +869,13 @@ namespace ICU4N.Dev.Test
                     StringFor(actual), "!=", true);
         }
 
+        [DebuggerStepThrough]
         protected static bool assertNull(string message, object actual)
         {
             return handleAssert(actual == null, message, null, StringFor(actual));
         }
 
+        [DebuggerStepThrough]
         protected static bool assertNotNull(string message, object actual)
         {
             return handleAssert(actual != null, message, null, StringFor(actual),
@@ -881,11 +906,13 @@ namespace ICU4N.Dev.Test
             Assert.DoesNotThrow(code, message, args);
         }
 
+        [DebuggerStepThrough]
         protected static void fail()
         {
             fail("");
         }
 
+        [DebuggerStepThrough]
         protected static void fail(string message)
         {
             if (message == null)
@@ -899,12 +926,14 @@ namespace ICU4N.Dev.Test
             Errln(SourceLocation() + message);
         }
 
+        [DebuggerStepThrough]
         private static bool handleAssert(bool result, string message,
                 string expected, string actual)
         {
             return handleAssert(result, message, expected, actual, null, false);
         }
 
+        [DebuggerStepThrough]
         public static bool handleAssert(bool result, string message,
                 object expected, object actual, string relation, bool flip)
         {

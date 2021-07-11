@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -66,6 +67,7 @@ namespace ICU4N.Dev.Test
         /**
          * Report an error.
          */
+        [DebuggerStepThrough]
         public static void Err(string message)
         {
             Assert.Fail(message);
@@ -75,6 +77,7 @@ namespace ICU4N.Dev.Test
         /**
          * Report an error and newline.
          */
+        [DebuggerStepThrough]
         public static void Errln(string message)
         {
             Assert.Fail(message);
@@ -84,6 +87,7 @@ namespace ICU4N.Dev.Test
         /**
          * Report a warning (generally missing tests or data).
          */
+        [DebuggerStepThrough]
         public static void Warn(string message)
         {
             Assert.Fail(message);
@@ -95,6 +99,7 @@ namespace ICU4N.Dev.Test
         /**
          * Report a warning (generally missing tests or data) and newline.
          */
+        [DebuggerStepThrough]
         public static void Warnln(string message)
         {
             Assert.Fail(message);
