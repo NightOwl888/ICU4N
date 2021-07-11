@@ -1645,6 +1645,949 @@ namespace ICU4N.Dev.Test.Lang
         }
 
         [Test]
+        public void TestPosixClasses2()
+        {
+            var set = new UnicodeSet("[:xdigit:]");
+            
+
+            set.IntersectWith(new UnicodeSet("[:age=8.0.0:]"));
+            //var set = new UnicodeSet("\\p{Alphabetic}");
+            //StringBuilder b = new StringBuilder();
+
+            //var str = set.ToPattern(escapeUnprintable: true);
+            int length = 1025;
+            int[] buffer = new int[length];
+            int index = 0;
+
+            int[] printables = new int[] { 66560, 66561, 66562, 66563, 66564, 66565, 66566, 66567, 66568, 66569, 66570, 66571, 66572, 66573, 66574, 66575, 66576, 66577, 66578, 66579, 66580 };
+
+            while (true)
+            {
+                for (int i = 0; i < printables.Length; i++)
+                {
+                    int c = printables[i];
+                    buffer[index++] = c;
+                    if (index >= length)
+                        goto exitLoop;
+                }
+            }
+        exitLoop: { }
+
+            //for (int c = UChar.MinSupplementaryCodePoint; c <= UChar.MaxCodePoint; c++) // Surrogates
+            ////for (int c = UChar.MinCodePoint + 1; c < UChar.MinSupplementaryCodePoint; c++) // BMP
+            //{
+            //    string pair = char.ConvertFromUtf32(c);
+            //    if (char.IsDigit(pair, 0) || char.GetUnicodeCategory(pair, 0) == UnicodeCategory.LowercaseLetter || char.GetUnicodeCategory(pair, 0) == UnicodeCategory.UppercaseLetter)
+            //    {
+            //        buffer[index++] = c;
+            //        if (index >= length)
+            //            break;
+            //    }
+            //}
+
+            string chars = string.Join(", ", buffer);
+
+            var sb = new StringBuilder();
+
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                sb.Append(@"\U");
+                sb.Append(buffer[i].ToString("x8", NumberFormatInfo.InvariantInfo));
+            }
+
+            string foo = "";
+
+            //bool first = true;
+            //foreach (var range in set.Ranges)
+            //{
+            //    //if (range.Codepoint == range.CodepointEnd)
+            //    //    UnicodeSet.AppendToPat(b, range.Codepoint, true);
+            //    //else
+            //    //    UnicodeSet.AppendToPat(UnicodeSet.AppendToPat(b, range.Codepoint, true).Append('-'), range.CodepointEnd, true);
+
+                //    if (first)
+                //        first = false;
+                //    else
+                //        b.Append('|');
+
+                //    if (range.Codepoint == range.CodepointEnd)
+                //        AppendToRegex(b, range.Codepoint, escapeUnprintable: true);
+                //    else
+                //        AppendToRegex(b, range.Codepoint, range.CodepointEnd, escapeUnprintable: true);
+                //}
+
+                //b.Append("]");
+
+                ////var regexString = ToRegex(set);
+
+                ////var regex = new System.Text.RegularExpressions.Regex(regexString, System.Text.RegularExpressions.RegexOptions.Compiled);
+
+                ////// Loop through all valid codepoints
+                ////for (int c = UChar.MinCodePoint; c < UChar.MaxCodePoint; c++)
+                ////{
+                ////    bool expected = set.Contains(c);
+
+                ////    bool utf32 = c >= UChar.MinSupplementaryCodePoint;
+
+                ////    var asString = utf32 ? char.ConvertFromUtf32(c) : (char)c + "";
+
+                ////    bool actual = regex.IsMatch(asString);
+
+                ////    assertEquals("", expected, actual);
+                ////}
+
+                //var x = UChar.GetNumericValue('9');
+
+                //var sb = new StringBuilder();
+
+                //for (int c = UChar.MinCodePoint; c < UChar.MaxCodePoint; c++)
+                //{
+                //    if (set.Contains(c))
+                //    {
+                //        bool utf32 = c >= UChar.MinSupplementaryCodePoint;
+
+                //        var asString = utf32 ? char.ConvertFromUtf32(c) : (char)c + "";
+
+                //        var asEscaped = utf32 ? "\\U+" + c.ToString("x8") : "\\u" + c.ToString("x4");
+
+                //        sb.Append(asEscaped);
+                //        //sb.AppendCodePoint()
+                //    }
+                //}
+
+                //var categories = new System.Collections.Generic.HashSet<UUnicodeCategory>();
+                //var set = new UnicodeSet();
+
+                //for (int c = UChar.MinCodePoint; c < UChar.MaxCodePoint; c++)
+                //{
+
+
+                //    bool utf32 = c >= UChar.MinSupplementaryCodePoint;
+
+                //    //if (!utf32)
+                //    {
+                //        int actual = UChar.Digit(c, 36);
+
+                //        if (actual > -1)
+                //        {
+                //            categories.Add(UChar.GetUnicodeCategory(c));
+                //            set.Add(c);
+                //        }
+                //    }
+                //}
+
+
+                //var sb = new StringBuilder();
+                //var sb2 = new StringBuilder();
+                //var sb3 = new StringBuilder();
+                //var sb4 = new StringBuilder();
+
+                //var sb5 = new StringBuilder();
+                //var sb6 = new StringBuilder();
+
+                //sb3.AppendLine("private static readonly int[] SupplementalDigits = new int[] {");
+                //sb4.AppendLine("private static readonly byte[] SupplementalDigitValues = new byte[] {");
+
+                //sb5.AppendLine("private static readonly int[] SupplementalDigitKeys = new int[] {");
+                //sb6.AppendLine("private static readonly int[] SupplementalDigitValues = new int[] {");
+
+                //int groupCount = 0;
+                //bool first = true;
+
+                //foreach (var range in set.Ranges)
+                //{
+                //    int c = range.Codepoint;
+
+                //    if (c <= 128)
+                //        continue;
+
+                //    bool utf32 = c >= UChar.MinSupplementaryCodePoint;
+
+                //    var asString = utf32 ? char.ConvertFromUtf32(c) : (char)c + "";
+                //    var endAsString = utf32 ? char.ConvertFromUtf32(range.CodepointEnd) : (char)range.CodepointEnd + "";
+
+                //    var asEscaped = utf32 ? "\\U+" + c.ToString("x8") : "\\u" + c.ToString("x4");
+                //    var endAsEscaped = utf32 ? "\\U+" + range.CodepointEnd.ToString("x8") : "\\u" + range.CodepointEnd.ToString("x4");
+
+                //    if (!utf32)
+                //    {
+                //        sb.Append(asEscaped);
+
+                //        sb2.Append(endAsEscaped);
+                //        sb2.Append(asEscaped);
+                //    }
+                //    else
+                //    {
+                //        //for (c = range.Codepoint; c <= range.CodepointEnd; c++)
+                //        //{
+                //        //    sb3.Append("0x");
+                //        //    sb3.Append(c.ToString("x8"));
+                //        //    //sb3.Append(",");
+
+                //        //    int value = UChar.Digit(c, UChar.MaxRadix);
+
+                //        //    sb4.Append(value.ToString(NumberFormatInfo.InvariantInfo));
+                //        //    //sb4.Append(",");
+                //        //}
+
+                //        if (first)
+                //        {
+                //            first = false;
+                //        }
+                //        else
+                //        {
+                //            if (groupCount == 8)
+                //            {
+                //                sb5.AppendLine(",");
+                //                sb6.AppendLine(",");
+                //                groupCount = 0;
+                //            }
+                //            else
+                //            {
+                //                sb5.Append(", ");
+                //                sb6.Append(", ");
+                //            }
+                //        }
+                //        groupCount++;
+
+                //        sb5.Append("0x");
+                //        sb5.Append(c.ToString("x8"));
+                //        //sb5.Append(",");
+
+                //        sb6.Append("0x");
+                //        sb6.Append(range.CodepointEnd.ToString("x8"));
+                //        sb6.Append(", ");
+                //        sb6.Append("0x");
+                //        sb6.Append(c.ToString("x8"));
+                //        //sb6.Append(",");
+                //    }
+                //}
+
+                //sb3.AppendLine("};");
+                //sb4.AppendLine("};");
+
+                //sb5.AppendLine("};");
+                //sb6.AppendLine("};");
+
+                //System.IO.File.WriteAllText(@"F:\digit-supplemental-keys.txt", sb5.ToString());
+                //System.IO.File.WriteAllText(@"F:\digit-supplemental-values.txt", sb6.ToString());
+
+                //for (int c = UChar.MinCodePoint; c < UChar.MaxCodePoint; c++)
+                //{
+                //    if (set.Contains(c))
+                //    {
+                //        bool utf32 = c >= UChar.MinSupplementaryCodePoint;
+
+                //        var asString = utf32 ? char.ConvertFromUtf32(c) : (char)c + "";
+
+                //        var asEscaped = utf32 ? "\\U+" + c.ToString("x8") : "\\u" + c.ToString("x4");
+
+                //        sb.Append(asEscaped);
+                //        //sb.AppendCodePoint()
+                //    }
+                //}
+
+
+
+                //var sb = new StringBuilder();
+                //sb.AppendLine("private static readonly int[] XDigitCodePoints = new int[] {");
+
+                //int groupCount = 0;
+                //bool first = true;
+
+                //// Loop through all valid codepoints
+                //for (int c = UChar.MinCodePoint; c < UChar.MaxCodePoint; c++)
+                //{
+                //    bool expected = set.Contains(c);
+
+                //    if (expected && c > 255)
+                //    {
+
+                //        if (first)
+                //        {
+                //            first = false;
+                //        }
+                //        else
+                //        {
+                //            if (groupCount == 8)
+                //            {
+                //                sb.AppendLine(",");
+                //                groupCount = 0;
+                //            }
+                //            else
+                //            {
+                //                sb.Append(", ");
+                //            }
+                //        }
+                //        groupCount++;
+
+                //        sb.Append("0x");
+                //        sb.Append(Convert.ToString(c, 16).ToUpperInvariant().PadLeft(8, '0'));
+                //    }
+
+                //    //bool utf32 = c >= UChar.MinSupplementaryCodePoint;
+
+                //    //var asString = utf32 ? char.ConvertFromUtf32(c) : (char)c + "";
+
+                //    //bool actual = regex.IsMatch(asString);
+
+                //    //assertEquals("", expected, actual);
+                //}
+
+                //sb.AppendLine(",");
+
+                //sb.AppendLine("};");
+
+                //System.IO.File.WriteAllText(@"F:\xdigit-codepoints-gt-255.txt", sb.ToString());
+
+
+
+                //expectEqual("dotnet xdigit pattern", "[:xdigit:]", b.ToString());
+        }
+
+        [Test]
+        public void ExportGetNumericValueAsciiValues()
+        {
+            var sb = new StringBuilder();
+
+            for (int c = 0; c < 128; c++)
+            {
+                sbyte value = (sbyte)UChar.GetNumericValue(c);
+
+                sb.Append("(sbyte)");
+                sb.Append("0x");
+                sb.Append(value.ToString("x2"));
+                sb.Append(", ");
+            }
+        }
+
+
+        [Test]
+        public void ExportGetNumericValueRanges()
+        {
+            var categories = new System.Collections.Generic.HashSet<UUnicodeCategory>();
+            var set = new UnicodeSet();
+
+            for (int c = UChar.MinCodePoint; c < UChar.MaxCodePoint; c++)
+            {
+
+
+                bool utf32 = c >= UChar.MinSupplementaryCodePoint;
+
+                //if (!utf32)
+                {
+                    int actual = UChar.GetNumericValue(c);
+
+                    if (actual > -1 || actual == -2)
+                    {
+                        categories.Add(UChar.GetUnicodeCategory(c));
+                        set.Add(c);
+                    }
+                }
+            }
+
+
+            var sb = new StringBuilder();
+            var sb2 = new StringBuilder();
+            var sb3 = new StringBuilder();
+            var sb4 = new StringBuilder();
+
+            var sb5 = new StringBuilder();
+            var sb6 = new StringBuilder();
+
+            sb3.AppendLine("public static readonly int[] Keys = new int[] {");
+            sb4.AppendLine("public static readonly int[] Values = new int[] {");
+
+            sb5.AppendLine("public static readonly int[] Keys = new int[] {");
+            sb6.AppendLine("public static readonly int[] Values = new int[] {");
+
+            int groupCount = 0;
+            bool first = true;
+
+            foreach (var range in set.Ranges)
+            {
+                int c = range.Codepoint;
+
+                if (c <= 128)
+                    continue;
+
+                bool utf32 = c >= UChar.MinSupplementaryCodePoint;
+
+                var asString = utf32 ? char.ConvertFromUtf32(c) : (char)c + "";
+                var endAsString = utf32 ? char.ConvertFromUtf32(range.CodepointEnd) : (char)range.CodepointEnd + "";
+
+                var asEscaped = utf32 ? "\\U+" + c.ToString("x8") : "\\u" + c.ToString("x4");
+                var endAsEscaped = utf32 ? "\\U+" + range.CodepointEnd.ToString("x8") : "\\u" + range.CodepointEnd.ToString("x4");
+
+                if (!utf32)
+                {
+                    if (c < 0x2187)
+                    {
+                        sb.Append(asEscaped);
+
+                        sb2.Append(endAsEscaped);
+                        sb2.Append(asEscaped);
+                    }
+                    else
+                    {
+                        if (c >= 0x4e8c) // Temporary minimum cutoff (below this have been done manually) - to be removed
+                        {
+                            int actual = UChar.GetNumericValue(c);
+
+                            sb3.Append("0x");
+                            sb3.Append(c.ToString("x4")); // Set actual value to the keys array
+                            sb3.Append(", ");
+
+                            sb4.Append("0x");
+                            sb4.Append(range.CodepointEnd.ToString("x4"));
+                            sb4.Append(", ");
+
+                            if (actual == -2)
+                            {
+                                sb4.Append("0x0000");
+                                sb4.Append(", ");
+                            }
+                            else
+                            {
+                                int adjusted = c - actual;
+                                sb4.Append("0x");
+                                sb4.Append(adjusted.ToString(adjusted > 54240 ? "x8" : "x4"));
+                                sb4.Append(", ");
+                            }
+                        }
+                    }
+
+
+                }
+                else
+                {
+                    //for (c = range.Codepoint; c <= range.CodepointEnd; c++)
+                    //{
+                    //    sb3.Append("0x");
+                    //    sb3.Append(c.ToString("x8"));
+                    //    //sb3.Append(",");
+
+                    //    int value = UChar.Digit(c, UChar.MaxRadix);
+
+                    //    sb4.Append(value.ToString(NumberFormatInfo.InvariantInfo));
+                    //    //sb4.Append(",");
+                    //}
+
+                    //if (first)
+                    //{
+                    //    first = false;
+                    //}
+                    //else
+                    //{
+                    //    if (groupCount == 8)
+                    //    {
+                    //        sb5.AppendLine(",");
+                    //        sb6.AppendLine(",");
+                    //        groupCount = 0;
+                    //    }
+                    //    else
+                    //    {
+                    //        sb5.Append(", ");
+                    //        sb6.Append(", ");
+                    //    }
+                    //}
+                    //groupCount++;
+
+                    
+
+                    //if (!(range.Codepoint == 0x0001d7ce && range.CodepointEnd == 0x0001d7ff))
+                    {
+                        int previousValue = UChar.GetNumericValue(range.Codepoint);
+                        int previousCodePoint = range.Codepoint;
+                        int firstCodePoint = range.Codepoint;
+                        int firstValue = previousValue;
+                        int nextValue;
+                        int nextCodePoint;
+                        bool newGroup = true;
+                        bool startOfLoop = true;
+                        int groupItemCount = 0;
+                        for (c = range.Codepoint; c <= range.CodepointEnd; c++)
+                        {
+                            nextCodePoint = c < range.CodepointEnd ? c + 1 : int.MinValue;
+                            nextValue = c < range.CodepointEnd ? UChar.GetNumericValue(c + 1) : int.MinValue;
+
+                            int actual = UChar.GetNumericValue(c);
+
+                            groupItemCount++;
+
+                            if (newGroup)
+                            {
+                                firstCodePoint = c;
+                                firstValue = actual;
+                                groupItemCount = 1;
+                                sb5.Append("0x");
+                                sb5.Append(c.ToString("x8"));
+                                sb5.Append(", ");
+                            }
+
+                            newGroup =
+                                // non-contiguous value
+                                !startOfLoop && actual + 1 != nextValue ||
+                                // contiguous -2 value
+                                !startOfLoop && actual == -2 && nextValue != -2 ||
+                                // end of the range
+                                c == range.CodepointEnd;
+
+                            // Ensure from now on we check the previous value
+                            startOfLoop = false;
+
+                            if (newGroup)
+                            {
+                                sb6.Append("0x");
+                                sb6.Append(c.ToString("x8"));
+                                sb6.Append(", ");
+
+                                if (actual == -2)
+                                {
+                                    sb6.Append("0x00000000");
+                                    sb6.Append(", ");
+                                }
+                                else
+                                {
+                                    //int adjusted = groupItemCount == 1 ? c - actual : firstCodePoint - firstValue;
+                                    int adjusted = c - actual;
+                                    sb6.Append("0x");
+                                    sb6.Append(adjusted.ToString("x8"));
+                                    sb6.Append(", ");
+                                }
+                            }
+                            previousValue = actual;
+                            previousCodePoint = c;
+                        }
+                    }
+                    //else
+                    //{
+                    //    sb5.AppendLine();
+
+                    //    // Special case - break up contiguous block into 5 groups of 0-9
+                    //    sb5.Append("0x");
+                    //    sb5.Append(0x0001d7ce.ToString("x8"));
+                    //    sb5.Append(", ");
+
+                    //    sb5.Append("0x");
+                    //    sb5.Append(0x0001d7d8.ToString("x8"));
+                    //    sb5.Append(", ");
+
+                    //    sb5.Append("0x");
+                    //    sb5.Append(0x0001d7e2.ToString("x8"));
+                    //    sb5.Append(", ");
+
+                    //    sb5.Append("0x");
+                    //    sb5.Append(0x0001d7ec.ToString("x8"));
+                    //    sb5.Append(", ");
+
+                    //    sb5.Append("0x");
+                    //    sb5.Append(0x0001d7f6.ToString("x8"));
+
+                    //    sb5.AppendLine();
+
+
+                    //    sb6.AppendLine();
+
+                    //    sb6.Append("0x");
+                    //    sb6.Append(0x0001d7d7.ToString("x8"));
+                    //    sb6.Append(", ");
+                    //    sb6.Append("0x");
+                    //    sb6.Append(0x0001d7ce.ToString("x8"));
+                    //    sb6.Append(", ");
+
+                    //    sb6.Append("0x");
+                    //    sb6.Append(0x0001d7e1.ToString("x8"));
+                    //    sb6.Append(", ");
+                    //    sb6.Append("0x");
+                    //    sb6.Append(0x0001d7d8.ToString("x8"));
+                    //    sb6.Append(", ");
+
+                    //    sb6.Append("0x");
+                    //    sb6.Append(0x0001d7eb.ToString("x8"));
+                    //    sb6.Append(", ");
+                    //    sb6.Append("0x");
+                    //    sb6.Append(0x0001d7e2.ToString("x8"));
+                    //    sb6.Append(", ");
+
+                    //    sb6.Append("0x");
+                    //    sb6.Append(0x0001d7f5.ToString("x8"));
+                    //    sb6.Append(", ");
+                    //    sb6.Append("0x");
+                    //    sb6.Append(0x0001d7ec.ToString("x8"));
+                    //    sb6.Append(", ");
+
+                    //    sb6.Append("0x");
+                    //    sb6.Append(0x0001d7ff.ToString("x8"));
+                    //    sb6.Append(", ");
+                    //    sb6.Append("0x");
+                    //    sb6.Append(0x0001d7f6.ToString("x8"));
+
+                    //    sb6.AppendLine();
+                    //}
+                }
+            }
+
+            sb3.AppendLine("};");
+            sb4.AppendLine("};");
+
+            sb5.AppendLine("};");
+            sb6.AppendLine("};");
+
+            System.IO.File.WriteAllText(@"F:\numeric-intermediate-keys.txt", sb3.ToString());
+            System.IO.File.WriteAllText(@"F:\numeric-intermediate-values.txt", sb4.ToString());
+
+            System.IO.File.WriteAllText(@"F:\numeric-supplemental-keys.txt", sb5.ToString());
+            System.IO.File.WriteAllText(@"F:\numeric-supplemental-values.txt", sb6.ToString());
+        }
+
+        private class UnicodeSetAndPattern
+        {
+            public UnicodeSetAndPattern(string pattern)
+            {
+                UnicodeSet = new UnicodeSet(pattern).IntersectWith(UnicodeCategoryHolder.Unicode3_O_1).Freeze();
+                Pattern = pattern;
+            }
+
+            public UnicodeSetAndPattern(string pattern, string regexPattern)
+            {
+                UnicodeSet = new UnicodeSet(pattern).IntersectWith(UnicodeCategoryHolder.Unicode3_O_1).Freeze();
+                Pattern = regexPattern;
+            }
+
+            public UnicodeSet UnicodeSet { get; private set; }
+
+            public string Pattern { get; private set; }
+        }
+
+        private static class UnicodeCategoryHolder
+        {
+            public static readonly UnicodeSet Unicode3_O_1 = new UnicodeSet("[:age=3.0.1:]").Freeze();
+
+
+            public static readonly UnicodeSetAndPattern[] UnicodeCategories = new UnicodeSetAndPattern[]
+            {
+            // Shorthand classes
+            //new UnicodeSetAndPattern(@"[.]", @"."),     // All characters.
+            //new UnicodeSetAndPattern(@"[\W]", @"\W"),    // Non-Word characters.
+            //new UnicodeSetAndPattern(@"[\d]", @"\d"),    // Digit characters. // ICU4N TODO: ExceptWith removes both the number range and the letter "d" from the regex - the latter seems to be a bug
+            //new UnicodeSetAndPattern(@"[\w]", @"\w"),    // Word characters.
+            //new UnicodeSetAndPattern(@"[\s]", @"\s"),    // Whitespace characters.
+
+
+            // General categories (all of the group)
+            new UnicodeSetAndPattern(@"\p{L}"), // All letter characters. This includes the Lu, Ll, Lt, Lm, and Lo characters.
+            new UnicodeSetAndPattern(@"\p{M}"), // All diacritic marks. This includes the Mn, Mc, and Me categories.
+            new UnicodeSetAndPattern(@"\p{N}"), // All numbers. This includes the Nd, Nl, and No categories.
+            new UnicodeSetAndPattern(@"\p{P}"), // All punctuation characters. This includes the Pc, Pd, Ps, Pe, Pi, Pf, and Po categories.
+            new UnicodeSetAndPattern(@"\p{S}"), // All symbols. This includes the Sm, Sc, Sk, and So categories.
+            new UnicodeSetAndPattern(@"\p{Z}"), // All separator characters. This includes the Zs, Zl, and Zp categories.
+            new UnicodeSetAndPattern(@"\p{C}"), // All control characters. This includes the Cc, Cf, Cs, Co, and Cn categories.
+
+            // General categories (specific)
+            new UnicodeSetAndPattern(@"\p{Lu}"), // Letter, Uppercase
+            new UnicodeSetAndPattern(@"\p{Ll}"), // Letter, Lowercase
+            new UnicodeSetAndPattern(@"\p{Lt}"), // Letter, Titlecase
+            new UnicodeSetAndPattern(@"\p{Lm}"), // Letter, Modifier
+            new UnicodeSetAndPattern(@"\p{Lo}"), // Letter, Other
+
+            new UnicodeSetAndPattern(@"\p{Mn}"), // Mark, Nonspacing
+            new UnicodeSetAndPattern(@"\p{Mc}"), // Mark, Spacing Combining
+            new UnicodeSetAndPattern(@"\p{Me}"), // Mark, Enclosing
+
+            new UnicodeSetAndPattern(@"\p{Nd}"), // Number, Decimal Digit
+            new UnicodeSetAndPattern(@"\p{Nl}"), // Number, Letter
+            new UnicodeSetAndPattern(@"\p{No}"), // Number, Other
+
+            new UnicodeSetAndPattern(@"\p{Pc}"), // Punctuation, Connector
+            new UnicodeSetAndPattern(@"\p{Pd}"), // Punctuation, Dash
+            new UnicodeSetAndPattern(@"\p{Ps}"), // Punctuation, Open
+            new UnicodeSetAndPattern(@"\p{Pe}"), // Punctuation, Close
+            new UnicodeSetAndPattern(@"\p{Pi}"), // Punctuation, Initial quote (may behave like Ps or Pe depending on usage)
+            new UnicodeSetAndPattern(@"\p{Pf}"), // Punctuation, Final quote (may behave like Ps or Pe depending on usage)
+            new UnicodeSetAndPattern(@"\p{Po}"), // Punctuation, Other
+
+            new UnicodeSetAndPattern(@"\p{Sm}"), // Symbol, Math
+            new UnicodeSetAndPattern(@"\p{Sc}"), // Symbol, Currency
+            new UnicodeSetAndPattern(@"\p{Sk}"), // Symbol, Modifier
+            new UnicodeSetAndPattern(@"\p{So}"), // Symbol, Other
+
+            new UnicodeSetAndPattern(@"\p{Zs}"), // Separator, Space
+            new UnicodeSetAndPattern(@"\p{Zl}"), // Separator, Line
+            new UnicodeSetAndPattern(@"\p{Zp}"), // Separator, Paragraph
+
+            new UnicodeSetAndPattern(@"\p{Cc}"), // Other, Control
+            new UnicodeSetAndPattern(@"\p{Cf}"), // Other, Format
+            new UnicodeSetAndPattern(@"\p{Cs}"), // Other, Surrogate
+            new UnicodeSetAndPattern(@"\p{Co}"), // Other, Private Use
+
+                //new UnicodeSetAndPattern(@"\p{IsBasicLatin}"),
+                //  new UnicodeSetAndPattern(@"\p{IsLatin-1Supplement}"),
+                //new UnicodeSetAndPattern(@"\p{IsLatinExtended-A}"),
+                //new UnicodeSetAndPattern(@"\p{IsLatinExtended-B}"),
+                //new UnicodeSetAndPattern(@"\p{IsIPAExtensions}"),
+                //new UnicodeSetAndPattern(@"\p{IsSpacingModifierLetters}"),
+                //new UnicodeSetAndPattern(@"\p{IsCombiningDiacriticalMarks}"),
+                //new UnicodeSetAndPattern(@"\p{IsGreek}"),
+                //new UnicodeSetAndPattern(@"\p{IsCyrillic}"),
+                //new UnicodeSetAndPattern(@"\p{IsCyrillicSupplement}"),
+                //new UnicodeSetAndPattern(@"\p{IsArmenian}"),
+                //new UnicodeSetAndPattern(@"\p{IsHebrew}"),
+                //  new UnicodeSetAndPattern(@"\p{IsArabic}"),
+                //new UnicodeSetAndPattern(@"\p{IsSyriac}"),
+                //new UnicodeSetAndPattern(@"\p{IsThaana}"),
+                //new UnicodeSetAndPattern(@"\p{IsDevanagari}"),
+                //new UnicodeSetAndPattern(@"\p{IsBengali}"),
+                //new UnicodeSetAndPattern(@"\p{IsGurmukhi}"),
+                //new UnicodeSetAndPattern(@"\p{IsGujarati}"),
+                //new UnicodeSetAndPattern(@"\p{IsOriya}"),
+                //new UnicodeSetAndPattern(@"\p{IsTamil}"),
+                //new UnicodeSetAndPattern(@"\p{IsTelugu}"),
+                //new UnicodeSetAndPattern(@"\p{IsKannada}"),
+                //  new UnicodeSetAndPattern(@"\p{IsMalayalam}"),
+                //new UnicodeSetAndPattern(@"\p{IsSinhala}"),
+                //new UnicodeSetAndPattern(@"\p{IsThai}"),
+                //new UnicodeSetAndPattern(@"\p{IsLao}"),
+                //new UnicodeSetAndPattern(@"\p{IsTibetan}"),
+                //new UnicodeSetAndPattern(@"\p{IsMyanmar}"),
+                //new UnicodeSetAndPattern(@"\p{IsGeorgian}"),
+                //new UnicodeSetAndPattern(@"\p{IsHangulJamo}"),
+
+
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //  new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //  new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+                //new UnicodeSetAndPattern(@"\p{M}"),
+            };
+        }
+
+        private bool characterClassClosed;
+
+        public string ToRegex(UnicodeSet set)
+        {
+            var sb = new StringBuilder();
+            ToRegex(set, sb);
+            return sb.ToString();
+        }
+
+        //private static readonly 
+
+        private StringBuilder ToRegex(UnicodeSet set, StringBuilder buf)
+        {
+            //bool containsUtf32 = set.Overlaps(UChar.MinSupplementaryCodePoint, UChar.MaxCodePoint);
+
+            var clone = (UnicodeSet)set.CloneAsThawed();
+            clone.ClearStrings();
+
+            buf.Append('[');
+            characterClassClosed = false;
+
+            // First, pull out any .NET-compatible character classes and append them as properties
+
+            //var x = UnicodeCategoryHolder.UnicodeCategories;
+
+            //var numberDecimalDigit = new UnicodeSet("\\p{Lu}");
+            //if (clone.IsSupersetOf(numberDecimalDigit))
+            //{
+            //    buf.Append("\\p{Lu}");
+            //    clone.ExceptWith(numberDecimalDigit);
+            //}
+
+            foreach (var category in UnicodeCategoryHolder.UnicodeCategories)
+            {
+                if (clone.IsSupersetOf(category.UnicodeSet))
+                {
+                    buf.Append(category.Pattern);
+                    clone.ExceptWith(category.UnicodeSet);
+                }
+            }
+
+
+            //bool first = true;
+            //bool previousCharacterClassClosed = false;
+            foreach (var range in clone.Ranges)
+            {
+                //if (range.Codepoint == range.CodepointEnd)
+                //    UnicodeSet.AppendToPat(b, range.Codepoint, true);
+                //else
+                //    UnicodeSet.AppendToPat(UnicodeSet.AppendToPat(b, range.Codepoint, true).Append('-'), range.CodepointEnd, true);
+
+                //if (first)
+                //{
+                //    buf.Append('[');
+                //    first = false;
+                //}
+                //else if (characterClassClosed)
+                //{
+                //    buf.Append("|");
+                //}
+
+                if (range.Codepoint == range.CodepointEnd)
+                    AppendToRegex(buf, range.Codepoint, escapeUnprintable: true);
+                else
+                    AppendToRegex(buf, range.Codepoint, range.CodepointEnd, escapeUnprintable: true);
+            }
+
+            if (!characterClassClosed)
+            {
+                buf.Append(']');
+            }
+
+            return buf;
+        }
+
+        private StringBuilder AppendToRegex(StringBuilder buf, int c, bool escapeUnprintable)
+        {
+            if (escapeUnprintable && Utility.IsUnprintable(c))
+            {
+                //// Use hex escape notation (<backslash>uxxxx or <backslash>Uxxxxxxxx) for anything
+                //// unprintable
+                //if (Utility.EscapeUnprintable(buf, c))
+                //{
+                //    return buf;
+                //}
+
+                if (UChar.IsSupplementary(c)) // UTF32
+                {
+                    if (!characterClassClosed)
+                        buf.Append(']');
+
+                    buf.Append('|');
+
+
+                    Utility.UTF32RangeToUTF16Range(buf, c, c);
+                    characterClassClosed = true;
+                }
+                else // UTF16
+                {
+                    //if (escapeForUtf32) buf.Append('[');
+                    Utility.EscapeUnprintable(buf, c);
+                    //if (escapeForUtf32) buf.Append(']');
+                    characterClassClosed = false;
+                }
+                return buf;
+            }
+            AppendToRegexPrintable(buf, c);
+            characterClassClosed = false;
+            return buf;
+        }
+        private StringBuilder AppendToRegex(StringBuilder buf, int codePointBegin, int codePointEnd, bool escapeUnprintable)
+        {
+            if (escapeUnprintable && (Utility.IsUnprintable(codePointBegin) || Utility.IsUnprintable(codePointEnd)))
+            {
+                // Use hex escape notation (<backslash>uxxxx or <backslash>Uxxxxxxxx) for anything
+                // unprintable
+                //if (Utility.EscapeUnprintable(buf, c))
+                //{
+                //    return buf;
+                //}
+
+                if (UChar.IsSupplementary(codePointBegin) || UChar.IsSupplementary(codePointEnd)) // UTF32
+                {
+                    if (!characterClassClosed)
+                        buf.Append(']');
+
+                    buf.Append('|');
+
+                    Utility.UTF32RangeToUTF16Range(buf, codePointBegin, codePointEnd);
+                    characterClassClosed = true;
+                }
+                else // UTF16
+                {
+                    //if (escapeForUtf32) buf.Append('[');
+                    Utility.EscapeUnprintable(buf, codePointBegin);
+                    buf.Append('-');
+                    Utility.EscapeUnprintable(buf, codePointEnd);
+                    //if (escapeForUtf32) buf.Append(']');
+                    characterClassClosed = false;
+                }
+                return buf;
+            }
+            //buf.Append('[');
+            AppendToRegexPrintable(buf, codePointBegin);
+            buf.Append('-');
+            AppendToRegexPrintable(buf, codePointEnd);
+            //buf.Append(']');
+            characterClassClosed = false;
+            return buf;
+        }
+
+        private static StringBuilder AppendToRegexPrintable(StringBuilder buf, int c)
+        {
+            // Okay to let ':' pass through
+            switch (c)
+            {
+                case '[': // SET_OPEN:
+                case ']': // SET_CLOSE:
+                case '-': // HYPHEN:
+                case '^': // COMPLEMENT:
+                case '&': // INTERSECTION:
+                case '\\': //BACKSLASH:
+                case '{':
+                case '}':
+                case '$':
+                case ':':
+                    buf.Append('\\');
+                    break;
+                default:
+                    // Escape whitespace
+                    if (PatternProps.IsWhiteSpace(c))
+                    {
+                        buf.Append('\\');
+                    }
+                    break;
+            }
+            UnicodeSet.AppendCodePoint(buf, c);
+            return buf;
+        }
+
+        //private static void EscapeUnprintable(StringBuilder buf, int codePointBegin)
+        //{
+        //    if ((codePointBegin & ~0xFFFF) != 0 || (codePointEnd & ~0xFFFF) != 0) // UTF32
+        //    {
+        //        Utility.UTF32RangeToUTF16Range(buf, codePointBegin, codePointEnd);
+        //    }
+        //    else // UTF16
+        //    {
+        //        buf.Append('[');
+        //        Utility.EscapeUnprintable(buf, codePointBegin);
+        //        buf.Append('-');
+        //        Utility.EscapeUnprintable(buf, codePointEnd);
+        //        buf.Append(']');
+        //    }
+        //}
+
+        //public string ToString()
+        //{
+        //    StringBuilder b = new StringBuilder();
+        //    return (
+        //            Codepoint == CodepointEnd ? UnicodeSet.AppendToPat(b, Codepoint, false)
+        //                    : UnicodeSet.AppendToPat(UnicodeSet.AppendToPat(b, Codepoint, false).Append('-'), CodepointEnd, false))
+        //                    .ToString();
+        //}
+
+        [Test]
         public void TestHangulSyllable()
         {
             UnicodeSet lvt = new UnicodeSet("[:Hangul_Syllable_Type=LVT_Syllable:]");

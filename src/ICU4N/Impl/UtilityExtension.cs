@@ -2050,5 +2050,140 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
+        ///// <summary>
+        ///// Escape unprintable characters using \uxxxx notation
+        ///// for U+0000 to U+FFFF and \Uxxxxxxxx for U+10000 and
+        ///// above. If the character is printable ASCII, then do nothing
+        ///// and return FALSE. Otherwise, append the escaped notation and
+        ///// return TRUE.
+        ///// </summary>
+        //public static bool EscapeUnprintable(StringBuilder result, int c, bool dotnetCompatibile)
+        //{
+        //    //if (!dotnetCompatibile)
+        //    //{
+        //    //    return EscapeUnprintable(result, c);
+        //    //}
+        //    try
+        //    {
+        //        if (IsUnprintable(c))
+        //        {
+        //            result.Append('\\');
+        //            if ((c & ~0xFFFF) != 0)
+        //            {
+        //                if (dotnetCompatibile)
+        //                {
+                            
+        //                }
+        //                else
+        //                {
+        //                    result.Append('U');
+        //                    result.Append(DIGITS[0xF & (c >> 28)]);
+        //                    result.Append(DIGITS[0xF & (c >> 24)]);
+        //                    result.Append(DIGITS[0xF & (c >> 20)]);
+        //                    result.Append(DIGITS[0xF & (c >> 16)]);
+        //                }
+        //            }
+        //            else
+        //            {
+        //                result.Append('u');
+        //            }
+        //            result.Append(DIGITS[0xF & (c >> 12)]);
+        //            result.Append(DIGITS[0xF & (c >> 8)]);
+        //            result.Append(DIGITS[0xF & (c >> 4)]);
+        //            result.Append(DIGITS[0xF & c]);
+        //            return true;
+        //        }
+        //        return false;
+        //    }
+        //    catch (IOException e)
+        //    {
+        //        throw new IcuArgumentException(e);
+        //    }
+        //}
+
+        public static void UTF32RangeToUTF16Range(StringBuilder result, string hexBegin, string hexEnd)
+        {
+            int beginCodePoint = int.Parse(hexBegin, System.Globalization.NumberStyles.HexNumber);
+            int endCodePoint = int.Parse(hexEnd, System.Globalization.NumberStyles.HexNumber);
+            UTF32RangeToUTF16Range(result, beginCodePoint, endCodePoint);
+        }
+
+        public static void UTF32RangeToUTF16Range(StringBuilder result, int codePointBegin, int codePointEnd)
+        {
+            var beginChars = UChar.ConvertFromUtf32(codePointBegin);
+            var endChars = UChar.ConvertFromUtf32(codePointEnd);
+            int beginDiff = endChars[0] - beginChars[0];
+
+            if (beginDiff == 0)
+            {
+                // If the begin character is the same, we can just use the syntax \uD807[\uDDEF-\uDFFF]
+                //result.Append('|');
+                AppendUTF16Character(result, beginChars[0]);
+                result.Append('[');
+                AppendUTF16Character(result, beginChars[1]);
+                result.Append('-');
+                AppendUTF16Character(result, endChars[1]);
+                result.Append(']');
+            }
+            else
+            {
+                // If the begin character is not the same, create 3 ranges
+                // 1. The remainder of the first
+                // 2. A range of all of the middle characters
+                // 3. The beginning of the last
+
+                //result.Append('|');
+                AppendUTF16Character(result, beginChars[0]);
+                result.Append('[');
+                AppendUTF16Character(result, beginChars[1]);
+                result.Append('-');
+                AppendUTF16Character(result, UChar.MaxLowSurrogate);
+                result.Append(']');
+
+                // We only need a middle range if the ranges are not adjacent
+                if (beginDiff > 1)
+                {
+                    result.Append('|');
+                    // We only need a character class if there are more than 1
+                    // characters in the middle range
+                    if (beginDiff > 2)
+                    {
+                        result.Append('[');
+                    }
+                    AppendUTF16Character(result, (char)(Math.Min(beginChars[0] + 1, UChar.MaxHighSurrogate)));
+                    if (beginDiff > 2)
+                    {
+                        result.Append('-');
+                        AppendUTF16Character(result, (char)(Math.Max(endChars[0] - 1, UChar.MinHighSurrogate)));
+                        result.Append(']');
+                    }
+                    result.Append('[');
+                    AppendUTF16Character(result, UChar.MinLowSurrogate);
+                    result.Append('-');
+                    AppendUTF16Character(result, UChar.MaxLowSurrogate);
+                    result.Append(']');
+                }
+
+                result.Append('|');
+                AppendUTF16Character(result, endChars[0]);
+                result.Append('[');
+                AppendUTF16Character(result, UChar.MinLowSurrogate);
+                result.Append('-');
+                AppendUTF16Character(result, endChars[1]);
+                result.Append(']');
+            }
+        }
+
+        private static void AppendUTF16Character(StringBuilder result, char c)
+        {
+            result.Append('\\');
+            result.Append('u');
+            //text.Append(Convert.ToString(c, 16).ToUpperInvariant());
+            result.Append(DIGITS[0xF & (c >> 12)]);
+            result.Append(DIGITS[0xF & (c >> 8)]);
+            result.Append(DIGITS[0xF & (c >> 4)]);
+            result.Append(DIGITS[0xF & c]);
+        }
     }
 }

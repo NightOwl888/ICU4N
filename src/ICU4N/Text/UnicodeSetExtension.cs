@@ -781,7 +781,7 @@ namespace ICU4N.Text
         // TODO: create IAppendable version of UTF16.Append(buf, c),
         // maybe in new class Appendables?
         /// <exception cref="IOException"/>
-        private static void AppendCodePoint(StringBuilder app, int c)
+        internal static void AppendCodePoint(StringBuilder app, int c)
         {
             Debug.Assert(0 <= c && c <= 0x10ffff);
             try
