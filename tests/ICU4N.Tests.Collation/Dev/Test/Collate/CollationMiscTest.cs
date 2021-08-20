@@ -1305,8 +1305,8 @@ namespace ICU4N.Dev.Test.Collate
                 }
                 iter1 = rbc.GetCollationElementIterator("CH");
                 iter2 = rbc.GetCollationElementIterator("\u0427");
-                int ce1 = CollationElementIterator.Ingorable;
-                int ce2 = CollationElementIterator.Ingorable;
+                int ce1 = CollationElementIterator.Ignorable;
+                int ce2 = CollationElementIterator.Ignorable;
                 // The ICU 53 builder code sets the uppercase flag only on the first CE.
                 int mask = ~0;
                 while (ce1 != CollationElementIterator.NullOrder

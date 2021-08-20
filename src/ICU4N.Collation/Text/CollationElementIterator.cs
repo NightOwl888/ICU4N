@@ -131,7 +131,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         /// <seealso cref="Next()"/>
         /// <seealso cref="Previous()"/>
-        public const int Ingorable = 0;
+        public const int Ignorable = 0;
 
         /// <summary>
         /// Return the primary order of the specified collation element,

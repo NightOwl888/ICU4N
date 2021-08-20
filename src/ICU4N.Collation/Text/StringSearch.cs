@@ -715,11 +715,11 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        sourcece = CollationElementIterator.Ingorable;
+                        sourcece = CollationElementIterator.Ignorable;
                     }
                 }
             }
-            else if (strength_ >= CollationStrength.Quaternary && sourcece == CollationElementIterator.Ingorable)
+            else if (strength_ >= CollationStrength.Quaternary && sourcece == CollationElementIterator.Ignorable)
             {
                 sourcece = 0xFFFF;
             }
@@ -810,7 +810,7 @@ namespace ICU4N.Text
             while ((ce = coleiter.Next()) != CollationElementIterator.NullOrder)
             {
                 int newce = GetCE(ce);
-                if (newce != CollationElementIterator.Ingorable /* 0 */)
+                if (newce != CollationElementIterator.Ignorable /* 0 */)
                 {
                     int[] temp = AddToInt32Array(cetable, offset, newce,
                             patternlength - coleiter.GetOffset() + 1);
@@ -1951,7 +1951,7 @@ namespace ICU4N.Text
 
                     if (primary == 0)
                     {
-                        return CollationElementIterator.Ingorable;
+                        return CollationElementIterator.Ignorable;
                     }
 
                     if (strength_ >= CollationStrength.Quaternary)
@@ -1987,7 +1987,7 @@ namespace ICU4N.Text
             /// if an error has occurred or if the end of string has been reached.</returns>
             public long NextProcessed(Range range)
             {
-                long result = CollationElementIterator.Ingorable;
+                long result = CollationElementIterator.Ignorable;
                 int low = 0, high = 0;
 
                 pceBuffer_.Reset();
@@ -2005,7 +2005,7 @@ namespace ICU4N.Text
                     }
 
                     result = ProcessCE(ce);
-                } while (result == CollationElementIterator.Ingorable);
+                } while (result == CollationElementIterator.Ignorable);
 
                 if (range != null)
                 {
@@ -2029,7 +2029,7 @@ namespace ICU4N.Text
             /// string has been reached.</returns>
             public long PreviousProcessed(Range range)
             {
-                long result = CollationElementIterator.Ingorable;
+                long result = CollationElementIterator.Ignorable;
                 int low = 0, high = 0;
 
                 // pceBuffer_.reset();
@@ -2075,7 +2075,7 @@ namespace ICU4N.Text
 
                         result = ProcessCE(rcei.CE);
 
-                        if (result != CollationElementIterator.Ingorable)
+                        if (result != CollationElementIterator.Ignorable)
                         {
                             pceBuffer_.Put(result, rcei.Low, rcei.High);
                         }
