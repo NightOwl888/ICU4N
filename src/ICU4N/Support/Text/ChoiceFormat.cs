@@ -245,7 +245,7 @@ namespace ICU4N.Support.Text
         /// <returns>The next larger <see cref="double"/> value.</returns>
         public static double NextDouble(double value)
         {
-            if (value == Double.PositiveInfinity)
+            if (value == double.PositiveInfinity)
             {
                 return value;
             }
