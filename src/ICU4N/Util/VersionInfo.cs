@@ -473,7 +473,7 @@ namespace ICU4N.Util
         /// Error statement string
         /// </summary>
         private const string INVALID_VERSION_NUMBER_ =
-                "Invalid version number: Version number may be negative or greater than 255";
+                "Invalid version number: Version number may not be negative or greater than 255";
 
         // static declaration ------------------------------------------------
 
