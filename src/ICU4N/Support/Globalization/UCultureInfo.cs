@@ -699,7 +699,7 @@ namespace ICU4N.Globalization
             {
                 tmpLocaleID = name;
             }
-            return nameCache.GetOrCreate(tmpLocaleID, (key) => new LocaleIDParser(tmpLocaleID).GetFullName());
+            return nameCache.GetOrCreate(tmpLocaleID, (key) => new LocaleIDParser(key).GetFullName());
         }
 
         /// <summary>
