@@ -1236,7 +1236,9 @@ namespace ICU4N.Globalization
                     {
                         Errln("FAIL: one of the getDisplayKeyword methods failed.");
                     }
-                    if (UCultureInfo.CurrentCulture.Equals(new UCultureInfo("en-US")) && !s1.Equals(s0))
+                    // ICU4N: This was ULocale.getDefault() in Java, but the production code is using display locale.
+                    // This seems like a bug with the original implementation, as that test is technically invalid.
+                    if (UCultureInfo.CurrentUICulture.Equals(new UCultureInfo("en-US")) && !s1.Equals(s0))
                     {
                         Errln("FAIL: getDisplayKeyword methods failed for the default locale.");
                     }
@@ -1278,7 +1280,9 @@ namespace ICU4N.Globalization
                     {
                         Errln("FAIL: one of the getDisplayKeywordValue methods failed.");
                     }
-                    if (UCultureInfo.CurrentCulture.Equals(new UCultureInfo("en_US")) && !ss1.Equals(ss0))
+                    // ICU4N: This was ULocale.getDefault() in Java, but the production code is using display locale.
+                    // This seems like a bug with the original implementation, as that test is technically invalid.
+                    if (UCultureInfo.CurrentUICulture.Equals(new UCultureInfo("en_US")) && !ss1.Equals(ss0))
                     {
                         Errln("FAIL: getDisplayKeyword methods failed for the default locale.");
                     }
