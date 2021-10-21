@@ -73,6 +73,8 @@ namespace ICU4N.Dev.Test.Collate
                 }
                 try
                 {
+                    UCultureInfo.CurrentUICulture = fu_FU; // ICU4N: This is a check to see if this works on Linux
+
                     String name = Collator.GetDisplayName(fu_FU);
                     if (!"fu (FU, FOO)".Equals(name)
                             && !"fu_FU_FOO".Equals(name) /* no LocaleDisplayNamesImpl */)
