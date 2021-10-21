@@ -82,11 +82,11 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-16.04'
+          imageName: 'ubuntu-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
-          imageName: 'macOS-10.14'
+          imageName: 'macOS-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
     displayName: 'Test net6.0,x64 on'
     pool:
@@ -110,11 +110,11 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-16.04'
+          imageName: 'ubuntu-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
-          imageName: 'macOS-10.14'
+          imageName: 'macOS-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
     displayName: 'Test net6.0,x86 on'
     pool:
@@ -138,11 +138,11 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-16.04'
+          imageName: 'ubuntu-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
-          imageName: 'macOS-10.14'
+          imageName: 'macOS-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
     displayName: 'Test net5.0,x64 on'
     pool:
@@ -166,11 +166,11 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-16.04'
+          imageName: 'ubuntu-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
-          imageName: 'macOS-10.14'
+          imageName: 'macOS-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
     displayName: 'Test net5.0,x86 on'
     pool:
@@ -194,11 +194,11 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-16.04'
+          imageName: 'ubuntu-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
-          imageName: 'macOS-10.14'
+          imageName: 'macOS-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
     displayName: 'Test netcoreapp3.1,x64 on'
     pool:
@@ -222,11 +222,11 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-16.04'
+          imageName: 'ubuntu-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
-          imageName: 'macOS-10.14'
+          imageName: 'macOS-latest'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
     displayName: 'Test netcoreapp3.1,x86 on'
     pool:
