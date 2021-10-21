@@ -82,7 +82,7 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-16.04'
+          imageName: 'ubuntu-18.04'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
@@ -110,7 +110,7 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-16.04'
+          imageName: 'ubuntu-18.04'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
@@ -138,7 +138,7 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-16.04'
+          imageName: 'ubuntu-18.04'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
@@ -166,7 +166,7 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-16.04'
+          imageName: 'ubuntu-18.04'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
@@ -194,7 +194,7 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-16.04'
+          imageName: 'ubuntu-18.04'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
@@ -222,7 +222,7 @@ stages:
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
-          imageName: 'ubuntu-16.04'
+          imageName: 'ubuntu-18.04'
           maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
