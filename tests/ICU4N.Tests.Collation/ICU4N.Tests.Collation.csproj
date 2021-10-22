@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Experiment to see if CollationServiceTest.TestRegister() works when using NLS -->
+    <RuntimeHostConfigurationOption Condition=" $(TargetFramework.StartsWith('net5.')) Or $(TargetFramework.StartsWith('net6.')) " Include="System.Globalization.UseNls" Value="true" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <Compile Include="..\TestAssemblyInfo.cs" Link="Properties\TestAssemblyInfo.cs" />
   </ItemGroup>
 
