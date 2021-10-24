@@ -18,6 +18,17 @@ namespace ICU4N.Dev.Test.Collate
         public void TestRegister()
         {
 #if NET5_0_OR_GREATER
+            
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                Console.WriteLine("This is Linux! (RuntimeInformation)");
+            else
+                Console.WriteLine("This is NOT Linux! (RuntimeInformation)");
+
+            if (OperatingSystem.IsLinux())
+                Console.WriteLine("This is Linux! (OperatingSystem)");
+            else
+                Console.WriteLine("This is NOT Linux! (OperatingSystem)");
+
             Assume.That(!RuntimeInformation.IsOSPlatform(OSPlatform.Linux), "ICU4N TODO: Fails on Ubuntu 18.04 and Ubuntu 20.04 on .NET 5 and higher. See: https://github.com/NightOwl888/ICU4N/issues/37");
 #endif
 
