@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Resources;
-using System.Runtime.InteropServices;
 
 namespace ICU4N.Dev.Test.Collate
 {
@@ -17,12 +16,6 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestRegister()
         {
-
-#if NET5_0_OR_GREATER
-            if (OperatingSystem.IsLinux())
-                Assert.Ignore("ICU4N TODO: Fails on Ubuntu 18.04 and Ubuntu 20.04 on .NET 5 and higher. See: https://github.com/NightOwl888/ICU4N/issues/37");
-#endif
-
             // register a singleton
             Collator frcol = Collator.GetInstance(new UCultureInfo("fr_FR"));
             Collator uscol = Collator.GetInstance(new UCultureInfo("en_US"));
