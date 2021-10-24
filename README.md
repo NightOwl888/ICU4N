@@ -8,22 +8,25 @@ International Components for Unicode
 
 ICU4N is a set of .NET libraries providing Unicode and Globalization support for software applications, a .NET port of the popular [ICU4J project](http://site.icu-project.org).
 
-This is a port of ICU4J, version 60.1. We have ported about 40% of the code, and while we aren't planning to add any additional features it is still a work in progress. Here are some of the major features that are functional:
+This is a port of ICU4J, version 60.1. We have ported about 40% of the code, and while we aren't planning to add any additional features it is still a work in progress.
 
-## Functioning
+## Features
 
-1. BreakIterator
-2. RuleBasedBreakIterator
-2. Normalizer
-3. Normalizer2
-4. FilteredNormalizer2
-5. UnicodeSet
-6. Collator
-7. RuleBasedCollator
-8. Transliterator
+Here are some of the major features that have been ported:
+
+1. [BreakIterator](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/BreakIterator.html)
+2. [RuleBasedBreakIterator](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/RuleBasedBreakIterator.html)
+2. [Normalizer](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/Normalizer.html)
+3. [Normalizer2](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/Normalizer2.html)
+4. [FilteredNormalizer2](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/FilteredNormalizer2.html)
+5. [UnicodeSet](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/UnicodeSet.html)
+6. [Collator](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/Collator.html)
+7. [RuleBasedCollator](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/RuleBasedCollator.html)
+8. [Transliterator](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/Transliterator.html)
+9. [RuleBasedTransliterator](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/RuleBasedTransliterator.html)
 
 
-There are several other features too numerous to mention that are also functioning, but APIs are currently in flux between releases. We have over 1600 passing tests, most failures are just due to missing dependencies.
+There are several other features too numerous to mention, but APIs are currently in flux between releases. We have over 1600 passing tests, most failures are just due to missing dependencies.
 
 
 ## NuGet Packages
@@ -47,8 +50,8 @@ We are looking into the best way to allow end users to be able to provide their 
 
 We have converted most of the documentation comments so Visual Studio Intellisense works. However, for full API docs the best source at the moment is the [ICU4J API Reference](http://icu-project.org/apiref/icu4j/). There is also a lot of other great info on the ICU project's web site, such as the [Feature Comparison Page](http://site.icu-project.org/charts/comparison).
 
-## Giving Back
+## Saying Thanks
 
-If you find this library to be useful, please star us on GitHub and consider a sponsorship so we can continue bringing you great free tools like this one.
+If you find this library to be useful, please star us [on GitHub](https://github.com/NightOwl888/ICU4N) and consider a sponsorship so we can continue bringing you great free tools like this one. It really would make a big difference!
 
 [![GitHub Sponsors](https://img.shields.io/badge/-Sponsor-fafbfc?logo=GitHub%20Sponsors)](https://github.com/sponsors/NightOwl888)
