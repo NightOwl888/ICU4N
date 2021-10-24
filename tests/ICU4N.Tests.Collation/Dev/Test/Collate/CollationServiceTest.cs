@@ -17,7 +17,6 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestRegister()
         {
-#if NET5_0_OR_GREATER
 
             try
             {
@@ -38,6 +37,10 @@ namespace ICU4N.Dev.Test.Collate
                 throw new Exception("This is Linux! (OperatingSystem) 2");
             else
                 throw new Exception("This is NOT Linux! (OperatingSystem) 2");
+
+#if NET5_0_OR_GREATER
+
+
 
 
 
