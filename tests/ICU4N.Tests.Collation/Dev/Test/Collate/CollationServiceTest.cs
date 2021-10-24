@@ -18,6 +18,9 @@ namespace ICU4N.Dev.Test.Collate
         public void TestRegister()
         {
 
+#if NET5_0_OR_GREATER
+
+
             try
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -33,19 +36,14 @@ namespace ICU4N.Dev.Test.Collate
                     throw new Exception("This is NOT Linux! (OperatingSystem)", e);
             }
 
-            if (OperatingSystem.IsLinux())
-                throw new Exception("This is Linux! (OperatingSystem) 2");
-            else
-                throw new Exception("This is NOT Linux! (OperatingSystem) 2");
 
-#if NET5_0_OR_GREATER
-
-
-
-
-
-            Assume.That(!RuntimeInformation.IsOSPlatform(OSPlatform.Linux), "ICU4N TODO: Fails on Ubuntu 18.04 and Ubuntu 20.04 on .NET 5 and higher. See: https://github.com/NightOwl888/ICU4N/issues/37");
+            //Assume.That(!RuntimeInformation.IsOSPlatform(OSPlatform.Linux), "ICU4N TODO: Fails on Ubuntu 18.04 and Ubuntu 20.04 on .NET 5 and higher. See: https://github.com/NightOwl888/ICU4N/issues/37");
 #endif
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                throw new Exception("This is Linux! (RuntimeInformation)");
+            else
+                throw new Exception("This is NOT Linux! (RuntimeInformation)");
 
             // register a singleton
             Collator frcol = Collator.GetInstance(new UCultureInfo("fr_FR"));
