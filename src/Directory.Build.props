@@ -8,10 +8,5 @@
   </PropertyGroup>
 
   <Import Project="$(RepositoryRoot)build/nuget.props" />
-
-  <PropertyGroup Label="Assembly Documentation">
-    <NoWarn Label="Missing XML comment for publicly visible type or member">$(NoWarn);1591</NoWarn>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-  </PropertyGroup>
   
 </Project>
