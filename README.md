@@ -50,6 +50,10 @@ We are looking into the best way to allow end users to be able to provide their 
 
 We have converted most of the documentation comments so Visual Studio Intellisense works. However, for full API docs the best source at the moment is the [ICU4J API Reference](http://icu-project.org/apiref/icu4j/). There is also a lot of other great info on the ICU project's web site, such as the [Feature Comparison Page](http://site.icu-project.org/charts/comparison).
 
+## Building and Testing
+
+To build the project from source, see the [Building and Testing documentation](https://github.com/NightOwl888/ICU4N/blob/main/docs/building-and-testing.md).
+
 ## Saying Thanks
 
 If you find this library to be useful, please star us [on GitHub](https://github.com/NightOwl888/ICU4N) and consider a sponsorship so we can continue bringing you great free tools like this one. It really would make a big difference!

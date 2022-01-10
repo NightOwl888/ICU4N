@@ -8,31 +8,39 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{5727
 		src\CodeGenerationSettings.xml = src\CodeGenerationSettings.xml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{F0008007-6BDA-4F66-A01E-F559AD954127}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{F0008007-6BDA-4F66-A01E-F559AD954127}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
-		build\dependencies.props = build\dependencies.props
-		build\nuget.props = build\nuget.props
-		build\TestReferences.Common.targets = build\TestReferences.Common.targets
-		build\TestTargetFramework.props = build\TestTargetFramework.props
+		.build\dependencies.props = .build\dependencies.props
+		.build\nuget.props = .build\nuget.props
+		.build\runbuild.ps1 = .build\runbuild.ps1
+		.build\TestReferences.Common.targets = .build\TestReferences.Common.targets
+		.build\TestTargetFramework.props = .build\TestTargetFramework.props
 		version.json = version.json
+		.build\version.ps1 = .build\version.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "azure-templates", "azure-templates", "{9A05917A-65A5-4E17-9A1E-8F180D557028}"
 	ProjectSection(SolutionItems) = preProject
-		build\azure-templates\build-pack-and-publish-libraries.yml = build\azure-templates\build-pack-and-publish-libraries.yml
-		build\azure-templates\gitversioning-increment-and-persist-versions.yml = build\azure-templates\gitversioning-increment-and-persist-versions.yml
-		build\azure-templates\publish-nuget-packages.yml = build\azure-templates\publish-nuget-packages.yml
-		build\azure-templates\publish-test-results-for-target-frameworks.yml = build\azure-templates\publish-test-results-for-target-frameworks.yml
-		build\azure-templates\publish-test-results-for-test-projects.yml = build\azure-templates\publish-test-results-for-test-projects.yml
-		build\azure-templates\publish-test-results.yml = build\azure-templates\publish-test-results.yml
-		build\azure-templates\run-tests-on-os.yml = build\azure-templates\run-tests-on-os.yml
-		build\azure-templates\show-all-environment-variables.yml = build\azure-templates\show-all-environment-variables.yml
-		build\azure-templates\show-all-files.yml = build\azure-templates\show-all-files.yml
+		.build\azure-templates\build-pack-and-publish-libraries.yml = .build\azure-templates\build-pack-and-publish-libraries.yml
+		.build\azure-templates\gitversioning-increment-and-persist-versions.yml = .build\azure-templates\gitversioning-increment-and-persist-versions.yml
+		.build\azure-templates\install-dotnet-sdk.yml = .build\azure-templates\install-dotnet-sdk.yml
+		.build\azure-templates\publish-nuget-packages.yml = .build\azure-templates\publish-nuget-packages.yml
+		.build\azure-templates\publish-test-results-for-target-frameworks.yml = .build\azure-templates\publish-test-results-for-target-frameworks.yml
+		.build\azure-templates\publish-test-results-for-test-projects.yml = .build\azure-templates\publish-test-results-for-test-projects.yml
+		.build\azure-templates\publish-test-results.yml = .build\azure-templates\publish-test-results.yml
+		.build\azure-templates\run-tests-on-os.yml = .build\azure-templates\run-tests-on-os.yml
+		.build\azure-templates\show-all-environment-variables.yml = .build\azure-templates\show-all-environment-variables.yml
+		.build\azure-templates\show-all-files.yml = .build\azure-templates\show-all-files.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF2F2031-FCC4-401C-9D58-96D0245C1A41}"
 	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		build = build
+		build.bat = build.bat
+		build.ps1 = build.ps1
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 		FUNDING.yml = FUNDING.yml
@@ -71,6 +79,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Tests.Collation", "tests\ICU4N.Tests.Collation\ICU4N.Tests.Collation.csproj", "{B384CCC9-55CA-452B-8C7B-12A38DFC9A95}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Tests.Transliterator", "tests\ICU4N.Tests.Transliterator\ICU4N.Tests.Transliterator.csproj", "{F0C32D59-219F-47F4-830C-A724F7213A80}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{92982575-6FD0-473C-81B5-240F53EDC0A9}"
+	ProjectSection(SolutionItems) = preProject
+		docs\building-and-testing.md = docs\building-and-testing.md
+		docs\make-release.md = docs\make-release.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

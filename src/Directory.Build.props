@@ -7,6 +7,6 @@
     <SolutionDir Condition=" '$(SolutionDir)' == '' ">$(MSBuildThisFileDirectory)../</SolutionDir>
   </PropertyGroup>
 
-  <Import Project="$(RepositoryRoot)build/nuget.props" />
+  <Import Project="$(RepositoryRoot).build/nuget.props" />
   
 </Project>

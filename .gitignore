@@ -311,3 +311,6 @@ OpenCover/
 
 # BeyondCompare .orig files (when doing conflict resolution)
 *.orig
+
+# Build artifacts
+_artifacts/
