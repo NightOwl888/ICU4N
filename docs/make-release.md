@@ -1,6 +1,6 @@
 # Making a Release
 
-This project uses Nerdbank.GitVersioning to assist with creating version numbers based on the current branch and commit. This tool handles making pre-release builds on the master branch and production releases on the main branch.
+This project uses Nerdbank.GitVersioning to assist with creating version numbers based on the current branch and commit. This tool handles making pre-release builds on the main branch and production releases on the release/ prefixed branch.
 
 ## Prerequisites
 
@@ -32,7 +32,7 @@ Assembly version should also remain the same when there are no breaking changes 
 
 When the changes in the main branch are ready to release, create a release branch using the following nbgv tool command as specified in the [documentation](https://github.com/dotnet/Nerdbank.GitVersioning/blob/master/doc/nbgv-cli.md).
 
-For example, the version.json file on the master branch is currently setup as 60.1.0-alpha.{height}. We want to go from this version to a release of 60.1.0 and set the next version on the main branch as 60.1.1-alpha.{height}.
+For example, the version.json file on the main branch is currently setup as 60.1.0-alpha.{height}. We want to go from this version to a release of 60.1.0 and set the next version on the main branch as 60.1.1-alpha.{height}.
 
 ```console
 nbgv prepare-release --nextVersion 60.1.1

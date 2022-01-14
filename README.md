@@ -2,7 +2,7 @@ International Components for Unicode
 =========
 
 [![Nuget](https://img.shields.io/nuget/dt/ICU4N)](https://www.nuget.org/packages/ICU4N)
-[![Azure DevOps builds (master)](https://img.shields.io/azure-devops/build/ICU4N/44041e22-bd88-42a2-ad29-ee6859a5010e/1/master)](https://dev.azure.com/ICU4N/ICU4N/_build?definitionId=1&_a=summary)
+[![Azure DevOps builds (main)](https://img.shields.io/azure-devops/build/ICU4N/44041e22-bd88-42a2-ad29-ee6859a5010e/1/main)](https://dev.azure.com/ICU4N/ICU4N/_build?definitionId=1&_a=summary)
 [![GitHub](https://img.shields.io/github/license/NightOwl888/ICU4N)](https://github.com/NightOwl888/ICU4N/blob/master/LICENSE.txt)
 [![GitHub Sponsors](https://img.shields.io/badge/-Sponsor-fafbfc?logo=GitHub%20Sponsors)](https://github.com/sponsors/NightOwl888)
 
