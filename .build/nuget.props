@@ -11,8 +11,8 @@
     <PackageReleaseNotes>$(ReleaseNotesUrl)
 
 This is an early prerelease. Not all features are fully functional yet, and there may still be some gaps in functionality that haven't been accounted for. See https://github.com/NightOwl888/ICU4N for more info about what is functioning and what is not.</PackageReleaseNotes>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
-  <PackageReadmeFile>readme.md</PackageReadmeFile>
   <ItemGroup>
     <None Include="$(SolutionDir)$(PackageLicenseFile)" Pack="true" PackagePath="$(PackageLicenseFile)"/>
     <None Include="$(SolutionDir)README.md" Pack="true" PackagePath="$(PackageReadmeFile)"/>
