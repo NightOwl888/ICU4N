@@ -7,7 +7,7 @@
     <PackageIconUrl>https://raw.githubusercontent.com/$(GitHubOrganization)/$(GitHubProject)/master/branding/unicode-icon-128x128.jpg</PackageIconUrl>
     <PackageIcon>unicode-icon-128x128.jpg</PackageIcon>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <ReleaseNotesUrl Condition=" '$(PackageVersion)' != '' ">https://github.com/$(GitHubOrganization)/$(GitHubProject)/releases/tag/$(PackageVersion)</ReleaseNotesUrl>
+    <ReleaseNotesUrl Condition=" '$(PackageVersion)' != '' ">https://github.com/$(GitHubOrganization)/$(GitHubProject)/releases/tag/v$(PackageVersion)</ReleaseNotesUrl>
     <PackageReleaseNotes>$(ReleaseNotesUrl)
 
 This is an early prerelease. Not all features are fully functional yet, and there may still be some gaps in functionality that haven't been accounted for. See https://github.com/NightOwl888/ICU4N for more info about what is functioning and what is not.</PackageReleaseNotes>
