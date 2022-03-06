@@ -70,12 +70,11 @@ namespace ICU4N.Support.Text
         /// <seealso cref="GetHashCode()"/>
         public override bool Equals(object obj)
         {
-            if (!(obj is FieldPosition))
+            if (!(obj is FieldPosition pos))
             {
                 return false;
             }
-            FieldPosition pos = (FieldPosition)obj;
-            return myField == pos.myField //&& myAttribute == pos.myAttribute
+            return myField == pos.myField && myAttribute == pos.myAttribute
                     && beginIndex == pos.beginIndex && endIndex == pos.endIndex;
         }
 
@@ -109,7 +108,7 @@ namespace ICU4N.Support.Text
 
         public override int GetHashCode()
         {
-            int attributeHash = 0;//(myAttribute == null) ? 0 : myAttribute.hashCode();
+            int attributeHash = (myAttribute is null) ? 0 : myAttribute.GetHashCode();
             return attributeHash + myField * 10 + beginIndex * 100 + endIndex;
         }
 
@@ -141,7 +140,7 @@ namespace ICU4N.Support.Text
         /// <returns>the string representation of this field position.</returns>
         public override string ToString()
         {
-            return GetType().Name + /*"[attribute=" + myAttribute + ", */"[field=" //$NON-NLS-1$ //$NON-NLS-2$
+            return GetType().Name + "[attribute=" + (myAttribute is null ? "null" : myAttribute.ToString()) + ", field=" //$NON-NLS-1$ //$NON-NLS-2$
                     + myField + ", beginIndex=" + beginIndex + ", endIndex=" //$NON-NLS-1$ //$NON-NLS-2$
                     + endIndex + "]"; //$NON-NLS-1$
         }
