@@ -44,7 +44,7 @@ namespace ICU4N.Text
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         // See ticket #11395, this is safe.
-        [CLSCompliant(false)]
+        //[CLSCompliant(false)] // ICU4N: This is only required if exposed publicly (which we don't want to do because of naming)
         public static UnicodeSet AddAll(this UnicodeSet set, params char[][] collection)
         {
             if (set == null)

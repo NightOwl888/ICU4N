@@ -1707,9 +1707,9 @@ namespace ICU4N.Dev.Test.Normalizers
                     Errln("error in Normalizer.Normalize(int,Mode,int)");
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw; // ICU4N: CA2200: Rethrow to preserve stack details
             }
         }
 

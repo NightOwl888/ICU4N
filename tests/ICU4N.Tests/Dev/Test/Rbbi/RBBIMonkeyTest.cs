@@ -919,7 +919,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             internal class MonkeyException : Exception
             {
-                private static readonly long serialVersionUID = 1L;
+                //private static readonly long serialVersionUID = 1L; // ICU4N: .NET serialization doesn't require this
                 public int fPosition;    // Position of the failure in the test data.
                 internal MonkeyException(String description, int pos)
                         : base(description)
@@ -1156,7 +1156,7 @@ namespace ICU4N.Dev.Test.Rbbi
             internal String fRuleFileName;
             internal bool fVerbose;                 // True to do long dump of failing data.
             internal int fLoopCount;
-            internal int fErrorCount;
+            //internal int fErrorCount; // ICU4N: Not used
 
             internal bool fDumpExpansions;          // Debug flag to output expanded form of rules and sets.
             internal StringBuilder fErrorMsgs = new StringBuilder();

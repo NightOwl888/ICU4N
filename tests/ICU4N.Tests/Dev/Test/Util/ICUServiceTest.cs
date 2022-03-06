@@ -125,19 +125,17 @@ namespace ICU4N.Dev.Test.Util
 
         private class AnonymousServiceListener : IServiceListener
         {
-            private readonly Action<ICUService, int> serviceChanged;
+            private readonly Action<ICUService, AnonymousServiceListener> serviceChanged;
             public int n;
 
-            public AnonymousServiceListener(Action<ICUService, int> serviceChanged)
+            public AnonymousServiceListener(Action<ICUService, AnonymousServiceListener> serviceChanged)
             {
-                if (serviceChanged == null)
-                    throw new ArgumentNullException(nameof(serviceChanged));
-                this.serviceChanged = serviceChanged;
+                this.serviceChanged = serviceChanged ?? throw new ArgumentNullException(nameof(serviceChanged));
             }
 
             public virtual void ServiceChanged(ICUService service)
             {
-                serviceChanged(service, n);
+                serviceChanged(service, this);
             }
         }
 
@@ -535,9 +533,9 @@ namespace ICU4N.Dev.Test.Util
             {
                 Logln("simple registration notification");
                 ICULocaleService ls = new ICULocaleService();
-                IServiceListener l1 = new AnonymousServiceListener(serviceChanged: (s, n) =>
+                IServiceListener l1 = new AnonymousServiceListener(serviceChanged: (s, me) =>
                 {
-                    Logln("listener 1 report " + n++ + " service changed: " + s);
+                    Logln("listener 1 report " + me.n++ + " service changed: " + s);
                 });
                 //ServiceListener l1 = new ServiceListener()
                 //{
@@ -549,9 +547,9 @@ namespace ICU4N.Dev.Test.Util
                 //}
                 //        };
                 ls.AddListener(l1);
-                IServiceListener l2 = new AnonymousServiceListener(serviceChanged: (s, n) =>
+                IServiceListener l2 = new AnonymousServiceListener(serviceChanged: (s, me) =>
                 {
-                    Logln("listener 2 report " + n++ + " service changed: " + s);
+                    Logln("listener 2 report " + me.n++ + " service changed: " + s);
                 });
                 //        ServiceListener l2 = new ServiceListener()
                 //        {
@@ -588,9 +586,9 @@ namespace ICU4N.Dev.Test.Util
                 Logln("... registered foo");
 
                 // since in a separate thread, we can callback and not deadlock
-                IServiceListener l3 = new AnonymousServiceListener(serviceChanged: (s, n) =>
+                IServiceListener l3 = new AnonymousServiceListener(serviceChanged: (s, me) =>
                 {
-                    Logln("listener 3 report " + n++ + " service changed...");
+                    Logln("listener 3 report " + me.n++ + " service changed...");
                     if (s.Get("en_BOINK") == null)
                     { // don't recurse on ourselves!!!
                         Logln("registering boink...");

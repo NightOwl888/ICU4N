@@ -92,7 +92,7 @@ namespace ICU4N.Support.Text
     public class AttributedCharacterIteratorAttribute //implements Serializable
     {
 
-        private static readonly long serialVersionUID = -9142742483513960612L;
+        //private static readonly long serialVersionUID = -9142742483513960612L; // ICU4N: .NET serialization doesn't require this
 
         /// <summary>
         /// This attribute marks segments from an input method. Most input

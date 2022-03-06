@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using StringBuffer = System.Text.StringBuilder;
@@ -934,7 +935,7 @@ namespace ICU4N.Dev.Test.Lang
                         }
                         else
                         {
-                            throw e;
+                            throw; // ICU4N: CA2200: Rethrow to preserve stack details
                         }
                     }
 

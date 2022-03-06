@@ -18,7 +18,7 @@ namespace ICU4N.Support.Text
         : ICloneable
 #endif
     {
-        private static readonly long serialVersionUID = -299282585814624189L;
+        //private static readonly long serialVersionUID = -299282585814624189L; // ICU4N: .NET serialization doesn't require this
 
         /// <summary>
         /// Constructs a new <see cref="Formatter"/> instance.
@@ -270,7 +270,7 @@ namespace ICU4N.Support.Text
     internal class FormatField : AttributedCharacterIteratorAttribute
     {
 
-        private static readonly long serialVersionUID = 276966692217360283L;
+        //private static readonly long serialVersionUID = 276966692217360283L; // ICU4N: .NET serialization doesn't require this
 
         /// <summary>
         /// Constructs a new instance of <see cref="FormatField"/> with the given field name.

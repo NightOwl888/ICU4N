@@ -681,7 +681,6 @@ namespace ICU4N.Text
         {
             var equivEmptySet = "";
             var equivSet = "ABCDEF";
-            var equivSet2 = "BDEFAC";
             var equivSubset = "CDEAF";
             var equivSuperset = "ABCDEFG";
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSubsetOf);
@@ -703,7 +702,6 @@ namespace ICU4N.Text
         {
             var equivEmptySet = new StringBuilder("");
             var equivSet = new StringBuilder("ABCDEF");
-            var equivSet2 = new StringBuilder("BDEFAC");
             var equivSubset = new StringBuilder("CDEAF");
             var equivSuperset = new StringBuilder("ABCDEFG");
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSubsetOf);
@@ -725,7 +723,6 @@ namespace ICU4N.Text
         {
             var equivEmptySet = "".ToCharArray();
             var equivSet = "ABCDEF".ToCharArray();
-            var equivSet2 = "BDEFAC".ToCharArray();
             var equivSubset = "CDEAF".ToCharArray();
             var equivSuperset = "ABCDEFG".ToCharArray();
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSubsetOf);
@@ -747,7 +744,6 @@ namespace ICU4N.Text
         {
             var equivEmptySet = "".AsCharSequence();
             var equivSet = "ABCDEF".AsCharSequence();
-            var equivSet2 = "BDEFAC".AsCharSequence();
             var equivSubset = "CDEAF".AsCharSequence();
             var equivSuperset = "ABCDEFG".AsCharSequence();
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSubsetOf);

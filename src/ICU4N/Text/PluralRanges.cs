@@ -206,7 +206,7 @@ namespace ICU4N.Text
         /// <param name="result">the resulting plural category</param>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public void Add(StandardPlural rangeStart, StandardPlural rangeEnd,
+        public void Add(StandardPlural? rangeStart, StandardPlural? rangeEnd,
                     StandardPlural result)
         {
             if (isFrozen)
@@ -229,7 +229,7 @@ namespace ICU4N.Text
                     else
                     {
                         @explicit[(int)rangeEnd] = true;
-                        matrix.SetIfNew(rs, rangeEnd, result);
+                        matrix.SetIfNew(rs, rangeEnd.Value, result);
                     }
                 }
             }
@@ -238,14 +238,14 @@ namespace ICU4N.Text
                 @explicit[(int)rangeStart] = true;
                 foreach (StandardPlural re in Enum.GetValues(typeof(StandardPlural)))
                 {
-                    matrix.SetIfNew(rangeStart, re, result);
+                    matrix.SetIfNew(rangeStart.Value, re, result);
                 }
             }
             else
             {
                 @explicit[(int)rangeStart] = true;
                 @explicit[(int)rangeEnd] = true;
-                matrix.SetIfNew(rangeStart, rangeEnd, result);
+                matrix.SetIfNew(rangeStart.Value, rangeEnd.Value, result);
             }
         }
 

@@ -472,7 +472,8 @@ namespace ICU4N.Text
          */
         public virtual DisplayContext GetContext(DisplayContextType type)
         {
-            return (type == DisplayContextType.Capitalization && capitalizationSetting != null) ?
+            // ICU4N note: capitalizationSetting not nullable.
+            return (type == DisplayContextType.Capitalization /*&& capitalizationSetting != null*/) ?
                     capitalizationSetting : DisplayContext.CapitalizationNone;
         }
 
@@ -1411,7 +1412,7 @@ namespace ICU4N.Text
          */
         private void ReadObject(Stream stream)
         {
-            // ICU4N TOOD: Serialization
+            // ICU4N TODO: Serialization
             //stream.defaultReadObject();
             /////CLOVER:OFF
             //// we don't have serialization data for this format
@@ -1498,7 +1499,9 @@ namespace ICU4N.Text
         //// * @serial
         //// * @see #getMaximumIntegerDigits
         //// */
-        private byte maxIntegerDigits = 40;
+#pragma warning disable CS0414, IDE0051 // Remove unused private members
+        private byte maxIntegerDigits = 40; // ICU4N: Not used (for now)
+#pragma warning restore CS0414, IDE0051 // Remove unused private members
 
         /////**
         //// * The minimum number of digits allowed in the integer portion of a
@@ -1516,7 +1519,9 @@ namespace ICU4N.Text
         //// * @serial
         //// * @see #getMinimumIntegerDigits
         //// */
-        private byte minIntegerDigits = 1;
+#pragma warning disable CS0414, IDE0051 // Remove unused private members
+        private byte minIntegerDigits = 1; // ICU4N: Not used (for now)
+#pragma warning restore CS0414, IDE0051 // Remove unused private members
 
         /////**
         //// * The maximum number of digits allowed in the fractional portion of a
@@ -1552,7 +1557,9 @@ namespace ICU4N.Text
         //// * @serial
         //// * @see #getMinimumFractionDigits
         //// */
+#pragma warning disable CS0414, IDE0051 // Remove unused private members
         private byte minFractionDigits = 0;
+#pragma warning restore CS0414, IDE0051 // Remove unused private members
 
         /**
          * True if this format will parse numbers as integers only.

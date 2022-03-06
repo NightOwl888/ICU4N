@@ -303,25 +303,21 @@ namespace ICU4N.Text
 <# if (charSequence == "string") { #>
             var equivEmptySet = "";
             var equivSet = "ABCDEF";
-            var equivSet2 = "BDEFAC";
             var equivSubset = "CDEAF";
             var equivSuperset = "ABCDEFG";
 <# } else if (charSequence == "StringBuilder") { #>
             var equivEmptySet = new StringBuilder("");
             var equivSet = new StringBuilder("ABCDEF");
-            var equivSet2 = new StringBuilder("BDEFAC");
             var equivSubset = new StringBuilder("CDEAF");
             var equivSuperset = new StringBuilder("ABCDEFG");
 <# } else if (charSequence == "char[]") { #>
             var equivEmptySet = "".ToCharArray();
             var equivSet = "ABCDEF".ToCharArray();
-            var equivSet2 = "BDEFAC".ToCharArray();
             var equivSubset = "CDEAF".ToCharArray();
             var equivSuperset = "ABCDEFG".ToCharArray();
 <# } else if (charSequence == "ICharSequence") { #>
             var equivEmptySet = "".AsCharSequence();
             var equivSet = "ABCDEF".AsCharSequence();
-            var equivSet2 = "BDEFAC".AsCharSequence();
             var equivSubset = "CDEAF".AsCharSequence();
             var equivSuperset = "ABCDEFG".AsCharSequence();
 <# } #>

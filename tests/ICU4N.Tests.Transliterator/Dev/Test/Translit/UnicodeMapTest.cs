@@ -389,7 +389,7 @@ namespace ICU4N.Dev.Test.Translit
 
         private const int LIMIT = 0x15; // limit to make testing more realistic in terms of collisions
         private const int ITERATIONS = 1000000;
-        private const bool SHOW_PROGRESS = false;
+        private static readonly bool SHOW_PROGRESS = false;
         private const bool DEBUG = false;
 
         JCG.SortedSet<string> log = new JCG.SortedSet<string>();

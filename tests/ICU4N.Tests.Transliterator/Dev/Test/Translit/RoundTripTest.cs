@@ -1797,7 +1797,9 @@ namespace ICU4N.Dev.Test.Translit
                 result.Append("\u200E").Append(s).Append("\u200E (").Append(TestUtility.Hex(s)).Append("/");
                 if (false)
                 { // append age, as a check
+#pragma warning disable CS0162 // Unreachable code detected
                     int cp = 0;
+#pragma warning restore CS0162 // Unreachable code detected
                     for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
                     {
                         cp = UTF16.CharAt(s, i);
@@ -1952,7 +1954,7 @@ namespace ICU4N.Dev.Test.Translit
                 /**
                  * For serialization
                  */
-                private static readonly long serialVersionUID = 3361828190488168323L;
+                //private static readonly long serialVersionUID = 3361828190488168323L; // ICU4N: .NET serialization doesn't require this
 
                 internal TestTruncated(String msg)
                 : base(msg)

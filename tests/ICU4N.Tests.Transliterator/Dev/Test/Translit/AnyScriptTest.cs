@@ -239,7 +239,9 @@ namespace ICU4N.Dev.Test.Translit
             assertContainsAll("Any-Latin transforms Arabic digits", westernDigitSetAndMarks, fromArabic);
             if (false)
             { // we don't require conversion to Arabic digits
+#pragma warning disable CS0162 // Unreachable code detected
                 String fromLatin = arabic.Transform(westernDigits);
+#pragma warning restore CS0162 // Unreachable code detected
                 assertContainsAll("Any-Arabic transforms Western digits", arabicDigitSet, fromLatin);
             }
         }

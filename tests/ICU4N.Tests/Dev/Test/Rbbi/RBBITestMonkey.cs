@@ -748,7 +748,7 @@ namespace ICU4N.Dev.Test.Rbbi
             internal UnicodeSet fEmojiNRK;
 
             internal StringBuffer fText;
-            internal int fOrigPositions;
+            //internal int fOrigPositions; // ICU4N: Not used
 
 
 

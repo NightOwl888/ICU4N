@@ -190,7 +190,7 @@ namespace ICU4N.Impl
                 if (loadFromProperties)
                 {
                     // ICU4N TODO: finish implementation
-                    throw new NotImplementedException();
+
                     //                try {
                     //                    string resName = name.Replace('.', '/') + ".properties";
                     //                    InputStream stream = java.security.AccessController.doPrivileged(
@@ -231,10 +231,11 @@ namespace ICU4N.Impl
                     //                        // localeID is only a language subtag, different from the default language.
                     //                        b = instantiateBundle(baseName, defaultID, defaultID, root, disableFallback);
                     //                    }
-                    //                    // if still could not find the bundle then return the parent
-                    //                    if(b==null && (!parentIsRoot || !disableFallback)){
-                    //                        b=parent;
-                    //                    }
+                    // if still could not find the bundle then return the parent
+                    if (b == null && (!parentIsRoot || !disableFallback))
+                    {
+                        b = parent;
+                    }
                     //                } catch (Exception e) {
                     //                    if (DEBUG)
                     //                        Console.Out.WriteLine("failure");
