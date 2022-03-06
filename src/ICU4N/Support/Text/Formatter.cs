@@ -36,7 +36,7 @@ namespace ICU4N.Support.Text
             return base.MemberwiseClone();
         }
 
-        internal string ConvertPattern(string template, string fromChars, string toChars,
+        internal virtual string ConvertPattern(string template, string fromChars, string toChars,
                 bool check)
         {
             if (!check && fromChars.Equals(toChars))
