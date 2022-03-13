@@ -1,8 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net451;net40</TargetFrameworks>
     <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard1.3' ">$(DefineConstants);LIBLOG_PORTABLE</DefineConstants>
+
+    <SatelliteAssemblyTargetFramework>netstandard2.0</SatelliteAssemblyTargetFramework>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet Package Settings">
@@ -61,6 +63,301 @@
     <EmbeddedResource Include="Impl\Data\*.nrm" />
     <EmbeddedResource Include="Impl\Data\*.spp" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <ArtifactsDir>$(SolutionDir)_artifacts</ArtifactsDir>
+    <ICU4JResourceConverterDir>$(SolutionDir)src/tools/ICU4JResourceConverter</ICU4JResourceConverterDir>
+    <ICU4JResourceConverterOutputDir>$(ICU4JResourceConverterDir)/bin/$(Configuration)/net6.0</ICU4JResourceConverterOutputDir>
+    <ICU4NSatelliteAssemblyOutputDir>$(ArtifactsDir)/SatelliteAssemblies</ICU4NSatelliteAssemblyOutputDir>
+
+    <ICU4JDownloadConfigFilePath>$(SolutionDir).build/icu4j-download-urls.txt</ICU4JDownloadConfigFilePath>
+    <ICU4JWorkingDirectory>$(ArtifactsDir)/icu4j-temp</ICU4JWorkingDirectory>
+    <ICU4JResourcesDirectory>$(ICU4JWorkingDirectory)/icu4j-transformed</ICU4JResourcesDirectory>
+  </PropertyGroup>
+  
+  <ItemGroup Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)">
+    <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" CopyToOutputDirectory="PreserveNewest" Visible="false"/>
+  </ItemGroup>
+
+  <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
+    
+    <PropertyGroup>
+      <Major>$(PackageVersion.Split('.')[0])</Major>
+      <Minor>$(PackageVersion.Split('.')[1])</Minor>
+      <ICU4JJarFilePath>$(ArtifactsDir)/icu4j-$(Major).$(Minor).jar</ICU4JJarFilePath>
+    </PropertyGroup>
+    <ItemGroup>
+      <ICU4JJarFiles Include="$(ICU4JJarFilePath)" />
+    </ItemGroup>
+    
+    <Message Text="Downloading ICU4J..." Importance="high" Condition=" !Exists('$(ICU4JJarFilePath)') "/>
+  
+    <ReadICU4JDownloadUrls ConfigFilePath="$(ICU4JDownloadConfigFilePath)" MajorVersion="$(Major)" MinorVersion="$(Minor)" Condition=" !Exists('$(ICU4JJarFilePath)') ">
+      <Output ItemName="ICU4JDownloadUrls" TaskParameter="Urls"/>
+    </ReadICU4JDownloadUrls>
+  
+    <Message Text="@(ICU4JDownloadUrls)" Importance="high"/>
+  
+    <DownloadFileWithFallback Urls="@(ICU4JDownloadUrls)" DestinationFilePath="$(ICU4JJarFilePath)" Condition=" !Exists('$(ICU4JJarFilePath)')">
+      <Output PropertyName="IsICU4JFileDownloaded" TaskParameter="Successful"/>
+    </DownloadFileWithFallback>
+  
+    <Error 
+      Condition=" '$(IsICU4JFileDownloaded)' != 'true' And !Exists('$(ICU4JJarFilePath)') "
+      Text="The build cannot continue without $(ICU4JJarFilePath). Use Maven search (https://mvnrepository.com or https://search.maven.org/) to look for the file and download it manually to $(ICU4JJarFilePath). Alternatively, check the ICU Releases Page: https://github.com/unicode-org/icu/releases."/>
+  </Target>
+    
+  <Target Name="ExecICU4JResourceConverter" AfterTargets="GenerateSatelliteAssemblies" BeforeTargets="GenerateOurSatelliteAssemblies" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
+    
+    <CheckWhetherResourcesRequireUpdate SourceFilePath="$(ICU4JJarFilePath)" DestinationPath="$(ICU4JResourcesDirectory)">
+      <Output PropertyName="ResourcesRequireUpdate" TaskParameter="RequiresUpdate"/>
+    </CheckWhetherResourcesRequireUpdate>
+  
+    <Message Text="ResourcesRequireUpdate: $(ResourcesRequireUpdate)" Importance="high"/>
+    
+    <Message Text="Converting ICU4J Resource Files..." Importance="high" Condition=" '$(ResourcesRequireUpdate.ToLowerInvariant())' == 'true' "/>
+    
+    <RemoveDir Directories="$(ICU4JWorkingDirectory)" Condition=" '$(ResourcesRequireUpdate.ToLowerInvariant())' == 'true' " />
+    <RemoveDir Directories="$(ICU4JResourcesDirectory)" Condition=" '$(ResourcesRequireUpdate.ToLowerInvariant())' == 'true' " />
+    
+    <PropertyGroup>
+      <RunICU4JResourceConverterCommand>"$(ICU4JResourceConverterOutputDir)/ICU4JResourceConverter.exe"</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) "$(ICU4JJarFilePath)"</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) -work "$(ICU4JWorkingDirectory)"</RunICU4JResourceConverterCommand>
+      <RunICU4JResourceConverterCommand>$(RunICU4JResourceConverterCommand) -out "$(ICU4JResourcesDirectory)"</RunICU4JResourceConverterCommand>
+    </PropertyGroup>
+
+    <Exec Command="$(RunICU4JResourceConverterCommand)" Condition=" '$(ResourcesRequireUpdate.ToLowerInvariant())' == 'true' " />
+  </Target>
+
+  <Target Name="GenerateOurSatelliteAssemblies" AfterTargets="ExecICU4JResourceConverter" BeforeTargets="DeploySatelliteAssemblies" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
+
+    <PropertyGroup>
+      <TemplateAssemblyFilePath>$(IntermediateOutputPath)$(TargetName)$(TargetExt)</TemplateAssemblyFilePath>
+    </PropertyGroup>
+    
+    <ItemGroup>
+      <EmbeddedResources Include="$(ICU4JResourcesDirectory)/*.*" />
+      <EmbeddedResourcesPaths Include="$([System.IO.Directory]::GetDirectories('$(ICU4JResourcesDirectory)'))" />
+      
+      <!-- This groups each locale together along with its nested files and root path -->
+      <FolderInLocale Include="@(EmbeddedResourcesPaths)">
+        <Culture>$([System.IO.Path]::GetFileName('%(Identity)'))</Culture>
+        <Files>$([System.IO.Directory]::GetFiles('%(EmbeddedResourcesPaths.Identity)'))</Files>
+      </FolderInLocale>
+    </ItemGroup>
+    
+    <MakeDir Directories="$(ICU4NSatelliteAssemblyOutputDir)" Condition="!Exists('$(ICU4NSatelliteAssemblyOutputDir)')" />
+
+    <!-- Make invariant resources -->
+    <AL EmbedResources="@(EmbeddedResources)" TargetType="library" TemplateFile="$(TemplateAssemblyFilePath)" Culture="" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/$(AssemblyName).resources.dll" />
+    
+    <!-- Make localized resources -->
+    <LinkAssemblies DotNetToolsDirectory="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(FolderInLocale->'%(Files)')" Culture="%(FolderInLocale.Culture)" TemplateFile="$(TemplateAssemblyFilePath)" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/%(FolderInLocale.Culture)/$(AssemblyName).resources.dll" />
+
+  </Target>
+
+  <!-- Runs the assembly linker only if it needs updating based on the timestamps of the source files -->
+  <UsingTask TaskName="LinkAssemblies" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <DotNetToolsDirectory ParameterType="System.String" Required="true" />
+      <EmbedResources ParameterType="System.String" Required="true" />
+      <Culture ParameterType="System.String" Required="true" />
+      <OutputAssembly ParameterType="System.String" Required="true" />
+      <TemplateFile ParameterType="System.String" Required="true" />
+      <KeyFile ParameterType="System.String" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.Diagnostics" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+          //Log.LogMessage(MessageImportance.High, $"Checking Whether Satellite Assembly for {Culture} is up to date...");
+          
+          bool requiresUpdate = false;
+          var embeddedResourceFiles = EmbedResources.Split(';');
+          if (File.Exists(OutputAssembly) && embeddedResourceFiles.Length > 0)
+          {
+              DateTime latestDestinationWrite = File.GetLastWriteTimeUtc(OutputAssembly);
+         
+              foreach (var file in embeddedResourceFiles)
+              {
+                  if (latestDestinationWrite < File.GetLastWriteTimeUtc(file))
+                  {
+                      requiresUpdate = true;
+                      break;
+                  }
+              }
+          }
+          else
+          {
+              requiresUpdate = true;
+          }
+          
+          if (requiresUpdate)
+          {
+              // Need to delete the files if they exist, otherwise the timestamps will be wrong
+              var directory = Path.GetDirectoryName(OutputAssembly);
+              if (Directory.Exists(directory))
+                  Directory.Delete(directory, recursive: true);
+              Directory.CreateDirectory(directory);
+          
+              Log.LogMessage(MessageImportance.High, $"Generating Satellite Assembly for {Culture}");
+              var command = DotNetToolsDirectory + "al.exe";
+              var sb = new StringBuilder();
+              const string Space = " ";
+              
+              sb.Append("-target:lib");
+              sb.Append(Space);
+              sb.Append($"-culture:{Culture}");
+              sb.Append(Space);
+              sb.Append($"-out:{OutputAssembly}");
+              sb.Append(Space);
+              sb.Append($"-template:{TemplateFile}");
+              if (KeyFile != null)
+              {
+                  sb.Append(Space);
+                  sb.Append($"-keyfile:{KeyFile}");
+              }
+              foreach (var file in embeddedResourceFiles)
+              {
+                  sb.Append(Space);
+                  sb.Append($"-embed:{file}");
+              }
+              var args = sb.ToString();
+              //Log.LogMessage(MessageImportance.High, "Command: " + command);
+              //Log.LogMessage(MessageImportance.High, "Args: " + args);
+              using Process p = new Process();
+              p.StartInfo.UseShellExecute = false;
+              //p.StartInfo.RedirectStandardOutput = true;
+              p.StartInfo.RedirectStandardError = true;
+              p.StartInfo.FileName = command;
+              p.StartInfo.Arguments = args;
+              p.Start();
+              //var stdOut = p.StandardOutput.ReadToEnd();
+              var stdErr = p.StandardError.ReadToEnd();
+              p.WaitForExit();
+              //Log.LogMessage(MessageImportance.High, "stdOut: " + stdOut);
+              if (!string.IsNullOrWhiteSpace(stdErr))
+                  Log.LogMessage(MessageImportance.High, "stdErr: " + stdErr);
+          }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <UsingTask TaskName="DownloadFileWithFallback" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
+     <ParameterGroup>
+      <Urls ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <DestinationFilePath ParameterType="System.String" Required="true" />
+      <!--<Tries ParameterType="System.Int32" />-->
+      <Successful ParameterType="System.Boolean" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.Net" />
+      <Using Namespace="System.IO" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        Successful = false;
+        using var client = new WebClient();
+        foreach (var url in Urls)
+        {
+            try
+            {
+                var tempFile = Path.GetDirectoryName(DestinationFilePath.ToString()) + Path.DirectorySeparatorChar + Guid.NewGuid().ToString();
+                client.DownloadFile(url.ToString(), tempFile);
+                File.Move(tempFile, DestinationFilePath.ToString());
+                Successful = true;
+                Log.LogMessage(MessageImportance.High, $"[SUCCESS] Downloaded {DestinationFilePath} from {url}");
+                break;
+            }
+            catch (Exception e)
+            {
+                Log.LogMessage(MessageImportance.High, $"[ERROR] Downloading {DestinationFilePath} from {url} failed: {e}");
+                continue;
+            }
+        }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+  
+  <UsingTask TaskName="ReadICU4JDownloadUrls" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <ConfigFilePath ParameterType="System.String" Required="true" />
+      <MajorVersion ParameterType="System.String" Required="true" />
+      <MinorVersion ParameterType="System.String" Required="true" />
+      <Urls ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        using var reader = new StreamReader(ConfigFilePath.ToString(), Encoding.UTF8);
+        var result = new List<string>();
+        string line, lineCleaned;
+        while ((line = reader.ReadLine()) != null)
+        {
+            // Ignore commented line
+            if (line.StartsWith("#", StringComparison.Ordinal))
+                continue;
+            // Ignore line after comment symbol (if it exists)
+            int firstComment = line.IndexOf('#');
+            if (firstComment >=0)
+                lineCleaned = line.Substring(0, firstComment);
+            else
+                lineCleaned = line;
+            result.Add(string.Format(lineCleaned, MajorVersion.ToString(), MinorVersion.ToString()));
+        }
+        Urls = new TaskItem[result.Count];
+        for (int i = 0; i < result.Count; i++)
+            Urls[i] = new TaskItem(result[i]);
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <UsingTask TaskName="CheckWhetherResourcesRequireUpdate" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <SourceFilePath ParameterType="System.String" Required="true" />
+      <DestinationPath ParameterType="System.String" Required="true" />
+      <RequiresUpdate ParameterType="System.Boolean" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            RequiresUpdate = false;
+            string[] files = Directory.GetFiles(DestinationPath, "*.*", SearchOption.AllDirectories);
+            if (File.Exists(SourceFilePath) && files.Length > 0)
+            {
+                DateTime latestSourceWrite = File.GetLastWriteTimeUtc(SourceFilePath);
+
+                // Check whether the source write is newer (greater than) than any destination write
+                foreach (var file in files)
+                {
+                    if (latestSourceWrite > File.GetLastWriteTimeUtc(file))
+                    {
+                        RequiresUpdate = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                RequiresUpdate = true;
+            }
+          ]]>
+        </Code>
+    </Task>
+  </UsingTask>
 
   <ItemGroup>
     <None Include="Impl\Norm2AllModesExtension.cs">
