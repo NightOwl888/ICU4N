@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{F00080
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
 		.build\dependencies.props = .build\dependencies.props
+		.build\icu4j-download-urls.txt = .build\icu4j-download-urls.txt
 		.build\nuget.props = .build\nuget.props
 		.build\runbuild.ps1 = .build\runbuild.ps1
 		.build\TestReferences.Common.targets = .build\TestReferences.Common.targets
