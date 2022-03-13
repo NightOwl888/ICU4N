@@ -7,7 +7,8 @@ namespace ICU4N.Impl.Locale
     {
         public static bool CaseIgnoreMatch(string s1, string s2)
         {
-            if (Utility.SameObjects(s1, s2))
+            //if (Utility.SameObjects(s1, s2))
+            if (ReferenceEquals(s1, s2))
             {
                 return true;
             }
@@ -32,7 +33,8 @@ namespace ICU4N.Impl.Locale
 
         public static int CaseIgnoreCompare(string s1, string s2)
         {
-            if (Utility.SameObjects(s1, s2))
+            //if (Utility.SameObjects(s1, s2))
+            if (ReferenceEquals(s1, s2))
             {
                 return 0;
             }

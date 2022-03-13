@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <IsPublishable>true</IsPublishable>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Include="..\..\ICU4N\Impl\LocaleIDParser.cs" Link="Shared\LocaleIDParser.cs" />
+    <Compile Include="..\..\ICU4N\Impl\LocaleIDs.cs" Link="Shared\LocaleIDs.cs" />
+    <Compile Include="..\..\ICU4N\Impl\Locale\AsciiUtil.cs" Link="Shared\AsciiUtil.cs" />
+    <Compile Include="..\..\ICU4N\Support\Collections\DictionaryExtensions.cs" Link="Shared\DictionaryExtensions.cs" />
+    <Compile Include="..\..\ICU4N\Support\Globalization\LocaleID.cs" Link="Shared\LocaleID.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="locales-unsupported-by-dotnet-6.txt" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="locales-unsupported-by-dotnet-6.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Shared\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="J2N" Version="$(J2NPackageReferenceVersion)" />
+  </ItemGroup>
+
+</Project>

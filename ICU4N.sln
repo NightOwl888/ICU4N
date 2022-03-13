@@ -62,6 +62,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8C266EC1
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N", "src\ICU4N\ICU4N.csproj", "{883E16AF-AB40-4285-89A8-57333CC68AA2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{19E2FD68-4144-491D-82FC-A163AF3692E0} = {19E2FD68-4144-491D-82FC-A163AF3692E0}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Collation", "src\ICU4N.Collation\ICU4N.Collation.csproj", "{E2A01BE7-8163-41F9-A273-7EE38355E28F}"
 EndProject
@@ -86,6 +89,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{92982575-6
 		docs\building-and-testing.md = docs\building-and-testing.md
 		docs\make-release.md = docs\make-release.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{CEF28F3A-21E4-4E63-B7E3-6C56DB2BFECE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4JResourceConverter", "src\tools\ICU4JResourceConverter\ICU4JResourceConverter.csproj", "{19E2FD68-4144-491D-82FC-A163AF3692E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,6 +140,10 @@ Global
 		{F0C32D59-219F-47F4-830C-A724F7213A80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0C32D59-219F-47F4-830C-A724F7213A80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0C32D59-219F-47F4-830C-A724F7213A80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19E2FD68-4144-491D-82FC-A163AF3692E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19E2FD68-4144-491D-82FC-A163AF3692E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19E2FD68-4144-491D-82FC-A163AF3692E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19E2FD68-4144-491D-82FC-A163AF3692E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -149,6 +160,8 @@ Global
 		{3D72AE06-7BB2-42B8-8772-D03053392AF5} = {8C266EC1-9565-4827-B3AD-AC657F6BDC27}
 		{B384CCC9-55CA-452B-8C7B-12A38DFC9A95} = {8C266EC1-9565-4827-B3AD-AC657F6BDC27}
 		{F0C32D59-219F-47F4-830C-A724F7213A80} = {8C266EC1-9565-4827-B3AD-AC657F6BDC27}
+		{CEF28F3A-21E4-4E63-B7E3-6C56DB2BFECE} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
+		{19E2FD68-4144-491D-82FC-A163AF3692E0} = {CEF28F3A-21E4-4E63-B7E3-6C56DB2BFECE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {083BF0D3-ED92-41EE-AD6E-6715D0BA155B}
