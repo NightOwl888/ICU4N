@@ -147,7 +147,7 @@
     <MakeDir Directories="$(ICU4NSatelliteAssemblyOutputDir)" Condition="!Exists('$(ICU4NSatelliteAssemblyOutputDir)')" />
 
     <!-- Make invariant resources -->
-    <AL EmbedResources="@(EmbeddedResources)" TargetType="library" TemplateFile="$(TemplateAssemblyFilePath)" Culture="" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/$(AssemblyName).resources.dll" />
+    <AL SdkToolsPath="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(EmbeddedResources)" TargetType="library" TemplateFile="$(TemplateAssemblyFilePath)" Culture="" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/$(AssemblyName).resources.dll" />
     
     <!-- Make localized resources -->
     <LinkAssemblies DotNetToolsDirectory="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(FolderInLocale->'%(Files)')" Culture="%(FolderInLocale.Culture)" TemplateFile="$(TemplateAssemblyFilePath)" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/%(FolderInLocale.Culture)/$(AssemblyName).resources.dll" />
