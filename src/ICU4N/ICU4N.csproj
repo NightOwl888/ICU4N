@@ -86,9 +86,6 @@
       <Minor>$(PackageVersion.Split('.')[1])</Minor>
       <ICU4JJarFilePath>$(ArtifactsDir)/icu4j-$(Major).$(Minor).jar</ICU4JJarFilePath>
     </PropertyGroup>
-    <ItemGroup>
-      <ICU4JJarFiles Include="$(ICU4JJarFilePath)" />
-    </ItemGroup>
     
     <Message Text="Downloading ICU4J..." Importance="high" Condition=" !Exists('$(ICU4JJarFilePath)') "/>
   
@@ -262,6 +259,7 @@
       <Code Type="Fragment" Language="cs">
         <![CDATA[
         Successful = false;
+        Directory.CreateDirectory(Path.GetDirectoryName(DestinationFilePath.ToString()));
         using var client = new WebClient();
         foreach (var url in Urls)
         {
