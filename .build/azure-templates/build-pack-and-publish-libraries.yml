@@ -50,7 +50,7 @@ steps:
     command: custom
     projects: '${{ parameters.solutionFilesConvention }}'
     custom: build
-    arguments: '--configuration ${{ parameters.buildConfiguration }} --verbosity normal /p:Platform="${{ parameters.buildPlatform }}" /p:InformationalVersion="${{ parameters.informationalVersion }}" /p:FileVersion="${{ parameters.fileVersion }}" /p:AssemblyVersion="${{ parameters.assemblyVersion }}" /p:TestAllTargetFrameworks=true /p:PortableDebugTypeOnly=true'
+    arguments: '--configuration ${{ parameters.buildConfiguration }} --verbosity normal /p:Platform="${{ parameters.buildPlatform }}" /p:InformationalVersion="${{ parameters.informationalVersion }}" /p:FileVersion="${{ parameters.fileVersion }}" /p:AssemblyVersion="${{ parameters.assemblyVersion }}" /p:PackageVersion="${{ parameters.packageVersion }}" /p:TestAllTargetFrameworks=true /p:PortableDebugTypeOnly=true'
 
   # Packs the project binaries into .nupkg files (NuGet).
   # Note that we are outputting .symbols.nupkg files as well 
