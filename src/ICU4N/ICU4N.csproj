@@ -79,12 +79,6 @@
   <ItemGroup Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)">
     <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" CopyToOutputDirectory="PreserveNewest" Visible="false"/>
   </ItemGroup>
-  
-  <Target Name="ALBeforeBuild" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-        <AlToolPath>$(TargetFrameworkSDKToolsDirectory)</AlToolPath>
-    </PropertyGroup>
-  </Target>
 
   <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
     
@@ -155,6 +149,7 @@
 
     <!-- Make invariant resources -->
     <!--<AL EmbedResources="@(EmbeddedResources)" TargetType="library" TemplateFile="$(TemplateAssemblyFilePath)" Culture="" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/$(AssemblyName).resources.dll" />-->
+    <LinkAssemblies DotNetToolsDirectory="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(EmbeddedResources)" Culture="" TemplateFile="$(TemplateAssemblyFilePath)" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/$(AssemblyName).resources.dll" />
     
     <!-- Make localized resources -->
     <LinkAssemblies DotNetToolsDirectory="$(TargetFrameworkSDKToolsDirectory)" EmbedResources="@(FolderInLocale->'%(Files)')" Culture="%(FolderInLocale.Culture)" TemplateFile="$(TemplateAssemblyFilePath)" KeyFile="$(AssemblyOriginatorKeyFile)" OutputAssembly="$(ICU4NSatelliteAssemblyOutputDir)/%(FolderInLocale.Culture)/$(AssemblyName).resources.dll" />
@@ -166,7 +161,7 @@
     <ParameterGroup>
       <DotNetToolsDirectory ParameterType="System.String" Required="true" />
       <EmbedResources ParameterType="System.String" Required="true" />
-      <Culture ParameterType="System.String" Required="true" />
+      <Culture ParameterType="System.String" />
       <OutputAssembly ParameterType="System.String" Required="true" />
       <TemplateFile ParameterType="System.String" Required="true" />
       <KeyFile ParameterType="System.String" />
@@ -214,8 +209,11 @@
               const string Space = " ";
               
               sb.Append("-target:lib");
-              sb.Append(Space);
-              sb.Append($"-culture:{Culture}");
+              if (!string.IsNullOrWhiteSpace(Culture))
+              {
+                  sb.Append(Space);
+                  sb.Append($"-culture:{Culture}");
+              }
               sb.Append(Space);
               sb.Append($"-out:{OutputAssembly}");
               sb.Append(Space);
