@@ -78,10 +78,10 @@ namespace JavaResourceConverter
                 {
                     string icuLocaleName = fileNameWithoutExtension;
 
-                    // ICU4N TODO: These are gaps we need to handle, but for now we skip them
-                    // for a PoC.
-                    if (UnsupportedDotNet6Locales.Contains(icuLocaleName))
-                        continue;
+                    //// ICU4N TODO: These are gaps we need to handle, but for now we skip them
+                    //// for a PoC.
+                    //if (UnsupportedDotNet6Locales.Contains(icuLocaleName))
+                    //    continue;
 
                     if (icuLocaleName.Equals("root"))
                         TransformInvariantFeature(filePath, featureName, outputDirectory);
