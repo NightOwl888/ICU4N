@@ -44,10 +44,10 @@
   </PropertyGroup>
 
   <PropertyGroup Label=".NET Framework SDK Fixup">
-    <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools</TargetFrameworkSDKToolsDirectory>
-    <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools</TargetFrameworkSDKToolsDirectory>
-    <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.2 Tools')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.2 Tools</TargetFrameworkSDKToolsDirectory>
-    <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools</TargetFrameworkSDKToolsDirectory>
+    <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.1 Tools\</TargetFrameworkSDKToolsDirectory>
+    <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools\</TargetFrameworkSDKToolsDirectory>
+    <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.2 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.2 Tools\</TargetFrameworkSDKToolsDirectory>
+    <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\</TargetFrameworkSDKToolsDirectory>
   </PropertyGroup>
 
 </Project>
