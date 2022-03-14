@@ -333,19 +333,26 @@
       <Code Type="Fragment" Language="cs">
         <![CDATA[
             RequiresUpdate = false;
-            string[] files = Directory.GetFiles(DestinationPath, "*.*", SearchOption.AllDirectories);
-            if (File.Exists(SourceFilePath) && files.Length > 0)
+            if (Directory.Exists(DestinationPath))
             {
-                DateTime latestSourceWrite = File.GetLastWriteTimeUtc(SourceFilePath);
-
-                // Check whether the source write is newer (greater than) than any destination write
-                foreach (var file in files)
+                string[] files = Directory.GetFiles(DestinationPath, "*.*", SearchOption.AllDirectories);
+                if (File.Exists(SourceFilePath) && files.Length > 0)
                 {
-                    if (latestSourceWrite > File.GetLastWriteTimeUtc(file))
+                    DateTime latestSourceWrite = File.GetLastWriteTimeUtc(SourceFilePath);
+
+                    // Check whether the source write is newer (greater than) than any destination write
+                    foreach (var file in files)
                     {
-                        RequiresUpdate = true;
-                        break;
+                        if (latestSourceWrite > File.GetLastWriteTimeUtc(file))
+                        {
+                            RequiresUpdate = true;
+                            break;
+                        }
                     }
+                }
+                else
+                {
+                    RequiresUpdate = true;
                 }
             }
             else
