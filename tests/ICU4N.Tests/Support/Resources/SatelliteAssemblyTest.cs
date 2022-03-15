@@ -129,11 +129,11 @@ namespace ICU4N.Support.Resources
             try
             {
                 var assembly = typeof(ICU4N.ICUConfig).Assembly.GetSatelliteAssembly(new ResourceCultureInfo(culture));
-                fail($"Expected {typeof(FileLoadException)}");
+                fail($"Expected {typeof(FileNotFoundException)}");
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is AssertionException))
             {
-                assertEquals($"Expected {typeof(FileLoadException)}, but was {e.GetType()}.", typeof(FileLoadException), e.GetType());
+                assertEquals($"Expected {typeof(FileNotFoundException)}, but was {e.GetType()}.", typeof(FileNotFoundException), e.GetType());
                 // expected
             }
             finally
