@@ -113,33 +113,33 @@ namespace ICU4N.Support.Resources
             assertNotNull(string.Empty, assembly);
         }
 
-        [Test]
-        public void TestMissingSatelliteAssembly()
-        {
-            var culture = "af-NA";
-#if NET46_OR_GREATER || NETCOREAPP1_0_OR_GREATER
-            var appDirectory = AppContext.BaseDirectory;
-#else
-            var appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-#endif
-            var filePath = Path.Combine(appDirectory, culture, "ICU4N.resources.dll");
-            var tempFilePath = filePath.Replace(".dll", ".dll.bak");
-            File.Move(filePath, tempFilePath);
+//        [Test]
+//        public void TestMissingSatelliteAssembly()
+//        {
+//            var culture = "af-NA";
+//#if NET46_OR_GREATER || NETCOREAPP1_0_OR_GREATER
+//            var appDirectory = AppContext.BaseDirectory;
+//#else
+//            var appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+//#endif
+//            var filePath = Path.Combine(appDirectory, culture, "ICU4N.resources.dll");
+//            var tempFilePath = filePath.Replace(".dll", ".dll.bak");
+//            File.Move(filePath, tempFilePath);
 
-            try
-            {
-                var assembly = typeof(ICU4N.ICUConfig).Assembly.GetSatelliteAssembly(new ResourceCultureInfo(culture));
-                fail($"Expected {typeof(FileNotFoundException)}");
-            }
-            catch (Exception e) when (!(e is AssertionException))
-            {
-                assertEquals($"Expected {typeof(FileNotFoundException)}, but was {e.GetType()}.", typeof(FileNotFoundException), e.GetType());
-                // expected
-            }
-            finally
-            {
-                File.Move(tempFilePath, filePath);
-            }
-        }
+//            try
+//            {
+//                var assembly = typeof(ICU4N.ICUConfig).Assembly.GetSatelliteAssembly(new ResourceCultureInfo(culture));
+//                fail($"Expected {typeof(FileNotFoundException)}");
+//            }
+//            catch (Exception e) when (!(e is AssertionException))
+//            {
+//                assertEquals($"Expected {typeof(FileNotFoundException)}, but was {e.GetType()}.", typeof(FileNotFoundException), e.GetType());
+//                // expected
+//            }
+//            finally
+//            {
+//                File.Move(tempFilePath, filePath);
+//            }
+//        }
     }
 }
