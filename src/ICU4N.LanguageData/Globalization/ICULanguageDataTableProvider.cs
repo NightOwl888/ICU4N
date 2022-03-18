@@ -1,5 +1,4 @@
 ﻿using ICU4N.Impl;
-using System.Reflection;
 
 namespace ICU4N.Globalization
 {
@@ -7,8 +6,8 @@ namespace ICU4N.Globalization
     /// The data table provider for language data that is read from embedded resources
     /// inside of this assembly.
     /// <para/>
-    /// The data must reside in an embedded resource in a folder named <c>Impl\Data\lang\</c>
-    /// within the assembly, so it is resolved as <c>[assembly name].Impl.Data.lang.[localeID].res</c>.
+    /// The data must reside in an embedded resource in a folder named <c>data\lang\</c>
+    /// within the assembly, so it is resolved as <c>[assembly name].data.lang.[localeID].res</c>.
     /// </summary>
     public class ICULanguageDataTableProvider : LanguageDataTableProvider
     {
