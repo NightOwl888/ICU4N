@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using ICU4N.Impl;
 
 namespace ICU4N.Globalization
 {
@@ -6,19 +6,13 @@ namespace ICU4N.Globalization
     /// The data table provider for region/country data that is read from embedded resources
     /// inside of this assembly.
     /// <para/>
-    /// The data must reside in an embedded resource in a folder named <c>Impl\Data\lang\</c>
-    /// within the assembly, so it is resolved as <c>[assembly name].Impl.Data.lang.[localeID].res</c>.
+    /// The data must reside in an embedded resource in a folder named <c>data\lang\</c>
+    /// within the assembly, so it is resolved as <c>[assembly name].data.lang.[localeID].res</c>.
     /// </summary>
     public class ICURegionDataTableProvider : RegionDataTableProvider
     {
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-        public ICURegionDataTableProvider()
-
-            : base(typeof(ICURegionDataTableProvider).GetTypeInfo().Assembly)
-#else
         private ICURegionDataTableProvider()
-            : base(typeof(ICURegionDataTableProvider).Assembly)
-#endif
+            : base(ICUResourceBundle.IcuDataAssembly)
         { }
 
         /// <summary>
