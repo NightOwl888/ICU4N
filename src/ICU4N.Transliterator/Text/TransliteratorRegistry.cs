@@ -115,7 +115,7 @@ namespace ICU4N.Text
                         UCultureInfo toploc = new UCultureInfo(top);
 
                         //CultureInfo toploc = LocaleUtility.GetLocaleFromName(top);
-                        res = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuTransliteratorBaseName, toploc, Transliterator.IcuDataAssembly);
+                        res = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuTransliteratorBaseName, toploc, ICUResourceBundle.IcuDataAssembly);
                         // Make sure we got the bundle we wanted; otherwise, don't use it
                         if (res != null && LocaleUtility.IsFallbackOf(res.UCulture.ToString(), top))
                         {
