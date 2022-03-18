@@ -16,7 +16,8 @@ namespace JavaResourceConverter
     public static class ResourceUtil
     {
         public const string LocaleListFileName = "fullLocaleNames.lst";
-        public const string InvariantResourcesDirectoryName = "invariantResources";
+        public const string InvariantResourcesListFileName = "invariantResourceNames.lst";
+        //public const string InvariantResourcesDirectoryName = "invariantResources";
         public const string DataDirectoryName = "data";
 
         public static readonly string[] SupportedFeatures = new string[] {
@@ -63,6 +64,8 @@ namespace JavaResourceConverter
 
                 TransformFeature(featureName, dir, outputDirectory);
             }
+
+            CreateInvariantResourceManifest(outputDirectory, outputDirectory);
         }
 
         public static void TransformFeature(string featureName, string featurePath, string outputDirectory)
@@ -188,6 +191,30 @@ namespace JavaResourceConverter
             while ((line = reader.ReadLine()) != null)
                 result.Add(line.Trim());
 
+            return result;
+        }
+
+        public static void CreateInvariantResourceManifest(string invariantResourceDirectory, string outputDirectory)
+        {
+            var files = GetNonLocalizedFileNameList(invariantResourceDirectory);
+            string outputFilePath = Path.Combine(outputDirectory, string.Concat(DataDirectoryName, ".", InvariantResourcesListFileName));
+            using var writer = new StreamWriter(outputFilePath, append: false, Encoding.UTF8);
+            for (int i = 0; i < files.Count - 1; i++)
+            {
+                writer.WriteLine(files[i]);
+            }
+            // Write the last name without a newline
+            writer.Write(files[files.Count - 1]);
+            //foreach (var file in files)
+            //    writer.WriteLine(file);
+            writer.Flush();
+        }
+
+        private static IList<string> GetNonLocalizedFileNameList(string inputDirectory)
+        {
+            var result = new List<string>();
+            foreach (var filePath in Directory.GetFiles(inputDirectory, "*.*", SearchOption.TopDirectoryOnly))
+                result.Add(Path.GetFileName(filePath));
             return result;
         }
     }
