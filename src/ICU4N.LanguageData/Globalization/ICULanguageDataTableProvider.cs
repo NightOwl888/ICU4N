@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using ICU4N.Impl;
+using System.Reflection;
 
 namespace ICU4N.Globalization
 {
@@ -11,14 +12,8 @@ namespace ICU4N.Globalization
     /// </summary>
     public class ICULanguageDataTableProvider : LanguageDataTableProvider
     {
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-        public ICULanguageDataTableProvider()
-
-            : base(typeof(ICULanguageDataTableProvider).GetTypeInfo().Assembly)
-#else
         private ICULanguageDataTableProvider()
-            : base(typeof(ICULanguageDataTableProvider).Assembly)
-#endif
+            : base(ICUResourceBundle.IcuDataAssembly)
         { }
 
         /// <summary>
