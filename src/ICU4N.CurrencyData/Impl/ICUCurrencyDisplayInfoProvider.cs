@@ -1,23 +1,13 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support.Collections;
 using ICU4N.Util;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using System.Resources;
 
 namespace ICU4N.Impl
 {
     public class ICUCurrencyDisplayInfoProvider : ICurrencyDisplayInfoProvider
     {
-        private static readonly Assembly IcuDataAssembly =
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly;
-#else
-            typeof(ICUCurrencyDisplayInfoProvider).Assembly;
-#endif
-
         public ICUCurrencyDisplayInfoProvider()
         {
         }
@@ -37,13 +27,13 @@ namespace ICU4N.Impl
                 ICUResourceBundle rb;
                 if (withFallback)
                 {
-                    rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, culture, IcuDataAssembly, OpenType.LocaleDefaultRoot);
+                    rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, culture, ICUResourceBundle.IcuDataAssembly, OpenType.LocaleDefaultRoot);
                 }
                 else
                 {
                     try
                     {
-                        rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, culture, IcuDataAssembly, OpenType.LocaleOnly);
+                        rb = ICUResourceBundle.GetBundleInstance(ICUData.IcuCurrencyBaseName, culture, ICUResourceBundle.IcuDataAssembly, OpenType.LocaleOnly);
                     }
                     catch (MissingManifestResourceException)
                     {
