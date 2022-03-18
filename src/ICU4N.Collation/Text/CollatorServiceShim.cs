@@ -90,7 +90,7 @@ namespace ICU4N.Text
             {
                 result = ICUResourceBundle.GetCultures(
                     ICUData.IcuCollationBaseName,
-                    CollationData.IcuDataAssembly,
+                    ICUResourceBundle.IcuDataAssembly,
                     types);
             }
             else
@@ -107,7 +107,7 @@ namespace ICU4N.Text
             {
                 result = ICUResourceBundle.GetUCultures(
                     ICUData.IcuCollationBaseName,
-                    CollationData.IcuDataAssembly,
+                    ICUResourceBundle.IcuDataAssembly,
                     types);
             }
             else

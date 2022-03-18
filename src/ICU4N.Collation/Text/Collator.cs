@@ -1143,7 +1143,7 @@ namespace ICU4N.Text
             {
                 return ICUResourceBundle.GetCultures(
                     ICUData.IcuCollationBaseName,
-                    CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */,
+                    ICUResourceBundle.IcuDataAssembly,
                     types);
             }
             return shim.GetCultures(types);
@@ -1166,7 +1166,7 @@ namespace ICU4N.Text
             {
                 return ICUResourceBundle.GetUCultures(
                     ICUData.IcuCollationBaseName,
-                    CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */,
+                    ICUResourceBundle.IcuDataAssembly,
                     types);
             }
             return shim.GetUCultures(types);
@@ -1215,7 +1215,7 @@ namespace ICU4N.Text
             {
                 throw new ArgumentException("Invalid keyword: " + keyword);
             }
-            return ICUResourceBundle.GetKeywordValues(BASE, RESOURCE, CollationData.IcuDataAssembly);
+            return ICUResourceBundle.GetKeywordValues(BASE, RESOURCE, ICUResourceBundle.IcuDataAssembly);
         }
 
         /// <summary>
@@ -1246,7 +1246,7 @@ namespace ICU4N.Text
             // Read available collation values from collation bundles.
             ICUResourceBundle bundle = (ICUResourceBundle)
                     UResourceBundle.GetBundleInstance(
-                            ICUData.IcuCollationBaseName, locale, CollationData.IcuDataAssembly);
+                            ICUData.IcuCollationBaseName, locale, ICUResourceBundle.IcuDataAssembly);
             KeywordsSink sink = new KeywordsSink();
             bundle.GetAllItemsWithFallback("collations", sink);
             return sink.values.ToArray();
@@ -1316,7 +1316,7 @@ namespace ICU4N.Text
                                                             UCultureInfo locID,
                                                             bool[] isAvailable)
         {
-            return ICUResourceBundle.GetFunctionalEquivalent(BASE, CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */, RESOURCE,
+            return ICUResourceBundle.GetFunctionalEquivalent(BASE, ICUResourceBundle.IcuDataAssembly, RESOURCE,
                                                              keyword, locID, isAvailable, true);
         }
 
