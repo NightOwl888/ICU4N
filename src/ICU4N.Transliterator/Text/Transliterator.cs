@@ -420,14 +420,6 @@ namespace ICU4N.Text
     /// <stable>ICU 2.0</stable>
     public abstract class Transliterator : IStringTransform
     {
-        // ICU4N specific - need to use the current assembly for resources
-        public static readonly Assembly IcuDataAssembly =
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            typeof(Transliterator).GetTypeInfo().Assembly;
-#else
-            typeof(Transliterator).Assembly;
-#endif
-
         /// <summary>
         /// Direction constant indicating the forward direction in a transliterator,
         /// e.g., the forward rules of a RuleBasedTransliterator.  An "A-B"
@@ -1306,7 +1298,7 @@ namespace ICU4N.Text
 
             ICUResourceBundle bundle = (ICUResourceBundle)UResourceBundle.
                 // ICU4N specific - we need to pass the current assembly to load the resource data
-                GetBundleInstance(ICUData.IcuTransliteratorBaseName, inLocale, IcuDataAssembly);
+                GetBundleInstance(ICUData.IcuTransliteratorBaseName, inLocale, ICUResourceBundle.IcuDataAssembly);
 
             // Normalize the ID
             string[] stv = TransliteratorIDParser.IDtoSTV(id);
@@ -2071,7 +2063,7 @@ namespace ICU4N.Text
              */
             UResourceBundle bundle, transIDs, colBund;
             // ICU4N specific - we must pass this assembly so the resources are loaded from here
-            bundle = UResourceBundle.GetBundleInstance(ICUData.IcuTransliteratorBaseName, ROOT, IcuDataAssembly);
+            bundle = UResourceBundle.GetBundleInstance(ICUData.IcuTransliteratorBaseName, ROOT, ICUResourceBundle.IcuDataAssembly);
             transIDs = bundle.Get(RB_RULE_BASED_IDS);
 
             int row, maxRows;
