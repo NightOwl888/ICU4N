@@ -127,7 +127,7 @@ namespace ICU4N.Dev.Test.Util
             int n;
 
             Logln("Testing getting collation values:");
-            kwVals = ICUResourceBundle.GetKeywordValues(ICUData.IcuCollationBaseName, COLLATION_RESNAME, CollationData.IcuDataAssembly);
+            kwVals = ICUResourceBundle.GetKeywordValues(ICUData.IcuCollationBaseName, COLLATION_RESNAME, ICUResourceBundle.IcuDataAssembly);
             for (n = 0; n < kwVals.Length; n++)
             {
                 Logln(n.ToString(CultureInfo.InvariantCulture) + ": " + kwVals[n]);

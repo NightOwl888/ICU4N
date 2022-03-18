@@ -21,14 +21,6 @@ namespace ICU4N.Impl.Coll
     /// </summary>
     public sealed class CollationData
     {
-        // ICU4N specific - We need to pass this assembly in order for its resources to load.
-        public static readonly Assembly IcuDataAssembly =
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            typeof(CollationData).GetTypeInfo().Assembly;
-#else
-            typeof(CollationData).Assembly;
-#endif
-
         // Note: The ucadata.icu loader could discover the reserved ranges by setting an array
         // parallel with the ranges, and resetting ranges that are indexed.
         // The reordering builder code could clone the resulting template array.

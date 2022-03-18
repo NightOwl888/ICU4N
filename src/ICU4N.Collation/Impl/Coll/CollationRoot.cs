@@ -52,13 +52,7 @@ namespace ICU4N.Impl.Coll
             Exception e2 = null;
             try
             {
-                // ICU4N specific - passing in assembly name so we resolve to this assembly rather than ICU4N.dll
-                ByteBuffer bytes =
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                    ICUBinary.GetRequiredData(typeof(CollationRoot).GetTypeInfo().Assembly, null, "coll/ucadata.icu");
-#else
-                    ICUBinary.GetRequiredData(typeof(CollationRoot).Assembly, null, "coll/ucadata.icu");
-#endif
+                ByteBuffer bytes = ICUBinary.GetRequiredData("coll/ucadata.icu");
                 CollationTailoring t2 = new CollationTailoring(null);
                 CollationDataReader.Read(null, bytes, t2);
                 // Keep t=null until after the root data has been read completely.

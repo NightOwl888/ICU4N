@@ -28,7 +28,7 @@ namespace ICU4N.Impl.Coll
             {
                 UResourceBundle rootBundle = UResourceBundle.GetBundleInstance(
                         // ICU4N specific - passing in the current assembly to load resources from.
-                        ICUData.IcuCollationBaseName, UCultureInfo.InvariantCulture, CollationData.IcuDataAssembly);
+                        ICUData.IcuCollationBaseName, UCultureInfo.InvariantCulture, ICUResourceBundle.IcuDataAssembly);
                 return rootBundle.GetString("UCARules");
             });
         }
@@ -75,7 +75,7 @@ namespace ICU4N.Impl.Coll
         {
             UResourceBundle bundle = UResourceBundle.GetBundleInstance(
                     // ICU4N specific - passing in the current assembly to load resources from.
-                    ICUData.IcuCollationBaseName, locale, CollationData.IcuDataAssembly);
+                    ICUData.IcuCollationBaseName, locale, ICUResourceBundle.IcuDataAssembly);
             UResourceBundle data = ((ICUResourceBundle)bundle).GetWithFallback(
                     "collations/" + ASCII.ToLower(collationType));
             string rules = data.GetString("Sequence");
@@ -109,7 +109,7 @@ namespace ICU4N.Impl.Coll
                         ICUData.IcuCollationBaseName, locale,
                         // ICU4N specific - need to pass in this assembly
                         // name for the resources to be resolved here.
-                        CollationData.IcuDataAssembly,
+                        ICUResourceBundle.IcuDataAssembly,
                         OpenType.LocaleRoot);
             }
             catch (MissingManifestResourceException)
