@@ -1,4 +1,6 @@
 ﻿using ICU4N.Globalization;
+using ICU4N.Reflection;
+using ICU4N.Resources;
 using ICU4N.Support.Globalization;
 using ICU4N.Util;
 using J2N;
@@ -11,6 +13,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using JCG = J2N.Collections.Generic;
@@ -20,6 +24,11 @@ namespace ICU4N.Impl
 {
     public class ICUResourceBundle : UResourceBundle
     {
+        /// <summary>
+        /// The path to the .NET Framework 4+ GAC where we will find .resources.dll files.
+        /// </summary>
+        private static readonly string GlobalAssemblyCacheMSILPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), @"Microsoft.NET\assembly\GAC_MSIL");
+
         /// <summary>
         /// CLDR string value "∅∅∅" prevents fallback to the parent bundle.
         /// </summary>
@@ -683,9 +692,13 @@ namespace ICU4N.Impl
             Assembly root, ISet<string> locales)
         {
             ICUResourceBundle bundle;
+            Assembly satelliteAssembly = root;
+            var resourceLocationAttribute = root.GetCustomAttribute<ResourceLocationAttribute>();
+            if (resourceLocationAttribute != null && resourceLocationAttribute.Location == Resources.ResourceLocation.Satellite)
+                satelliteAssembly = root.GetSatelliteAssembly(CultureInfo.InvariantCulture);
             try
             {
-                bundle = (ICUResourceBundle)UResourceBundle.InstantiateBundle(baseName, ICU_RESOURCE_INDEX, root, true);
+                bundle = (ICUResourceBundle)UResourceBundle.InstantiateBundle(baseName, ICU_RESOURCE_INDEX, satelliteAssembly, true);
                 bundle = (ICUResourceBundle)bundle.Get(InstalledLocales);
             }
             catch (MissingManifestResourceException)
@@ -708,8 +721,8 @@ namespace ICU4N.Impl
             }
         }
 
-        private static void AddBundleBaseNamesFromClassLoader(
-            string bn, Assembly root, ISet<string> names) // ICU4N TODO: API - rename AddBundleBaseNamesFromAssembly
+        private static void AddBundleBaseNamesFromAssembly(
+            string bn, Assembly root, ISet<string> names) // ICU4N: Renamed from AddBundleBaseNamesFromClassLoader()
         {
             // ICU4N: Convert to .NET style base name
             string suffix = bn.Replace('/', '.').Replace('.' + ICUData.PackageName, "");
@@ -726,24 +739,25 @@ namespace ICU4N.Impl
             }
         }
 
-        private static void AddLocaleIDsFromListFile(string bn, Assembly root, ISet<string> locales)
+        // internal for testing
+        internal static void AddLocaleIDsFromListFile(string bn, Assembly root, ISet<string> locales)
         {
+            Assembly satelliteAssembly = root;
+            var resourceLocationAttribute = root.GetCustomAttribute<ResourceLocationAttribute>();
+            if (resourceLocationAttribute != null && resourceLocationAttribute.Location == Resources.ResourceLocation.Satellite)
+                satelliteAssembly = root.GetSatelliteAssembly(CultureInfo.InvariantCulture);
             try
             {
-                using (Stream s = root.FindAndGetManifestResourceStream(ResourceUtil.ConvertResourceName(bn + FULL_LOCALE_NAMES_LIST)))
+                using Stream s = satelliteAssembly.FindAndGetManifestResourceStream(ResourceUtil.ConvertResourceName(bn + FULL_LOCALE_NAMES_LIST));
+                if (s != null)
                 {
-                    if (s != null)
+                    using TextReader br = new StreamReader(s, Encoding.ASCII);
+                    string line;
+                    while ((line = br.ReadLine()) != null)
                     {
-                        using (TextReader br = new StreamReader(s, Encoding.ASCII))
+                        if (line.Length != 0 && !line.StartsWith("#", StringComparison.Ordinal))
                         {
-                            string line;
-                            while ((line = br.ReadLine()) != null)
-                            {
-                                if (line.Length != 0 && !line.StartsWith("#", StringComparison.Ordinal))
-                                {
-                                    locales.Add(line);
-                                }
-                            }
+                            locales.Add(line);
                         }
                     }
                 }
@@ -754,6 +768,106 @@ namespace ICU4N.Impl
             }
         }
 
+        // internal for testing
+        internal static void AddLocaleIDsFromSatelliteAndGACFolderNames(string baseName, Assembly assembly, ISet<string> set)
+        {
+            if (baseName is null)
+                throw new ArgumentNullException(nameof(baseName));
+            if (assembly is null)
+                throw new ArgumentNullException(nameof(assembly));
+            if (set is null)
+                throw new ArgumentNullException(nameof(set));
+
+            AssemblyName assemblyNameObj = assembly.GetName();
+            string assemblyName = assemblyNameObj.Name;
+            string satelliteAssemblyName = $"{assemblyName}.resources";
+            string satelliteAssemblyDLLName = $"{satelliteAssemblyName}.dll";
+
+            var cultureNames = new HashSet<string>();
+
+            foreach (var file in new DirectoryInfo(PlatformDetection.BaseDirectory).GetFiles(satelliteAssemblyDLLName, SearchOption.AllDirectories))
+            {
+                string cultureName = file.Directory.Name;
+                if (LooksLikeACultureName(cultureName))
+                    cultureNames.Add(cultureName);
+            }
+
+            // Check the Global Assembly Cache (for .NET 4+ only)
+            if (PlatformDetection.IsWindows)
+            {
+                // Example path: C:\Windows\Microsoft.NET\assembly\GAC_MSIL\ICU4N.resources\v4.0_60.0.0.0_de--PHONEBOOK_efb17c8e4f0e291b
+
+                string globalAssemblyCacheResourcePath = Path.Combine(GlobalAssemblyCacheMSILPath, satelliteAssemblyName);
+
+                if (Directory.Exists(globalAssemblyCacheResourcePath))
+                {
+                    foreach (var file in new DirectoryInfo(globalAssemblyCacheResourcePath).GetFiles(satelliteAssemblyDLLName, SearchOption.AllDirectories))
+                    {
+                        string assemblyDetails = file.Directory.Name;
+                        string[] parts = assemblyDetails.Split('_');
+                        string cultureName = parts[2]; // 3rd segment of the folder is the culture name. Neutral resources have an empty string.
+
+                        if (LooksLikeACultureName(cultureName))
+                            cultureNames.Add(cultureName);
+                    }
+                }
+            }
+
+            Assembly satelliteAssembly;
+
+            foreach (var cultureName in cultureNames)
+            {
+                // ICU4N TODO: For .NET Core 3+, there is a better way with AssemblyLoadContext that allows us to
+                // unload the assembly again https://docs.microsoft.com/en-us/dotnet/standard/assembly/unloadability
+                // We need to target .NET Core 3 (or higher), to pull it off.
+
+                // ICU4N TODO: For .NET Framework, we can unload the assemblies by loading them into a temporary domain.
+                // This works in most cases, but certain domains trip up due to scropt codes. Still, if we load
+                // and unload the majority of them and fall back on ICUData.GetSatelliteAssemblyOrDefault, it should be more
+                // efficient than using ICUData.GetSatelliteAssemblyOrDefault alone.
+                //
+                // We require a cultureName -> assembly path Dictionary to use this approach, though. And the same will
+                // likely apply to the .NET Core 3+ unloading approach.
+                //
+                //            AppDomain dom = AppDomain.CreateDomain("getCultures");
+                //            AssemblyName satelliteAssemblyNamer = new AssemblyName();
+                //            foreach (var kvp in cultureMap)
+                //            {
+                //                satelliteAssemblyNamer.CodeBase = kvp.Value;
+                //                var satellite = dom.Load(satelliteAssemblyNamer);
+
+                //                string localeID = kvp.Key.Replace('-', '_');
+                //                if (EmbeddedResourceFileExists(satellite, baseName, localeID))
+                //                    set.Add(localeID);
+                //            }
+                //            AppDomain.Unload(dom);
+
+                if ((satelliteAssembly = ICUData.GetSatelliteAssemblyOrDefault(assembly, cultureName)) != null)
+                {
+                    string localeID = cultureName.Replace('-', '_');
+                    if (EmbeddedResourceFileExists(satelliteAssembly, baseName, localeID))
+                        set.Add(localeID);
+                }
+            }
+        }
+
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        private static bool EmbeddedResourceFileExists(Assembly assembly, string baseName, string localeID)
+        {
+            var icuPath = Path.Combine(baseName, string.Concat(localeID, ".res"));
+
+            // We just run a quick check to see if the file is in the resource
+            return assembly.GetManifestResourceInfo(ResourceUtil.ConvertResourceName(icuPath)) != null;
+        }
+
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        private static bool LooksLikeACultureName(string cultureName)
+                => (cultureName.Length > 1 && cultureName.Length <= 3) || cultureName.IndexOf('-') >= 2;
+
         private static ISet<string> CreateFullLocaleNameSet(string baseName, Assembly assembly)
         {
             string bn = baseName.EndsWith("/", StringComparison.Ordinal) ? baseName : baseName + "/";
@@ -761,47 +875,56 @@ namespace ICU4N.Impl
             string skipScan = ICUConfig.Get("ICUResourceBundle.SkipRuntimeLocaleResourceScan", "false");
             if (!skipScan.Equals("true", StringComparison.OrdinalIgnoreCase))
             {
-                // scan available locale resources under the base url first
-                AddBundleBaseNamesFromClassLoader(bn, assembly, set);
-                if (baseName.StartsWith(ICUData.IcuBaseName, StringComparison.Ordinal))
+                var resourceLocationAttribute = assembly.GetCustomAttribute<ResourceLocationAttribute>();
+                if (resourceLocationAttribute != null && resourceLocationAttribute.Location == Resources.ResourceLocation.Satellite)
                 {
-                    string folder;
-                    if (baseName.Length == ICUData.IcuBaseName.Length)
-                    {
-                        folder = "";
-                    }
-                    else if (baseName[ICUData.IcuBaseName.Length] == '/')
-                    {
-                        folder = baseName.Substring(ICUData.IcuBaseName.Length + 1);
-                    }
-                    else
-                    {
-                        folder = null;
-                    }
-                    if (folder != null)
-                    {
-                        ICUBinary.AddBaseNamesInFileFolder(folder, ".res", set);
-                    }
+                    AddLocaleIDsFromSatelliteAndGACFolderNames(baseName, assembly, set);
                 }
-                set.Remove(ICU_RESOURCE_INDEX);  // "res_index"
-                                                 // HACK: TODO: Figure out how we can distinguish locale data from other data items.
-
-                var toRemove = new List<string>();
-                using (var iter = set.GetEnumerator())
+                else
                 {
-                    while (iter.MoveNext())
+                    // scan available locale resources under the base url first
+                    AddBundleBaseNamesFromAssembly(bn, assembly, set);
+
+                    if (baseName.StartsWith(ICUData.IcuBaseName, StringComparison.Ordinal))
                     {
-                        string name = iter.Current;
-                        if ((name.Length == 1 || name.Length > 3) && name.IndexOf('_') < 0)
+                        string folder;
+                        if (baseName.Length == ICUData.IcuBaseName.Length)
                         {
-                            // Does not look like a locale ID.
-                            //iter.remove();
-                            toRemove.Add(name);
+                            folder = "";
+                        }
+                        else if (baseName[ICUData.IcuBaseName.Length] == '/')
+                        {
+                            folder = baseName.Substring(ICUData.IcuBaseName.Length + 1);
+                        }
+                        else
+                        {
+                            folder = null;
+                        }
+                        if (folder != null)
+                        {
+                            ICUBinary.AddBaseNamesInFileFolder(folder, ".res", set);
                         }
                     }
+                    set.Remove(ICU_RESOURCE_INDEX);  // "res_index"
+                                                     // HACK: TODO: Figure out how we can distinguish locale data from other data items.
+
+                    var toRemove = new List<string>();
+                    using (var iter = set.GetEnumerator())
+                    {
+                        while (iter.MoveNext())
+                        {
+                            string name = iter.Current;
+                            if ((name.Length == 1 || name.Length > 3) && name.IndexOf('_') < 0)
+                            {
+                                // Does not look like a locale ID.
+                                //iter.remove();
+                                toRemove.Add(name);
+                            }
+                        }
+                    }
+                    // ICU4N: Remove items outside of the enumerator loop
+                    set.ExceptWith(toRemove);
                 }
-                // ICU4N: Remove items outside of the enumerator loop
-                set.ExceptWith(toRemove);
             }
             // look for prebuilt full locale names list next
             if (set.Count == 0)
@@ -817,6 +940,11 @@ namespace ICU4N.Impl
             // We need to have the root locale in the set, but not as "root".
             set.Remove("root");
             set.Add(UCultureInfo.InvariantCulture.ToString());  // ""
+
+            // ICU4N TODO: Add extension point (something like ICUConfig) that can be used at
+            // app startup to inject additional locale names to cover cases like dynamically
+            // generated assemblies in the AppDomain.AssemblyLoad Event.
+
             return set.AsReadOnly();
         }
 

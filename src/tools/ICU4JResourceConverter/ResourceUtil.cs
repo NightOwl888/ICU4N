@@ -1,12 +1,9 @@
 ﻿using ICU4N.Globalization;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Resources;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace JavaResourceConverter
 {
@@ -15,6 +12,9 @@ namespace JavaResourceConverter
     /// </summary>
     public static class ResourceUtil
     {
+        // ICU4N TODO: Change logic to generate fullLocaleNames.lst files based on the actual files being processed.
+        // This list is used as a backup when the directory scan returns no results or is disabled by the user.
+
         public const string LocaleListFileName = "fullLocaleNames.lst";
         public const string InvariantResourcesListFileName = "invariantResourceNames.lst";
         //public const string InvariantResourcesDirectoryName = "invariantResources";

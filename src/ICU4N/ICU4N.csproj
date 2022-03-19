@@ -76,7 +76,7 @@
   </PropertyGroup>
   
   <ItemGroup Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)">
-    <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" CopyToOutputDirectory="PreserveNewest" Visible="false"/>
+    <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
   </ItemGroup>
 
   <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
@@ -87,32 +87,30 @@
       <ICU4JJarFilePath>$(ArtifactsDir)/icu4j-$(Major).$(Minor).jar</ICU4JJarFilePath>
     </PropertyGroup>
     
-    <Message Text="Downloading ICU4J..." Importance="high" Condition=" !Exists('$(ICU4JJarFilePath)') "/>
+    <Message Text="Downloading ICU4J..." Importance="high" Condition=" !Exists('$(ICU4JJarFilePath)') " />
   
     <ReadICU4JDownloadUrls ConfigFilePath="$(ICU4JDownloadConfigFilePath)" MajorVersion="$(Major)" MinorVersion="$(Minor)" Condition=" !Exists('$(ICU4JJarFilePath)') ">
-      <Output ItemName="ICU4JDownloadUrls" TaskParameter="Urls"/>
+      <Output ItemName="ICU4JDownloadUrls" TaskParameter="Urls" />
     </ReadICU4JDownloadUrls>
   
-    <Message Text="@(ICU4JDownloadUrls)" Importance="high"/>
+    <Message Text="@(ICU4JDownloadUrls)" Importance="high" />
   
     <DownloadFileWithFallback Urls="@(ICU4JDownloadUrls)" DestinationFilePath="$(ICU4JJarFilePath)" Condition=" !Exists('$(ICU4JJarFilePath)')">
-      <Output PropertyName="IsICU4JFileDownloaded" TaskParameter="Successful"/>
+      <Output PropertyName="IsICU4JFileDownloaded" TaskParameter="Successful" />
     </DownloadFileWithFallback>
   
-    <Error 
-      Condition=" '$(IsICU4JFileDownloaded)' != 'true' And !Exists('$(ICU4JJarFilePath)') "
-      Text="The build cannot continue without $(ICU4JJarFilePath). Use Maven search (https://mvnrepository.com or https://search.maven.org/) to look for the file and download it manually to $(ICU4JJarFilePath). Alternatively, check the ICU Releases Page: https://github.com/unicode-org/icu/releases."/>
+    <Error Condition=" '$(IsICU4JFileDownloaded)' != 'true' And !Exists('$(ICU4JJarFilePath)') " Text="The build cannot continue without $(ICU4JJarFilePath). Use Maven search (https://mvnrepository.com or https://search.maven.org/) to look for the file and download it manually to $(ICU4JJarFilePath). Alternatively, check the ICU Releases Page: https://github.com/unicode-org/icu/releases." />
   </Target>
     
   <Target Name="ExecICU4JResourceConverter" AfterTargets="GenerateSatelliteAssemblies" BeforeTargets="GenerateOurSatelliteAssemblies" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
     
     <CheckWhetherResourcesRequireUpdate SourceFilePath="$(ICU4JJarFilePath)" DestinationPath="$(ICU4JResourcesDirectory)">
-      <Output PropertyName="ResourcesRequireUpdate" TaskParameter="RequiresUpdate"/>
+      <Output PropertyName="ResourcesRequireUpdate" TaskParameter="RequiresUpdate" />
     </CheckWhetherResourcesRequireUpdate>
   
-    <Message Text="ResourcesRequireUpdate: $(ResourcesRequireUpdate)" Importance="high"/>
+    <Message Text="ResourcesRequireUpdate: $(ResourcesRequireUpdate)" Importance="high" />
     
-    <Message Text="Converting ICU4J Resource Files..." Importance="high" Condition=" '$(ResourcesRequireUpdate.ToLowerInvariant())' == 'true' "/>
+    <Message Text="Converting ICU4J Resource Files..." Importance="high" Condition=" '$(ResourcesRequireUpdate.ToLowerInvariant())' == 'true' " />
     
     <RemoveDir Directories="$(ICU4JWorkingDirectory)" Condition=" '$(ResourcesRequireUpdate.ToLowerInvariant())' == 'true' " />
     <RemoveDir Directories="$(ICU4JResourcesDirectory)" Condition=" '$(ResourcesRequireUpdate.ToLowerInvariant())' == 'true' " />

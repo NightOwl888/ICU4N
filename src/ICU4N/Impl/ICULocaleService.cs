@@ -715,14 +715,7 @@ namespace ICU4N.Impl
             return ICUResourceBundle.GetBundleInstance(bundleName, loc, Assembly);
         }
 
-        protected virtual Assembly Assembly
-        {
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            get { return GetType().GetTypeInfo().Assembly; }
-#else
-            get { return GetType().Assembly; }
-#endif
-        }
+        protected virtual Assembly Assembly => ICUResourceBundle.IcuDataAssembly; // ICU4N specific: We use the main assembly here. The end user can override if their assembly has any embedded resources.
 
         public override string ToString()
         {

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Resources;
+﻿using ICU4N.Resources;
+using System;
 
 [assembly: CLSCompliant(true)]
-[assembly: NeutralResourcesLanguage("", UltimateResourceFallbackLocation.MainAssembly)]
+[assembly: ResourceLocation(ResourceLocation.Satellite)]

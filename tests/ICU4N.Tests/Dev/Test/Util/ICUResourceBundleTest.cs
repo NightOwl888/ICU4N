@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Resources;
 
@@ -1376,6 +1377,24 @@ namespace ICU4N.Dev.Test.Util
             //    catch (NoSuchElementException ex)
             //    {
             //    }
+        }
+
+        [Test]
+        public void TestAddLocaleIDsFromSatelliteFolderNames()
+        {
+            // Load raw list data for the root path
+            var expected = new HashSet<string>();
+            string baseName = ICUData.IcuBaseName.EndsWith("/", StringComparison.Ordinal) ? ICUData.IcuBaseName : ICUData.IcuBaseName + "/";
+            ICUResourceBundle.AddLocaleIDsFromListFile(baseName, ICUResourceBundle.IcuDataAssembly, expected);
+            expected.Remove("root");
+
+            // Run the scan of directories to get the full list of cultures
+            var cultures = new HashSet<string>();
+            ICUResourceBundle.AddLocaleIDsFromSatelliteAndGACFolderNames($"data/{ICUData.PackageName}/", ICUResourceBundle.IcuDataAssembly, cultures);
+
+            // Exclude the originals so we can see what went wrong.
+            expected.ExceptWith(cultures);
+            assertFalse($"Missing culture values: {string.Join(", ", expected)}", expected.Count > 0);
         }
     }
 }
