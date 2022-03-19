@@ -101,7 +101,7 @@ namespace ICU4N.Impl
         {
             if (root == null)
             {
-                root = GetAssembly(baseName); // ICU4N: Load the correct assembly based on baseName if not explicitly provided
+                root = ICUResourceBundle.IcuDataAssembly; // ICU4N: We always use the current assembly as fallback when not provided.
             }
             ResourceBundleWrapper b;
             if (disableFallback)

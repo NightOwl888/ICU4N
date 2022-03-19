@@ -1,12 +1,19 @@
-﻿using ICU4N.Logging;
+﻿using ICU4N.Globalization;
+using ICU4N.Logging;
+using ICU4N.Reflection;
+using ICU4N.Resources;
 using ICU4N.Support;
 using ICU4N.Support.Globalization;
 using ICU4N.Util;
 using J2N;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace ICU4N.Impl
 {
@@ -15,10 +22,27 @@ namespace ICU4N.Impl
     /// </summary>
     public sealed class ICUData
     {
+        private const string InvariantResourceManifestFileName = "data.invariantResourceNames.lst";
+        private static readonly Assembly InvariantResourceAssembly = typeof(ICUData).Assembly.GetSatelliteAssembly(CultureInfo.InvariantCulture);
+        private static readonly ISet<string> InvariantResourceFileNames = LoadInvariantResourceFileNames();
+
+        private static ISet<string> LoadInvariantResourceFileNames()
+        {
+            var result = new HashSet<string>();
+            using var stream = typeof(ICUData).Assembly
+                .GetSatelliteAssembly(CultureInfo.InvariantCulture)
+                .GetManifestResourceStream(InvariantResourceManifestFileName);
+            using var reader = new StreamReader(stream, Encoding.UTF8);
+            string line = null;
+            while ((line = reader.ReadLine()) != null)
+                result.Add(line);
+            return result;
+        }
+
         /// <summary>
         /// The data path to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
-        internal const string IcuDataPath = "Impl/";
+        internal const string IcuDataPath = ""; //"impl/"; // ICU4N: We elimiated the impl path because it makes more sense to use the top name data/
 
         /// <summary>
         /// The ICU data package name.
@@ -31,7 +55,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// The data path to be used with <see cref="Assembly.GetManifestResourceStream(string)"/>.
         /// </summary>
-        public const string IcuBundle = "Data/" + PackageName;
+        public const string IcuBundle = "data/" + PackageName;
 
         /// <summary>
         /// The base name of ICU data to be used with <see cref="Assembly.GetManifestResourceStream(string)"/>,
@@ -83,22 +107,33 @@ namespace ICU4N.Impl
 
         public static bool Exists(string resourceName)
         {
-            return typeof(ICUData).FindAndGetManifestResourceStream(ResourceUtil.ConvertResourceName(resourceName)) != null;
+            //return typeof(ICUData).FindAndGetManifestResourceStream(ResourceUtil.ConvertResourceName(resourceName)) != null;
+            return GetStream(typeof(ICUData).Assembly, resourceName, required: false) != null;
         }
 
         private static Stream GetStream(Type root, string resourceName, bool required)
         {
-            Stream i;
-            i = root.FindAndGetManifestResourceStream(ResourceUtil.ConvertResourceName(resourceName));
+#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            Assembly assembly = root.GetTypeInfo().Assembly;
+#else
+            Assembly assembly = root.Assembly;
+#endif
+            return GetStream(assembly, resourceName, required);
+        }
+
+        /// <summary>
+        /// Should be called only from <see cref="ICUBinary.GetData(Assembly, string, string, bool)"/> or from convenience overloads here.
+        /// </summary>
+        internal static Stream GetStream(Assembly loader, string resourceName, bool required)
+        {
+            var resourceLocationAttribute = loader.GetCustomAttribute<ResourceLocationAttribute>();
+            if (resourceLocationAttribute != null && resourceLocationAttribute.Location == Resources.ResourceLocation.Satellite)
+                return GetStream(loader, GetLocaleIDFromResourceName(resourceName), resourceName, required);
+
+            Stream i = loader.FindAndGetManifestResourceStream(ResourceUtil.ConvertResourceName(resourceName));
             if (i == null && required)
             {
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                Assembly assembly = root.GetTypeInfo().Assembly;
-#else
-                Assembly assembly = root.Assembly;
-#endif
-                throw new MissingManifestResourceException("could not locate data " + resourceName +
-                    " Assembly: " + assembly.FullName + " Resource: " + resourceName);
+                throw new MissingManifestResourceException("could not locate data " + loader.ToString() + " Resource: " + resourceName);
             }
             CheckStreamForBinaryData(i, resourceName);
             return i;
@@ -107,16 +142,65 @@ namespace ICU4N.Impl
         /// <summary>
         /// Should be called only from <see cref="ICUBinary.GetData(Assembly, string, string, bool)"/> or from convenience overloads here.
         /// </summary>
-        internal static Stream GetStream(Assembly loader, string resourceName, bool required)
+        internal static Stream GetStream(Assembly loader, string localeID, string resourceName, bool required)
         {
+            string cultureName = localeID == "root" || localeID == "any" ? string.Empty : localeID.Replace('_', '-');
+            //var culture = string.IsNullOrWhiteSpace(cultureName) ? CultureInfo.InvariantCulture : new ResourceCultureInfo(cultureName);
+
             Stream i = null;
-            i = loader.FindAndGetManifestResourceStream(ResourceUtil.ConvertResourceName(resourceName));
+            Assembly satelliteAssembly;
+
+            // Skip the lookup if the wrong satellite assembly was loaded. In most cases, if the resource assembly doesn't exist,
+            // we will have the neutral resource (invariant) assembly. So, we do a check to make sure we have the right one,
+            // and fallback if we do not.
+            if ((satelliteAssembly = GetSatelliteAssemblyOrDefault(loader, cultureName)) != null)
+                i = satelliteAssembly.GetManifestResourceStream(ResourceUtil.ConvertResourceName(resourceName));
+
             if (i == null && required)
             {
                 throw new MissingManifestResourceException("could not locate data " + loader.ToString() + " Resource: " + resourceName);
             }
             CheckStreamForBinaryData(i, resourceName);
             return i;
+        }
+
+        internal static Assembly GetSatelliteAssemblyOrDefault(Assembly assembly, string cultureName)
+        {
+            var culture = string.IsNullOrWhiteSpace(cultureName) ? CultureInfo.InvariantCulture : new ResourceCultureInfo(cultureName);
+            Assembly satelliteAssembly = null;
+
+            // We need to catch FileNotFound or FileLoadException and ignore them. This happens when the initial
+            // culture lookup fails and then the framework attempts to validate the culture name. Since we have
+            // culture names that don't exist in .NET, there isn't much we can do except catch and ignore these
+            // exceptions.
+            try
+            {
+                satelliteAssembly = assembly.GetSatelliteAssembly(culture);
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (FileLoadException) //when (e.InnerException is CultureNotFoundException)
+            {
+                // ICU4N: If we end up here, it means that the culture folder was not found.
+                // Fall back
+            }
+            catch (FileNotFoundException)
+            {
+                // .NET 5.0 and earlier tend to throw this when the culture folder is not found.
+                // Fall back
+            }
+#pragma warning restore CA1031 // Do not catch general exception types
+
+            return IsRequestedCulture(satelliteAssembly, cultureName) ? satelliteAssembly : null;
+        }
+
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static bool IsRequestedCulture(Assembly satelliteAssembly, string cultureName)
+        {
+            if (satelliteAssembly is null) return false;
+            bool isInvariant = InvariantResourceAssembly.Equals(satelliteAssembly);
+            return string.IsNullOrWhiteSpace(cultureName) ? isInvariant : !isInvariant;
         }
 
         private static void CheckStreamForBinaryData(Stream input, string resourceName)
@@ -163,7 +247,7 @@ namespace ICU4N.Impl
         /// <returns>Returns null if the resource could not be found.</returns>
         public static Stream GetStream(string resourceName)
         {
-            return GetStream(typeof(ICUData), resourceName, false);
+            return GetStream(typeof(ICUData).Assembly, resourceName, false);
         }
 
         /// <summary>
@@ -172,7 +256,7 @@ namespace ICU4N.Impl
         /// <exception cref="System.Resources.MissingManifestResourceException">If the resource could not be found.</exception>
         public static Stream GetRequiredStream(string resourceName)
         {
-            return GetStream(typeof(ICUData), resourceName, true);
+            return GetStream(typeof(ICUData).Assembly, resourceName, true);
         }
 
         /// <summary>
@@ -181,7 +265,7 @@ namespace ICU4N.Impl
         /// <returns>Returns null if the resource could not be found.</returns>
         public static Stream GetStream(Type root, string resourceName)
         {
-            return GetStream(root, resourceName, false);
+            return GetStream(root.Assembly, resourceName, false);
         }
 
         /// <summary>
@@ -190,7 +274,15 @@ namespace ICU4N.Impl
         /// <exception cref="System.Resources.MissingManifestResourceException">If the resource could not be found.</exception>
         public static Stream GetRequiredStream(Type root, string resourceName)
         {
-            return GetStream(root, resourceName, true);
+            return GetStream(root.Assembly, resourceName, true);
+        }
+
+        private static string GetLocaleIDFromResourceName(string resourceName)
+        {
+            if (InvariantResourceFileNames.Contains(ResourceUtil.ConvertResourceName(resourceName)))
+                return "root";
+
+            return Path.GetFileNameWithoutExtension(resourceName);
         }
     }
 }
