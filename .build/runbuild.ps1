@@ -29,8 +29,10 @@ $versionInfo = @{}
 task default -depends Pack
 
 task Clean -description "This task cleans up the build directory" {
-    Remove-Item $artifactsDirectory -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item $nugetPackageDirectory -Force -Recurse -ErrorAction SilentlyContinue
+    Remove-Item $testResultsDirectory -Force -Recurse -ErrorAction SilentlyContinue
     Get-ChildItem $baseDirectory -Include *.bak -Recurse | foreach ($_) {Remove-Item $_.FullName}
+	Ensure-Directory-Exists $nugetPackageDirectory #For some strange reason, nbgv tool won't install without this directory present
 }
 
 task CheckSDK -description "This task makes sure the correct SDK version is installed" {
@@ -83,6 +85,7 @@ task Compile -depends Clean, Init -description "This task compiles the solution"
     $localInformationalVersion = $versionInfo['InformationalVersion']
     $localFileVersion = $versionInfo['FileVersion']
     $localAssemblyVersion = $versionInfo['AssemblyVersion']
+    $localPackageVersion = $versionInfo['PackageVersion']
 
     Exec {
         &dotnet build "$solutionFile" `
@@ -91,6 +94,7 @@ task Compile -depends Clean, Init -description "This task compiles the solution"
             /p:InformationalVersion="$localInformationalVersion" `
             /p:FileVersion="$localFileVersion" `
             /p:AssemblyVersion="$localAssemblyVersion" `
+            /p:PackageVersion="$localPackageVersion" `
             /p:TestAllTargetFrameworks=true `
             /p:PortableDebugTypeOnly=true `
             /p:SkipGitVersioning=true

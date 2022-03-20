@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net40</TargetFramework>
+
+    <Description>Full data for ICU4N. This package is a transient dependency of ICU4N and does not necessarily need to be installed explicitly.</Description>
+
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeSymbols>false</IncludeSymbols>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <RootNamespace>ICU4N.Resources.NETFramework40</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" Pack="true" PackagePath="lib/net40" Visible="false" />
+  </ItemGroup>
+
+</Project>

@@ -5,6 +5,7 @@
     <LangVersion>8.0</LangVersion>
     <GitHubOrganization>NightOwl888</GitHubOrganization>
     <GitHubProject>ICU4N</GitHubProject>
+    <ArtifactsDir>$(SolutionDir)_artifacts</ArtifactsDir>
   </PropertyGroup>
   
   <PropertyGroup Label="Assembly Signing">
@@ -23,6 +24,10 @@
     <IncludeSymbols>true</IncludeSymbols>
     <!-- This is the new symbols format (the only one currently supported at NuGet.org) -->
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageTags>$(PackageTags);icu;international;unicode</PackageTags>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <ICUDataEndian Label="b for big endian, l for little endian">b</ICUDataEndian>
+    <ICUDataPrefix>icudt</ICUDataPrefix>
   </PropertyGroup>
   
   <PropertyGroup Label="Copyright Info">
@@ -48,6 +53,10 @@
     <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6.2 Tools\</TargetFrameworkSDKToolsDirectory>
     <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.2 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.7.2 Tools\</TargetFrameworkSDKToolsDirectory>
     <TargetFrameworkSDKToolsDirectory Condition="Exists('$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\')">$(MSBuildProgramFiles32)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8 Tools\</TargetFrameworkSDKToolsDirectory>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Satellite Assemblies">
+    <ICU4NSatelliteAssemblyOutputDir>$(ArtifactsDir)/SatelliteAssemblies/$(Configuration)</ICU4NSatelliteAssemblyOutputDir>
   </PropertyGroup>
 
 </Project>
