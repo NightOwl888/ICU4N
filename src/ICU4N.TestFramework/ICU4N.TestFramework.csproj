@@ -4,6 +4,7 @@
     <TargetFramework></TargetFramework>
     <TargetFrameworks>netstandard2.0;net451;net40</TargetFrameworks>
     <RootNamespace>ICU4N</RootNamespace>
+    <CLSCompliant>false</CLSCompliant>
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet Package Defaults">
