@@ -10,6 +10,10 @@
   <Import Project="$(SolutionDir)/.build/TestTargetFramework.props" />
 
   <PropertyGroup>
+    <CLSCompliant>false</CLSCompliant>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <NoWarn>$(NoWarn);168;612;618;672;809</NoWarn>
   </PropertyGroup>
 

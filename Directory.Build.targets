@@ -103,6 +103,14 @@
       </AssemblyAttribute>
     </ItemGroup>
   </Target>
+
+  <Target Name ="AddCLSCompliant" BeforeTargets="AddInternalsVisibleTo" Label="Adds CLSCompliant Attribute (if specified)">
+    <ItemGroup Condition=" '$(CLSCompliant.ToLowerInvariant())' == 'true' Or '$(CLSCompliant.ToLowerInvariant())' == 'false' ">
+      <AssemblyAttribute Include="System.CLSCompliantAttribute">
+        <_Parameter1>$(CLSCompliant.ToLowerInvariant())</_Parameter1>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
   
   <Target Name="PrintTargetFrameworks" Label="Prints the value for the $(TargetFrameworks) property or 'none' if no frameworks apply. Pass TestProjectsOnly=true to get results only if this is a test project.">
     <PropertyGroup>

@@ -6,6 +6,7 @@
     <GitHubOrganization>NightOwl888</GitHubOrganization>
     <GitHubProject>ICU4N</GitHubProject>
     <ArtifactsDir>$(SolutionDir)_artifacts</ArtifactsDir>
+    <CLSCompliant>true</CLSCompliant>
   </PropertyGroup>
   
   <PropertyGroup Label="Assembly Signing">
