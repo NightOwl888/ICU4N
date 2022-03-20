@@ -9,8 +9,8 @@ namespace ICU4N.Globalization
     /// Provides a base class for a language data provider, which can be used to provide
     /// custom distributions of language data with ICU4N.
     /// <para/>
-    /// The data must reside in an embedded resource in a folder named <c>Impl\Data\lang\</c>
-    /// within the assembly, so it is resolved as <c>[assembly name].Impl.Data.lang.[localeID].res</c>.
+    /// The data must reside in an embedded resource in a folder named <c>data\lang\</c>
+    /// within the assembly, so it is resolved as <c>[assembly name].data.lang.[localeID].res</c>.
     /// </summary>
     /// <draft>ICU 60</draft>
     public abstract class LanguageDataTableProvider : ILanguageDataTableProvider

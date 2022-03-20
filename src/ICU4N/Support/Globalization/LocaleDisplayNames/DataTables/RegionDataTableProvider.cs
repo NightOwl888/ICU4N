@@ -11,8 +11,8 @@ namespace ICU4N.Globalization
     /// Provides a base class for a region data provider, which can be used to provide
     /// custom distributions of region/country data with ICU4N.
     /// <para/>
-    /// The data must reside in an embedded resource in a folder named <c>Impl\Data\region\</c>
-    /// within the assembly, so it is resolved as <c>[assembly name].Impl.Data.region.[localeID].res</c>.
+    /// The data must reside in an embedded resource in a folder named <c>data\region\</c>
+    /// within the assembly, so it is resolved as <c>[assembly name].data.region.[localeID].res</c>.
     /// </summary>
     /// <draft>ICU 60</draft>
     public abstract class RegionDataTableProvider : IRegionDataTableProvider
