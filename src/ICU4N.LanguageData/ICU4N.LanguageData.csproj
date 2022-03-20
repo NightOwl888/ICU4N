@@ -12,14 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Impl\Data\lang\*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Impl\Data\lang\*" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ICU4N\ICU4N.csproj" />
   </ItemGroup>
 

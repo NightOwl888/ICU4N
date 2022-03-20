@@ -43,26 +43,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Impl\Data\brkitr\*" />
-    <None Remove="Impl\Data\*.cfu" />
-    <None Remove="Impl\Data\*.cnv" />
-    <None Remove="Impl\Data\*.icu" />
-    <None Remove="Impl\Data\*.nrm" />
-    <None Remove="Impl\Data\*.res" />
-    <None Remove="Impl\Data\*.spp" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Impl\Data\brkitr\*" />
-    <EmbeddedResource Include="Impl\Data\*.cfu" />
-    <EmbeddedResource Include="Impl\Data\*.cnv" />
-    <EmbeddedResource Include="Impl\Data\*.res" />
-    <EmbeddedResource Include="Impl\Data\*.icu" />
-    <EmbeddedResource Include="Impl\Data\*.nrm" />
-    <EmbeddedResource Include="Impl\Data\*.spp" />
-  </ItemGroup>
-
   <PropertyGroup>
     <ICU4JResourceConverterDir>$(SolutionDir)src/tools/ICU4JResourceConverter</ICU4JResourceConverterDir>
     <ICU4JResourceConverterOutputDir>$(ICU4JResourceConverterDir)/bin/$(Configuration)/net6.0</ICU4JResourceConverterOutputDir>

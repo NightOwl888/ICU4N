@@ -12,10 +12,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Impl\Data\curr\*" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ICU4N\ICU4N.csproj" />
   </ItemGroup>
 
