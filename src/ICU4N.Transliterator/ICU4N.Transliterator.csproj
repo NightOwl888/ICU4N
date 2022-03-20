@@ -15,12 +15,4 @@
     <ProjectReference Include="..\ICU4N\ICU4N.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="Impl\Data\translit\*" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Impl\Data\translit\*" />
-  </ItemGroup>
-
 </Project>
