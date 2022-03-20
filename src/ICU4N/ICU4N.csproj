@@ -10,7 +10,6 @@
   <PropertyGroup Label="NuGet Package Settings">
     <AssemblyTitle>ICU4N</AssemblyTitle>
     <Description>ICU (International Components for Unicode) is a set of libraries providing Unicode and Globalization support for software applications. It provides Text-boundary analysis (RuleBasedBreakIterator) as well as easy access to all of the many Unicode character properties, Unicode Normalization, Case Folding and other fundamental operations as specified by the Unicode Standard. ICU4N is a .NET port of ICU4J.</Description>
-    <PackageTags>$(PackageTags);icu;international;unicode</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -65,10 +64,8 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <ArtifactsDir>$(SolutionDir)_artifacts</ArtifactsDir>
     <ICU4JResourceConverterDir>$(SolutionDir)src/tools/ICU4JResourceConverter</ICU4JResourceConverterDir>
     <ICU4JResourceConverterOutputDir>$(ICU4JResourceConverterDir)/bin/$(Configuration)/net6.0</ICU4JResourceConverterOutputDir>
-    <ICU4NSatelliteAssemblyOutputDir>$(ArtifactsDir)/SatelliteAssemblies</ICU4NSatelliteAssemblyOutputDir>
 
     <ICU4JDownloadConfigFilePath>$(SolutionDir).build/icu4j-download-urls.txt</ICU4JDownloadConfigFilePath>
     <ICU4JWorkingDirectory>$(ArtifactsDir)/icu4j-temp</ICU4JWorkingDirectory>
@@ -77,6 +74,21 @@
   
   <ItemGroup Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)">
     <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+  </ItemGroup>
+  
+  <Target Name="CreateIntermediateTargetsFile" BeforeTargets="DownloadICU4J" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
+
+    <PropertyGroup>
+      <Major>$(PackageVersion.Split('.')[0])</Major>
+      <ICUDataFolderName>$(ICUDataPrefix)$(Major)$(ICUDataEndian)</ICUDataFolderName>
+    </PropertyGroup>
+    
+    <ReplaceFileText InputFilename="$(AssemblyName).targets" OutputFilename="$(ArtifactsDir)/$(AssemblyName).targets" MatchExpression="\$version\$" ReplacementText="$(PackageVersion)" />
+    <ReplaceFileText InputFilename="$(ArtifactsDir)/$(AssemblyName).targets" OutputFilename="$(ArtifactsDir)/$(AssemblyName).targets" MatchExpression="\$icuDataFolderName\$" ReplacementText="$(ICUDataFolderName)" />
+  </Target>
+
+  <ItemGroup>
+    <None Include="$(SolutionDir)_artifacts/$(AssemblyName).targets" Pack="true" PackagePath="build/$(AssemblyName).targets" />
   </ItemGroup>
 
   <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
