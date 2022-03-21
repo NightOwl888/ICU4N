@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ICU4N.Collation\ICU4N.Collation.csproj" />
+    <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj" />
   </ItemGroup>
 
 </Project>

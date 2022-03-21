@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup Label="Import other ICU4J projects into the main assembly, so we only have 1 DLL to distribute">
+    <Compile Include="../ICU4N.Collation/**/*.cs" Exclude="../ICU4N.Collation/obj/**/*.*;../ICU4N.Collation/bin/**/*.*" LinkBase="_merged_packages/Collation" />
     <Compile Include="../ICU4N.CurrencyData/**/*.cs" Exclude="../ICU4N.CurrencyData/obj/**/*.*;../ICU4N.CurrencyData/bin/**/*.*" LinkBase="_merged_packages/CurrencyData" />
     <Compile Include="../ICU4N.LanguageData/**/*.cs" Exclude="../ICU4N.LanguageData/obj/**/*.*;../ICU4N.LanguageData/bin/**/*.*" LinkBase="_merged_packages/LanguageData" />
     <Compile Include="../ICU4N.RegionData/**/*.cs" Exclude="../ICU4N.RegionData/obj/**/*.*;../ICU4N.RegionData/bin/**/*.*" LinkBase="_merged_packages/RegionData" />
