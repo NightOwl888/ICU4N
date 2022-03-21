@@ -189,7 +189,7 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 try
                 {
-                    Type cls = Type.GetType("ICU4N.Text.Transliterator, ICU4N.Transliterator");
+                    Type cls = Type.GetType("ICU4N.Text.Transliterator, ICU4N");
                     MethodInfo createMethod = cls.GetMethod("CreateFromRules", new Type[] { typeof(String), typeof(String), typeof(int) });
                     translitInstance = createMethod.Invoke(null, new object[] { id, rule, direction });
                     translitMethod = cls.GetMethod("Transliterate", new Type[] { typeof(String) });

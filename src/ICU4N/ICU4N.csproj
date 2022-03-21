@@ -17,6 +17,7 @@
     <Compile Include="../ICU4N.CurrencyData/**/*.cs" Exclude="../ICU4N.CurrencyData/obj/**/*.*;../ICU4N.CurrencyData/bin/**/*.*" LinkBase="_merged_packages/CurrencyData" />
     <Compile Include="../ICU4N.LanguageData/**/*.cs" Exclude="../ICU4N.LanguageData/obj/**/*.*;../ICU4N.LanguageData/bin/**/*.*" LinkBase="_merged_packages/LanguageData" />
     <Compile Include="../ICU4N.RegionData/**/*.cs" Exclude="../ICU4N.RegionData/obj/**/*.*;../ICU4N.RegionData/bin/**/*.*" LinkBase="_merged_packages/RegionData" />
+    <Compile Include="../ICU4N.Transliterator/**/*.cs" Exclude="../ICU4N.Transliterator/obj/**/*.*;../ICU4N.Transliterator/bin/**/*.*" LinkBase="_merged_packages/Transliterator" />
   </ItemGroup>
 
   <ItemGroup>
