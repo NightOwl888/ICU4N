@@ -19,9 +19,6 @@ namespace ICU4N.Globalization
 {
     public class DataTableCultureDisplayNames : CultureDisplayNames
     {
-        internal const string DefaultLanguageDataTableProvider = "ICU4N.Globalization.ICULanguageDataTableProvider, ICU4N.LanguageData";
-        internal const string DefaultRegionDataTableProvider = "ICU4N.Globalization.ICURegionDataTableProvider, ICU4N.RegionData";
-
         private static ILanguageDataTableProvider languageDataTableProvider = new DefaultLanguageDataTableProvider();
         private static IRegionDataTableProvider regionDataTableProvider = new DefaultRegionDataTableProvider();
 

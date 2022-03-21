@@ -12,6 +12,11 @@
     <Description>ICU (International Components for Unicode) is a set of libraries providing Unicode and Globalization support for software applications. It provides Text-boundary analysis (RuleBasedBreakIterator) as well as easy access to all of the many Unicode character properties, Unicode Normalization, Case Folding and other fundamental operations as specified by the Unicode Standard. ICU4N is a .NET port of ICU4J.</Description>
   </PropertyGroup>
 
+  <ItemGroup Label="Import other ICU4J projects into the main assembly, so we only have 1 DLL to distribute">
+    <Compile Include="../ICU4N.LanguageData/**/*.cs" Exclude="../ICU4N.LanguageData/obj/**/*.*;../ICU4N.LanguageData/bin/**/*.*" LinkBase="_merged_packages/LanguageData" />
+    <Compile Include="../ICU4N.RegionData/**/*.cs" Exclude="../ICU4N.RegionData/obj/**/*.*;../ICU4N.RegionData/bin/**/*.*" LinkBase="_merged_packages/RegionData" />
+  </ItemGroup>
+
   <ItemGroup>
     <InternalsVisibleTo Include="ICU4N.Collation" />
     <InternalsVisibleTo Include="ICU4N.CurrencyData" />

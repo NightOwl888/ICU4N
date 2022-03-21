@@ -1,4 +1,5 @@
-﻿//using System;
+﻿// ICU4N: This class (from langdata) was replaced with ICU4N.Globalization.ICULanguageDataTableProvider
+//using System;
 //using System.Collections.Generic;
 //using System.Text;
 
