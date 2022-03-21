@@ -180,17 +180,24 @@ namespace ICU4N.Impl
 
         private static ICurrencyDisplayInfoProvider LoadCurrencyDisplayInfoProvider()
         {
-            ICurrencyDisplayInfoProvider temp;
-            try
-            {
-                Type clzz = Type.GetType("ICU4N.Impl.ICUCurrencyDisplayInfoProvider, ICU4N.CurrencyData");
-                temp = (ICurrencyDisplayInfoProvider)Activator.CreateInstance(clzz); //clzz.newInstance();
-            }
-            catch (Exception)
-            {
-                temp = new FallbackCurrencyDisplayInfoProvider();
-            }
-            return temp;
+            // ICU4N specific - since we have merged this into the ICU4N assembly, we need to fallback if
+            // there is no data. We cannot determine that by whether the assembly is installed.
+            ICurrencyDisplayInfoProvider temp = new ICUCurrencyDisplayInfoProvider();
+            if (temp.HasData)
+                return temp;
+
+            return new FallbackCurrencyDisplayInfoProvider();
+
+            //try
+            //{
+            //    Type clzz = Type.GetType("ICU4N.Impl.ICUCurrencyDisplayInfoProvider, ICU4N.CurrencyData");
+            //    temp = (ICurrencyDisplayInfoProvider)Activator.CreateInstance(clzz); //clzz.newInstance();
+            //}
+            //catch (Exception)
+            //{
+            //    temp = new FallbackCurrencyDisplayInfoProvider();
+            //}
+            //return temp;
         }
 
         private CurrencyData() { }

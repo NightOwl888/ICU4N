@@ -3,11 +3,14 @@ using ICU4N.Util;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Resources;
+using System.Threading;
 
 namespace ICU4N.Impl
 {
     public class ICUCurrencyDisplayInfoProvider : ICurrencyDisplayInfoProvider
     {
+        private object hasDataIfNotNull; // ICU4N specific - lazy check to be sure we have data, since we cannot determine this by whether the assembly is installed
+
         public ICUCurrencyDisplayInfoProvider()
         {
         }
@@ -46,7 +49,9 @@ namespace ICU4N.Impl
             return instance;
         }
 
-        public virtual bool HasData => true;
+        // ICU4N specific - lazy check to be sure we have data, since we cannot determine this by whether the assembly is installed
+        public virtual bool HasData => LazyInitializer.EnsureInitialized(ref hasDataIfNotNull, () => GetInstance(UCultureInfo.InvariantCulture, withFallback: false) is null ? null : new object()) != null;
+
 
         /// <summary>
         /// This class performs data loading for currencies and keeps data in lightweight cache.
