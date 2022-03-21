@@ -31,7 +31,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ICU4N.CurrencyData\ICU4N.CurrencyData.csproj" />
     <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj" />
   </ItemGroup>
   
