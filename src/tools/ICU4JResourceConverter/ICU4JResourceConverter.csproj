@@ -16,14 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="locales-unsupported-by-dotnet-6.txt" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <EmbeddedResource Include="locales-unsupported-by-dotnet-6.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Shared\" />
   </ItemGroup>
 
