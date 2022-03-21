@@ -32,22 +32,6 @@ namespace JavaResourceConverter
             //"zone",
         };
 
-        private const string UnsupportedDotNet6LocalesFileName = "locales-unsupported-by-dotnet-6.txt";
-        public static readonly string[] UnsupportedDotNet6Locales = LoadUnsupportedDotNet6Locales();
-
-        private static string[] LoadUnsupportedDotNet6Locales()
-        {
-            var thisType = typeof(ResourceUtil);
-            using var stream = thisType.Assembly.GetManifestResourceStream("ICU4JResourceConverter." + UnsupportedDotNet6LocalesFileName);
-            using var reader = new StreamReader(stream, Encoding.UTF8);
-            var temp = new List<string>();
-            string line = null;
-            while ((line = reader.ReadLine()) != null)
-                temp.Add(line.Trim());
-            return temp.ToArray();
-        }
-
-
         public static void TransformResources(string dataPath, string outputDirectory)
         {
             // locales (from root data directory)
@@ -80,11 +64,6 @@ namespace JavaResourceConverter
                 if (localeList.Contains(fileNameWithoutExtension))
                 {
                     string icuLocaleName = fileNameWithoutExtension;
-
-                    //// ICU4N TODO: These are gaps we need to handle, but for now we skip them
-                    //// for a PoC.
-                    //if (UnsupportedDotNet6Locales.Contains(icuLocaleName))
-                    //    continue;
 
                     if (icuLocaleName.Equals("root"))
                         TransformInvariantFeature(filePath, featureName, outputDirectory);
