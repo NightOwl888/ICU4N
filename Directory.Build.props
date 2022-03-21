@@ -25,7 +25,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <!-- This is the new symbols format (the only one currently supported at NuGet.org) -->
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageTags>$(PackageTags);icu;international;unicode</PackageTags>
+    <PackageTags>$(PackageTags);icu;icu4j;international;unicode;localization;globalization;breakiterator;bidi;collation;collator;rule-based</PackageTags>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <ICUDataEndian Label="b for big endian, l for little endian">b</ICUDataEndian>
     <ICUDataPrefix>icudt</ICUDataPrefix>

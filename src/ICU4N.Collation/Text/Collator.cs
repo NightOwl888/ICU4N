@@ -772,7 +772,7 @@ namespace ICU4N.Text
             {
                 try
                 {
-                    Type cls = Type.GetType("ICU4N.Text.CollatorServiceShim, ICU4N.Collation");
+                    Type cls = Type.GetType("ICU4N.Text.CollatorServiceShim, ICU4N");
                     shim = (ServiceShim)Activator.CreateInstance(cls);
                 }
                 catch (MissingManifestResourceException e)
