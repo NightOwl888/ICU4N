@@ -3,12 +3,8 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net451;net40</TargetFrameworks>
     <RootNamespace>ICU4N</RootNamespace>
-  </PropertyGroup>
-
-  <PropertyGroup Label="NuGet Package Settings">
-    <AssemblyTitle>ICU4N.LanguageData</AssemblyTitle>
-    <Description>International language compiled resources for ICU4N. ICU (International Components for Unicode) is a set of libraries providing Unicode and Globalization support for software applications. ICU4N is a .NET port of ICU4J.</Description>
-    <PackageTags>$(PackageTags);language;resources</PackageTags>
+    <!-- This project is only for organizational purposes-->
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
