@@ -376,7 +376,7 @@ namespace ICU4N.Impl
                 }
                 if (path.Length != 0)
                 {
-                    AddDataFilesFromFolder(new DirectoryInfo(path), new StringBuilder(), icuDataFiles);
+                    AddDataFilesFromFolder(new DirectoryInfo(path), new StringBuilder(), files);
                 }
                 if (sepIndex < 0)
                 {

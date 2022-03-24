@@ -129,7 +129,7 @@ data.
 internal</comment>
   </data>
   <data name="ICUBinary_DataPath" xml:space="preserve">
-    <value />
+    <value>data/icudt60b</value>
     <comment>File system path where ICU looks for binary data files.
 If not empty, then ICU looks for binary data files before looking for data in embedded resources.
 This string may contain multiple paths, see File.pathSeparatorChar.

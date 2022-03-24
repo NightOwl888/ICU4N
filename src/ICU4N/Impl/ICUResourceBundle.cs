@@ -725,7 +725,7 @@ namespace ICU4N.Impl
             string bn, Assembly root, ISet<string> names) // ICU4N: Renamed from AddBundleBaseNamesFromClassLoader()
         {
             // ICU4N: Convert to .NET style base name
-            string suffix = bn.Replace('/', '.').Replace('.' + ICUData.PackageName, "");
+            string suffix = ResourceUtil.ConvertResourceName(bn);
             string baseName = root.GetManifestResourceBaseName(suffix);
             foreach (var s in root.GetManifestResourceNames()
                 .Where(name => name.StartsWith(baseName, StringComparison.Ordinal))
@@ -884,47 +884,47 @@ namespace ICU4N.Impl
                 {
                     // scan available locale resources under the base url first
                     AddBundleBaseNamesFromAssembly(bn, assembly, set);
-
-                    if (baseName.StartsWith(ICUData.IcuBaseName, StringComparison.Ordinal))
-                    {
-                        string folder;
-                        if (baseName.Length == ICUData.IcuBaseName.Length)
-                        {
-                            folder = "";
-                        }
-                        else if (baseName[ICUData.IcuBaseName.Length] == '/')
-                        {
-                            folder = baseName.Substring(ICUData.IcuBaseName.Length + 1);
-                        }
-                        else
-                        {
-                            folder = null;
-                        }
-                        if (folder != null)
-                        {
-                            ICUBinary.AddBaseNamesInFileFolder(folder, ".res", set);
-                        }
-                    }
-                    set.Remove(ICU_RESOURCE_INDEX);  // "res_index"
-                                                     // HACK: TODO: Figure out how we can distinguish locale data from other data items.
-
-                    var toRemove = new List<string>();
-                    using (var iter = set.GetEnumerator())
-                    {
-                        while (iter.MoveNext())
-                        {
-                            string name = iter.Current;
-                            if ((name.Length == 1 || name.Length > 3) && name.IndexOf('_') < 0)
-                            {
-                                // Does not look like a locale ID.
-                                //iter.remove();
-                                toRemove.Add(name);
-                            }
-                        }
-                    }
-                    // ICU4N: Remove items outside of the enumerator loop
-                    set.ExceptWith(toRemove);
                 }
+
+                if (baseName.StartsWith(ICUData.IcuBaseName, StringComparison.Ordinal))
+                {
+                    string folder;
+                    if (baseName.Length == ICUData.IcuBaseName.Length)
+                    {
+                        folder = "";
+                    }
+                    else if (baseName[ICUData.IcuBaseName.Length] == '/')
+                    {
+                        folder = baseName.Substring(ICUData.IcuBaseName.Length + 1);
+                    }
+                    else
+                    {
+                        folder = null;
+                    }
+                    if (folder != null)
+                    {
+                        ICUBinary.AddBaseNamesInFileFolder(folder, ".res", set);
+                    }
+                }
+                set.Remove(ICU_RESOURCE_INDEX);  // "res_index"
+                                                    // HACK: TODO: Figure out how we can distinguish locale data from other data items.
+
+                var toRemove = new List<string>();
+                using (var iter = set.GetEnumerator())
+                {
+                    while (iter.MoveNext())
+                    {
+                        string name = iter.Current;
+                        if ((name.Length == 1 || name.Length > 3) && name.IndexOf('_') < 0)
+                        {
+                            // Does not look like a locale ID.
+                            //iter.remove();
+                            toRemove.Add(name);
+                        }
+                    }
+                }
+                // ICU4N: Remove items outside of the enumerator loop
+                set.ExceptWith(toRemove);
             }
             // look for prebuilt full locale names list next
             if (set.Count == 0)
