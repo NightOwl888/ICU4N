@@ -10,7 +10,6 @@
 
 namespace ICU4N {
     using System;
-    using System.Reflection;
     
     
     /// <summary>
@@ -40,11 +39,7 @@ namespace ICU4N {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ICU4N.ICUConfig", typeof(ICUConfig).GetTypeInfo().Assembly);
-#else
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ICU4N.ICUConfig", typeof(ICUConfig).Assembly);
-#endif
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -75,7 +70,7 @@ namespace ICU4N {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to data/icudt60b.
         /// </summary>
         internal static string ICUBinary_DataPath {
             get {
