@@ -403,11 +403,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>UCharacterExtension.tt</DependentUpon>
     </Compile>
-    <Compile Update="ICUConfig.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>ICUConfig.resx</DependentUpon>
-    </Compile>
     <Compile Update="Impl\BMPSetExtension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -548,13 +543,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CharsTrieExtension.tt</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="ICUConfig.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ICUConfig.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

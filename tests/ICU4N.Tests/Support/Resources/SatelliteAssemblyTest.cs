@@ -23,7 +23,7 @@ namespace ICU4N.Support.Resources
 
         static SatelliteAssemblyTest()
         {
-            var assembly = typeof(ICU4N.ICUConfig).Assembly.GetSatelliteAssembly(CultureInfo.InvariantCulture);
+            var assembly = typeof(ICU4N.Impl.ICUConfig).Assembly.GetSatelliteAssembly(CultureInfo.InvariantCulture);
 
             LoadManifest(assembly, "data.fullLocaleNames.lst", localeCultures);
             LoadManifest(assembly, "data.coll.fullLocaleNames.lst", collCultures);
@@ -101,7 +101,7 @@ namespace ICU4N.Support.Resources
         [Test]
         public void TestLoadInvariantAssembly()
         {
-            var assembly = typeof(ICU4N.ICUConfig).Assembly.GetSatelliteAssembly(CultureInfo.InvariantCulture);
+            var assembly = typeof(ICU4N.Impl.ICUConfig).Assembly.GetSatelliteAssembly(CultureInfo.InvariantCulture);
             assertNotNull(string.Empty, assembly);
         }
 
@@ -109,7 +109,7 @@ namespace ICU4N.Support.Resources
         [TestCaseSource("LocaleCultures")]
         public void TestLoadLocaleAssemblies(string culture)
         {
-            var assembly = typeof(ICU4N.ICUConfig).Assembly.GetSatelliteAssembly(new ResourceCultureInfo(culture));
+            var assembly = typeof(ICU4N.Impl.ICUConfig).Assembly.GetSatelliteAssembly(new ResourceCultureInfo(culture));
             assertNotNull(string.Empty, assembly);
         }
 
