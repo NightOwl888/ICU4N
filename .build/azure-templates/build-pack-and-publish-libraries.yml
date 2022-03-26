@@ -72,11 +72,12 @@ steps:
     Contents: '**/bin/${{ parameters.buildConfiguration }}/**/*.pdb'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}'
 
-- task: PublishBuildArtifacts@1
+- task: PublishPipelineArtifact@1
   displayName: 'Publish Artifact: ${{ parameters.nugetArtifactName }}'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}'
-    ArtifactName: '${{ parameters.nugetArtifactName }}'
+    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}'
+    artifact: '${{ parameters.nugetArtifactName }}'
+    publishLocation: 'pipeline'
   condition: succeededOrFailed()
 
   # Loops through each framework in the TestTargetFrameworks variable and
@@ -96,9 +97,10 @@ steps:
     }
   displayName: 'dotnet publish ${{ parameters.testTargetFrameworks }}'
 
-- task: PublishBuildArtifacts@1
+- task: PublishPipelineArtifact@1
   displayName: 'Publish Artifact: ${{ parameters.binaryArtifactName }}'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/${{ parameters.binaryArtifactName }}'
-    ArtifactName: '${{ parameters.binaryArtifactName }}'
+    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.binaryArtifactName }}'
+    artifact: '${{ parameters.binaryArtifactName }}'
+    publishLocation: 'pipeline'
   condition: succeededOrFailed()

@@ -70,8 +70,8 @@ steps:
     '$(Build.BuildNumber)' | Out-File -FilePath "$dir/${{ parameters.buildNumberFileName }}" -Force
   displayName: 'Write Versions to Files'
 
-- task: PublishBuildArtifacts@1
+- task: PublishPipelineArtifact@1
   displayName: 'Publish Artifact: $(VersionArtifactName)'
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(VersionArtifactName)'
-    ArtifactName: '$(VersionArtifactName)'
+    targetPath: '$(Build.ArtifactStagingDirectory)/$(VersionArtifactName)'
+    artifact: '$(VersionArtifactName)'

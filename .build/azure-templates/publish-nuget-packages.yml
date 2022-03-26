@@ -21,11 +21,11 @@ steps:
     EnsureNotNullOrEmpty('${{ parameters.testSymbolFilesConvention }}', 'testSymbolFilesConvention')
   displayName: 'Validate Template Parameters'
 
-- task: DownloadBuildArtifacts@0
-  displayName: 'Download Build Artifacts: ${{ parameters.nugetArtifactName }}'
+- task: DownloadPipelineArtifact@0
+  displayName: 'Download Pipeline Artifacts: ${{ parameters.nugetArtifactName }}'
   inputs:
     artifactName: ${{ parameters.nugetArtifactName }}
-    downloadPath: '$(Build.ArtifactStagingDirectory)'
+    targetPath: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}'
 
 #  # Push to MyGet
 #- task: NuGetCommand@2
