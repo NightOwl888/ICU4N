@@ -332,66 +332,67 @@ namespace ICU4N.Impl
             }
         }
 
-        private static readonly IList<DataFile> icuDataFiles = new List<DataFile>();
+        private static readonly IList<DataFile> icuDataFiles = LoadICUDataFiles();
 
-        static ICUBinary()
+        // ICU4N: Avoid static constructors
+        private static IList<DataFile> LoadICUDataFiles()
         {
-            // ICU4N TODO: Fix path
-            // Normally com.ibm.icu.impl.ICUBinary.dataPath.
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            string dataPath = ICUConfig.Get(typeof(ICUBinary).GetTypeInfo().Name + "_DataPath");
-#else
-            string dataPath = ICUConfig.Get(typeof(ICUBinary).Name + "_DataPath");
-#endif
+            var result = new List<DataFile>();
+            string dataPath = ICUConfig.Get("dataPath", PlatformDetection.NormalizePath(Path.Combine(PlatformDetection.BaseDirectory, ICUData.IcuBundle))); // ICU4N specific - default to IcuBundle
             if (dataPath != null)
             {
-                AddDataFilesFromPath(dataPath, icuDataFiles);
+                AddDataFilesFromPath(dataPath, result);
             }
+            return result;
         }
 
         private static void AddDataFilesFromPath(string dataPath, IList<DataFile> files)
         {
-            // Split the path and find files in each location.
-            // This splitting code avoids the regex pattern compilation in string.split()
-            // and its array allocation.
-            // (There is no simple by-character split()
-            // and the StringTokenizer "is discouraged in new code".)
-            int pathStart = 0;
-            while (pathStart < dataPath.Length)
-            {
-                int sepIndex = dataPath.IndexOf(Path.DirectorySeparatorChar, pathStart);
-                int pathLimit;
-                if (sepIndex >= 0)
-                {
-                    pathLimit = sepIndex;
-                }
-                else
-                {
-                    pathLimit = dataPath.Length;
-                }
-                string path = dataPath.Substring(pathStart, pathLimit - pathStart).Trim(); // ICU4N: Corrected 2nd parameter
-                if (path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
-                {
-                    path = path.Substring(0, (path.Length - 1) - 0); // ICU4N: Checked 2nd parameter
-                }
-                if (path.Length != 0)
-                {
-                    AddDataFilesFromFolder(new DirectoryInfo(path), new StringBuilder(), icuDataFiles);
-                }
-                if (sepIndex < 0)
-                {
-                    break;
-                }
-                pathStart = sepIndex + 1;
-            }
+            // ICU4N: Not sure why the original code searches every directory in the path that is
+            // provided. But this code searches every directory BELOW that path, which is what
+            // is logical if a full path is provided by the user.
+            AddDataFilesFromFolder(new DirectoryInfo(dataPath), new StringBuilder(), files);
+
+            //// Split the path and find files in each location.
+            //// This splitting code avoids the regex pattern compilation in string.split()
+            //// and its array allocation.
+            //// (There is no simple by-character split()
+            //// and the StringTokenizer "is discouraged in new code".)
+            //int pathStart = 0;
+            //while (pathStart < dataPath.Length)
+            //{
+            //    int sepIndex = dataPath.IndexOf(Path.DirectorySeparatorChar, pathStart);
+            //    int pathLimit;
+            //    if (sepIndex >= 0)
+            //    {
+            //        pathLimit = sepIndex;
+            //    }
+            //    else
+            //    {
+            //        pathLimit = dataPath.Length;
+            //    }
+            //    string path = dataPath.Substring(pathStart, pathLimit - pathStart).Trim(); // ICU4N: Corrected 2nd parameter
+            //    if (path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
+            //    {
+            //        path = path.Substring(0, (path.Length - 1) - 0); // ICU4N: Checked 2nd parameter
+            //    }
+            //    if (path.Length != 0)
+            //    {
+            //        AddDataFilesFromFolder(new DirectoryInfo(path), new StringBuilder(), files);
+            //    }
+            //    if (sepIndex < 0)
+            //    {
+            //        break;
+            //    }
+            //    pathStart = sepIndex + 1;
+            //}
         }
 
         private static void AddDataFilesFromFolder(DirectoryInfo folder, StringBuilder itemPath,
                 IList<DataFile> dataFiles)
         {
-            FileInfo[] files = folder.GetFiles();
-            DirectoryInfo[] folders = folder.GetDirectories();
-            if ((files == null || files.Length == 0) && (folders == null || folders.Length == 0))
+            FileSystemInfo[] files = folder.Exists ? folder.GetFileSystemInfos() : null;
+            if ((files == null || files.Length == 0))
             {
                 return;
             }
@@ -404,13 +405,8 @@ namespace ICU4N.Impl
                 itemPath.Append('/');
                 ++folderPathLength;
             }
-            foreach (DirectoryInfo folder2 in folders)
-            {
-                // TODO: Within a folder, put all single files before all .dat packages?
-                AddDataFilesFromFolder(folder2, itemPath, dataFiles);
-            }
 
-            foreach (FileInfo file in files)
+            foreach (FileSystemInfo file in files)
             {
                 string fileName = file.Name;
                 if (fileName.EndsWith(".txt", StringComparison.Ordinal))
@@ -418,9 +414,14 @@ namespace ICU4N.Impl
                     continue;
                 }
                 itemPath.Append(fileName);
-                if (fileName.EndsWith(".dat", StringComparison.Ordinal))
+                if (file is DirectoryInfo directory)
                 {
-                    ByteBuffer pkgBytes = MapFile(file);
+                    // TODO: Within a folder, put all single files before all .dat packages?
+                    AddDataFilesFromFolder(directory, itemPath, dataFiles);
+                }
+                else if (fileName.EndsWith(".dat", StringComparison.Ordinal))
+                {
+                    ByteBuffer pkgBytes = MapFile(file as FileInfo);
                     if (pkgBytes != null && DatPackageReader.Validate(pkgBytes))
                     {
                         dataFiles.Add(new PackageDataFile(itemPath.ToString(), pkgBytes));
@@ -428,7 +429,7 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    dataFiles.Add(new SingleDataFile(itemPath.ToString(), file));
+                    dataFiles.Add(new SingleDataFile(itemPath.ToString(), file as FileInfo));
                 }
                 itemPath.Length = folderPathLength;
             }
@@ -603,12 +604,15 @@ namespace ICU4N.Impl
 
         private static ByteBuffer GetDataFromFile(string itemPath)
         {
-            foreach (DataFile dataFile in icuDataFiles)
+            if (icuDataFiles.Count > 0)
             {
-                ByteBuffer data = dataFile.GetData(itemPath);
-                if (data != null)
+                foreach (DataFile dataFile in icuDataFiles)
                 {
-                    return data;
+                    ByteBuffer data = dataFile.GetData(itemPath);
+                    if (data != null)
+                    {
+                        return data;
+                    }
                 }
             }
             return null;

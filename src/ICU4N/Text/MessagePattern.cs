@@ -1891,7 +1891,7 @@ namespace ICU4N.Text
         // ICU4N specific - changed the casing of the text to match that of the enum
         // (both here and in ICUConfig.resx)
         private static readonly ApostropheMode defaultAposMode = (ApostropheMode)Enum.Parse(typeof(ApostropheMode),
-                ICU4N.Impl.ICUConfig.Get("MessagePattern_ApostropheMode", "DoubleOptional"));
+                ICU4N.Impl.ICUConfig.Get("apostropheMode", "DoubleOptional"));
 
         // ICU4N specific - moved argTypes to Part class
     }

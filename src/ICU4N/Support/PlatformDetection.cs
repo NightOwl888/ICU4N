@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -32,5 +33,18 @@ namespace ICU4N
         }
 
         public static bool IsWindows => isWindows;
+
+        /// <summary>
+        /// Normalize file path names
+        /// for the current operating system.
+        /// </summary>
+        public static string NormalizePath(string input)
+        {
+            if (Path.DirectorySeparatorChar.Equals('/'))
+            {
+                return input.Replace('\\', '/');
+            }
+            return input.Replace('/', '\\');
+        }
     }
 }

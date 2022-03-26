@@ -8,6 +8,7 @@
     <DefineConstants>$(DefineConstants);FEATURE_APPCONTEXT_BASEDIRECTORY</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_ASYNCLOCAL</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_ICONFIGURATIONROOT_PROVIDERS</DefineConstants>
     <DefineConstants Condition=" '$(TargetFramework)' != 'netstandard1.0' ">$(DefineConstants);FEATURE_RUNTIMEINFORMATION_ISOSPLATFORM</DefineConstants>
 
     <DebugType>portable</DebugType>
@@ -21,6 +22,7 @@
     <DefineConstants>$(DefineConstants);FEATURE_EXCEPTION_HRESULT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_MICROSOFT_EXTENSIONS_CACHING</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_MICROSOFT_EXTENSIONS_CONFIGURATION</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_READONLYDICTIONARY</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_REGEX_MATCHTIMEOUT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TASK_ASYNC_AWAIT</DefineConstants>
@@ -79,6 +81,7 @@
   <!-- Features in .NET Framework 4+ only -->
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net4'))">
 
+    <DefineConstants>$(DefineConstants);FEATURE_CONFIGURATIONMANAGER</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_SERIALIZABLE</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_SERIALIZABLE_EXCEPTIONS</DefineConstants>
 

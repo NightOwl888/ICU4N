@@ -102,7 +102,7 @@ namespace ICU4N.Impl
         /// to read the properties file, so we would get a circular dependency
         /// in the class initialization.
         /// </summary>
-        private static readonly bool logBinaryDataFromInputStream = SystemProperties.GetPropertyAsBoolean("ICU4N.LogBinaryDataFromInputStream", false);
+        private static readonly bool logBinaryDataFromInputStream = SystemProperties.GetPropertyAsBoolean("logBinaryDataFromInputStream", false);
         private static readonly ILog logger = logBinaryDataFromInputStream ? LogProvider.For<ICUData>() : null;
 
         public static bool Exists(string resourceName)
