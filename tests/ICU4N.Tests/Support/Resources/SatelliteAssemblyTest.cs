@@ -1,4 +1,6 @@
-﻿using ICU4N.Dev.Test;
+﻿#if FEATURE_SATELLITE_ASSEMBLY_TESTS
+
+using ICU4N.Dev.Test;
 using ICU4N.Globalization;
 using NUnit.Framework;
 using System;
@@ -143,3 +145,4 @@ namespace ICU4N.Support.Resources
 //        }
     }
 }
+#endif

@@ -621,20 +621,26 @@ namespace ICU4N.Impl
         // Closing a file closes its channel.
         private static ByteBuffer MapFile(FileInfo path)
         {
-            MemoryMappedFile file;
+            //MemoryMappedFile file;
             try
             {
-                file = MemoryMappedFile.CreateFromFile(path.FullName);
-                ByteBuffer bytes = null;
-                try
-                {
-                    bytes = file.CreateViewByteBuffer();
-                }
-                finally
-                {
-                    file.Dispose();
-                }
-                return bytes;
+                using var file = new FileStream(path.FullName, FileMode.Open, FileAccess.Read);
+                return GetByteBufferFromStreamAndDisposeStream(file);
+
+                // ICU4N: Since there is no easy way to dispose the underlying stream when using a MemoryMappedFile, we
+                // use the above to simply read the ByteBuffer into memory (the same approach used for loading from satellite
+                // assemblies).
+                //file = MemoryMappedFile.CreateFromFile(path.FullName, FileMode.Open, mapName: null, path.Length);
+                //ByteBuffer bytes = null;
+                //try
+                //{
+                //    bytes = file.CreateViewByteBuffer(offset: 0, size: path.Length, access: MemoryMappedFileAccess.Read);
+                //}
+                //finally
+                //{
+                //    //file.Dispose();
+                //}
+                //return bytes;
             }
             catch (FileNotFoundException ignored)
             {

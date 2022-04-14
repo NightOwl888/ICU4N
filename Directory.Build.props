@@ -58,6 +58,9 @@
 
   <PropertyGroup Label="Satellite Assemblies">
     <ICU4NSatelliteAssemblyOutputDir>$(ArtifactsDir)/SatelliteAssemblies/$(Configuration)</ICU4NSatelliteAssemblyOutputDir>
+    <ICU4JWorkingDirectory>$(ArtifactsDir)/icu4j-temp</ICU4JWorkingDirectory>
+    <ICU4JResourcesDirectory>$(ICU4JWorkingDirectory)/icu4j-transformed</ICU4JResourcesDirectory>
+    <ICU4JRawResourcesDirectory>$(ICU4JWorkingDirectory)/icu-temp/com/ibm/icu/impl/data</ICU4JRawResourcesDirectory>
     <!-- Without this we get error MSB4057: The target "GetTargetPath" does not exist in the project.
          See: https://github.com/dotnet/msbuild/issues/4303#issuecomment-482345617 -->
     <AddSyntheticProjectReferencesForSolutionDependencies>false</AddSyntheticProjectReferencesForSolutionDependencies>

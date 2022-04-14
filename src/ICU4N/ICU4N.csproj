@@ -59,13 +59,7 @@
     <ICU4JResourceConverterOutputDir>$(ICU4JResourceConverterDir)/bin/$(Configuration)/net6.0</ICU4JResourceConverterOutputDir>
 
     <ICU4JDownloadConfigFilePath>$(SolutionDir).build/icu4j-download-urls.txt</ICU4JDownloadConfigFilePath>
-    <ICU4JWorkingDirectory>$(ArtifactsDir)/icu4j-temp</ICU4JWorkingDirectory>
-    <ICU4JResourcesDirectory>$(ICU4JWorkingDirectory)/icu4j-transformed</ICU4JResourcesDirectory>
   </PropertyGroup>
-  
-  <ItemGroup Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)">
-    <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
-  </ItemGroup>
   
   <Target Name="CreateIntermediateTargetsFile" BeforeTargets="DownloadICU4J" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
 

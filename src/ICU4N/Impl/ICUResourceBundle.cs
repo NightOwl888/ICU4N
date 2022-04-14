@@ -666,24 +666,46 @@ namespace ICU4N.Impl
             int length = bundle.Length;
             int i = 0;
             UCultureInfo[] locales = new UCultureInfo[length];
-            using (UResourceBundleEnumerator iter = bundle.GetEnumerator())
+            using UResourceBundleEnumerator iter = bundle.GetEnumerator();
+            iter.Reset();
+            while (iter.MoveNext())
             {
-                iter.Reset();
-                while (iter.MoveNext())
+                string locstr = iter.Current.Key;
+                if (locstr.Equals("root"))
                 {
-                    string locstr = iter.Current.Key;
-                    if (locstr.Equals("root"))
-                    {
-                        locales[i++] = UCultureInfo.InvariantCulture;
-                    }
-                    else
-                    {
-                        locales[i++] = new UCultureInfo(locstr);
-                    }
+                    locales[i++] = UCultureInfo.InvariantCulture;
+                }
+                else
+                {
+                    locales[i++] = new UCultureInfo(locstr);
                 }
             }
             bundle = null;
             return locales;
+        }
+
+        /// <summary>
+        /// Gets the satellite assembly if one exists. Returns the root if one does not, so we can lookup the data via files.
+        /// </summary>
+        /// <exception cref="ArgumentNullException"><paramref name="root"/> is <c>null</c>.</exception>
+        private static Assembly GetInvariantSatelliteAssemblyOrDefault(Assembly root)
+        {
+            if (root is null)
+                throw new ArgumentNullException(nameof(root));
+
+            var resourceLocationAttribute = root.GetCustomAttribute<ResourceLocationAttribute>();
+            if (resourceLocationAttribute != null && resourceLocationAttribute.Location == Resources.ResourceLocation.Satellite)
+            {
+                try
+                {
+                    return root.GetSatelliteAssembly(CultureInfo.InvariantCulture);
+                }
+                catch (FileNotFoundException) // ICU4N: This will occur if the root satellite assembly is missing from the disk/GAC
+                {
+                    // ignore
+                }
+            }
+            return root;
         }
 
         // Same as createULocaleList() but catches the MissingResourceException
@@ -692,10 +714,8 @@ namespace ICU4N.Impl
             Assembly root, ISet<string> locales)
         {
             ICUResourceBundle bundle;
-            Assembly satelliteAssembly = root;
-            var resourceLocationAttribute = root.GetCustomAttribute<ResourceLocationAttribute>();
-            if (resourceLocationAttribute != null && resourceLocationAttribute.Location == Resources.ResourceLocation.Satellite)
-                satelliteAssembly = root.GetSatelliteAssembly(CultureInfo.InvariantCulture);
+            Assembly satelliteAssembly = GetInvariantSatelliteAssemblyOrDefault(root);
+                
             try
             {
                 bundle = (ICUResourceBundle)UResourceBundle.InstantiateBundle(baseName, ICU_RESOURCE_INDEX, satelliteAssembly, true);
@@ -710,14 +730,12 @@ namespace ICU4N.Impl
                 }
                 return;
             }
-            using (UResourceBundleEnumerator iter = bundle.GetEnumerator())
+            using UResourceBundleEnumerator iter = bundle.GetEnumerator();
+            iter.Reset();
+            while (iter.MoveNext())
             {
-                iter.Reset();
-                while (iter.MoveNext())
-                {
-                    string locstr = iter.Current.Key;
-                    locales.Add(locstr);
-                }
+                string locstr = iter.Current.Key;
+                locales.Add(locstr);
             }
         }
 
@@ -742,10 +760,7 @@ namespace ICU4N.Impl
         // internal for testing
         internal static void AddLocaleIDsFromListFile(string bn, Assembly root, ISet<string> locales)
         {
-            Assembly satelliteAssembly = root;
-            var resourceLocationAttribute = root.GetCustomAttribute<ResourceLocationAttribute>();
-            if (resourceLocationAttribute != null && resourceLocationAttribute.Location == Resources.ResourceLocation.Satellite)
-                satelliteAssembly = root.GetSatelliteAssembly(CultureInfo.InvariantCulture);
+            Assembly satelliteAssembly = GetInvariantSatelliteAssemblyOrDefault(root);
             try
             {
                 using Stream s = satelliteAssembly.FindAndGetManifestResourceStream(ResourceUtil.ConvertResourceName(bn + FULL_LOCALE_NAMES_LIST));
@@ -880,7 +895,8 @@ namespace ICU4N.Impl
                 {
                     AddLocaleIDsFromSatelliteAndGACFolderNames(baseName, assembly, set);
                 }
-                else
+
+                if (set.Count == 0)
                 {
                     // scan available locale resources under the base url first
                     AddBundleBaseNamesFromAssembly(bn, assembly, set);

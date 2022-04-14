@@ -23,19 +23,32 @@ namespace ICU4N.Impl
     public sealed class ICUData
     {
         private const string InvariantResourceManifestFileName = "data.invariantResourceNames.lst";
-        private static readonly Assembly InvariantResourceAssembly = typeof(ICUData).Assembly.GetSatelliteAssembly(CultureInfo.InvariantCulture);
+        internal static readonly Assembly InvariantResourceAssembly = LoadInvariantResourceAssembly();
         private static readonly ISet<string> InvariantResourceFileNames = LoadInvariantResourceFileNames();
+
+        private static Assembly LoadInvariantResourceAssembly()
+        {
+            try
+            {
+                return typeof(ICUData).Assembly.GetSatelliteAssembly(CultureInfo.InvariantCulture);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
+        }
 
         private static ISet<string> LoadInvariantResourceFileNames()
         {
             var result = new HashSet<string>();
-            using var stream = typeof(ICUData).Assembly
-                .GetSatelliteAssembly(CultureInfo.InvariantCulture)
-                .GetManifestResourceStream(InvariantResourceManifestFileName);
-            using var reader = new StreamReader(stream, Encoding.UTF8);
-            string line = null;
-            while ((line = reader.ReadLine()) != null)
-                result.Add(line);
+            if (InvariantResourceAssembly != null)
+            {
+                using var stream = InvariantResourceAssembly.GetManifestResourceStream(InvariantResourceManifestFileName);
+                using var reader = new StreamReader(stream, Encoding.UTF8);
+                string line = null;
+                while ((line = reader.ReadLine()) != null)
+                    result.Add(line);
+            }
             return result;
         }
 
@@ -279,10 +292,26 @@ namespace ICU4N.Impl
 
         private static string GetLocaleIDFromResourceName(string resourceName)
         {
-            if (InvariantResourceFileNames.Contains(ResourceUtil.ConvertResourceName(resourceName)))
-                return "root";
+            if (InvariantResourceFileNames.Count > 0)
+            {
+                if (InvariantResourceFileNames.Contains(ResourceUtil.ConvertResourceName(resourceName)))
+                    return "root";
+            }
+            else
+            {
+                if (!LooksLikeALocaleFileName(resourceName))
+                    return "root";
+            }
 
             return Path.GetFileNameWithoutExtension(resourceName);
+        }
+
+        private static bool LooksLikeALocaleFileName(string resourceName)
+        {
+            if (Path.GetExtension(resourceName) != ".res")
+                return false;
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(resourceName);
+            return (fileNameWithoutExtension.Length > 1 && fileNameWithoutExtension.Length <= 3) || fileNameWithoutExtension.IndexOf('_') >= 2;
         }
     }
 }

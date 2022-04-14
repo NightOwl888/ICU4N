@@ -1,0 +1,36 @@
+<Project>
+  <PropertyGroup>
+    <!-- Choose between satellite assemblies (true) or raw resource files (false) in tests -->
+    <UseSatelliteAssemblies Condition=" '$(UseSatelliteAssemblies)' == '' ">true</UseSatelliteAssemblies>
+    <DefineConstants Condition=" '$(UseSatelliteAssemblies.ToLowerInvariant())' == 'true' ">$(DefineConstants);FEATURE_SATELLITE_ASSEMBLY_TESTS</DefineConstants>
+  </PropertyGroup>
+  
+  <ItemGroup Condition=" '$(UseSatelliteAssemblies.ToLowerInvariant())' == 'true' " Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)">
+    <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/ICU4N.resources.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+  </ItemGroup>
+
+  <Target Name="CopyRawResourceFiles" AfterTargets="GenerateSatelliteAssemblies" Condition=" '$(UseSatelliteAssemblies.ToLowerInvariant())' != 'true' ">
+
+    <PropertyGroup>
+      <Major>$(PackageVersion.Split('.')[0])</Major>
+      <ICUDataFolderName>$(ICUDataPrefix)$(Major)$(ICUDataEndian)</ICUDataFolderName>
+      <VersionedICU4JRawResourcesDirectory>$(ICU4JRawResourcesDirectory)/$(ICUDataFolderName)</VersionedICU4JRawResourcesDirectory>
+    </PropertyGroup>
+    
+    <!--<Message Text="VersionedICU4JRawResourcesDirectory: $(VersionedICU4JRawResourcesDirectory)" Importance="high" />-->
+
+    <ItemGroup Label="Specifies raw resource files should be copied to the output folder (and dependent projects as well)">
+      <!-- NOTE: We exclude the features that aren't yet ported here -->
+      <ICU4JRawResourceFiles Include="$(VersionedICU4JRawResourcesDirectory)/**/*.*" Exclude="$(VersionedICU4JRawResourcesDirectory)/rbnf/*.*;$(VersionedICU4JRawResourcesDirectory)/unit/*.*;$(VersionedICU4JRawResourcesDirectory)/zone/*.*" />
+    </ItemGroup>
+
+    <!--<Message Text="$(OutDir)/data/$(ICUDataFolderName)" Importance="high" />-->
+
+    <Copy SourceFiles="@(ICU4JRawResourceFiles)" DestinationFolder="$(OutDir)/data/$(ICUDataFolderName)/%(RecursiveDir)" />
+      
+    <!--<ItemGroup Label="Specifies raw resource files should be copied to the output folder (and dependent projects as well)">
+      <None Include="$(VersionedICU4JRawResourcesDirectory)/**/*.*" Exclude="$(VersionedICU4JRawResourcesDirectory)/rbnf/*.*;$(VersionedICU4JRawResourcesDirectory)/unit/*.*;$(VersionedICU4JRawResourcesDirectory)/zone/*.*" LinkBase="data/$(ICUDataFolderName)" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+    </ItemGroup>-->
+  </Target>
+  
+</Project>
