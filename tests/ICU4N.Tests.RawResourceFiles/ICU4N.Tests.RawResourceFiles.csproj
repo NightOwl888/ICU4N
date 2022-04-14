@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ICU4N</RootNamespace>
+    <UseSatelliteAssemblies>false</UseSatelliteAssemblies>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);1701;1702</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/ICU4N/ICU4N.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="../TestAssemblyInfo.cs" Link="Properties/TestAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="../ICU4N.Tests/Dev/Data/**/*" LinkBase="Dev/Data" />
+    <EmbeddedResource Include="../ICU4N.Tests/Dev/Test/Rbbi/**/*" LinkBase="Dev/Test/Rbbi" />
+    <EmbeddedResource Include="../ICU4N.Tests/Dev/Test/Util/**/*.tri2" LinkBase="Dev/Test/Util" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="../ICU4N.Tests/**/*.cs" Exclude="**/obj/**/*.cs;**/bin/**/*.cs;**/*.Version.cs" />
+  </ItemGroup>
+
+</Project>

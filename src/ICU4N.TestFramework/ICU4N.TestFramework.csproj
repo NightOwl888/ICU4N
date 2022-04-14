@@ -21,7 +21,9 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="ICU4N.Tests" />
+    <InternalsVisibleTo Include="ICU4N.Tests.RawResourceFiles" />
     <InternalsVisibleTo Include="ICU4N.Tests.Transliterator" />
+    <InternalsVisibleTo Include="ICU4N.Tests.Transliterator.RawResourceFiles" />
   </ItemGroup>
 
   <ItemGroup>

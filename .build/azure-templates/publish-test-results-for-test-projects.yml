@@ -57,6 +57,14 @@ steps:
     testResultsArtifactName: '${{ parameters.testResultsArtifactName }}'
     testResultsFileName: '${{ parameters.testResultsFileName }}'
 
+- template: publish-test-results-for-target-frameworks.yml
+  parameters:
+    testProjectName: 'ICU4N.Tests.RawResourceFiles'
+    osName: '${{ parameters.osName }}'
+    testPlatform: '${{ parameters.testPlatform }}'
+    testResultsFormat: '${{ parameters.testResultsFormat }}'
+    testResultsArtifactName: '${{ parameters.testResultsArtifactName }}'
+    testResultsFileName: '${{ parameters.testResultsFileName }}'
 
 - template: publish-test-results-for-target-frameworks.yml
   parameters:
@@ -69,7 +77,25 @@ steps:
 
 - template: publish-test-results-for-target-frameworks.yml
   parameters:
+    testProjectName: 'ICU4N.Tests.Collation.RawResourceFiles'
+    osName: '${{ parameters.osName }}'
+    testPlatform: '${{ parameters.testPlatform }}'
+    testResultsFormat: '${{ parameters.testResultsFormat }}'
+    testResultsArtifactName: '${{ parameters.testResultsArtifactName }}'
+    testResultsFileName: '${{ parameters.testResultsFileName }}'
+
+- template: publish-test-results-for-target-frameworks.yml
+  parameters:
     testProjectName: 'ICU4N.Tests.Transliterator'
+    osName: '${{ parameters.osName }}'
+    testPlatform: '${{ parameters.testPlatform }}'
+    testResultsFormat: '${{ parameters.testResultsFormat }}'
+    testResultsArtifactName: '${{ parameters.testResultsArtifactName }}'
+    testResultsFileName: '${{ parameters.testResultsFileName }}'
+
+- template: publish-test-results-for-target-frameworks.yml
+  parameters:
+    testProjectName: 'ICU4N.Tests.Transliterator.RawResourceFiles'
     osName: '${{ parameters.osName }}'
     testPlatform: '${{ parameters.testPlatform }}'
     testResultsFormat: '${{ parameters.testResultsFormat }}'

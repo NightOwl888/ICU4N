@@ -5,7 +5,8 @@
     <MicrosoftExtensionsCachingMemoryPackageReferenceVersion Condition=" $(TargetFramework.StartsWith('net45')) ">1.1.2</MicrosoftExtensionsCachingMemoryPackageReferenceVersion>
     <MicrosoftExtensionsConfigurationPackageReferenceVersion>2.0.0</MicrosoftExtensionsConfigurationPackageReferenceVersion>
     <MicrosoftExtensionsConfigurationPackageReferenceVersion Condition=" $(TargetFramework.StartsWith('net45')) ">1.1.2</MicrosoftExtensionsConfigurationPackageReferenceVersion>
-    <MicrosoftExtensionsConfigurationPackageReferenceVersion Condition=" $(TargetFramework.StartsWith('netcoreapp')) ">3.0.0</MicrosoftExtensionsConfigurationPackageReferenceVersion>
+    <MicrosoftExtensionsConfigurationPackageReferenceVersion Condition=" $(TargetFramework.StartsWith('net5')) Or $(TargetFramework.StartsWith('net6')) ">3.0.0</MicrosoftExtensionsConfigurationPackageReferenceVersion>
+    <MicrosoftExtensionsConfigurationAbstractionsPackageReferenceVersion>$(MicrosoftExtensionsConfigurationPackageReferenceVersion)</MicrosoftExtensionsConfigurationAbstractionsPackageReferenceVersion>
     <MicrosoftNETFrameworkReferenceAssembliesPackageReferenceVersion>1.0.2</MicrosoftNETFrameworkReferenceAssembliesPackageReferenceVersion>
     <MicrosoftNETTestSdkPackageReferenceVersion>16.1.1</MicrosoftNETTestSdkPackageReferenceVersion>
     <MicrosoftSourceLinkAzureReposGitPackageReferenceVersion>1.1.1</MicrosoftSourceLinkAzureReposGitPackageReferenceVersion>
@@ -14,7 +15,5 @@
     <NETStandardLibrary20PackageReferenceVersion>2.0.3</NETStandardLibrary20PackageReferenceVersion>
     <NUnitPackageReferenceVersion>3.12.0</NUnitPackageReferenceVersion>
     <NUnit3TestAdapterPackageReferenceVersion>3.13.0</NUnit3TestAdapterPackageReferenceVersion>
-  
-
-</PropertyGroup>
+  </PropertyGroup>
 </Project>

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>ICU4N</RootNamespace>
+    <UseSatelliteAssemblies>false</UseSatelliteAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../TestAssemblyInfo.cs" Link="Properties/TestAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="../ICU4N.Tests.Transliterator/**/*.cs" Exclude="**/obj/**/*.cs;**/bin/**/*.cs;**/*.Version.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/ICU4N/ICU4N.csproj" />
+  </ItemGroup>
+
+</Project>

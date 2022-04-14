@@ -3,60 +3,27 @@
   <PropertyGroup>
     <RootNamespace>ICU4N</RootNamespace>
   </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+
+  <PropertyGroup>
     <NoWarn>$(NoWarn);1701;1702</NoWarn>
   </PropertyGroup>
-  
+
   <ItemGroup>
-    <Compile Include="..\TestAssemblyInfo.cs" Link="Properties\TestAssemblyInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion)" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion)" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion)" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) ">
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(MicrosoftExtensionsConfigurationPackageReferenceVersion)" />
-    <Reference Include="System.Configuration" />
+    <ProjectReference Include="../../src/ICU4N/ICU4N.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Dev\Data\IDNATestInput.txt" />
-    <EmbeddedResource Include="Dev\Data\TestData\*" />
-    <EmbeddedResource Include="Dev\Data\TestData\unicode\*" />
-    <EmbeddedResource Include="Dev\Test\Rbbi\rbbitst.txt" />
-    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges1.16.tri2" />
-    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges1.32.tri2" />
-    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges2.16.tri2" />
-    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges2.32.tri2" />
-    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges3.16.tri2" />
-    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges3.32.tri2" />
-    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesEmpty.16.tri2" />
-    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesEmpty.32.tri2" />
-    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesSingleValue.16.tri2" />
-    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesSingleValue.32.tri2" />
-    <EmbeddedResource Include="Dev\Test\Rbbi\break_rules\*" />
+    <Compile Include="../TestAssemblyInfo.cs" Link="Properties/TestAssemblyInfo.cs" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)/Dev/Data/**/*" LinkBase="Dev/Data" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)/Dev/Test/Rbbi/**/*" LinkBase="Dev/Test/Rbbi" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)/Dev/Test/Util/**/*.tri2" LinkBase="Dev/Test/Util" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <None Update="Support\Text\UnicodeSetPartialTestExtension.tt">
+    <None Update="Support/Text/UnicodeSetPartialTestExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UnicodeSetPartialTestExtension.cs</LastGenOutput>
     </None>
@@ -67,7 +34,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Compile Update="Support\Text\UnicodeSetPartialTestExtension.cs">
+    <Compile Update="Support/Text/UnicodeSetPartialTestExtension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>UnicodeSetPartialTestExtension.tt</DependentUpon>

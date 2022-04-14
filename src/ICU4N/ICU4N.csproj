@@ -26,8 +26,11 @@
     
     <InternalsVisibleTo Include="ICU4N.TestFramework" />
     <InternalsVisibleTo Include="ICU4N.Tests" />
+    <InternalsVisibleTo Include="ICU4N.Tests.RawResourceFiles" />
     <InternalsVisibleTo Include="ICU4N.Tests.Collation" />
+    <InternalsVisibleTo Include="ICU4N.Tests.Collation.RawResourceFiles" />
     <InternalsVisibleTo Include="ICU4N.Tests.Transliterator" />
+    <InternalsVisibleTo Include="ICU4N.Tests.Transliterator.RawResourceFiles" />
   </ItemGroup>
 
   <ItemGroup>
