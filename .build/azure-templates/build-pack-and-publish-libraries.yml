@@ -94,15 +94,16 @@ steps:
     foreach ($framework in $testTargetFrameworks) {
         $outputPath = "$outputRoot/$framework/$resourcesDirectory"
         Write-Host "Publishing '$framework' to '$outputPath'..."
-        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:TestAllTargetFrameworks=true /p:UseSatelliteAssemblies=true
+        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:PackageVersion="${{ parameters.packageVersion }}" /p:TestAllTargetFrameworks=true /p:UseSatelliteAssemblies=true
     }
 
-    # ICU4N special case - publish a second batch in a different resourcesDirectory so we can run all of the tests with raw resource files
+    # ICU4N special case - publish a second batch in a different resourcesDirectory so we can run all of the tests with raw resource files.
+    # PackageVersion is required here so it can resolve the directory name to copy into.
     $resourcesDirectory = "RawResourceFiles"
     foreach ($framework in $testTargetFrameworks) {
         $outputPath = "$outputRoot/$framework/$resourcesDirectory"
         Write-Host "Publishing '$framework' to '$outputPath'..."
-        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:TestAllTargetFrameworks=true /p:UseSatelliteAssemblies=false
+        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:PackageVersion="${{ parameters.packageVersion }}" /p:TestAllTargetFrameworks=true /p:UseSatelliteAssemblies=false
     }
   displayName: 'dotnet publish ${{ parameters.testTargetFrameworks }}'
 

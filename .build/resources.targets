@@ -24,14 +24,14 @@
     </ItemGroup>
   </Target>
   
-  <Target Name="CopyRawResourceFiles" DependsOnTargets="ResolveICUVersionDirectories" AfterTargets="GenerateSatelliteAssemblies" Condition=" '$(UseSatelliteAssemblies.ToLowerInvariant())' != 'true' ">
+  <Target Name="CopyRawResourceFiles" DependsOnTargets="ResolveICUVersionDirectories" AfterTargets="GenerateSatelliteAssemblies" Condition=" '$(UseSatelliteAssemblies.ToLowerInvariant())' != 'true' And '$(AssemblyName)' == 'ICU4N.Tests.RawResourceFiles' ">
     <!--<Message Text="$(OutDir)/data/$(ICUDataFolderName)" Importance="high" />-->
     <Copy SourceFiles="@(ICU4JRawResourceFiles)" DestinationFolder="$(OutDir)/data/$(ICUDataFolderName)/%(RecursiveDir)" />
   </Target>
 
-  <Target Name="CopyRawResourceFilesAfterPublish" DependsOnTargets="ResolveICUVersionDirectories" AfterTargets="AfterPublish" Condition=" '$(UseSatelliteAssemblies.ToLowerInvariant())' != 'true' ">
-    <!--<Message Text="$(PublishDir)/data/$(ICUDataFolderName)" Importance="high" />-->
-    <Copy SourceFiles="@(ICU4JRawResourceFiles)" DestinationFolder="$(PublishDir)/data/$(ICUDataFolderName)/%(RecursiveDir)" />
+  <Target Name="CopyRawResourceFilesAfterPublish" DependsOnTargets="ResolveICUVersionDirectories" AfterTargets="Publish" Condition=" '$(UseSatelliteAssemblies.ToLowerInvariant())' != 'true' And '$(AssemblyName)' == 'ICU4N.Tests.RawResourceFiles' ">
+    <!--<Message Text="Publish dir: $(PublishDir)data/$(ICUDataFolderName)" Importance="high" />-->
+    <Copy SourceFiles="@(ICU4JRawResourceFiles)" DestinationFolder="$(PublishDir)data/$(ICUDataFolderName)/%(RecursiveDir)" />
   </Target>
   
 </Project>
