@@ -90,10 +90,19 @@ steps:
     $sourcesDirectory = "$(Build.SourcesDirectory)"
     
     $testTargetFrameworks = $testTargetFrameworksString.Split([char]';',[char]',')
+    $resourcesDirectory = "SatelliteAssemblies"
     foreach ($framework in $testTargetFrameworks) {
-        $outputPath = "$outputRoot/$framework"
+        $outputPath = "$outputRoot/$framework/$resourcesDirectory"
         Write-Host "Publishing '$framework' to '$outputPath'..."
-        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:TestAllTargetFrameworks=true
+        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:TestAllTargetFrameworks=true /p:UseSatelliteAssemblies=true
+    }
+
+    # ICU4N special case - publish a second batch in a different resourcesDirectory so we can run all of the tests with raw resource files
+    $resourcesDirectory = "RawResourceFiles"
+    foreach ($framework in $testTargetFrameworks) {
+        $outputPath = "$outputRoot/$framework/$resourcesDirectory"
+        Write-Host "Publishing '$framework' to '$outputPath'..."
+        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:TestAllTargetFrameworks=true /p:UseSatelliteAssemblies=false
     }
   displayName: 'dotnet publish ${{ parameters.testTargetFrameworks }}'
 

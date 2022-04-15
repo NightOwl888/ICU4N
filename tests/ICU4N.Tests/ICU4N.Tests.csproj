@@ -8,12 +8,12 @@
     <NoWarn>$(NoWarn);1701;1702</NoWarn>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="../../src/ICU4N/ICU4N.csproj" />
-  </ItemGroup>
+  <PropertyGroup Label="Assembly Publishing">
+    <IsPublishable Condition=" '$(UseSatelliteAssemblies.ToLowerInvariant())' == 'true' ">true</IsPublishable>
+  </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="../TestAssemblyInfo.cs" Link="Properties/TestAssemblyInfo.cs" />
+    <ProjectReference Include="../../src/ICU4N/ICU4N.csproj" />
   </ItemGroup>
 
   <ItemGroup>
