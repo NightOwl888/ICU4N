@@ -23,7 +23,7 @@ namespace ICU4N.Impl
     public sealed class ICUData
     {
         private const string InvariantResourceManifestFileName = "data.invariantResourceNames.lst";
-        internal static readonly Assembly InvariantResourceAssembly = LoadInvariantResourceAssembly();
+        private static readonly Assembly InvariantResourceAssembly = LoadInvariantResourceAssembly();
         private static readonly ISet<string> InvariantResourceFileNames = LoadInvariantResourceFileNames();
 
         private static Assembly LoadInvariantResourceAssembly()
