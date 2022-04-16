@@ -704,6 +704,10 @@ namespace ICU4N.Impl
                 {
                     // ignore
                 }
+                catch (FileLoadException)
+                {
+                    // ignore (this can happen on .NET Framework)
+                }
             }
             return root;
         }
