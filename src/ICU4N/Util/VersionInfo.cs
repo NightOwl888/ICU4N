@@ -615,7 +615,7 @@ namespace ICU4N.Util
             {
                 return LazyInitializer.EnsureInitialized(ref TZDATA_VERSION, () =>
                 {
-                    UResourceBundle tzbundle = UResourceBundle.GetBundleInstance("Impl/Data/icudt"
+                    UResourceBundle tzbundle = UResourceBundle.GetBundleInstance("data/icudt"
 #pragma warning disable 612, 618
                         + VersionInfo.IcuDataVersionPath, "zoneinfo64");
 #pragma warning restore 612, 618
