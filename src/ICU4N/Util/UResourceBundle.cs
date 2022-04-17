@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
-using System.Threading;
 
 namespace ICU4N.Util
 {
@@ -315,17 +314,15 @@ namespace ICU4N.Util
 
         private enum RootType { Missing, ICU, DotNet }
 
-        // ICU4N specific - use Lazy<T> to ensure that we don't do the expensive part of the create operation on multiple threads
-        private static readonly ConcurrentDictionary<string, Lazy<RootType>> rootCache = new ConcurrentDictionary<string, Lazy<RootType>>();
+        private static readonly ConcurrentDictionary<string, RootType> ROOT_CACHE = new ConcurrentDictionary<string, RootType>();
 
         private static RootType GetRootType(string baseName, Assembly root)
         {
-            return rootCache.GetOrAdd(baseName, (key) => new Lazy<RootType>(() =>
+            return ROOT_CACHE.GetOrAdd(baseName, (key) =>
             {
                 string rootLocale = (baseName.IndexOf('.') == -1) ? "root" : "";
                 try
                 {
-                    // ICU4N TODO: Change logic to return null instead of throw here
                     ICUResourceBundle.GetBundleInstance(baseName, rootLocale, root, true);
                     return RootType.ICU;
                 }
@@ -342,13 +339,12 @@ namespace ICU4N.Util
                         return RootType.Missing;
                     }
                 }
-            })).Value;
+            });
         }
 
         private static void SetRootType(string baseName, RootType rootType)
         {
-            // ICU4N: When set explicitly, there is no reason to make the value accessor thread safe
-            rootCache[baseName] = new Lazy<RootType>(() => rootType, LazyThreadSafetyMode.None);
+            ROOT_CACHE[baseName] = rootType;
         }
 
         /// <summary>
