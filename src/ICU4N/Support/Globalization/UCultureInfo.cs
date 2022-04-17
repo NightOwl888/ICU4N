@@ -10,6 +10,7 @@ using System.Linq;
 using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using UnicodeLocaleExtensionClass = ICU4N.Impl.Locale.UnicodeLocaleExtension;
 
 namespace ICU4N.Globalization
@@ -38,7 +39,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// The closest match for the current UCultureInfo as a CultureInfo
         /// </summary>
-        internal readonly CultureInfo culture; // internal for testing
+        private CultureInfo culture; // This instance is lazily loaded to avoid infinite recursion
 
         // Used in both UCultureInfo and LocaleIDParser, so moved up here.
         private const char Underscore = '_';
@@ -216,7 +217,7 @@ namespace ICU4N.Globalization
         public UCultureInfo(string name)
             : this(GetFullName(name), null)
         {
-            this.culture = DotNetLocaleHelper.ToCultureInfo(this);
+            // this.culture is lazy initialized to avoid infinite recursion
         }
 
         /// <summary>
@@ -271,10 +272,17 @@ namespace ICU4N.Globalization
             //if (culture == null)
             //    culture = DotNetLocaleHelper.ToCultureInfo(this);
 
-            return culture;
+            return EnsureCultureInfoInitialized();
         }
 
-
+        /// <summary>
+        /// Lazily initializes the <see cref="CultureInfo"/> instance that most closely resembles this <see cref="UCultureInfo"/>.
+        /// </summary>
+        /// <returns>The <see cref="CultureInfo"/> instance that most closely resembles this <see cref="UCultureInfo"/>.</returns>
+        internal CultureInfo EnsureCultureInfoInitialized()
+        {
+            return LazyInitializer.EnsureInitialized(ref culture, () => DotNetLocaleHelper.ToCultureInfo(this));
+        }
 
 
         /// <summary>

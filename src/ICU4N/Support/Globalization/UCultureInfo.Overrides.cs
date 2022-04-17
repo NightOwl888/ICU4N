@@ -127,7 +127,7 @@ namespace ICU4N.Globalization
 
 #if FEATURE_CULTUREINFO_THREELETTERWINDOWSLANGUAGENAME
         /// <inheritdoc/>
-        public /*override*/ string ThreeLetterWindowsLanguageName => culture?.ThreeLetterWindowsLanguageName; // Windows API
+        public /*override*/ string ThreeLetterWindowsLanguageName => EnsureCultureInfoInitialized().ThreeLetterWindowsLanguageName; // Windows API
 #endif
 
         /// <inheritdoc/>
