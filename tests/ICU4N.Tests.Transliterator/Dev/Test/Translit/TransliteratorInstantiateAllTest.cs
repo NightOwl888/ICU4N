@@ -37,22 +37,22 @@ namespace ICU4N.Dev.Test.Translit
                 throw ex;
             }
 
-            if (t != null)
-            {
-                // Test toRules
-                String rules = null;
-                try
-                {
-                    rules = t.ToRules(true);
-                    Transliterator.CreateFromRules("x", rules, Transliterator.Forward);
-                }
-                catch (ArgumentException ex2)
-                {
-                    Errln("FAIL: " + "ID" + ".toRules() => bad rules: " +
-                          rules);
-                    throw ex2;
-                }
-            }
+            //if (t != null)
+            //{
+            //    // Test toRules
+            //    String rules = null;
+            //    try
+            //    {
+            //        rules = t.ToRules(true);
+            //        Transliterator.CreateFromRules("x", rules, Transliterator.Forward);
+            //    }
+            //    catch (ArgumentException ex2)
+            //    {
+            //        Errln("FAIL: " + "ID" + ".toRules() => bad rules: " +
+            //              rules);
+            //        throw ex2;
+            //    }
+            //}
         }
     }
 }
