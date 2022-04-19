@@ -747,7 +747,7 @@ namespace ICU4N.Dev.Test.Lang
                     {
                         continue;
                     }
-                    String[] fields = s.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+                    String[] fields = s.Split(new char[] { ';' }); // ICU4N: This was set to split and not remove empty entries in Java
                     Debug.Assert((fields.Length == 15), "Number of fields is " + fields.Length + ": " + s);
 
                     int ch = int.Parse(fields[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
@@ -856,7 +856,7 @@ namespace ICU4N.Dev.Test.Lang
                         }
                         else
                         {
-                            String[] dmChars = Regex.Split(d, " +");
+                            String[] dmChars = Regex.Split(d, " +").TrimEnd();
                             StringBuilder dmb = new StringBuilder(dmChars.Length);
                             foreach (String dmc in dmChars)
                             {
