@@ -28,7 +28,7 @@ namespace ICU4N.Dev.Test
 #else
                 Assembly assembly = typeof(TestUtil).Assembly;
 #endif
-                input = assembly.GetManifestResourceStream(DATA_PATH + name);
+                input = assembly.GetManifestResourceStream(DATA_PATH + name.Replace('/', '.'));
             }
             catch (Exception t)
             {
