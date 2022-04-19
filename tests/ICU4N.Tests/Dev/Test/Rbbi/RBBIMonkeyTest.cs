@@ -451,7 +451,7 @@ namespace ICU4N.Dev.Test.Rbbi
             {
                 int lineNumber = 0;
 
-                foreach (string l in Regex.Split(rules, "\\r?\\n"))
+                foreach (string l in Regex.Split(rules, "\\r?\\n").TrimEnd())
                 {
                     string line = l;
                     ++lineNumber;
