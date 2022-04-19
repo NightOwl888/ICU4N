@@ -1723,15 +1723,17 @@ namespace ICU4N.Impl
 
         public static string[] SplitString(string src, string target)
         {
-            return Regex.Split(src, "\\Q" + target + "\\E");
+            return Regex.Split(src, "\\Q" + target + "\\E").TrimEnd();
         }
+
+        private static readonly Regex WhiteSpaceRegex = new Regex("\\s+", RegexOptions.Compiled);
 
         /// <summary>
         /// Split the string at runs of ascii whitespace characters.
         /// </summary>
         public static string[] SplitWhitespace(string src)
         {
-            return Regex.Split(src, "\\s+");
+            return WhiteSpaceRegex.Split(src).TrimEnd();
         }
 
         /// <summary>
