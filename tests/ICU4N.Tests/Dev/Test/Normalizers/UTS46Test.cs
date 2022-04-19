@@ -136,7 +136,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 errors.Clear();
                 if (data[3].Length != 0)
                 {
-                    foreach (string e in Regex.Split(data[3], "\\|"))
+                    foreach (string e in Regex.Split(data[3], "\\|").TrimEnd())
                     {
                         errors.Add(errorNamesToErrors.Get(e));
                     }
