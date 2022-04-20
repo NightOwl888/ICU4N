@@ -1,7 +1,9 @@
-﻿#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
-    using Microsoft.Extensions.Caching.Memory;
+﻿using System.Globalization;
+using System.Threading;
+#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
+using Microsoft.Extensions.Caching.Memory;
 #else
-    using System.Runtime.Caching;
+using System.Runtime.Caching;
 #endif
 
 namespace ICU4N.Support
@@ -56,8 +58,8 @@ namespace ICU4N.Support
 #if FEATURE_MICROSOFT_EXTENSIONS_CACHING
             innerCache.Set(this, value, options);
 #else
-            id = lastId++;
-            innerCache.Set(id.ToString(), value, options);
+            id = Interlocked.Increment(ref lastId);
+            innerCache.Set(id.ToString(CultureInfo.InvariantCulture), value, options);
 #endif
         }
 
@@ -66,7 +68,7 @@ namespace ICU4N.Support
 #if FEATURE_MICROSOFT_EXTENSIONS_CACHING
             return innerCache.TryGetValue(this, out value);
 #else
-            value = (T) innerCache.Get(id.ToString());
+            value = (T) innerCache.Get(id.ToString(CultureInfo.InvariantCulture));
             return value != null;
 #endif
         }
