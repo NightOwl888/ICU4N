@@ -1378,8 +1378,8 @@ namespace ICU4N.Impl
             private readonly int levelBitsList;
             private Level rootLevel;
 
-            // ICU4N: The lock was changed to a ReaderWriterLockSlim to allow multiple threads to read simultaneously.
-            private readonly ReaderWriterLockSlim syncLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            // ICU4N: Avoid lock (this)
+            private object syncLock = new object();
 
             private static bool StoreDirectly(int size)
             {
@@ -1387,7 +1387,7 @@ namespace ICU4N.Impl
             }
 
             // ICU4N: syncLock is assumed to already have an open upgradable read lock
-            private static object PutIfCleared(object[] values, int index, object item, int size, ReaderWriterLockSlim syncLock)
+            private static object PutIfCleared(object[] values, int index, object item, int size)
             {
                 object value = values[index];
                 if (!(value is SoftReference<object> softRefence))
@@ -1403,33 +1403,22 @@ namespace ICU4N.Impl
                 {
                     return value;
                 }
-                syncLock.EnterWriteLock();
-                try
-                {
-                    // Prevent double entry
-                    if (softRefence.TryGetValue(out value))
-                        return value;
 
-                    if (CacheValue<object>.FutureInstancesWillBeStrong)
-                    {
-                        values[index] = item;
-                    }
-                    else
-                    {
-#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
-                        values[index] = new SoftReference<object>(
-                            item,
-                            new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
-#else
-                        values[index] = new SoftReference<object>(
-                            item,
-                            new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
-#endif
-                    }
-                }
-                finally
+                if (CacheValue<object>.FutureInstancesWillBeStrong)
                 {
-                    syncLock.ExitWriteLock();
+                    values[index] = item;
+                }
+                else
+                {
+#if FEATURE_MICROSOFT_EXTENSIONS_CACHING
+                    values[index] = new SoftReference<object>(
+                        item,
+                        new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
+#else
+                    values[index] = new SoftReference<object>(
+                        item,
+                        new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
+#endif
                 }
                 return item;
             }
@@ -1441,13 +1430,11 @@ namespace ICU4N.Impl
                 private readonly int mask;
                 private readonly int[] keys;
                 private readonly object[] values;
-                private readonly ReaderWriterLockSlim syncLock;
 
-                internal Level(int levelBitsList, int shift, ReaderWriterLockSlim syncLock)
+                internal Level(int levelBitsList, int shift)
                 {
                     this.levelBitsList = levelBitsList;
                     this.shift = shift;
-                    this.syncLock = syncLock ?? throw new ArgumentNullException(nameof(syncLock));
                     int bits = levelBitsList & 0xf;
                     Debug.Assert(bits != 0);
                     int length = 1 << bits;
@@ -1459,94 +1446,61 @@ namespace ICU4N.Impl
                 public object Get(int key)
                 {
                     int index = (key >> shift) & mask;
-                    syncLock.EnterReadLock();
-                    try
+                    int k = keys[index];
+                    if (k == key)
                     {
-                        int k = keys[index];
-                        if (k == key)
-                        {
-                            return values[index];
-                        }
-                        if (k == 0)
-                        {
-                            Level level = (Level)values[index];
-                            if (level != null)
-                            {
-                                return level.Get(key);
-                            }
-                        }
-                        return null;
+                        return values[index];
                     }
-                    finally
+                    if (k == 0)
                     {
-                        syncLock.ExitReadLock();
+                        Level level = (Level)values[index];
+                        if (level != null)
+                        {
+                            return level.Get(key);
+                        }
                     }
+                    return null;
                 }
 
                 public object GetOrAdd(int key, object item, int size)
                 {
                     int index = (key >> shift) & mask;
-                    syncLock.EnterUpgradeableReadLock();
-                    try
+                    int k = keys[index];
+                    if (k == key)
                     {
-                        int k = keys[index];
-                        if (k == key)
+                        return PutIfCleared(values, index, item, size);
+                    }
+                    if (k == 0)
+                    {
+                        Level level2 = (Level)values[index];
+                        if (level2 != null)
                         {
-                            return PutIfCleared(values, index, item, size, syncLock);
+                            return level2.GetOrAdd(key, item, size);
                         }
-                        if (k == 0)
-                        {
-                            Level level2 = (Level)values[index];
-                            if (level2 != null)
-                            {
-                                return level2.GetOrAdd(key, item, size);
-                            }
 
-                            syncLock.EnterWriteLock();
-                            try
-                            {
-                                keys[index] = key;
+                        keys[index] = key;
 #if FEATURE_MICROSOFT_EXTENSIONS_CACHING
-                                values[index] = StoreDirectly(size) ? item
-                                    : new SoftReference<object>(
-                                        item,
-                                        new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
+                        values[index] = StoreDirectly(size) ? item
+                            : new SoftReference<object>(
+                                item,
+                                new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
 #else
-                                values[index] = StoreDirectly(size) ? item
-                                    : new SoftReference<object>(
-                                        item,
-                                        new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
+                        values[index] = StoreDirectly(size) ? item
+                            : new SoftReference<object>(
+                                item,
+                                new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
 #endif
-                            }
-                            finally
-                            {
-                                syncLock.ExitWriteLock();
-                            }
-                            return item;
-                        }
-                        // Collision: Add a child level, move the old item there,
-                        // and then insert the current item.
-                        Level level = new Level(levelBitsList >> 4, shift + (levelBitsList & 0xf), syncLock);
-                        int i = (k >> level.shift) & level.mask;
-                        level.keys[i] = k;
-                        level.values[i] = values[index];
-
-                        syncLock.EnterWriteLock();
-                        try
-                        {
-                            keys[index] = 0;
-                            values[index] = level;
-                        }
-                        finally
-                        {
-                            syncLock.ExitWriteLock();
-                        }
-                        return level.GetOrAdd(key, item, size);
+                        return item;
                     }
-                    finally
-                    {
-                        syncLock.ExitUpgradeableReadLock();
-                    }
+                    // Collision: Add a child level, move the old item there,
+                    // and then insert the current item.
+                    Level level = new Level(levelBitsList >> 4, shift + (levelBitsList & 0xf));
+                    int i = (k >> level.shift) & level.mask;
+                    level.keys[i] = k;
+                    level.values[i] = values[index];
+                    keys[index] = 0;
+                    values[index] = level;
+                    return level.GetOrAdd(key, item, size);
                 }
             }
 
@@ -1653,8 +1607,7 @@ namespace ICU4N.Impl
 
             public object Get(int res)
             {
-                syncLock.EnterReadLock();
-                try
+                lock (syncLock)
                 {
                     // Integers and empty resources need not be cached.
                     // The cache itself uses res=0 for "no match".
@@ -1684,59 +1637,46 @@ namespace ICU4N.Impl
                         softReference.TryGetValue(out value);
                     return value;  // null if the reference was cleared
                 }
-                finally
-                {
-                    syncLock.ExitReadLock();
-                }
             }
 
             public object GetOrAdd(int res, object item, int size)
             {
-                syncLock.EnterUpgradeableReadLock();
-                try
+                lock (syncLock)
                 {
                     if (length >= 0)
                     {
                         int index = FindSimple(res);
                         if (index >= 0)
                         {
-                            return PutIfCleared(values, index, item, size, syncLock);
+                            return PutIfCleared(values, index, item, size);
                         }
                         else if (length < SIMPLE_LENGTH)
                         {
                             index = ~index;
-                            syncLock.EnterWriteLock();
-                            try
+                            if (index < length)
                             {
-                                if (index < length)
-                                {
-                                    System.Array.Copy(keys, index, keys, index + 1, length - index);
-                                    System.Array.Copy(values, index, values, index + 1, length - index);
-                                }
-                                ++length;
-                                keys[index] = res;
+                                System.Array.Copy(keys, index, keys, index + 1, length - index);
+                                System.Array.Copy(values, index, values, index + 1, length - index);
+                            }
+                            ++length;
+                            keys[index] = res;
 #if FEATURE_MICROSOFT_EXTENSIONS_CACHING
-                                values[index] = StoreDirectly(size) ? item
-                                    : new SoftReference<object>(
-                                        item,
-                                        new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
+                            values[index] = StoreDirectly(size) ? item
+                                : new SoftReference<object>(
+                                    item,
+                                    new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
 #else
-                                values[index] = StoreDirectly(size) ? item
-                                    : new SoftReference<object>(
-                                        item,
-                                        new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
+                            values[index] = StoreDirectly(size) ? item
+                                : new SoftReference<object>(
+                                    item,
+                                    new CacheItemPolicy { SlidingExpiration = ResourceCache.SlidingExpiration });
 #endif
-                            }
-                            finally
-                            {
-                                syncLock.ExitWriteLock();
-                            }
                             return item;
                         }
                         else /* not found && length == SIMPLE_LENGTH */
                         {
                             // Grow to become trie-like.
-                            rootLevel = new Level(levelBitsList, 0, syncLock);
+                            rootLevel = new Level(levelBitsList, 0);
                             for (int i = 0; i < SIMPLE_LENGTH; ++i)
                             {
                                 rootLevel.GetOrAdd(MakeKey(keys[i]), values[i], 0);
@@ -1747,10 +1687,6 @@ namespace ICU4N.Impl
                         }
                     }
                     return rootLevel.GetOrAdd(MakeKey(res), item, size);
-                }
-                finally
-                {
-                    syncLock.ExitUpgradeableReadLock();
                 }
             }
         }
