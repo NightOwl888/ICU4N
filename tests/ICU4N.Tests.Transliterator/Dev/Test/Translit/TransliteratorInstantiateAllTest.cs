@@ -44,7 +44,7 @@ namespace ICU4N.Dev.Test.Translit
                 try
                 {
                     rules = t.ToRules(true);
-                    //Transliterator.CreateFromRules("x", rules, Transliterator.Forward);
+                    Transliterator.CreateFromRules("x", rules, Transliterator.Forward);
                 }
                 catch (ArgumentException ex2)
                 {
