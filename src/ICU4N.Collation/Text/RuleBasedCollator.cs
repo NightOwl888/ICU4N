@@ -156,32 +156,34 @@ namespace ICU4N.Text
             // ICU4N TODO: Seems like reflection is overkill here.
 
             CollationTailoring @base = CollationRoot.Root;
-            // Most code using Collator does not need to build a Collator from rules.
-            // By using reflection, most code will not have a static dependency on the builder code.
-            // CollationBuilder builder = new CollationBuilder(base);
-            Assembly classLoader =
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-                GetType().GetTypeInfo().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
-#else
-                GetType().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
-#endif
-            CollationTailoring t;
-            try
-            {
-                Type builderClass = classLoader.GetType("ICU4N.Impl.Coll.CollationBuilder");
-                object builder = builderClass.GetConstructor(new Type[] { typeof(CollationTailoring) }).Invoke(new object[] { @base });
-                // builder.parseAndBuild(rules);
-                //Method parseAndBuild = builderClass.getMethod("parseAndBuild", String.class);
-                //            t = (CollationTailoring) parseAndBuild.invoke(builder, rules);
+            //            // Most code using Collator does not need to build a Collator from rules.
+            //            // By using reflection, most code will not have a static dependency on the builder code.
+            //            // CollationBuilder builder = new CollationBuilder(base);
+            //            Assembly classLoader =
+            //#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
+            //                GetType().GetTypeInfo().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
+            //#else
+            //                GetType().Assembly; // ClassLoaderUtil.getClassLoader(GetUnicodeCategory());
+            //#endif
+            //            CollationTailoring t;
+            //            try
+            //            {
+            //                Type builderClass = classLoader.GetType("ICU4N.Impl.Coll.CollationBuilder");
+            //                object builder = builderClass.GetConstructor(new Type[] { typeof(CollationTailoring) }).Invoke(new object[] { @base });
+            //                // builder.parseAndBuild(rules);
+            //                //Method parseAndBuild = builderClass.getMethod("parseAndBuild", String.class);
+            //                //            t = (CollationTailoring) parseAndBuild.invoke(builder, rules);
 
-                MethodInfo parseAndBuild = builderClass.GetMethod("ParseAndBuild", new Type[] { typeof(string) });
-                t = (CollationTailoring)parseAndBuild.Invoke(builder, new object[] { rules });
-            }
-            catch (TargetInvocationException e)
-            {
-                throw e.GetBaseException();
-            }
+            //                MethodInfo parseAndBuild = builderClass.GetMethod("ParseAndBuild", new Type[] { typeof(string) });
+            //                t = (CollationTailoring)parseAndBuild.Invoke(builder, new object[] { rules });
+            //            }
+            //            catch (TargetInvocationException e)
+            //            {
+            //                throw e.GetBaseException();
+            //            }
 
+            CollationBuilder builder = new CollationBuilder(@base);
+            CollationTailoring t = builder.ParseAndBuild(rules);
 
             t.ActualCulture = null;
             AdoptTailoring(t);
