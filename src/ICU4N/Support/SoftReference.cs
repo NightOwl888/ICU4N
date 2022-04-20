@@ -45,7 +45,6 @@ namespace ICU4N.Support
         private static readonly MemoryCache innerCache = new MemoryCache("ICU4N");
         private static int lastId = 0;
         private int id;
-        private readonly object innerCacheLock = new object();
 #endif
 
         public SoftReference(T value,
@@ -60,8 +59,7 @@ namespace ICU4N.Support
             innerCache.Set(this, value, options);
 #else
             id = Interlocked.Increment(ref lastId);
-            lock (innerCacheLock)
-                innerCache.Set(id.ToString(CultureInfo.InvariantCulture), value, options);
+            innerCache.Set(id.ToString(CultureInfo.InvariantCulture), value, options);
 #endif
         }
 
@@ -70,8 +68,7 @@ namespace ICU4N.Support
 #if FEATURE_MICROSOFT_EXTENSIONS_CACHING
             return innerCache.TryGetValue(this, out value);
 #else
-            lock (innerCacheLock)
-                value = (T) innerCache.Get(id.ToString(CultureInfo.InvariantCulture));
+            value = (T) innerCache.Get(id.ToString(CultureInfo.InvariantCulture));
             return value != null;
 #endif
         }
