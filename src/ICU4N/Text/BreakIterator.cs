@@ -6,6 +6,7 @@ using J2N.Text;
 using System;
 using System.Globalization;
 using System.Text;
+using System.Threading;
 
 namespace ICU4N.Text
 {
@@ -1034,8 +1035,9 @@ namespace ICU4N.Text
             {
                 try
                 {
-                    Type cls = Type.GetType("ICU4N.Text.BreakIteratorFactory, ICU4N"); // ICU4N TODO: API Set BreakIteratorFactory statically on BreakIterator abstract class so it can be injected (this won't allow external injection)
-                    shim = (BreakIteratorServiceShim)Activator.CreateInstance(cls);
+                    //Type cls = Type.GetType("ICU4N.Text.BreakIteratorFactory, ICU4N"); // ICU4N TODO: API Set BreakIteratorFactory statically on BreakIterator abstract class so it can be injected (this won't allow external injection)
+                    //shim = (BreakIteratorServiceShim)Activator.CreateInstance(cls);
+                    LazyInitializer.EnsureInitialized(ref shim, () => new BreakIteratorFactory());
                 }
                 catch (TypeInitializationException) // ICU4N TODO: Check exception type
                 {

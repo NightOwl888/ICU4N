@@ -11,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Numerics;
 using System.Resources;
+using System.Threading;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -744,8 +745,9 @@ namespace ICU4N.Text
                 {
                     //Class <?> cls = Class.forName("com.ibm.icu.text.NumberFormatServiceShim");
                     //shim = (NumberFormatShim)cls.newInstance();
-                    Type type = Type.GetType("ICU4N.Text.NumberFormatServiceShim");
-                    shim = (NumberFormatShim)Activator.CreateInstance(type);
+                    //Type type = Type.GetType("ICU4N.Text.NumberFormatServiceShim");
+                    //shim = (NumberFormatShim)Activator.CreateInstance(type);
+                    LazyInitializer.EnsureInitialized(ref shim, () => new NumberFormatServiceShim());
 
                 }
                 ////CLOVER:OFF

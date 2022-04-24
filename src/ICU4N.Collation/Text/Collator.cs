@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Resources;
+using System.Threading;
 
 namespace ICU4N.Text
 {
@@ -768,12 +769,13 @@ namespace ICU4N.Text
             // despite lack of synchronization, since the shim instance has no state--
             // it's all in the class init.  The worst problem is we might instantiate
             // two shim instances, but they'll share the same state so that's ok.
-            if (shim == null)
+            if (shim is null)
             {
                 try
                 {
-                    Type cls = Type.GetType("ICU4N.Text.CollatorServiceShim, ICU4N");
-                    shim = (ServiceShim)Activator.CreateInstance(cls);
+                    //Type cls = Type.GetType("ICU4N.Text.CollatorServiceShim, ICU4N");
+                    //shim = (ServiceShim)Activator.CreateInstance(cls);
+                    LazyInitializer.EnsureInitialized(ref shim, () => new CollatorServiceShim());
                 }
                 catch (MissingManifestResourceException e)
                 {
