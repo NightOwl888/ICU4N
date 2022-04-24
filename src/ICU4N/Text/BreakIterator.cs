@@ -5,6 +5,7 @@ using ICU4N.Util;
 using J2N.Text;
 using System;
 using System.Globalization;
+using System.Resources;
 using System.Text;
 using System.Threading;
 
@@ -1039,7 +1040,7 @@ namespace ICU4N.Text
                     //shim = (BreakIteratorServiceShim)Activator.CreateInstance(cls);
                     LazyInitializer.EnsureInitialized(ref shim, () => new BreakIteratorFactory());
                 }
-                catch (TypeInitializationException) // ICU4N TODO: Check exception type
+                catch (MissingManifestResourceException)
                 {
                     throw;
                 }
