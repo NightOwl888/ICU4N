@@ -101,11 +101,11 @@ namespace ICU4N.Impl
             public override TValue Get() => value;
         }
 
-        // ICU4N: Utilize ReaderWriterLockSlim to get better throughput on reads
+        // ICU4N: Utilize double-checked lock pattern
         private sealed class SoftValue : CacheValue<TValue>
         {
             private SoftReference<TValue> reference;
-            private readonly ReaderWriterLockSlim syncLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+            private readonly object syncLock = new object();
             private readonly Func<TValue> createValue;
             private static readonly TimeSpan SlidingExpiration = new TimeSpan(hours: 0, minutes: 5, seconds: 0);
 
@@ -113,11 +113,6 @@ namespace ICU4N.Impl
             {
                 this.createValue = createValue ?? throw new ArgumentNullException(nameof(createValue));
                 this.reference = CreateReference(initialValue);
-            }
-
-            ~SoftValue() // ICU4N specific - Added finalizer
-            {
-                syncLock?.Dispose();
             }
 
             private SoftReference<TValue> CreateReference(TValue value)
@@ -131,31 +126,18 @@ namespace ICU4N.Impl
 
             public override TValue Get()
             {
-                syncLock.EnterUpgradeableReadLock();
-                try
+                if (reference.TryGetValue(out TValue value))
+                    return value;
+
+                lock (syncLock)
                 {
-                    if (reference.TryGetValue(out TValue value))
+                    // Double check another thread didn't beat us
+                    if (reference.TryGetValue(out value))
                         return value;
 
-                    syncLock.EnterWriteLock();
-                    try
-                    {
-                        // Double check another thread didn't beat us
-                        if (reference.TryGetValue(out value))
-                            return value;
-
-                        value = createValue();
-                        reference = CreateReference(value);
-                        return value;
-                    }
-                    finally
-                    {
-                        syncLock.ExitWriteLock();
-                    }
-                }
-                finally
-                {
-                    syncLock.ExitUpgradeableReadLock();
+                    value = createValue();
+                    reference = CreateReference(value);
+                    return value;
                 }
             }
         }
