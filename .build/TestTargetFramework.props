@@ -22,7 +22,7 @@
     <SetTargetFramework></SetTargetFramework>
     <SetTargetFramework Condition=" '$(TargetFramework)' == 'netcoreapp3.0' ">TargetFramework=netstandard2.1</SetTargetFramework>
     <SetTargetFramework Condition=" '$(TargetFramework)' == 'net452' ">TargetFramework=net40</SetTargetFramework>
-    <SetTargetFramework Condition=" '$(TargetFramework)' == 'net461' ">TargetFramework=net45</SetTargetFramework>
+    <SetTargetFramework Condition=" '$(TargetFramework)' == 'net461' ">TargetFramework=net451</SetTargetFramework>
   </PropertyGroup>
   
 </Project>
