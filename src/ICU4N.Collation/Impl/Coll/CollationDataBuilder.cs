@@ -1602,7 +1602,7 @@ namespace ICU4N.Impl.Coll
                                                          // Characters that have context (prefixes or contraction suffixes).
         private UnicodeSet contextChars = new UnicodeSet();
         // Serialized UCharsTrie structures for finalized contexts.
-        private J2N.Text.StringBuffer contexts = new J2N.Text.StringBuffer(); // ICU4N specific - use StringBuffer to prevent issues with multiple threads accessing the StringBuilder concurrently
+        private StringBuilder contexts = new StringBuilder();
         private UnicodeSet unsafeBackwardSet = new UnicodeSet();
         private bool modified;
 
