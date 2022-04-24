@@ -1247,12 +1247,11 @@ namespace ICU4N.Impl.Coll
             return fcd.IsNormalized(s);
         }
 
-        private static readonly UnicodeSet COMPOSITES = new UnicodeSet("[:NFD_QC=N:]");
-        static CollationBuilder()
-        {
+        private static readonly UnicodeSet COMPOSITES = new UnicodeSet("[:NFD_QC=N:]")
             // Hangul is decomposed on the fly during collation.
-            COMPOSITES.Remove(Hangul.HangulBase, Hangul.HangulEnd);
-        }
+            .Remove(Hangul.HangulBase, Hangul.HangulEnd)
+            // ICU4N specific - avoid static constructor
+            .Freeze();
 
         private void CloseOverComposites()
         {
