@@ -2,6 +2,9 @@
 using NUnit.Framework;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace ICU4N.Dev.Test.Translit
 {
@@ -11,11 +14,15 @@ namespace ICU4N.Dev.Test.Translit
     /// </summary>
     public class TransliteratorInstantiateAllTest : TestFmwk
     {
+        private static IList<string> availableIDs;
+        private static IList<string> AvailableIDs => LazyInitializer.EnsureInitialized<IList<string>>(ref availableIDs, () => Transliterator.GetAvailableIDs().ToArray());
+
+
         public static IEnumerable TestData
         {
             get
             {
-                foreach (var e in Transliterator.GetAvailableIDs())
+                foreach (var e in AvailableIDs)
                 {
                     yield return e;
                 }
