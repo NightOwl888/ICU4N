@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.Globalization;
+using System.Threading;
 
 //
 // Port From:   ICU4C v2.1 : Collate/G7CollationTest
@@ -201,7 +202,7 @@ namespace ICU4N.Dev.Test.Collate
                     myCollation = Collator.GetInstance(locales[i]);
                     tblColl1 = new RuleBasedCollator(((RuleBasedCollator)myCollation).GetRules());
                 }
-                catch (Exception foo)
+                catch (Exception foo) when (!(foo is ThreadAbortException)) // ICU4N specific - ignore ThreadAbortException
                 {
                     Warnln("Exception: " + foo.Message +
                           "; Locale : " + locales[i].DisplayName + " getRules failed");
