@@ -388,7 +388,7 @@ namespace ICU4N.Impl.Coll
             }
             else
             {
-                return GetCEs(new StringBuilder(prefix.Length).Append(prefix).Append(s).AsCharSequence(), prefixLength, ces, cesLength);
+                return GetCEs(new StringBuilder(prefix.Length + s.Length).Append(prefix).Append(s).AsCharSequence(), prefixLength, ces, cesLength);
             }
         }
 
