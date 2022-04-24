@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
 
 namespace ICU4N.Impl.Coll
 {
@@ -263,7 +264,7 @@ namespace ICU4N.Impl.Coll
             {
                 sink.AddReset(resetStrength, rawBuilder);
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is ThreadAbortException)) // ICU4N specific - ignore ThreadAbortException
             {
                 SetParseError("adding reset failed", e);
                 return (CollationStrength)UCOL_DEFAULT;
@@ -369,7 +370,7 @@ namespace ICU4N.Impl.Coll
             {
                 sink.AddRelation(strength, prefix, rawBuilder, extension);
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is ThreadAbortException)) // ICU4N specific - ignore ThreadAbortException
             {
                 SetParseError("adding relation failed", e);
                 return;
@@ -402,7 +403,7 @@ namespace ICU4N.Impl.Coll
                     {
                         sink.AddRelation(strength, empty, UTF16.ValueOf(cp).AsCharSequence(), empty.Value);
                     }
-                    catch (Exception e)
+                    catch (Exception e) when (!(e is ThreadAbortException)) // ICU4N specific - ignore ThreadAbortException
                     {
                         SetParseError("adding relation failed", e);
                         return;
@@ -453,7 +454,7 @@ namespace ICU4N.Impl.Coll
                     {
                         sink.AddRelation(strength, empty, UTF16.ValueOf(prev).AsCharSequence(), empty.Value);
                     }
-                    catch (Exception e)
+                    catch (Exception e) when (!(e is ThreadAbortException)) // ICU4N specific - ignore ThreadAbortException
                     {
                         SetParseError("adding relation failed", e);
                         return;
@@ -801,7 +802,7 @@ namespace ICU4N.Impl.Coll
                     {
                         localeID = new UCultureInfoBuilder().SetLanguageTag(v).Build();
                     }
-                    catch (Exception e)
+                    catch (Exception e) when (!(e is ThreadAbortException)) // ICU4N specific - ignore ThreadAbortException
                     {
                         SetParseError("expected language tag in [import langTag]", e);
                         return;
@@ -823,7 +824,7 @@ namespace ICU4N.Impl.Coll
                                 importer.GetRules(baseID,
                                         collationType != null ? collationType : "standard");
                         }
-                        catch (Exception e)
+                        catch (Exception e) when (!(e is ThreadAbortException)) // ICU4N specific - ignore ThreadAbortException
                         {
                             SetParseError("[import langTag] failed", e);
                             return;
@@ -834,7 +835,7 @@ namespace ICU4N.Impl.Coll
                         {
                             Parse(importedRules);
                         }
-                        catch (Exception e)
+                        catch (Exception e) when (!(e is ThreadAbortException)) // ICU4N specific - ignore ThreadAbortException
                         {
                             ruleIndex = outerRuleIndex;  // Restore the original index for error reporting.
                             SetParseError("parsing imported rules failed", e);
@@ -855,7 +856,7 @@ namespace ICU4N.Impl.Coll
                     {
                         sink.Optimize(set);
                     }
-                    catch (Exception e)
+                    catch (Exception e) when (!(e is ThreadAbortException)) // ICU4N specific - ignore ThreadAbortException
                     {
                         SetParseError("[optimize set] failed", e);
                     }
@@ -868,7 +869,7 @@ namespace ICU4N.Impl.Coll
                     {
                         sink.SuppressContractions(set);
                     }
-                    catch (Exception e)
+                    catch (Exception e) when (!(e is ThreadAbortException)) // ICU4N specific - ignore ThreadAbortException
                     {
                         SetParseError("[suppressContractions set] failed", e);
                     }
@@ -997,9 +998,9 @@ namespace ICU4N.Impl.Coll
             {
                 set.ApplyPattern(rules.Substring(i, j - i)); // ICU4N: Corrected 2nd parameter
             }
-            catch (Exception e)
+            catch (Exception e) when (!(e is ThreadAbortException)) // ICU4N specific - ignore ThreadAbortException
             {
-                SetParseError("not a valid UnicodeSet pattern: " + e.ToString());
+                SetParseError("not a valid UnicodeSet pattern: ", e);
             }
             j = SkipWhiteSpace(j);
             if (j == rules.Length || rules[j] != 0x5d)
