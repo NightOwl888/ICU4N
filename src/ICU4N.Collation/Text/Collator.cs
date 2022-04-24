@@ -777,10 +777,10 @@ namespace ICU4N.Text
                     //shim = (ServiceShim)Activator.CreateInstance(cls);
                     LazyInitializer.EnsureInitialized(ref shim, () => new CollatorServiceShim());
                 }
-                catch (MissingManifestResourceException e)
+                catch (MissingManifestResourceException)
                 {
                     ////CLOVER:OFF
-                    throw e;
+                    throw;
                     ////CLOVER:ON
                 }
                 catch (Exception e)
