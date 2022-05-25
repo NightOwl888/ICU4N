@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Extensions.ObjectPool;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
@@ -19,6 +20,8 @@ namespace ICU4N.Impl.Coll
     /// </summary>
     internal sealed class CollationDataBuilder // not final in C++
     {
+        private ObjectPool<StringBuilder> stringBuilderPool = new DefaultObjectPool<StringBuilder>(new StringBuilderPooledObjectPolicy(), 10);
+
         /// <summary>
         /// Collation element modifier. Interface class for a modifier
         /// that changes a tailoring builder's temporary CEs to final CEs.
@@ -242,8 +245,17 @@ namespace ICU4N.Impl.Coll
                     cond.BuiltCE32 = Collation.NO_CE32;
                 }
                 ICharSequence suffix = s.Subsequence(cLength, s.Length - cLength); // ICU4N: Corrected 2nd parameter
-                string context = new StringBuilder().Append((char)prefix.Length).
+                string context;
+                var stringBuilder = stringBuilderPool.Get(); // ICU4N: Use StringBuilderPool rather than new to avoid ThreadAbortException
+                try
+                {
+                    context = stringBuilder.Append((char)prefix.Length).
                         Append(prefix).Append(suffix).ToString();
+                }
+                finally
+                {
+                    stringBuilderPool.Return(stringBuilder);
+                }
                 unsafeBackwardSet.AddAll(suffix);
                 for (; ; )
                 {
@@ -388,7 +400,16 @@ namespace ICU4N.Impl.Coll
             }
             else
             {
-                return GetCEs(new StringBuilder(prefix.Length + s.Length).Append(prefix).Append(s).AsCharSequence(), prefixLength, ces, cesLength);
+                var stringBuilder = stringBuilderPool.Get(); // ICU4N: Use StringBuilderPool rather than new to avoid ThreadAbortException
+                try
+                {
+                    stringBuilder.Capacity = Math.Min(prefixLength + s.Length, stringBuilder.Capacity);
+                    return GetCEs(stringBuilder.Append(prefix).Append(s).AsCharSequence(), prefixLength, ces, cesLength);
+                }
+                finally
+                {
+                    stringBuilderPool.Return(stringBuilder);
+                }
             }
         }
 
@@ -674,37 +695,45 @@ namespace ICU4N.Impl.Coll
                             return CopyFromBaseCE32(c, ce32, false);
                         }
                         ConditionalCE32 head = new ConditionalCE32("", 0);
-                        StringBuilder context = new StringBuilder("\0");
-                        int index;
-                        if (Collation.IsContractionCE32(ce32))
+                        StringBuilder context = stringBuilderPool.Get(); // ICU4N: Use StringBuilderPool rather than new to avoid ThreadAbortException
+                        try
                         {
-                            index = CopyContractionsFromBaseCE32(context, c, ce32, head);
-                        }
-                        else
-                        {
-                            ce32 = CopyFromBaseCE32(c, ce32, true);
-                            head.Next = index = AddConditionalCE32(context.ToString(), ce32);
-                        }
-                        ConditionalCE32 cond = GetConditionalCE32(index);  // the last ConditionalCE32 so far
-                        using (CharsTrieEnumerator prefixes = CharsTrie.GetEnumerator(base_.contexts, trieIndex + 2, 0))
-                        {
-                            while (prefixes.MoveNext())
+                            context.Append('\0');
+                            int index;
+                            if (Collation.IsContractionCE32(ce32))
                             {
-                                CharsTrieEntry entry = prefixes.Current;
-                                context.Length = 0;
-                                context.Append(entry.Chars).Reverse().Insert(0, (char)entry.Chars.Length);
-                                ce32 = entry.Value;
-                                if (Collation.IsContractionCE32(ce32))
-                                {
-                                    index = CopyContractionsFromBaseCE32(context, c, ce32, cond);
-                                }
-                                else
-                                {
-                                    ce32 = CopyFromBaseCE32(c, ce32, true);
-                                    cond.Next = index = AddConditionalCE32(context.ToString(), ce32);
-                                }
-                                cond = GetConditionalCE32(index);
+                                index = CopyContractionsFromBaseCE32(context, c, ce32, head);
                             }
+                            else
+                            {
+                                ce32 = CopyFromBaseCE32(c, ce32, true);
+                                head.Next = index = AddConditionalCE32(context.ToString(), ce32);
+                            }
+                            ConditionalCE32 cond = GetConditionalCE32(index);  // the last ConditionalCE32 so far
+                            using (CharsTrieEnumerator prefixes = CharsTrie.GetEnumerator(base_.contexts, trieIndex + 2, 0))
+                            {
+                                while (prefixes.MoveNext())
+                                {
+                                    CharsTrieEntry entry = prefixes.Current;
+                                    context.Length = 0;
+                                    context.Append(entry.Chars).Reverse().Insert(0, (char)entry.Chars.Length);
+                                    ce32 = entry.Value;
+                                    if (Collation.IsContractionCE32(ce32))
+                                    {
+                                        index = CopyContractionsFromBaseCE32(context, c, ce32, cond);
+                                    }
+                                    else
+                                    {
+                                        ce32 = CopyFromBaseCE32(c, ce32, true);
+                                        cond.Next = index = AddConditionalCE32(context.ToString(), ce32);
+                                    }
+                                    cond = GetConditionalCE32(index);
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            stringBuilderPool.Return(context);
                         }
                         ce32 = MakeBuilderContextCE32(head.Next);
                         contextChars.Add(c);
@@ -719,8 +748,16 @@ namespace ICU4N.Impl.Coll
                             return CopyFromBaseCE32(c, ce32, false);
                         }
                         ConditionalCE32 head = new ConditionalCE32("", 0);
-                        StringBuilder context = new StringBuilder("\0");
-                        CopyContractionsFromBaseCE32(context, c, ce32, head);
+                        StringBuilder context = stringBuilderPool.Get(); // ICU4N: Use StringBuilderPool rather than new to avoid ThreadAbortException
+                        try
+                        {
+                            context.Append('\0');
+                            CopyContractionsFromBaseCE32(context, c, ce32, head);
+                        }
+                        finally
+                        {
+                            stringBuilderPool.Return(context);
+                        }
                         ce32 = MakeBuilderContextCE32(head.Next);
                         contextChars.Add(c);
                         break;
@@ -1234,112 +1271,120 @@ namespace ICU4N.Impl.Coll
                 // After the list head, the prefix or suffix can be empty, but not both.
                 Debug.Assert(cond == head || cond.HasContext);
                 int prefixLength = cond.PrefixLength;
-                StringBuilder prefix = new StringBuilder().Append(cond.Context, 0, (prefixLength + 1) - 0); // ICU4N: Checked 3rd parameter
-                string prefixString = prefix.ToString();
-                // Collect all contraction suffixes for one prefix.
-                ConditionalCE32 firstCond = cond;
-                ConditionalCE32 lastCond = cond;
-                while (cond.Next >= 0 &&
-                        (cond = GetConditionalCE32(cond.Next)).Context.StartsWith(prefixString, StringComparison.Ordinal))
+                StringBuilder prefix = stringBuilderPool.Get(); // ICU4N: Use StringBuilderPool rather than new to avoid ThreadAbortException
+                string prefixString;
+                try
                 {
-                    lastCond = cond;
-                }
-                int ce32;
-                int suffixStart = prefixLength + 1;  // == prefix.length()
-                if (lastCond.Context.Length == suffixStart)
-                {
-                    // One prefix without contraction suffix.
-                    Debug.Assert(firstCond == lastCond);
-                    ce32 = lastCond.Ce32;
-                    cond = lastCond;
-                }
-                else
-                {
-                    // Build the contractions trie.
-                    contractionBuilder.Clear();
-                    // Entry for an empty suffix, to be stored before the trie.
-                    int emptySuffixCE32 = Collation.NO_CE32;  // Will always be set to a real value.
-                    int flags = 0;
-                    if (firstCond.Context.Length == suffixStart)
+                    prefixString = prefix.Append(cond.Context, 0, (prefixLength + 1) - 0).ToString(); // ICU4N: Checked 3rd parameter
+                    // Collect all contraction suffixes for one prefix.
+                    ConditionalCE32 firstCond = cond;
+                    ConditionalCE32 lastCond = cond;
+                    while (cond.Next >= 0 &&
+                            (cond = GetConditionalCE32(cond.Next)).Context.StartsWith(prefixString, StringComparison.Ordinal))
                     {
-                        // There is a mapping for the prefix and the single character c. (p|c)
-                        // If no other suffix matches, then we return this value.
-                        emptySuffixCE32 = firstCond.Ce32;
-                        cond = GetConditionalCE32(firstCond.Next);
+                        lastCond = cond;
+                    }
+                    int ce32;
+                    int suffixStart = prefixLength + 1;  // == prefix.length()
+                    if (lastCond.Context.Length == suffixStart)
+                    {
+                        // One prefix without contraction suffix.
+                        Debug.Assert(firstCond == lastCond);
+                        ce32 = lastCond.Ce32;
+                        cond = lastCond;
                     }
                     else
                     {
-                        // There is no mapping for the prefix and just the single character.
-                        // (There is no p|c, only p|cd, p|ce etc.)
-                        flags |= Collation.CONTRACT_SINGLE_CP_NO_MATCH;
-                        // When the prefix matches but none of the prefix-specific suffixes,
-                        // then we fall back to the mappings with the next-longest prefix,
-                        // and ultimately to mappings with no prefix.
-                        // Each fallback might be another set of contractions.
-                        // For example, if there are mappings for ch, p|cd, p|ce, but not for p|c,
-                        // then in text "pch" we find the ch contraction.
-                        for (cond = head; ; cond = GetConditionalCE32(cond.Next))
+                        // Build the contractions trie.
+                        contractionBuilder.Clear();
+                        // Entry for an empty suffix, to be stored before the trie.
+                        int emptySuffixCE32 = Collation.NO_CE32;  // Will always be set to a real value.
+                        int flags = 0;
+                        if (firstCond.Context.Length == suffixStart)
                         {
-                            int length = cond.PrefixLength;
-                            if (length == prefixLength) { break; }
-                            if (cond.DefaultCE32 != Collation.NO_CE32 &&
-                                    (length == 0 || prefixString.RegionMatches(
-                                            prefix.Length - length, cond.Context, 1, length, StringComparison.Ordinal)
-                                            /* C++: prefix.endsWith(cond.context, 1, length) */))
+                            // There is a mapping for the prefix and the single character c. (p|c)
+                            // If no other suffix matches, then we return this value.
+                            emptySuffixCE32 = firstCond.Ce32;
+                            cond = GetConditionalCE32(firstCond.Next);
+                        }
+                        else
+                        {
+                            // There is no mapping for the prefix and just the single character.
+                            // (There is no p|c, only p|cd, p|ce etc.)
+                            flags |= Collation.CONTRACT_SINGLE_CP_NO_MATCH;
+                            // When the prefix matches but none of the prefix-specific suffixes,
+                            // then we fall back to the mappings with the next-longest prefix,
+                            // and ultimately to mappings with no prefix.
+                            // Each fallback might be another set of contractions.
+                            // For example, if there are mappings for ch, p|cd, p|ce, but not for p|c,
+                            // then in text "pch" we find the ch contraction.
+                            for (cond = head; ; cond = GetConditionalCE32(cond.Next))
                             {
-                                emptySuffixCE32 = cond.DefaultCE32;
+                                int length = cond.PrefixLength;
+                                if (length == prefixLength) { break; }
+                                if (cond.DefaultCE32 != Collation.NO_CE32 &&
+                                        (length == 0 || prefixString.RegionMatches(
+                                                prefix.Length - length, cond.Context, 1, length, StringComparison.Ordinal)
+                                                /* C++: prefix.endsWith(cond.context, 1, length) */))
+                                {
+                                    emptySuffixCE32 = cond.DefaultCE32;
+                                }
                             }
+                            cond = firstCond;
                         }
-                        cond = firstCond;
-                    }
-                    // Optimization: Set a flag when
-                    // the first character of every contraction suffix has lccc!=0.
-                    // Short-circuits contraction matching when a normal letter follows.
-                    flags |= Collation.CONTRACT_NEXT_CCC;
-                    // Add all of the non-empty suffixes into the contraction trie.
-                    for (; ; )
-                    {
-                        string suffix = cond.Context.Substring(suffixStart);
-                        int fcd16 = nfcImpl.GetFCD16(suffix.CodePointAt(0));
-                        if (fcd16 <= 0xff)
+                        // Optimization: Set a flag when
+                        // the first character of every contraction suffix has lccc!=0.
+                        // Short-circuits contraction matching when a normal letter follows.
+                        flags |= Collation.CONTRACT_NEXT_CCC;
+                        // Add all of the non-empty suffixes into the contraction trie.
+                        for (; ; )
                         {
-                            flags &= ~Collation.CONTRACT_NEXT_CCC;
+                            string suffix = cond.Context.Substring(suffixStart);
+                            int fcd16 = nfcImpl.GetFCD16(suffix.CodePointAt(0));
+                            if (fcd16 <= 0xff)
+                            {
+                                flags &= ~Collation.CONTRACT_NEXT_CCC;
+                            }
+                            fcd16 = nfcImpl.GetFCD16(suffix.CodePointBefore(suffix.Length));
+                            if (fcd16 > 0xff)
+                            {
+                                // The last suffix character has lccc!=0, allowing for discontiguous contractions.
+                                flags |= Collation.CONTRACT_TRAILING_CCC;
+                            }
+                            contractionBuilder.Add(suffix, cond.Ce32);
+                            if (cond == lastCond) { break; }
+                            cond = GetConditionalCE32(cond.Next);
                         }
-                        fcd16 = nfcImpl.GetFCD16(suffix.CodePointBefore(suffix.Length));
-                        if (fcd16 > 0xff)
+                        int index = AddContextTrie(emptySuffixCE32, contractionBuilder);
+                        if (index > Collation.MAX_INDEX)
                         {
-                            // The last suffix character has lccc!=0, allowing for discontiguous contractions.
-                            flags |= Collation.CONTRACT_TRAILING_CCC;
+                            throw new IndexOutOfRangeException("too many context-sensitive mappings");
+                            // BufferOverflowException is a better fit
+                            // but cannot be constructed with a message string.
                         }
-                        contractionBuilder.Add(suffix, cond.Ce32);
-                        if (cond == lastCond) { break; }
-                        cond = GetConditionalCE32(cond.Next);
+                        ce32 = Collation.MakeCE32FromTagAndIndex(Collation.CONTRACTION_TAG, index) | flags;
                     }
-                    int index = AddContextTrie(emptySuffixCE32, contractionBuilder);
-                    if (index > Collation.MAX_INDEX)
+                    Debug.Assert(cond == lastCond);
+                    firstCond.DefaultCE32 = ce32;
+                    if (prefixLength == 0)
                     {
-                        throw new IndexOutOfRangeException("too many context-sensitive mappings");
-                        // BufferOverflowException is a better fit
-                        // but cannot be constructed with a message string.
+                        if (cond.Next < 0)
+                        {
+                            // No non-empty prefixes, only contractions.
+                            return ce32;
+                        }
                     }
-                    ce32 = Collation.MakeCE32FromTagAndIndex(Collation.CONTRACTION_TAG, index) | flags;
-                }
-                Debug.Assert(cond == lastCond);
-                firstCond.DefaultCE32 = ce32;
-                if (prefixLength == 0)
-                {
-                    if (cond.Next < 0)
+                    else
                     {
-                        // No non-empty prefixes, only contractions.
-                        return ce32;
+                        prefix.Delete(0, 1 - 0);  // Remove the length unit. // ICU4N: Corrected 2nd parameter
+                        prefix.Reverse();
+                        prefixBuilder.Add(prefix, ce32);
+                        if (cond.Next < 0) { break; }
                     }
                 }
-                else
+                finally
                 {
-                    prefix.Delete(0, 1 - 0);  // Remove the length unit. // ICU4N: Corrected 2nd parameter
-                    prefix.Reverse();
-                    prefixBuilder.Add(prefix, ce32);
-                    if (cond.Next < 0) { break; }
+                    stringBuilderPool.Return(prefix);
                 }
             }
 
@@ -1358,16 +1403,24 @@ namespace ICU4N.Impl.Coll
 
         private int AddContextTrie(int defaultCE32, CharsTrieBuilder trieBuilder)
         {
-            StringBuilder context = new StringBuilder();
-            context.Append((char)(defaultCE32 >> 16)).Append((char)defaultCE32);
-            context.Append(trieBuilder.BuildCharSequence(TrieBuilderOption.Small));
-            // ICU4N: IndexOf method on StringBuilder is extremely slow, so we call ToString() first,
-            // which generally gets better performance.
-            int index = contexts.ToString().IndexOf(context.ToString(), StringComparison.Ordinal);
-            if (index < 0)
+            int index;
+            StringBuilder context = stringBuilderPool.Get(); // ICU4N: Use StringBuilderPool rather than new to avoid ThreadAbortException
+            try
             {
-                index = contexts.Length;
-                contexts.Append(context);
+                context.Append((char)(defaultCE32 >> 16)).Append((char)defaultCE32);
+                context.Append(trieBuilder.BuildCharSequence(TrieBuilderOption.Small));
+                // ICU4N: IndexOf method on StringBuilder is extremely slow, so we call ToString() first,
+                // which generally gets better performance.
+                index = contexts.ToString().IndexOf(context.ToString(), StringComparison.Ordinal);
+                if (index < 0)
+                {
+                    index = contexts.Length;
+                    contexts.Append(context);
+                }
+            }
+            finally
+            {
+                stringBuilderPool.Return(context);
             }
             return index;
         }
