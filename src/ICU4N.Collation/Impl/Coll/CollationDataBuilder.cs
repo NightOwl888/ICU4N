@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading;
 
 namespace ICU4N.Impl.Coll
 {
@@ -1515,7 +1516,14 @@ namespace ICU4N.Impl.Coll
                 // Set the pointers each time, in case they changed due to reallocation.
                 builderData.ce32s = builder.ce32s;
                 builderData.ces = builder.ce64s;
-                builderData.contexts = builder.contexts.ToString();
+                try
+                {
+                    builderData.contexts = builder.contexts.ToString();
+                }
+                catch (ThreadAbortException) // ICU4N specific - ignore ThreadAbortException
+                {
+                    // ignore
+                }
                 // Modified copy of CollationIterator.nextCE() and CollationIterator.nextCEFromCE32().
                 Reset();
                 s = str;
