@@ -180,6 +180,7 @@ namespace ICU4N.Dev.Test.Collate
         }
 
         [Test]
+        [Timeout(timeout: 120000)] // 2 min
         public void TestG7Data()
         {
             CultureInfo[] locales = {

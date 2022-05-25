@@ -30,6 +30,7 @@ namespace ICU4N.Dev.Test.Translit
         }
 
         [Test, TestCaseSource(typeof(TransliteratorInstantiateAllTest), "TestData")]
+        [Timeout(timeout: 120000)] // 2 min
         public void TestInstantiation(string testTransliteratorID)
         {
             Transliterator t = null;
