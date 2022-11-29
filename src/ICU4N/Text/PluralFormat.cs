@@ -773,96 +773,98 @@ namespace ICU4N.Text
             throw new InvalidOperationException();
         }
 
-        //// ICU4N TODO: Finish implementation
-        /////**
-        //// * This method returns the PluralRules type found from parsing.
-        //// * @param source the string to be parsed.
-        //// * @param pos defines the position where parsing is to begin,
-        //// * and upon return, the position where parsing left off.  If the position
-        //// * is a negative index, then parsing failed.
-        //// * @return Returns the PluralRules type. For example, it could be "zero", "one", "two", "few", "many" or "other")
-        //// */
-        /////*package*/
-        ////internal string ParseType(string source, RbnfLenientScanner scanner, FieldPosition pos)
-        ////{
-        ////    // If no pattern was applied, return null.
-        ////    if (msgPattern == null || msgPattern.CountParts() == 0)
-        ////    {
-        ////        pos.BeginIndex = -1;
-        ////        pos.EndIndex = -1;
-        ////        return null;
-        ////    }
-        ////    int partIndex = 0;
-        ////    int currMatchIndex;
-        ////    int count = msgPattern.CountParts();
-        ////    int startingAt = pos.BeginIndex;
-        ////    if (startingAt < 0)
-        ////    {
-        ////        startingAt = 0;
-        ////    }
+        /// <summary>
+        /// This method returns the <see cref="PluralRules"/> type found from parsing.
+        /// </summary>
+        /// <param name="source">The string to be parsed.</param>
+        /// <param name="scanner"></param>
+        /// <param name="pos">Defines the position where parsing is to begin,
+        /// and upon return, the position where parsing left off. If the position
+        /// is a negative index, then parsing failed.
+        /// </param>
+        /// <returns>Returns the <see cref="PluralRules"/> type. For example,
+        /// it could be "zero", "one", "two", "few", "many" or "other".</returns>
+        /*package*/
+        internal string ParseType(string source, IRbnfLenientScanner scanner, FieldPosition pos)
+        {
+            // If no pattern was applied, return null.
+            if (msgPattern == null || msgPattern.CountParts() == 0)
+            {
+                pos.BeginIndex = -1;
+                pos.EndIndex = -1;
+                return null;
+            }
+            int partIndex = 0;
+            int currMatchIndex;
+            int count = msgPattern.CountParts();
+            int startingAt = pos.BeginIndex;
+            if (startingAt < 0)
+            {
+                startingAt = 0;
+            }
 
-        ////    // The keyword is null until we need to match against a non-explicit, not-"other" value.
-        ////    // Then we get the keyword from the selector.
-        ////    // (In other words, we never call the selector if we match against an explicit value,
-        ////    // or if the only non-explicit keyword is "other".)
-        ////    String keyword = null;
-        ////    String matchedWord = null;
-        ////    int matchedIndex = -1;
-        ////    // Iterate over (ARG_SELECTOR ARG_START message ARG_LIMIT) tuples
-        ////    // until the end of the plural-only pattern.
-        ////    while (partIndex < count)
-        ////    {
-        ////        Part partSelector = msgPattern.GetPart(partIndex++);
-        ////        if (partSelector.PartType != PartType.ArgSelector)
-        ////        {
-        ////            // Bad format
-        ////            continue;
-        ////        }
+            // The keyword is null until we need to match against a non-explicit, not-"other" value.
+            // Then we get the keyword from the selector.
+            // (In other words, we never call the selector if we match against an explicit value,
+            // or if the only non-explicit keyword is "other".)
+            string keyword = null;
+            string matchedWord = null;
+            int matchedIndex = -1;
+            // Iterate over (ARG_SELECTOR ARG_START message ARG_LIMIT) tuples
+            // until the end of the plural-only pattern.
+            while (partIndex < count)
+            {
+                var partSelector = msgPattern.GetPart(partIndex++);
+                if (partSelector.Type != MessagePatternPartType.ArgSelector)
+                {
+                    // Bad Format
+                    continue;
+                }
 
-        ////        Part partStart = msgPattern.GetPart(partIndex++);
-        ////        if (partStart.PartType != PartType.MsgStart)
-        ////        {
-        ////            // Bad format
-        ////            continue;
-        ////        }
+                var partStart = msgPattern.GetPart(partIndex++);
+                if (partStart.Type != MessagePatternPartType.MsgStart)
+                {
+                    // Bad Format
+                    continue;
+                }
 
-        ////        Part partLimit = msgPattern.GetPart(partIndex++);
-        ////        if (partLimit.PartType != PartType.MsgLimit)
-        ////        {
-        ////            // Bad format
-        ////            continue;
-        ////        }
+                var partLimit = msgPattern.GetPart(partIndex++);
+                if (partLimit.Type != MessagePatternPartType.MsgLimit)
+                {
+                    // Bad Format
+                    continue;
+                }
 
-        ////        String currArg = pattern.Substring(partStart.Limit, partLimit.Index);
-        ////        if (scanner != null)
-        ////        {
-        ////            // If lenient parsing is turned ON, we've got some time consuming parsing ahead of us.
-        ////            int[] scannerMatchResult = scanner.findText(source, currArg, startingAt);
-        ////            currMatchIndex = scannerMatchResult[0];
-        ////        }
-        ////        else
-        ////        {
-        ////            currMatchIndex = source.IndexOf(currArg, startingAt);
-        ////        }
-        ////        if (currMatchIndex >= 0 && currMatchIndex >= matchedIndex && (matchedWord == null || currArg.Length > matchedWord.Length))
-        ////        {
-        ////            matchedIndex = currMatchIndex;
-        ////            matchedWord = currArg;
-        ////            keyword = pattern.Substring(partStart.Limit, partLimit.Index - partStart.Limit); // ICU4N: Corrected 2nd arg
-        ////        }
-        ////    }
-        ////    if (keyword != null)
-        ////    {
-        ////        pos.BeginIndex = matchedIndex;
-        ////        pos.EndIndex = (matchedIndex + matchedWord.Length);
-        ////        return keyword;
-        ////    }
+                string currArg = pattern.Substring(partStart.Limit, partLimit.Index);
+                if (scanner != null)
+                {
+                    // If lenient parsing is turned ON, we've got some time consuming parsing ahead of us.
+                    int[] scannerMatchResult = scanner.FindText(source, currArg, startingAt);
+                    currMatchIndex = scannerMatchResult[0];
+                }
+                else
+                {
+                    currMatchIndex = source.IndexOf(currArg, startingAt);
+                }
+                if (currMatchIndex >= 0 && currMatchIndex >= matchedIndex && (matchedWord == null || currArg.Length > matchedWord.Length))
+                {
+                    matchedIndex = currMatchIndex;
+                    matchedWord = currArg;
+                    keyword = pattern.Substring(partStart.Limit, partLimit.Index - partStart.Limit); // ICU4N: Corrected 2nd arg
+                }
+            }
+            if (keyword != null)
+            {
+                pos.BeginIndex = matchedIndex;
+                pos.EndIndex = (matchedIndex + matchedWord.Length);
+                return keyword;
+            }
 
-        ////    // Not found!
-        ////    pos.BeginIndex = -1;
-        ////    pos.EndIndex = -1;
-        ////    return null;
-        ////}
+            // Not found!
+            pos.BeginIndex = -1;
+            pos.EndIndex = -1;
+            return null;
+        }
 
         /// <summary>
         /// Sets the locale used by this <see cref="PluralFormat"/> object.
