@@ -58,7 +58,7 @@ namespace ICU4N.Text
         /**
          * The RuleBasedNumberFormat that owns this rule
          */
-        private readonly RuleBasedNumberFormat owner;
+        internal readonly RuleBasedNumberFormat owner;
 
         /**
          * True if the rule set is a fraction rule set.  A fraction rule set

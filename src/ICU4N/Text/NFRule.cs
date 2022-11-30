@@ -900,7 +900,7 @@ namespace ICU4N.Text
          * @return radix ** exponent
          * @see Math#pow(double, double)
          */
-        private static long Power(long @base, short exponent)
+        internal static long Power(long @base, short exponent)
         {
             if (exponent < 0)
             {
