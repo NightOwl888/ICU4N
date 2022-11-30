@@ -321,7 +321,7 @@ namespace ICU4N.Text
         /// <seealso cref="DecimalFormat.ParseBigDecimal"/>
         /// <seealso cref="Formatter.ParseObject(string, ParsePosition)"/>
         /// <stable>ICU 2.0</stable>
-        public abstract /*Number*/ object Parse(string text, ParsePosition parsePosition);
+        public abstract J2N.Numerics.Number Parse(string text, ParsePosition parsePosition);
 
         /**
          * Parses text from the beginning of the given string to produce a number.
@@ -335,10 +335,10 @@ namespace ICU4N.Text
          * @stable ICU 2.0
          */
         //Bug 4375399 [Richard/GCL]
-        public virtual /*Number*/ object Parse(string text)
+        public virtual J2N.Numerics.Number Parse(string text)
         {
             ParsePosition parsePosition = new ParsePosition(0);
-            object result = Parse(text, parsePosition);
+            J2N.Numerics.Number result = Parse(text, parsePosition);
             if (parsePosition.Index == 0)
             {
                 throw new FormatException("Unparseable number: \"" + text + " ErrorIndex: " +
@@ -1118,49 +1118,49 @@ namespace ICU4N.Text
         ////}
 
         // ICU4N specific - no need to add properties that cannot be supported
-        /////**
-        //// * Returns the rounding mode used in this NumberFormat.  The default implementation of
-        //// * tis method in NumberFormat always throws <code>UnsupportedOperationException</code>.
-        //// * @return A rounding mode, between <code>BigDecimal.ROUND_UP</code>
-        //// * and <code>BigDecimal.ROUND_UNNECESSARY</code>.
-        //// * @see #setRoundingMode(int)
-        //// * @stable ICU 4.0
-        //// */
-        ////public virtual int RoundingMode
-        ////{
-        ////    throw new NotSupportedException(
-        ////        "getRoundingMode must be implemented by the subclass implementation.");
-        ////}
-
-        /////**
-        //// * Set the rounding mode used in this NumberFormat.  The default implementation of
-        //// * tis method in NumberFormat always throws <code>UnsupportedOperationException</code>.
-        //// * @param roundingMode A rounding mode, between
-        //// * <code>BigDecimal.ROUND_UP</code> and
-        //// * <code>BigDecimal.ROUND_UNNECESSARY</code>.
-        //// * @see #getRoundingMode()
-        //// * @stable ICU 4.0
-        //// */
-        ////public virtual void setRoundingMode(int roundingMode)
-        ////{
-        ////    throw new NotSupportedException(
-        ////        "setRoundingMode must be implemented by the subclass implementation.");
-        ////}
-
-
         /**
-         * Returns a specific style number format for a specific locale.
-         * @param desiredLocale  the specific locale.
-         * @param choice         number format style
-         * @throws IllegalArgumentException  if choice is not one of
-         *                                   NUMBERSTYLE, CURRENCYSTYLE,
-         *                                   PERCENTSTYLE, SCIENTIFICSTYLE,
-         *                                   INTEGERSTYLE, ISOCURRENCYSTYLE,
-         *                                   PLURALCURRENCYSTYLE, ACCOUNTINGCURRENCYSTYLE.
-         *                                   CASHCURRENCYSTYLE, STANDARDCURRENCYSTYLE.
-         * @stable ICU 4.2
+         * Returns the rounding mode used in this NumberFormat.  The default implementation of
+         * tis method in NumberFormat always throws <code>UnsupportedOperationException</code>.
+         * @return A rounding mode, between <code>BigDecimal.ROUND_UP</code>
+         * and <code>BigDecimal.ROUND_UNNECESSARY</code>.
+         * @see #setRoundingMode(int)
+         * @stable ICU 4.0
          */
-        public static NumberFormat GetInstance(UCultureInfo desiredLocale, NumberFormatStyle choice)
+        public virtual int RoundingMode
+        {
+            get => throw new NotSupportedException("RoundingMode getter must be implemented by the subclass implementation.");
+            set => throw new NotSupportedException("RoundingMode setter must be implemented by the subclass implementation.");
+        }
+
+    /////**
+    //// * Set the rounding mode used in this NumberFormat.  The default implementation of
+    //// * tis method in NumberFormat always throws <code>UnsupportedOperationException</code>.
+    //// * @param roundingMode A rounding mode, between
+    //// * <code>BigDecimal.ROUND_UP</code> and
+    //// * <code>BigDecimal.ROUND_UNNECESSARY</code>.
+    //// * @see #getRoundingMode()
+    //// * @stable ICU 4.0
+    //// */
+    ////public virtual void setRoundingMode(int roundingMode)
+    ////{
+    ////    throw new NotSupportedException(
+    ////        "setRoundingMode must be implemented by the subclass implementation.");
+    ////}
+
+
+    /**
+     * Returns a specific style number format for a specific locale.
+     * @param desiredLocale  the specific locale.
+     * @param choice         number format style
+     * @throws IllegalArgumentException  if choice is not one of
+     *                                   NUMBERSTYLE, CURRENCYSTYLE,
+     *                                   PERCENTSTYLE, SCIENTIFICSTYLE,
+     *                                   INTEGERSTYLE, ISOCURRENCYSTYLE,
+     *                                   PLURALCURRENCYSTYLE, ACCOUNTINGCURRENCYSTYLE.
+     *                                   CASHCURRENCYSTYLE, STANDARDCURRENCYSTYLE.
+     * @stable ICU 4.2
+     */
+    public static NumberFormat GetInstance(UCultureInfo desiredLocale, NumberFormatStyle choice)
         {
             if (choice < NumberFormatStyle.NumberStyle || choice > NumberFormatStyle.StandardCurrencyStyle)
             {

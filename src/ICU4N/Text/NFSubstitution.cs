@@ -26,7 +26,7 @@ namespace ICU4N.Text
         /**
          * The substitution's position in the rule text of the rule that owns it
          */
-        private readonly int pos;
+        internal readonly int pos;
 
         /**
          * The rule set this substitution uses to format its result, or null.
@@ -38,7 +38,7 @@ namespace ICU4N.Text
          * The DecimalFormat this substitution uses to format its result,
          * or null.  (Either this or ruleSet has to be non-null.)
          */
-        private readonly DecimalFormat numberFormat;
+        internal readonly DecimalFormat numberFormat;
 
         //-----------------------------------------------------------------------
         // construction

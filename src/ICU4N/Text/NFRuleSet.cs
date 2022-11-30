@@ -508,7 +508,7 @@ namespace ICU4N.Text
                 NFRule rule = nonNumericalRules[NAN_RULE_INDEX];
                 if (rule == null)
                 {
-                    rule = owner.getDefaultNaNRule();
+                    rule = owner.GetDefaultNaNRule();
                 }
                 return rule;
             }

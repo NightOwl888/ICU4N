@@ -4,6 +4,7 @@ using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Double = J2N.Numerics.Double;
 using Long = J2N.Numerics.Int64;
@@ -240,7 +241,7 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        owner.NonNumericalRule = rule2;
+                        owner.SetNonNumericalRule(rule2);
                     }
                 }
             }
@@ -250,7 +251,7 @@ namespace ICU4N.Text
             }
             else
             {
-                owner.NonNumericalRule = rule1;
+                owner.SetNonNumericalRule(rule1);
             }
         }
 
@@ -633,7 +634,7 @@ namespace ICU4N.Text
             "<<", "<%", "<#", "<0",
             ">>", ">%", ">#", ">0",
             "=%", "=#", "=0"
-    };
+        };
 
         /**
          * Searches the rule's rule text for any of the specified strings.
@@ -732,7 +733,7 @@ namespace ICU4N.Text
                 // if isn't the same as the actual exponent, write an appropriate
                 // number of > signs.  Finally, terminate the whole thing with
                 // a colon.
-                result.Append(String.valueOf(baseValue));
+                result.Append(baseValue.ToString(CultureInfo.InvariantCulture));
                 if (radix != 10)
                 {
                     result.Append('/').Append(radix);
@@ -778,13 +779,13 @@ namespace ICU4N.Text
          * Returns the rule's base value
          * @return The rule's base value
          */
-        public sealed char DecimalPoint => decimalPoint;
+        public char DecimalPoint => decimalPoint;
 
         /**
          * Returns the rule's base value
          * @return The rule's base value
          */
-        public sealed long BaseValue => baseValue;
+        public long BaseValue => baseValue;
 
         /**
          * Returns the rule's divisor (the value that cotrols the behavior
@@ -991,15 +992,15 @@ namespace ICU4N.Text
             // matches the text at the beginning of the string being
             // parsed.  If it does, strip that off the front of workText;
             // otherwise, dump out with a mismatch
-            int sub1Pos = sub1 != null ? sub1.getPos() : ruleText.Length;
-            int sub2Pos = sub2 != null ? sub2.getPos() : ruleText.Length;
+            int sub1Pos = sub1 != null ? sub1.Pos : ruleText.Length;
+            int sub2Pos = sub2 != null ? sub2.Pos : ruleText.Length;
             string workText = StripPrefix(text, ruleText.Substring(0, sub1Pos), pp); // ICU4N: Checked 2nd parameter
             int prefixLength = text.Length - workText.Length;
 
             if (pp.Index == 0 && sub1Pos != 0)
             {
                 // commented out because ParsePosition doesn't have error index in 1.1.x
-                //                parsePosition.setErrorIndex(pp.getErrorIndex());
+                //                parsePosition.ErrorIndex = pp.ErrorIndex;
                 return ZERO;
             }
             if (baseValue == INFINITY_RULE)
@@ -1092,17 +1093,17 @@ namespace ICU4N.Text
                     }
                     // commented out because ParsePosition doesn't have error index in 1.1.x
                     //                    else {
-                    //                        int temp = pp2.getErrorIndex() + sub1.getPos() + pp.getIndex();
-                    //                        if (temp> parsePosition.getErrorIndex()) {
-                    //                            parsePosition.setErrorIndex(temp);
+                    //                        int temp = pp2.ErrorIndex + sub1.Pos + pp.Index;
+                    //                        if (temp> parsePosition.ErrorIndex) {
+                    //                            parsePosition.ErrorIndex = temp;
                     //                        }
                     //                    }
                 }
                 // commented out because ParsePosition doesn't have error index in 1.1.x
                 //                else {
-                //                    int temp = sub1.getPos() + pp.getErrorIndex();
-                //                    if (temp > parsePosition.getErrorIndex()) {
-                //                        parsePosition.setErrorIndex(temp);
+                //                    int temp = sub1.Pos + pp.ErrorIndex;
+                //                    if (temp > parsePosition.ErrorIndex) {
+                //                        parsePosition.ErrorIndex = temp;
                 //                    }
                 //                }
                 // keep trying to match things until the outer MatchToDelimiter()
@@ -1119,7 +1120,7 @@ namespace ICU4N.Text
             parsePosition.Index = highWaterMark;
             // commented out because ParsePosition doesn't have error index in 1.1.x
             //        if (highWaterMark > 0) {
-            //            parsePosition.setErrorIndex(0);
+            //            parsePosition.ErrorIndex = 0;
             //        }
 
             // this is a hack for one unusual condition: Normally, whether this
@@ -1178,7 +1179,7 @@ namespace ICU4N.Text
                 {
                     // if we got a successful match, update the parse position
                     // and strip the prefix off of "text"
-                    pp.Index = pp.Index + pfl);
+                    pp.Index = pp.Index + pfl;
                     return text.Substring(pfl);
 
                     // if we didn't get a successful match, leave everything alone
@@ -1259,10 +1260,10 @@ namespace ICU4N.Text
                         }
                         // commented out because ParsePosition doesn't have error index in 1.1.x
                         //                    else {
-                        //                        if (tempPP.getErrorIndex() > 0) {
-                        //                            pp.setErrorIndex(tempPP.getErrorIndex());
+                        //                        if (tempPP.ErrorIndex > 0) {
+                        //                            pp.ErrorIndex = tempPP.ErrorIndex;
                         //                        } else {
-                        //                            pp.setErrorIndex(tempPP.getIndex());
+                        //                            pp.ErrorIndex = tempPP.Index;
                         //                        }
                         //                    }
                     }
@@ -1310,7 +1311,7 @@ namespace ICU4N.Text
                 }
                 // commented out because ParsePosition doesn't have error index in 1.1.x
                 //            else {
-                //                pp.setErrorIndex(tempPP.getErrorIndex());
+                //                pp.ErrorIndex = tempPP.ErrorIndex;
                 //            }
 
                 // and if we get to here, then nothing matched, so we return
@@ -1342,11 +1343,13 @@ namespace ICU4N.Text
                 return 0;
             }
 
+#pragma warning disable CS0618 // Type or member is obsolete
             IRbnfLenientScanner scanner = formatter.LenientScanner;
             if (scanner != null)
             {
                 return scanner.PrefixLength(str, prefix);
             }
+#pragma warning restore CS0618 // Type or member is obsolete
 
             // If lenient parsing is turned off, forget all that crap above.
             // Just use String.startsWith() and be done with it.
@@ -1374,7 +1377,9 @@ namespace ICU4N.Text
          */
         private int[] FindText(string str, string key, PluralFormat pluralFormatKey, int startingAt)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             IRbnfLenientScanner scanner = formatter.LenientScanner;
+#pragma warning restore CS0618 // Type or member is obsolete
             if (pluralFormatKey != null)
             {
                 FieldPosition position = new FieldPosition(NumberFormat.IntegerField);
@@ -1399,9 +1404,11 @@ namespace ICU4N.Text
 
             if (scanner != null)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 // if lenient parsing is turned ON, we've got some work
                 // ahead of us
                 return scanner.FindText(str, key, startingAt);
+#pragma warning restore CS0618 // Type or member is obsolete
             }
             // if lenient parsing is turned off, this is easy. Just call
             // String.indexOf() and we're done
@@ -1423,8 +1430,10 @@ namespace ICU4N.Text
             {
                 return true;
             }
+#pragma warning disable CS0618 // Type or member is obsolete
             IRbnfLenientScanner scanner = formatter.LenientScanner;
             return scanner != null && scanner.AllIgnorable(str);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         public void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
