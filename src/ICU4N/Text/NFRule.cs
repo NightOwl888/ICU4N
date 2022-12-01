@@ -840,59 +840,60 @@ namespace ICU4N.Text
             sub1?.DoSubstitution(number, toInsertInto, pos - (sub1.Pos > pluralRuleStart ? lengthOffset : 0), recursionCount);
         }
 
-        /**
-         * Formats the number, and inserts the resulting text into
-         * toInsertInto.
-         * @param number The number being formatted
-         * @param toInsertInto The string where the resultant text should
-         * be inserted
-         * @param pos The position in toInsertInto where the resultant text
-         * should be inserted
-         */
-        public void DoFormat(double number, StringBuilder toInsertInto, int pos, int recursionCount)
-        {
-            // first, insert the rule's rule text into toInsertInto at the
-            // specified position, then insert the results of the substitutions
-            // into the right places in toInsertInto
-            // [again, we have two copies of this routine that do the same thing
-            // so that we don't sacrifice precision in a long by casting it
-            // to a double]
-            int pluralRuleStart = ruleText.Length;
-            int lengthOffset = 0;
-            if (rulePatternFormat == null)
-            {
-                toInsertInto.Insert(pos, ruleText);
-            }
-            else
-            {
-                pluralRuleStart = ruleText.IndexOf("$(", StringComparison.Ordinal);
-                int pluralRuleEnd = ruleText.IndexOf(")$", pluralRuleStart, StringComparison.Ordinal);
-                int initialLength = toInsertInto.Length;
-                if (pluralRuleEnd < ruleText.Length - 1)
-                {
-                    toInsertInto.Insert(pos, ruleText.Substring(pluralRuleEnd + 2));
-                }
-                double pluralVal = number;
-                if (0 <= pluralVal && pluralVal < 1)
-                {
-                    // We're in a fractional rule, and we have to match the NumeratorSubstitution behavior.
-                    // 2.3 can become 0.2999999999999998 for the fraction due to rounding errors.
-                    pluralVal = Math.Round(pluralVal * Power(radix, exponent));
-                }
-                else
-                {
-                    pluralVal = pluralVal / Power(radix, exponent);
-                }
-                toInsertInto.Insert(pos, rulePatternFormat.Format((long)(pluralVal)));
-                if (pluralRuleStart > 0)
-                {
-                    toInsertInto.Insert(pos, ruleText.Substring(0, pluralRuleStart));
-                }
-                lengthOffset = ruleText.Length - (toInsertInto.Length - initialLength);
-            }
-            sub2?.DoSubstitution(number, toInsertInto, pos - (sub2.Pos > pluralRuleStart ? lengthOffset : 0), recursionCount);
-            sub1?.DoSubstitution(number, toInsertInto, pos - (sub1.Pos > pluralRuleStart ? lengthOffset : 0), recursionCount);
-        }
+        // ICU4N TODO: Support for double
+        ///**
+        // * Formats the number, and inserts the resulting text into
+        // * toInsertInto.
+        // * @param number The number being formatted
+        // * @param toInsertInto The string where the resultant text should
+        // * be inserted
+        // * @param pos The position in toInsertInto where the resultant text
+        // * should be inserted
+        // */
+        //public void DoFormat(double number, StringBuilder toInsertInto, int pos, int recursionCount)
+        //{
+        //    // first, insert the rule's rule text into toInsertInto at the
+        //    // specified position, then insert the results of the substitutions
+        //    // into the right places in toInsertInto
+        //    // [again, we have two copies of this routine that do the same thing
+        //    // so that we don't sacrifice precision in a long by casting it
+        //    // to a double]
+        //    int pluralRuleStart = ruleText.Length;
+        //    int lengthOffset = 0;
+        //    if (rulePatternFormat == null)
+        //    {
+        //        toInsertInto.Insert(pos, ruleText);
+        //    }
+        //    else
+        //    {
+        //        pluralRuleStart = ruleText.IndexOf("$(", StringComparison.Ordinal);
+        //        int pluralRuleEnd = ruleText.IndexOf(")$", pluralRuleStart, StringComparison.Ordinal);
+        //        int initialLength = toInsertInto.Length;
+        //        if (pluralRuleEnd < ruleText.Length - 1)
+        //        {
+        //            toInsertInto.Insert(pos, ruleText.Substring(pluralRuleEnd + 2));
+        //        }
+        //        double pluralVal = number;
+        //        if (0 <= pluralVal && pluralVal < 1)
+        //        {
+        //            // We're in a fractional rule, and we have to match the NumeratorSubstitution behavior.
+        //            // 2.3 can become 0.2999999999999998 for the fraction due to rounding errors.
+        //            pluralVal = Math.Round(pluralVal * Power(radix, exponent));
+        //        }
+        //        else
+        //        {
+        //            pluralVal = pluralVal / Power(radix, exponent);
+        //        }
+        //        toInsertInto.Insert(pos, rulePatternFormat.Format((long)(pluralVal)));
+        //        if (pluralRuleStart > 0)
+        //        {
+        //            toInsertInto.Insert(pos, ruleText.Substring(0, pluralRuleStart));
+        //        }
+        //        lengthOffset = ruleText.Length - (toInsertInto.Length - initialLength);
+        //    }
+        //    sub2?.DoSubstitution(number, toInsertInto, pos - (sub2.Pos > pluralRuleStart ? lengthOffset : 0), recursionCount);
+        //    sub1?.DoSubstitution(number, toInsertInto, pos - (sub1.Pos > pluralRuleStart ? lengthOffset : 0), recursionCount);
+        //}
 
         /**
          * This is an equivalent to Math.pow that accurately works on 64-bit numbers
@@ -1436,16 +1437,17 @@ namespace ICU4N.Text
 #pragma warning restore CS0618 // Type or member is obsolete
         }
 
-        public void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
-        {
-            if (sub1 != null)
-            {
-                sub1.SetDecimalFormatSymbols(newSymbols);
-            }
-            if (sub2 != null)
-            {
-                sub2.SetDecimalFormatSymbols(newSymbols);
-            }
-        }
+        // ICU4N TODO: DecimalFormatSymbols
+        //public void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
+        //{
+        //    if (sub1 != null)
+        //    {
+        //        sub1.SetDecimalFormatSymbols(newSymbols);
+        //    }
+        //    if (sub2 != null)
+        //    {
+        //        sub2.SetDecimalFormatSymbols(newSymbols);
+        //    }
+        //}
     }
 }

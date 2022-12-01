@@ -88,11 +88,12 @@ namespace ICU4N.Text
          */
         private UCultureInfo locale = null;
 
-        /**
-         * The formatter's rounding mode.
-         * @serial
-         */
-        private int roundingMode = BigDecimal.ROUND_UNNECESSARY;
+        // ICU4N TODO: BigDecimal
+        ///**
+        // * The formatter's rounding mode.
+        // * @serial
+        // */
+        //private int roundingMode = BigDecimal.ROUND_UNNECESSARY;
 
         /**
          * Collator to be used in lenient parsing.  This variable is lazy-evaluated:
@@ -106,21 +107,23 @@ namespace ICU4N.Text
         [NonSerialized]
         private bool lookedForScanner;
 
-        /**
-         * The DecimalFormatSymbols object that any DecimalFormat objects this
-         * formatter uses should use.  This variable is lazy-evaluated: it isn't
-         * filled in if the rule set never uses a DecimalFormat pattern.
-         */
-        [NonSerialized]
-        private DecimalFormatSymbols decimalFormatSymbols = null;
+        // ICU4N TODO: DecimalFormatSymbols
+        ///**
+        // * The DecimalFormatSymbols object that any DecimalFormat objects this
+        // * formatter uses should use.  This variable is lazy-evaluated: it isn't
+        // * filled in if the rule set never uses a DecimalFormat pattern.
+        // */
+        //[NonSerialized]
+        //private DecimalFormatSymbols decimalFormatSymbols = null;
 
-        /**
-         * The NumberFormat used when lenient parsing numbers.  This needs to reflect
-         * the locale.  This is lazy-evaluated, like decimalFormatSymbols.  It is
-         * here so it can be shared by different NFSubstitutions.
-         */
-        [NonSerialized]
-        private DecimalFormat decimalFormat = null;
+        // ICU4N TODO: DecimalFormat
+        ///**
+        // * The NumberFormat used when lenient parsing numbers.  This needs to reflect
+        // * the locale.  This is lazy-evaluated, like decimalFormatSymbols.  It is
+        // * here so it can be shared by different NFSubstitutions.
+        // */
+        //[NonSerialized]
+        //private DecimalFormat decimalFormat = null;
 
         /**
          * The rule used when dealing with infinity. This is lazy-evaluated, and derived from decimalFormat.
@@ -1075,41 +1078,42 @@ namespace ICU4N.Text
             set => SetDefaultRuleSet(value);
         }
 
-        /**
-         * Sets the decimal format symbols used by this formatter. The formatter uses a copy of the
-         * provided symbols.
-         *
-         * @param newSymbols desired DecimalFormatSymbols
-         * @see DecimalFormatSymbols
-         * @stable ICU 49
-         */
-        public virtual void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
-        {
-            if (newSymbols != null)
-            {
-                decimalFormatSymbols = (DecimalFormatSymbols)newSymbols.Clone();
-                if (decimalFormat != null)
-                {
-                    decimalFormat.SetDecimalFormatSymbols(decimalFormatSymbols);
-                }
-                if (defaultInfinityRule != null)
-                {
-                    defaultInfinityRule = null;
-                    var _ = DefaultInfinityRule; // Reset with the new DecimalFormatSymbols
-                }
-                if (defaultNaNRule != null)
-                {
-                    defaultNaNRule = null;
-                    var _ = DefaultNaNRule; // Reset with the new DecimalFormatSymbols
-                }
+        // ICU4N TODO: DecimalFormatSymbols
+        ///**
+        // * Sets the decimal format symbols used by this formatter. The formatter uses a copy of the
+        // * provided symbols.
+        // *
+        // * @param newSymbols desired DecimalFormatSymbols
+        // * @see DecimalFormatSymbols
+        // * @stable ICU 49
+        // */
+        //public virtual void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
+        //{
+        //    if (newSymbols != null)
+        //    {
+        //        decimalFormatSymbols = (DecimalFormatSymbols)newSymbols.Clone();
+        //        if (decimalFormat != null)
+        //        {
+        //            decimalFormat.SetDecimalFormatSymbols(decimalFormatSymbols);
+        //        }
+        //        if (defaultInfinityRule != null)
+        //        {
+        //            defaultInfinityRule = null;
+        //            var _ = DefaultInfinityRule; // Reset with the new DecimalFormatSymbols
+        //        }
+        //        if (defaultNaNRule != null)
+        //        {
+        //            defaultNaNRule = null;
+        //            var _ = DefaultNaNRule; // Reset with the new DecimalFormatSymbols
+        //        }
 
-                // Apply the new decimalFormatSymbols by reparsing the rulesets
-                foreach (NFRuleSet ruleSet in ruleSets)
-                {
-                    ruleSet.SetDecimalFormatSymbols(decimalFormatSymbols);
-                }
-            }
-        }
+        //        // Apply the new decimalFormatSymbols by reparsing the rulesets
+        //        foreach (NFRuleSet ruleSet in ruleSets)
+        //        {
+        //            ruleSet.SetDecimalFormatSymbols(decimalFormatSymbols);
+        //        }
+        //    }
+        //}
 
         /**
          * {@icu} Set a particular DisplayContext value in the formatter,
@@ -1138,30 +1142,30 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the rounding mode.
-         *
-         * @return A rounding mode, between <code>BigDecimal.ROUND_UP</code> and
-         * <code>BigDecimal.ROUND_UNNECESSARY</code>.
-         * @see #setRoundingMode
-         * @see java.math.BigDecimal
-         * @stable ICU 56
-         */
+        // ICU4N TODO: BigDecimal
+        ///**
+        // * Returns the rounding mode.
+        // *
+        // * @return A rounding mode, between <code>BigDecimal.ROUND_UP</code> and
+        // * <code>BigDecimal.ROUND_UNNECESSARY</code>.
+        // * @see #setRoundingMode
+        // * @see java.math.BigDecimal
+        // * @stable ICU 56
+        // */
 
-        public override int RoundingMode
-        {
-            get => roundingMode;
-            set
-            {
-                // ICU4N TODO: Finish implementation
-                //if (value < BigDecimal.ROUND_UP || value > BigDecimal.ROUND_UNNECESSARY)
-                //{
-                //    throw new ArgumentException("Invalid rounding mode: " + value);
-                //}
+        //public override int RoundingMode
+        //{
+        //    get => roundingMode;
+        //    set
+        //    {
+        //        if (value < BigDecimal.ROUND_UP || value > BigDecimal.ROUND_UNNECESSARY)
+        //        {
+        //            throw new ArgumentException("Invalid rounding mode: " + value);
+        //        }
 
-                this.roundingMode = value;
-            }
-        }
+        //        this.roundingMode = value;
+        //    }
+        //}
 
         ///**
         // * Sets the rounding mode. This has no effect unless the rounding increment is greater
@@ -1220,78 +1224,82 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the DecimalFormatSymbols object that should be used by all DecimalFormat
-         * instances owned by this formatter.  This object is lazily created: this function
-         * creates it the first time it's called.
-         * @return The DecimalFormatSymbols object that should be used by all DecimalFormat
-         * instances owned by this formatter.
-         */
-        internal DecimalFormatSymbols DecimalFormatSymbols
-        {
-            get
-            {
-                // lazy-evaluate the DecimalFormatSymbols object.  This object
-                // is shared by all DecimalFormat instances belonging to this
-                // formatter
-                if (decimalFormatSymbols == null)
-                {
-                    decimalFormatSymbols = new DecimalFormatSymbols(locale);
-                }
-                return decimalFormatSymbols;
-            }
-        }
+        // ICU4N TODO: DecimalFormatSymbols
+        ///**
+        // * Returns the DecimalFormatSymbols object that should be used by all DecimalFormat
+        // * instances owned by this formatter.  This object is lazily created: this function
+        // * creates it the first time it's called.
+        // * @return The DecimalFormatSymbols object that should be used by all DecimalFormat
+        // * instances owned by this formatter.
+        // */
+        //internal DecimalFormatSymbols DecimalFormatSymbols
+        //{
+        //    get
+        //    {
+        //        // lazy-evaluate the DecimalFormatSymbols object.  This object
+        //        // is shared by all DecimalFormat instances belonging to this
+        //        // formatter
+        //        if (decimalFormatSymbols == null)
+        //        {
+        //            decimalFormatSymbols = new DecimalFormatSymbols(locale);
+        //        }
+        //        return decimalFormatSymbols;
+        //    }
+        //}
 
-        internal DecimalFormat DecimalFormat
-        {
-            get
-            {
-                if (decimalFormat == null)
-                {
-                    // Don't use NumberFormat.getInstance, which can cause a recursive call
-                    string pattern = GetPattern(locale, NumberFormatStyle.NumberStyle);
-                    decimalFormat = new DecimalFormat(pattern, DecimalFormatSymbols);
-                }
-                return decimalFormat;
-            }
-        }
+        // ICU4N TODO: DecimalFormat
+        //internal DecimalFormat DecimalFormat
+        //{
+        //    get
+        //    {
+        //        if (decimalFormat == null)
+        //        {
+        //            // Don't use NumberFormat.getInstance, which can cause a recursive call
+        //            string pattern = GetPattern(locale, NumberFormatStyle.NumberStyle);
+        //            decimalFormat = new DecimalFormat(pattern, DecimalFormatSymbols);
+        //        }
+        //        return decimalFormat;
+        //    }
+        //}
 
         internal PluralFormat CreatePluralFormat(PluralType pluralType, string pattern)
         {
-            return new PluralFormat(locale, pluralType, pattern, DecimalFormat);
+            return new PluralFormat(locale, pluralType, pattern, /*DecimalFormat*/ null);
         }
 
-        /**
-         * Returns the default rule for infinity. This object is lazily created: this function
-         * creates it the first time it's called.
-         */
-        internal NFRule DefaultInfinityRule
-        {
-            get
-            {
-                if (defaultInfinityRule == null)
-                {
-                    defaultInfinityRule = new NFRule(this, "Inf: " + DecimalFormatSymbols.Infinity);
-                }
-                return defaultInfinityRule;
-            }
-        }
+        // ICU4N TODO: DecimalFormatSymbols
+        ///**
+        // * Returns the default rule for infinity. This object is lazily created: this function
+        // * creates it the first time it's called.
+        // */
+        //internal NFRule DefaultInfinityRule
+        //{
+        //    get
+        //    {
+        //        if (defaultInfinityRule == null)
+        //        {
+        //            defaultInfinityRule = new NFRule(this, "Inf: " + DecimalFormatSymbols.Infinity);
+        //        }
+        //        return defaultInfinityRule;
+        //    }
+        //}
 
-        /**
-         * Returns the default rule for NaN. This object is lazily created: this function
-         * creates it the first time it's called.
-         */
-        internal NFRule DefaultNaNRule
-        {
-            get
-            {
-                if (defaultNaNRule == null)
-                {
-                    defaultNaNRule = new NFRule(this, "NaN: " + DecimalFormatSymbols.NaN);
-                }
-                return defaultNaNRule;
-            }
-        }
+        // ICU4N TODO: DecimalFormatSymbols
+        ///**
+        // * Returns the default rule for NaN. This object is lazily created: this function
+        // * creates it the first time it's called.
+        // */
+        //internal NFRule DefaultNaNRule
+        //{
+        //    get
+        //    {
+        //        if (defaultNaNRule == null)
+        //        {
+        //            defaultNaNRule = new NFRule(this, "NaN: " + DecimalFormatSymbols.NaN);
+        //        }
+        //        return defaultNaNRule;
+        //    }
+        //}
 
         //-----------------------------------------------------------------------
         // construction implementation
@@ -1643,12 +1651,13 @@ namespace ICU4N.Text
             // position of 0 and the number being formatted) to the rule set
             // for formatting
             StringBuilder result = new StringBuilder();
-            if (RoundingMode != BigDecimal.ROUND_UNNECESSARY && !double.IsNaN(number) && !double.IsInfinity(number))
-            {
-                // We convert to a string because BigDecimal insists on excessive precision.
-                number = new BigDecimal(Double.ToString(number, CultureInfo.InvariantCulture)).SetScale(MaximumFractionDigits, roundingMode).ToDouble();
-            }
-            ruleSet.Format(number, result, 0, 0);
+            // ICU4N TODO: BigDecimal
+            //if (RoundingMode != BigDecimal.ROUND_UNNECESSARY && !double.IsNaN(number) && !double.IsInfinity(number))
+            //{
+            //    // We convert to a string because BigDecimal insists on excessive precision.
+            //    number = new BigDecimal(Double.ToString(number, CultureInfo.InvariantCulture)).SetScale(MaximumFractionDigits, roundingMode).ToDouble();
+            //}
+            ruleSet.Format((long)number, result, 0, 0); // ICU4N TODO: Remove cast to long when we add support for double
             PostProcess(result, ruleSet);
             return result.ToString();
         }
