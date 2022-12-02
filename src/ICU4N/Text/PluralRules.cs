@@ -1336,11 +1336,11 @@ namespace ICU4N.Text
             return result;
         }
 
-        private static readonly Regex AT_SEPARATED = new Regex(@"\\s*\\Q\\E@\\s*", RegexOptions.Compiled);
+        private static readonly Regex AT_SEPARATED = new Regex("\\s*@\\s*", RegexOptions.Compiled); // ICU4N: \E and \Q are not supported in .NET
         private static readonly Regex OR_SEPARATED = new Regex("\\s*or\\s*", RegexOptions.Compiled);
         private static readonly Regex AND_SEPARATED = new Regex("\\s*and\\s*", RegexOptions.Compiled);
         private static readonly Regex COMMA_SEPARATED = new Regex("\\s*,\\s*", RegexOptions.Compiled);
-        private static readonly Regex DOTDOT_SEPARATED = new Regex(@"\\s*\\Q..\\E\\s*", RegexOptions.Compiled);
+        private static readonly Regex DOTDOT_SEPARATED = new Regex("\\s*\\.\\.\\s*", RegexOptions.Compiled); // ICU4N: \E and \Q are not supported in .NET
         private static readonly Regex TILDE_SEPARATED = new Regex("\\s*~\\s*", RegexOptions.Compiled);
         private static readonly Regex SEMI_SEPARATED = new Regex("\\s*;\\s*", RegexOptions.Compiled);
 
