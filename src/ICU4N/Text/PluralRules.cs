@@ -783,19 +783,19 @@ namespace ICU4N.Text
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
             // TODO Auto-generated method stub
-            public virtual int Int32Value => Convert.ToInt32(integerValue); // ICU4N specific - renamed from intValue()
+            public virtual int Int32Value => Convert.ToInt32(integerValue); // ICU4N specific - renamed from intValue() // ICU4N TODO: API - Rename ToInt32()
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual long Int64Value => Convert.ToInt64(integerValue); // ICU4N specific - renamed from longValue()
+            public virtual long Int64Value => Convert.ToInt64(integerValue); // ICU4N specific - renamed from longValue() // ICU4N TODO: API - Rename ToInt64()
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual float SingleValue => Convert.ToSingle(source); // ICU4N specific - renamed from floatValue()
+            public virtual float SingleValue => Convert.ToSingle(source); // ICU4N specific - renamed from floatValue() // ICU4N TODO: API - Rename ToSingle()
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual double DoubleValue => isNegative ? -source : source;
+            public virtual double DoubleValue => isNegative ? -source : source; // ICU4N TODO: API - Rename ToDouble()
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
@@ -2414,7 +2414,7 @@ namespace ICU4N.Text
         /// <returns>The <see cref="PluralRulesKeywordStatus"/>.</returns>
         /// <draft>ICU 50</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual PluralRulesKeywordStatus GetKeywordStatus(string keyword, int offset, ICollection<Double> explicits, // ICU4N TODO: API Try to cleanup ref param
+        public virtual PluralRulesKeywordStatus GetKeywordStatus(string keyword, int offset, ICollection<double> explicits, // ICU4N TODO: API Try to cleanup ref param
                 ref double? uniqueValue)
         {
 #pragma warning disable 612, 618
@@ -2578,12 +2578,12 @@ namespace ICU4N.Text
     /// </summary>
     /// <internal/>
     [Obsolete("This API is ICU internal only.")]
-    internal enum PluralRulesSampleType // ICU4N: Marked internal since it is obsolete anyway
+    internal enum PluralRulesSampleType // ICU4N: Marked internal since it is obsolete anyway // ICU4N TODO: API - change name back to SampleType?
     {
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         Integer,
-        
+
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         Decimal
@@ -2594,7 +2594,7 @@ namespace ICU4N.Text
     /// </summary>
     /// <draft>ICU 50</draft>
     /// <provisional>This API might change or be removed in a future release.</provisional>
-    public enum PluralRulesKeywordStatus
+    public enum PluralRulesKeywordStatus // ICU4N TODO: API - change name back to KeywordStatus?
     {
         /// <summary>
         /// The keyword is not valid for the rules.
