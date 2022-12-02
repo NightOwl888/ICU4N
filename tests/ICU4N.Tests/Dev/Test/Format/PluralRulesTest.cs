@@ -38,7 +38,7 @@ namespace ICU4N.Dev.Test.Format
         })
             {
                 FixedDecimal fd = new FixedDecimal(testDouble[0]);
-                assertEquals(testDouble[0] + "=doubleValue()", testDouble[0], fd.DoubleValue);
+                assertEquals(testDouble[0] + "=doubleValue()", testDouble[0], fd.ToDouble());
                 assertEquals(testDouble[0] + " decimalDigits", (int)testDouble[1], fd.DecimalDigits);
                 assertEquals(testDouble[0] + " visibleDecimalDigitCount", (int)testDouble[2], fd.VisibleDecimalDigitCount);
                 assertEquals(testDouble[0] + " decimalDigitsWithoutTrailingZeros", (int)testDouble[1],

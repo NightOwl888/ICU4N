@@ -8,9 +8,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using JCG = J2N.Collections.Generic;
+using Number = J2N.Numerics.Number;
+using Double = J2N.Numerics.Double;
+using Integer = J2N.Numerics.Int32;
 
 namespace ICU4N.Text
 {
@@ -451,7 +455,7 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal class FixedDecimal /*extends Number*/ : IComparable<FixedDecimal>, IFixedDecimal // ICU4N specific - changed from public to internal (obsolete anyway)
+        internal class FixedDecimal : Number, IComparable<FixedDecimal>, IFixedDecimal // ICU4N specific - changed from public to internal (obsolete anyway)
         {
             //private static readonly long serialVersionUID = -4756200506571685661L;
 
@@ -637,8 +641,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    //string buf = String.Format(Locale.ENGLISH, "%1.15e", n); // ICU4N TODO: Check this
-                    string buf = string.Format(CultureInfo.InvariantCulture, "0.000000000000000e");
+                    string buf = n.ToString("e15", CultureInfo.InvariantCulture);
                     int ePos = buf.LastIndexOf('e');
                     int expNumPos = ePos + 1;
                     if (buf[expNumPos] == '+')
@@ -646,7 +649,7 @@ namespace ICU4N.Text
                         expNumPos++;
                     }
                     string exponentStr = buf.Substring(expNumPos);
-                    int exponent = int.Parse(exponentStr, NumberStyles.Any, CultureInfo.InvariantCulture); // Integer.parseInt(exponentStr);
+                    int exponent = int.Parse(exponentStr, NumberStyles.Integer, CultureInfo.InvariantCulture); // Integer.parseInt(exponentStr);
                     int numFractionDigits = ePos - 2 - exponent;
                     if (numFractionDigits < 0)
                     {
@@ -667,7 +670,7 @@ namespace ICU4N.Text
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
             public FixedDecimal(string n)
-                : this(Convert.ToInt64(n), GetVisibleFractionCount(n)) // Ugly, but for samples we don't care.
+                : this(long.Parse(n, CultureInfo.InvariantCulture), GetVisibleFractionCount(n)) // Ugly, but for samples we don't care.
             {
             }
 
@@ -773,7 +776,14 @@ namespace ICU4N.Text
             public override string ToString()
 #pragma warning restore 809
             {
-                return string.Format("%." + visibleDecimalDigitCount + "f", source);
+                return source.ToString("f" + visibleDecimalDigitCount.ToString(CultureInfo.InvariantCulture));
+            }
+
+            /// <internal/>
+            [Obsolete("This API is ICU internal only.")]
+            public override string ToString(string format, IFormatProvider provider)
+            {
+                return ToString(); // We don't allow any customization - this is a "fixed" decimal with a set number of places
             }
 
             /// <internal/>
@@ -783,19 +793,21 @@ namespace ICU4N.Text
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
             // TODO Auto-generated method stub
-            public virtual int Int32Value => Convert.ToInt32(integerValue); // ICU4N specific - renamed from intValue() // ICU4N TODO: API - Rename ToInt32()
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
+            public override int ToInt32() => Convert.ToInt32(integerValue); // ICU4N specific - renamed from intValue()
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual long Int64Value => Convert.ToInt64(integerValue); // ICU4N specific - renamed from longValue() // ICU4N TODO: API - Rename ToInt64()
+            public override long ToInt64() => integerValue; // ICU4N specific - renamed from longValue()
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual float SingleValue => Convert.ToSingle(source); // ICU4N specific - renamed from floatValue() // ICU4N TODO: API - Rename ToSingle()
+            public override float ToSingle() => Convert.ToSingle(source); // ICU4N specific - renamed from floatValue()
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual double DoubleValue => isNegative ? -source : source; // ICU4N TODO: API - Rename ToDouble()
+            public override double ToDouble() => isNegative ? -source : source; // ICU4N specific - renamed from doubleValue()
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
@@ -2280,12 +2292,12 @@ namespace ICU4N.Text
                 case PluralRulesSampleType.Integer:
                     for (int i = 0; i < 200; ++i)
                     {
-                        if (!AddSample(keyword, i, maxCount, result))
+                        if (!AddSample(keyword, Integer.GetInstance(i), maxCount, result))
                         {
                             break;
                         }
                     }
-                    AddSample(keyword, 1000000, maxCount, result); // hack for Welsh
+                    AddSample(keyword, Integer.GetInstance(1000000), maxCount, result); // hack for Welsh
                     break;
                 case PluralRulesSampleType.Decimal:
                     for (int i = 0; i < 2000; ++i)
@@ -2303,12 +2315,12 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal virtual bool AddSample(string keyword, /*Number*/ object sample, int maxCount, ICollection<double> result) // ICU4N: Marked internal since it is obsolete anyway // ICU4N: sample will always be a number
+        internal virtual bool AddSample(string keyword, Number sample, int maxCount, ICollection<double> result) // ICU4N: Marked internal since it is obsolete anyway // ICU4N: sample will always be a number
         {
-            string selectedKeyword = sample is FixedDecimal ? Select((FixedDecimal)sample) : Select((double)sample);
+            string selectedKeyword = sample is FixedDecimal ? Select((FixedDecimal)sample) : Select(sample.ToDouble());
             if (selectedKeyword.Equals(keyword))
             {
-                result.Add((double)sample);
+                result.Add(sample.ToDouble());
                 if (--maxCount < 0)
                 {
                     return false;
