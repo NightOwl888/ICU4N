@@ -308,7 +308,7 @@ namespace ICU4N.Text
 
             public bool IsLimited(PluralRulesSampleType sampleType)
             {
-                return true;
+                return false;
             }
 #pragma warning restore 612, 618
 
@@ -1337,12 +1337,12 @@ namespace ICU4N.Text
         }
 
         private static readonly Regex AT_SEPARATED = new Regex(@"\\s*\\Q\\E@\\s*", RegexOptions.Compiled);
-        private static readonly Regex OR_SEPARATED = new Regex(@"\\s*or\\s*", RegexOptions.Compiled);
-        private static readonly Regex AND_SEPARATED = new Regex(@"\\s*and\\s*", RegexOptions.Compiled);
-        private static readonly Regex COMMA_SEPARATED = new Regex(@"\\s*,\\s*", RegexOptions.Compiled);
+        private static readonly Regex OR_SEPARATED = new Regex("\\s*or\\s*", RegexOptions.Compiled);
+        private static readonly Regex AND_SEPARATED = new Regex("\\s*and\\s*", RegexOptions.Compiled);
+        private static readonly Regex COMMA_SEPARATED = new Regex("\\s*,\\s*", RegexOptions.Compiled);
         private static readonly Regex DOTDOT_SEPARATED = new Regex(@"\\s*\\Q..\\E\\s*", RegexOptions.Compiled);
-        private static readonly Regex TILDE_SEPARATED = new Regex(@"\\s*~\\s*", RegexOptions.Compiled);
-        private static readonly Regex SEMI_SEPARATED = new Regex(@"\\s*;\\s*", RegexOptions.Compiled);
+        private static readonly Regex TILDE_SEPARATED = new Regex("\\s*~\\s*", RegexOptions.Compiled);
+        private static readonly Regex SEMI_SEPARATED = new Regex("\\s*;\\s*", RegexOptions.Compiled);
 
         /// <summary>
         /// Returns a parse exception wrapping the token and context strings.
@@ -1788,7 +1788,7 @@ namespace ICU4N.Text
         {
             private bool hasExplicitBoundingInfo = false;
             //private static readonly long serialVersionUID = 1;
-            private readonly IList<Rule> rules = new List<Rule>();
+            private readonly List<Rule> rules = new List<Rule>();
 
             public RuleList AddRule(Rule nextRule)
             {
@@ -1815,15 +1815,15 @@ namespace ICU4N.Text
             {
                 // make sure that 'other' is present, and at the end.
                 Rule otherRule = null;
-                foreach (var rule in rules.ToArray())
+                rules.RemoveAll((rule) =>
                 {
                     if ("other".Equals(rule.Keyword))
                     {
                         otherRule = rule;
-                        rules.Remove(rule);
-                        //it.remove();
+                        return true;
                     }
-                }
+                    return false;
+                });
                 if (otherRule == null)
                 {
                     otherRule = ParseRule("other:"); // make sure we have always have an 'other' a rule

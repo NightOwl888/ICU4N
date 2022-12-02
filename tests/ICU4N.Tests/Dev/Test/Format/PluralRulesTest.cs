@@ -795,18 +795,18 @@ namespace ICU4N.Dev.Test.Format
                     {
                         valueList = valueList.Trim();
                     }
-                    ICollection<Double> values;
+                    ICollection<double> values;
                     if (valueList == null || valueList.Length == 0)
                     {
-                        values = new HashSet<Double>(); //Collections.EMPTY_SET;
+                        values = new HashSet<double>(); //Collections.EMPTY_SET;
                     }
-                    else if ("null".Equals(valueList))
+                    else if ("null".Equals(valueList, StringComparison.Ordinal))
                     {
                         values = null;
                     }
                     else
                     {
-                        values = new JCG.SortedSet<Double>();
+                        values = new JCG.SortedSet<double>();
                         foreach (String value in valueList.Split(',').TrimEnd())
                         {
                             values.Add(Double.Parse(value, CultureInfo.InvariantCulture));
@@ -814,7 +814,7 @@ namespace ICU4N.Dev.Test.Format
                     }
 
                     ICollection<double> results = p.GetAllKeywordValues(keyword);
-                    assertEquals(keyword + " in " + ruleDescription, values, results == null ? null : new HashSet<double>(results));
+                    assertEquals(keyword + " in " + ruleDescription, (ISet<double>)values, results == null ? null : new HashSet<double>(results));
 
                     if (results != null)
                     {
@@ -823,7 +823,7 @@ namespace ICU4N.Dev.Test.Format
                             results.Add(PluralRules.NoUniqueValue);
                             fail("returned set is modifiable");
                         }
-                        catch (InvalidOperationException e)
+                        catch (NotSupportedException e)
                         {
                             // pass
                         }
