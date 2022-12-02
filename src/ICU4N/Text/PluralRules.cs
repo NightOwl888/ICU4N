@@ -1072,7 +1072,7 @@ namespace ICU4N.Text
                     {
                         if (last >= 0)
                         {
-                            result.Add(source.Substring(last, i));
+                            result.Add(source.Substring(last, i - last)); // ICU4N:: Corrected 2nd arg
                             last = -1;
                         }
                     }
