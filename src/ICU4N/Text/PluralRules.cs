@@ -354,7 +354,7 @@ namespace ICU4N.Text
         {
             try
             {
-                return ParseDescription(description);
+                return ParseDescription(description); // ICU4N TODO: TryParseDescription
             }
             catch (Exception)
             {
@@ -918,7 +918,7 @@ namespace ICU4N.Text
                 PluralRulesSampleType sampleType2;
                 bool bounded2 = true;
                 bool haveBound = false;
-                ICollection<FixedDecimalRange> samples2 = new List<FixedDecimalRange>(); // new LinkedHashSet<FixedDecimalRange>();
+                ISet<FixedDecimalRange> samples2 = new JCG.LinkedHashSet<FixedDecimalRange>();
 
                 if (source.StartsWith("integer", StringComparison.Ordinal))
                 {
@@ -952,26 +952,14 @@ namespace ICU4N.Text
                         case 1:
                             FixedDecimal sample = new FixedDecimal(rangeParts[0]);
                             CheckDecimal(sampleType2, sample);
-
-                            // ICU4N specific: Careful not to add any items to the
-                            // collection that already exist. List<T> keeps track of
-                            // insertion order, but not duplicates!
-                            var fdr1 = new FixedDecimalRange(sample, sample);
-                            if (!samples2.Contains(fdr1))
-                                samples2.Add(fdr1);
+                            samples2.Add(new FixedDecimalRange(sample, sample));
                             break;
                         case 2:
                             FixedDecimal start = new FixedDecimal(rangeParts[0]);
                             FixedDecimal end = new FixedDecimal(rangeParts[1]);
                             CheckDecimal(sampleType2, start);
                             CheckDecimal(sampleType2, end);
-
-                            // ICU4N specific: Careful not to add any items to the
-                            // collection that already exist. List<T> keeps track of
-                            // insertion order, but not duplicates!
-                            var fdr2 = new FixedDecimalRange(start, end);
-                            if (!samples2.Contains(fdr2))
-                                samples2.Add(fdr2);
+                            samples2.Add(new FixedDecimalRange(start, end));
                             break;
                         default: throw new ArgumentException("Ill-formed number range: " + range);
                     }
