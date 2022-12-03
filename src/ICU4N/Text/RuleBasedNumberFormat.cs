@@ -1616,7 +1616,7 @@ namespace ICU4N.Text
                 }
                 else if (p < descriptionLength)
                 {
-                    result.Append(description.Substring(start, p + 1));
+                    result.Append(description.Substring(start, (p + 1) - start)); // ICU4N: Corrected 2nd parameter
                     start = p + 1;
                 }
                 else
@@ -1711,7 +1711,7 @@ namespace ICU4N.Text
                     {
                         ix = postProcessRules.Length;
                     }
-                    string ppClassName = postProcessRules.Substring(0, ix).Trim();
+                    string ppClassName = postProcessRules.Substring(0, ix).Trim(); // ICU4N: Checked 2nd parameter
                     try
                     {
                         //Class <?> cls = Class.forName(ppClassName);

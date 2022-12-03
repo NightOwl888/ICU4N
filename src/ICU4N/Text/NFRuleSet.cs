@@ -186,7 +186,7 @@ namespace ICU4N.Text
                 // makeRules (a factory method on NFRule) will return either
                 // a single rule or an array of rules.  Either way, add them
                 // to our rule vector
-                NFRule.MakeRules(description.Substring(oldP, p),
+                NFRule.MakeRules(description.Substring(oldP, p - oldP), // ICU4N: Corrected 2nd parameter
                         this, predecessor, owner, tempRules);
                 if (tempRules.Count != 0)
                 {

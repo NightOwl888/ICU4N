@@ -474,7 +474,7 @@ namespace ICU4N.Text
                 {
                     throw new ArgumentException("Rule \"" + ruleText + "\" does not have a defined type");
                 }
-                string type = this.ruleText.Substring(pluralRuleStart + 2, endType);
+                string type = this.ruleText.Substring(pluralRuleStart + 2, endType - (pluralRuleStart + 2)); // ICU4N: Corrected 2nd parameter
                 PluralType pluralType;
                 if ("cardinal".Equals(type, StringComparison.Ordinal))
                 {
@@ -533,7 +533,7 @@ namespace ICU4N.Text
                 // otherwise the substitution token ends with the same character
                 // it began with
                 char c = ruleText[subStart];
-                subEnd = ruleText.IndexOf(c, (subStart + 1) - c);
+                subEnd = ruleText.IndexOf(c, subStart + 1);
                 // special case for '<%foo<<'
                 if (c == '<' && subEnd != -1 && subEnd < ruleText.Length - 1 && ruleText[subEnd + 1] == c)
                 {
@@ -557,10 +557,10 @@ namespace ICU4N.Text
             // some text bounded by substitution token characters).  Use
             // makeSubstitution() to create the right kind of substitution
             result = NFSubstitution.MakeSubstitution(subStart, this, predecessor, owner,
-                    this.formatter, ruleText.Substring(subStart, (subEnd + 1) - subStart));
+                    this.formatter, ruleText.Substring(subStart, (subEnd + 1) - subStart)); // ICU4N: Corrected 2nd parameter
 
             // remove the substitution from the rule text
-            ruleText = ruleText.Substring(0, subStart) + ruleText.Substring(subEnd + 1);
+            ruleText = ruleText.Substring(0, subStart) + ruleText.Substring(subEnd + 1); // ICU4N: Checked 2nd parameter
             return result;
         }
 
@@ -887,7 +887,7 @@ namespace ICU4N.Text
         //        toInsertInto.Insert(pos, rulePatternFormat.Format((long)(pluralVal)));
         //        if (pluralRuleStart > 0)
         //        {
-        //            toInsertInto.Insert(pos, ruleText.Substring(0, pluralRuleStart));
+        //            toInsertInto.Insert(pos, ruleText.Substring(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
         //        }
         //        lengthOffset = ruleText.Length - (toInsertInto.Length - initialLength);
         //    }
