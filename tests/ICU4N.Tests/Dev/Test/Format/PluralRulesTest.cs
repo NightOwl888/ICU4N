@@ -90,33 +90,33 @@ namespace ICU4N.Dev.Test.Format
                 // singles have special exceptions
                 new object[] { "a: n is 1" },
                 new object[] { "a: n is not 1" },
-                new object[] { "a: n not is 1", typeof(ParseException) }, // hacked to fail
+                new object[] { "a: n not is 1", typeof(FormatException) }, // hacked to fail
                 new object[] { "a: n in 1" },
                 new object[] { "a: n not in 1" },
 
                 // multiples also have special exceptions
                 // TODO enable the following once there is an update to CLDR
-                // new object[] {"a: n is 1,3", ParseException)},
-                new object[] { "a: n is not 1,3", typeof(ParseException) }, // hacked to fail
-                new object[] { "a: n not is 1,3", typeof(ParseException) }, // hacked to fail
+                // new object[] {"a: n is 1,3", FormatException)},
+                new object[] { "a: n is not 1,3", typeof(FormatException) }, // hacked to fail
+                new object[] { "a: n not is 1,3", typeof(FormatException) }, // hacked to fail
                 new object[] { "a: n in 1,3" },
                 new object[] { "a: n not in 1,3" },
 
                 // disallow not with =
-                new object[] { "a: n not= 1", typeof(ParseException) }, // hacked to fail
-                new object[] { "a: n not= 1,3", typeof(ParseException) }, // hacked to fail
+                new object[] { "a: n not= 1", typeof(FormatException) }, // hacked to fail
+                new object[] { "a: n not= 1,3", typeof(FormatException) }, // hacked to fail
 
                 // disallow double negatives
-                new object[] { "a: n ! is not 1", typeof(ParseException) },
-                new object[] { "a: n ! is not 1", typeof(ParseException) },
-                new object[] { "a: n not not in 1", typeof(ParseException) },
+                new object[] { "a: n ! is not 1", typeof(FormatException) },
+                new object[] { "a: n ! is not 1", typeof(FormatException) },
+                new object[] { "a: n not not in 1", typeof(FormatException) },
                 new object[] { "a: n is not not 1", typeof(FormatException) },
 
                 // disallow screwy cases
-                new object[] { null, typeof(NullReferenceException) }, new object[] { "djkl;", typeof(ParseException) },
-                new object[] { "a: n = 1 .", typeof(ParseException) }, new object[] { "a: n = 1 ..", typeof(ParseException) },
-                new object[] { "a: n = 1 2", typeof(ParseException) }, new object[] { "a: n = 1 ,", typeof(ParseException) },
-                new object[] { "a:n in 3 .. 10 , 13 .. 19 ,", typeof(ParseException) }, };
+                new object[] { null, typeof(NullReferenceException) }, new object[] { "djkl;", typeof(FormatException) }, // ICU4N TODO: Factor out NullReferenceException, if possible
+                new object[] { "a: n = 1 .", typeof(FormatException) }, new object[] { "a: n = 1 ..", typeof(FormatException) },
+                new object[] { "a: n = 1 2", typeof(FormatException) }, new object[] { "a: n = 1 ,", typeof(FormatException) },
+                new object[] { "a:n in 3 .. 10 , 13 .. 19 ,", typeof(FormatException) }, };
             foreach (object[] shouldFailTest in shouldFail)
             {
                 string rules = (string)shouldFailTest[0];
