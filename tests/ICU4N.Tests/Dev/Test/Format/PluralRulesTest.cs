@@ -840,6 +840,7 @@ namespace ICU4N.Dev.Test.Format
         }
 
         [Test]
+        [Ignore("ICU4N TODO: Port DecimalFormatSymbols")]
         public void TestBasicFraction()
         {
             string[][] tests = new string[][] { new string[] { "en", "one: j is 1" }, new string[] { "1", "0", "1", "one" }, new string[] { "1", "2", "1.00", "other" }, };
