@@ -936,6 +936,13 @@ namespace ICU4N.Text
 
                 foreach (string range in COMMA_SEPARATED.Split(source))
                 {
+                    // ICU4N specific - .NET Split() doesn't remove empty entries
+                    // from the end of the array. So, we skip them here.
+                    if (string.IsNullOrWhiteSpace(range))
+                    {
+                        continue;
+                    }
+
                     if (range.Equals("…") || range.Equals("..."))
                     {
                         bounded2 = false;
