@@ -12,6 +12,7 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
+    // ICU4N TODO: Refactor this so it is a more sensible API
     public static partial class StandardPluralUtil
     {
 

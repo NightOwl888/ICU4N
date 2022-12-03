@@ -211,7 +211,7 @@ namespace ICU4N.Text
         {
             if (isFrozen)
             {
-                throw new InvalidOperationException();
+                throw new NotSupportedException("Attempt to modify frozen object");
             }
             @explicit[(int)result] = true;
             // ICU4N TODO: API Need to work out whether we should nullify or add another element to StandardPlural enum
