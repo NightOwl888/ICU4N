@@ -948,7 +948,7 @@ namespace ICU4N.Dev.Test.Format
                     PluralRulesKeywordStatus statusExpected = (PluralRulesKeywordStatus)row[1];
                     double? uniqueExpected = (double?)row[2];
                     remaining.Remove(keyword);
-                    PluralRulesKeywordStatus status = pluralRules.GetKeywordStatus(keyword, 0, explicits, ref uniqueValue);
+                    PluralRulesKeywordStatus status = pluralRules.GetKeywordStatus(keyword, 0, explicits, out uniqueValue);
                     assertEquals(getAssertMessage("Unique Value", locale, pluralRules, keyword), uniqueExpected.GetValueOrDefault(),
                             uniqueValue.GetValueOrDefault());
                     assertEquals(getAssertMessage("Keyword Status", locale, pluralRules, keyword), statusExpected, status);
@@ -956,7 +956,7 @@ namespace ICU4N.Dev.Test.Format
                     {
                         statusExpected = (PluralRulesKeywordStatus)row[3];
                         uniqueExpected = (double?)row[4];
-                        status = pluralRules.GetKeywordStatus(keyword, 0, explicits, ref uniqueValue, PluralRulesSampleType.Decimal);
+                        status = pluralRules.GetKeywordStatus(keyword, 0, explicits, out uniqueValue, PluralRulesSampleType.Decimal);
                         assertEquals(getAssertMessage("Unique Value - decimal", locale, pluralRules, keyword),
                                 uniqueExpected.GetValueOrDefault(), uniqueValue.GetValueOrDefault());
                         assertEquals(getAssertMessage("Keyword Status - decimal", locale, pluralRules, keyword),
@@ -965,9 +965,9 @@ namespace ICU4N.Dev.Test.Format
                 }
                 foreach (String keyword in remaining)
                 {
-                    PluralRulesKeywordStatus status = pluralRules.GetKeywordStatus(keyword, 0, null, ref uniqueValue);
+                    PluralRulesKeywordStatus status = pluralRules.GetKeywordStatus(keyword, 0, null, out uniqueValue);
                     assertEquals("Invalid keyword " + keyword, status, PluralRulesKeywordStatus.Invalid);
-                    assertNull("Invalid keyword " + keyword, uniqueValue.Value);
+                    assertFalse("Invalid keyword " + keyword, uniqueValue.HasValue);
                 }
             }
         }

@@ -2421,11 +2421,11 @@ namespace ICU4N.Text
         /// <returns>The <see cref="PluralRulesKeywordStatus"/>.</returns>
         /// <draft>ICU 50</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual PluralRulesKeywordStatus GetKeywordStatus(string keyword, int offset, ICollection<double> explicits, // ICU4N TODO: API Try to cleanup ref param
-                ref double? uniqueValue)
+        public virtual PluralRulesKeywordStatus GetKeywordStatus(string keyword, int offset, ICollection<double> explicits,
+                out double? uniqueValue)
         {
 #pragma warning disable 612, 618
-            return GetKeywordStatus(keyword, offset, explicits, ref uniqueValue, PluralRulesSampleType.Integer);
+            return GetKeywordStatus(keyword, offset, explicits, out uniqueValue, PluralRulesSampleType.Integer);
 #pragma warning restore 612, 618
         }
 
@@ -2443,16 +2443,10 @@ namespace ICU4N.Text
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         internal virtual PluralRulesKeywordStatus GetKeywordStatus(string keyword, int offset, ICollection<double> explicits,
-                ref double? uniqueValue, PluralRulesSampleType sampleType)  // ICU4N: Marked internal since it is obsolete anyway
+                out double? uniqueValue, PluralRulesSampleType sampleType)  // ICU4N: Marked internal since it is obsolete anyway
         {
-            //if (uniqueValue != null)
-            //{
-            //    uniqueValue.value = null;
-            //}
-            if (uniqueValue.HasValue)
-            {
-                uniqueValue = null;
-            }
+            // ICU4N specific - since we are using an out parameter, we don't need to check whether it is null first.
+            uniqueValue = null;// [Ignore("ICU4N TODO: Requires DecimalFormatSymbols")]
 
             if (!keywords.Contains(keyword))
             {
@@ -2479,10 +2473,8 @@ namespace ICU4N.Text
             {
                 if (originalSize == 1)
                 {
-                    if (uniqueValue != null)
-                    {
-                        uniqueValue = values.First(); //.iterator().next();
-                    }
+                    // ICU4N specific - since we are using an out parameter, we don't need to check whether it is null first.
+                    uniqueValue = values.First(); //.iterator().next();
                     return PluralRulesKeywordStatus.Unique;
                 }
                 return PluralRulesKeywordStatus.Bounded;
@@ -2500,7 +2492,8 @@ namespace ICU4N.Text
                 return PluralRulesKeywordStatus.Suppressed;
             }
 
-            if (uniqueValue != null && subtractedSet.Count == 1)
+            // ICU4N specific - since we are using an out parameter, we don't need to check whether it is null first.
+            if (subtractedSet.Count == 1)
             {
                 uniqueValue = subtractedSet.First(); //.iterator().next();
             }
