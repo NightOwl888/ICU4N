@@ -1014,7 +1014,7 @@ namespace ICU4N.Text
          * @throws IllegalArgumentException if ruleSetName is not the name of a public ruleset.
          * @stable ICU 2.0
          */
-        private void SetDefaultRuleSet(string ruleSetName)
+        public virtual void SetDefaultRuleSet(string ruleSetName)
         {
             if (ruleSetName == null)
             {
@@ -1075,7 +1075,7 @@ namespace ICU4N.Text
                 }
                 return "";
             }
-            set => SetDefaultRuleSet(value);
+            //set => SetDefaultRuleSet(value);
         }
 
         // ICU4N TODO: DecimalFormatSymbols

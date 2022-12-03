@@ -15,7 +15,154 @@ using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
-    internal class BigDecimal { } // ICU4N TODO: Remove when BigDecimal is ported.
+    internal class BigDecimal {
+        /* ----- Properties ----- */
+        /* properties public constant */
+        /**
+         * Plain (fixed point) notation, without any exponent.
+         * Used as a setting to control the form of the result of a
+         * <code>BigDecimal</code> operation.
+         * A zero result in plain form may have a decimal part of one or
+         * more zeros.
+         *
+         * @see #ENGINEERING
+         * @see #SCIENTIFIC
+         * @stable ICU 2.0
+         */
+        public const int PLAIN = 0; // [no exponent]
+
+        /**
+         * Standard floating point notation (with scientific exponential
+         * format, where there is one digit before any decimal point).
+         * Used as a setting to control the form of the result of a
+         * <code>BigDecimal</code> operation.
+         * A zero result in plain form may have a decimal part of one or
+         * more zeros.
+         *
+         * @see #ENGINEERING
+         * @see #PLAIN
+         * @stable ICU 2.0
+         */
+        public const int SCIENTIFIC = 1; // 1 digit before .
+
+        /**
+         * Standard floating point notation (with engineering exponential
+         * format, where the power of ten is a multiple of 3).
+         * Used as a setting to control the form of the result of a
+         * <code>BigDecimal</code> operation.
+         * A zero result in plain form may have a decimal part of one or
+         * more zeros.
+         *
+         * @see #PLAIN
+         * @see #SCIENTIFIC
+         * @stable ICU 2.0
+         */
+        public const int ENGINEERING = 2; // 1-3 digits before .
+
+        // The rounding modes match the original BigDecimal class values
+        /**
+         * Rounding mode to round to a more positive number.
+         * Used as a setting to control the rounding mode used during a
+         * <code>BigDecimal</code> operation.
+         * <p>
+         * If any of the discarded digits are non-zero then the result
+         * should be rounded towards the next more positive digit.
+         * @stable ICU 2.0
+         */
+        public const int ROUND_CEILING = 2;
+
+        /**
+         * Rounding mode to round towards zero.
+         * Used as a setting to control the rounding mode used during a
+         * <code>BigDecimal</code> operation.
+         * <p>
+         * All discarded digits are ignored (truncated).  The result is
+         * neither incremented nor decremented.
+         * @stable ICU 2.0
+         */
+        public const int ROUND_DOWN = 1;
+
+        /**
+         * Rounding mode to round to a more negative number.
+         * Used as a setting to control the rounding mode used during a
+         * <code>BigDecimal</code> operation.
+         * <p>
+         * If any of the discarded digits are non-zero then the result
+         * should be rounded towards the next more negative digit.
+         * @stable ICU 2.0
+         */
+        public const int ROUND_FLOOR = 3;
+
+        /**
+         * Rounding mode to round to nearest neighbor, where an equidistant
+         * value is rounded down.
+         * Used as a setting to control the rounding mode used during a
+         * <code>BigDecimal</code> operation.
+         * <p>
+         * If the discarded digits represent greater than half (0.5 times)
+         * the value of a one in the next position then the result should be
+         * rounded up (away from zero).  Otherwise the discarded digits are
+         * ignored.
+         * @stable ICU 2.0
+         */
+        public const int ROUND_HALF_DOWN = 5;
+
+        /**
+         * Rounding mode to round to nearest neighbor, where an equidistant
+         * value is rounded to the nearest even neighbor.
+         * Used as a setting to control the rounding mode used during a
+         * <code>BigDecimal</code> operation.
+         * <p>
+         * If the discarded digits represent greater than half (0.5 times)
+         * the value of a one in the next position then the result should be
+         * rounded up (away from zero).  If they represent less than half,
+         * then the result should be rounded down.
+         * <p>
+         * Otherwise (they represent exactly half) the result is rounded
+         * down if its rightmost digit is even, or rounded up if its
+         * rightmost digit is odd (to make an even digit).
+         * @stable ICU 2.0
+         */
+        public const int ROUND_HALF_EVEN = 6;
+
+        /**
+         * Rounding mode to round to nearest neighbor, where an equidistant
+         * value is rounded up.
+         * Used as a setting to control the rounding mode used during a
+         * <code>BigDecimal</code> operation.
+         * <p>
+         * If the discarded digits represent greater than or equal to half
+         * (0.5 times) the value of a one in the next position then the result
+         * should be rounded up (away from zero).  Otherwise the discarded
+         * digits are ignored.
+         * @stable ICU 2.0
+         */
+        public const int ROUND_HALF_UP = 4;
+
+        /**
+         * Rounding mode to assert that no rounding is necessary.
+         * Used as a setting to control the rounding mode used during a
+         * <code>BigDecimal</code> operation.
+         * <p>
+         * Rounding (potential loss of information) is not permitted.
+         * If any of the discarded digits are non-zero then an
+         * <code>ArithmeticException</code> should be thrown.
+         * @stable ICU 2.0
+         */
+        public const int ROUND_UNNECESSARY = 7;
+
+        /**
+         * Rounding mode to round away from zero.
+         * Used as a setting to control the rounding mode used during a
+         * <code>BigDecimal</code> operation.
+         * <p>
+         * If any of the discarded digits are non-zero then the result will
+         * be rounded up (away from zero).
+         * @stable ICU 2.0
+         */
+        public const int ROUND_UP = 0;
+
+    } // ICU4N TODO: Remove when BigDecimal is ported.
 
     /// <summary>
     /// Constants to be used to specify <see cref="NumberFormat"/> style.
@@ -1126,7 +1273,7 @@ namespace ICU4N.Text
          * @see #setRoundingMode(int)
          * @stable ICU 4.0
          */
-        public virtual int RoundingMode
+        public virtual int RoundingMode // ICU4N TODO: API Change to enum ?
         {
             get => throw new NotSupportedException("RoundingMode getter must be implemented by the subclass implementation.");
             set => throw new NotSupportedException("RoundingMode setter must be implemented by the subclass implementation.");
