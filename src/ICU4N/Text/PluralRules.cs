@@ -670,7 +670,7 @@ namespace ICU4N.Text
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
             public FixedDecimal(string n)
-                : this(long.Parse(n, CultureInfo.InvariantCulture), GetVisibleFractionCount(n)) // Ugly, but for samples we don't care.
+                : this(Double.Parse(n, CultureInfo.InvariantCulture), GetVisibleFractionCount(n)) // Ugly, but for samples we don't care.
             {
             }
 
