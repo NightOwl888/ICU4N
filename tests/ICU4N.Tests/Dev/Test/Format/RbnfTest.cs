@@ -304,7 +304,7 @@ namespace ICU4N.Dev.Test.Format
                         + "thousand six hundred seventy-eight" },
                 new string[] { "-36", "minus thirty-six" },
                 new string[] { "234.567", "two hundred thirty-four point five six seven" }
-        };
+            };
 
             doTest(formatter, testData, true);
         }
@@ -335,7 +335,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "102", "102nd" },
                 new string[] { "312", "312th" },
                 new string[] { "12,345", "12,345th" }
-        };
+            };
 
             doTest(formatter, testData, false);
         }
@@ -360,7 +360,7 @@ namespace ICU4N.Dev.Test.Format
                 //            new string[] { "3,600", "1:00:00" },
                 new string[] { "3,740", "1:02:20" },
                 new string[] { "10,293", "2:51:33" }
-        };
+            };
 
             doTest(formatter, testData, true);
         }
@@ -396,7 +396,7 @@ namespace ICU4N.Dev.Test.Format
                         + "seiscientos setenta y ocho"},
                 new string[] { "-36", "menos treinta y seis" },
                 new string[] { "234.567", "doscientos treinta y cuatro coma cinco seis siete" }
-        };
+            };
 
             doTest(formatter, testData, true);
         }
@@ -437,7 +437,7 @@ namespace ICU4N.Dev.Test.Format
                         + "six cent soixante-dix-huit" },
                 new string[] { "-36", "moins trente-six" },
                 new string[] { "234.567", "deux cent trente-quatre virgule cinq six sept" }
-        };
+            };
 
             doTest(formatter, testData, true);
         }
@@ -478,7 +478,7 @@ namespace ICU4N.Dev.Test.Format
                         + "six cent septante-huit" },
                 new string[] { "-36", "moins trente-six" },
                 new string[] { "234.567", "deux cent trente-quatre virgule cinq six sept" }
-        };
+            };
 
             doTest(formatter, testData, true);
         }
@@ -512,7 +512,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "15,943", "quindici\u00ADmila\u00ADnove\u00ADcento\u00ADquaranta\u00ADtr\u00E9" },
                 new string[] { "-36", "meno trenta\u00ADsei" },
                 new string[] { "234.567", "due\u00ADcento\u00ADtrenta\u00ADquattro virgola cinque sei sette" }
-        };
+            };
 
             doTest(formatter, testData, true);
         }
@@ -544,7 +544,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "15,943", "f\u00fcnfzehn\u00ADtausend\u00ADneun\u00ADhundert\u00ADdrei\u00ADund\u00ADvierzig" },
                 new string[] { "2,345,678", "zwei Millionen drei\u00ADhundert\u00ADf\u00fcnf\u00ADund\u00ADvierzig\u00ADtausend\u00AD"
                         + "sechs\u00ADhundert\u00ADacht\u00ADund\u00ADsiebzig" }
-        };
+            };
 
             doTest(formatter, testData, true);
         }
@@ -570,7 +570,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "23.45", "\u0e22\u0e35\u0e48\u200b\u0e2a\u0e34\u0e1a\u200b\u0e2a\u0e32\u0e21\u200b\u0e08\u0e38\u0e14\u200b\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" },
                 new string[] { "123.45", "\u0e2b\u0e19\u0e36\u0e48\u0e07\u200b\u0e23\u0e49\u0e2d\u0e22\u200b\u0e22\u0e35\u0e48\u200b\u0e2a\u0e34\u0e1a\u200b\u0e2a\u0e32\u0e21\u200b\u0e08\u0e38\u0e14\u200b\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" },
                 new string[] { "12,345.678", "\u0E2B\u0E19\u0E36\u0E48\u0E07\u200b\u0E2B\u0E21\u0E37\u0E48\u0E19\u200b\u0E2A\u0E2D\u0E07\u200b\u0E1E\u0E31\u0E19\u200b\u0E2A\u0E32\u0E21\u200b\u0E23\u0E49\u0E2D\u0E22\u200b\u0E2A\u0E35\u0E48\u200b\u0E2A\u0E34\u0E1A\u200b\u0E2B\u0E49\u0E32\u200b\u0E08\u0E38\u0E14\u200b\u0E2B\u0E01\u0E40\u0E08\u0E47\u0E14\u0E41\u0E1B\u0E14" },
-        };
+            };
 
             doTest(formatter, testData, true);
         }
@@ -598,7 +598,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "22", "22nd" },
                 new string[] { "23", "23rd" },
                 new string[] { "24", "24th" },
-        };
+            };
 
             doTest(enFormatter, enTestData, true);
 
@@ -667,7 +667,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "0.22", "двадцать два сотых" },
                 new string[] { "21.1", "двадцать один целый один десятая" },
                 new string[] { "22.2", "двадцать два целых два десятых" },
-        };
+            };
 
             doTest(ruFormatter, ruTestData, true);
 
@@ -815,7 +815,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { ".4444", "4/9" },
                 new string[] { ".5555", "5/9" },
                 new string[] { "1.2856", "1 2/7" }
-        };
+            };
             doTest(formatter, testData, false); // exact values aren't parsable from fractions
         }
 
@@ -846,7 +846,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "12,345,678", "tolv miljoner tre\u00ADhundra\u00ADfyrtio\u00ADfem\u00ADtusen sex\u00ADhundra\u00ADsjuttio\u00AD\u00e5tta" },
                 new string[] { "123,456.789", "ett\u00ADhundra\u00ADtjugo\u00ADtre\u00ADtusen fyra\u00ADhundra\u00ADfemtio\u00ADsex komma sju \u00e5tta nio" },
                 new string[] { "-12,345.678", "minus tolv\u00ADtusen tre\u00ADhundra\u00ADfyrtio\u00ADfem komma sex sju \u00e5tta" },
-        };
+            };
 
             Logln("testing default rules");
             doTest(formatter, testDataDefault, true);
@@ -857,7 +857,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "1,101", "et\u00adtusen ett\u00adhundra\u00adett" },
                 new string[] { "10,001", "tio\u00adtusen ett" },
                 new string[] { "21,001", "tjugo\u00adet\u00adtusen ett" }
-        };
+            };
 
             formatter.SetDefaultRuleSet("%spellout-cardinal-neuter");
             Logln("testing neutrum rules");
@@ -872,7 +872,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "1,234", "tolv\u00adhundra\u00adtrettio\u00adfyra" },
                 new string[] { "2,001", "tjugo\u00adhundra\u00adett" },
                 new string[] { "10,001", "tio\u00adtusen ett" }
-        };
+            };
 
             formatter.SetDefaultRuleSet("%spellout-numbering-year");
             Logln("testing year rules");
@@ -936,7 +936,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "0", "\u0e28\u0e39\u0e19\u0e22\u0e4c" },
                 new string[] { "1", "\u0e2b\u0e19\u0e36\u0e48\u0e07" },
                 new string[] { "123.45", "\u0e2b\u0e19\u0e36\u0e48\u0e07\u0e23\u0e49\u0e2d\u0e22\u0e22\u0e35\u0e48\u0e2a\u0e34\u0e1a\u0e2a\u0e32\u0e21\u0e08\u0e38\u0e14\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" }
-        };
+            };
 
             doTest(formatter, testData, true);
         }
@@ -976,7 +976,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "123.321", "one hundred twenty-three point three two one" },
                 new string[] { "0.0000000011754944", "zero point zero zero zero zero zero zero zero zero one one seven five four nine four four" },
                 new string[] { "0.000001175494351", "zero point zero zero zero zero zero one one seven five four nine four three five one" },
-        };
+            };
 
             RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new CultureInfo("en-US"), NumberPresentation.SpellOut);
             doTest(formatter, testData, true);
@@ -1137,7 +1137,7 @@ namespace ICU4N.Dev.Test.Format
                 " (spellout) ",
                 " (ordinal) "
                 //" (duration) " // English only
-        };
+            };
             double[] numbers = { 45.678, 1, 2, 10, 11, 100, 110, 200, 1000, 1111, -1111 };
             int count = numbers.Length;
             Random r = (count <= numbers.Length ? null : CreateRandom());
@@ -1602,7 +1602,7 @@ namespace ICU4N.Dev.Test.Format
                 new TextContextItem( "en", NumberPresentation.SpellOut, DisplayContext.CapitalizationForBeginningOfSentence,  123.45, "One hundred twenty-three point four five" ),
                 new TextContextItem( "en", NumberPresentation.SpellOut, DisplayContext.CapitalizationForUIListOrMenu,         123.45, "One hundred twenty-three point four five" ),
                 new TextContextItem( "en", NumberPresentation.SpellOut, DisplayContext.CapitalizationForStandalone,           123.45, "One hundred twenty-three point four five" ),
-        };
+            };
             foreach (TextContextItem item in items)
             {
                 UCultureInfo locale = new UCultureInfo(item.locale);
@@ -1644,7 +1644,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] {"-\u221E", "minus infinite"},
                 new string[] {"NaN", "not a number"},
 
-        };
+            };
 
             doTest(enFormatter, enTestData, true);
 
@@ -1659,7 +1659,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] {"-\u221E", "-∞"},
                 new string[] {"NaN", "NaN"},
 
-        };
+            };
 
             doTest(enFormatter, enDefaultTestData, true);
         }
@@ -1720,24 +1720,24 @@ namespace ICU4N.Dev.Test.Format
                 new string[] {"1.51", "one point five one"},
                 new string[] {"450359962737049.6", "four hundred fifty trillion three hundred fifty-nine billion nine hundred sixty-two million seven hundred thirty-seven thousand forty-nine point six"}, // 2^52 / 10
                 new string[] {"450359962737049.7", "four hundred fifty trillion three hundred fifty-nine billion nine hundred sixty-two million seven hundred thirty-seven thousand forty-nine point seven"}, // 2^52 + 1 / 10
-        };
+            };
             doTest(enFormatter, enTestFullData, false);
 
             enFormatter.MaximumFractionDigits = 0;
             enFormatter.RoundingMode = (BigDecimal.ROUND_HALF_EVEN);
             string[][] enTestIntegerData = new string[][] {
-        new string[] {"0", "zero"},
-        new string[] {"0.4", "zero"},
-        new string[] {"0.49", "zero"},
-        new string[] {"0.5", "zero"},
-        new string[] {"0.51", "one"},
-        new string[] {"0.99", "one"},
-        new string[] {"1", "one"},
-        new string[] {"1.01", "one"},
-        new string[] {"1.49", "one"},
-        new string[] {"1.5", "two"},
-        new string[] {"1.51", "two"},
-    };
+                new string[] {"0", "zero"},
+                new string[] {"0.4", "zero"},
+                new string[] {"0.49", "zero"},
+                new string[] {"0.5", "zero"},
+                new string[] {"0.51", "one"},
+                new string[] {"0.99", "one"},
+                new string[] {"1", "one"},
+                new string[] {"1.01", "one"},
+                new string[] {"1.49", "one"},
+                new string[] {"1.5", "two"},
+                new string[] {"1.51", "two"},
+            };
             doTest(enFormatter, enTestIntegerData, false);
 
             enFormatter.MaximumFractionDigits = 1;
@@ -1753,14 +1753,14 @@ namespace ICU4N.Dev.Test.Format
                 new string[] {"10.149", "ten point one"},
                 new string[] {"10.15", "ten point two"},
                 new string[] {"10.151", "ten point two"},
-        };
+            };
             doTest(enFormatter, enTestTwoDigitsData, false);
 
             enFormatter.MaximumFractionDigits = 3;
             enFormatter.RoundingMode = (BigDecimal.ROUND_DOWN);
             string[][] enTestThreeDigitsDownData = new string[][] {
                 new string[] {"4.3", "four point three"}, // Not 4.299!
-        };
+            };
             doTest(enFormatter, enTestThreeDigitsDownData, false);
         }
 
@@ -1788,7 +1788,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] {"9223372036854775806", "9,223,372,036,854,775,806"}, // Maximum 64-bit precision - 1
                 new string[] {"9223372036854775807", "9,223,372,036,854,775,807"}, // Maximum 64-bit precision
                 new string[] {"9223372036854775808", "9,223,372,036,854,775,808"}, // We've gone beyond 64-bit precision. This can only be represented with BigDecimal.
-        };
+            };
             doTest(rbnf, enTestFullData, false);
         }
 
@@ -1822,7 +1822,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] {"10000000000000000", "10.00 Q"},  // Number doesn't precisely fit into a double
                 new string[] {"9223372036854775807", "9223.00 Q"}, // Maximum 64-bit precision
                 new string[] {"9223372036854775808", "9,223,372,036,854,775,808"}, // We've gone beyond 64-bit precision. This can only be represented with BigDecimal.
-        };
+            };
             doTest(rbnf, enTestFullData, false);
         }
 
