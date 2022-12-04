@@ -224,10 +224,7 @@ namespace ICU4N.Text
          * @see #getDigitStrings()
          * @discouraged ICU 58 use {@link #getDigitStrings()} instead.
          */
-        public virtual char[] GetDigits()
-        {
-            return (char[])digits.Clone();
-        }
+        public virtual char[] Digits => (char[])digits.Clone();
 
         /**
          * Sets the character used for zero.
