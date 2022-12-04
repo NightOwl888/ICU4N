@@ -1712,12 +1712,16 @@ namespace ICU4N.Text
                         ix = postProcessRules.Length;
                     }
                     string ppClassName = postProcessRules.Substring(0, ix).Trim(); // ICU4N: Checked 2nd parameter
+
+                    // ICU4N: Hack to replace the namespace for the RBNFChinesePostProcessor if it is specified this way.
+                    if (ppClassName.Equals("com.ibm.icu.text.RBNFChinesePostProcessor", StringComparison.Ordinal))
+                        ppClassName = "ICU4N.Text.RbnfChinesePostProcessor";
                     try
                     {
                         //Class <?> cls = Class.forName(ppClassName);
                         //postProcessor = (RBNFPostProcessor)cls.newInstance();
 
-                        Type cls = Type.GetType(ppClassName);
+                        Type cls = Type.GetType(ppClassName); // ICU4N TODO: Create abstract factory to create instance of the class, which is set at app startup
                         postProcessor = (IRbnfPostProcessor)Activator.CreateInstance(cls);
                         postProcessor.Init(this, postProcessRules);
                     }

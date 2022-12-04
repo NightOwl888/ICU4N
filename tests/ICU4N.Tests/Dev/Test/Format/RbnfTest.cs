@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Text;
+using J2N.Globalization;
 using J2N.Numerics;
 using NUnit.Framework;
 using System;
@@ -7,6 +8,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
+using Double = J2N.Numerics.Double;
 
 namespace ICU4N.Dev.Test.Format
 {
@@ -1210,7 +1212,54 @@ namespace ICU4N.Dev.Test.Format
         void doTest(RuleBasedNumberFormat formatter, string[][] testData,
                     bool testParsing)
         {
-            throw new NotImplementedException("Missing DecimalFormat dependency");
+            //        NumberFormat decFmt = NumberFormat.getInstance(Locale.US);
+            //NumberFormat decFmt = new DecimalFormat("#,###.################");
+            try
+            {
+                for (int i = 0; i < testData.Length; i++)
+                {
+                    String number = testData[i][0];
+                    String expectedWords = testData[i][1];
+                    if (IsVerbose())
+                    {
+                        Logln("test[" + i + "] number: " + number + " target: " + expectedWords);
+                    }
+                    //Number num = decFmt.Parse(number);
+                    Number num = Double.GetInstance(Double.Parse(number, NumberStyle.Float | NumberStyle.AllowThousands, CultureInfo.InvariantCulture));
+                    String actualWords = formatter.Format(num);
+
+                    if (!actualWords.Equals(expectedWords))
+                    {
+                        Errln("Spot check format failed: for " + number + ", expected\n    "
+                                + expectedWords + ", but got\n    " +
+                                actualWords);
+                    }
+                    else if (testParsing)
+                    {
+                        String actualNumber = formatter
+                                .Parse(actualWords).ToString("#,###.################", CultureInfo.InvariantCulture);
+                        //String actualNumber = decFmt.Format(formatter
+                        //        .Parse(actualWords));
+
+                        if (!actualNumber.Equals(number))
+                        {
+                            Errln("Spot check parse failed: for " + actualWords +
+                                    ", expected " + number + ", but got " +
+                                    actualNumber);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Errln("Test failed with exception: " + e.ToString());
+
+                //e.printStackTrace();
+                //Errln("Test failed with exception: " + e.toString());
+            }
+
+            // ICU4N TODO: After DecimalFormat is ported, use the below code.
+            //throw new NotImplementedException("Missing DecimalFormat dependency");
 
             ////        NumberFormat decFmt = NumberFormat.getInstance(Locale.US);
             //NumberFormat decFmt = new DecimalFormat("#,###.################");
@@ -1517,7 +1566,8 @@ namespace ICU4N.Dev.Test.Format
                 + "    0: *=00=;\n"
                 + "    60/60: <00<>>;\n"
                 + "    3600/60: <#,##0<:>>>;\n"
-                + "%%post-process:com.ibm.icu.text.RBNFChinesePostProcessor\n";
+                + "%%post-process:ICU4N.Text.RbnfChinesePostProcessor\n";
+            //+ "%%post-process:com.ibm.icu.text.RBNFChinesePostProcessor\n";
 
             RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(ruleWithChinese, new UCultureInfo("zh"));
             String[] ruleNames = rbnf.GetRuleSetNames();
@@ -1527,7 +1577,7 @@ namespace ICU4N.Dev.Test.Format
                 rbnf.Format(0.0, null);
                 Errln("This was suppose to return an exception for a null format");
             }
-            catch (Exception e) { }
+            catch (Exception e) when (!(e is AssertionException)) { }
             for (int i = 0; i < ruleNames.Length; i++)
             {
                 try
