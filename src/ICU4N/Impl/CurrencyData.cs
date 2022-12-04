@@ -50,7 +50,7 @@ namespace ICU4N.Impl
     {
         private static readonly int SpacingTypeCount = Enum.GetNames(typeof(SpacingType)).Length;
         private static readonly int SpacingPatternCount = Enum.GetNames(typeof(SpacingPattern)).Length;
-        private readonly string[][] symbols = Arrays.NewRectangularArray<string>(SpacingTypeCount, SpacingTypeCount);
+        private readonly string[][] symbols = Arrays.NewRectangularArray<string>(SpacingTypeCount, SpacingPatternCount);
 
         public bool HasBeforeCurrency { get; set; } = false;
         public bool HasAfterCurrency { get; set; } = false;
