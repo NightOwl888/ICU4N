@@ -211,7 +211,11 @@ namespace ICU4N.Text
          * @stable ICU 2.0
          * @discouraged ICU 58 use {@link #getDigitStrings()} instead.
          */
-        public virtual char ZeroDigit => zeroDigit;
+        public virtual char ZeroDigit
+        {
+            get => zeroDigit;
+            set => SetZeroDigit(value);
+        }
 
         /**
          * Returns the array of characters used as digits, in order from 0 through 9
@@ -235,7 +239,7 @@ namespace ICU4N.Text
          * @stable ICU 2.0
          * @discouraged ICU 58 use {@link #setDigitStrings(String[])} instead.
          */
-        public virtual void SetZeroDigit(char zeroDigit)
+        private void SetZeroDigit(char zeroDigit)
         {
             this.zeroDigit = zeroDigit;
 
@@ -686,7 +690,7 @@ namespace ICU4N.Text
         public virtual char Digit
         {
             get => digit;
-            set => Digit = value;
+            set => digit = value;
         }
 
         ///**
