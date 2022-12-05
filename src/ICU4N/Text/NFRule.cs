@@ -1437,17 +1437,16 @@ namespace ICU4N.Text
 #pragma warning restore CS0618 // Type or member is obsolete
         }
 
-        // ICU4N TODO: DecimalFormatSymbols
-        //public void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
-        //{
-        //    if (sub1 != null)
-        //    {
-        //        sub1.SetDecimalFormatSymbols(newSymbols);
-        //    }
-        //    if (sub2 != null)
-        //    {
-        //        sub2.SetDecimalFormatSymbols(newSymbols);
-        //    }
-        //}
+        public void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
+        {
+            if (sub1 != null)
+            {
+                sub1.SetDecimalFormatSymbols(newSymbols);
+            }
+            if (sub2 != null)
+            {
+                sub2.SetDecimalFormatSymbols(newSymbols);
+            }
+        }
     }
 }

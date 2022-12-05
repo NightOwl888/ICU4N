@@ -202,14 +202,13 @@ namespace ICU4N.Text
             }
             else if (description[0] == '#' || description[0] == '0')
             {
-                throw new NotImplementedException(); // ICU4N TODO: DecimalFormat
-                //// if the description begins with 0 or #, treat it as a
-                //// DecimalFormat pattern, and initialize a DecimalFormat with
-                //// that pattern (then set it to use the DecimalFormatSymbols
-                //// belonging to our formatter)
-                //this.ruleSet = null;
-                //this.numberFormat = (DecimalFormat)ruleSet.owner.DecimalFormat.Clone();
-                //this.numberFormat.ApplyPattern(description);
+                // if the description begins with 0 or #, treat it as a
+                // DecimalFormat pattern, and initialize a DecimalFormat with
+                // that pattern (then set it to use the DecimalFormatSymbols
+                // belonging to our formatter)
+                this.ruleSet = null;
+                this.numberFormat = (DecimalFormat)ruleSet.owner.DecimalFormat.Clone();
+                this.numberFormat.ApplyPattern(description);
             }
             else if (description[0] == '>')
             {
@@ -297,9 +296,7 @@ namespace ICU4N.Text
             }
             else
             {
-                // ICU4N TODO: Support for DecimalFormat
-                return "DecimalFormat not supported";
-                //return TokenChar + numberFormat.ToPattern() + TokenChar;
+                return TokenChar + numberFormat.ToPattern() + TokenChar;
             }
         }
 
@@ -332,34 +329,32 @@ namespace ICU4N.Text
             }
             else
             {
-                // ICU4N TODO: Support for double
-                throw new NotImplementedException();
-                //if (number <= MAX_INT64_IN_DOUBLE)
-                //{
-                //    // or perform the transformation on the number (preserving
-                //    // the result's fractional part if the formatter it set
-                //    // to show it), then use that formatter's format() method
-                //    // to format the result
-                //    double numberToFormat = TransformNumber((double)number);
-                //    if (numberFormat.MaximumFractionDigits == 0)
-                //    {
-                //        numberToFormat = Math.Floor(numberToFormat);
-                //    }
+                if (number <= MAX_INT64_IN_DOUBLE)
+                {
+                    // or perform the transformation on the number (preserving
+                    // the result's fractional part if the formatter it set
+                    // to show it), then use that formatter's format() method
+                    // to format the result
+                    double numberToFormat = TransformNumber(/*(double)*/number); // ICU4N TODO: support for double
+                    if (numberFormat.MaximumFractionDigits == 0)
+                    {
+                        numberToFormat = Math.Floor(numberToFormat);
+                    }
 
-                //    toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
-                //}
-                //else
-                //{
-                //    // We have gone beyond double precision. Something has to give.
-                //    // We're favoring accuracy of the large number over potential rules
-                //    // that round like a CompactDecimalFormat, which is not a common use case.
-                //    //
-                //    // Perform a transformation on the number that is dependent
-                //    // on the type of substitution this is, then just call its
-                //    // rule set's format() method to format the result
-                //    long numberToFormat = TransformNumber(number);
-                //    toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
-                //}
+                    toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
+                }
+                else
+                {
+                    // We have gone beyond double precision. Something has to give.
+                    // We're favoring accuracy of the large number over potential rules
+                    // that round like a CompactDecimalFormat, which is not a common use case.
+                    //
+                    // Perform a transformation on the number that is dependent
+                    // on the type of substitution this is, then just call its
+                    // rule set's format() method to format the result
+                    long numberToFormat = TransformNumber(number);
+                    toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
+                }
             }
         }
 
@@ -491,18 +486,14 @@ namespace ICU4N.Text
                 tempResult = ruleSet.Parse(text, parsePosition, upperBound);
                 if (lenientParse && !ruleSet.IsFractionSet && parsePosition.Index == 0)
                 {
-                    // ICU4N TODO: Support for double
-                    throw new NotImplementedException();
-                    //tempResult = ruleSet.owner.DecimalFormat.Parse(text, parsePosition);
+                    tempResult = ruleSet.owner.DecimalFormat.Parse(text, parsePosition);
                 }
 
                 // ...or use our DecimalFormat to parse the text
             }
             else
             {
-                // ICU4N TODO: Support for double
-                throw new NotImplementedException();
-                //tempResult = numberFormat.Parse(text, parsePosition);
+                tempResult = numberFormat.Parse(text, parsePosition);
             }
 
             // if the parse was successful, we've already advanced the caller's
@@ -602,11 +593,10 @@ namespace ICU4N.Text
         public virtual bool IsModulusSubstitution => false;
 
 
-        // ICU4N TODO: DecimalFormatSymbols
-        //public virtual void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
-        //{
-        //    numberFormat?.SetDecimalFormatSymbols(newSymbols);
-        //}
+        public virtual void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
+        {
+            numberFormat?.SetDecimalFormatSymbols(newSymbols);
+        }
     }
 
     //===================================================================

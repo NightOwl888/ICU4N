@@ -11,15 +11,99 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using JCG = J2N.Collections.Generic;
+using Double = J2N.Numerics.Double;
+using Long = J2N.Numerics.Int64;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
     // ICU4N TODO: Missing dependencies, DateFormat, DecimalFormat, RuleBasedNumberFormat, BigDecimal, others
     internal class DateFormat { } // ICU4N TODO: Remove when DateFormat is ported
-    internal class DecimalFormat { public bool ParseBigDecimal { get; set; } } // ICU4N TODO: Remove when DecimalFormat is ported
+    internal class DecimalFormat : NumberFormat // ICU4N TODO: Remove when DecimalFormat is ported
+    {
+        [NonSerialized]
+        private volatile DecimalFormatSymbols symbols;
+
+        //public DecimalFormat(string pattern)
+        //{
+        //    symbols = DefaultSymbols;
+        //    //properties = new DecimalFormatProperties();
+        //    //exportedProperties = new DecimalFormatProperties();
+        //    //// Regression: ignore pattern rounding information if the pattern has currency symbols.
+        //    //setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_IF_CURRENCY);
+        //    //refreshFormatter();
+        //}
+
+        public DecimalFormat(string pattern, DecimalFormatSymbols symbols)
+        {
+            this.symbols = (DecimalFormatSymbols)symbols.Clone();
+            //properties = new DecimalFormatProperties();
+            //exportedProperties = new DecimalFormatProperties();
+            //// Regression: ignore pattern rounding information if the pattern has currency symbols.
+            //setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_IF_CURRENCY);
+            //refreshFormatter();
+        }
+
+        public bool ParseBigDecimal { get; set; }
+
+        /**
+        * Sets the decimal format symbols used by this formatter. The formatter uses a copy of the
+        * provided symbols.
+        *
+        * @param newSymbols desired DecimalFormatSymbols
+        * @see DecimalFormatSymbols
+        * @stable ICU 2.0
+        */
+        public /*synchronized*/ void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
+        {
+            symbols = (DecimalFormatSymbols)newSymbols.Clone();
+            //refreshFormatter();
+        }
+
+        public /*synchronized*/ void ApplyPattern(string pattern)
+        {
+            // ICU4N TODO: Parse properties from pattern
+        }
+
+        public /*synchronized*/ string ToPattern()
+        {
+            return string.Empty; // ICU4N TODO: Finish implementation
+        }
+
+        public override J2N.Numerics.Number Parse(string text, ParsePosition parsePosition)
+        {
+            int startIndex = parsePosition.Index;
+
+            // ICU4N TODO: Parse into long
+            //throw new NotImplementedException();
+            return Double.GetInstance(double.Parse(text.Substring(startIndex), NumberStyles.Integer, CultureInfo.InvariantCulture));
+        }
+
+        public override StringBuffer Format(long number, StringBuffer result, FieldPosition fieldPosition)
+        {
+            int startIndex = fieldPosition.BeginIndex;
+            int length = fieldPosition.EndIndex - startIndex;
+            // ICU4N TODO: Format number
+            //throw new NotImplementedException();
+            char[] chars = new char[length];
+            string formatted = number.ToString(CultureInfo.InvariantCulture);
+            formatted.CopyTo(0, chars, 0, length);
+            return result.Insert(startIndex, chars, startIndex, length);
+        }
+
+        public override StringBuffer Format(double number, StringBuffer toAppendTo, FieldPosition pos)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override StringBuffer Format(BigInteger number, StringBuffer toAppendTo, FieldPosition pos)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
     /// <icuenhanced><see cref="MessageFormat"/></icuenhanced><icu>_usage_</icu>
     /// <summary>
@@ -2532,7 +2616,7 @@ namespace ICU4N.Text
                             newFormat = NumberFormat.GetInstance(uCulure);
                             // ICU4N TODO: Finish implementation
                             //newFormat = new DecimalFormat(style,
-                            //        new DecimalFormatSymbols(ulocale));
+                            //        new DecimalFormatSymbols(uCulure));
                             break;
                     }
                     break;

@@ -11,6 +11,8 @@ using System.Globalization;
 using System.IO;
 using System.Numerics;
 using System.Resources;
+using Double = J2N.Numerics.Double;
+using Long = J2N.Numerics.Int64;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -275,13 +277,17 @@ namespace ICU4N.Text
                                    StringBuffer toAppendTo,
                                    FieldPosition pos)
         {
-            if (number is long)
+            if (number is Long @long)
             {
-                return Format(Convert.ToInt64(number), toAppendTo, pos);
+                return Format(@long.ToInt64(), toAppendTo, pos);
             }
-            else if (number is BigInteger)
+            else if (number is long l)
             {
-                return Format((BigInteger)number, toAppendTo, pos);
+                return Format(l, toAppendTo, pos);
+            }
+            else if (number is BigInteger bigInteger)
+            {
+                return Format(bigInteger, toAppendTo, pos);
             }
             // ICU4N TODO: BigDecimal, CurrencyAmount
             //else if (number is java.math.BigDecimal)
@@ -296,6 +302,10 @@ namespace ICU4N.Text
             //{
             //    return Format((CurrencyAmount)number, toAppendTo, pos);
             //}
+            else if (number is Double @double)
+            {
+                return Format(@double.ToDouble(), toAppendTo, pos);
+            }
             else if (number.IsNumber())
             {
                 return Format(Convert.ToDouble(number), toAppendTo, pos);
@@ -1325,119 +1335,118 @@ namespace ICU4N.Text
 
         // =======================privates===============================
         // Hook for service
-        internal static NumberFormat CreateInstance(UCultureInfo desiredLocale, int choice) // ICU4N note: choice is type NumberFormatStyle
+        internal static NumberFormat CreateInstance(UCultureInfo desiredLocale, NumberFormatStyle choice)
         {
-            // ICU4N TODO: Implementation
-            throw new NotImplementedException("CreateInstance is not yet ported");
+            // If the choice is PLURALCURRENCYSTYLE, the pattern is not a single
+            // pattern, it is a pattern set, so we do not need to get them here.
+            // If the choice is ISOCURRENCYSTYLE, the pattern is the currrency
+            // pattern in the locale but by replacing the single currency sign
+            // with double currency sign.
+            string pattern = GetPattern(desiredLocale, choice);
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(desiredLocale);
 
+            // Here we assume that the locale passed in is in the canonical
+            // form, e.g: pt_PT_@currency=PTE not pt_PT_PREEURO
+            // This style wont work for currency plural format.
+            // For currency plural format, the pattern is get from
+            // the locale (from CurrencyUnitPatterns) without override.
+            if (choice == NumberFormatStyle.CurrencyStyle || choice == NumberFormatStyle.ISOCurrencyStyle || choice == NumberFormatStyle.AccountingCurrencyStyle
+                || choice == NumberFormatStyle.CashCurrencyStyle || choice == NumberFormatStyle.StandardCurrencyStyle)
+            {
+                string temp = symbols.CurrencyPattern;
+                if (temp != null)
+                {
+                    pattern = temp;
+                }
+            }
 
-            //// If the choice is PLURALCURRENCYSTYLE, the pattern is not a single
-            //// pattern, it is a pattern set, so we do not need to get them here.
-            //// If the choice is ISOCURRENCYSTYLE, the pattern is the currrency
-            //// pattern in the locale but by replacing the single currency sign
-            //// with double currency sign.
-            //string pattern = GetPattern(desiredLocale, choice);
-            //DecimalFormatSymbols symbols = new DecimalFormatSymbols(desiredLocale);
+            // replace single currency sign in the pattern with double currency sign
+            // if the choice is ISOCURRENCYSTYLE.
+            if (choice == NumberFormatStyle.ISOCurrencyStyle)
+            {
+                pattern = pattern.Replace("\u00A4", doubleCurrencyStr);
+            }
 
-            //// Here we assume that the locale passed in is in the canonical
-            //// form, e.g: pt_PT_@currency=PTE not pt_PT_PREEURO
-            //// This style wont work for currency plural format.
-            //// For currency plural format, the pattern is get from
-            //// the locale (from CurrencyUnitPatterns) without override.
-            //if (choice == CURRENCYSTYLE || choice == ISOCURRENCYSTYLE || choice == ACCOUNTINGCURRENCYSTYLE
-            //        || choice == CASHCURRENCYSTYLE || choice == STANDARDCURRENCYSTYLE)
-            //{
-            //    String temp = symbols.getCurrencyPattern();
-            //    if (temp != null)
-            //    {
-            //        pattern = temp;
-            //    }
-            //}
+            // Get the numbering system
+            NumberingSystem ns = NumberingSystem.GetInstance(desiredLocale);
+            if (ns == null)
+            {
+                return null;
+            }
 
-            //// replace single currency sign in the pattern with double currency sign
-            //// if the choice is ISOCURRENCYSTYLE.
-            //if (choice == ISOCURRENCYSTYLE)
-            //{
-            //    pattern = pattern.Replace("\u00A4", doubleCurrencyStr);
-            //}
+            NumberFormat format;
 
-            //// Get the numbering system
-            //NumberingSystem ns = NumberingSystem.GetInstance(desiredLocale);
-            //if (ns == null)
-            //{
-            //    return null;
-            //}
+            if (ns != null && ns.IsAlgorithmic)
+            {
+                string nsDesc;
+                string nsRuleSetGroup;
+                string nsRuleSetName;
+                UCultureInfo nsLoc;
+                NumberPresentation desiredRulesType = NumberPresentation.NumberingSystem;
 
-            //NumberFormat format;
+                nsDesc = ns.Description;
+                int firstSlash = nsDesc.IndexOf('/');
+                int lastSlash = nsDesc.LastIndexOf('/');
 
-            //if (ns != null && ns.IsAlgorithmic)
-            //{
-            //    string nsDesc;
-            //    string nsRuleSetGroup;
-            //    string nsRuleSetName;
-            //    ULocale nsLoc;
-            //    int desiredRulesType = RuleBasedNumberFormat.NUMBERING_SYSTEM;
+                if (lastSlash > firstSlash)
+                {
+                    string nsLocID = nsDesc.Substring(0, firstSlash); // ICU4N: Checked 2nd arg
+                    nsRuleSetGroup = nsDesc.Substring(firstSlash + 1, lastSlash - (firstSlash + 1)); // ICU4N: Corrected 2nd arg
+                    nsRuleSetName = nsDesc.Substring(lastSlash + 1);
 
-            //    nsDesc = ns.Description;
-            //    int firstSlash = nsDesc.IndexOf('/');
-            //    int lastSlash = nsDesc.LastIndexOf('/');
+                    nsLoc = new UCultureInfo(nsLocID);
+                    if (nsRuleSetGroup.Equals("SpelloutRules"))
+                    {
+                        desiredRulesType = NumberPresentation.SpellOut;
+                    }
+                }
+                else
+                {
+                    nsLoc = desiredLocale;
+                    nsRuleSetName = nsDesc;
+                }
 
-            //    if (lastSlash > firstSlash)
-            //    {
-            //        String nsLocID = nsDesc.Substring(0, firstSlash); // ICU4N: Checked 2nd arg
-            //        nsRuleSetGroup = nsDesc.Substring(firstSlash + 1, lastSlash - (firstSlash + 1)); // ICU4N: Corrected 2nd arg
-            //        nsRuleSetName = nsDesc.Substring(lastSlash + 1);
+                RuleBasedNumberFormat r = new RuleBasedNumberFormat(nsLoc, desiredRulesType);
+                r.SetDefaultRuleSet(nsRuleSetName);
+                format = r;
+            }
+            else
+            {
+                // ICU4N TODO: Support for decimal
+                throw new NotImplementedException("Double support not implemented.");
 
-            //        nsLoc = new UCultureInfo(nsLocID);
-            //        if (nsRuleSetGroup.Equals("SpelloutRules"))
-            //        {
-            //            desiredRulesType = RuleBasedNumberFormat.SPELLOUT;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        nsLoc = desiredLocale;
-            //        nsRuleSetName = nsDesc;
-            //    }
+                //DecimalFormat f = new DecimalFormat(pattern, symbols, choice);
+                //// System.out.println("loc: " + desiredLocale + " choice: " + choice + " pat: " + pattern + " sym: " + symbols + " result: " + format);
 
-            //    RuleBasedNumberFormat r = new RuleBasedNumberFormat(nsLoc, desiredRulesType);
-            //    r.setDefaultRuleSet(nsRuleSetName);
-            //    format = r;
-            //}
-            //else
-            //{
-            //    DecimalFormat f = new DecimalFormat(pattern, symbols, choice);
-            //    // System.out.println("loc: " + desiredLocale + " choice: " + choice + " pat: " + pattern + " sym: " + symbols + " result: " + format);
+                ///*Bug 4408066
+                // Add codes for the new method getIntegerInstance() [Richard/GCL]
+                //*/
+                //// TODO: revisit this -- this is almost certainly not the way we want
+                //// to do this.  aliu 1/6/2004
+                //if (choice == NumberFormatStyle.IntegerStyle)
+                //{
+                //    f.MaximumFractionDigits = 0;
+                //    f.setDecimalSeparatorAlwaysShown(false);
+                //    f.ParseIntegerOnly = true;
+                //}
+                //if (choice == NumberFormatStyle.CashCurrencyStyle)
+                //{
+                //    f.setCurrencyUsage(CurrencyUsage.CASH);
+                //}
+                //if (choice == NumberFormatStyle.PluralCurrencyStyle)
+                //{
+                //    f.SetCurrencyPluralInfo(CurrencyPluralInfo.GetInstance(desiredLocale));
+                //}
+                //format = f;
+            }
+            // TODO: the actual locale of the *pattern* may differ from that
+            // for the *symbols*.  For now, we use the data for the symbols.
+            // Revisit this.
+            UCultureInfo valid = symbols.ValidCulture;
+            UCultureInfo actual = symbols.ActualCulture;
+            format.SetCulture(valid, actual);
 
-            //    /*Bug 4408066
-            //     Add codes for the new method getIntegerInstance() [Richard/GCL]
-            //    */
-            //    // TODO: revisit this -- this is almost certainly not the way we want
-            //    // to do this.  aliu 1/6/2004
-            //    if (choice == INTEGERSTYLE)
-            //    {
-            //        f.setMaximumFractionDigits(0);
-            //        f.setDecimalSeparatorAlwaysShown(false);
-            //        f.setParseIntegerOnly(true);
-            //    }
-            //    if (choice == CASHCURRENCYSTYLE)
-            //    {
-            //        f.setCurrencyUsage(CurrencyUsage.CASH);
-            //    }
-            //    if (choice == PLURALCURRENCYSTYLE)
-            //    {
-            //        f.SetCurrencyPluralInfo(CurrencyPluralInfo.GetInstance(desiredLocale));
-            //    }
-            //    format = f;
-            //}
-            //// TODO: the actual locale of the *pattern* may differ from that
-            //// for the *symbols*.  For now, we use the data for the symbols.
-            //// Revisit this.
-            //ULocale valid = symbols.GetLocale(ULocale.VALID_LOCALE);
-            //ULocale actual = symbols.GetLocale(ULocale.ACTUAL_LOCALE);
-            //format.SetLocale(valid, actual);
-
-            //return format;
+            return format;
         }
 
         /**

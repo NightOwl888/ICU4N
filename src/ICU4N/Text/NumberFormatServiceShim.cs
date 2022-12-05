@@ -104,7 +104,7 @@ namespace ICU4N.Text
         {
             protected override object HandleCreate(UCultureInfo loc, int kind, ICUService srvc)
             {
-                return NumberFormat.CreateInstance(loc, kind);
+                return NumberFormat.CreateInstance(loc, (NumberFormatStyle)kind);
             }
         }
 

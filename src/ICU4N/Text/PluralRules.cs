@@ -2446,7 +2446,7 @@ namespace ICU4N.Text
                 out double? uniqueValue, PluralRulesSampleType sampleType)  // ICU4N: Marked internal since it is obsolete anyway
         {
             // ICU4N specific - since we are using an out parameter, we don't need to check whether it is null first.
-            uniqueValue = null;// [Ignore("ICU4N TODO: Requires DecimalFormatSymbols")]
+            uniqueValue = null;
 
             if (!keywords.Contains(keyword))
             {

@@ -296,13 +296,12 @@ namespace ICU4N.Text
             }
             else
             {
-                // ICU4N TODO: DecimalFormatSymbols
-                //// We have more than one. Which one is better?
-                //DecimalFormatSymbols decimalFormatSymbols = owner.DecimalFormatSymbols;
-                //if (decimalFormatSymbols.DecimalSeparator == newRule.DecimalPoint)
-                //{
-                //    nonNumericalRules[originalIndex] = newRule;
-                //}
+                // We have more than one. Which one is better?
+                DecimalFormatSymbols decimalFormatSymbols = owner.DecimalFormatSymbols;
+                if (decimalFormatSymbols.DecimalSeparator == newRule.DecimalPoint)
+                {
+                    nonNumericalRules[originalIndex] = newRule;
+                }
                 // else leave it alone
             }
         }
@@ -912,38 +911,37 @@ namespace ICU4N.Text
             return result;
         }
 
-        // ICU4N TODO: DecimalFormatSymbols
-        //public void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
-        //{
-        //    foreach (NFRule rule in rules)
-        //    {
-        //        rule.SetDecimalFormatSymbols(newSymbols);
-        //    }
-        //    // Switch the fraction rules to mirror the DecimalFormatSymbols.
-        //    if (fractionRules != null)
-        //    {
-        //        for (int nonNumericalIdx = IMPROPER_FRACTION_RULE_INDEX; nonNumericalIdx <= MASTER_RULE_INDEX; nonNumericalIdx++)
-        //        {
-        //            if (nonNumericalRules[nonNumericalIdx] != null)
-        //            {
-        //                foreach (NFRule rule in fractionRules)
-        //                {
-        //                    if (nonNumericalRules[nonNumericalIdx].BaseValue == rule.BaseValue)
-        //                    {
-        //                        SetBestFractionRule(nonNumericalIdx, rule, false);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
+        public void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
+        {
+            foreach (NFRule rule in rules)
+            {
+                rule.SetDecimalFormatSymbols(newSymbols);
+            }
+            // Switch the fraction rules to mirror the DecimalFormatSymbols.
+            if (fractionRules != null)
+            {
+                for (int nonNumericalIdx = IMPROPER_FRACTION_RULE_INDEX; nonNumericalIdx <= MASTER_RULE_INDEX; nonNumericalIdx++)
+                {
+                    if (nonNumericalRules[nonNumericalIdx] != null)
+                    {
+                        foreach (NFRule rule in fractionRules)
+                        {
+                            if (nonNumericalRules[nonNumericalIdx].BaseValue == rule.BaseValue)
+                            {
+                                SetBestFractionRule(nonNumericalIdx, rule, false);
+                            }
+                        }
+                    }
+                }
+            }
 
-        //    foreach (NFRule rule in nonNumericalRules)
-        //    {
-        //        if (rule != null)
-        //        {
-        //            rule.SetDecimalFormatSymbols(newSymbols);
-        //        }
-        //    }
-        //}
+            foreach (NFRule rule in nonNumericalRules)
+            {
+                if (rule != null)
+                {
+                    rule.SetDecimalFormatSymbols(newSymbols);
+                }
+            }
+        }
     }
 }
