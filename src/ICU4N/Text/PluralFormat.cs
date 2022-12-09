@@ -11,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using static ICU4N.Text.PluralRules;
+using Double = J2N.Numerics.Double;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -628,7 +629,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.0</stable>
         public string Format(double number)
         {
-            return Format(number, number);
+            return Format(Double.GetInstance(number), number);
         }
 
         /// <summary>
@@ -650,15 +651,15 @@ namespace ICU4N.Text
         public override StringBuffer Format(object number, StringBuffer toAppendTo,
                 FieldPosition pos)
         {
-            if (!number.IsNumber())
+            if (!(number is J2N.Numerics.Number num))
             {
                 throw new ArgumentException("'" + number + "' is not a Number");
             }
-            toAppendTo.Append(Format(number, Convert.ToDouble(number)));
+            toAppendTo.Append(Format(num, num.ToInt64()));
             return toAppendTo;
         }
 
-        private string Format(/*Number*/ object numberObject, double number)
+        private string Format(J2N.Numerics.Number numberObject, double number)
         {
             // If no pattern was applied, return the formatted number.
             if (msgPattern == null || msgPattern.CountParts() == 0)
