@@ -1223,7 +1223,9 @@ namespace ICU4N.Dev.Test.Format
             testParsing = false;
 
             //        NumberFormat decFmt = NumberFormat.GetInstance(new CultureInfo("en-US"));
-            //NumberFormat decFmt = new DecimalFormat("#,###.################");
+#if FEATURE_IKVM
+             com.ibm.icu.text.NumberFormat decFmt = new com.ibm.icu.text.DecimalFormat("#,###.################");
+#endif
             try
             {
                 for (int i = 0; i < testData.Length; i++)
@@ -1234,9 +1236,13 @@ namespace ICU4N.Dev.Test.Format
                     {
                         Logln("test[" + i + "] number: " + number + " target: " + expectedWords);
                     }
-                    //Number num = decFmt.Parse(number);
+#if FEATURE_IKVM
+                    var num = decFmt.parse(number);
+                    String actualWords = formatter.Format(num.longValue());
+#else
                     Number num = Double.GetInstance(Double.Parse(number, NumberStyle.Float | NumberStyle.AllowThousands, CultureInfo.InvariantCulture));
                     String actualWords = formatter.Format(num);
+#endif
 
                     if (!actualWords.Equals(expectedWords))
                     {
@@ -1246,10 +1252,11 @@ namespace ICU4N.Dev.Test.Format
                     }
                     else if (testParsing)
                     {
-                        String actualNumber = formatter
-                                .Parse(actualWords).ToString("#,###.################", CultureInfo.InvariantCulture);
-                        //String actualNumber = decFmt.Format(formatter
-                        //        .Parse(actualWords));
+#if FEATURE_IKVM
+                        //String actualNumber = formatter
+                        //        .Parse(actualWords).ToString("#,###.################", CultureInfo.InvariantCulture);
+                        String actualNumber = decFmt.format(formatter
+                                .Parse(actualWords).ToInt64());
 
                         if (!actualNumber.Equals(number))
                         {
@@ -1257,6 +1264,7 @@ namespace ICU4N.Dev.Test.Format
                                     ", expected " + number + ", but got " +
                                     actualNumber);
                         }
+#endif
                     }
                 }
             }

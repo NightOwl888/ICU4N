@@ -84,24 +84,47 @@ namespace ICU4N.Text
 
         public override StringBuffer Format(long number, StringBuffer result, FieldPosition fieldPosition)
         {
-            int startIndex = fieldPosition.BeginIndex;
-            int length = fieldPosition.EndIndex - startIndex;
-            // ICU4N TODO: Format number
-            //throw new NotImplementedException();
-            char[] chars = new char[length];
             string formatted = number.ToString(CultureInfo.InvariantCulture);
-            formatted.CopyTo(0, chars, 0, length);
-            return result.Insert(startIndex, chars, startIndex, length);
+            return result.Append(formatted);
+
+            //int startIndex = fieldPosition.BeginIndex;
+            //int length = fieldPosition.EndIndex - startIndex;
+            //// ICU4N TODO: Format number
+            ////throw new NotImplementedException();
+            //char[] chars = new char[length];
+            //string formatted = number.ToString(CultureInfo.InvariantCulture);
+            //formatted.CopyTo(0, chars, 0, length);
+            //return result.Insert(startIndex, chars, startIndex, length);
         }
 
-        public override StringBuffer Format(double number, StringBuffer toAppendTo, FieldPosition pos)
+        public override StringBuffer Format(double number, StringBuffer result, FieldPosition fieldPosition)
         {
-            throw new NotImplementedException();
+            string formatted = number.ToString("#,##0.################", CultureInfo.InvariantCulture);
+            return result.Append(formatted);
+
+            //int startIndex = fieldPosition.BeginIndex;
+            //int length = fieldPosition.EndIndex - startIndex;
+            //// ICU4N TODO: Format number
+            ////throw new NotImplementedException();
+            //char[] chars = new char[length];
+            //string formatted = number.ToString("#,##0.################", CultureInfo.InvariantCulture);
+            //formatted.CopyTo(0, chars, 0, length);
+            //return toAppendTo.Insert(startIndex, chars, startIndex, length);
         }
 
-        public override StringBuffer Format(BigInteger number, StringBuffer toAppendTo, FieldPosition pos)
+        public override StringBuffer Format(BigInteger number, StringBuffer result, FieldPosition fieldPosition)
         {
-            throw new NotImplementedException();
+            string formatted = number.ToString(CultureInfo.InvariantCulture);
+            return result.Append(formatted);
+
+            //int startIndex = fieldPosition.BeginIndex;
+            //int length = fieldPosition.EndIndex - startIndex;
+            //// ICU4N TODO: Format number
+            ////throw new NotImplementedException();
+            //char[] chars = new char[length];
+            //string formatted = number.ToString(CultureInfo.InvariantCulture);
+            //formatted.CopyTo(0, chars, 0, length);
+            //return toAppendTo.Insert(startIndex, chars, startIndex, length);
         }
     }
 
