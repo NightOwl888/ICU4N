@@ -292,72 +292,70 @@ namespace ICU4N.Dev.Test.Format
             helperTestRules(localeIDs, testPattern, changes);
         }
 
-        // ICU4N TODO: Port CurrencyPluralInfo
+        /* Tests the method public PluralRules getPluralRules() */
+        [Test]
+        public void TestGetPluralRules()
+        {
+            CurrencyPluralInfo cpi = new CurrencyPluralInfo();
+            try
+            {
+                var _ = cpi.PluralRules;
+            }
+            catch (Exception e)
+            {
+                Errln("CurrencyPluralInfo.getPluralRules() was not suppose to " + "return an exception.");
+            }
+        }
 
-        ///* Tests the method public PluralRules getPluralRules() */
-        //[Test]
-        //public void TestGetPluralRules()
-        //{
-        //    CurrencyPluralInfo cpi = new CurrencyPluralInfo();
-        //    try
-        //    {
-        //        cpi.getPluralRules();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Errln("CurrencyPluralInfo.getPluralRules() was not suppose to " + "return an exception.");
-        //    }
-        //}
+        /* Tests the method public ULocale getLocale() */
+        [Test]
+        public void TestGetLocale()
+        {
+            CurrencyPluralInfo cpi = new CurrencyPluralInfo(new UCultureInfo("en_US"));
+            if (!cpi.Culture.Equals(new UCultureInfo("en_US")))
+            {
+                Errln("CurrencyPluralInfo.getLocale() was suppose to return true " + "when passing the same ULocale");
+            }
+            if (cpi.Culture.Equals(new UCultureInfo("jp_JP")))
+            {
+                Errln("CurrencyPluralInfo.getLocale() was not suppose to return true " + "when passing a different ULocale");
+            }
+        }
 
-        ///* Tests the method public ULocale getLocale() */
-        //[Test]
-        //public void TestGetLocale()
-        //{
-        //    CurrencyPluralInfo cpi = new CurrencyPluralInfo(new UCultureInfo("en_US"));
-        //    if (!cpi.Culture.Equals(new UCultureInfo("en_US")))
-        //    {
-        //        Errln("CurrencyPluralInfo.getLocale() was suppose to return true " + "when passing the same ULocale");
-        //    }
-        //    if (cpi.Culture.Equals(new UCultureInfo("jp_JP")))
-        //    {
-        //        Errln("CurrencyPluralInfo.getLocale() was not suppose to return true " + "when passing a different ULocale");
-        //    }
-        //}
-
-        ///* Tests the method public void setLocale(ULocale loc) */
-        //[Test]
-        //public void TestSetLocale()
-        //{
-        //    CurrencyPluralInfo cpi = new CurrencyPluralInfo();
-        //    cpi.setLocale(new UCultureInfo("en_US"));
-        //    if (!cpi.Culture.Equals(new UCultureInfo("en_US")))
-        //    {
-        //        Errln("CurrencyPluralInfo.setLocale() was suppose to return true when passing the same ULocale");
-        //    }
-        //    if (cpi.Culture.Equals(new UCultureInfo("jp_JP")))
-        //    {
-        //        Errln("CurrencyPluralInfo.setLocale() was not suppose to return true when passing a different ULocale");
-        //    }
-        //}
+        /* Tests the method public void setLocale(ULocale loc) */
+        [Test]
+        public void TestSetLocale()
+        {
+            CurrencyPluralInfo cpi = new CurrencyPluralInfo();
+            cpi.Culture = new UCultureInfo("en_US");
+            if (!cpi.Culture.Equals(new UCultureInfo("en_US")))
+            {
+                Errln("CurrencyPluralInfo.setLocale() was suppose to return true when passing the same ULocale");
+            }
+            if (cpi.Culture.Equals(new UCultureInfo("jp_JP")))
+            {
+                Errln("CurrencyPluralInfo.setLocale() was not suppose to return true when passing a different ULocale");
+            }
+        }
 
         /* Tests the method public boolean equals(Object a) */
-        //[Test]
-        //public void TestEquals()
-        //{
-        //    CurrencyPluralInfo cpi = new CurrencyPluralInfo();
-        //    if (cpi.Equals(0))
-        //    {
-        //        Errln("CurrencyPluralInfo.equals(Object) was not suppose to return true when comparing to an invalid object for integer 0.");
-        //    }
-        //    if (cpi.Equals(0.0))
-        //    {
-        //        Errln("CurrencyPluralInfo.equals(Object) was not suppose to return true when comparing to an invalid object for float 0.");
-        //    }
-        //    if (cpi.Equals("0"))
-        //    {
-        //        Errln("CurrencyPluralInfo.equals(Object) was not suppose to return true when comparing to an invalid object for string 0.");
-        //    }
-        //}
+        [Test]
+        public void TestEquals()
+        {
+            CurrencyPluralInfo cpi = new CurrencyPluralInfo();
+            if (cpi.Equals(0))
+            {
+                Errln("CurrencyPluralInfo.equals(Object) was not suppose to return true when comparing to an invalid object for integer 0.");
+            }
+            if (cpi.Equals(0.0))
+            {
+                Errln("CurrencyPluralInfo.equals(Object) was not suppose to return true when comparing to an invalid object for float 0.");
+            }
+            if (cpi.Equals("0"))
+            {
+                Errln("CurrencyPluralInfo.equals(Object) was not suppose to return true when comparing to an invalid object for string 0.");
+            }
+        }
 
         /* Test for http://bugs.icu-project.org/trac/ticket/13151 */
         [Test]

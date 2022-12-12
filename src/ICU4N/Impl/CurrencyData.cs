@@ -23,7 +23,7 @@ namespace ICU4N.Impl
         {
         }
 
-        public abstract IDictionary<string, string> GetUnitPatterns();
+        public abstract IDictionary<string, string> GetUnitPatterns(); // ICU4N TODO: API - make into property ?
         public abstract CurrencyFormatInfo GetFormatInfo(string isoCode);
         public abstract CurrencySpacingInfo GetSpacingInfo(); // ICU4N TODO: API - make into property ?
         public abstract string GetNarrowSymbol(string isoCode);

@@ -1457,7 +1457,7 @@ namespace ICU4N.Text
          * @deprecated ICU 3.4 subclassers should override getPattern(ULocale, int) instead of this method.
          */
         [Obsolete("ICU 3.4 subclassers should override GetPattern(ULocale, int) instead of this method.")]
-        protected static string GetPattern(CultureInfo forLocale, NumberFormatStyle choice)
+        protected internal static string GetPattern(CultureInfo forLocale, NumberFormatStyle choice)
         {
             return GetPattern(forLocale.ToUCultureInfo(), choice);
         }
@@ -1469,7 +1469,7 @@ namespace ICU4N.Text
          * @return the pattern
          * @stable ICU 3.2
          */
-        protected static string GetPattern(UCultureInfo forLocale, NumberFormatStyle choice)
+        protected internal static string GetPattern(UCultureInfo forLocale, NumberFormatStyle choice)
         {
 #pragma warning disable 612, 618
             return GetPatternForStyle(forLocale, choice);
