@@ -1412,32 +1412,31 @@ namespace ICU4N.Text
             }
             else
             {
-                // ICU4N TODO: Support for decimal
-                throw new NotImplementedException("Double support not implemented.");
+                DecimalFormat f = new DecimalFormat(pattern, symbols, choice);
+                // System.out.println("loc: " + desiredLocale + " choice: " + choice + " pat: " + pattern + " sym: " + symbols + " result: " + format);
 
-                //DecimalFormat f = new DecimalFormat(pattern, symbols, choice);
-                //// System.out.println("loc: " + desiredLocale + " choice: " + choice + " pat: " + pattern + " sym: " + symbols + " result: " + format);
-
-                ///*Bug 4408066
-                // Add codes for the new method getIntegerInstance() [Richard/GCL]
-                //*/
-                //// TODO: revisit this -- this is almost certainly not the way we want
-                //// to do this.  aliu 1/6/2004
-                //if (choice == NumberFormatStyle.IntegerStyle)
-                //{
-                //    f.MaximumFractionDigits = 0;
-                //    f.setDecimalSeparatorAlwaysShown(false);
-                //    f.ParseIntegerOnly = true;
-                //}
-                //if (choice == NumberFormatStyle.CashCurrencyStyle)
-                //{
-                //    f.setCurrencyUsage(CurrencyUsage.CASH);
-                //}
-                //if (choice == NumberFormatStyle.PluralCurrencyStyle)
-                //{
-                //    f.SetCurrencyPluralInfo(CurrencyPluralInfo.GetInstance(desiredLocale));
-                //}
-                //format = f;
+                /*Bug 4408066
+                 Add codes for the new method getIntegerInstance() [Richard/GCL]
+                */
+                // TODO: revisit this -- this is almost certainly not the way we want
+                // to do this.  aliu 1/6/2004
+                if (choice == NumberFormatStyle.IntegerStyle)
+                {
+                    f.MaximumFractionDigits = 0;
+                    f.DecimalSeparatorAlwaysShown = false;
+                    f.ParseIntegerOnly = true;
+                }
+                if (choice == NumberFormatStyle.CashCurrencyStyle)
+                {
+                    throw new NotImplementedException("Currency not yet supported by DecimalFormat");
+                    //f.SetCurrencyUsage(CurrencyUsage.CASH);
+                }
+                if (choice == NumberFormatStyle.PluralCurrencyStyle)
+                {
+                    throw new NotImplementedException("Currency not yet supported by DecimalFormat");
+                    //f.SetCurrencyPluralInfo(CurrencyPluralInfo.GetInstance(desiredLocale));
+                }
+                format = f;
             }
             // TODO: the actual locale of the *pattern* may differ from that
             // for the *symbols*.  For now, we use the data for the symbols.

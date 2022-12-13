@@ -24,6 +24,8 @@ namespace ICU4N.Text
     internal class DateFormat { } // ICU4N TODO: Remove when DateFormat is ported
     internal class DecimalFormat : NumberFormat // ICU4N TODO: Remove when DecimalFormat is ported
     {
+        // ICU4N TODO: This class should have all synchronized properties to match ICU4J
+
         [NonSerialized]
         private volatile DecimalFormatSymbols symbols;
 
@@ -47,7 +49,34 @@ namespace ICU4N.Text
             //refreshFormatter();
         }
 
+        /// <summary>
+        /// Internal constructor used by <see cref="NumberFormat"/>.
+        /// </summary>
+        internal DecimalFormat(string pattern, DecimalFormatSymbols symbols, NumberFormatStyle choice)
+        {
+            this.symbols = (DecimalFormatSymbols)symbols.Clone();
+            //properties = new DecimalFormatProperties();
+            //exportedProperties = new DecimalFormatProperties();
+            //// If choice is a currency type, ignore the rounding information.
+            //if (choice == CURRENCYSTYLE
+            //    || choice == ISOCURRENCYSTYLE
+            //    || choice == ACCOUNTINGCURRENCYSTYLE
+            //    || choice == CASHCURRENCYSTYLE
+            //    || choice == STANDARDCURRENCYSTYLE
+            //    || choice == PLURALCURRENCYSTYLE)
+            //{
+            //    setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_ALWAYS);
+            //}
+            //else
+            //{
+            //    setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_IF_CURRENCY);
+            //}
+            //refreshFormatter();
+        }
+
         public bool ParseBigDecimal { get; set; }
+
+        public bool DecimalSeparatorAlwaysShown { get; set; }
 
         /**
         * Sets the decimal format symbols used by this formatter. The formatter uses a copy of the
