@@ -64,7 +64,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestOneFormLocales()
         {
             String localeIDs = "ja,ko,tr,vi";
-            String testPattern = "other{other}";
+            String testPattern = @"other{other}";
             var changes = new Dictionary<Integer, string>();
             changes[Integer.GetInstance(0)] = "other";
             helperTestRules(localeIDs, testPattern, changes);
@@ -75,7 +75,7 @@ namespace ICU4N.Dev.Test.Format
         {
             String localeIDs = "bem,da,de,el,en,eo,es,et,fi,fo,he,it,nb,nl,nn,no,pt_PT,sv,af,bg,ca,eu,fur,fy,ha,ku,lb,ml," +
                 "nah,ne,om,or,pap,ps,so,sq,sw,ta,te,tk,ur,mn,gsw,rm";
-            String testPattern = "one{one} other{other}";
+            String testPattern = @"one{one} other{other}";
             var changes = new Dictionary<Integer, string>();
             changes[Integer.GetInstance(0)] = "other";
             changes[Integer.GetInstance(1)] = "one";
@@ -87,7 +87,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestSingular01Locales()
         {
             String localeIDs = "ff,fr,kab,gu,mr,pa,pt,zu,bn";
-            String testPattern = "one{one} other{other}";
+            String testPattern = @"one{one} other{other}";
             var changes = new Dictionary<Integer, string>();
             changes[Integer.GetInstance(0)] = "one";
             changes[Integer.GetInstance(2)] = "other";
@@ -98,7 +98,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestZeroSingularLocales()
         {
             String localeIDs = "lv";
-            String testPattern = "zero{zero} one{one} other{other}";
+            String testPattern = @"zero{zero} one{one} other{other}";
             var changes = new Dictionary<Integer, string>();
             changes[Integer.GetInstance(0)] = "zero";
             changes[Integer.GetInstance(1)] = "one";
@@ -131,7 +131,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestSingularDual()
         {
             String localeIDs = "ga";
-            String testPattern = "one{one} two{two} other{other}";
+            String testPattern = @"one{one} two{two} other{other}";
             var changes = new Dictionary<Integer, string>();
             changes[Integer.GetInstance(0)] = "other";
             changes[Integer.GetInstance(1)] = "one";
@@ -144,7 +144,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestSingularZeroSome()
         {
             String localeIDs = "ro";
-            String testPattern = "few{few} one{one} other{other}";
+            String testPattern = @"few{few} one{one} other{other}";
             var changes = new Dictionary<Integer, string>();
             changes[Integer.GetInstance(0)] = "few";
             changes[Integer.GetInstance(1)] = "one";
@@ -159,7 +159,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestSpecial12_19()
         {
             String localeIDs = "lt";
-            String testPattern = "one{one} few{few} other{other}";
+            String testPattern = @"one{one} few{few} other{other}";
             var changes = new Dictionary<Integer, string>();
             changes[Integer.GetInstance(0)] = "other";
             changes[Integer.GetInstance(1)] = "one";
@@ -182,7 +182,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestPaucalExcept11_14()
         {
             String localeIDs = "hr,sr,uk";
-            String testPattern = "one{one} few{few} other{other}";
+            String testPattern = @"one{one} few{few} other{other}";
             var changes = new Dictionary<Integer, string>();
             changes[Integer.GetInstance(0)] = "other";
             changes[Integer.GetInstance(1)] = "one";
@@ -205,7 +205,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestPaucalRu()
         {
             String localeIDs = "ru";
-            String testPattern = "one{one} many{many} other{other}";
+            String testPattern = @"one{one} many{many} other{other}";
             var changes = new Dictionary<Integer, string>();
             for (int i = 0; i < 200; i += 10)
             {
@@ -243,7 +243,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestSingularPaucal()
         {
             String localeIDs = "cs,sk";
-            String testPattern = "one{one} few{few} other{other}";
+            String testPattern = @"one{one} few{few} other{other}";
             var changes = new Dictionary<Integer, string>();
             changes[Integer.GetInstance(0)] = "other";
             changes[Integer.GetInstance(1)] = "one";
@@ -256,7 +256,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestPaucal1_234()
         {
             String localeIDs = "pl";
-            String testPattern = "one{one} few{few} other{other}";
+            String testPattern = @"one{one} few{few} other{other}";
             var changes = new Dictionary<Integer, string>();
             changes[Integer.GetInstance(0)] = "other";
             changes[Integer.GetInstance(1)] = "one";
@@ -278,7 +278,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestPaucal1_2_34()
         {
             String localeIDs = "sl";
-            String testPattern = "one{one} two{two} few{few} other{other}";
+            String testPattern = @"one{one} two{two} few{few} other{other}";
             var changes = new Dictionary<Integer, string>();
             changes[Integer.GetInstance(0)] = "other";
             changes[Integer.GetInstance(1)] = "one";
@@ -363,7 +363,7 @@ namespace ICU4N.Dev.Test.Format
         {
             NumberFormat nf = NumberFormat.GetInstance(new CultureInfo("en"));
             nf.MaximumFractionDigits = (0);
-            PluralFormat pf = new PluralFormat(new UCultureInfo("en"), "one{#kg}other{#kgs}");
+            PluralFormat pf = new PluralFormat(new UCultureInfo("en"), @"one{#kg}other{#kgs}");
             pf.SetNumberFormat(nf);
             assertEquals("1.2kg", "1kg", pf.Format(1.2));
         }

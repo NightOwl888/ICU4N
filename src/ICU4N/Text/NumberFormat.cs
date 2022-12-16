@@ -903,6 +903,7 @@ namespace ICU4N.Text
                     //shim = (NumberFormatShim)cls.newInstance();
                     Type type = Type.GetType("ICU4N.Text.NumberFormatServiceShim");
                     shim = (NumberFormatShim)Activator.CreateInstance(type);
+                    //shim = new NumberFormatServiceShim();
 
                 }
                 ////CLOVER:OFF
@@ -1331,6 +1332,7 @@ namespace ICU4N.Text
             //              return getShim().createInstance(desiredLocale, choice);
             //          }
             return GetShim().CreateInstance(desiredLocale, choice);
+            //return CreateInstance(desiredLocale, choice);
         }
 
         // =======================privates===============================

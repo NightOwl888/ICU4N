@@ -17,6 +17,7 @@ using JCG = J2N.Collections.Generic;
 using Double = J2N.Numerics.Double;
 using Long = J2N.Numerics.Int64;
 using StringBuffer = System.Text.StringBuilder;
+using static ICU4N.Text.PluralRules;
 
 namespace ICU4N.Text
 {
@@ -100,6 +101,11 @@ namespace ICU4N.Text
         public /*synchronized*/ string ToPattern()
         {
             return string.Empty; // ICU4N TODO: Finish implementation
+        }
+
+        public IFixedDecimal GetFixedDecimal(double number)
+        {
+            return new FixedDecimal(number, MaximumFractionDigits); // No places to the right of the decimal
         }
 
         public override J2N.Numerics.Number Parse(string text, ParsePosition parsePosition)

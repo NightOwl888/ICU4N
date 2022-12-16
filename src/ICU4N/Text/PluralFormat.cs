@@ -681,16 +681,15 @@ namespace ICU4N.Text
             }
 #pragma warning disable 612, 618
             IFixedDecimal dec;
-            // ICU4N TODO: 
-            //if (numberFormat is DecimalFormat)
-            //{
-            //    dec = ((DecimalFormat)numberFormat).GetFixedDecimal(numberMinusOffset);
-            //}
-            //else
-            //{
-            dec = new FixedDecimal(numberMinusOffset);
+            if (numberFormat is DecimalFormat decimalFormat)
+            {
+                dec = decimalFormat.GetFixedDecimal(numberMinusOffset);
+            }
+            else
+            {
+                dec = new FixedDecimal(numberMinusOffset);
 #pragma warning restore 612, 618
-            //}
+            }
             int partIndex = FindSubMessage(msgPattern, 0, pluralRulesWrapper, dec, number);
             // Replace syntactic # signs in the top level of this sub-message
             // (not in nested arguments) with the formatted number-offset.
@@ -709,7 +708,7 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        return result.Append(pattern, prevIndex, index).ToString();
+                        return result.Append(pattern, prevIndex, index - prevIndex).ToString(); // ICU4N: Corrected 3rd arg
                     }
                 }
                 else if (type == MessagePatternPartType.ReplaceNumber ||
@@ -720,7 +719,7 @@ namespace ICU4N.Text
                     {
                         result = new StringBuilder();
                     }
-                    result.Append(pattern, prevIndex, index);
+                    result.Append(pattern, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                     if (type == MessagePatternPartType.ReplaceNumber)
                     {
                         result.Append(numberString);
@@ -751,12 +750,12 @@ namespace ICU4N.Text
         /// and upon return, the position where parsing left off.  If the position
         /// has not changed upon return, then parsing failed.</param>
         /// <returns>nothing because this method is not yet implemented.</returns>
-        /// <exception cref="InvalidOperationException">will always be thrown by this method.</exception>
+        /// <exception cref="NotSupportedException">will always be thrown by this method.</exception>
         /// <stable>ICU 3.8</stable>
-        public virtual /*Number*/object Parse(string text, ParsePosition parsePosition)
+        public virtual J2N.Numerics.Number Parse(string text, ParsePosition parsePosition)
         {
             // You get number ranges from this. You can't get an exact number.
-            throw new InvalidOperationException();
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -767,11 +766,11 @@ namespace ICU4N.Text
         /// and upon return, the position where parsing left off.  If the position
         /// has not changed upon return, then parsing failed.</param>
         /// <returns>nothing because this method is not yet implemented.</returns>
-        /// <exception cref="InvalidOperationException">will always be thrown by this method.</exception>
+        /// <exception cref="NotSupportedException">will always be thrown by this method.</exception>
         /// <stable>ICU 3.8</stable>
         public override object ParseObject(string source, ParsePosition pos)
         {
-            throw new InvalidOperationException();
+            throw new NotSupportedException();
         }
 
         /// <summary>
