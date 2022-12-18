@@ -119,7 +119,7 @@ namespace ICU4N.Numerics
         /// This is named ROUND_HALF_EVEN in ICU4J.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        HalfEven = 6,
+        HalfEven = 6, // ICU4N TODO: Rename ToEven() ? This is the same function, but it follows the convention of the other 2 which we have no equivalent for.
 
         /// <summary>
         /// Rounding mode to round to nearest neighbor, where an equidistant
@@ -167,7 +167,7 @@ namespace ICU4N.Numerics
     /// Exponent form to be used during a <see cref="BigDecimal"/> operation.
     /// </summary>
     /// <stable>ICU 2.0</stable>
-    internal enum ExponentForm
+    internal enum ExponentForm : sbyte
     {
         /// <summary>
         /// Plain (fixed point) notation, without any exponent.
@@ -726,7 +726,7 @@ namespace ICU4N.Numerics
         /* <sgml> Test whether round is valid. </sgml> */
         // This could be made shared for use by BigDecimal for setScale.
 
-        private static bool IsValidRound(RoundingMode testround)
+        internal static bool IsValidRound(RoundingMode testround)
         {
             int r = 0;
             int test = ROUNDS.Length; for (r = 0;test > 0;test--,r++){
