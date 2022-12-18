@@ -212,25 +212,26 @@ namespace ICU4N.Numerics
         /* Constructors */
         /* ---------------------------------------------------------------- */
 
-        ///**
-        // * Constructs a <code>BigDecimal</code> object from a <code>java.math.BigDecimal</code>.
-        // * <p>
-        // * Constructs a <code>BigDecimal</code> as though the parameter had been represented as a <code>String</code> (using
-        // * its <code>toString</code> method) and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
-        // * The parameter must not be <code>null</code>.
-        // * <p>
-        // * <i>(Note: this constructor is provided only in the <code>com.ibm.icu.math</code> version of the BigDecimal class.
-        // * It would not be present in a <code>java.math</code> version.)</i>
-        // *
-        // * @param bd The <code>BigDecimal</code> to be translated.
-        // * @stable ICU 2.0
-        // */
+        /**
+         * Constructs a <code>BigDecimal</code> object from a <code>java.math.BigDecimal</code>.
+         * <p>
+         * Constructs a <code>BigDecimal</code> as though the parameter had been represented as a <code>String</code> (using
+         * its <code>toString</code> method) and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
+         * The parameter must not be <code>null</code>.
+         * <p>
+         * <i>(Note: this constructor is provided only in the <code>com.ibm.icu.math</code> version of the BigDecimal class.
+         * It would not be present in a <code>java.math</code> version.)</i>
+         *
+         * @param bd The <code>BigDecimal</code> to be translated.
+         * @stable ICU 2.0
+         */
 
-        //public BigDecimal(java.math.BigDecimal bd)
-        //{
-        //    this(bd.toString());
-        //    return;
-        //}
+        public BigDecimal(Deveel.Math.BigDecimal bd)
+            : this(bd?.ToString(CultureInfo.InvariantCulture))
+        {
+            //this(bd.toString());
+            //return;
+        }
 
         /**
          * Constructs a <code>BigDecimal</code> object from a <code>BigInteger</code>, with scale 0.
@@ -2894,10 +2895,10 @@ namespace ICU4N.Numerics
          */
 
         // ICU4N TODO: Complete implementation
-        //public java.math.BigDecimal ToBigDecimal()
-        //{
-        //    return new java.math.BigDecimal(this.unscaledValue(), this.Scale);
-        //}
+        public Deveel.Math.BigDecimal ToBigDecimal()
+        {
+            return new Deveel.Math.BigDecimal(new Deveel.Math.BigInteger(this.ToUnscaledValue().ToByteArray()), this.Scale);
+        }
 
         /**
          * Converts this <code>BigDecimal</code> to a <code>java.math.BigInteger</code>.

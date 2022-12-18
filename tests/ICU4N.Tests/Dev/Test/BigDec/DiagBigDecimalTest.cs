@@ -210,16 +210,15 @@ namespace ICU4N.Dev.Test.BigDec
             //if (!isJDK15OrLater)
             //    TestFmwk.assertTrue("cbd014", ((new BigDecimal(new java.math.BigDecimal(num).ToString())).ToString(CultureInfo.InvariantCulture)).Equals(num));
 
-            // ICU4N TODO: currently we don't have a .NET BigDecimal type to provide to the constructor
-            //try
-            //{
-            //    new BigDecimal((java.math.BigDecimal)null);
-            //    flag = false;
-            //}
-            //catch (ArgumentNullException $3) {
-            //    flag = true;
-            //}/* checknull */
-            //TestFmwk.assertTrue("cbi015", flag);
+            try
+            {
+                new BigDecimal((Deveel.Math.BigDecimal)null);
+                flag = false;
+            }
+            catch (ArgumentNullException e3) {
+                flag = true;
+            }/* checknull */
+            TestFmwk.assertTrue("cbi015", flag);
 
             // BigInteger
             bip = BigInteger.Parse("987654321987654321987654321", CultureInfo.InvariantCulture); // biggie +ve
@@ -4403,25 +4402,24 @@ namespace ICU4N.Dev.Test.BigDec
         /* ----------------------------------------------------------------- */
 
         /** Test the {@link BigDecimal#toBigDecimal} method. */
-
-        // ICU4N TODO: Need an implementation of BigDecimal to compare with
-        //[Test]
-        //public void diagtobigdecimal() {
-        //    TestFmwk.assertTrue("tbd001", ((new BigDecimal("0")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-        //    TestFmwk.assertTrue("tbd002", ((new BigDecimal("-1")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-        //    TestFmwk.assertTrue("tbd003", ((new BigDecimal("+1")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-        //    TestFmwk.assertTrue("tbd004", ((new BigDecimal("1")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-        //    TestFmwk.assertTrue("tbd005", ((new BigDecimal("1E+2")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("100"));
-        //    TestFmwk.assertTrue("tbd006", ((new BigDecimal("1E-2")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
-        //    //if (!isJDK15OrLater) {
-        //        TestFmwk.assertTrue("tbd007", ((new BigDecimal("1E-8")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0.00000001"));
-        //    //}
-        //    //if (!isJDK15OrLater) {
-        //        TestFmwk.assertTrue("tbd008", ((new BigDecimal("1E-9")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0.000000001"));
-        //    //}
-        //    TestFmwk.assertTrue("tbd009", ((new BigDecimal("1E10")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("10000000000"));
-        //    TestFmwk.assertTrue("tbd010", ((new BigDecimal("1E12")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("1000000000000"));
-        //}
+        [Test]
+        public void diagtobigdecimal()
+        {
+            TestFmwk.assertTrue("tbd001", ((new BigDecimal("0")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbd002", ((new BigDecimal("-1")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbd003", ((new BigDecimal("+1")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbd004", ((new BigDecimal("1")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbd005", ((new BigDecimal("1E+2")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("100"));
+            TestFmwk.assertTrue("tbd006", ((new BigDecimal("1E-2")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
+            //if (!isJDK15OrLater) {
+            TestFmwk.assertTrue("tbd007", ((new BigDecimal("1E-8")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0.00000001"));
+            //}
+            //if (!isJDK15OrLater) {
+            TestFmwk.assertTrue("tbd008", ((new BigDecimal("1E-9")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0.000000001"));
+            //}
+            TestFmwk.assertTrue("tbd009", ((new BigDecimal("1E10")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("10000000000"));
+            TestFmwk.assertTrue("tbd010", ((new BigDecimal("1E12")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("1000000000000"));
+        }
 
         /* ----------------------------------------------------------------- */
 
