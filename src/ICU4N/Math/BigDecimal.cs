@@ -1,4 +1,5 @@
-﻿using J2N.Numerics;
+﻿using ICU4N.Support.Numerics;
+using J2N.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -212,26 +213,26 @@ namespace ICU4N.Numerics
         /* Constructors */
         /* ---------------------------------------------------------------- */
 
-        /**
-         * Constructs a <code>BigDecimal</code> object from a <code>java.math.BigDecimal</code>.
-         * <p>
-         * Constructs a <code>BigDecimal</code> as though the parameter had been represented as a <code>String</code> (using
-         * its <code>toString</code> method) and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
-         * The parameter must not be <code>null</code>.
-         * <p>
-         * <i>(Note: this constructor is provided only in the <code>com.ibm.icu.math</code> version of the BigDecimal class.
-         * It would not be present in a <code>java.math</code> version.)</i>
-         *
-         * @param bd The <code>BigDecimal</code> to be translated.
-         * @stable ICU 2.0
-         */
+        ///**
+        // * Constructs a <code>BigDecimal</code> object from a <code>java.math.BigDecimal</code>.
+        // * <p>
+        // * Constructs a <code>BigDecimal</code> as though the parameter had been represented as a <code>String</code> (using
+        // * its <code>toString</code> method) and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
+        // * The parameter must not be <code>null</code>.
+        // * <p>
+        // * <i>(Note: this constructor is provided only in the <code>com.ibm.icu.math</code> version of the BigDecimal class.
+        // * It would not be present in a <code>java.math</code> version.)</i>
+        // *
+        // * @param bd The <code>BigDecimal</code> to be translated.
+        // * @stable ICU 2.0
+        // */
 
-        public BigDecimal(Deveel.Math.BigDecimal bd)
-            : this(bd?.ToString(CultureInfo.InvariantCulture))
-        {
-            //this(bd.toString());
-            //return;
-        }
+        //public BigDecimal(Deveel.Math.BigDecimal bd)
+        //    : this(bd?.ToString(CultureInfo.InvariantCulture))
+        //{
+        //    //this(bd.toString());
+        //    //return;
+        //}
 
         /**
          * Constructs a <code>BigDecimal</code> object from a <code>BigInteger</code>, with scale 0.
@@ -586,28 +587,18 @@ namespace ICU4N.Numerics
          */
 
         public BigDecimal(double num)
-            //: this(Double.ToString(num, CultureInfo.InvariantCulture)) // ICU4N TODO: Determine if we have a method for returning a precise result
-            : this(ConvertDoubleToPreciseString(num))
+            : this(ConvertDoubleToExactString(num))
         {
-            //// 1999.03.06: use exactly the old algorithm
-            //// 2000.01.01: note that this constructor does give an exact result,
-            //// so perhaps it should not be deprecated
-            //// 2000.06.18: no longer deprecated
-            //this((new java.math.BigDecimal(num)).toString());
-            //return;
         }
 
-        // Workaround for wrong errors being thrown by Deveel Math
-        private static string ConvertDoubleToPreciseString(double value)
+        private static string ConvertDoubleToExactString(double value)
         {
-            try
-            {
-                return new Deveel.Math.BigDecimal(value).ToString(CultureInfo.InvariantCulture);
-            }
-            catch (FormatException fe)
-            {
-                throw new OverflowException(fe.Message, fe);
-            }
+            if (double.IsNaN(value))
+                throw new OverflowException(SR.Overflow_NotANumber);
+            if (double.IsNegativeInfinity(value) || double.IsPositiveInfinity(value))
+                throw new OverflowException(SR.Overflow_BigDecInfinity);
+
+            return DoubleConverter.ToExactString(value);
         }
 
         /**
@@ -798,16 +789,12 @@ namespace ICU4N.Numerics
         public BigDecimal(string str)
             : this(str?.ToCharArray(), 0, str?.Length ?? 0) // ICU4N TODO: Remove this allocation and copy logic from char[] constructors
         {
-            //this(string.toCharArray(), 0, string.length());
-            //return;
         }
 
         /* <sgml> Make a default BigDecimal object for local use. </sgml> */
 
         private BigDecimal()
         {
-            //super();
-            //return;
         }
 
         /* ---------------------------------------------------------------- */
@@ -2895,10 +2882,10 @@ namespace ICU4N.Numerics
          */
 
         // ICU4N TODO: Complete implementation
-        public Deveel.Math.BigDecimal ToBigDecimal()
-        {
-            return new Deveel.Math.BigDecimal(new Deveel.Math.BigInteger(this.ToUnscaledValue().ToByteArray()), this.Scale);
-        }
+        //public Deveel.Math.BigDecimal ToBigDecimal()
+        //{
+        //    return new Deveel.Math.BigDecimal(new Deveel.Math.BigInteger(this.ToUnscaledValue().ToByteArray()), this.Scale);
+        //}
 
         /**
          * Converts this <code>BigDecimal</code> to a <code>java.math.BigInteger</code>.
@@ -3052,6 +3039,11 @@ namespace ICU4N.Numerics
 
         public static BigDecimal GetInstance(double dub)
         {
+            if (double.IsNaN(dub))
+                throw new OverflowException(SR.Overflow_NotANumber);
+            if (double.IsNegativeInfinity(dub) || double.IsPositiveInfinity(dub))
+                throw new OverflowException(SR.Overflow_BigDecInfinity);
+
             // Reminder: a zero double returns '0.0', so we cannot fastpath to
             // use the constant ZERO. This might be important enough to justify
             // a factory approach, a cache, or a few private constants, later.
@@ -4220,6 +4212,8 @@ namespace ICU4N.Numerics
             public const string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
             public const string ArgumentOutOfRange_IndexLength = "Index and length must refer to a location within the string.";
             public const string ArgumentOutOfRange_NeedPositiveNum = "Positive non-zero number required.";
+            public const string Overflow_NotANumber = "The value is not a number.";
+            public const string Overflow_BigDecInfinity = "Value was either too large or too small for a BigDecimal.";
         }
 
     }
