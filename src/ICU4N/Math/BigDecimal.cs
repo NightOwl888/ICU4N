@@ -323,8 +323,8 @@ namespace ICU4N.Numerics
                 throw new ArgumentNullException(nameof(inchars));
             if (startIndex < 0)
                 throw new ArgumentOutOfRangeException(nameof(startIndex), SR.ArgumentOutOfRange_NeedNonNegNum);
-            if (length < 1)
-                throw new ArgumentOutOfRangeException(nameof(length), SR.ArgumentOutOfRange_NeedPositiveNum);
+            if (length < 0)
+                throw new ArgumentOutOfRangeException(nameof(length), SR.ArgumentOutOfRange_NeedNonNegNum);
             if (startIndex > inchars.Length - length) // Checks for int overflow
                 throw new ArgumentOutOfRangeException(nameof(length), SR.ArgumentOutOfRange_IndexLength);
 
@@ -348,9 +348,9 @@ namespace ICU4N.Numerics
             // 1998.06.25: exponent form built only if E/e in string
             // 1998.06.25: trailing zeros not removed for zero
             // 1999.03.06: no embedded blanks; allow offset and length
-            //if (length <= 0) /// ICU4N: Already checked this above
-            //    Bad(inchars); // bad conversion (empty string)
-            //                  // [bad offset will raise array bounds exception]
+            if (length <= 0) /// ICU4N: Already checked this above
+                Bad(inchars); // bad conversion (empty string)
+                              // [bad offset will raise array bounds exception]
 
             /* Handle and step past sign */
             ind = ispos; // assume positive
@@ -585,7 +585,8 @@ namespace ICU4N.Numerics
          */
 
         public BigDecimal(double num)
-            : this(Double.ToString(num, CultureInfo.InvariantCulture)) // ICU4N TODO: Determine if we have a method for returning a precise result
+            //: this(Double.ToString(num, CultureInfo.InvariantCulture)) // ICU4N TODO: Determine if we have a method for returning a precise result
+            : this(ConvertDoubleToPreciseString(num))
         {
             //// 1999.03.06: use exactly the old algorithm
             //// 2000.01.01: note that this constructor does give an exact result,
@@ -593,6 +594,19 @@ namespace ICU4N.Numerics
             //// 2000.06.18: no longer deprecated
             //this((new java.math.BigDecimal(num)).toString());
             //return;
+        }
+
+        // Workaround for wrong errors being thrown by Deveel Math
+        private static string ConvertDoubleToPreciseString(double value)
+        {
+            try
+            {
+                return new Deveel.Math.BigDecimal(value).ToString(CultureInfo.InvariantCulture);
+            }
+            catch (FormatException fe)
+            {
+                throw new OverflowException(fe.Message, fe);
+            }
         }
 
         /**
@@ -646,6 +660,7 @@ namespace ICU4N.Numerics
                             ind = isneg;
                         }
                     }
+                    return;
                 }/* singledigit */
 
             /* We work on negative numbers so we handle the most negative number */
@@ -780,7 +795,7 @@ namespace ICU4N.Numerics
          */
 
         public BigDecimal(string str)
-            : this(str.ToCharArray(), 0, str.Length) // ICU4N TODO: Remove this allocation and copy logic from char[] constructors
+            : this(str?.ToCharArray(), 0, str?.Length ?? 0) // ICU4N TODO: Remove this allocation and copy logic from char[] constructors
         {
             //this(string.toCharArray(), 0, string.length());
             //return;
@@ -3653,7 +3668,7 @@ namespace ICU4N.Numerics
 
         private void Bad(char[] s)
         {
-            throw new OverflowException("Not a number:" + " " + new string(s)); // ICU4N TODO: This was originally NumberFormatException - verify this works
+            throw new FormatException("Not a number:" + " " + new string(s)); // ICU4N TODO: This was originally NumberFormatException - verify this works
         }
 
         /*
