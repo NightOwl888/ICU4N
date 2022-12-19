@@ -15,13 +15,16 @@ using System.Numerics;
 using System.Text;
 using JCG = J2N.Collections.Generic;
 using Double = J2N.Numerics.Double;
+using Integer = J2N.Numerics.Int32;
 using Long = J2N.Numerics.Int64;
 using StringBuffer = System.Text.StringBuilder;
 using static ICU4N.Text.PluralRules;
+using J2N.Numerics;
+using ICU4N.Numerics;
 
 namespace ICU4N.Text
 {
-    // ICU4N TODO: Missing dependencies, DateFormat, DecimalFormat, RuleBasedNumberFormat, BigDecimal, others
+    // ICU4N TODO: Missing dependencies, DateFormat, DecimalFormat, others
     internal class DateFormat { } // ICU4N TODO: Remove when DateFormat is ported
     internal class DecimalFormat : NumberFormat // ICU4N TODO: Remove when DecimalFormat is ported
     {
@@ -160,6 +163,11 @@ namespace ICU4N.Text
             //string formatted = number.ToString(CultureInfo.InvariantCulture);
             //formatted.CopyTo(0, chars, 0, length);
             //return toAppendTo.Insert(startIndex, chars, startIndex, length);
+        }
+
+        public override StringBuffer Format(BigDecimal number, StringBuffer toAppendTo, FieldPosition pos)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -1965,8 +1973,7 @@ namespace ICU4N.Text
                     if (dest.Attributes != null)
                     {
                         // We only need argId if we add it into the attributes.
-                        //argId = Integer.valueOf(argNumber);
-                        argId = argNumber;
+                        argId = Integer.GetInstance(argNumber);
                     }
                     if (0 <= argNumber && argNumber < args.Length)
                     {
@@ -2020,7 +2027,7 @@ namespace ICU4N.Text
                 {
                     // Handles all ArgType.SIMPLE, and formatters from setFormat() and its siblings.
                     if (formatter is ChoiceFormat ||
-                        //formatter is PluralFormat ||
+                        formatter is PluralFormat ||
                         formatter is SelectFormat)
                     {
                         // We only handle nested formats here if they were provided via setFormat() or its siblings.
@@ -2058,38 +2065,35 @@ namespace ICU4N.Text
                     // ICU4N TODO: Implementation
                     // ArgType.NONE, or
                     // any argument which got reset to null via setFormat() or its siblings.
-                    //if (arg is Number)
-                    //if (arg.IsNumber())
-                    //{
-                    //    // format number if can
-                    //    dest.FormatAndAppend(GetStockNumberFormatter(), arg);
-                    //}
+                    if (arg is J2N.Numerics.Number)
+                    {
+                        // format number if can
+                        dest.FormatAndAppend(GetStockNumberFormatter(), arg);
+                    }
                     ////else if (arg is Date)
                     //else if (arg is DateTime)
                     //{
                     //    // format a Date if can
                     //    dest.FormatAndAppend(GetStockDateFormatter(), arg);
                     //}
-                    //else
-                    //{
+                    else
+                    {
                         dest.Append(arg.ToString());
-                    //}
+                    }
                 }
                 else if (argType == MessagePatternArgType.Choice)
                 {
-                    //if (!(arg id Number)) 
-                    if (!arg.IsNumber())
+                    if (!(arg is J2N.Numerics.Number)) 
                     {
                         throw new ArgumentException("'" + arg + "' is not a Number");
                     }
-                    double number = Convert.ToDouble(arg); //((Number)arg).doubleValue();
+                    double number = ((J2N.Numerics.Number)arg).ToDouble();
                     int subMsgStart = FindChoiceSubMessage(msgPattern, i, number);
                     FormatComplexSubMessage(subMsgStart, null, args, argsMap, dest);
                 }
                 else if (argType.HasPluralStyle())
                 {
-                    //if (!(arg is Number))
-                    if (!arg.IsNumber())
+                    if (!(arg is J2N.Numerics.Number number))
                     {
                         throw new ArgumentException("'" + arg + "' is not a Number");
                     }
@@ -2110,13 +2114,12 @@ namespace ICU4N.Text
                         }
                         selector = ordinalProvider;
                     }
-                    //Number number = (Number)arg;
-                    decimal number = (decimal)arg;
+                    //Number number = (Number)arg; // ICU4N: Set above
                     double offset = msgPattern.GetPluralOffset(i);
                     PluralSelectorContext context =
                             new PluralSelectorContext(i, argName, number, offset);
                     int subMsgStart = PluralFormat.FindSubMessage(
-                            msgPattern, i, selector, context, (double)number);
+                            msgPattern, i, selector, context, number.ToDouble());
                     FormatComplexSubMessage(subMsgStart, context, args, argsMap, dest);
                 }
                 else if (argType == MessagePatternArgType.Select)
@@ -2478,7 +2481,7 @@ namespace ICU4N.Text
         /// </summary>
         internal sealed class PluralSelectorContext
         {
-            internal PluralSelectorContext(int start, string name, /*Number*/ decimal num, double off)
+            internal PluralSelectorContext(int start, string name, J2N.Numerics.Number num, double off)
             {
                 startIndex = start;
                 argName = name;
@@ -2491,7 +2494,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    number = (double)num - off;
+                    number = Double.GetInstance(num.ToDouble() - off);
                 }
                 offset = off;
             }
@@ -2505,8 +2508,7 @@ namespace ICU4N.Text
             internal int startIndex;
             internal string argName;
             /** argument number - plural offset */
-            //Number number;
-            internal object number;
+            internal J2N.Numerics.Number number;
             internal double offset;
             // Output values for plural selection with decimals.
             /** -1 if REPLACE_NUMBER, 0 arg not found, >0 ARG_START index */
@@ -2556,18 +2558,17 @@ namespace ICU4N.Text
                     context.formatter = msgFormat.GetStockNumberFormatter();
                     context.forReplaceNumber = true;
                 }
-                Debug.Assert((double)context.number /*.doubleValue()*/ == number);  // argument number minus the offset
+                Debug.Assert(context.number.ToDouble() == number);  // argument number minus the offset
                 context.numberString = context.formatter.Format(context.number);
-                // ICU4N TODO: DecimalFormat
-                //if (context.formatter is DecimalFormat)
-                //{
-                //    IFixedDecimal dec = ((DecimalFormat)context.formatter).GetFixedDecimal(number);
-                //    return rules.Select(dec);
-                //}
-                //else
-                //{
-                return rules.Select(number);
-                //}
+                if (context.formatter is DecimalFormat)
+                {
+                    IFixedDecimal dec = ((DecimalFormat)context.formatter).GetFixedDecimal(number);
+                    return rules.Select(dec);
+                }
+                else
+                {
+                    return rules.Select(number);
+                }
             }
             private MessageFormat msgFormat;
             private PluralRules rules;
