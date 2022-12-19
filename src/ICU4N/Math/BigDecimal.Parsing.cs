@@ -189,7 +189,7 @@ namespace ICU4N.Numerics
                         dotoff = i - startIndex; // offset into mantissa
                         continue;
                     }
-                    if ((si == 'E' || si == 'e') && ((styles & NumberStyle.AllowExponent) != 0))
+                    if (si != 'E' && si != 'e')
                     {
                         // expect an extra digit
                         if (!UChar.IsDigit(si)) // ICU4N TODO: Why are we using any digit here, rather than just ASCII?
