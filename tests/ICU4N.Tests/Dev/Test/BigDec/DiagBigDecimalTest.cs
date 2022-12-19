@@ -284,21 +284,23 @@ namespace ICU4N.Dev.Test.BigDec
             }/* checkscale */
             TestFmwk.assertTrue("cbs005", flag);
 
-            // char[]
-            // We just test it's there
-            // Functionality is tested by BigDecimal(String).
-            ca = ("123.45").ToCharArray();
-            TestFmwk.assertTrue("cca001", ((new BigDecimal(ca)).ToString(CultureInfo.InvariantCulture)).Equals("123.45"));
-            try
-            {
-                new BigDecimal((char[])null);
-                flag = false;
-            }
-            catch (ArgumentNullException e7)
-            {
-                flag = true;
-            }/* checknull */
-            TestFmwk.assertTrue("cca010", flag);
+            // ICU4N: Made BigDecimal(string) constructor into BigDecimal.Parse(char[])
+
+            //// char[]
+            //// We just test it's there
+            //// Functionality is tested by BigDecimal(String).
+            //ca = ("123.45").ToCharArray();
+            //TestFmwk.assertTrue("cca001", ((new BigDecimal(ca)).ToString(CultureInfo.InvariantCulture)).Equals("123.45"));
+            //try
+            //{
+            //    new BigDecimal((char[])null);
+            //    flag = false;
+            //}
+            //catch (ArgumentNullException e7)
+            //{
+            //    flag = true;
+            //}/* checknull */
+            //TestFmwk.assertTrue("cca010", flag);
 
             // ICU4N: Constructor made into BigDecimal.Parse(char[], int, int, NumberStyle, NumberFormatInfo)
 
@@ -520,158 +522,162 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("clo004", ((new BigDecimal(lzer)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
             TestFmwk.assertTrue("clo005", ((new BigDecimal(lpos)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
 
-            // String [many more examples are elsewhere]
-            // strings without E cannot generate E in result
-            TestFmwk.assertTrue("cst001", ((new BigDecimal("12")).ToString(CultureInfo.InvariantCulture)).Equals("12"));
-            TestFmwk.assertTrue("cst002", ((new BigDecimal("-76")).ToString(CultureInfo.InvariantCulture)).Equals("-76"));
-            TestFmwk.assertTrue("cst003", ((new BigDecimal("12.76")).ToString(CultureInfo.InvariantCulture)).Equals("12.76"));
-            TestFmwk.assertTrue("cst004", ((new BigDecimal("+12.76")).ToString(CultureInfo.InvariantCulture)).Equals("12.76"));
-            TestFmwk.assertTrue("cst005", ((new BigDecimal("012.76")).ToString(CultureInfo.InvariantCulture)).Equals("12.76"));
-            TestFmwk.assertTrue("cst006", ((new BigDecimal("+0.003")).ToString(CultureInfo.InvariantCulture)).Equals("0.003"));
-            TestFmwk.assertTrue("cst007", ((new BigDecimal("17.")).ToString(CultureInfo.InvariantCulture)).Equals("17"));
-            TestFmwk.assertTrue("cst008", ((new BigDecimal(".5")).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
-            TestFmwk.assertTrue("cst009", ((new BigDecimal("044")).ToString(CultureInfo.InvariantCulture)).Equals("44"));
-            TestFmwk.assertTrue("cst010", ((new BigDecimal("0044")).ToString(CultureInfo.InvariantCulture)).Equals("44"));
-            TestFmwk.assertTrue("cst011", ((new BigDecimal("0.0005")).ToString(CultureInfo.InvariantCulture)).Equals("0.0005"));
-            TestFmwk.assertTrue("cst012", ((new BigDecimal("00.00005")).ToString(CultureInfo.InvariantCulture)).Equals("0.00005"));
-            TestFmwk.assertTrue("cst013", ((new BigDecimal("0.000005")).ToString(CultureInfo.InvariantCulture)).Equals("0.000005"));
-            TestFmwk.assertTrue("cst014", ((new BigDecimal("0.0000005")).ToString(CultureInfo.InvariantCulture)).Equals("0.0000005")); // \NR
-            TestFmwk.assertTrue("cst015", ((new BigDecimal("0.00000005")).ToString(CultureInfo.InvariantCulture)).Equals("0.00000005")); // \NR
-            TestFmwk.assertTrue("cst016", ((new BigDecimal("12345678.876543210")).ToString(CultureInfo.InvariantCulture)).Equals("12345678.876543210"));
-            TestFmwk.assertTrue("cst017", ((new BigDecimal("2345678.876543210")).ToString(CultureInfo.InvariantCulture)).Equals("2345678.876543210"));
-            TestFmwk.assertTrue("cst018", ((new BigDecimal("345678.876543210")).ToString(CultureInfo.InvariantCulture)).Equals("345678.876543210"));
-            TestFmwk.assertTrue("cst019", ((new BigDecimal("0345678.87654321")).ToString(CultureInfo.InvariantCulture)).Equals("345678.87654321"));
-            TestFmwk.assertTrue("cst020", ((new BigDecimal("345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("345678.8765432"));
-            TestFmwk.assertTrue("cst021", ((new BigDecimal("+345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("345678.8765432"));
-            TestFmwk.assertTrue("cst022", ((new BigDecimal("+0345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("345678.8765432"));
-            TestFmwk.assertTrue("cst023", ((new BigDecimal("+00345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("345678.8765432"));
-            TestFmwk.assertTrue("cst024", ((new BigDecimal("-345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("-345678.8765432"));
-            TestFmwk.assertTrue("cst025", ((new BigDecimal("-0345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("-345678.8765432"));
-            TestFmwk.assertTrue("cst026", ((new BigDecimal("-00345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("-345678.8765432"));
+            // ICU4N: Constructor made into BigDecimal.Parse(string, NumberStyle, NumberFormatInfo)
 
-            // exotics --
-            TestFmwk.assertTrue("cst035", ((new BigDecimal("\u0e57.\u0e50")).ToString(CultureInfo.InvariantCulture)).Equals("7.0"));
-            TestFmwk.assertTrue("cst036", ((new BigDecimal("\u0b66.\u0b67")).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("cst037", ((new BigDecimal("\u0b66\u0b66")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("cst038", ((new BigDecimal("\u0b6a\u0b66")).ToString(CultureInfo.InvariantCulture)).Equals("40"));
+            ////// String [many more examples are elsewhere]
+            ////// strings without E cannot generate E in result
+            ////TestFmwk.assertTrue("cst001", ((new BigDecimal("12")).ToString(CultureInfo.InvariantCulture)).Equals("12"));
+            ////TestFmwk.assertTrue("cst002", ((new BigDecimal("-76")).ToString(CultureInfo.InvariantCulture)).Equals("-76"));
+            ////TestFmwk.assertTrue("cst003", ((new BigDecimal("12.76")).ToString(CultureInfo.InvariantCulture)).Equals("12.76"));
+            ////TestFmwk.assertTrue("cst004", ((new BigDecimal("+12.76")).ToString(CultureInfo.InvariantCulture)).Equals("12.76"));
+            ////TestFmwk.assertTrue("cst005", ((new BigDecimal("012.76")).ToString(CultureInfo.InvariantCulture)).Equals("12.76"));
+            ////TestFmwk.assertTrue("cst006", ((new BigDecimal("+0.003")).ToString(CultureInfo.InvariantCulture)).Equals("0.003"));
+            ////TestFmwk.assertTrue("cst007", ((new BigDecimal("17.")).ToString(CultureInfo.InvariantCulture)).Equals("17"));
+            ////TestFmwk.assertTrue("cst008", ((new BigDecimal(".5")).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
+            ////TestFmwk.assertTrue("cst009", ((new BigDecimal("044")).ToString(CultureInfo.InvariantCulture)).Equals("44"));
+            ////TestFmwk.assertTrue("cst010", ((new BigDecimal("0044")).ToString(CultureInfo.InvariantCulture)).Equals("44"));
+            ////TestFmwk.assertTrue("cst011", ((new BigDecimal("0.0005")).ToString(CultureInfo.InvariantCulture)).Equals("0.0005"));
+            ////TestFmwk.assertTrue("cst012", ((new BigDecimal("00.00005")).ToString(CultureInfo.InvariantCulture)).Equals("0.00005"));
+            ////TestFmwk.assertTrue("cst013", ((new BigDecimal("0.000005")).ToString(CultureInfo.InvariantCulture)).Equals("0.000005"));
+            ////TestFmwk.assertTrue("cst014", ((new BigDecimal("0.0000005")).ToString(CultureInfo.InvariantCulture)).Equals("0.0000005")); // \NR
+            ////TestFmwk.assertTrue("cst015", ((new BigDecimal("0.00000005")).ToString(CultureInfo.InvariantCulture)).Equals("0.00000005")); // \NR
+            ////TestFmwk.assertTrue("cst016", ((new BigDecimal("12345678.876543210")).ToString(CultureInfo.InvariantCulture)).Equals("12345678.876543210"));
+            ////TestFmwk.assertTrue("cst017", ((new BigDecimal("2345678.876543210")).ToString(CultureInfo.InvariantCulture)).Equals("2345678.876543210"));
+            ////TestFmwk.assertTrue("cst018", ((new BigDecimal("345678.876543210")).ToString(CultureInfo.InvariantCulture)).Equals("345678.876543210"));
+            ////TestFmwk.assertTrue("cst019", ((new BigDecimal("0345678.87654321")).ToString(CultureInfo.InvariantCulture)).Equals("345678.87654321"));
+            ////TestFmwk.assertTrue("cst020", ((new BigDecimal("345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("345678.8765432"));
+            ////TestFmwk.assertTrue("cst021", ((new BigDecimal("+345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("345678.8765432"));
+            ////TestFmwk.assertTrue("cst022", ((new BigDecimal("+0345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("345678.8765432"));
+            ////TestFmwk.assertTrue("cst023", ((new BigDecimal("+00345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("345678.8765432"));
+            ////TestFmwk.assertTrue("cst024", ((new BigDecimal("-345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("-345678.8765432"));
+            ////TestFmwk.assertTrue("cst025", ((new BigDecimal("-0345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("-345678.8765432"));
+            ////TestFmwk.assertTrue("cst026", ((new BigDecimal("-00345678.8765432")).ToString(CultureInfo.InvariantCulture)).Equals("-345678.8765432"));
 
-            // strings with E
-            TestFmwk.assertTrue("cst040", ((new BigDecimal("1E+9")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("cst041", ((new BigDecimal("1e+09")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("cst042", ((new BigDecimal("1E+90")).ToString(CultureInfo.InvariantCulture)).Equals("1E+90"));
-            TestFmwk.assertTrue("cst043", ((new BigDecimal("+1E+009")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("cst044", ((new BigDecimal("0E+9")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("cst045", ((new BigDecimal("1E+9")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("cst046", ((new BigDecimal("1E+09")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("cst047", ((new BigDecimal("1e+90")).ToString(CultureInfo.InvariantCulture)).Equals("1E+90"));
-            TestFmwk.assertTrue("cst048", ((new BigDecimal("1E+009")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("cst049", ((new BigDecimal("0E+9")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("cst050", ((new BigDecimal("1E9")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("cst051", ((new BigDecimal("1e09")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("cst052", ((new BigDecimal("1E90")).ToString(CultureInfo.InvariantCulture)).Equals("1E+90"));
-            TestFmwk.assertTrue("cst053", ((new BigDecimal("1E009")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("cst054", ((new BigDecimal("0E9")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("cst055", ((new BigDecimal("0.000e+0")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("cst056", ((new BigDecimal("0.000E-1")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("cst057", ((new BigDecimal("4E+9")).ToString(CultureInfo.InvariantCulture)).Equals("4E+9"));
-            TestFmwk.assertTrue("cst058", ((new BigDecimal("44E+9")).ToString(CultureInfo.InvariantCulture)).Equals("4.4E+10"));
-            TestFmwk.assertTrue("cst059", ((new BigDecimal("0.73e-7")).ToString(CultureInfo.InvariantCulture)).Equals("7.3E-8"));
-            TestFmwk.assertTrue("cst060", ((new BigDecimal("00E+9")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("cst061", ((new BigDecimal("00E-9")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("cst062", ((new BigDecimal("10E+9")).ToString(CultureInfo.InvariantCulture)).Equals("1.0E+10"));
-            TestFmwk.assertTrue("cst063", ((new BigDecimal("10E+09")).ToString(CultureInfo.InvariantCulture)).Equals("1.0E+10"));
-            TestFmwk.assertTrue("cst064", ((new BigDecimal("10e+90")).ToString(CultureInfo.InvariantCulture)).Equals("1.0E+91"));
-            TestFmwk.assertTrue("cst065", ((new BigDecimal("10E+009")).ToString(CultureInfo.InvariantCulture)).Equals("1.0E+10"));
-            TestFmwk.assertTrue("cst066", ((new BigDecimal("100e+9")).ToString(CultureInfo.InvariantCulture)).Equals("1.00E+11"));
-            TestFmwk.assertTrue("cst067", ((new BigDecimal("100e+09")).ToString(CultureInfo.InvariantCulture)).Equals("1.00E+11"));
-            TestFmwk.assertTrue("cst068", ((new BigDecimal("100E+90")).ToString(CultureInfo.InvariantCulture)).Equals("1.00E+92"));
-            TestFmwk.assertTrue("cst069", ((new BigDecimal("100e+009")).ToString(CultureInfo.InvariantCulture)).Equals("1.00E+11"));
+            ////// exotics --
+            ////TestFmwk.assertTrue("cst035", ((new BigDecimal("\u0e57.\u0e50")).ToString(CultureInfo.InvariantCulture)).Equals("7.0"));
+            ////TestFmwk.assertTrue("cst036", ((new BigDecimal("\u0b66.\u0b67")).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            ////TestFmwk.assertTrue("cst037", ((new BigDecimal("\u0b66\u0b66")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            ////TestFmwk.assertTrue("cst038", ((new BigDecimal("\u0b6a\u0b66")).ToString(CultureInfo.InvariantCulture)).Equals("40"));
 
-            TestFmwk.assertTrue("cst070", ((new BigDecimal("1.265")).ToString(CultureInfo.InvariantCulture)).Equals("1.265"));
-            TestFmwk.assertTrue("cst071", ((new BigDecimal("1.265E-20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-20"));
-            TestFmwk.assertTrue("cst072", ((new BigDecimal("1.265E-8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-8"));
-            TestFmwk.assertTrue("cst073", ((new BigDecimal("1.265E-4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-4"));
-            TestFmwk.assertTrue("cst074", ((new BigDecimal("1.265E-3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-3"));
-            TestFmwk.assertTrue("cst075", ((new BigDecimal("1.265E-2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-2"));
-            TestFmwk.assertTrue("cst076", ((new BigDecimal("1.265E-1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-1"));
-            TestFmwk.assertTrue("cst077", ((new BigDecimal("1.265E-0")).ToString(CultureInfo.InvariantCulture)).Equals("1.265"));
-            TestFmwk.assertTrue("cst078", ((new BigDecimal("1.265E+1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+1"));
-            TestFmwk.assertTrue("cst079", ((new BigDecimal("1.265E+2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+2"));
-            TestFmwk.assertTrue("cst080", ((new BigDecimal("1.265E+3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+3"));
-            TestFmwk.assertTrue("cst081", ((new BigDecimal("1.265E+4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+4"));
-            TestFmwk.assertTrue("cst082", ((new BigDecimal("1.265E+8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+8"));
-            TestFmwk.assertTrue("cst083", ((new BigDecimal("1.265E+20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+20"));
+            ////// strings with E
+            ////TestFmwk.assertTrue("cst040", ((new BigDecimal("1E+9")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            ////TestFmwk.assertTrue("cst041", ((new BigDecimal("1e+09")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            ////TestFmwk.assertTrue("cst042", ((new BigDecimal("1E+90")).ToString(CultureInfo.InvariantCulture)).Equals("1E+90"));
+            ////TestFmwk.assertTrue("cst043", ((new BigDecimal("+1E+009")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            ////TestFmwk.assertTrue("cst044", ((new BigDecimal("0E+9")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            ////TestFmwk.assertTrue("cst045", ((new BigDecimal("1E+9")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            ////TestFmwk.assertTrue("cst046", ((new BigDecimal("1E+09")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            ////TestFmwk.assertTrue("cst047", ((new BigDecimal("1e+90")).ToString(CultureInfo.InvariantCulture)).Equals("1E+90"));
+            ////TestFmwk.assertTrue("cst048", ((new BigDecimal("1E+009")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            ////TestFmwk.assertTrue("cst049", ((new BigDecimal("0E+9")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            ////TestFmwk.assertTrue("cst050", ((new BigDecimal("1E9")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            ////TestFmwk.assertTrue("cst051", ((new BigDecimal("1e09")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            ////TestFmwk.assertTrue("cst052", ((new BigDecimal("1E90")).ToString(CultureInfo.InvariantCulture)).Equals("1E+90"));
+            ////TestFmwk.assertTrue("cst053", ((new BigDecimal("1E009")).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            ////TestFmwk.assertTrue("cst054", ((new BigDecimal("0E9")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            ////TestFmwk.assertTrue("cst055", ((new BigDecimal("0.000e+0")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            ////TestFmwk.assertTrue("cst056", ((new BigDecimal("0.000E-1")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            ////TestFmwk.assertTrue("cst057", ((new BigDecimal("4E+9")).ToString(CultureInfo.InvariantCulture)).Equals("4E+9"));
+            ////TestFmwk.assertTrue("cst058", ((new BigDecimal("44E+9")).ToString(CultureInfo.InvariantCulture)).Equals("4.4E+10"));
+            ////TestFmwk.assertTrue("cst059", ((new BigDecimal("0.73e-7")).ToString(CultureInfo.InvariantCulture)).Equals("7.3E-8"));
+            ////TestFmwk.assertTrue("cst060", ((new BigDecimal("00E+9")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            ////TestFmwk.assertTrue("cst061", ((new BigDecimal("00E-9")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            ////TestFmwk.assertTrue("cst062", ((new BigDecimal("10E+9")).ToString(CultureInfo.InvariantCulture)).Equals("1.0E+10"));
+            ////TestFmwk.assertTrue("cst063", ((new BigDecimal("10E+09")).ToString(CultureInfo.InvariantCulture)).Equals("1.0E+10"));
+            ////TestFmwk.assertTrue("cst064", ((new BigDecimal("10e+90")).ToString(CultureInfo.InvariantCulture)).Equals("1.0E+91"));
+            ////TestFmwk.assertTrue("cst065", ((new BigDecimal("10E+009")).ToString(CultureInfo.InvariantCulture)).Equals("1.0E+10"));
+            ////TestFmwk.assertTrue("cst066", ((new BigDecimal("100e+9")).ToString(CultureInfo.InvariantCulture)).Equals("1.00E+11"));
+            ////TestFmwk.assertTrue("cst067", ((new BigDecimal("100e+09")).ToString(CultureInfo.InvariantCulture)).Equals("1.00E+11"));
+            ////TestFmwk.assertTrue("cst068", ((new BigDecimal("100E+90")).ToString(CultureInfo.InvariantCulture)).Equals("1.00E+92"));
+            ////TestFmwk.assertTrue("cst069", ((new BigDecimal("100e+009")).ToString(CultureInfo.InvariantCulture)).Equals("1.00E+11"));
 
-            TestFmwk.assertTrue("cst090", ((new BigDecimal("12.65")).ToString(CultureInfo.InvariantCulture)).Equals("12.65"));
-            TestFmwk.assertTrue("cst091", ((new BigDecimal("12.65E-20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-19"));
-            TestFmwk.assertTrue("cst092", ((new BigDecimal("12.65E-8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-7"));
-            TestFmwk.assertTrue("cst093", ((new BigDecimal("12.65E-4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-3"));
-            TestFmwk.assertTrue("cst094", ((new BigDecimal("12.65E-3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-2"));
-            TestFmwk.assertTrue("cst095", ((new BigDecimal("12.65E-2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-1"));
-            TestFmwk.assertTrue("cst096", ((new BigDecimal("12.65E-1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265"));
-            TestFmwk.assertTrue("cst097", ((new BigDecimal("12.65E-0")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+1"));
-            TestFmwk.assertTrue("cst098", ((new BigDecimal("12.65E+1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+2"));
-            TestFmwk.assertTrue("cst099", ((new BigDecimal("12.65E+2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+3"));
-            TestFmwk.assertTrue("cst100", ((new BigDecimal("12.65E+3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+4"));
-            TestFmwk.assertTrue("cst101", ((new BigDecimal("12.65E+4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+5"));
-            TestFmwk.assertTrue("cst102", ((new BigDecimal("12.65E+8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+9"));
-            TestFmwk.assertTrue("cst103", ((new BigDecimal("12.65E+20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+21"));
+            ////TestFmwk.assertTrue("cst070", ((new BigDecimal("1.265")).ToString(CultureInfo.InvariantCulture)).Equals("1.265"));
+            ////TestFmwk.assertTrue("cst071", ((new BigDecimal("1.265E-20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-20"));
+            ////TestFmwk.assertTrue("cst072", ((new BigDecimal("1.265E-8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-8"));
+            ////TestFmwk.assertTrue("cst073", ((new BigDecimal("1.265E-4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-4"));
+            ////TestFmwk.assertTrue("cst074", ((new BigDecimal("1.265E-3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-3"));
+            ////TestFmwk.assertTrue("cst075", ((new BigDecimal("1.265E-2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-2"));
+            ////TestFmwk.assertTrue("cst076", ((new BigDecimal("1.265E-1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-1"));
+            ////TestFmwk.assertTrue("cst077", ((new BigDecimal("1.265E-0")).ToString(CultureInfo.InvariantCulture)).Equals("1.265"));
+            ////TestFmwk.assertTrue("cst078", ((new BigDecimal("1.265E+1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+1"));
+            ////TestFmwk.assertTrue("cst079", ((new BigDecimal("1.265E+2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+2"));
+            ////TestFmwk.assertTrue("cst080", ((new BigDecimal("1.265E+3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+3"));
+            ////TestFmwk.assertTrue("cst081", ((new BigDecimal("1.265E+4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+4"));
+            ////TestFmwk.assertTrue("cst082", ((new BigDecimal("1.265E+8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+8"));
+            ////TestFmwk.assertTrue("cst083", ((new BigDecimal("1.265E+20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+20"));
 
-            TestFmwk.assertTrue("cst110", ((new BigDecimal("126.5")).ToString(CultureInfo.InvariantCulture)).Equals("126.5"));
-            TestFmwk.assertTrue("cst111", ((new BigDecimal("126.5E-20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-18"));
-            TestFmwk.assertTrue("cst112", ((new BigDecimal("126.5E-8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-6"));
-            TestFmwk.assertTrue("cst113", ((new BigDecimal("126.5E-4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-2"));
-            TestFmwk.assertTrue("cst114", ((new BigDecimal("126.5E-3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-1"));
-            TestFmwk.assertTrue("cst115", ((new BigDecimal("126.5E-2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265"));
-            TestFmwk.assertTrue("cst116", ((new BigDecimal("126.5E-1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+1"));
-            TestFmwk.assertTrue("cst117", ((new BigDecimal("126.5E-0")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+2"));
-            TestFmwk.assertTrue("cst118", ((new BigDecimal("126.5E+1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+3"));
-            TestFmwk.assertTrue("cst119", ((new BigDecimal("126.5E+2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+4"));
-            TestFmwk.assertTrue("cst120", ((new BigDecimal("126.5E+3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+5"));
-            TestFmwk.assertTrue("cst121", ((new BigDecimal("126.5E+4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+6"));
-            TestFmwk.assertTrue("cst122", ((new BigDecimal("126.5E+8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+10"));
-            TestFmwk.assertTrue("cst123", ((new BigDecimal("126.5E+20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+22"));
+            ////TestFmwk.assertTrue("cst090", ((new BigDecimal("12.65")).ToString(CultureInfo.InvariantCulture)).Equals("12.65"));
+            ////TestFmwk.assertTrue("cst091", ((new BigDecimal("12.65E-20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-19"));
+            ////TestFmwk.assertTrue("cst092", ((new BigDecimal("12.65E-8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-7"));
+            ////TestFmwk.assertTrue("cst093", ((new BigDecimal("12.65E-4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-3"));
+            ////TestFmwk.assertTrue("cst094", ((new BigDecimal("12.65E-3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-2"));
+            ////TestFmwk.assertTrue("cst095", ((new BigDecimal("12.65E-2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-1"));
+            ////TestFmwk.assertTrue("cst096", ((new BigDecimal("12.65E-1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265"));
+            ////TestFmwk.assertTrue("cst097", ((new BigDecimal("12.65E-0")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+1"));
+            ////TestFmwk.assertTrue("cst098", ((new BigDecimal("12.65E+1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+2"));
+            ////TestFmwk.assertTrue("cst099", ((new BigDecimal("12.65E+2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+3"));
+            ////TestFmwk.assertTrue("cst100", ((new BigDecimal("12.65E+3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+4"));
+            ////TestFmwk.assertTrue("cst101", ((new BigDecimal("12.65E+4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+5"));
+            ////TestFmwk.assertTrue("cst102", ((new BigDecimal("12.65E+8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+9"));
+            ////TestFmwk.assertTrue("cst103", ((new BigDecimal("12.65E+20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+21"));
 
-            TestFmwk.assertTrue("cst130", ((new BigDecimal("1265")).ToString(CultureInfo.InvariantCulture)).Equals("1265"));
-            TestFmwk.assertTrue("cst131", ((new BigDecimal("1265E-20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-17"));
-            TestFmwk.assertTrue("cst132", ((new BigDecimal("1265E-8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-5"));
-            TestFmwk.assertTrue("cst133", ((new BigDecimal("1265E-4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-1"));
-            TestFmwk.assertTrue("cst134", ((new BigDecimal("1265E-3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265"));
-            TestFmwk.assertTrue("cst135", ((new BigDecimal("1265E-2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+1"));
-            TestFmwk.assertTrue("cst136", ((new BigDecimal("1265E-1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+2"));
-            TestFmwk.assertTrue("cst137", ((new BigDecimal("1265E-0")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+3"));
-            TestFmwk.assertTrue("cst138", ((new BigDecimal("1265E+1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+4"));
-            TestFmwk.assertTrue("cst139", ((new BigDecimal("1265E+2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+5"));
-            TestFmwk.assertTrue("cst140", ((new BigDecimal("1265E+3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+6"));
-            TestFmwk.assertTrue("cst141", ((new BigDecimal("1265E+4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+7"));
-            TestFmwk.assertTrue("cst142", ((new BigDecimal("1265E+8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+11"));
-            TestFmwk.assertTrue("cst143", ((new BigDecimal("1265E+20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+23"));
+            ////TestFmwk.assertTrue("cst110", ((new BigDecimal("126.5")).ToString(CultureInfo.InvariantCulture)).Equals("126.5"));
+            ////TestFmwk.assertTrue("cst111", ((new BigDecimal("126.5E-20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-18"));
+            ////TestFmwk.assertTrue("cst112", ((new BigDecimal("126.5E-8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-6"));
+            ////TestFmwk.assertTrue("cst113", ((new BigDecimal("126.5E-4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-2"));
+            ////TestFmwk.assertTrue("cst114", ((new BigDecimal("126.5E-3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-1"));
+            ////TestFmwk.assertTrue("cst115", ((new BigDecimal("126.5E-2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265"));
+            ////TestFmwk.assertTrue("cst116", ((new BigDecimal("126.5E-1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+1"));
+            ////TestFmwk.assertTrue("cst117", ((new BigDecimal("126.5E-0")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+2"));
+            ////TestFmwk.assertTrue("cst118", ((new BigDecimal("126.5E+1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+3"));
+            ////TestFmwk.assertTrue("cst119", ((new BigDecimal("126.5E+2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+4"));
+            ////TestFmwk.assertTrue("cst120", ((new BigDecimal("126.5E+3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+5"));
+            ////TestFmwk.assertTrue("cst121", ((new BigDecimal("126.5E+4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+6"));
+            ////TestFmwk.assertTrue("cst122", ((new BigDecimal("126.5E+8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+10"));
+            ////TestFmwk.assertTrue("cst123", ((new BigDecimal("126.5E+20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+22"));
 
-            TestFmwk.assertTrue("cst150", ((new BigDecimal("0.1265")).ToString(CultureInfo.InvariantCulture)).Equals("0.1265"));
-            TestFmwk.assertTrue("cst151", ((new BigDecimal("0.1265E-20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-21"));
-            TestFmwk.assertTrue("cst152", ((new BigDecimal("0.1265E-8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-9"));
-            TestFmwk.assertTrue("cst153", ((new BigDecimal("0.1265E-4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-5"));
-            TestFmwk.assertTrue("cst154", ((new BigDecimal("0.1265E-3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-4"));
-            TestFmwk.assertTrue("cst155", ((new BigDecimal("0.1265E-2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-3"));
-            TestFmwk.assertTrue("cst156", ((new BigDecimal("0.1265E-1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-2"));
-            TestFmwk.assertTrue("cst157", ((new BigDecimal("0.1265E-0")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-1"));
-            TestFmwk.assertTrue("cst158", ((new BigDecimal("0.1265E+1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265"));
-            TestFmwk.assertTrue("cst159", ((new BigDecimal("0.1265E+2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+1"));
-            TestFmwk.assertTrue("cst160", ((new BigDecimal("0.1265E+3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+2"));
-            TestFmwk.assertTrue("cst161", ((new BigDecimal("0.1265E+4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+3"));
-            TestFmwk.assertTrue("cst162", ((new BigDecimal("0.1265E+8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+7"));
-            TestFmwk.assertTrue("cst163", ((new BigDecimal("0.1265E+20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+19"));
+            ////TestFmwk.assertTrue("cst130", ((new BigDecimal("1265")).ToString(CultureInfo.InvariantCulture)).Equals("1265"));
+            ////TestFmwk.assertTrue("cst131", ((new BigDecimal("1265E-20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-17"));
+            ////TestFmwk.assertTrue("cst132", ((new BigDecimal("1265E-8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-5"));
+            ////TestFmwk.assertTrue("cst133", ((new BigDecimal("1265E-4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-1"));
+            ////TestFmwk.assertTrue("cst134", ((new BigDecimal("1265E-3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265"));
+            ////TestFmwk.assertTrue("cst135", ((new BigDecimal("1265E-2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+1"));
+            ////TestFmwk.assertTrue("cst136", ((new BigDecimal("1265E-1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+2"));
+            ////TestFmwk.assertTrue("cst137", ((new BigDecimal("1265E-0")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+3"));
+            ////TestFmwk.assertTrue("cst138", ((new BigDecimal("1265E+1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+4"));
+            ////TestFmwk.assertTrue("cst139", ((new BigDecimal("1265E+2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+5"));
+            ////TestFmwk.assertTrue("cst140", ((new BigDecimal("1265E+3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+6"));
+            ////TestFmwk.assertTrue("cst141", ((new BigDecimal("1265E+4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+7"));
+            ////TestFmwk.assertTrue("cst142", ((new BigDecimal("1265E+8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+11"));
+            ////TestFmwk.assertTrue("cst143", ((new BigDecimal("1265E+20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+23"));
 
-            TestFmwk.assertTrue("cst170", ((new BigDecimal("0.09e999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9E+999999997"));
-            TestFmwk.assertTrue("cst171", ((new BigDecimal("0.9e999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9E+999999998"));
-            TestFmwk.assertTrue("cst172", ((new BigDecimal("9e999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9E+999999999"));
-            TestFmwk.assertTrue("cst173", ((new BigDecimal("9.9e999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9.9E+999999999"));
-            TestFmwk.assertTrue("cst174", ((new BigDecimal("9.99e999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9.99E+999999999"));
-            TestFmwk.assertTrue("cst175", ((new BigDecimal("9.99e-999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9.99E-999999999"));
-            TestFmwk.assertTrue("cst176", ((new BigDecimal("9.9e-999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9.9E-999999999"));
-            TestFmwk.assertTrue("cst177", ((new BigDecimal("9e-999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9E-999999999"));
-            TestFmwk.assertTrue("cst179", ((new BigDecimal("99e-999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9.9E-999999998"));
-            TestFmwk.assertTrue("cst180", ((new BigDecimal("999e-999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9.99E-999999997"));
+            ////TestFmwk.assertTrue("cst150", ((new BigDecimal("0.1265")).ToString(CultureInfo.InvariantCulture)).Equals("0.1265"));
+            ////TestFmwk.assertTrue("cst151", ((new BigDecimal("0.1265E-20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-21"));
+            ////TestFmwk.assertTrue("cst152", ((new BigDecimal("0.1265E-8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-9"));
+            ////TestFmwk.assertTrue("cst153", ((new BigDecimal("0.1265E-4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-5"));
+            ////TestFmwk.assertTrue("cst154", ((new BigDecimal("0.1265E-3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-4"));
+            ////TestFmwk.assertTrue("cst155", ((new BigDecimal("0.1265E-2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-3"));
+            ////TestFmwk.assertTrue("cst156", ((new BigDecimal("0.1265E-1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-2"));
+            ////TestFmwk.assertTrue("cst157", ((new BigDecimal("0.1265E-0")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E-1"));
+            ////TestFmwk.assertTrue("cst158", ((new BigDecimal("0.1265E+1")).ToString(CultureInfo.InvariantCulture)).Equals("1.265"));
+            ////TestFmwk.assertTrue("cst159", ((new BigDecimal("0.1265E+2")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+1"));
+            ////TestFmwk.assertTrue("cst160", ((new BigDecimal("0.1265E+3")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+2"));
+            ////TestFmwk.assertTrue("cst161", ((new BigDecimal("0.1265E+4")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+3"));
+            ////TestFmwk.assertTrue("cst162", ((new BigDecimal("0.1265E+8")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+7"));
+            ////TestFmwk.assertTrue("cst163", ((new BigDecimal("0.1265E+20")).ToString(CultureInfo.InvariantCulture)).Equals("1.265E+19"));
+
+            ////TestFmwk.assertTrue("cst170", ((new BigDecimal("0.09e999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9E+999999997"));
+            ////TestFmwk.assertTrue("cst171", ((new BigDecimal("0.9e999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9E+999999998"));
+            ////TestFmwk.assertTrue("cst172", ((new BigDecimal("9e999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9E+999999999"));
+            ////TestFmwk.assertTrue("cst173", ((new BigDecimal("9.9e999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9.9E+999999999"));
+            ////TestFmwk.assertTrue("cst174", ((new BigDecimal("9.99e999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9.99E+999999999"));
+            ////TestFmwk.assertTrue("cst175", ((new BigDecimal("9.99e-999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9.99E-999999999"));
+            ////TestFmwk.assertTrue("cst176", ((new BigDecimal("9.9e-999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9.9E-999999999"));
+            ////TestFmwk.assertTrue("cst177", ((new BigDecimal("9e-999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9E-999999999"));
+            ////TestFmwk.assertTrue("cst179", ((new BigDecimal("99e-999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9.9E-999999998"));
+            ////TestFmwk.assertTrue("cst180", ((new BigDecimal("999e-999999999")).ToString(CultureInfo.InvariantCulture)).Equals("9.99E-999999997"));
+
+            // ICU4N TODO: Convert error cases
 
             // baddies --
             badstrings = new string[] { "1..2", ".", "..", "++1", "--1",
@@ -700,37 +706,37 @@ namespace ICU4N.Dev.Test.BigDec
                                                        // 241-244
                                                        // 245-248
 
-            // watch out for commas on continuation lines
+            //// watch out for commas on continuation lines
 
-            {
-                int len16 = badstrings.Length;
-                i = 0;
-                for (; len16 > 0; len16--, i++)
-                {
-                    try
-                    {
-                        new BigDecimal(badstrings[i]);
-                        say(">>> cst" + (200 + i) + ":" + " " + badstrings[i] + " " + (new BigDecimal(badstrings[i])).ToString(CultureInfo.InvariantCulture));
-                        flag = false;
-                    }
-                    catch (FormatException e17)
-                    {
-                        flag = true;
-                    }
-                    TestFmwk.assertTrue("cst" + (200 + i), flag);
-                }
-            }/* i */
+            //{
+            //    int len16 = badstrings.Length;
+            //    i = 0;
+            //    for (; len16 > 0; len16--, i++)
+            //    {
+            //        try
+            //        {
+            //            new BigDecimal(badstrings[i]);
+            //            say(">>> cst" + (200 + i) + ":" + " " + badstrings[i] + " " + (new BigDecimal(badstrings[i])).ToString(CultureInfo.InvariantCulture));
+            //            flag = false;
+            //        }
+            //        catch (FormatException e17)
+            //        {
+            //            flag = true;
+            //        }
+            //        TestFmwk.assertTrue("cst" + (200 + i), flag);
+            //    }
+            //}/* i */
 
-            try
-            {
-                new BigDecimal((string)null);
-                flag = false;
-            }
-            catch (ArgumentNullException e18)
-            {
-                flag = true;
-            }/* checknull */
-            TestFmwk.assertTrue("cst301", flag);
+            //try
+            //{
+            //    new BigDecimal((string)null);
+            //    flag = false;
+            //}
+            //catch (ArgumentNullException e18)
+            //{
+            //    flag = true;
+            //}/* checknull */
+            //TestFmwk.assertTrue("cst301", flag);
 
         }
 
@@ -795,24 +801,26 @@ namespace ICU4N.Dev.Test.BigDec
         {
             bool flag = false;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
             // most of the function of this is tested by add
-            TestFmwk.assertTrue("abs001", ((new BigDecimal("2")).Abs().ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("abs002", ((new BigDecimal("-2")).Abs().ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("abs003", ((new BigDecimal("+0.000")).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.000"));
-            TestFmwk.assertTrue("abs004", ((new BigDecimal("00.000")).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.000"));
-            TestFmwk.assertTrue("abs005", ((new BigDecimal("-0.000")).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.000"));
-            TestFmwk.assertTrue("abs006", ((new BigDecimal("+0.000")).Abs(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("abs007", ((new BigDecimal("00.000")).Abs(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("abs008", ((new BigDecimal("-0.000")).Abs(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("abs009", ((new BigDecimal("-2000000")).Abs().ToString(CultureInfo.InvariantCulture)).Equals("2000000"));
-            TestFmwk.assertTrue("abs010", ((new BigDecimal("-2000000")).Abs(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2000000"));
-            TestFmwk.assertTrue("abs011", ((new BigDecimal("-2000000")).Abs(mc6).ToString(CultureInfo.InvariantCulture)).Equals("2.00000E+6"));
-            TestFmwk.assertTrue("abs012", ((new BigDecimal("2000000")).Abs(mc6).ToString(CultureInfo.InvariantCulture)).Equals("2.00000E+6"));
-            TestFmwk.assertTrue("abs013", ((new BigDecimal("0.2")).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
-            TestFmwk.assertTrue("abs014", ((new BigDecimal("-0.2")).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
-            TestFmwk.assertTrue("abs015", ((new BigDecimal("0.01")).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
-            TestFmwk.assertTrue("abs016", ((new BigDecimal("-0.01")).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
+            TestFmwk.assertTrue("abs001", ((BigDecimal.Parse("2", numberStyle, provider)).Abs().ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("abs002", ((BigDecimal.Parse("-2", numberStyle, provider)).Abs().ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("abs003", ((BigDecimal.Parse("+0.000", numberStyle, provider)).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.000"));
+            TestFmwk.assertTrue("abs004", ((BigDecimal.Parse("00.000", numberStyle, provider)).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.000"));
+            TestFmwk.assertTrue("abs005", ((BigDecimal.Parse("-0.000", numberStyle, provider)).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.000"));
+            TestFmwk.assertTrue("abs006", ((BigDecimal.Parse("+0.000", numberStyle, provider)).Abs(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("abs007", ((BigDecimal.Parse("00.000", numberStyle, provider)).Abs(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("abs008", ((BigDecimal.Parse("-0.000", numberStyle, provider)).Abs(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("abs009", ((BigDecimal.Parse("-2000000", numberStyle, provider)).Abs().ToString(CultureInfo.InvariantCulture)).Equals("2000000"));
+            TestFmwk.assertTrue("abs010", ((BigDecimal.Parse("-2000000", numberStyle, provider)).Abs(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2000000"));
+            TestFmwk.assertTrue("abs011", ((BigDecimal.Parse("-2000000", numberStyle, provider)).Abs(mc6).ToString(CultureInfo.InvariantCulture)).Equals("2.00000E+6"));
+            TestFmwk.assertTrue("abs012", ((BigDecimal.Parse("2000000", numberStyle, provider)).Abs(mc6).ToString(CultureInfo.InvariantCulture)).Equals("2.00000E+6"));
+            TestFmwk.assertTrue("abs013", ((BigDecimal.Parse("0.2", numberStyle, provider)).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("abs014", ((BigDecimal.Parse("-0.2", numberStyle, provider)).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("abs015", ((BigDecimal.Parse("0.01", numberStyle, provider)).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
+            TestFmwk.assertTrue("abs016", ((BigDecimal.Parse("-0.01", numberStyle, provider)).Abs().ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
             try
             {
                 tenlong.Abs(mcld);
@@ -862,215 +870,217 @@ namespace ICU4N.Dev.Test.BigDec
             BigDecimal alhs;
             BigDecimal arhs;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
             // [first group are 'quick confidence check']
             TestFmwk.assertTrue("add001", ((new BigDecimal(2)).Add(new BigDecimal(3), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("5"));
-            TestFmwk.assertTrue("add003", ((new BigDecimal("5.75")).Add(new BigDecimal("3.3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("9.05"));
-            TestFmwk.assertTrue("add004", ((new BigDecimal("5")).Add(new BigDecimal("-3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("add005", ((new BigDecimal("-5")).Add(new BigDecimal("-3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-8"));
-            TestFmwk.assertTrue("add006", ((new BigDecimal("-7")).Add(new BigDecimal("2.5"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-4.5"));
-            TestFmwk.assertTrue("add007", ((new BigDecimal("0.7")).Add(new BigDecimal("0.3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
-            TestFmwk.assertTrue("add008", ((new BigDecimal("1.25")).Add(new BigDecimal("1.25"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.50"));
-            TestFmwk.assertTrue("add009", ((new BigDecimal("1.23456789")).Add(new BigDecimal("1.00000000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.23456789"));
+            TestFmwk.assertTrue("add003", ((BigDecimal.Parse("5.75", numberStyle, provider)).Add(BigDecimal.Parse("3.3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("9.05"));
+            TestFmwk.assertTrue("add004", ((BigDecimal.Parse("5", numberStyle, provider)).Add(BigDecimal.Parse("-3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("add005", ((BigDecimal.Parse("-5", numberStyle, provider)).Add(BigDecimal.Parse("-3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-8"));
+            TestFmwk.assertTrue("add006", ((BigDecimal.Parse("-7", numberStyle, provider)).Add(BigDecimal.Parse("2.5", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-4.5"));
+            TestFmwk.assertTrue("add007", ((BigDecimal.Parse("0.7", numberStyle, provider)).Add(BigDecimal.Parse("0.3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
+            TestFmwk.assertTrue("add008", ((BigDecimal.Parse("1.25", numberStyle, provider)).Add(BigDecimal.Parse("1.25", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.50"));
+            TestFmwk.assertTrue("add009", ((BigDecimal.Parse("1.23456789", numberStyle, provider)).Add(BigDecimal.Parse("1.00000000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.23456789"));
 
-            TestFmwk.assertTrue("add010", ((new BigDecimal("1.23456789")).Add(new BigDecimal("1.00000011"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.23456800"));
-
-
-            TestFmwk.assertTrue("add011", ((new BigDecimal("0.4444444444")).Add(new BigDecimal("0.5555555555"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000"));
-
-            TestFmwk.assertTrue("add012", ((new BigDecimal("0.4444444440")).Add(new BigDecimal("0.5555555555"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000"));
-
-            TestFmwk.assertTrue("add013", ((new BigDecimal("0.4444444444")).Add(new BigDecimal("0.5555555550"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.999999999"));
-
-            TestFmwk.assertTrue("add014", ((new BigDecimal("0.4444444444999")).Add(new BigDecimal("0"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.444444444"));
-
-            TestFmwk.assertTrue("add015", ((new BigDecimal("0.4444444445000")).Add(new BigDecimal("0"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.444444445"));
+            TestFmwk.assertTrue("add010", ((BigDecimal.Parse("1.23456789", numberStyle, provider)).Add(BigDecimal.Parse("1.00000011", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.23456800"));
 
 
-            TestFmwk.assertTrue("add016", ((new BigDecimal("70")).Add(new BigDecimal("10000e+9"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
+            TestFmwk.assertTrue("add011", ((BigDecimal.Parse("0.4444444444", numberStyle, provider)).Add(BigDecimal.Parse("0.5555555555", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000"));
 
-            TestFmwk.assertTrue("add017", ((new BigDecimal("700")).Add(new BigDecimal("10000e+9"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
+            TestFmwk.assertTrue("add012", ((BigDecimal.Parse("0.4444444440", numberStyle, provider)).Add(BigDecimal.Parse("0.5555555555", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000"));
 
-            TestFmwk.assertTrue("add018", ((new BigDecimal("7000")).Add(new BigDecimal("10000e+9"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
+            TestFmwk.assertTrue("add013", ((BigDecimal.Parse("0.4444444444", numberStyle, provider)).Add(BigDecimal.Parse("0.5555555550", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.999999999"));
 
-            TestFmwk.assertTrue("add019", ((new BigDecimal("70000")).Add(new BigDecimal("10000e+9"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000001E+13"));
+            TestFmwk.assertTrue("add014", ((BigDecimal.Parse("0.4444444444999", numberStyle, provider)).Add(BigDecimal.Parse("0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.444444444"));
 
-            TestFmwk.assertTrue("add020", ((new BigDecimal("700000")).Add(new BigDecimal("10000e+9"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000007E+13"));
+            TestFmwk.assertTrue("add015", ((BigDecimal.Parse("0.4444444445000", numberStyle, provider)).Add(BigDecimal.Parse("0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.444444445"));
+
+
+            TestFmwk.assertTrue("add016", ((BigDecimal.Parse("70", numberStyle, provider)).Add(BigDecimal.Parse("10000e+9", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
+
+            TestFmwk.assertTrue("add017", ((BigDecimal.Parse("700", numberStyle, provider)).Add(BigDecimal.Parse("10000e+9", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
+
+            TestFmwk.assertTrue("add018", ((BigDecimal.Parse("7000", numberStyle, provider)).Add(BigDecimal.Parse("10000e+9", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
+
+            TestFmwk.assertTrue("add019", ((BigDecimal.Parse("70000", numberStyle, provider)).Add(BigDecimal.Parse("10000e+9", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000001E+13"));
+
+            TestFmwk.assertTrue("add020", ((BigDecimal.Parse("700000", numberStyle, provider)).Add(BigDecimal.Parse("10000e+9", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000007E+13"));
 
 
             // [Now the same group with fixed arithmetic]
             TestFmwk.assertTrue("add030", ((new BigDecimal(2)).Add(new BigDecimal(3)).ToString(CultureInfo.InvariantCulture)).Equals("5"));
-            TestFmwk.assertTrue("add031", ((new BigDecimal("5.75")).Add(new BigDecimal("3.3")).ToString(CultureInfo.InvariantCulture)).Equals("9.05"));
-            TestFmwk.assertTrue("add032", ((new BigDecimal("5")).Add(new BigDecimal("-3")).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("add033", ((new BigDecimal("-5")).Add(new BigDecimal("-3")).ToString(CultureInfo.InvariantCulture)).Equals("-8"));
-            TestFmwk.assertTrue("add034", ((new BigDecimal("-7")).Add(new BigDecimal("2.5")).ToString(CultureInfo.InvariantCulture)).Equals("-4.5"));
-            TestFmwk.assertTrue("add035", ((new BigDecimal("0.7")).Add(new BigDecimal("0.3")).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
-            TestFmwk.assertTrue("add036", ((new BigDecimal("1.25")).Add(new BigDecimal("1.25")).ToString(CultureInfo.InvariantCulture)).Equals("2.50"));
-            TestFmwk.assertTrue("add037", ((new BigDecimal("1.23456789")).Add(new BigDecimal("1.00000000")).ToString(CultureInfo.InvariantCulture)).Equals("2.23456789"));
+            TestFmwk.assertTrue("add031", ((BigDecimal.Parse("5.75", numberStyle, provider)).Add(BigDecimal.Parse("3.3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9.05"));
+            TestFmwk.assertTrue("add032", ((BigDecimal.Parse("5", numberStyle, provider)).Add(BigDecimal.Parse("-3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("add033", ((BigDecimal.Parse("-5", numberStyle, provider)).Add(BigDecimal.Parse("-3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-8"));
+            TestFmwk.assertTrue("add034", ((BigDecimal.Parse("-7", numberStyle, provider)).Add(BigDecimal.Parse("2.5", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-4.5"));
+            TestFmwk.assertTrue("add035", ((BigDecimal.Parse("0.7", numberStyle, provider)).Add(BigDecimal.Parse("0.3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
+            TestFmwk.assertTrue("add036", ((BigDecimal.Parse("1.25", numberStyle, provider)).Add(BigDecimal.Parse("1.25", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.50"));
+            TestFmwk.assertTrue("add037", ((BigDecimal.Parse("1.23456789", numberStyle, provider)).Add(BigDecimal.Parse("1.00000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.23456789"));
 
-            TestFmwk.assertTrue("add038", ((new BigDecimal("1.23456789")).Add(new BigDecimal("1.00000011")).ToString(CultureInfo.InvariantCulture)).Equals("2.23456800"));
-
-
-            TestFmwk.assertTrue("add039", ((new BigDecimal("0.4444444444")).Add(new BigDecimal("0.5555555555")).ToString(CultureInfo.InvariantCulture)).Equals("0.9999999999"));
-
-            TestFmwk.assertTrue("add040", ((new BigDecimal("0.4444444440")).Add(new BigDecimal("0.5555555555")).ToString(CultureInfo.InvariantCulture)).Equals("0.9999999995"));
-
-            TestFmwk.assertTrue("add041", ((new BigDecimal("0.4444444444")).Add(new BigDecimal("0.5555555550")).ToString(CultureInfo.InvariantCulture)).Equals("0.9999999994"));
-
-            TestFmwk.assertTrue("add042", ((new BigDecimal("0.4444444444999")).Add(new BigDecimal("0")).ToString(CultureInfo.InvariantCulture)).Equals("0.4444444444999"));
-
-            TestFmwk.assertTrue("add043", ((new BigDecimal("0.4444444445000")).Add(new BigDecimal("0")).ToString(CultureInfo.InvariantCulture)).Equals("0.4444444445000"));
+            TestFmwk.assertTrue("add038", ((BigDecimal.Parse("1.23456789", numberStyle, provider)).Add(BigDecimal.Parse("1.00000011", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.23456800"));
 
 
-            TestFmwk.assertTrue("add044", ((new BigDecimal("70")).Add(new BigDecimal("10000e+9")).ToString(CultureInfo.InvariantCulture)).Equals("10000000000070"));
+            TestFmwk.assertTrue("add039", ((BigDecimal.Parse("0.4444444444", numberStyle, provider)).Add(BigDecimal.Parse("0.5555555555", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.9999999999"));
 
-            TestFmwk.assertTrue("add045", ((new BigDecimal("700")).Add(new BigDecimal("10000e+9")).ToString(CultureInfo.InvariantCulture)).Equals("10000000000700"));
+            TestFmwk.assertTrue("add040", ((BigDecimal.Parse("0.4444444440", numberStyle, provider)).Add(BigDecimal.Parse("0.5555555555", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.9999999995"));
 
-            TestFmwk.assertTrue("add046", ((new BigDecimal("7000")).Add(new BigDecimal("10000e+9")).ToString(CultureInfo.InvariantCulture)).Equals("10000000007000"));
+            TestFmwk.assertTrue("add041", ((BigDecimal.Parse("0.4444444444", numberStyle, provider)).Add(BigDecimal.Parse("0.5555555550", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.9999999994"));
 
-            TestFmwk.assertTrue("add047", ((new BigDecimal("70000")).Add(new BigDecimal("10000e+9")).ToString(CultureInfo.InvariantCulture)).Equals("10000000070000"));
+            TestFmwk.assertTrue("add042", ((BigDecimal.Parse("0.4444444444999", numberStyle, provider)).Add(BigDecimal.Parse("0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.4444444444999"));
 
-            TestFmwk.assertTrue("add048", ((new BigDecimal("700000")).Add(new BigDecimal("10000e+9")).ToString(CultureInfo.InvariantCulture)).Equals("10000000700000"));
+            TestFmwk.assertTrue("add043", ((BigDecimal.Parse("0.4444444445000", numberStyle, provider)).Add(BigDecimal.Parse("0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.4444444445000"));
+
+
+            TestFmwk.assertTrue("add044", ((BigDecimal.Parse("70", numberStyle, provider)).Add(BigDecimal.Parse("10000e+9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10000000000070"));
+
+            TestFmwk.assertTrue("add045", ((BigDecimal.Parse("700", numberStyle, provider)).Add(BigDecimal.Parse("10000e+9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10000000000700"));
+
+            TestFmwk.assertTrue("add046", ((BigDecimal.Parse("7000", numberStyle, provider)).Add(BigDecimal.Parse("10000e+9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10000000007000"));
+
+            TestFmwk.assertTrue("add047", ((BigDecimal.Parse("70000", numberStyle, provider)).Add(BigDecimal.Parse("10000e+9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10000000070000"));
+
+            TestFmwk.assertTrue("add048", ((BigDecimal.Parse("700000", numberStyle, provider)).Add(BigDecimal.Parse("10000e+9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10000000700000"));
 
 
             // symmetry:
-            TestFmwk.assertTrue("add049", ((new BigDecimal("10000e+9")).Add(new BigDecimal("70"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
+            TestFmwk.assertTrue("add049", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("70", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
 
-            TestFmwk.assertTrue("add050", ((new BigDecimal("10000e+9")).Add(new BigDecimal("700"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
+            TestFmwk.assertTrue("add050", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("700", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
 
-            TestFmwk.assertTrue("add051", ((new BigDecimal("10000e+9")).Add(new BigDecimal("7000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
+            TestFmwk.assertTrue("add051", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("7000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
 
-            TestFmwk.assertTrue("add052", ((new BigDecimal("10000e+9")).Add(new BigDecimal("70000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000001E+13"));
+            TestFmwk.assertTrue("add052", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("70000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000001E+13"));
 
-            TestFmwk.assertTrue("add053", ((new BigDecimal("10000e+9")).Add(new BigDecimal("700000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000007E+13"));
+            TestFmwk.assertTrue("add053", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("700000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000007E+13"));
 
 
-            TestFmwk.assertTrue("add054", ((new BigDecimal("10000e+9")).Add(new BigDecimal("70")).ToString(CultureInfo.InvariantCulture)).Equals("10000000000070"));
+            TestFmwk.assertTrue("add054", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("70", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10000000000070"));
 
-            TestFmwk.assertTrue("add055", ((new BigDecimal("10000e+9")).Add(new BigDecimal("700")).ToString(CultureInfo.InvariantCulture)).Equals("10000000000700"));
+            TestFmwk.assertTrue("add055", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("700", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10000000000700"));
 
-            TestFmwk.assertTrue("add056", ((new BigDecimal("10000e+9")).Add(new BigDecimal("7000")).ToString(CultureInfo.InvariantCulture)).Equals("10000000007000"));
+            TestFmwk.assertTrue("add056", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("7000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10000000007000"));
 
-            TestFmwk.assertTrue("add057", ((new BigDecimal("10000e+9")).Add(new BigDecimal("70000")).ToString(CultureInfo.InvariantCulture)).Equals("10000000070000"));
+            TestFmwk.assertTrue("add057", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("70000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10000000070000"));
 
-            TestFmwk.assertTrue("add058", ((new BigDecimal("10000e+9")).Add(new BigDecimal("700000")).ToString(CultureInfo.InvariantCulture)).Equals("10000000700000"));
+            TestFmwk.assertTrue("add058", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("700000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10000000700000"));
 
             // some rounding effects
-            TestFmwk.assertTrue("add059", ((new BigDecimal("0.9998")).Add(new BigDecimal("0.0000")).ToString(CultureInfo.InvariantCulture)).Equals("0.9998"));
+            TestFmwk.assertTrue("add059", ((BigDecimal.Parse("0.9998", numberStyle, provider)).Add(BigDecimal.Parse("0.0000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.9998"));
 
-            TestFmwk.assertTrue("add060", ((new BigDecimal("0.9998")).Add(new BigDecimal("0.0001")).ToString(CultureInfo.InvariantCulture)).Equals("0.9999"));
+            TestFmwk.assertTrue("add060", ((BigDecimal.Parse("0.9998", numberStyle, provider)).Add(BigDecimal.Parse("0.0001", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.9999"));
 
-            TestFmwk.assertTrue("add061", ((new BigDecimal("0.9998")).Add(new BigDecimal("0.0002")).ToString(CultureInfo.InvariantCulture)).Equals("1.0000"));
+            TestFmwk.assertTrue("add061", ((BigDecimal.Parse("0.9998", numberStyle, provider)).Add(BigDecimal.Parse("0.0002", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1.0000"));
 
-            TestFmwk.assertTrue("add062", ((new BigDecimal("0.9998")).Add(new BigDecimal("0.0003")).ToString(CultureInfo.InvariantCulture)).Equals("1.0001"));
+            TestFmwk.assertTrue("add062", ((BigDecimal.Parse("0.9998", numberStyle, provider)).Add(BigDecimal.Parse("0.0003", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1.0001"));
 
 
             // MC
-            TestFmwk.assertTrue("add070", ((new BigDecimal("10000e+9")).Add(new BigDecimal("70000"), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("10000000070000"));
+            TestFmwk.assertTrue("add070", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("70000", numberStyle, provider), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("10000000070000"));
 
-            TestFmwk.assertTrue("add071", ((new BigDecimal("10000e+9")).Add(new BigDecimal("70000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000001E+13"));
+            TestFmwk.assertTrue("add071", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("70000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000001E+13"));
 
-            TestFmwk.assertTrue("add072", ((new BigDecimal("10000e+9")).Add(new BigDecimal("70000"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.00000E+13"));
+            TestFmwk.assertTrue("add072", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Add(BigDecimal.Parse("70000", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.00000E+13"));
 
 
             // zero preservation
-            TestFmwk.assertTrue("add080", (BigDecimal.One.Add(new BigDecimal("0.0001"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.0001"));
+            TestFmwk.assertTrue("add080", (BigDecimal.One.Add(BigDecimal.Parse("0.0001", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.0001"));
 
-            TestFmwk.assertTrue("add081", (BigDecimal.One.Add(new BigDecimal("0.00001"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.00001"));
+            TestFmwk.assertTrue("add081", (BigDecimal.One.Add(BigDecimal.Parse("0.00001", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.00001"));
 
-            TestFmwk.assertTrue("add082", (BigDecimal.One.Add(new BigDecimal("0.000001"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.00000"));
+            TestFmwk.assertTrue("add082", (BigDecimal.One.Add(BigDecimal.Parse("0.000001", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.00000"));
 
-            TestFmwk.assertTrue("add083", (BigDecimal.One.Add(new BigDecimal("0.0000001"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.00000"));
+            TestFmwk.assertTrue("add083", (BigDecimal.One.Add(BigDecimal.Parse("0.0000001", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.00000"));
 
-            TestFmwk.assertTrue("add084", (BigDecimal.One.Add(new BigDecimal("0.00000001"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.00000"));
+            TestFmwk.assertTrue("add084", (BigDecimal.One.Add(BigDecimal.Parse("0.00000001", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.00000"));
 
 
             // more fixed, LHS swaps
-            TestFmwk.assertTrue("add090", ((new BigDecimal("-56267E-10")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000056267"));
-            TestFmwk.assertTrue("add091", ((new BigDecimal("-56267E-6")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.056267"));
-            TestFmwk.assertTrue("add092", ((new BigDecimal("-56267E-5")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.56267"));
-            TestFmwk.assertTrue("add093", ((new BigDecimal("-56267E-4")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-5.6267"));
-            TestFmwk.assertTrue("add094", ((new BigDecimal("-56267E-3")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-56.267"));
-            TestFmwk.assertTrue("add095", ((new BigDecimal("-56267E-2")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-562.67"));
-            TestFmwk.assertTrue("add096", ((new BigDecimal("-56267E-1")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-5626.7"));
-            TestFmwk.assertTrue("add097", ((new BigDecimal("-56267E-0")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-56267"));
-            TestFmwk.assertTrue("add098", ((new BigDecimal("-5E-10")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000000005"));
-            TestFmwk.assertTrue("add099", ((new BigDecimal("-5E-5")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.00005"));
-            TestFmwk.assertTrue("add100", ((new BigDecimal("-5E-1")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.5"));
-            TestFmwk.assertTrue("add101", ((new BigDecimal("-5E-10")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000000005"));
-            TestFmwk.assertTrue("add102", ((new BigDecimal("-5E-5")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.00005"));
-            TestFmwk.assertTrue("add103", ((new BigDecimal("-5E-1")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.5"));
-            TestFmwk.assertTrue("add104", ((new BigDecimal("-5E10")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-50000000000"));
-            TestFmwk.assertTrue("add105", ((new BigDecimal("-5E5")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-500000"));
-            TestFmwk.assertTrue("add106", ((new BigDecimal("-5E1")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-50"));
-            TestFmwk.assertTrue("add107", ((new BigDecimal("-5E0")).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-5"));
+            TestFmwk.assertTrue("add090", ((BigDecimal.Parse("-56267E-10", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000056267"));
+            TestFmwk.assertTrue("add091", ((BigDecimal.Parse("-56267E-6", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.056267"));
+            TestFmwk.assertTrue("add092", ((BigDecimal.Parse("-56267E-5", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.56267"));
+            TestFmwk.assertTrue("add093", ((BigDecimal.Parse("-56267E-4", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-5.6267"));
+            TestFmwk.assertTrue("add094", ((BigDecimal.Parse("-56267E-3", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-56.267"));
+            TestFmwk.assertTrue("add095", ((BigDecimal.Parse("-56267E-2", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-562.67"));
+            TestFmwk.assertTrue("add096", ((BigDecimal.Parse("-56267E-1", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-5626.7"));
+            TestFmwk.assertTrue("add097", ((BigDecimal.Parse("-56267E-0", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-56267"));
+            TestFmwk.assertTrue("add098", ((BigDecimal.Parse("-5E-10", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000000005"));
+            TestFmwk.assertTrue("add099", ((BigDecimal.Parse("-5E-5", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.00005"));
+            TestFmwk.assertTrue("add100", ((BigDecimal.Parse("-5E-1", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.5"));
+            TestFmwk.assertTrue("add101", ((BigDecimal.Parse("-5E-10", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000000005"));
+            TestFmwk.assertTrue("add102", ((BigDecimal.Parse("-5E-5", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.00005"));
+            TestFmwk.assertTrue("add103", ((BigDecimal.Parse("-5E-1", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.5"));
+            TestFmwk.assertTrue("add104", ((BigDecimal.Parse("-5E10", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-50000000000"));
+            TestFmwk.assertTrue("add105", ((BigDecimal.Parse("-5E5", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-500000"));
+            TestFmwk.assertTrue("add106", ((BigDecimal.Parse("-5E1", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-50"));
+            TestFmwk.assertTrue("add107", ((BigDecimal.Parse("-5E0", numberStyle, provider)).Add(zero).ToString(CultureInfo.InvariantCulture)).Equals("-5"));
 
             // more fixed, RHS swaps
-            TestFmwk.assertTrue("add108", (zero.Add(new BigDecimal("-56267E-10")).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000056267"));
-            TestFmwk.assertTrue("add109", (zero.Add(new BigDecimal("-56267E-6")).ToString(CultureInfo.InvariantCulture)).Equals("-0.056267"));
-            TestFmwk.assertTrue("add110", (zero.Add(new BigDecimal("-56267E-5")).ToString(CultureInfo.InvariantCulture)).Equals("-0.56267"));
-            TestFmwk.assertTrue("add111", (zero.Add(new BigDecimal("-56267E-4")).ToString(CultureInfo.InvariantCulture)).Equals("-5.6267"));
-            TestFmwk.assertTrue("add112", (zero.Add(new BigDecimal("-56267E-3")).ToString(CultureInfo.InvariantCulture)).Equals("-56.267"));
-            TestFmwk.assertTrue("add113", (zero.Add(new BigDecimal("-56267E-2")).ToString(CultureInfo.InvariantCulture)).Equals("-562.67"));
-            TestFmwk.assertTrue("add114", (zero.Add(new BigDecimal("-56267E-1")).ToString(CultureInfo.InvariantCulture)).Equals("-5626.7"));
-            TestFmwk.assertTrue("add115", (zero.Add(new BigDecimal("-56267E-0")).ToString(CultureInfo.InvariantCulture)).Equals("-56267"));
-            TestFmwk.assertTrue("add116", (zero.Add(new BigDecimal("-5E-10")).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000000005"));
-            TestFmwk.assertTrue("add117", (zero.Add(new BigDecimal("-5E-5")).ToString(CultureInfo.InvariantCulture)).Equals("-0.00005"));
-            TestFmwk.assertTrue("add118", (zero.Add(new BigDecimal("-5E-1")).ToString(CultureInfo.InvariantCulture)).Equals("-0.5"));
-            TestFmwk.assertTrue("add129", (zero.Add(new BigDecimal("-5E-10")).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000000005"));
-            TestFmwk.assertTrue("add130", (zero.Add(new BigDecimal("-5E-5")).ToString(CultureInfo.InvariantCulture)).Equals("-0.00005"));
-            TestFmwk.assertTrue("add131", (zero.Add(new BigDecimal("-5E-1")).ToString(CultureInfo.InvariantCulture)).Equals("-0.5"));
-            TestFmwk.assertTrue("add132", (zero.Add(new BigDecimal("-5E10")).ToString(CultureInfo.InvariantCulture)).Equals("-50000000000"));
-            TestFmwk.assertTrue("add133", (zero.Add(new BigDecimal("-5E5")).ToString(CultureInfo.InvariantCulture)).Equals("-500000"));
-            TestFmwk.assertTrue("add134", (zero.Add(new BigDecimal("-5E1")).ToString(CultureInfo.InvariantCulture)).Equals("-50"));
-            TestFmwk.assertTrue("add135", (zero.Add(new BigDecimal("-5E0")).ToString(CultureInfo.InvariantCulture)).Equals("-5"));
+            TestFmwk.assertTrue("add108", (zero.Add(BigDecimal.Parse("-56267E-10", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000056267"));
+            TestFmwk.assertTrue("add109", (zero.Add(BigDecimal.Parse("-56267E-6", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.056267"));
+            TestFmwk.assertTrue("add110", (zero.Add(BigDecimal.Parse("-56267E-5", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.56267"));
+            TestFmwk.assertTrue("add111", (zero.Add(BigDecimal.Parse("-56267E-4", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-5.6267"));
+            TestFmwk.assertTrue("add112", (zero.Add(BigDecimal.Parse("-56267E-3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-56.267"));
+            TestFmwk.assertTrue("add113", (zero.Add(BigDecimal.Parse("-56267E-2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-562.67"));
+            TestFmwk.assertTrue("add114", (zero.Add(BigDecimal.Parse("-56267E-1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-5626.7"));
+            TestFmwk.assertTrue("add115", (zero.Add(BigDecimal.Parse("-56267E-0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-56267"));
+            TestFmwk.assertTrue("add116", (zero.Add(BigDecimal.Parse("-5E-10", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000000005"));
+            TestFmwk.assertTrue("add117", (zero.Add(BigDecimal.Parse("-5E-5", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.00005"));
+            TestFmwk.assertTrue("add118", (zero.Add(BigDecimal.Parse("-5E-1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.5"));
+            TestFmwk.assertTrue("add129", (zero.Add(BigDecimal.Parse("-5E-10", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000000005"));
+            TestFmwk.assertTrue("add130", (zero.Add(BigDecimal.Parse("-5E-5", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.00005"));
+            TestFmwk.assertTrue("add131", (zero.Add(BigDecimal.Parse("-5E-1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.5"));
+            TestFmwk.assertTrue("add132", (zero.Add(BigDecimal.Parse("-5E10", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-50000000000"));
+            TestFmwk.assertTrue("add133", (zero.Add(BigDecimal.Parse("-5E5", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-500000"));
+            TestFmwk.assertTrue("add134", (zero.Add(BigDecimal.Parse("-5E1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-50"));
+            TestFmwk.assertTrue("add135", (zero.Add(BigDecimal.Parse("-5E0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-5"));
 
             // [some of the next group are really constructor tests]
-            TestFmwk.assertTrue("add140", ((new BigDecimal("00.0")).Add(new BigDecimal("0.00"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("add141", ((new BigDecimal("0.00")).Add(new BigDecimal("00.0"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("add142", ((new BigDecimal("3")).Add(new BigDecimal(".3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("3.3"));
-            TestFmwk.assertTrue("add143", ((new BigDecimal("3.")).Add(new BigDecimal(".3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("3.3"));
-            TestFmwk.assertTrue("add144", ((new BigDecimal("3.0")).Add(new BigDecimal(".3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("3.3"));
-            TestFmwk.assertTrue("add145", ((new BigDecimal("3.00")).Add(new BigDecimal(".3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("3.30"));
-            TestFmwk.assertTrue("add146", ((new BigDecimal("3")).Add(new BigDecimal("3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("6"));
-            TestFmwk.assertTrue("add147", ((new BigDecimal("3")).Add(new BigDecimal("+3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("6"));
-            TestFmwk.assertTrue("add148", ((new BigDecimal("3")).Add(new BigDecimal("-3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("add149", ((new BigDecimal("0.03")).Add(new BigDecimal("-0.03"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("add140", ((BigDecimal.Parse("00.0", numberStyle, provider)).Add(BigDecimal.Parse("0.00", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("add141", ((BigDecimal.Parse("0.00", numberStyle, provider)).Add(BigDecimal.Parse("00.0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("add142", ((BigDecimal.Parse("3", numberStyle, provider)).Add(BigDecimal.Parse(".3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("3.3"));
+            TestFmwk.assertTrue("add143", ((BigDecimal.Parse("3.", numberStyle, provider)).Add(BigDecimal.Parse(".3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("3.3"));
+            TestFmwk.assertTrue("add144", ((BigDecimal.Parse("3.0", numberStyle, provider)).Add(BigDecimal.Parse(".3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("3.3"));
+            TestFmwk.assertTrue("add145", ((BigDecimal.Parse("3.00", numberStyle, provider)).Add(BigDecimal.Parse(".3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("3.30"));
+            TestFmwk.assertTrue("add146", ((BigDecimal.Parse("3", numberStyle, provider)).Add(BigDecimal.Parse("3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("6"));
+            TestFmwk.assertTrue("add147", ((BigDecimal.Parse("3", numberStyle, provider)).Add(BigDecimal.Parse("+3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("6"));
+            TestFmwk.assertTrue("add148", ((BigDecimal.Parse("3", numberStyle, provider)).Add(BigDecimal.Parse("-3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("add149", ((BigDecimal.Parse("0.03", numberStyle, provider)).Add(BigDecimal.Parse("-0.03", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
-            TestFmwk.assertTrue("add150", ((new BigDecimal("00.0")).Add(new BigDecimal("0.00")).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("add151", ((new BigDecimal("0.00")).Add(new BigDecimal("00.0")).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("add152", ((new BigDecimal("3")).Add(new BigDecimal(".3")).ToString(CultureInfo.InvariantCulture)).Equals("3.3"));
-            TestFmwk.assertTrue("add153", ((new BigDecimal("3.")).Add(new BigDecimal(".3")).ToString(CultureInfo.InvariantCulture)).Equals("3.3"));
-            TestFmwk.assertTrue("add154", ((new BigDecimal("3.0")).Add(new BigDecimal(".3")).ToString(CultureInfo.InvariantCulture)).Equals("3.3"));
-            TestFmwk.assertTrue("add155", ((new BigDecimal("3.00")).Add(new BigDecimal(".3")).ToString(CultureInfo.InvariantCulture)).Equals("3.30"));
-            TestFmwk.assertTrue("add156", ((new BigDecimal("3")).Add(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("6"));
-            TestFmwk.assertTrue("add157", ((new BigDecimal("3")).Add(new BigDecimal("+3")).ToString(CultureInfo.InvariantCulture)).Equals("6"));
-            TestFmwk.assertTrue("add158", ((new BigDecimal("3")).Add(new BigDecimal("-3")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("add159", ((new BigDecimal("0.3")).Add(new BigDecimal("-0.3")).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("add160", ((new BigDecimal("0.03")).Add(new BigDecimal("-0.03")).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("add161", ((new BigDecimal("7E+12")).Add(new BigDecimal("-1"), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("6999999999999"));
+            TestFmwk.assertTrue("add150", ((BigDecimal.Parse("00.0", numberStyle, provider)).Add(BigDecimal.Parse("0.00", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("add151", ((BigDecimal.Parse("0.00", numberStyle, provider)).Add(BigDecimal.Parse("00.0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("add152", ((BigDecimal.Parse("3", numberStyle, provider)).Add(BigDecimal.Parse(".3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("3.3"));
+            TestFmwk.assertTrue("add153", ((BigDecimal.Parse("3.", numberStyle, provider)).Add(BigDecimal.Parse(".3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("3.3"));
+            TestFmwk.assertTrue("add154", ((BigDecimal.Parse("3.0", numberStyle, provider)).Add(BigDecimal.Parse(".3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("3.3"));
+            TestFmwk.assertTrue("add155", ((BigDecimal.Parse("3.00", numberStyle, provider)).Add(BigDecimal.Parse(".3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("3.30"));
+            TestFmwk.assertTrue("add156", ((BigDecimal.Parse("3", numberStyle, provider)).Add(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("6"));
+            TestFmwk.assertTrue("add157", ((BigDecimal.Parse("3", numberStyle, provider)).Add(BigDecimal.Parse("+3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("6"));
+            TestFmwk.assertTrue("add158", ((BigDecimal.Parse("3", numberStyle, provider)).Add(BigDecimal.Parse("-3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("add159", ((BigDecimal.Parse("0.3", numberStyle, provider)).Add(BigDecimal.Parse("-0.3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("add160", ((BigDecimal.Parse("0.03", numberStyle, provider)).Add(BigDecimal.Parse("-0.03", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("add161", ((BigDecimal.Parse("7E+12", numberStyle, provider)).Add(BigDecimal.Parse("-1", numberStyle, provider), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("6999999999999"));
 
-            TestFmwk.assertTrue("add162", ((new BigDecimal("7E+12")).Add(new BigDecimal("1.11"), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("7000000000001.11"));
+            TestFmwk.assertTrue("add162", ((BigDecimal.Parse("7E+12", numberStyle, provider)).Add(BigDecimal.Parse("1.11", numberStyle, provider), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("7000000000001.11"));
 
-            TestFmwk.assertTrue("add163", ((new BigDecimal("1.11")).Add(new BigDecimal("7E+12"), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("7000000000001.11"));
+            TestFmwk.assertTrue("add163", ((BigDecimal.Parse("1.11", numberStyle, provider)).Add(BigDecimal.Parse("7E+12", numberStyle, provider), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("7000000000001.11"));
 
 
             // input preparation tests
-            alhs = new BigDecimal("12345678900000");
-            arhs = new BigDecimal("9999999999999");
+            alhs = BigDecimal.Parse("12345678900000", numberStyle, provider);
+            arhs = BigDecimal.Parse("9999999999999", numberStyle, provider);
             TestFmwk.assertTrue("add170", (alhs.Add(arhs, mc3).ToString(CultureInfo.InvariantCulture)).Equals("2.23E+13"));
             TestFmwk.assertTrue("add171", (arhs.Add(alhs, mc3).ToString(CultureInfo.InvariantCulture)).Equals("2.23E+13"));
-            TestFmwk.assertTrue("add172", ((new BigDecimal("12E+3")).Add(new BigDecimal("3456"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.55E+4"));
+            TestFmwk.assertTrue("add172", ((BigDecimal.Parse("12E+3", numberStyle, provider)).Add(BigDecimal.Parse("3456", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.55E+4"));
             // next was 1.54E+4 under old [truncate to digits+1] rules
-            TestFmwk.assertTrue("add173", ((new BigDecimal("12E+3")).Add(new BigDecimal("3446"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.55E+4"));
-            TestFmwk.assertTrue("add174", ((new BigDecimal("12E+3")).Add(new BigDecimal("3454"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.55E+4"));
-            TestFmwk.assertTrue("add175", ((new BigDecimal("12E+3")).Add(new BigDecimal("3444"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.54E+4"));
+            TestFmwk.assertTrue("add173", ((BigDecimal.Parse("12E+3", numberStyle, provider)).Add(BigDecimal.Parse("3446", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.55E+4"));
+            TestFmwk.assertTrue("add174", ((BigDecimal.Parse("12E+3", numberStyle, provider)).Add(BigDecimal.Parse("3454", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.55E+4"));
+            TestFmwk.assertTrue("add175", ((BigDecimal.Parse("12E+3", numberStyle, provider)).Add(BigDecimal.Parse("3444", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.54E+4"));
 
-            TestFmwk.assertTrue("add176", ((new BigDecimal("3456")).Add(new BigDecimal("12E+3"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.55E+4"));
+            TestFmwk.assertTrue("add176", ((BigDecimal.Parse("3456", numberStyle, provider)).Add(BigDecimal.Parse("12E+3", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.55E+4"));
             // next was 1.54E+4 under old [truncate to digits+1] rules
-            TestFmwk.assertTrue("add177", ((new BigDecimal("3446")).Add(new BigDecimal("12E+3"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.55E+4"));
-            TestFmwk.assertTrue("add178", ((new BigDecimal("3454")).Add(new BigDecimal("12E+3"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.55E+4"));
-            TestFmwk.assertTrue("add179", ((new BigDecimal("3444")).Add(new BigDecimal("12E+3"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.54E+4"));
+            TestFmwk.assertTrue("add177", ((BigDecimal.Parse("3446", numberStyle, provider)).Add(BigDecimal.Parse("12E+3", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.55E+4"));
+            TestFmwk.assertTrue("add178", ((BigDecimal.Parse("3454", numberStyle, provider)).Add(BigDecimal.Parse("12E+3", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.55E+4"));
+            TestFmwk.assertTrue("add179", ((BigDecimal.Parse("3444", numberStyle, provider)).Add(BigDecimal.Parse("12E+3", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("1.54E+4"));
 
             try
             {
@@ -1155,17 +1165,19 @@ namespace ICU4N.Dev.Test.BigDec
         {
             bool flag = false;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
             // we assume add/subtract test function; this just
             // tests existence, exceptions, and possible results
 
-            TestFmwk.assertTrue("cpt001", ((new BigDecimal("5")).CompareTo(new BigDecimal("2"))) == 1);
-            TestFmwk.assertTrue("cpt002", ((new BigDecimal("5")).CompareTo(new BigDecimal("5"))) == 0);
-            TestFmwk.assertTrue("cpt003", ((new BigDecimal("5")).CompareTo(new BigDecimal("5.00"))) == 0);
-            TestFmwk.assertTrue("cpt004", ((new BigDecimal("0.5")).CompareTo(new BigDecimal("0.5"))) == 0);
-            TestFmwk.assertTrue("cpt005", ((new BigDecimal("2")).CompareTo(new BigDecimal("5"))) == (-1));
-            TestFmwk.assertTrue("cpt006", ((new BigDecimal("2")).CompareTo(new BigDecimal("5"), mcdef)) == (-1));
-            TestFmwk.assertTrue("cpt007", ((new BigDecimal("2")).CompareTo(new BigDecimal("5"), mc6)) == (-1));
-            TestFmwk.assertTrue("cpt008", ((new BigDecimal("2")).CompareTo(new BigDecimal("5"), mcfd)) == (-1));
+            TestFmwk.assertTrue("cpt001", ((BigDecimal.Parse("5", numberStyle, provider)).CompareTo(BigDecimal.Parse("2", numberStyle, provider))) == 1);
+            TestFmwk.assertTrue("cpt002", ((BigDecimal.Parse("5", numberStyle, provider)).CompareTo(BigDecimal.Parse("5", numberStyle, provider))) == 0);
+            TestFmwk.assertTrue("cpt003", ((BigDecimal.Parse("5", numberStyle, provider)).CompareTo(BigDecimal.Parse("5.00", numberStyle, provider))) == 0);
+            TestFmwk.assertTrue("cpt004", ((BigDecimal.Parse("0.5", numberStyle, provider)).CompareTo(BigDecimal.Parse("0.5", numberStyle, provider))) == 0);
+            TestFmwk.assertTrue("cpt005", ((BigDecimal.Parse("2", numberStyle, provider)).CompareTo(BigDecimal.Parse("5", numberStyle, provider))) == (-1));
+            TestFmwk.assertTrue("cpt006", ((BigDecimal.Parse("2", numberStyle, provider)).CompareTo(BigDecimal.Parse("5", numberStyle, provider), mcdef)) == (-1));
+            TestFmwk.assertTrue("cpt007", ((BigDecimal.Parse("2", numberStyle, provider)).CompareTo(BigDecimal.Parse("5", numberStyle, provider), mc6)) == (-1));
+            TestFmwk.assertTrue("cpt008", ((BigDecimal.Parse("2", numberStyle, provider)).CompareTo(BigDecimal.Parse("5", numberStyle, provider), mcfd)) == (-1));
             //    try
             //    {
             //        ten.CompareTo((BigDecimal)null);
@@ -1231,220 +1243,222 @@ namespace ICU4N.Dev.Test.BigDec
             RoundingMode ru;
             Exception e = null;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            TestFmwk.assertTrue("div301", ((new BigDecimal("1")).Divide(new BigDecimal("3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.333333333"));
-            TestFmwk.assertTrue("div302", ((new BigDecimal("2")).Divide(new BigDecimal("3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.666666667"));
-            TestFmwk.assertTrue("div303", ((new BigDecimal("2.4")).Divide(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.4"));
-            TestFmwk.assertTrue("div304", ((new BigDecimal("2.4")).Divide(new BigDecimal("-1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2.4"));
-            TestFmwk.assertTrue("div305", ((new BigDecimal("-2.4")).Divide(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2.4"));
-            TestFmwk.assertTrue("div306", ((new BigDecimal("-2.4")).Divide(new BigDecimal("-1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.4"));
-            TestFmwk.assertTrue("div307", ((new BigDecimal("2.40")).Divide(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.4"));
-            TestFmwk.assertTrue("div308", ((new BigDecimal("2.400")).Divide(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.4"));
-            TestFmwk.assertTrue("div309", ((new BigDecimal("2.4")).Divide(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.2"));
-            TestFmwk.assertTrue("div310", ((new BigDecimal("2.400")).Divide(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.2"));
-            TestFmwk.assertTrue("div311", ((new BigDecimal("2.")).Divide(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("div312", ((new BigDecimal("20")).Divide(new BigDecimal("20"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("div313", ((new BigDecimal("187")).Divide(new BigDecimal("187"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("div314", ((new BigDecimal("5")).Divide(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.5"));
-            TestFmwk.assertTrue("div315", ((new BigDecimal("5")).Divide(new BigDecimal("2.0"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.5"));
-            TestFmwk.assertTrue("div316", ((new BigDecimal("5")).Divide(new BigDecimal("2.000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.5"));
-            TestFmwk.assertTrue("div317", ((new BigDecimal("5")).Divide(new BigDecimal("0.200"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("25"));
-            TestFmwk.assertTrue("div318", ((new BigDecimal("999999999")).Divide(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("999999999"));
-            TestFmwk.assertTrue("div319", ((new BigDecimal("999999999.4")).Divide(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("999999999"));
-            TestFmwk.assertTrue("div320", ((new BigDecimal("999999999.5")).Divide(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("div321", ((new BigDecimal("999999999.9")).Divide(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("div322", ((new BigDecimal("999999999.999")).Divide(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("div323", ((new BigDecimal("0.0000E-50")).Divide(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div301", ((BigDecimal.Parse("1", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.333333333"));
+            TestFmwk.assertTrue("div302", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.666666667"));
+            TestFmwk.assertTrue("div303", ((BigDecimal.Parse("2.4", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.4"));
+            TestFmwk.assertTrue("div304", ((BigDecimal.Parse("2.4", numberStyle, provider)).Divide(BigDecimal.Parse("-1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2.4"));
+            TestFmwk.assertTrue("div305", ((BigDecimal.Parse("-2.4", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2.4"));
+            TestFmwk.assertTrue("div306", ((BigDecimal.Parse("-2.4", numberStyle, provider)).Divide(BigDecimal.Parse("-1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.4"));
+            TestFmwk.assertTrue("div307", ((BigDecimal.Parse("2.40", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.4"));
+            TestFmwk.assertTrue("div308", ((BigDecimal.Parse("2.400", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.4"));
+            TestFmwk.assertTrue("div309", ((BigDecimal.Parse("2.4", numberStyle, provider)).Divide(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.2"));
+            TestFmwk.assertTrue("div310", ((BigDecimal.Parse("2.400", numberStyle, provider)).Divide(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.2"));
+            TestFmwk.assertTrue("div311", ((BigDecimal.Parse("2.", numberStyle, provider)).Divide(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div312", ((BigDecimal.Parse("20", numberStyle, provider)).Divide(BigDecimal.Parse("20", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div313", ((BigDecimal.Parse("187", numberStyle, provider)).Divide(BigDecimal.Parse("187", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div314", ((BigDecimal.Parse("5", numberStyle, provider)).Divide(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.5"));
+            TestFmwk.assertTrue("div315", ((BigDecimal.Parse("5", numberStyle, provider)).Divide(BigDecimal.Parse("2.0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.5"));
+            TestFmwk.assertTrue("div316", ((BigDecimal.Parse("5", numberStyle, provider)).Divide(BigDecimal.Parse("2.000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.5"));
+            TestFmwk.assertTrue("div317", ((BigDecimal.Parse("5", numberStyle, provider)).Divide(BigDecimal.Parse("0.200", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("25"));
+            TestFmwk.assertTrue("div318", ((BigDecimal.Parse("999999999", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("999999999"));
+            TestFmwk.assertTrue("div319", ((BigDecimal.Parse("999999999.4", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("999999999"));
+            TestFmwk.assertTrue("div320", ((BigDecimal.Parse("999999999.5", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            TestFmwk.assertTrue("div321", ((BigDecimal.Parse("999999999.9", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            TestFmwk.assertTrue("div322", ((BigDecimal.Parse("999999999.999", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            TestFmwk.assertTrue("div323", ((BigDecimal.Parse("0.0000E-50", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
             // MC
-            TestFmwk.assertTrue("div325", ((new BigDecimal("999999999")).Divide(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("999999999"));
-            TestFmwk.assertTrue("div326", ((new BigDecimal("999999999")).Divide(new BigDecimal("1"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
-            TestFmwk.assertTrue("div327", ((new BigDecimal("9999999")).Divide(new BigDecimal("1"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1E+7"));
-            TestFmwk.assertTrue("div328", ((new BigDecimal("999999")).Divide(new BigDecimal("1"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("999999"));
+            TestFmwk.assertTrue("div325", ((BigDecimal.Parse("999999999", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("999999999"));
+            TestFmwk.assertTrue("div326", ((BigDecimal.Parse("999999999", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1E+9"));
+            TestFmwk.assertTrue("div327", ((BigDecimal.Parse("9999999", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1E+7"));
+            TestFmwk.assertTrue("div328", ((BigDecimal.Parse("999999", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("999999"));
 
             // check rounding explicitly [note: digits+1 truncation]
             rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundCeiling);
-            TestFmwk.assertTrue("div330", ((new BigDecimal("1.50")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
-            TestFmwk.assertTrue("div331", ((new BigDecimal("1.51")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
-            TestFmwk.assertTrue("div332", ((new BigDecimal("1.55")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
+            TestFmwk.assertTrue("div330", ((BigDecimal.Parse("1.50", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
+            TestFmwk.assertTrue("div331", ((BigDecimal.Parse("1.51", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
+            TestFmwk.assertTrue("div332", ((BigDecimal.Parse("1.55", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
             rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundDown);
-            TestFmwk.assertTrue("div333", ((new BigDecimal("1.55")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
-            TestFmwk.assertTrue("div334", ((new BigDecimal("1.59")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
+            TestFmwk.assertTrue("div333", ((BigDecimal.Parse("1.55", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
+            TestFmwk.assertTrue("div334", ((BigDecimal.Parse("1.59", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
             rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundFloor);
-            TestFmwk.assertTrue("div335", ((new BigDecimal("1.55")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
-            TestFmwk.assertTrue("div336", ((new BigDecimal("1.59")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
+            TestFmwk.assertTrue("div335", ((BigDecimal.Parse("1.55", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
+            TestFmwk.assertTrue("div336", ((BigDecimal.Parse("1.59", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
             rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundHalfDown);
-            TestFmwk.assertTrue("div337", ((new BigDecimal("1.45")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.4"));
-            TestFmwk.assertTrue("div338", ((new BigDecimal("1.50")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
-            TestFmwk.assertTrue("div339", ((new BigDecimal("1.55")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
+            TestFmwk.assertTrue("div337", ((BigDecimal.Parse("1.45", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.4"));
+            TestFmwk.assertTrue("div338", ((BigDecimal.Parse("1.50", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
+            TestFmwk.assertTrue("div339", ((BigDecimal.Parse("1.55", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
             rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundHalfEven);
-            TestFmwk.assertTrue("div340", ((new BigDecimal("1.45")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.4"));
-            TestFmwk.assertTrue("div341", ((new BigDecimal("1.50")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
-            TestFmwk.assertTrue("div342", ((new BigDecimal("1.55")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
+            TestFmwk.assertTrue("div340", ((BigDecimal.Parse("1.45", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.4"));
+            TestFmwk.assertTrue("div341", ((BigDecimal.Parse("1.50", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
+            TestFmwk.assertTrue("div342", ((BigDecimal.Parse("1.55", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
             rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundHalfUp);
-            TestFmwk.assertTrue("div343", ((new BigDecimal("1.45")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
-            TestFmwk.assertTrue("div344", ((new BigDecimal("1.50")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
-            TestFmwk.assertTrue("div345", ((new BigDecimal("1.55")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
+            TestFmwk.assertTrue("div343", ((BigDecimal.Parse("1.45", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
+            TestFmwk.assertTrue("div344", ((BigDecimal.Parse("1.50", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
+            TestFmwk.assertTrue("div345", ((BigDecimal.Parse("1.55", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
             rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundUp);
-            TestFmwk.assertTrue("div346", ((new BigDecimal("1.50")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
-            TestFmwk.assertTrue("div347", ((new BigDecimal("1.51")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
-            TestFmwk.assertTrue("div348", ((new BigDecimal("1.55")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
+            TestFmwk.assertTrue("div346", ((BigDecimal.Parse("1.50", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
+            TestFmwk.assertTrue("div347", ((BigDecimal.Parse("1.51", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
+            TestFmwk.assertTrue("div348", ((BigDecimal.Parse("1.55", numberStyle, provider)).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
 
             // fixed point...
-            TestFmwk.assertTrue("div350", ((new BigDecimal("1")).Divide(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div351", ((new BigDecimal("2")).Divide(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("div352", ((new BigDecimal("2.4")).Divide(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("2.4"));
-            TestFmwk.assertTrue("div353", ((new BigDecimal("2.4")).Divide(new BigDecimal("-1")).ToString(CultureInfo.InvariantCulture)).Equals("-2.4"));
-            TestFmwk.assertTrue("div354", ((new BigDecimal("-2.4")).Divide(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("-2.4"));
-            TestFmwk.assertTrue("div355", ((new BigDecimal("-2.4")).Divide(new BigDecimal("-1")).ToString(CultureInfo.InvariantCulture)).Equals("2.4"));
-            TestFmwk.assertTrue("div356", ((new BigDecimal("2.40")).Divide(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("2.40"));
-            TestFmwk.assertTrue("div357", ((new BigDecimal("2.400")).Divide(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("2.400"));
-            TestFmwk.assertTrue("div358", ((new BigDecimal("2.4")).Divide(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("1.2"));
-            TestFmwk.assertTrue("div359", ((new BigDecimal("2.400")).Divide(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("1.200"));
-            TestFmwk.assertTrue("div360", ((new BigDecimal("2.")).Divide(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("div361", ((new BigDecimal("20")).Divide(new BigDecimal("20")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("div362", ((new BigDecimal("187")).Divide(new BigDecimal("187")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("div363", ((new BigDecimal("5")).Divide(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("3"));
-            TestFmwk.assertTrue("div364", ((new BigDecimal("5")).Divide(new BigDecimal("2.0")).ToString(CultureInfo.InvariantCulture)).Equals("3"));
-            TestFmwk.assertTrue("div365", ((new BigDecimal("5")).Divide(new BigDecimal("2.000")).ToString(CultureInfo.InvariantCulture)).Equals("3"));
-            TestFmwk.assertTrue("div366", ((new BigDecimal("5")).Divide(new BigDecimal("0.200")).ToString(CultureInfo.InvariantCulture)).Equals("25"));
-            TestFmwk.assertTrue("div367", ((new BigDecimal("5.0")).Divide(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("2.5"));
-            TestFmwk.assertTrue("div368", ((new BigDecimal("5.0")).Divide(new BigDecimal("2.0")).ToString(CultureInfo.InvariantCulture)).Equals("2.5"));
-            TestFmwk.assertTrue("div369", ((new BigDecimal("5.0")).Divide(new BigDecimal("2.000")).ToString(CultureInfo.InvariantCulture)).Equals("2.5"));
-            TestFmwk.assertTrue("div370", ((new BigDecimal("5.0")).Divide(new BigDecimal("0.200")).ToString(CultureInfo.InvariantCulture)).Equals("25.0"));
-            TestFmwk.assertTrue("div371", ((new BigDecimal("999999999")).Divide(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("999999999"));
-            TestFmwk.assertTrue("div372", ((new BigDecimal("999999999.4")).Divide(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("999999999.4"));
-            TestFmwk.assertTrue("div373", ((new BigDecimal("999999999.5")).Divide(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("999999999.5"));
-            TestFmwk.assertTrue("div374", ((new BigDecimal("999999999.9")).Divide(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("999999999.9"));
-            TestFmwk.assertTrue("div375", ((new BigDecimal("999999999.999")).Divide(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("999999999.999"));
-            TestFmwk.assertTrue("div376", ((new BigDecimal("0.0000E-5")).Divide(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div377", ((new BigDecimal("0.000000000")).Divide(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("0.000000000"));
+            TestFmwk.assertTrue("div350", ((BigDecimal.Parse("1", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div351", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div352", ((BigDecimal.Parse("2.4", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.4"));
+            TestFmwk.assertTrue("div353", ((BigDecimal.Parse("2.4", numberStyle, provider)).Divide(BigDecimal.Parse("-1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-2.4"));
+            TestFmwk.assertTrue("div354", ((BigDecimal.Parse("-2.4", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-2.4"));
+            TestFmwk.assertTrue("div355", ((BigDecimal.Parse("-2.4", numberStyle, provider)).Divide(BigDecimal.Parse("-1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.4"));
+            TestFmwk.assertTrue("div356", ((BigDecimal.Parse("2.40", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.40"));
+            TestFmwk.assertTrue("div357", ((BigDecimal.Parse("2.400", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.400"));
+            TestFmwk.assertTrue("div358", ((BigDecimal.Parse("2.4", numberStyle, provider)).Divide(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1.2"));
+            TestFmwk.assertTrue("div359", ((BigDecimal.Parse("2.400", numberStyle, provider)).Divide(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1.200"));
+            TestFmwk.assertTrue("div360", ((BigDecimal.Parse("2.", numberStyle, provider)).Divide(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div361", ((BigDecimal.Parse("20", numberStyle, provider)).Divide(BigDecimal.Parse("20", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div362", ((BigDecimal.Parse("187", numberStyle, provider)).Divide(BigDecimal.Parse("187", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div363", ((BigDecimal.Parse("5", numberStyle, provider)).Divide(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+            TestFmwk.assertTrue("div364", ((BigDecimal.Parse("5", numberStyle, provider)).Divide(BigDecimal.Parse("2.0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+            TestFmwk.assertTrue("div365", ((BigDecimal.Parse("5", numberStyle, provider)).Divide(BigDecimal.Parse("2.000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+            TestFmwk.assertTrue("div366", ((BigDecimal.Parse("5", numberStyle, provider)).Divide(BigDecimal.Parse("0.200", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("25"));
+            TestFmwk.assertTrue("div367", ((BigDecimal.Parse("5.0", numberStyle, provider)).Divide(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.5"));
+            TestFmwk.assertTrue("div368", ((BigDecimal.Parse("5.0", numberStyle, provider)).Divide(BigDecimal.Parse("2.0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.5"));
+            TestFmwk.assertTrue("div369", ((BigDecimal.Parse("5.0", numberStyle, provider)).Divide(BigDecimal.Parse("2.000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.5"));
+            TestFmwk.assertTrue("div370", ((BigDecimal.Parse("5.0", numberStyle, provider)).Divide(BigDecimal.Parse("0.200", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("25.0"));
+            TestFmwk.assertTrue("div371", ((BigDecimal.Parse("999999999", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("999999999"));
+            TestFmwk.assertTrue("div372", ((BigDecimal.Parse("999999999.4", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("999999999.4"));
+            TestFmwk.assertTrue("div373", ((BigDecimal.Parse("999999999.5", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("999999999.5"));
+            TestFmwk.assertTrue("div374", ((BigDecimal.Parse("999999999.9", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("999999999.9"));
+            TestFmwk.assertTrue("div375", ((BigDecimal.Parse("999999999.999", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("999999999.999"));
+            TestFmwk.assertTrue("div376", ((BigDecimal.Parse("0.0000E-5", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div377", ((BigDecimal.Parse("0.000000000", numberStyle, provider)).Divide(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.000000000"));
 
             // - Fixed point; explicit scales & rounds [old BigDecimal divides]
             rhu = MathContext.RoundHalfUp;
             rd = MathContext.RoundDown;
-            TestFmwk.assertTrue("div001", ((new BigDecimal("0")).Divide(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div002", ((new BigDecimal("0")).Divide(new BigDecimal("3"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div003", ((new BigDecimal("0")).Divide(new BigDecimal("3"), 0, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div004", ((new BigDecimal("0")).Divide(new BigDecimal("3"), 1, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("div005", ((new BigDecimal("0")).Divide(new BigDecimal("3"), 2, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("div006", ((new BigDecimal("0")).Divide(new BigDecimal("3"), 3, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.000"));
-            TestFmwk.assertTrue("div007", ((new BigDecimal("0")).Divide(new BigDecimal("3"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.0000"));
-            TestFmwk.assertTrue("div008", ((new BigDecimal("1")).Divide(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div009", ((new BigDecimal("1")).Divide(new BigDecimal("3"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div010", ((new BigDecimal("1")).Divide(new BigDecimal("3"), 0, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div011", ((new BigDecimal("1")).Divide(new BigDecimal("3"), 1, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.3"));
-            TestFmwk.assertTrue("div012", ((new BigDecimal("1")).Divide(new BigDecimal("3"), 2, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.33"));
-            TestFmwk.assertTrue("div013", ((new BigDecimal("1")).Divide(new BigDecimal("3"), 3, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.333"));
-            TestFmwk.assertTrue("div014", ((new BigDecimal("1")).Divide(new BigDecimal("3"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.3333"));
-            TestFmwk.assertTrue("div015", ((new BigDecimal("2")).Divide(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("div016", ((new BigDecimal("2")).Divide(new BigDecimal("3"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("div017", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 0, rhu).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("div018", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 1, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.7"));
-            TestFmwk.assertTrue("div019", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 2, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.67"));
-            TestFmwk.assertTrue("div020", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 3, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.667"));
-            TestFmwk.assertTrue("div021", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.6667"));
+            TestFmwk.assertTrue("div001", ((BigDecimal.Parse("0", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div002", ((BigDecimal.Parse("0", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div003", ((BigDecimal.Parse("0", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 0, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div004", ((BigDecimal.Parse("0", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 1, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("div005", ((BigDecimal.Parse("0", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 2, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("div006", ((BigDecimal.Parse("0", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 3, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.000"));
+            TestFmwk.assertTrue("div007", ((BigDecimal.Parse("0", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.0000"));
+            TestFmwk.assertTrue("div008", ((BigDecimal.Parse("1", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div009", ((BigDecimal.Parse("1", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div010", ((BigDecimal.Parse("1", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 0, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div011", ((BigDecimal.Parse("1", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 1, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.3"));
+            TestFmwk.assertTrue("div012", ((BigDecimal.Parse("1", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 2, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.33"));
+            TestFmwk.assertTrue("div013", ((BigDecimal.Parse("1", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 3, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.333"));
+            TestFmwk.assertTrue("div014", ((BigDecimal.Parse("1", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.3333"));
+            TestFmwk.assertTrue("div015", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div016", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div017", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 0, rhu).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div018", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 1, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.7"));
+            TestFmwk.assertTrue("div019", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 2, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.67"));
+            TestFmwk.assertTrue("div020", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 3, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.667"));
+            TestFmwk.assertTrue("div021", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.6667"));
 
-            TestFmwk.assertTrue("div030", ((new BigDecimal("1000")).Divide(new BigDecimal("2000"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.5000"));
-            TestFmwk.assertTrue("div031", ((new BigDecimal("1000")).Divide(new BigDecimal("2000"), 3, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.500"));
-            TestFmwk.assertTrue("div032", ((new BigDecimal("1000")).Divide(new BigDecimal("2000"), 2, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.50"));
-            TestFmwk.assertTrue("div033", ((new BigDecimal("1000")).Divide(new BigDecimal("2000"), 1, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
-            TestFmwk.assertTrue("div034", ((new BigDecimal("1000")).Divide(new BigDecimal("2000"), 0, rhu).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div030", ((BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("2000", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.5000"));
+            TestFmwk.assertTrue("div031", ((BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("2000", numberStyle, provider), 3, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.500"));
+            TestFmwk.assertTrue("div032", ((BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("2000", numberStyle, provider), 2, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.50"));
+            TestFmwk.assertTrue("div033", ((BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("2000", numberStyle, provider), 1, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
+            TestFmwk.assertTrue("div034", ((BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("2000", numberStyle, provider), 0, rhu).ToString(CultureInfo.InvariantCulture)).Equals("1"));
 
-            TestFmwk.assertTrue("div035", ((new BigDecimal("100")).Divide(new BigDecimal("5000"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.0200"));
-            TestFmwk.assertTrue("div036", ((new BigDecimal("100")).Divide(new BigDecimal("5000"), 3, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.020"));
-            TestFmwk.assertTrue("div037", ((new BigDecimal("100")).Divide(new BigDecimal("5000"), 2, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.02"));
-            TestFmwk.assertTrue("div038", ((new BigDecimal("100")).Divide(new BigDecimal("5000"), 1, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("div039", ((new BigDecimal("100")).Divide(new BigDecimal("5000"), 0, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div035", ((BigDecimal.Parse("100", numberStyle, provider)).Divide(BigDecimal.Parse("5000", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.0200"));
+            TestFmwk.assertTrue("div036", ((BigDecimal.Parse("100", numberStyle, provider)).Divide(BigDecimal.Parse("5000", numberStyle, provider), 3, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.020"));
+            TestFmwk.assertTrue("div037", ((BigDecimal.Parse("100", numberStyle, provider)).Divide(BigDecimal.Parse("5000", numberStyle, provider), 2, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.02"));
+            TestFmwk.assertTrue("div038", ((BigDecimal.Parse("100", numberStyle, provider)).Divide(BigDecimal.Parse("5000", numberStyle, provider), 1, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("div039", ((BigDecimal.Parse("100", numberStyle, provider)).Divide(BigDecimal.Parse("5000", numberStyle, provider), 0, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
-            TestFmwk.assertTrue("div040", ((new BigDecimal("9.99999999")).Divide(new BigDecimal("9.77777777"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0227"));
-            TestFmwk.assertTrue("div041", ((new BigDecimal("9.9999999")).Divide(new BigDecimal("9.7777777"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0227"));
-            TestFmwk.assertTrue("div042", ((new BigDecimal("9.999999")).Divide(new BigDecimal("9.777777"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0227"));
-            TestFmwk.assertTrue("div043", ((new BigDecimal("9.77777777")).Divide(new BigDecimal("9.99999999"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
-            TestFmwk.assertTrue("div044", ((new BigDecimal("9.7777777")).Divide(new BigDecimal("9.9999999"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
-            TestFmwk.assertTrue("div045", ((new BigDecimal("9.777777")).Divide(new BigDecimal("9.999999"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
-            TestFmwk.assertTrue("div046", ((new BigDecimal("9.77777")).Divide(new BigDecimal("9.99999"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
-            TestFmwk.assertTrue("div047", ((new BigDecimal("9.7777")).Divide(new BigDecimal("9.9999"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
-            TestFmwk.assertTrue("div048", ((new BigDecimal("9.777")).Divide(new BigDecimal("9.999"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
-            TestFmwk.assertTrue("div049", ((new BigDecimal("9.77")).Divide(new BigDecimal("9.99"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9780"));
-            TestFmwk.assertTrue("div050", ((new BigDecimal("9.7")).Divide(new BigDecimal("9.9"), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9798"));
-            TestFmwk.assertTrue("div051", ((new BigDecimal("9.")).Divide(new BigDecimal("9."), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0000"));
+            TestFmwk.assertTrue("div040", ((BigDecimal.Parse("9.99999999", numberStyle, provider)).Divide(BigDecimal.Parse("9.77777777", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0227"));
+            TestFmwk.assertTrue("div041", ((BigDecimal.Parse("9.9999999", numberStyle, provider)).Divide(BigDecimal.Parse("9.7777777", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0227"));
+            TestFmwk.assertTrue("div042", ((BigDecimal.Parse("9.999999", numberStyle, provider)).Divide(BigDecimal.Parse("9.777777", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0227"));
+            TestFmwk.assertTrue("div043", ((BigDecimal.Parse("9.77777777", numberStyle, provider)).Divide(BigDecimal.Parse("9.99999999", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
+            TestFmwk.assertTrue("div044", ((BigDecimal.Parse("9.7777777", numberStyle, provider)).Divide(BigDecimal.Parse("9.9999999", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
+            TestFmwk.assertTrue("div045", ((BigDecimal.Parse("9.777777", numberStyle, provider)).Divide(BigDecimal.Parse("9.999999", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
+            TestFmwk.assertTrue("div046", ((BigDecimal.Parse("9.77777", numberStyle, provider)).Divide(BigDecimal.Parse("9.99999", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
+            TestFmwk.assertTrue("div047", ((BigDecimal.Parse("9.7777", numberStyle, provider)).Divide(BigDecimal.Parse("9.9999", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
+            TestFmwk.assertTrue("div048", ((BigDecimal.Parse("9.777", numberStyle, provider)).Divide(BigDecimal.Parse("9.999", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
+            TestFmwk.assertTrue("div049", ((BigDecimal.Parse("9.77", numberStyle, provider)).Divide(BigDecimal.Parse("9.99", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9780"));
+            TestFmwk.assertTrue("div050", ((BigDecimal.Parse("9.7", numberStyle, provider)).Divide(BigDecimal.Parse("9.9", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9798"));
+            TestFmwk.assertTrue("div051", ((BigDecimal.Parse("9.", numberStyle, provider)).Divide(BigDecimal.Parse("9.", numberStyle, provider), 4, rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0000"));
 
-            TestFmwk.assertTrue("div060", ((new BigDecimal("9.99999999")).Divide(new BigDecimal("9.77777777"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.02272727"));
-            TestFmwk.assertTrue("div061", ((new BigDecimal("9.9999999")).Divide(new BigDecimal("9.7777777"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0227273"));
-            TestFmwk.assertTrue("div062", ((new BigDecimal("9.999999")).Divide(new BigDecimal("9.777777"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.022727"));
-            TestFmwk.assertTrue("div063", ((new BigDecimal("9.77777777")).Divide(new BigDecimal("9.99999999"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.97777778"));
-            TestFmwk.assertTrue("div064", ((new BigDecimal("9.7777777")).Divide(new BigDecimal("9.9999999"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9777778"));
-            TestFmwk.assertTrue("div065", ((new BigDecimal("9.777777")).Divide(new BigDecimal("9.999999"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.977778"));
-            TestFmwk.assertTrue("div066", ((new BigDecimal("9.77777")).Divide(new BigDecimal("9.99999"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.97778"));
-            TestFmwk.assertTrue("div067", ((new BigDecimal("9.7777")).Divide(new BigDecimal("9.9999"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
-            TestFmwk.assertTrue("div068", ((new BigDecimal("9.777")).Divide(new BigDecimal("9.999"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.978"));
-            TestFmwk.assertTrue("div069", ((new BigDecimal("9.77")).Divide(new BigDecimal("9.99"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.98"));
-            TestFmwk.assertTrue("div070", ((new BigDecimal("9.7")).Divide(new BigDecimal("9.9"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
-            TestFmwk.assertTrue("div071", ((new BigDecimal("9.")).Divide(new BigDecimal("9."), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div060", ((BigDecimal.Parse("9.99999999", numberStyle, provider)).Divide(BigDecimal.Parse("9.77777777", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.02272727"));
+            TestFmwk.assertTrue("div061", ((BigDecimal.Parse("9.9999999", numberStyle, provider)).Divide(BigDecimal.Parse("9.7777777", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0227273"));
+            TestFmwk.assertTrue("div062", ((BigDecimal.Parse("9.999999", numberStyle, provider)).Divide(BigDecimal.Parse("9.777777", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.022727"));
+            TestFmwk.assertTrue("div063", ((BigDecimal.Parse("9.77777777", numberStyle, provider)).Divide(BigDecimal.Parse("9.99999999", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.97777778"));
+            TestFmwk.assertTrue("div064", ((BigDecimal.Parse("9.7777777", numberStyle, provider)).Divide(BigDecimal.Parse("9.9999999", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9777778"));
+            TestFmwk.assertTrue("div065", ((BigDecimal.Parse("9.777777", numberStyle, provider)).Divide(BigDecimal.Parse("9.999999", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.977778"));
+            TestFmwk.assertTrue("div066", ((BigDecimal.Parse("9.77777", numberStyle, provider)).Divide(BigDecimal.Parse("9.99999", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.97778"));
+            TestFmwk.assertTrue("div067", ((BigDecimal.Parse("9.7777", numberStyle, provider)).Divide(BigDecimal.Parse("9.9999", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.9778"));
+            TestFmwk.assertTrue("div068", ((BigDecimal.Parse("9.777", numberStyle, provider)).Divide(BigDecimal.Parse("9.999", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.978"));
+            TestFmwk.assertTrue("div069", ((BigDecimal.Parse("9.77", numberStyle, provider)).Divide(BigDecimal.Parse("9.99", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0.98"));
+            TestFmwk.assertTrue("div070", ((BigDecimal.Parse("9.7", numberStyle, provider)).Divide(BigDecimal.Parse("9.9", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
+            TestFmwk.assertTrue("div071", ((BigDecimal.Parse("9.", numberStyle, provider)).Divide(BigDecimal.Parse("9.", numberStyle, provider), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1"));
 
             rd = MathContext.RoundDown; // test this is actually being used
-            TestFmwk.assertTrue("div080", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 0, rd).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div081", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 1, rd).ToString(CultureInfo.InvariantCulture)).Equals("0.6"));
-            TestFmwk.assertTrue("div082", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 2, rd).ToString(CultureInfo.InvariantCulture)).Equals("0.66"));
-            TestFmwk.assertTrue("div083", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 3, rd).ToString(CultureInfo.InvariantCulture)).Equals("0.666"));
-            TestFmwk.assertTrue("div084", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 4, rd).ToString(CultureInfo.InvariantCulture)).Equals("0.6666"));
+            TestFmwk.assertTrue("div080", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 0, rd).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div081", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 1, rd).ToString(CultureInfo.InvariantCulture)).Equals("0.6"));
+            TestFmwk.assertTrue("div082", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 2, rd).ToString(CultureInfo.InvariantCulture)).Equals("0.66"));
+            TestFmwk.assertTrue("div083", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 3, rd).ToString(CultureInfo.InvariantCulture)).Equals("0.666"));
+            TestFmwk.assertTrue("div084", ((BigDecimal.Parse("2", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), 4, rd).ToString(CultureInfo.InvariantCulture)).Equals("0.6666"));
 
             ru = MathContext.RoundUnnecessary; // check for some 0 residues
-            TestFmwk.assertTrue("div090", ((new BigDecimal("1000")).Divide(new BigDecimal("5"), 4, ru).ToString(CultureInfo.InvariantCulture)).Equals("200.0000"));
-            TestFmwk.assertTrue("div091", ((new BigDecimal("1000")).Divide(new BigDecimal("50"), 4, ru).ToString(CultureInfo.InvariantCulture)).Equals("20.0000"));
-            TestFmwk.assertTrue("div092", ((new BigDecimal("1000")).Divide(new BigDecimal("500"), 4, ru).ToString(CultureInfo.InvariantCulture)).Equals("2.0000"));
-            TestFmwk.assertTrue("div093", ((new BigDecimal("1000")).Divide(new BigDecimal("5000"), 4, ru).ToString(CultureInfo.InvariantCulture)).Equals("0.2000"));
-            TestFmwk.assertTrue("div094", ((new BigDecimal("1000")).Divide(new BigDecimal("5000"), 3, ru).ToString(CultureInfo.InvariantCulture)).Equals("0.200"));
-            TestFmwk.assertTrue("div095", ((new BigDecimal("1000")).Divide(new BigDecimal("5000"), 2, ru).ToString(CultureInfo.InvariantCulture)).Equals("0.20"));
-            TestFmwk.assertTrue("div096", ((new BigDecimal("1000")).Divide(new BigDecimal("5000"), 1, ru).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("div090", ((BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("5", numberStyle, provider), 4, ru).ToString(CultureInfo.InvariantCulture)).Equals("200.0000"));
+            TestFmwk.assertTrue("div091", ((BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("50", numberStyle, provider), 4, ru).ToString(CultureInfo.InvariantCulture)).Equals("20.0000"));
+            TestFmwk.assertTrue("div092", ((BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("500", numberStyle, provider), 4, ru).ToString(CultureInfo.InvariantCulture)).Equals("2.0000"));
+            TestFmwk.assertTrue("div093", ((BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("5000", numberStyle, provider), 4, ru).ToString(CultureInfo.InvariantCulture)).Equals("0.2000"));
+            TestFmwk.assertTrue("div094", ((BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("5000", numberStyle, provider), 3, ru).ToString(CultureInfo.InvariantCulture)).Equals("0.200"));
+            TestFmwk.assertTrue("div095", ((BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("5000", numberStyle, provider), 2, ru).ToString(CultureInfo.InvariantCulture)).Equals("0.20"));
+            TestFmwk.assertTrue("div096", ((BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("5000", numberStyle, provider), 1, ru).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
 
             // check rounding explicitly
-            TestFmwk.assertTrue("div101", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("0.06"));
-            TestFmwk.assertTrue("div102", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("div103", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("div104", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
-            TestFmwk.assertTrue("div105", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("div106", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div107", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
-            TestFmwk.assertTrue("div108", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("div109", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div101", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 2, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("0.06"));
+            TestFmwk.assertTrue("div102", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 1, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("div103", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 0, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div104", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 2, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
+            TestFmwk.assertTrue("div105", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 1, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("div106", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 0, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div107", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 2, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
+            TestFmwk.assertTrue("div108", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 1, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("div109", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 0, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
-            TestFmwk.assertTrue("div110", ((new BigDecimal("0.045")).Divide(one, 2, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.04"));
-            TestFmwk.assertTrue("div111", ((new BigDecimal("0.045")).Divide(one, 1, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("div112", ((new BigDecimal("0.045")).Divide(one, 0, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div113", ((new BigDecimal("0.050")).Divide(one, 2, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
-            TestFmwk.assertTrue("div114", ((new BigDecimal("0.050")).Divide(one, 1, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("div115", ((new BigDecimal("0.050")).Divide(one, 0, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div116", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
-            TestFmwk.assertTrue("div117", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("div118", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div110", ((BigDecimal.Parse("0.045", numberStyle, provider)).Divide(one, 2, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.04"));
+            TestFmwk.assertTrue("div111", ((BigDecimal.Parse("0.045", numberStyle, provider)).Divide(one, 1, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("div112", ((BigDecimal.Parse("0.045", numberStyle, provider)).Divide(one, 0, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div113", ((BigDecimal.Parse("0.050", numberStyle, provider)).Divide(one, 2, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
+            TestFmwk.assertTrue("div114", ((BigDecimal.Parse("0.050", numberStyle, provider)).Divide(one, 1, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("div115", ((BigDecimal.Parse("0.050", numberStyle, provider)).Divide(one, 0, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div116", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 2, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
+            TestFmwk.assertTrue("div117", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 1, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("div118", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 0, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
-            TestFmwk.assertTrue("div120", ((new BigDecimal("0.045")).Divide(one, 2, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.04"));
-            TestFmwk.assertTrue("div121", ((new BigDecimal("0.045")).Divide(one, 1, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("div122", ((new BigDecimal("0.045")).Divide(one, 0, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div123", ((new BigDecimal("0.050")).Divide(one, 2, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
-            TestFmwk.assertTrue("div124", ((new BigDecimal("0.050")).Divide(one, 1, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("div125", ((new BigDecimal("0.050")).Divide(one, 0, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div126", ((new BigDecimal("0.150")).Divide(one, 2, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.15"));
-            TestFmwk.assertTrue("div127", ((new BigDecimal("0.150")).Divide(one, 1, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
-            TestFmwk.assertTrue("div128", ((new BigDecimal("0.150")).Divide(one, 0, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div129", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.06"));
-            TestFmwk.assertTrue("div130", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("div131", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div120", ((BigDecimal.Parse("0.045", numberStyle, provider)).Divide(one, 2, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.04"));
+            TestFmwk.assertTrue("div121", ((BigDecimal.Parse("0.045", numberStyle, provider)).Divide(one, 1, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("div122", ((BigDecimal.Parse("0.045", numberStyle, provider)).Divide(one, 0, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div123", ((BigDecimal.Parse("0.050", numberStyle, provider)).Divide(one, 2, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
+            TestFmwk.assertTrue("div124", ((BigDecimal.Parse("0.050", numberStyle, provider)).Divide(one, 1, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("div125", ((BigDecimal.Parse("0.050", numberStyle, provider)).Divide(one, 0, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div126", ((BigDecimal.Parse("0.150", numberStyle, provider)).Divide(one, 2, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.15"));
+            TestFmwk.assertTrue("div127", ((BigDecimal.Parse("0.150", numberStyle, provider)).Divide(one, 1, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("div128", ((BigDecimal.Parse("0.150", numberStyle, provider)).Divide(one, 0, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div129", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 2, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.06"));
+            TestFmwk.assertTrue("div130", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 1, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("div131", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 0, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
-            TestFmwk.assertTrue("div140", ((new BigDecimal("0.045")).Divide(one, 2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
-            TestFmwk.assertTrue("div141", ((new BigDecimal("0.045")).Divide(one, 1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("div142", ((new BigDecimal("0.045")).Divide(one, 0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div143", ((new BigDecimal("0.050")).Divide(one, 2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
-            TestFmwk.assertTrue("div144", ((new BigDecimal("0.050")).Divide(one, 1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("div145", ((new BigDecimal("0.050")).Divide(one, 0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div146", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.06"));
-            TestFmwk.assertTrue("div147", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("div148", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div140", ((BigDecimal.Parse("0.045", numberStyle, provider)).Divide(one, 2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
+            TestFmwk.assertTrue("div141", ((BigDecimal.Parse("0.045", numberStyle, provider)).Divide(one, 1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("div142", ((BigDecimal.Parse("0.045", numberStyle, provider)).Divide(one, 0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div143", ((BigDecimal.Parse("0.050", numberStyle, provider)).Divide(one, 2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
+            TestFmwk.assertTrue("div144", ((BigDecimal.Parse("0.050", numberStyle, provider)).Divide(one, 1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("div145", ((BigDecimal.Parse("0.050", numberStyle, provider)).Divide(one, 0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div146", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.06"));
+            TestFmwk.assertTrue("div147", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("div148", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
-            TestFmwk.assertTrue("div150", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("0.06"));
-            TestFmwk.assertTrue("div151", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("div52.", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div150", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 2, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("0.06"));
+            TestFmwk.assertTrue("div151", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 1, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("div52.", ((BigDecimal.Parse("0.055", numberStyle, provider)).Divide(one, 0, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
 
             // - error conditions ---
             try
@@ -1470,7 +1484,7 @@ namespace ICU4N.Dev.Test.BigDec
 
             try
             {
-                (new BigDecimal("1")).Divide(new BigDecimal("3"), -8, 0);
+                (BigDecimal.Parse("1", numberStyle, provider)).Divide(BigDecimal.Parse("3", numberStyle, provider), -8, 0);
                 flag = false;
             }
             catch (ArgumentOutOfRangeException e34)
@@ -1482,7 +1496,7 @@ namespace ICU4N.Dev.Test.BigDec
 
             try
             {
-                (new BigDecimal("1000")).Divide(new BigDecimal("5000"), 0, MathContext.RoundUnnecessary);
+                (BigDecimal.Parse("1000", numberStyle, provider)).Divide(BigDecimal.Parse("5000", numberStyle, provider), 0, MathContext.RoundUnnecessary);
                 flag = false;
             }
             catch (ArithmeticException e35)
@@ -1493,7 +1507,7 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("div204", flag);
             try
             {
-                (new BigDecimal("1001")).Divide(new BigDecimal("10"), 0, MathContext.RoundUnnecessary);
+                (BigDecimal.Parse("1001", numberStyle, provider)).Divide(BigDecimal.Parse("10", numberStyle, provider), 0, MathContext.RoundUnnecessary);
                 flag = false;
             }
             catch (ArithmeticException e36)
@@ -1504,7 +1518,7 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("div205", flag);
             try
             {
-                (new BigDecimal("1001")).Divide(new BigDecimal("100"), 1, MathContext.RoundUnnecessary);
+                (BigDecimal.Parse("1001", numberStyle, provider)).Divide(BigDecimal.Parse("100", numberStyle, provider), 1, MathContext.RoundUnnecessary);
                 flag = false;
             }
             catch (ArithmeticException e37)
@@ -1515,8 +1529,8 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("div206", flag);
             try
             {
-                (new BigDecimal("10001")).Divide(
-                        new BigDecimal("10000"), 1,
+                (BigDecimal.Parse("10001", numberStyle, provider)).Divide(
+                        BigDecimal.Parse("10000", numberStyle, provider), 1,
                         MathContext.RoundUnnecessary);
                 flag = false;
             }
@@ -1528,8 +1542,8 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("div207", flag);
             try
             {
-                (new BigDecimal("1.0001")).Divide(
-                        new BigDecimal("1"), 1,
+                (BigDecimal.Parse("1.0001", numberStyle, provider)).Divide(
+                        BigDecimal.Parse("1", numberStyle, provider), 1,
                         MathContext.RoundUnnecessary);
                 flag = false;
             }
@@ -1542,8 +1556,8 @@ namespace ICU4N.Dev.Test.BigDec
 
             try
             {
-                (new BigDecimal("5"))
-                        .Divide(new BigDecimal("0.00"));
+                (BigDecimal.Parse("5", numberStyle, provider))
+                        .Divide(BigDecimal.Parse("0.00", numberStyle, provider));
                 flag = false;
             }
             catch (ArithmeticException e40)
@@ -1589,42 +1603,44 @@ namespace ICU4N.Dev.Test.BigDec
         {
             bool flag = false;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            TestFmwk.assertTrue("dvI001", ((new BigDecimal("101.3")).DivideInteger(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("101"));
-            TestFmwk.assertTrue("dvI002", ((new BigDecimal("101.0")).DivideInteger(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("101"));
-            TestFmwk.assertTrue("dvI003", ((new BigDecimal("101.3")).DivideInteger(new BigDecimal("3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("33"));
-            TestFmwk.assertTrue("dvI004", ((new BigDecimal("101.0")).DivideInteger(new BigDecimal("3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("33"));
-            TestFmwk.assertTrue("dvI005", ((new BigDecimal("2.4")).DivideInteger(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("dvI006", ((new BigDecimal("2.400")).DivideInteger(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("dvI007", ((new BigDecimal("18")).DivideInteger(new BigDecimal("18"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("dvI008", ((new BigDecimal("1120")).DivideInteger(new BigDecimal("1000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("dvI009", ((new BigDecimal("2.4")).DivideInteger(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("dvI010", ((new BigDecimal("2.400")).DivideInteger(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("dvI011", ((new BigDecimal("0.5")).DivideInteger(new BigDecimal("2.000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("dvI012", ((new BigDecimal("8.005")).DivideInteger(new BigDecimal("7"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("dvI013", ((new BigDecimal("5")).DivideInteger(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("dvI014", ((new BigDecimal("0")).DivideInteger(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("dvI015", ((new BigDecimal("0.00")).DivideInteger(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("dvI001", ((BigDecimal.Parse("101.3", numberStyle, provider)).DivideInteger(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("101"));
+            TestFmwk.assertTrue("dvI002", ((BigDecimal.Parse("101.0", numberStyle, provider)).DivideInteger(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("101"));
+            TestFmwk.assertTrue("dvI003", ((BigDecimal.Parse("101.3", numberStyle, provider)).DivideInteger(BigDecimal.Parse("3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("33"));
+            TestFmwk.assertTrue("dvI004", ((BigDecimal.Parse("101.0", numberStyle, provider)).DivideInteger(BigDecimal.Parse("3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("33"));
+            TestFmwk.assertTrue("dvI005", ((BigDecimal.Parse("2.4", numberStyle, provider)).DivideInteger(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("dvI006", ((BigDecimal.Parse("2.400", numberStyle, provider)).DivideInteger(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("dvI007", ((BigDecimal.Parse("18", numberStyle, provider)).DivideInteger(BigDecimal.Parse("18", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("dvI008", ((BigDecimal.Parse("1120", numberStyle, provider)).DivideInteger(BigDecimal.Parse("1000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("dvI009", ((BigDecimal.Parse("2.4", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("dvI010", ((BigDecimal.Parse("2.400", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("dvI011", ((BigDecimal.Parse("0.5", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2.000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("dvI012", ((BigDecimal.Parse("8.005", numberStyle, provider)).DivideInteger(BigDecimal.Parse("7", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("dvI013", ((BigDecimal.Parse("5", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("dvI014", ((BigDecimal.Parse("0", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("dvI015", ((BigDecimal.Parse("0.00", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
             // MC
-            TestFmwk.assertTrue("dvI016", ((new BigDecimal("5")).DivideInteger(new BigDecimal("2"), mce).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("dvI017", ((new BigDecimal("5")).DivideInteger(new BigDecimal("2"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("dvI016", ((BigDecimal.Parse("5", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("dvI017", ((BigDecimal.Parse("5", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("2"));
 
             // Fixed --
-            TestFmwk.assertTrue("dvI021", ((new BigDecimal("101.3")).DivideInteger(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("101"));
-            TestFmwk.assertTrue("dvI022", ((new BigDecimal("101.0")).DivideInteger(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("101"));
-            TestFmwk.assertTrue("dvI023", ((new BigDecimal("101.3")).DivideInteger(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("33"));
-            TestFmwk.assertTrue("dvI024", ((new BigDecimal("101.0")).DivideInteger(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("33"));
-            TestFmwk.assertTrue("dvI025", ((new BigDecimal("2.4")).DivideInteger(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("dvI026", ((new BigDecimal("2.400")).DivideInteger(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("dvI027", ((new BigDecimal("18")).DivideInteger(new BigDecimal("18")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("dvI028", ((new BigDecimal("1120")).DivideInteger(new BigDecimal("1000")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("dvI029", ((new BigDecimal("2.4")).DivideInteger(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("dvI030", ((new BigDecimal("2.400")).DivideInteger(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("dvI031", ((new BigDecimal("0.5")).DivideInteger(new BigDecimal("2.000")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("dvI032", ((new BigDecimal("8.005")).DivideInteger(new BigDecimal("7")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("dvI033", ((new BigDecimal("5")).DivideInteger(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("dvI034", ((new BigDecimal("0")).DivideInteger(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("dvI035", ((new BigDecimal("0.00")).DivideInteger(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("dvI021", ((BigDecimal.Parse("101.3", numberStyle, provider)).DivideInteger(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("101"));
+            TestFmwk.assertTrue("dvI022", ((BigDecimal.Parse("101.0", numberStyle, provider)).DivideInteger(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("101"));
+            TestFmwk.assertTrue("dvI023", ((BigDecimal.Parse("101.3", numberStyle, provider)).DivideInteger(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("33"));
+            TestFmwk.assertTrue("dvI024", ((BigDecimal.Parse("101.0", numberStyle, provider)).DivideInteger(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("33"));
+            TestFmwk.assertTrue("dvI025", ((BigDecimal.Parse("2.4", numberStyle, provider)).DivideInteger(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("dvI026", ((BigDecimal.Parse("2.400", numberStyle, provider)).DivideInteger(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("dvI027", ((BigDecimal.Parse("18", numberStyle, provider)).DivideInteger(BigDecimal.Parse("18", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("dvI028", ((BigDecimal.Parse("1120", numberStyle, provider)).DivideInteger(BigDecimal.Parse("1000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("dvI029", ((BigDecimal.Parse("2.4", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("dvI030", ((BigDecimal.Parse("2.400", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("dvI031", ((BigDecimal.Parse("0.5", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2.000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("dvI032", ((BigDecimal.Parse("8.005", numberStyle, provider)).DivideInteger(BigDecimal.Parse("7", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("dvI033", ((BigDecimal.Parse("5", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("dvI034", ((BigDecimal.Parse("0", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("dvI035", ((BigDecimal.Parse("0.00", numberStyle, provider)).DivideInteger(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
             try
             {
@@ -1684,18 +1700,20 @@ namespace ICU4N.Dev.Test.BigDec
         {
             bool flag = false;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
             // we assume add/subtract test function; this and min just
             // test existence and test the truth table
-            TestFmwk.assertTrue("max001", ((new BigDecimal("5")).Max(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("5"));
-            TestFmwk.assertTrue("max002", ((new BigDecimal("5")).Max(new BigDecimal("5")).ToString(CultureInfo.InvariantCulture)).Equals("5"));
-            TestFmwk.assertTrue("max003", ((new BigDecimal("2")).Max(new BigDecimal("7")).ToString(CultureInfo.InvariantCulture)).Equals("7"));
-            TestFmwk.assertTrue("max004", ((new BigDecimal("2")).Max(new BigDecimal("7"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("7"));
-            TestFmwk.assertTrue("max005", ((new BigDecimal("2")).Max(new BigDecimal("7"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("7"));
-            TestFmwk.assertTrue("max006", ((new BigDecimal("2E+3")).Max(new BigDecimal("7")).ToString(CultureInfo.InvariantCulture)).Equals("2000"));
-            TestFmwk.assertTrue("max007", ((new BigDecimal("2E+3")).Max(new BigDecimal("7"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("2E+3"));
-            TestFmwk.assertTrue("max008", ((new BigDecimal("7")).Max(new BigDecimal("2E+3")).ToString(CultureInfo.InvariantCulture)).Equals("2000"));
-            TestFmwk.assertTrue("max009", ((new BigDecimal("7")).Max(new BigDecimal("2E+3"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("2E+3"));
+            TestFmwk.assertTrue("max001", ((BigDecimal.Parse("5", numberStyle, provider)).Max(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("5"));
+            TestFmwk.assertTrue("max002", ((BigDecimal.Parse("5", numberStyle, provider)).Max(BigDecimal.Parse("5", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("5"));
+            TestFmwk.assertTrue("max003", ((BigDecimal.Parse("2", numberStyle, provider)).Max(BigDecimal.Parse("7", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("7"));
+            TestFmwk.assertTrue("max004", ((BigDecimal.Parse("2", numberStyle, provider)).Max(BigDecimal.Parse("7", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("7"));
+            TestFmwk.assertTrue("max005", ((BigDecimal.Parse("2", numberStyle, provider)).Max(BigDecimal.Parse("7", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("7"));
+            TestFmwk.assertTrue("max006", ((BigDecimal.Parse("2E+3", numberStyle, provider)).Max(BigDecimal.Parse("7", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2000"));
+            TestFmwk.assertTrue("max007", ((BigDecimal.Parse("2E+3", numberStyle, provider)).Max(BigDecimal.Parse("7", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("2E+3"));
+            TestFmwk.assertTrue("max008", ((BigDecimal.Parse("7", numberStyle, provider)).Max(BigDecimal.Parse("2E+3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2000"));
+            TestFmwk.assertTrue("max009", ((BigDecimal.Parse("7", numberStyle, provider)).Max(BigDecimal.Parse("2E+3", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("2E+3"));
             try
             {
                 ten.Max((BigDecimal)null);
@@ -1750,18 +1768,20 @@ namespace ICU4N.Dev.Test.BigDec
             bool flag = false;
             BigDecimal minx = null;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
             // we assume add/subtract test function; this and max just
             // test existence and test the truth table
 
-            TestFmwk.assertTrue("min001", ((new BigDecimal("5")).Min(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("min002", ((new BigDecimal("5")).Min(new BigDecimal("5")).ToString(CultureInfo.InvariantCulture)).Equals("5"));
-            TestFmwk.assertTrue("min003", ((new BigDecimal("2")).Min(new BigDecimal("7")).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("min004", ((new BigDecimal("2")).Min(new BigDecimal("7"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("min005", ((new BigDecimal("1")).Min(new BigDecimal("7"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("min006", ((new BigDecimal("-2E+3")).Min(new BigDecimal("7")).ToString(CultureInfo.InvariantCulture)).Equals("-2000"));
-            TestFmwk.assertTrue("min007", ((new BigDecimal("-2E+3")).Min(new BigDecimal("7"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("-2E+3"));
-            TestFmwk.assertTrue("min008", ((new BigDecimal("7")).Min(new BigDecimal("-2E+3")).ToString(CultureInfo.InvariantCulture)).Equals("-2000"));
-            TestFmwk.assertTrue("min009", ((new BigDecimal("7")).Min(new BigDecimal("-2E+3"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("-2E+3"));
+            TestFmwk.assertTrue("min001", ((BigDecimal.Parse("5", numberStyle, provider)).Min(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("min002", ((BigDecimal.Parse("5", numberStyle, provider)).Min(BigDecimal.Parse("5", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("5"));
+            TestFmwk.assertTrue("min003", ((BigDecimal.Parse("2", numberStyle, provider)).Min(BigDecimal.Parse("7", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("min004", ((BigDecimal.Parse("2", numberStyle, provider)).Min(BigDecimal.Parse("7", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("min005", ((BigDecimal.Parse("1", numberStyle, provider)).Min(BigDecimal.Parse("7", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("min006", ((BigDecimal.Parse("-2E+3", numberStyle, provider)).Min(BigDecimal.Parse("7", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-2000"));
+            TestFmwk.assertTrue("min007", ((BigDecimal.Parse("-2E+3", numberStyle, provider)).Min(BigDecimal.Parse("7", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("-2E+3"));
+            TestFmwk.assertTrue("min008", ((BigDecimal.Parse("7", numberStyle, provider)).Min(BigDecimal.Parse("-2E+3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-2000"));
+            TestFmwk.assertTrue("min009", ((BigDecimal.Parse("7", numberStyle, provider)).Min(BigDecimal.Parse("-2E+3", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("-2E+3"));
             try
             {
                 minx = ten;
@@ -1830,157 +1850,159 @@ namespace ICU4N.Dev.Test.BigDec
             BigDecimal d2 = null;
             ArithmeticException oe = null;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            TestFmwk.assertTrue("mul001", ((new BigDecimal("2")).Multiply(new BigDecimal("3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("6"));
-            TestFmwk.assertTrue("mul002", ((new BigDecimal("5")).Multiply(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("5"));
-            TestFmwk.assertTrue("mul003", ((new BigDecimal("5")).Multiply(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("10"));
-            TestFmwk.assertTrue("mul004", ((new BigDecimal("1.20")).Multiply(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.40"));
-            TestFmwk.assertTrue("mul005", ((new BigDecimal("1.20")).Multiply(new BigDecimal("0"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("mul006", ((new BigDecimal("1.20")).Multiply(new BigDecimal("-2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2.40"));
-            TestFmwk.assertTrue("mul007", ((new BigDecimal("-1.20")).Multiply(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2.40"));
-            TestFmwk.assertTrue("mul008", ((new BigDecimal("-1.20")).Multiply(new BigDecimal("0"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("mul009", ((new BigDecimal("-1.20")).Multiply(new BigDecimal("-2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.40"));
-            TestFmwk.assertTrue("mul010", ((new BigDecimal("5.09")).Multiply(new BigDecimal("7.1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("36.139"));
-            TestFmwk.assertTrue("mul011", ((new BigDecimal("2.5")).Multiply(new BigDecimal("4"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("10.0"));
-            TestFmwk.assertTrue("mul012", ((new BigDecimal("2.50")).Multiply(new BigDecimal("4"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("10.00"));
-            TestFmwk.assertTrue("mul013", ((new BigDecimal("1.23456789")).Multiply(new BigDecimal("1.00000000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.23456789"));
+            TestFmwk.assertTrue("mul001", ((BigDecimal.Parse("2", numberStyle, provider)).Multiply(BigDecimal.Parse("3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("6"));
+            TestFmwk.assertTrue("mul002", ((BigDecimal.Parse("5", numberStyle, provider)).Multiply(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("5"));
+            TestFmwk.assertTrue("mul003", ((BigDecimal.Parse("5", numberStyle, provider)).Multiply(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("10"));
+            TestFmwk.assertTrue("mul004", ((BigDecimal.Parse("1.20", numberStyle, provider)).Multiply(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.40"));
+            TestFmwk.assertTrue("mul005", ((BigDecimal.Parse("1.20", numberStyle, provider)).Multiply(BigDecimal.Parse("0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("mul006", ((BigDecimal.Parse("1.20", numberStyle, provider)).Multiply(BigDecimal.Parse("-2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2.40"));
+            TestFmwk.assertTrue("mul007", ((BigDecimal.Parse("-1.20", numberStyle, provider)).Multiply(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2.40"));
+            TestFmwk.assertTrue("mul008", ((BigDecimal.Parse("-1.20", numberStyle, provider)).Multiply(BigDecimal.Parse("0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("mul009", ((BigDecimal.Parse("-1.20", numberStyle, provider)).Multiply(BigDecimal.Parse("-2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.40"));
+            TestFmwk.assertTrue("mul010", ((BigDecimal.Parse("5.09", numberStyle, provider)).Multiply(BigDecimal.Parse("7.1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("36.139"));
+            TestFmwk.assertTrue("mul011", ((BigDecimal.Parse("2.5", numberStyle, provider)).Multiply(BigDecimal.Parse("4", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("10.0"));
+            TestFmwk.assertTrue("mul012", ((BigDecimal.Parse("2.50", numberStyle, provider)).Multiply(BigDecimal.Parse("4", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("10.00"));
+            TestFmwk.assertTrue("mul013", ((BigDecimal.Parse("1.23456789", numberStyle, provider)).Multiply(BigDecimal.Parse("1.00000000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.23456789"));
 
-            TestFmwk.assertTrue("mul014", ((new BigDecimal("9.999999999")).Multiply(new BigDecimal("9.999999999"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("100.000000"));
+            TestFmwk.assertTrue("mul014", ((BigDecimal.Parse("9.999999999", numberStyle, provider)).Multiply(BigDecimal.Parse("9.999999999", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("100.000000"));
 
-            TestFmwk.assertTrue("mul015", ((new BigDecimal("2.50")).Multiply(new BigDecimal("4"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("10.00"));
-            TestFmwk.assertTrue("mul016", ((new BigDecimal("2.50")).Multiply(new BigDecimal("4"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("10.00"));
-            TestFmwk.assertTrue("mul017", ((new BigDecimal("9.999999999")).Multiply(new BigDecimal("9.999999999"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("100.000"));
+            TestFmwk.assertTrue("mul015", ((BigDecimal.Parse("2.50", numberStyle, provider)).Multiply(BigDecimal.Parse("4", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("10.00"));
+            TestFmwk.assertTrue("mul016", ((BigDecimal.Parse("2.50", numberStyle, provider)).Multiply(BigDecimal.Parse("4", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("10.00"));
+            TestFmwk.assertTrue("mul017", ((BigDecimal.Parse("9.999999999", numberStyle, provider)).Multiply(BigDecimal.Parse("9.999999999", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("100.000"));
 
 
-            TestFmwk.assertTrue("mul020", ((new BigDecimal("2")).Multiply(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("6"));
-            TestFmwk.assertTrue("mul021", ((new BigDecimal("5")).Multiply(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("5"));
-            TestFmwk.assertTrue("mul022", ((new BigDecimal("5")).Multiply(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("10"));
-            TestFmwk.assertTrue("mul023", ((new BigDecimal("1.20")).Multiply(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("2.40"));
-            TestFmwk.assertTrue("mul024", ((new BigDecimal("1.20")).Multiply(new BigDecimal("0")).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("mul025", ((new BigDecimal("1.20")).Multiply(new BigDecimal("-2")).ToString(CultureInfo.InvariantCulture)).Equals("-2.40"));
-            TestFmwk.assertTrue("mul026", ((new BigDecimal("-1.20")).Multiply(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("-2.40"));
-            TestFmwk.assertTrue("mul027", ((new BigDecimal("-1.20")).Multiply(new BigDecimal("0")).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("mul028", ((new BigDecimal("-1.20")).Multiply(new BigDecimal("-2")).ToString(CultureInfo.InvariantCulture)).Equals("2.40"));
-            TestFmwk.assertTrue("mul029", ((new BigDecimal("5.09")).Multiply(new BigDecimal("7.1")).ToString(CultureInfo.InvariantCulture)).Equals("36.139"));
-            TestFmwk.assertTrue("mul030", ((new BigDecimal("2.5")).Multiply(new BigDecimal("4")).ToString(CultureInfo.InvariantCulture)).Equals("10.0"));
-            TestFmwk.assertTrue("mul031", ((new BigDecimal("2.50")).Multiply(new BigDecimal("4")).ToString(CultureInfo.InvariantCulture)).Equals("10.00"));
-            TestFmwk.assertTrue("mul032", ((new BigDecimal("1.23456789")).Multiply(new BigDecimal("1.00000000")).ToString(CultureInfo.InvariantCulture)).Equals("1.2345678900000000"));
+            TestFmwk.assertTrue("mul020", ((BigDecimal.Parse("2", numberStyle, provider)).Multiply(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("6"));
+            TestFmwk.assertTrue("mul021", ((BigDecimal.Parse("5", numberStyle, provider)).Multiply(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("5"));
+            TestFmwk.assertTrue("mul022", ((BigDecimal.Parse("5", numberStyle, provider)).Multiply(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10"));
+            TestFmwk.assertTrue("mul023", ((BigDecimal.Parse("1.20", numberStyle, provider)).Multiply(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.40"));
+            TestFmwk.assertTrue("mul024", ((BigDecimal.Parse("1.20", numberStyle, provider)).Multiply(BigDecimal.Parse("0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("mul025", ((BigDecimal.Parse("1.20", numberStyle, provider)).Multiply(BigDecimal.Parse("-2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-2.40"));
+            TestFmwk.assertTrue("mul026", ((BigDecimal.Parse("-1.20", numberStyle, provider)).Multiply(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-2.40"));
+            TestFmwk.assertTrue("mul027", ((BigDecimal.Parse("-1.20", numberStyle, provider)).Multiply(BigDecimal.Parse("0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("mul028", ((BigDecimal.Parse("-1.20", numberStyle, provider)).Multiply(BigDecimal.Parse("-2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.40"));
+            TestFmwk.assertTrue("mul029", ((BigDecimal.Parse("5.09", numberStyle, provider)).Multiply(BigDecimal.Parse("7.1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("36.139"));
+            TestFmwk.assertTrue("mul030", ((BigDecimal.Parse("2.5", numberStyle, provider)).Multiply(BigDecimal.Parse("4", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10.0"));
+            TestFmwk.assertTrue("mul031", ((BigDecimal.Parse("2.50", numberStyle, provider)).Multiply(BigDecimal.Parse("4", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10.00"));
+            TestFmwk.assertTrue("mul032", ((BigDecimal.Parse("1.23456789", numberStyle, provider)).Multiply(BigDecimal.Parse("1.00000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1.2345678900000000"));
 
-            TestFmwk.assertTrue("mul033", ((new BigDecimal("1234.56789")).Multiply(new BigDecimal("-1000.00000")).ToString(CultureInfo.InvariantCulture)).Equals("-1234567.8900000000"));
+            TestFmwk.assertTrue("mul033", ((BigDecimal.Parse("1234.56789", numberStyle, provider)).Multiply(BigDecimal.Parse("-1000.00000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-1234567.8900000000"));
 
-            TestFmwk.assertTrue("mul034", ((new BigDecimal("-1234.56789")).Multiply(new BigDecimal("1000.00000")).ToString(CultureInfo.InvariantCulture)).Equals("-1234567.8900000000"));
+            TestFmwk.assertTrue("mul034", ((BigDecimal.Parse("-1234.56789", numberStyle, provider)).Multiply(BigDecimal.Parse("1000.00000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-1234567.8900000000"));
 
-            TestFmwk.assertTrue("mul035", ((new BigDecimal("9.999999999")).Multiply(new BigDecimal("9.999999999")).ToString(CultureInfo.InvariantCulture)).Equals("99.999999980000000001"));
+            TestFmwk.assertTrue("mul035", ((BigDecimal.Parse("9.999999999", numberStyle, provider)).Multiply(BigDecimal.Parse("9.999999999", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("99.999999980000000001"));
 
-            TestFmwk.assertTrue("mul036", ((new BigDecimal("5.00")).Multiply(new BigDecimal("1E-3")).ToString(CultureInfo.InvariantCulture)).Equals("0.00500"));
-            TestFmwk.assertTrue("mul037", ((new BigDecimal("00.00")).Multiply(new BigDecimal("0.000")).ToString(CultureInfo.InvariantCulture)).Equals("0.00000"));
-            TestFmwk.assertTrue("mul038", ((new BigDecimal("00.00")).Multiply(new BigDecimal("0E-3")).ToString(CultureInfo.InvariantCulture)).Equals("0.00")); // rhs is '0'
+            TestFmwk.assertTrue("mul036", ((BigDecimal.Parse("5.00", numberStyle, provider)).Multiply(BigDecimal.Parse("1E-3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00500"));
+            TestFmwk.assertTrue("mul037", ((BigDecimal.Parse("00.00", numberStyle, provider)).Multiply(BigDecimal.Parse("0.000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00000"));
+            TestFmwk.assertTrue("mul038", ((BigDecimal.Parse("00.00", numberStyle, provider)).Multiply(BigDecimal.Parse("0E-3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00")); // rhs is '0'
                                                                                                                                                                // 1999.12.21: next one is a edge case if intermediate longs are used
-            TestFmwk.assertTrue("mul039", ((new BigDecimal("999999999999")).Multiply(new BigDecimal("9765625")).ToString(CultureInfo.InvariantCulture)).Equals("9765624999990234375"));
+            TestFmwk.assertTrue("mul039", ((BigDecimal.Parse("999999999999", numberStyle, provider)).Multiply(BigDecimal.Parse("9765625", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9765624999990234375"));
 
-            l9 = new BigDecimal("123456789E+10");
-            l77e = new BigDecimal("77E-20");
-            TestFmwk.assertTrue("mul040", (l9.Multiply(new BigDecimal("3456757")).ToString(CultureInfo.InvariantCulture)).Equals("4267601195732730000000000"));
-            TestFmwk.assertTrue("mul041", (l9.Multiply(new BigDecimal("3456757"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("4.26E+24"));
+            l9 = BigDecimal.Parse("123456789E+10", numberStyle, provider);
+            l77e = BigDecimal.Parse("77E-20", numberStyle, provider);
+            TestFmwk.assertTrue("mul040", (l9.Multiply(BigDecimal.Parse("3456757", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("4267601195732730000000000"));
+            TestFmwk.assertTrue("mul041", (l9.Multiply(BigDecimal.Parse("3456757", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("4.26E+24"));
             TestFmwk.assertTrue("mul042", (l9.Multiply(l77e).ToString(CultureInfo.InvariantCulture)).Equals("0.95061727530000000000"));
             TestFmwk.assertTrue("mul043", (l9.Multiply(l77e, mc3).ToString(CultureInfo.InvariantCulture)).Equals("0.947"));
             TestFmwk.assertTrue("mul044", (l77e.Multiply(l9, mc3).ToString(CultureInfo.InvariantCulture)).Equals("0.947"));
 
-            l12345 = new BigDecimal("123.45");
-            TestFmwk.assertTrue("mul050", (l12345.Multiply(new BigDecimal("1e11"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.2345E+13"));
-            TestFmwk.assertTrue("mul051", (l12345.Multiply(new BigDecimal("1e11"), mcs).ToString(CultureInfo.InvariantCulture)).Equals("1.2345E+13"));
-            TestFmwk.assertTrue("mul052", (l12345.Multiply(new BigDecimal("1e+9"), mce).ToString(CultureInfo.InvariantCulture)).Equals("123.45E+9"));
-            TestFmwk.assertTrue("mul053", (l12345.Multiply(new BigDecimal("1e10"), mce).ToString(CultureInfo.InvariantCulture)).Equals("1.2345E+12"));
-            TestFmwk.assertTrue("mul054", (l12345.Multiply(new BigDecimal("1e11"), mce).ToString(CultureInfo.InvariantCulture)).Equals("12.345E+12"));
-            TestFmwk.assertTrue("mul055", (l12345.Multiply(new BigDecimal("1e12"), mce).ToString(CultureInfo.InvariantCulture)).Equals("123.45E+12"));
-            TestFmwk.assertTrue("mul056", (l12345.Multiply(new BigDecimal("1e13"), mce).ToString(CultureInfo.InvariantCulture)).Equals("1.2345E+15"));
+            l12345 = BigDecimal.Parse("123.45", numberStyle, provider);
+            TestFmwk.assertTrue("mul050", (l12345.Multiply(BigDecimal.Parse("1e11", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.2345E+13"));
+            TestFmwk.assertTrue("mul051", (l12345.Multiply(BigDecimal.Parse("1e11", numberStyle, provider), mcs).ToString(CultureInfo.InvariantCulture)).Equals("1.2345E+13"));
+            TestFmwk.assertTrue("mul052", (l12345.Multiply(BigDecimal.Parse("1e+9", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("123.45E+9"));
+            TestFmwk.assertTrue("mul053", (l12345.Multiply(BigDecimal.Parse("1e10", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("1.2345E+12"));
+            TestFmwk.assertTrue("mul054", (l12345.Multiply(BigDecimal.Parse("1e11", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("12.345E+12"));
+            TestFmwk.assertTrue("mul055", (l12345.Multiply(BigDecimal.Parse("1e12", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("123.45E+12"));
+            TestFmwk.assertTrue("mul056", (l12345.Multiply(BigDecimal.Parse("1e13", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("1.2345E+15"));
 
             // test some cases that are close to exponent overflow
-            TestFmwk.assertTrue("mul060", (one.Multiply(new BigDecimal("9e999999999"), mcs).ToString(CultureInfo.InvariantCulture)).Equals("9E+999999999"));
-            TestFmwk.assertTrue("mul061", (one.Multiply(new BigDecimal("9.9e999999999"), mcs).ToString(CultureInfo.InvariantCulture)).Equals("9.9E+999999999"));
-            TestFmwk.assertTrue("mul062", (one.Multiply(new BigDecimal("9.99e999999999"), mcs).ToString(CultureInfo.InvariantCulture)).Equals("9.99E+999999999"));
-            TestFmwk.assertTrue("mul063", (ten.Multiply(new BigDecimal("9e999999999"), mce).ToString(CultureInfo.InvariantCulture)).Equals("90E+999999999"));
-            TestFmwk.assertTrue("mul064", (ten.Multiply(new BigDecimal("9.9e999999999"), mce).ToString(CultureInfo.InvariantCulture)).Equals("99.0E+999999999"));
-            edge = new BigDecimal("9.999e999999999");
+            TestFmwk.assertTrue("mul060", (one.Multiply(BigDecimal.Parse("9e999999999", numberStyle, provider), mcs).ToString(CultureInfo.InvariantCulture)).Equals("9E+999999999"));
+            TestFmwk.assertTrue("mul061", (one.Multiply(BigDecimal.Parse("9.9e999999999", numberStyle, provider), mcs).ToString(CultureInfo.InvariantCulture)).Equals("9.9E+999999999"));
+            TestFmwk.assertTrue("mul062", (one.Multiply(BigDecimal.Parse("9.99e999999999", numberStyle, provider), mcs).ToString(CultureInfo.InvariantCulture)).Equals("9.99E+999999999"));
+            TestFmwk.assertTrue("mul063", (ten.Multiply(BigDecimal.Parse("9e999999999", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("90E+999999999"));
+            TestFmwk.assertTrue("mul064", (ten.Multiply(BigDecimal.Parse("9.9e999999999", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("99.0E+999999999"));
+            edge = BigDecimal.Parse("9.999e999999999", numberStyle, provider);
             tenedge = ten.Multiply(edge, mce);
             TestFmwk.assertTrue("mul065", (tenedge.ToString(CultureInfo.InvariantCulture)).Equals("99.990E+999999999"));
             hunedge = ten.Multiply(tenedge, mce);
             TestFmwk.assertTrue("mul066", (hunedge.ToString(CultureInfo.InvariantCulture)).Equals("999.900E+999999999"));
-            opo = new BigDecimal("0.1"); // one tenth
-            TestFmwk.assertTrue("mul067", (opo.Multiply(new BigDecimal("9e-999999998"), mcs).ToString(CultureInfo.InvariantCulture)).Equals("9E-999999999"));
-            TestFmwk.assertTrue("mul068", (opo.Multiply(new BigDecimal("99e-999999998"), mcs).ToString(CultureInfo.InvariantCulture)).Equals("9.9E-999999998"));
-            TestFmwk.assertTrue("mul069", (opo.Multiply(new BigDecimal("999e-999999998"), mcs).ToString(CultureInfo.InvariantCulture)).Equals("9.99E-999999997"));
+            opo = BigDecimal.Parse("0.1", numberStyle, provider); // one tenth
+            TestFmwk.assertTrue("mul067", (opo.Multiply(BigDecimal.Parse("9e-999999998", numberStyle, provider), mcs).ToString(CultureInfo.InvariantCulture)).Equals("9E-999999999"));
+            TestFmwk.assertTrue("mul068", (opo.Multiply(BigDecimal.Parse("99e-999999998", numberStyle, provider), mcs).ToString(CultureInfo.InvariantCulture)).Equals("9.9E-999999998"));
+            TestFmwk.assertTrue("mul069", (opo.Multiply(BigDecimal.Parse("999e-999999998", numberStyle, provider), mcs).ToString(CultureInfo.InvariantCulture)).Equals("9.99E-999999997"));
 
-            TestFmwk.assertTrue("mul070", (opo.Multiply(new BigDecimal("9e-999999998"), mce).ToString(CultureInfo.InvariantCulture)).Equals("9E-999999999"));
-            TestFmwk.assertTrue("mul071", (opo.Multiply(new BigDecimal("99e-999999998"), mce).ToString(CultureInfo.InvariantCulture)).Equals("99E-999999999"));
-            TestFmwk.assertTrue("mul072", (opo.Multiply(new BigDecimal("999e-999999998"), mce).ToString(CultureInfo.InvariantCulture)).Equals("999E-999999999"));
-            TestFmwk.assertTrue("mul073", (opo.Multiply(new BigDecimal("999e-999999997"), mce).ToString(CultureInfo.InvariantCulture)).Equals("9.99E-999999996"));
-            TestFmwk.assertTrue("mul074", (opo.Multiply(new BigDecimal("9999e-999999997"), mce).ToString(CultureInfo.InvariantCulture)).Equals("99.99E-999999996"));
-            TestFmwk.assertTrue("mul074", (opo.Multiply(new BigDecimal("99999e-999999997"), mce).ToString(CultureInfo.InvariantCulture)).Equals("999.99E-999999996"));
+            TestFmwk.assertTrue("mul070", (opo.Multiply(BigDecimal.Parse("9e-999999998", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("9E-999999999"));
+            TestFmwk.assertTrue("mul071", (opo.Multiply(BigDecimal.Parse("99e-999999998", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("99E-999999999"));
+            TestFmwk.assertTrue("mul072", (opo.Multiply(BigDecimal.Parse("999e-999999998", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("999E-999999999"));
+            TestFmwk.assertTrue("mul073", (opo.Multiply(BigDecimal.Parse("999e-999999997", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("9.99E-999999996"));
+            TestFmwk.assertTrue("mul074", (opo.Multiply(BigDecimal.Parse("9999e-999999997", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("99.99E-999999996"));
+            TestFmwk.assertTrue("mul074", (opo.Multiply(BigDecimal.Parse("99999e-999999997", numberStyle, provider), mce).ToString(CultureInfo.InvariantCulture)).Equals("999.99E-999999996"));
 
             // test some intermediate lengths
-            TestFmwk.assertTrue("mul080", (opo.Multiply(new BigDecimal("123456789"), mcs).ToString(CultureInfo.InvariantCulture)).Equals("12345678.9"));
-            TestFmwk.assertTrue("mul081", (opo.Multiply(new BigDecimal("12345678901234"), mcs).ToString(CultureInfo.InvariantCulture)).Equals("1.23456789E+12"));
-            TestFmwk.assertTrue("mul082", (opo.Multiply(new BigDecimal("123456789123456789"), mcs).ToString(CultureInfo.InvariantCulture)).Equals("1.23456789E+16"));
-            TestFmwk.assertTrue("mul083", (opo.Multiply(new BigDecimal("123456789"), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("12345678.9"));
-            TestFmwk.assertTrue("mul084", (opo.Multiply(new BigDecimal("12345678901234"), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("1234567890123.4"));
-            TestFmwk.assertTrue("mul085", (opo.Multiply(new BigDecimal("123456789123456789"), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("12345678912345678.9"));
+            TestFmwk.assertTrue("mul080", (opo.Multiply(BigDecimal.Parse("123456789", numberStyle, provider), mcs).ToString(CultureInfo.InvariantCulture)).Equals("12345678.9"));
+            TestFmwk.assertTrue("mul081", (opo.Multiply(BigDecimal.Parse("12345678901234", numberStyle, provider), mcs).ToString(CultureInfo.InvariantCulture)).Equals("1.23456789E+12"));
+            TestFmwk.assertTrue("mul082", (opo.Multiply(BigDecimal.Parse("123456789123456789", numberStyle, provider), mcs).ToString(CultureInfo.InvariantCulture)).Equals("1.23456789E+16"));
+            TestFmwk.assertTrue("mul083", (opo.Multiply(BigDecimal.Parse("123456789", numberStyle, provider), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("12345678.9"));
+            TestFmwk.assertTrue("mul084", (opo.Multiply(BigDecimal.Parse("12345678901234", numberStyle, provider), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("1234567890123.4"));
+            TestFmwk.assertTrue("mul085", (opo.Multiply(BigDecimal.Parse("123456789123456789", numberStyle, provider), mcfd).ToString(CultureInfo.InvariantCulture)).Equals("12345678912345678.9"));
 
-            TestFmwk.assertTrue("mul090", ((new BigDecimal("123456789")).Multiply(opo, mcs).ToString(CultureInfo.InvariantCulture)).Equals("12345678.9"));
-            TestFmwk.assertTrue("mul091", ((new BigDecimal("12345678901234")).Multiply(opo, mcs).ToString(CultureInfo.InvariantCulture)).Equals("1.23456789E+12"));
-            TestFmwk.assertTrue("mul092", ((new BigDecimal("123456789123456789")).Multiply(opo, mcs).ToString(CultureInfo.InvariantCulture)).Equals("1.23456789E+16"));
-            TestFmwk.assertTrue("mul093", ((new BigDecimal("123456789")).Multiply(opo, mcfd).ToString(CultureInfo.InvariantCulture)).Equals("12345678.9"));
-            TestFmwk.assertTrue("mul094", ((new BigDecimal("12345678901234")).Multiply(opo, mcfd).ToString(CultureInfo.InvariantCulture)).Equals("1234567890123.4"));
-            TestFmwk.assertTrue("mul095", ((new BigDecimal("123456789123456789")).Multiply(opo, mcfd).ToString(CultureInfo.InvariantCulture)).Equals("12345678912345678.9"));
+            TestFmwk.assertTrue("mul090", ((BigDecimal.Parse("123456789", numberStyle, provider)).Multiply(opo, mcs).ToString(CultureInfo.InvariantCulture)).Equals("12345678.9"));
+            TestFmwk.assertTrue("mul091", ((BigDecimal.Parse("12345678901234", numberStyle, provider)).Multiply(opo, mcs).ToString(CultureInfo.InvariantCulture)).Equals("1.23456789E+12"));
+            TestFmwk.assertTrue("mul092", ((BigDecimal.Parse("123456789123456789", numberStyle, provider)).Multiply(opo, mcs).ToString(CultureInfo.InvariantCulture)).Equals("1.23456789E+16"));
+            TestFmwk.assertTrue("mul093", ((BigDecimal.Parse("123456789", numberStyle, provider)).Multiply(opo, mcfd).ToString(CultureInfo.InvariantCulture)).Equals("12345678.9"));
+            TestFmwk.assertTrue("mul094", ((BigDecimal.Parse("12345678901234", numberStyle, provider)).Multiply(opo, mcfd).ToString(CultureInfo.InvariantCulture)).Equals("1234567890123.4"));
+            TestFmwk.assertTrue("mul095", ((BigDecimal.Parse("123456789123456789", numberStyle, provider)).Multiply(opo, mcfd).ToString(CultureInfo.InvariantCulture)).Equals("12345678912345678.9"));
 
             // test some more edge cases and carries
-            TestFmwk.assertTrue("mul101", ((new BigDecimal("9")).Multiply(new BigDecimal("9")).ToString(CultureInfo.InvariantCulture)).Equals("81"));
-            TestFmwk.assertTrue("mul102", ((new BigDecimal("9")).Multiply(new BigDecimal("90")).ToString(CultureInfo.InvariantCulture)).Equals("810"));
-            TestFmwk.assertTrue("mul103", ((new BigDecimal("9")).Multiply(new BigDecimal("900")).ToString(CultureInfo.InvariantCulture)).Equals("8100"));
-            TestFmwk.assertTrue("mul104", ((new BigDecimal("9")).Multiply(new BigDecimal("9000")).ToString(CultureInfo.InvariantCulture)).Equals("81000"));
-            TestFmwk.assertTrue("mul105", ((new BigDecimal("9")).Multiply(new BigDecimal("90000")).ToString(CultureInfo.InvariantCulture)).Equals("810000"));
-            TestFmwk.assertTrue("mul106", ((new BigDecimal("9")).Multiply(new BigDecimal("900000")).ToString(CultureInfo.InvariantCulture)).Equals("8100000"));
-            TestFmwk.assertTrue("mul107", ((new BigDecimal("9")).Multiply(new BigDecimal("9000000")).ToString(CultureInfo.InvariantCulture)).Equals("81000000"));
-            TestFmwk.assertTrue("mul108", ((new BigDecimal("9")).Multiply(new BigDecimal("90000000")).ToString(CultureInfo.InvariantCulture)).Equals("810000000"));
-            TestFmwk.assertTrue("mul109", ((new BigDecimal("9")).Multiply(new BigDecimal("900000000")).ToString(CultureInfo.InvariantCulture)).Equals("8100000000"));
-            TestFmwk.assertTrue("mul110", ((new BigDecimal("9")).Multiply(new BigDecimal("9000000000")).ToString(CultureInfo.InvariantCulture)).Equals("81000000000"));
-            TestFmwk.assertTrue("mul111", ((new BigDecimal("9")).Multiply(new BigDecimal("90000000000")).ToString(CultureInfo.InvariantCulture)).Equals("810000000000"));
-            TestFmwk.assertTrue("mul112", ((new BigDecimal("9")).Multiply(new BigDecimal("900000000000")).ToString(CultureInfo.InvariantCulture)).Equals("8100000000000"));
-            TestFmwk.assertTrue("mul113", ((new BigDecimal("9")).Multiply(new BigDecimal("9000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("81000000000000"));
-            TestFmwk.assertTrue("mul114", ((new BigDecimal("9")).Multiply(new BigDecimal("90000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("810000000000000"));
-            TestFmwk.assertTrue("mul115", ((new BigDecimal("9")).Multiply(new BigDecimal("900000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("8100000000000000"));
-            TestFmwk.assertTrue("mul116", ((new BigDecimal("9")).Multiply(new BigDecimal("9000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("81000000000000000"));
-            TestFmwk.assertTrue("mul117", ((new BigDecimal("9")).Multiply(new BigDecimal("90000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("810000000000000000"));
-            TestFmwk.assertTrue("mul118", ((new BigDecimal("9")).Multiply(new BigDecimal("900000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("8100000000000000000"));
-            TestFmwk.assertTrue("mul119", ((new BigDecimal("9")).Multiply(new BigDecimal("9000000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("81000000000000000000"));
-            TestFmwk.assertTrue("mul120", ((new BigDecimal("9")).Multiply(new BigDecimal("90000000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("810000000000000000000"));
-            TestFmwk.assertTrue("mul121", ((new BigDecimal("9")).Multiply(new BigDecimal("900000000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("8100000000000000000000"));
-            TestFmwk.assertTrue("mul122", ((new BigDecimal("9")).Multiply(new BigDecimal("9000000000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("81000000000000000000000"));
-            TestFmwk.assertTrue("mul123", ((new BigDecimal("9")).Multiply(new BigDecimal("90000000000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("810000000000000000000000"));
+            TestFmwk.assertTrue("mul101", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("81"));
+            TestFmwk.assertTrue("mul102", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("90", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("810"));
+            TestFmwk.assertTrue("mul103", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("900", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("8100"));
+            TestFmwk.assertTrue("mul104", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("9000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("81000"));
+            TestFmwk.assertTrue("mul105", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("90000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("810000"));
+            TestFmwk.assertTrue("mul106", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("900000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("8100000"));
+            TestFmwk.assertTrue("mul107", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("9000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("81000000"));
+            TestFmwk.assertTrue("mul108", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("90000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("810000000"));
+            TestFmwk.assertTrue("mul109", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("900000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("8100000000"));
+            TestFmwk.assertTrue("mul110", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("9000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("81000000000"));
+            TestFmwk.assertTrue("mul111", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("90000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("810000000000"));
+            TestFmwk.assertTrue("mul112", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("900000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("8100000000000"));
+            TestFmwk.assertTrue("mul113", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("9000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("81000000000000"));
+            TestFmwk.assertTrue("mul114", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("90000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("810000000000000"));
+            TestFmwk.assertTrue("mul115", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("900000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("8100000000000000"));
+            TestFmwk.assertTrue("mul116", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("9000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("81000000000000000"));
+            TestFmwk.assertTrue("mul117", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("90000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("810000000000000000"));
+            TestFmwk.assertTrue("mul118", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("900000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("8100000000000000000"));
+            TestFmwk.assertTrue("mul119", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("9000000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("81000000000000000000"));
+            TestFmwk.assertTrue("mul120", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("90000000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("810000000000000000000"));
+            TestFmwk.assertTrue("mul121", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("900000000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("8100000000000000000000"));
+            TestFmwk.assertTrue("mul122", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("9000000000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("81000000000000000000000"));
+            TestFmwk.assertTrue("mul123", ((BigDecimal.Parse("9", numberStyle, provider)).Multiply(BigDecimal.Parse("90000000000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("810000000000000000000000"));
             // test some more edge cases without carries
-            TestFmwk.assertTrue("mul131", ((new BigDecimal("3")).Multiply(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("9"));
-            TestFmwk.assertTrue("mul132", ((new BigDecimal("3")).Multiply(new BigDecimal("30")).ToString(CultureInfo.InvariantCulture)).Equals("90"));
-            TestFmwk.assertTrue("mul133", ((new BigDecimal("3")).Multiply(new BigDecimal("300")).ToString(CultureInfo.InvariantCulture)).Equals("900"));
-            TestFmwk.assertTrue("mul134", ((new BigDecimal("3")).Multiply(new BigDecimal("3000")).ToString(CultureInfo.InvariantCulture)).Equals("9000"));
-            TestFmwk.assertTrue("mul135", ((new BigDecimal("3")).Multiply(new BigDecimal("30000")).ToString(CultureInfo.InvariantCulture)).Equals("90000"));
-            TestFmwk.assertTrue("mul136", ((new BigDecimal("3")).Multiply(new BigDecimal("300000")).ToString(CultureInfo.InvariantCulture)).Equals("900000"));
-            TestFmwk.assertTrue("mul137", ((new BigDecimal("3")).Multiply(new BigDecimal("3000000")).ToString(CultureInfo.InvariantCulture)).Equals("9000000"));
-            TestFmwk.assertTrue("mul138", ((new BigDecimal("3")).Multiply(new BigDecimal("30000000")).ToString(CultureInfo.InvariantCulture)).Equals("90000000"));
-            TestFmwk.assertTrue("mul139", ((new BigDecimal("3")).Multiply(new BigDecimal("300000000")).ToString(CultureInfo.InvariantCulture)).Equals("900000000"));
-            TestFmwk.assertTrue("mul140", ((new BigDecimal("3")).Multiply(new BigDecimal("3000000000")).ToString(CultureInfo.InvariantCulture)).Equals("9000000000"));
-            TestFmwk.assertTrue("mul141", ((new BigDecimal("3")).Multiply(new BigDecimal("30000000000")).ToString(CultureInfo.InvariantCulture)).Equals("90000000000"));
-            TestFmwk.assertTrue("mul142", ((new BigDecimal("3")).Multiply(new BigDecimal("300000000000")).ToString(CultureInfo.InvariantCulture)).Equals("900000000000"));
-            TestFmwk.assertTrue("mul143", ((new BigDecimal("3")).Multiply(new BigDecimal("3000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("9000000000000"));
-            TestFmwk.assertTrue("mul144", ((new BigDecimal("3")).Multiply(new BigDecimal("30000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("90000000000000"));
-            TestFmwk.assertTrue("mul145", ((new BigDecimal("3")).Multiply(new BigDecimal("300000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("900000000000000"));
-            TestFmwk.assertTrue("mul146", ((new BigDecimal("3")).Multiply(new BigDecimal("3000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("9000000000000000"));
-            TestFmwk.assertTrue("mul147", ((new BigDecimal("3")).Multiply(new BigDecimal("30000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("90000000000000000"));
-            TestFmwk.assertTrue("mul148", ((new BigDecimal("3")).Multiply(new BigDecimal("300000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("900000000000000000"));
-            TestFmwk.assertTrue("mul149", ((new BigDecimal("3")).Multiply(new BigDecimal("3000000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("9000000000000000000"));
-            TestFmwk.assertTrue("mul150", ((new BigDecimal("3")).Multiply(new BigDecimal("30000000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("90000000000000000000"));
-            TestFmwk.assertTrue("mul151", ((new BigDecimal("3")).Multiply(new BigDecimal("300000000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("900000000000000000000"));
-            TestFmwk.assertTrue("mul152", ((new BigDecimal("3")).Multiply(new BigDecimal("3000000000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("9000000000000000000000"));
-            TestFmwk.assertTrue("mul153", ((new BigDecimal("3")).Multiply(new BigDecimal("30000000000000000000000")).ToString(CultureInfo.InvariantCulture)).Equals("90000000000000000000000"));
+            TestFmwk.assertTrue("mul131", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9"));
+            TestFmwk.assertTrue("mul132", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("30", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("90"));
+            TestFmwk.assertTrue("mul133", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("300", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("900"));
+            TestFmwk.assertTrue("mul134", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("3000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9000"));
+            TestFmwk.assertTrue("mul135", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("30000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("90000"));
+            TestFmwk.assertTrue("mul136", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("300000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("900000"));
+            TestFmwk.assertTrue("mul137", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("3000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9000000"));
+            TestFmwk.assertTrue("mul138", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("30000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("90000000"));
+            TestFmwk.assertTrue("mul139", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("300000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("900000000"));
+            TestFmwk.assertTrue("mul140", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("3000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9000000000"));
+            TestFmwk.assertTrue("mul141", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("30000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("90000000000"));
+            TestFmwk.assertTrue("mul142", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("300000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("900000000000"));
+            TestFmwk.assertTrue("mul143", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("3000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9000000000000"));
+            TestFmwk.assertTrue("mul144", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("30000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("90000000000000"));
+            TestFmwk.assertTrue("mul145", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("300000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("900000000000000"));
+            TestFmwk.assertTrue("mul146", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("3000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9000000000000000"));
+            TestFmwk.assertTrue("mul147", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("30000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("90000000000000000"));
+            TestFmwk.assertTrue("mul148", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("300000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("900000000000000000"));
+            TestFmwk.assertTrue("mul149", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("3000000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9000000000000000000"));
+            TestFmwk.assertTrue("mul150", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("30000000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("90000000000000000000"));
+            TestFmwk.assertTrue("mul151", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("300000000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("900000000000000000000"));
+            TestFmwk.assertTrue("mul152", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("3000000000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9000000000000000000000"));
+            TestFmwk.assertTrue("mul153", ((BigDecimal.Parse("3", numberStyle, provider)).Multiply(BigDecimal.Parse("30000000000000000000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("90000000000000000000000"));
 
             try
             {
@@ -2005,8 +2027,8 @@ namespace ICU4N.Dev.Test.BigDec
 
             try
             {
-                d1 = new BigDecimal("-1.23456789012345E-0");
-                d2 = new BigDecimal("9E+999999999");
+                d1 = BigDecimal.Parse("-1.23456789012345E-0", numberStyle, provider);
+                d2 = BigDecimal.Parse("9E+999999999", numberStyle, provider);
                 d1.Multiply(d2, mcdef); // marginal overflow
                 flag = false;
             }
@@ -2018,8 +2040,8 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("mul202", flag);
             try
             {
-                d1 = new BigDecimal("112");
-                d2 = new BigDecimal("9E+999999999");
+                d1 = BigDecimal.Parse("112", numberStyle, provider);
+                d2 = BigDecimal.Parse("9E+999999999", numberStyle, provider);
                 d1.Multiply(d2, mce); // marginal overflow, engineering
                 flag = false;
             }
@@ -2032,8 +2054,8 @@ namespace ICU4N.Dev.Test.BigDec
 
             try
             {
-                d1 = new BigDecimal("0.9");
-                d2 = new BigDecimal("1E-999999999");
+                d1 = BigDecimal.Parse("0.9", numberStyle, provider);
+                d2 = BigDecimal.Parse("1E-999999999", numberStyle, provider);
                 d1.Multiply(d2, mcdef); // marginal negative overflow
                 flag = false;
             }
@@ -2045,8 +2067,8 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("mul204", flag);
             try
             {
-                d1 = new BigDecimal("0.9");
-                d2 = new BigDecimal("1E-999999999");
+                d1 = BigDecimal.Parse("0.9", numberStyle, provider);
+                d2 = BigDecimal.Parse("1E-999999999", numberStyle, provider);
                 d1.Multiply(d2, mce); // marginal negative overflow,
                                       // engineering
                 flag = false;
@@ -2094,28 +2116,30 @@ namespace ICU4N.Dev.Test.BigDec
         {
             bool flag = false;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            TestFmwk.assertTrue("neg001", ((new BigDecimal("2")).Negate().ToString(CultureInfo.InvariantCulture)).Equals("-2"));
-            TestFmwk.assertTrue("neg002", ((new BigDecimal("-2")).Negate().ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("neg003", ((new BigDecimal("2.00")).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2.00"));
-            TestFmwk.assertTrue("neg004", ((new BigDecimal("-2.00")).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.00"));
-            TestFmwk.assertTrue("neg005", ((new BigDecimal("0")).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("neg006", ((new BigDecimal("0.00")).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("neg007", ((new BigDecimal("00.0")).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("neg008", ((new BigDecimal("00")).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("neg001", ((BigDecimal.Parse("2", numberStyle, provider)).Negate().ToString(CultureInfo.InvariantCulture)).Equals("-2"));
+            TestFmwk.assertTrue("neg002", ((BigDecimal.Parse("-2", numberStyle, provider)).Negate().ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("neg003", ((BigDecimal.Parse("2.00", numberStyle, provider)).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2.00"));
+            TestFmwk.assertTrue("neg004", ((BigDecimal.Parse("-2.00", numberStyle, provider)).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.00"));
+            TestFmwk.assertTrue("neg005", ((BigDecimal.Parse("0", numberStyle, provider)).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("neg006", ((BigDecimal.Parse("0.00", numberStyle, provider)).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("neg007", ((BigDecimal.Parse("00.0", numberStyle, provider)).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("neg008", ((BigDecimal.Parse("00", numberStyle, provider)).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
-            TestFmwk.assertTrue("neg010", ((new BigDecimal("2.00")).Negate().ToString(CultureInfo.InvariantCulture)).Equals("-2.00"));
-            TestFmwk.assertTrue("neg011", ((new BigDecimal("-2.00")).Negate().ToString(CultureInfo.InvariantCulture)).Equals("2.00"));
-            TestFmwk.assertTrue("neg012", ((new BigDecimal("0")).Negate().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("neg013", ((new BigDecimal("0.00")).Negate().ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("neg014", ((new BigDecimal("00.0")).Negate().ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("neg015", ((new BigDecimal("00.00")).Negate().ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("neg016", ((new BigDecimal("00")).Negate().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("neg010", ((BigDecimal.Parse("2.00", numberStyle, provider)).Negate().ToString(CultureInfo.InvariantCulture)).Equals("-2.00"));
+            TestFmwk.assertTrue("neg011", ((BigDecimal.Parse("-2.00", numberStyle, provider)).Negate().ToString(CultureInfo.InvariantCulture)).Equals("2.00"));
+            TestFmwk.assertTrue("neg012", ((BigDecimal.Parse("0", numberStyle, provider)).Negate().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("neg013", ((BigDecimal.Parse("0.00", numberStyle, provider)).Negate().ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("neg014", ((BigDecimal.Parse("00.0", numberStyle, provider)).Negate().ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("neg015", ((BigDecimal.Parse("00.00", numberStyle, provider)).Negate().ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("neg016", ((BigDecimal.Parse("00", numberStyle, provider)).Negate().ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
-            TestFmwk.assertTrue("neg020", ((new BigDecimal("-2000000")).Negate().ToString(CultureInfo.InvariantCulture)).Equals("2000000"));
-            TestFmwk.assertTrue("neg021", ((new BigDecimal("-2000000")).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2000000"));
-            TestFmwk.assertTrue("neg022", ((new BigDecimal("-2000000")).Negate(mc6).ToString(CultureInfo.InvariantCulture)).Equals("2.00000E+6"));
-            TestFmwk.assertTrue("neg023", ((new BigDecimal("2000000")).Negate(mc6).ToString(CultureInfo.InvariantCulture)).Equals("-2.00000E+6"));
+            TestFmwk.assertTrue("neg020", ((BigDecimal.Parse("-2000000", numberStyle, provider)).Negate().ToString(CultureInfo.InvariantCulture)).Equals("2000000"));
+            TestFmwk.assertTrue("neg021", ((BigDecimal.Parse("-2000000", numberStyle, provider)).Negate(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2000000"));
+            TestFmwk.assertTrue("neg022", ((BigDecimal.Parse("-2000000", numberStyle, provider)).Negate(mc6).ToString(CultureInfo.InvariantCulture)).Equals("2.00000E+6"));
+            TestFmwk.assertTrue("neg023", ((BigDecimal.Parse("2000000", numberStyle, provider)).Negate(mc6).ToString(CultureInfo.InvariantCulture)).Equals("-2.00000E+6"));
 
             try
             {
@@ -2152,57 +2176,59 @@ namespace ICU4N.Dev.Test.BigDec
             bool flag = false;
             MathContext mche1;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            TestFmwk.assertTrue("plu001", ((new BigDecimal("2")).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("plu002", ((new BigDecimal("-2")).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2"));
-            TestFmwk.assertTrue("plu003", ((new BigDecimal("2.00")).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.00"));
-            TestFmwk.assertTrue("plu004", ((new BigDecimal("-2.00")).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2.00"));
-            TestFmwk.assertTrue("plu005", ((new BigDecimal("0")).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("plu006", ((new BigDecimal("0.00")).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("plu007", ((new BigDecimal("00.0")).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("plu008", ((new BigDecimal("00")).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("plu001", ((BigDecimal.Parse("2", numberStyle, provider)).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("plu002", ((BigDecimal.Parse("-2", numberStyle, provider)).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2"));
+            TestFmwk.assertTrue("plu003", ((BigDecimal.Parse("2.00", numberStyle, provider)).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.00"));
+            TestFmwk.assertTrue("plu004", ((BigDecimal.Parse("-2.00", numberStyle, provider)).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2.00"));
+            TestFmwk.assertTrue("plu005", ((BigDecimal.Parse("0", numberStyle, provider)).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("plu006", ((BigDecimal.Parse("0.00", numberStyle, provider)).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("plu007", ((BigDecimal.Parse("00.0", numberStyle, provider)).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("plu008", ((BigDecimal.Parse("00", numberStyle, provider)).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
-            TestFmwk.assertTrue("plu010", ((new BigDecimal("2")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("plu011", ((new BigDecimal("-2")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-2"));
-            TestFmwk.assertTrue("plu012", ((new BigDecimal("2.00")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("2.00"));
-            TestFmwk.assertTrue("plu013", ((new BigDecimal("-2.00")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-2.00"));
-            TestFmwk.assertTrue("plu014", ((new BigDecimal("0")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("plu015", ((new BigDecimal("0.00")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("plu016", ((new BigDecimal("00.0")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("plu017", ((new BigDecimal("00.00")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("plu018", ((new BigDecimal("00")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("plu010", ((BigDecimal.Parse("2", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            TestFmwk.assertTrue("plu011", ((BigDecimal.Parse("-2", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-2"));
+            TestFmwk.assertTrue("plu012", ((BigDecimal.Parse("2.00", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("2.00"));
+            TestFmwk.assertTrue("plu013", ((BigDecimal.Parse("-2.00", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-2.00"));
+            TestFmwk.assertTrue("plu014", ((BigDecimal.Parse("0", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("plu015", ((BigDecimal.Parse("0.00", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("plu016", ((BigDecimal.Parse("00.0", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("plu017", ((BigDecimal.Parse("00.00", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("plu018", ((BigDecimal.Parse("00", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
-            TestFmwk.assertTrue("plu020", ((new BigDecimal("-2000000")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-2000000"));
-            TestFmwk.assertTrue("plu021", ((new BigDecimal("-2000000")).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2000000"));
-            TestFmwk.assertTrue("plu022", ((new BigDecimal("-2000000")).Plus(mc6).ToString(CultureInfo.InvariantCulture)).Equals("-2.00000E+6"));
-            TestFmwk.assertTrue("plu023", ((new BigDecimal("2000000")).Plus(mc6).ToString(CultureInfo.InvariantCulture)).Equals("2.00000E+6"));
+            TestFmwk.assertTrue("plu020", ((BigDecimal.Parse("-2000000", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-2000000"));
+            TestFmwk.assertTrue("plu021", ((BigDecimal.Parse("-2000000", numberStyle, provider)).Plus(mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2000000"));
+            TestFmwk.assertTrue("plu022", ((BigDecimal.Parse("-2000000", numberStyle, provider)).Plus(mc6).ToString(CultureInfo.InvariantCulture)).Equals("-2.00000E+6"));
+            TestFmwk.assertTrue("plu023", ((BigDecimal.Parse("2000000", numberStyle, provider)).Plus(mc6).ToString(CultureInfo.InvariantCulture)).Equals("2.00000E+6"));
 
             // try some exotic but silly rounding [format checks more varieties]
             // [this mostly ensures we can set up and pass the setting]
             mche1 = new MathContext(1, MathContext.Scientific, false, MathContext.RoundHalfEven);
-            TestFmwk.assertTrue("plu030", ((new BigDecimal("0.24")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
-            TestFmwk.assertTrue("plu031", ((new BigDecimal("0.25")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
-            TestFmwk.assertTrue("plu032", ((new BigDecimal("0.26")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.3"));
-            TestFmwk.assertTrue("plu033", ((new BigDecimal("0.14")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("plu034", ((new BigDecimal("0.15")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
-            TestFmwk.assertTrue("plu035", ((new BigDecimal("0.16")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("plu030", ((BigDecimal.Parse("0.24", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("plu031", ((BigDecimal.Parse("0.25", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("plu032", ((BigDecimal.Parse("0.26", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.3"));
+            TestFmwk.assertTrue("plu033", ((BigDecimal.Parse("0.14", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("plu034", ((BigDecimal.Parse("0.15", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("plu035", ((BigDecimal.Parse("0.16", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
 
-            TestFmwk.assertTrue("plu040", ((new BigDecimal("0.251")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.3"));
-            TestFmwk.assertTrue("plu041", ((new BigDecimal("0.151")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("plu040", ((BigDecimal.Parse("0.251", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.3"));
+            TestFmwk.assertTrue("plu041", ((BigDecimal.Parse("0.151", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
 
-            TestFmwk.assertTrue("plu050", ((new BigDecimal("-0.24")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("-0.2"));
-            TestFmwk.assertTrue("plu051", ((new BigDecimal("-0.25")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("-0.2"));
-            TestFmwk.assertTrue("plu052", ((new BigDecimal("-0.26")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("-0.3"));
-            TestFmwk.assertTrue("plu053", ((new BigDecimal("-0.14")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("-0.1"));
-            TestFmwk.assertTrue("plu054", ((new BigDecimal("-0.15")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("-0.2"));
-            TestFmwk.assertTrue("plu055", ((new BigDecimal("-0.16")).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("-0.2"));
+            TestFmwk.assertTrue("plu050", ((BigDecimal.Parse("-0.24", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("-0.2"));
+            TestFmwk.assertTrue("plu051", ((BigDecimal.Parse("-0.25", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("-0.2"));
+            TestFmwk.assertTrue("plu052", ((BigDecimal.Parse("-0.26", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("-0.3"));
+            TestFmwk.assertTrue("plu053", ((BigDecimal.Parse("-0.14", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("-0.1"));
+            TestFmwk.assertTrue("plu054", ((BigDecimal.Parse("-0.15", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("-0.2"));
+            TestFmwk.assertTrue("plu055", ((BigDecimal.Parse("-0.16", numberStyle, provider)).Plus(mche1).ToString(CultureInfo.InvariantCulture)).Equals("-0.2"));
 
             // more fixed, potential LHS swaps if done by add 0
-            TestFmwk.assertTrue("plu060", ((new BigDecimal("-56267E-10")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-0.0000056267"));
-            TestFmwk.assertTrue("plu061", ((new BigDecimal("-56267E-5")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-0.56267"));
-            TestFmwk.assertTrue("plu062", ((new BigDecimal("-56267E-2")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-562.67"));
-            TestFmwk.assertTrue("plu063", ((new BigDecimal("-56267E-1")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-5626.7"));
-            TestFmwk.assertTrue("plu065", ((new BigDecimal("-56267E-0")).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-56267"));
+            TestFmwk.assertTrue("plu060", ((BigDecimal.Parse("-56267E-10", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-0.0000056267"));
+            TestFmwk.assertTrue("plu061", ((BigDecimal.Parse("-56267E-5", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-0.56267"));
+            TestFmwk.assertTrue("plu062", ((BigDecimal.Parse("-56267E-2", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-562.67"));
+            TestFmwk.assertTrue("plu063", ((BigDecimal.Parse("-56267E-1", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-5626.7"));
+            TestFmwk.assertTrue("plu065", ((BigDecimal.Parse("-56267E-0", numberStyle, provider)).Plus().ToString(CultureInfo.InvariantCulture)).Equals("-56267"));
 
             try
             {
@@ -2244,62 +2270,65 @@ namespace ICU4N.Dev.Test.BigDec
             BigDecimal vn;
             ArithmeticException ae = null;
             flag = true;
-            TestFmwk.assertTrue("pow001", "1".Equals((new BigDecimal("0.3")).Pow(new BigDecimal("0"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow002", "0.3".Equals((new BigDecimal("0.3")).Pow(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow003", "0.3".Equals((new BigDecimal("0.3")).Pow(new BigDecimal("1.00"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow004", "0.09".Equals((new BigDecimal("0.3")).Pow(new BigDecimal("2.00"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow005", "0.09".Equals((new BigDecimal("0.3")).Pow(new BigDecimal("2.000000000"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow006", ("1E-8").Equals((new BigDecimal("10")).Pow(new BigDecimal("-8"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow007", ("1E-7").Equals((new BigDecimal("10")).Pow(new BigDecimal("-7"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow008", "0.000001".Equals((new BigDecimal("10")).Pow(new BigDecimal("-6"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow009", "0.00001".Equals((new BigDecimal("10")).Pow(new BigDecimal("-5"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow010", "0.0001".Equals((new BigDecimal("10")).Pow(new BigDecimal("-4"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow011", "0.001".Equals((new BigDecimal("10")).Pow(new BigDecimal("-3"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow012", "0.01".Equals((new BigDecimal("10")).Pow(new BigDecimal("-2"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow013", "0.1".Equals((new BigDecimal("10")).Pow(new BigDecimal("-1"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow014", "1".Equals((new BigDecimal("10")).Pow(new BigDecimal("0"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow015", "10".Equals((new BigDecimal("10")).Pow(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow016", "100000000".Equals((new BigDecimal("10")).Pow(new BigDecimal("8"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow017", ("1E+9").Equals((new BigDecimal("10")).Pow(new BigDecimal("9"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow018", ("1E+99").Equals((new BigDecimal("10")).Pow(new BigDecimal("99"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow019", ("1E+999999999").Equals((new BigDecimal("10")).Pow(new BigDecimal("999999999"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow020", ("1E+999999998").Equals((new BigDecimal("10")).Pow(new BigDecimal("999999998"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow021", ("1E+999999997").Equals((new BigDecimal("10")).Pow(new BigDecimal("999999997"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow022", ("1E+333333333").Equals((new BigDecimal("10")).Pow(new BigDecimal("333333333"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow023", ("1E-333333333").Equals((new BigDecimal("10")).Pow(new BigDecimal("-333333333"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow024", ("1E-999999998").Equals((new BigDecimal("10")).Pow(new BigDecimal("-999999998"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow025", ("1E-999999999").Equals((new BigDecimal("10")).Pow(new BigDecimal("-999999999"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow026", "0.5".Equals((new BigDecimal("2")).Pow(new BigDecimal("-1"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow027", "0.25".Equals((new BigDecimal("2")).Pow(new BigDecimal("-2"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow028", "0.0625".Equals((new BigDecimal("2")).Pow(new BigDecimal("-4"), mcdef).ToString(CultureInfo.InvariantCulture)));
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            TestFmwk.assertTrue("pow050", ((new BigDecimal("0")).Pow(new BigDecimal("0"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("pow051", ((new BigDecimal("0")).Pow(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("pow052", ((new BigDecimal("0")).Pow(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("pow053", ((new BigDecimal("1")).Pow(new BigDecimal("0"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("pow054", ((new BigDecimal("1")).Pow(new BigDecimal("1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("pow055", ((new BigDecimal("1")).Pow(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("pow056", ((new BigDecimal("0.3")).Pow(new BigDecimal("0"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("pow057", ((new BigDecimal("10")).Pow(new BigDecimal("999999999"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+999999999"));
-            TestFmwk.assertTrue("pow058", ((new BigDecimal("10")).Pow(new BigDecimal("999999998"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+999999998"));
-            TestFmwk.assertTrue("pow059", ((new BigDecimal("10")).Pow(new BigDecimal("999999997"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+999999997"));
-            TestFmwk.assertTrue("pow060", ((new BigDecimal("10")).Pow(new BigDecimal("333333333"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+333333333"));
-            TestFmwk.assertTrue("pow061", ((new BigDecimal("10")).Pow(new BigDecimal("77"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+77"));
-            TestFmwk.assertTrue("pow062", ((new BigDecimal("10")).Pow(new BigDecimal("22"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+22"));
-            TestFmwk.assertTrue("pow063", ((new BigDecimal("10")).Pow(new BigDecimal("-77"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E-77"));
-            TestFmwk.assertTrue("pow064", ((new BigDecimal("10")).Pow(new BigDecimal("-22"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E-22"));
-            TestFmwk.assertTrue("pow065", ((new BigDecimal("2")).Pow(new BigDecimal("-1"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
-            TestFmwk.assertTrue("pow066", ((new BigDecimal("2")).Pow(new BigDecimal("-2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.25"));
-            TestFmwk.assertTrue("pow067", ((new BigDecimal("2")).Pow(new BigDecimal("-4"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.0625"));
-            TestFmwk.assertTrue("pow068", ((new BigDecimal("6.0")).Pow(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("36"));
-            TestFmwk.assertTrue("pow069", ((new BigDecimal("-3")).Pow(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("9"));/* from book */
-            TestFmwk.assertTrue("pow070", ((new BigDecimal("2")).Pow(new BigDecimal("2"), mcdef).Pow(new BigDecimal("3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("64"));/* from book */
+            TestFmwk.assertTrue("pow001", "1".Equals((BigDecimal.Parse("0.3", numberStyle, provider)).Pow(BigDecimal.Parse("0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow002", "0.3".Equals((BigDecimal.Parse("0.3", numberStyle, provider)).Pow(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow003", "0.3".Equals((BigDecimal.Parse("0.3", numberStyle, provider)).Pow(BigDecimal.Parse("1.00", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow004", "0.09".Equals((BigDecimal.Parse("0.3", numberStyle, provider)).Pow(BigDecimal.Parse("2.00", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow005", "0.09".Equals((BigDecimal.Parse("0.3", numberStyle, provider)).Pow(BigDecimal.Parse("2.000000000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow006", ("1E-8").Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-8", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow007", ("1E-7").Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-7", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow008", "0.000001".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-6", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow009", "0.00001".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-5", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow010", "0.0001".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-4", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow011", "0.001".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow012", "0.01".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow013", "0.1".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow014", "1".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow015", "10".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow016", "100000000".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("8", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow017", ("1E+9").Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("9", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow018", ("1E+99").Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("99", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow019", ("1E+999999999").Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("999999999", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow020", ("1E+999999998").Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("999999998", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow021", ("1E+999999997").Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("999999997", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow022", ("1E+333333333").Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("333333333", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow023", ("1E-333333333").Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-333333333", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow024", ("1E-999999998").Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-999999998", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow025", ("1E-999999999").Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-999999999", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow026", "0.5".Equals((BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("-1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow027", "0.25".Equals((BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("-2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow028", "0.0625".Equals((BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("-4", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+
+            TestFmwk.assertTrue("pow050", ((BigDecimal.Parse("0", numberStyle, provider)).Pow(BigDecimal.Parse("0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("pow051", ((BigDecimal.Parse("0", numberStyle, provider)).Pow(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("pow052", ((BigDecimal.Parse("0", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("pow053", ((BigDecimal.Parse("1", numberStyle, provider)).Pow(BigDecimal.Parse("0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("pow054", ((BigDecimal.Parse("1", numberStyle, provider)).Pow(BigDecimal.Parse("1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("pow055", ((BigDecimal.Parse("1", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("pow056", ((BigDecimal.Parse("0.3", numberStyle, provider)).Pow(BigDecimal.Parse("0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("pow057", ((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("999999999", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+999999999"));
+            TestFmwk.assertTrue("pow058", ((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("999999998", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+999999998"));
+            TestFmwk.assertTrue("pow059", ((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("999999997", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+999999997"));
+            TestFmwk.assertTrue("pow060", ((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("333333333", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+333333333"));
+            TestFmwk.assertTrue("pow061", ((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("77", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+77"));
+            TestFmwk.assertTrue("pow062", ((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("22", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E+22"));
+            TestFmwk.assertTrue("pow063", ((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-77", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E-77"));
+            TestFmwk.assertTrue("pow064", ((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("-22", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E-22"));
+            TestFmwk.assertTrue("pow065", ((BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("-1", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
+            TestFmwk.assertTrue("pow066", ((BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("-2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.25"));
+            TestFmwk.assertTrue("pow067", ((BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("-4", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.0625"));
+            TestFmwk.assertTrue("pow068", ((BigDecimal.Parse("6.0", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("36"));
+            TestFmwk.assertTrue("pow069", ((BigDecimal.Parse("-3", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("9"));/* from book */
+            TestFmwk.assertTrue("pow070", ((BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider), mcdef).Pow(BigDecimal.Parse("3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("64"));/* from book */
 
             // 1998.12.14 Next test removed as pow() no longer rounds RHS [as per ANSI]
             // Test('pow071').ok=BigDecimal('2').Pow(BigDecimal('2.000000001'),mcdef).toString == '4'/* check input rounding */
 
             /* General tests from original Rexx diagnostics */
-            x = new BigDecimal("0.5");
+            x = BigDecimal.Parse("0.5", numberStyle, provider);
             temp = BigDecimal.One;
             flag = true;
             {
@@ -2314,7 +2343,7 @@ namespace ICU4N.Dev.Test.BigDec
             }/* n */
             TestFmwk.assertTrue("pow080", flag);
 
-            x = new BigDecimal("2");
+            x = BigDecimal.Parse("2", numberStyle, provider);
             temp = BigDecimal.One;
             flag = true;
             {
@@ -2333,39 +2362,39 @@ namespace ICU4N.Dev.Test.BigDec
             /* The Vienna case. Checks both setup and 1/acc working precision */
             // Modified 1998.12.14 as RHS no longer rounded before use (must fit)
             // Modified 1990.02.04 as LHS is now rounded (instead of truncated to guard)
-            vx = new BigDecimal("123456789E+10"); // lhs .. rounded to 1.23E+18
-            vn = new BigDecimal("-1.23000e+2"); // rhs .. [was: -1.23455e+2, rounds to -123]
+            vx = BigDecimal.Parse("123456789E+10", numberStyle, provider); // lhs .. rounded to 1.23E+18
+            vn = BigDecimal.Parse("-1.23000e+2", numberStyle, provider); // rhs .. [was: -1.23455e+2, rounds to -123]
             TestFmwk.assertTrue("pow090", (vx.Pow(vn, mc3).ToString(CultureInfo.InvariantCulture)).Equals("8.74E-2226"));
 
             // - fixed point versions ---
-            TestFmwk.assertTrue("pow101", "1".Equals((new BigDecimal("0.3")).Pow(new BigDecimal("0")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow102", "0.3".Equals((new BigDecimal("0.3")).Pow(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow103", "0.3".Equals((new BigDecimal("0.3")).Pow(new BigDecimal("1.00")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow104", "0.09".Equals((new BigDecimal("0.3")).Pow(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow105", "0.09".Equals((new BigDecimal("0.3")).Pow(new BigDecimal("2.00")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow106", "10".Equals((new BigDecimal("10")).Pow(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow107", "100000000".Equals((new BigDecimal("10")).Pow(new BigDecimal("8")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow108", "1000000000".Equals((new BigDecimal("10")).Pow(new BigDecimal("9")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow109", "10000000000".Equals((new BigDecimal("10")).Pow(new BigDecimal("10")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow110", "1".Equals((new BigDecimal("2")).Pow(new BigDecimal("0")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow111", "16".Equals((new BigDecimal("2")).Pow(new BigDecimal("4")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow112", "256".Equals((new BigDecimal("2")).Pow(new BigDecimal("8")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow113", "1024".Equals((new BigDecimal("2")).Pow(new BigDecimal("10")).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("pow114", "1.0510100501".Equals((new BigDecimal("1.01")).Pow(new BigDecimal("5")).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow101", "1".Equals((BigDecimal.Parse("0.3", numberStyle, provider)).Pow(BigDecimal.Parse("0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow102", "0.3".Equals((BigDecimal.Parse("0.3", numberStyle, provider)).Pow(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow103", "0.3".Equals((BigDecimal.Parse("0.3", numberStyle, provider)).Pow(BigDecimal.Parse("1.00", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow104", "0.09".Equals((BigDecimal.Parse("0.3", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow105", "0.09".Equals((BigDecimal.Parse("0.3", numberStyle, provider)).Pow(BigDecimal.Parse("2.00", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow106", "10".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow107", "100000000".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("8", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow108", "1000000000".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow109", "10000000000".Equals((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("10", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow110", "1".Equals((BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow111", "16".Equals((BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("4", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow112", "256".Equals((BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("8", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow113", "1024".Equals((BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("10", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("pow114", "1.0510100501".Equals((BigDecimal.Parse("1.01", numberStyle, provider)).Pow(BigDecimal.Parse("5", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)));
 
-            TestFmwk.assertTrue("pow120", ((new BigDecimal("0")).Pow(new BigDecimal("0")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("pow121", ((new BigDecimal("0")).Pow(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("pow122", ((new BigDecimal("0")).Pow(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("pow123", ((new BigDecimal("1")).Pow(new BigDecimal("0")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("pow144", ((new BigDecimal("1")).Pow(new BigDecimal("1")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("pow125", ((new BigDecimal("1")).Pow(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("pow126", ((new BigDecimal("0.3")).Pow(new BigDecimal("0")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("pow127", ((new BigDecimal("10")).Pow(new BigDecimal("7")).ToString(CultureInfo.InvariantCulture)).Equals("10000000"));
-            TestFmwk.assertTrue("pow128", ((new BigDecimal("6.0")).Pow(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("36.00"));
-            TestFmwk.assertTrue("pow129", ((new BigDecimal("6.00")).Pow(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("36.0000"));
-            TestFmwk.assertTrue("pow130", ((new BigDecimal("6.000")).Pow(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("36.000000"));
-            TestFmwk.assertTrue("pow131", ((new BigDecimal("-3")).Pow(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("9"));
-            TestFmwk.assertTrue("pow132", ((new BigDecimal("2")).Pow(new BigDecimal("2")).Pow(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("64"));
+            TestFmwk.assertTrue("pow120", ((BigDecimal.Parse("0", numberStyle, provider)).Pow(BigDecimal.Parse("0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("pow121", ((BigDecimal.Parse("0", numberStyle, provider)).Pow(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("pow122", ((BigDecimal.Parse("0", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("pow123", ((BigDecimal.Parse("1", numberStyle, provider)).Pow(BigDecimal.Parse("0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("pow144", ((BigDecimal.Parse("1", numberStyle, provider)).Pow(BigDecimal.Parse("1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("pow125", ((BigDecimal.Parse("1", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("pow126", ((BigDecimal.Parse("0.3", numberStyle, provider)).Pow(BigDecimal.Parse("0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("pow127", ((BigDecimal.Parse("10", numberStyle, provider)).Pow(BigDecimal.Parse("7", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("10000000"));
+            TestFmwk.assertTrue("pow128", ((BigDecimal.Parse("6.0", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("36.00"));
+            TestFmwk.assertTrue("pow129", ((BigDecimal.Parse("6.00", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("36.0000"));
+            TestFmwk.assertTrue("pow130", ((BigDecimal.Parse("6.000", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("36.000000"));
+            TestFmwk.assertTrue("pow131", ((BigDecimal.Parse("-3", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9"));
+            TestFmwk.assertTrue("pow132", ((BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("2", numberStyle, provider)).Pow(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("64"));
 
             /* errors */
             try
@@ -2419,7 +2448,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 BigDecimal.One
-                        .Pow(new BigDecimal("-71"));
+                        .Pow(BigDecimal.Parse("-71", numberStyle, provider));
                 flag = false;
             }
             catch (ArithmeticException e71)
@@ -2432,7 +2461,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 BigDecimal.One.Pow(
-                        new BigDecimal("1234"), mc3);
+                        BigDecimal.Parse("1234", numberStyle, provider), mc3);
                 flag = false;
             }
             catch (ArithmeticException e72)
@@ -2445,7 +2474,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 BigDecimal.One.Pow(
-                        new BigDecimal("12.34e+2"), mc3);
+                        BigDecimal.Parse("12.34e+2", numberStyle, provider), mc3);
                 flag = false;
             }
             catch (ArithmeticException e73)
@@ -2458,7 +2487,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 BigDecimal.One.Pow(
-                        new BigDecimal("12.4"), mcdef);
+                        BigDecimal.Parse("12.4", numberStyle, provider), mcdef);
                 flag = false;
             }
             catch (ArithmeticException e74)
@@ -2471,7 +2500,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 BigDecimal.One.Pow(
-                        new BigDecimal("1.01"), mcdef);
+                        BigDecimal.Parse("1.01", numberStyle, provider), mcdef);
                 flag = false;
             }
             catch (ArithmeticException e75)
@@ -2484,7 +2513,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 BigDecimal.One.Pow(
-                        new BigDecimal("1.000000001"), mcdef);
+                        BigDecimal.Parse("1.000000001", numberStyle, provider), mcdef);
                 flag = false;
             }
             catch (ArithmeticException e76)
@@ -2498,7 +2527,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 BigDecimal.One.Pow(
-                        new BigDecimal("1.000000001"), mc3);
+                        BigDecimal.Parse("1.000000001", numberStyle, provider), mc3);
                 flag = false;
             }
             catch (ArithmeticException e77)
@@ -2513,8 +2542,7 @@ namespace ICU4N.Dev.Test.BigDec
             {
                 BigDecimal.One
                         .Pow(
-                                new BigDecimal(
-                                        "5.67E-987654321"), mc3);
+                                BigDecimal.Parse("5.67E-987654321", numberStyle, provider), mc3);
                 flag = false;
             }
             catch (ArithmeticException e78)
@@ -2535,126 +2563,128 @@ namespace ICU4N.Dev.Test.BigDec
         {
             bool flag = false;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            TestFmwk.assertTrue("rem001", ((new BigDecimal("1")).Remainder(new BigDecimal("3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("rem002", ((new BigDecimal("5")).Remainder(new BigDecimal("5"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("rem003", ((new BigDecimal("13")).Remainder(new BigDecimal("10"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("3"));
-            TestFmwk.assertTrue("rem004", ((new BigDecimal("13")).Remainder(new BigDecimal("50"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("13"));
-            TestFmwk.assertTrue("rem005", ((new BigDecimal("13")).Remainder(new BigDecimal("100"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("13"));
-            TestFmwk.assertTrue("rem006", ((new BigDecimal("13")).Remainder(new BigDecimal("1000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("13"));
-            TestFmwk.assertTrue("rem007", ((new BigDecimal(".13")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.13"));
-            TestFmwk.assertTrue("rem008", ((new BigDecimal("0.133")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.133"));
-            TestFmwk.assertTrue("rem009", ((new BigDecimal("0.1033")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.1033"));
-            TestFmwk.assertTrue("rem010", ((new BigDecimal("1.033")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.033"));
-            TestFmwk.assertTrue("rem011", ((new BigDecimal("10.33")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.33"));
-            TestFmwk.assertTrue("rem012", ((new BigDecimal("10.33")).Remainder(BigDecimal.Ten).ToString(CultureInfo.InvariantCulture)).Equals("0.33"));
-            TestFmwk.assertTrue("rem013", ((new BigDecimal("103.3")).Remainder(BigDecimal.One).ToString(CultureInfo.InvariantCulture)).Equals("0.3"));
-            TestFmwk.assertTrue("rem014", ((new BigDecimal("133")).Remainder(BigDecimal.Ten).ToString(CultureInfo.InvariantCulture)).Equals("3"));
-            TestFmwk.assertTrue("rem015", ((new BigDecimal("1033")).Remainder(BigDecimal.Ten).ToString(CultureInfo.InvariantCulture)).Equals("3"));
-            TestFmwk.assertTrue("rem016", ((new BigDecimal("1033")).Remainder(new BigDecimal(50), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("33"));
-            TestFmwk.assertTrue("rem017", ((new BigDecimal("101.0")).Remainder(new BigDecimal(3), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.0"));
-            TestFmwk.assertTrue("rem018", ((new BigDecimal("102.0")).Remainder(new BigDecimal(3), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("rem019", ((new BigDecimal("103.0")).Remainder(new BigDecimal(3), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
-            TestFmwk.assertTrue("rem020", ((new BigDecimal("2.40")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.40"));
-            TestFmwk.assertTrue("rem021", ((new BigDecimal("2.400")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
-            TestFmwk.assertTrue("rem022", ((new BigDecimal("2.4")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
-            TestFmwk.assertTrue("rem023", ((new BigDecimal("2.4")).Remainder(new BigDecimal(2), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
-            TestFmwk.assertTrue("rem024", ((new BigDecimal("2.400")).Remainder(new BigDecimal(2), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
-            TestFmwk.assertTrue("rem025", ((new BigDecimal("1")).Remainder(new BigDecimal("0.3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("rem026", ((new BigDecimal("1")).Remainder(new BigDecimal("0.30"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.10"));
-            TestFmwk.assertTrue("rem027", ((new BigDecimal("1")).Remainder(new BigDecimal("0.300"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.100"));
-            TestFmwk.assertTrue("rem028", ((new BigDecimal("1")).Remainder(new BigDecimal("0.3000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.1000"));
-            TestFmwk.assertTrue("rem029", ((new BigDecimal("1.0")).Remainder(new BigDecimal("0.3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("rem030", ((new BigDecimal("1.00")).Remainder(new BigDecimal("0.3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.10"));
-            TestFmwk.assertTrue("rem031", ((new BigDecimal("1.000")).Remainder(new BigDecimal("0.3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.100"));
-            TestFmwk.assertTrue("rem032", ((new BigDecimal("1.0000")).Remainder(new BigDecimal("0.3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.1000"));
-            TestFmwk.assertTrue("rem033", ((new BigDecimal("0.5")).Remainder(new BigDecimal("2.001"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
+            TestFmwk.assertTrue("rem001", ((BigDecimal.Parse("1", numberStyle, provider)).Remainder(BigDecimal.Parse("3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("rem002", ((BigDecimal.Parse("5", numberStyle, provider)).Remainder(BigDecimal.Parse("5", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("rem003", ((BigDecimal.Parse("13", numberStyle, provider)).Remainder(BigDecimal.Parse("10", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+            TestFmwk.assertTrue("rem004", ((BigDecimal.Parse("13", numberStyle, provider)).Remainder(BigDecimal.Parse("50", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("13"));
+            TestFmwk.assertTrue("rem005", ((BigDecimal.Parse("13", numberStyle, provider)).Remainder(BigDecimal.Parse("100", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("13"));
+            TestFmwk.assertTrue("rem006", ((BigDecimal.Parse("13", numberStyle, provider)).Remainder(BigDecimal.Parse("1000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("13"));
+            TestFmwk.assertTrue("rem007", ((BigDecimal.Parse(".13", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.13"));
+            TestFmwk.assertTrue("rem008", ((BigDecimal.Parse("0.133", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.133"));
+            TestFmwk.assertTrue("rem009", ((BigDecimal.Parse("0.1033", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.1033"));
+            TestFmwk.assertTrue("rem010", ((BigDecimal.Parse("1.033", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.033"));
+            TestFmwk.assertTrue("rem011", ((BigDecimal.Parse("10.33", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.33"));
+            TestFmwk.assertTrue("rem012", ((BigDecimal.Parse("10.33", numberStyle, provider)).Remainder(BigDecimal.Ten).ToString(CultureInfo.InvariantCulture)).Equals("0.33"));
+            TestFmwk.assertTrue("rem013", ((BigDecimal.Parse("103.3", numberStyle, provider)).Remainder(BigDecimal.One).ToString(CultureInfo.InvariantCulture)).Equals("0.3"));
+            TestFmwk.assertTrue("rem014", ((BigDecimal.Parse("133", numberStyle, provider)).Remainder(BigDecimal.Ten).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+            TestFmwk.assertTrue("rem015", ((BigDecimal.Parse("1033", numberStyle, provider)).Remainder(BigDecimal.Ten).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+            TestFmwk.assertTrue("rem016", ((BigDecimal.Parse("1033", numberStyle, provider)).Remainder(new BigDecimal(50), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("33"));
+            TestFmwk.assertTrue("rem017", ((BigDecimal.Parse("101.0", numberStyle, provider)).Remainder(new BigDecimal(3), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.0"));
+            TestFmwk.assertTrue("rem018", ((BigDecimal.Parse("102.0", numberStyle, provider)).Remainder(new BigDecimal(3), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("rem019", ((BigDecimal.Parse("103.0", numberStyle, provider)).Remainder(new BigDecimal(3), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
+            TestFmwk.assertTrue("rem020", ((BigDecimal.Parse("2.40", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.40"));
+            TestFmwk.assertTrue("rem021", ((BigDecimal.Parse("2.400", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
+            TestFmwk.assertTrue("rem022", ((BigDecimal.Parse("2.4", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
+            TestFmwk.assertTrue("rem023", ((BigDecimal.Parse("2.4", numberStyle, provider)).Remainder(new BigDecimal(2), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
+            TestFmwk.assertTrue("rem024", ((BigDecimal.Parse("2.400", numberStyle, provider)).Remainder(new BigDecimal(2), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
+            TestFmwk.assertTrue("rem025", ((BigDecimal.Parse("1", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("rem026", ((BigDecimal.Parse("1", numberStyle, provider)).Remainder(BigDecimal.Parse("0.30", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.10"));
+            TestFmwk.assertTrue("rem027", ((BigDecimal.Parse("1", numberStyle, provider)).Remainder(BigDecimal.Parse("0.300", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.100"));
+            TestFmwk.assertTrue("rem028", ((BigDecimal.Parse("1", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.1000"));
+            TestFmwk.assertTrue("rem029", ((BigDecimal.Parse("1.0", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("rem030", ((BigDecimal.Parse("1.00", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.10"));
+            TestFmwk.assertTrue("rem031", ((BigDecimal.Parse("1.000", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.100"));
+            TestFmwk.assertTrue("rem032", ((BigDecimal.Parse("1.0000", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.1000"));
+            TestFmwk.assertTrue("rem033", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("2.001", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
 
-            TestFmwk.assertTrue("rem040", ((new BigDecimal("0.5")).Remainder(new BigDecimal("0.5000001"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
-            TestFmwk.assertTrue("rem041", ((new BigDecimal("0.5")).Remainder(new BigDecimal("0.50000001"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
-            TestFmwk.assertTrue("rem042", ((new BigDecimal("0.5")).Remainder(new BigDecimal("0.500000001"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
-            TestFmwk.assertTrue("rem043", ((new BigDecimal("0.5")).Remainder(new BigDecimal("0.5000000001"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("rem044", ((new BigDecimal("0.5")).Remainder(new BigDecimal("0.50000000001"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("rem045", ((new BigDecimal("0.5")).Remainder(new BigDecimal("0.4999999"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E-7"));
-            TestFmwk.assertTrue("rem046", ((new BigDecimal("0.5")).Remainder(new BigDecimal("0.49999999"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E-8"));
-            TestFmwk.assertTrue("rem047", ((new BigDecimal("0.5")).Remainder(new BigDecimal("0.499999999"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E-9"));
-            TestFmwk.assertTrue("rem048", ((new BigDecimal("0.5")).Remainder(new BigDecimal("0.4999999999"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("rem049", ((new BigDecimal("0.5")).Remainder(new BigDecimal("0.49999999999"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("rem040", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("0.5000001", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
+            TestFmwk.assertTrue("rem041", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("0.50000001", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
+            TestFmwk.assertTrue("rem042", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("0.500000001", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
+            TestFmwk.assertTrue("rem043", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("0.5000000001", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("rem044", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("0.50000000001", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("rem045", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("0.4999999", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E-7"));
+            TestFmwk.assertTrue("rem046", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("0.49999999", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E-8"));
+            TestFmwk.assertTrue("rem047", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("0.499999999", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E-9"));
+            TestFmwk.assertTrue("rem048", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("0.4999999999", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("rem049", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("0.49999999999", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
-            TestFmwk.assertTrue("rem050", ((new BigDecimal("0.03")).Remainder(new BigDecimal("7"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.03"));
-            TestFmwk.assertTrue("rem051", ((new BigDecimal("5")).Remainder(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("rem052", ((new BigDecimal("4.1")).Remainder(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("rem053", ((new BigDecimal("4.01")).Remainder(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
-            TestFmwk.assertTrue("rem054", ((new BigDecimal("4.001")).Remainder(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.001"));
-            TestFmwk.assertTrue("rem055", ((new BigDecimal("4.0001")).Remainder(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.0001"));
-            TestFmwk.assertTrue("rem056", ((new BigDecimal("4.00001")).Remainder(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.00001"));
-            TestFmwk.assertTrue("rem057", ((new BigDecimal("4.000001")).Remainder(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.000001"));
-            TestFmwk.assertTrue("rem058", ((new BigDecimal("4.0000001")).Remainder(new BigDecimal("2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E-7"));
+            TestFmwk.assertTrue("rem050", ((BigDecimal.Parse("0.03", numberStyle, provider)).Remainder(BigDecimal.Parse("7", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.03"));
+            TestFmwk.assertTrue("rem051", ((BigDecimal.Parse("5", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("rem052", ((BigDecimal.Parse("4.1", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("rem053", ((BigDecimal.Parse("4.01", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
+            TestFmwk.assertTrue("rem054", ((BigDecimal.Parse("4.001", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.001"));
+            TestFmwk.assertTrue("rem055", ((BigDecimal.Parse("4.0001", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.0001"));
+            TestFmwk.assertTrue("rem056", ((BigDecimal.Parse("4.00001", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.00001"));
+            TestFmwk.assertTrue("rem057", ((BigDecimal.Parse("4.000001", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.000001"));
+            TestFmwk.assertTrue("rem058", ((BigDecimal.Parse("4.0000001", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1E-7"));
 
-            TestFmwk.assertTrue("rem060", ((new BigDecimal("1.2")).Remainder(new BigDecimal("0.7345"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.4655"));
-            TestFmwk.assertTrue("rem061", ((new BigDecimal("0.8")).Remainder(new BigDecimal("12"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.8"));
-            TestFmwk.assertTrue("rem062", ((new BigDecimal("0.8")).Remainder(new BigDecimal("0.2"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("rem063", ((new BigDecimal("0.8")).Remainder(new BigDecimal("0.3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
-            TestFmwk.assertTrue("rem064", ((new BigDecimal("0.800")).Remainder(new BigDecimal("12"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.800"));
-            TestFmwk.assertTrue("rem065", ((new BigDecimal("0.800")).Remainder(new BigDecimal("1.7"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.800"));
-            TestFmwk.assertTrue("rem066", ((new BigDecimal("2.400")).Remainder(new BigDecimal(2), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
+            TestFmwk.assertTrue("rem060", ((BigDecimal.Parse("1.2", numberStyle, provider)).Remainder(BigDecimal.Parse("0.7345", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.4655"));
+            TestFmwk.assertTrue("rem061", ((BigDecimal.Parse("0.8", numberStyle, provider)).Remainder(BigDecimal.Parse("12", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.8"));
+            TestFmwk.assertTrue("rem062", ((BigDecimal.Parse("0.8", numberStyle, provider)).Remainder(BigDecimal.Parse("0.2", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("rem063", ((BigDecimal.Parse("0.8", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("rem064", ((BigDecimal.Parse("0.800", numberStyle, provider)).Remainder(BigDecimal.Parse("12", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.800"));
+            TestFmwk.assertTrue("rem065", ((BigDecimal.Parse("0.800", numberStyle, provider)).Remainder(BigDecimal.Parse("1.7", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.800"));
+            TestFmwk.assertTrue("rem066", ((BigDecimal.Parse("2.400", numberStyle, provider)).Remainder(new BigDecimal(2), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
 
             // MC --
-            TestFmwk.assertTrue("rem071", ((new BigDecimal("2.400")).Remainder(new BigDecimal(2), mc6).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
-            TestFmwk.assertTrue("rem072", ((new BigDecimal("12345678900000")).Remainder(new BigDecimal("12e+12"), mc3).ToString(CultureInfo.InvariantCulture)).Equals("3E+11"));
+            TestFmwk.assertTrue("rem071", ((BigDecimal.Parse("2.400", numberStyle, provider)).Remainder(new BigDecimal(2), mc6).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
+            TestFmwk.assertTrue("rem072", ((BigDecimal.Parse("12345678900000", numberStyle, provider)).Remainder(BigDecimal.Parse("12e+12", numberStyle, provider), mc3).ToString(CultureInfo.InvariantCulture)).Equals("3E+11"));
 
             // Fixed --
-            TestFmwk.assertTrue("rem101", ((new BigDecimal("1")).Remainder(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("rem102", ((new BigDecimal("5")).Remainder(new BigDecimal("5")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("rem103", ((new BigDecimal("13")).Remainder(new BigDecimal("10")).ToString(CultureInfo.InvariantCulture)).Equals("3"));
-            TestFmwk.assertTrue("rem104", ((new BigDecimal("13")).Remainder(new BigDecimal("50")).ToString(CultureInfo.InvariantCulture)).Equals("13"));
-            TestFmwk.assertTrue("rem105", ((new BigDecimal("13")).Remainder(new BigDecimal("100")).ToString(CultureInfo.InvariantCulture)).Equals("13"));
-            TestFmwk.assertTrue("rem106", ((new BigDecimal("13")).Remainder(new BigDecimal("1000")).ToString(CultureInfo.InvariantCulture)).Equals("13"));
-            TestFmwk.assertTrue("rem107", ((new BigDecimal(".13")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.13"));
-            TestFmwk.assertTrue("rem108", ((new BigDecimal("0.133")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.133"));
-            TestFmwk.assertTrue("rem109", ((new BigDecimal("0.1033")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.1033"));
-            TestFmwk.assertTrue("rem110", ((new BigDecimal("1.033")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.033"));
-            TestFmwk.assertTrue("rem111", ((new BigDecimal("10.33")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.33"));
-            TestFmwk.assertTrue("rem112", ((new BigDecimal("10.33")).Remainder(BigDecimal.Ten).ToString(CultureInfo.InvariantCulture)).Equals("0.33"));
-            TestFmwk.assertTrue("rem113", ((new BigDecimal("103.3")).Remainder(BigDecimal.One).ToString(CultureInfo.InvariantCulture)).Equals("0.3"));
-            TestFmwk.assertTrue("rem114", ((new BigDecimal("133")).Remainder(BigDecimal.Ten).ToString(CultureInfo.InvariantCulture)).Equals("3"));
-            TestFmwk.assertTrue("rem115", ((new BigDecimal("1033")).Remainder(BigDecimal.Ten).ToString(CultureInfo.InvariantCulture)).Equals("3"));
-            TestFmwk.assertTrue("rem116", ((new BigDecimal("1033")).Remainder(new BigDecimal(50)).ToString(CultureInfo.InvariantCulture)).Equals("33"));
-            TestFmwk.assertTrue("rem117", ((new BigDecimal("101.0")).Remainder(new BigDecimal(3)).ToString(CultureInfo.InvariantCulture)).Equals("2.0"));
-            TestFmwk.assertTrue("rem118", ((new BigDecimal("102.0")).Remainder(new BigDecimal(3)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("rem119", ((new BigDecimal("103.0")).Remainder(new BigDecimal(3)).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
-            TestFmwk.assertTrue("rem120", ((new BigDecimal("2.40")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.40"));
-            TestFmwk.assertTrue("rem121", ((new BigDecimal("2.400")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
-            TestFmwk.assertTrue("rem122", ((new BigDecimal("2.4")).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
-            TestFmwk.assertTrue("rem123", ((new BigDecimal("2.4")).Remainder(new BigDecimal(2)).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
-            TestFmwk.assertTrue("rem124", ((new BigDecimal("2.400")).Remainder(new BigDecimal(2)).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
-            TestFmwk.assertTrue("rem125", ((new BigDecimal("1")).Remainder(new BigDecimal("0.3")).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("rem126", ((new BigDecimal("1")).Remainder(new BigDecimal("0.30")).ToString(CultureInfo.InvariantCulture)).Equals("0.10"));
-            TestFmwk.assertTrue("rem127", ((new BigDecimal("1")).Remainder(new BigDecimal("0.300")).ToString(CultureInfo.InvariantCulture)).Equals("0.100"));
-            TestFmwk.assertTrue("rem128", ((new BigDecimal("1")).Remainder(new BigDecimal("0.3000")).ToString(CultureInfo.InvariantCulture)).Equals("0.1000"));
-            TestFmwk.assertTrue("rem129", ((new BigDecimal("1.0")).Remainder(new BigDecimal("0.3")).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("rem130", ((new BigDecimal("1.00")).Remainder(new BigDecimal("0.3")).ToString(CultureInfo.InvariantCulture)).Equals("0.10"));
-            TestFmwk.assertTrue("rem131", ((new BigDecimal("1.000")).Remainder(new BigDecimal("0.3")).ToString(CultureInfo.InvariantCulture)).Equals("0.100"));
-            TestFmwk.assertTrue("rem132", ((new BigDecimal("1.0000")).Remainder(new BigDecimal("0.3")).ToString(CultureInfo.InvariantCulture)).Equals("0.1000"));
-            TestFmwk.assertTrue("rem133", ((new BigDecimal("0.5")).Remainder(new BigDecimal("2.001")).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
-            TestFmwk.assertTrue("rem134", ((new BigDecimal("0.5")).Remainder(new BigDecimal("0.500000001")).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
-            TestFmwk.assertTrue("rem135", ((new BigDecimal("0.5")).Remainder(new BigDecimal("0.5000000001")).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
-            TestFmwk.assertTrue("rem136", ((new BigDecimal("0.03")).Remainder(new BigDecimal("7")).ToString(CultureInfo.InvariantCulture)).Equals("0.03"));
-            TestFmwk.assertTrue("rem137", ((new BigDecimal("5")).Remainder(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("rem138", ((new BigDecimal("4.1")).Remainder(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("rem139", ((new BigDecimal("4.01")).Remainder(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
-            TestFmwk.assertTrue("rem140", ((new BigDecimal("4.001")).Remainder(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("0.001"));
-            TestFmwk.assertTrue("rem141", ((new BigDecimal("4.0001")).Remainder(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("0.0001"));
-            TestFmwk.assertTrue("rem142", ((new BigDecimal("4.00001")).Remainder(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("0.00001"));
-            TestFmwk.assertTrue("rem143", ((new BigDecimal("4.000001")).Remainder(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("0.000001"));
-            TestFmwk.assertTrue("rem144", ((new BigDecimal("4.0000001")).Remainder(new BigDecimal("2")).ToString(CultureInfo.InvariantCulture)).Equals("0.0000001")); // 1E-7, plain
-            TestFmwk.assertTrue("rem145", ((new BigDecimal("1.2")).Remainder(new BigDecimal("0.7345")).ToString(CultureInfo.InvariantCulture)).Equals("0.4655"));
-            TestFmwk.assertTrue("rem146", ((new BigDecimal("0.8")).Remainder(new BigDecimal("12")).ToString(CultureInfo.InvariantCulture)).Equals("0.8"));
-            TestFmwk.assertTrue("rem147", ((new BigDecimal("0.8")).Remainder(new BigDecimal("0.2")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("rem148", ((new BigDecimal("0.8")).Remainder(new BigDecimal("0.3")).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
-            TestFmwk.assertTrue("rem149", ((new BigDecimal("0.800")).Remainder(new BigDecimal("12")).ToString(CultureInfo.InvariantCulture)).Equals("0.800"));
-            TestFmwk.assertTrue("rem150", ((new BigDecimal("0.800")).Remainder(new BigDecimal("1.7")).ToString(CultureInfo.InvariantCulture)).Equals("0.800"));
-            TestFmwk.assertTrue("rem151", ((new BigDecimal("2.400")).Remainder(new BigDecimal(2), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
+            TestFmwk.assertTrue("rem101", ((BigDecimal.Parse("1", numberStyle, provider)).Remainder(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("rem102", ((BigDecimal.Parse("5", numberStyle, provider)).Remainder(BigDecimal.Parse("5", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("rem103", ((BigDecimal.Parse("13", numberStyle, provider)).Remainder(BigDecimal.Parse("10", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+            TestFmwk.assertTrue("rem104", ((BigDecimal.Parse("13", numberStyle, provider)).Remainder(BigDecimal.Parse("50", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("13"));
+            TestFmwk.assertTrue("rem105", ((BigDecimal.Parse("13", numberStyle, provider)).Remainder(BigDecimal.Parse("100", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("13"));
+            TestFmwk.assertTrue("rem106", ((BigDecimal.Parse("13", numberStyle, provider)).Remainder(BigDecimal.Parse("1000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("13"));
+            TestFmwk.assertTrue("rem107", ((BigDecimal.Parse(".13", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.13"));
+            TestFmwk.assertTrue("rem108", ((BigDecimal.Parse("0.133", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.133"));
+            TestFmwk.assertTrue("rem109", ((BigDecimal.Parse("0.1033", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.1033"));
+            TestFmwk.assertTrue("rem110", ((BigDecimal.Parse("1.033", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.033"));
+            TestFmwk.assertTrue("rem111", ((BigDecimal.Parse("10.33", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.33"));
+            TestFmwk.assertTrue("rem112", ((BigDecimal.Parse("10.33", numberStyle, provider)).Remainder(BigDecimal.Ten).ToString(CultureInfo.InvariantCulture)).Equals("0.33"));
+            TestFmwk.assertTrue("rem113", ((BigDecimal.Parse("103.3", numberStyle, provider)).Remainder(BigDecimal.One).ToString(CultureInfo.InvariantCulture)).Equals("0.3"));
+            TestFmwk.assertTrue("rem114", ((BigDecimal.Parse("133", numberStyle, provider)).Remainder(BigDecimal.Ten).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+            TestFmwk.assertTrue("rem115", ((BigDecimal.Parse("1033", numberStyle, provider)).Remainder(BigDecimal.Ten).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+            TestFmwk.assertTrue("rem116", ((BigDecimal.Parse("1033", numberStyle, provider)).Remainder(new BigDecimal(50)).ToString(CultureInfo.InvariantCulture)).Equals("33"));
+            TestFmwk.assertTrue("rem117", ((BigDecimal.Parse("101.0", numberStyle, provider)).Remainder(new BigDecimal(3)).ToString(CultureInfo.InvariantCulture)).Equals("2.0"));
+            TestFmwk.assertTrue("rem118", ((BigDecimal.Parse("102.0", numberStyle, provider)).Remainder(new BigDecimal(3)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("rem119", ((BigDecimal.Parse("103.0", numberStyle, provider)).Remainder(new BigDecimal(3)).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
+            TestFmwk.assertTrue("rem120", ((BigDecimal.Parse("2.40", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.40"));
+            TestFmwk.assertTrue("rem121", ((BigDecimal.Parse("2.400", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
+            TestFmwk.assertTrue("rem122", ((BigDecimal.Parse("2.4", numberStyle, provider)).Remainder(one).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
+            TestFmwk.assertTrue("rem123", ((BigDecimal.Parse("2.4", numberStyle, provider)).Remainder(new BigDecimal(2)).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
+            TestFmwk.assertTrue("rem124", ((BigDecimal.Parse("2.400", numberStyle, provider)).Remainder(new BigDecimal(2)).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
+            TestFmwk.assertTrue("rem125", ((BigDecimal.Parse("1", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("rem126", ((BigDecimal.Parse("1", numberStyle, provider)).Remainder(BigDecimal.Parse("0.30", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.10"));
+            TestFmwk.assertTrue("rem127", ((BigDecimal.Parse("1", numberStyle, provider)).Remainder(BigDecimal.Parse("0.300", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.100"));
+            TestFmwk.assertTrue("rem128", ((BigDecimal.Parse("1", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.1000"));
+            TestFmwk.assertTrue("rem129", ((BigDecimal.Parse("1.0", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("rem130", ((BigDecimal.Parse("1.00", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.10"));
+            TestFmwk.assertTrue("rem131", ((BigDecimal.Parse("1.000", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.100"));
+            TestFmwk.assertTrue("rem132", ((BigDecimal.Parse("1.0000", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.1000"));
+            TestFmwk.assertTrue("rem133", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("2.001", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
+            TestFmwk.assertTrue("rem134", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("0.500000001", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
+            TestFmwk.assertTrue("rem135", ((BigDecimal.Parse("0.5", numberStyle, provider)).Remainder(BigDecimal.Parse("0.5000000001", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
+            TestFmwk.assertTrue("rem136", ((BigDecimal.Parse("0.03", numberStyle, provider)).Remainder(BigDecimal.Parse("7", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.03"));
+            TestFmwk.assertTrue("rem137", ((BigDecimal.Parse("5", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("rem138", ((BigDecimal.Parse("4.1", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("rem139", ((BigDecimal.Parse("4.01", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
+            TestFmwk.assertTrue("rem140", ((BigDecimal.Parse("4.001", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.001"));
+            TestFmwk.assertTrue("rem141", ((BigDecimal.Parse("4.0001", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.0001"));
+            TestFmwk.assertTrue("rem142", ((BigDecimal.Parse("4.00001", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00001"));
+            TestFmwk.assertTrue("rem143", ((BigDecimal.Parse("4.000001", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.000001"));
+            TestFmwk.assertTrue("rem144", ((BigDecimal.Parse("4.0000001", numberStyle, provider)).Remainder(BigDecimal.Parse("2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.0000001")); // 1E-7, plain
+            TestFmwk.assertTrue("rem145", ((BigDecimal.Parse("1.2", numberStyle, provider)).Remainder(BigDecimal.Parse("0.7345", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.4655"));
+            TestFmwk.assertTrue("rem146", ((BigDecimal.Parse("0.8", numberStyle, provider)).Remainder(BigDecimal.Parse("12", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.8"));
+            TestFmwk.assertTrue("rem147", ((BigDecimal.Parse("0.8", numberStyle, provider)).Remainder(BigDecimal.Parse("0.2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("rem148", ((BigDecimal.Parse("0.8", numberStyle, provider)).Remainder(BigDecimal.Parse("0.3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("rem149", ((BigDecimal.Parse("0.800", numberStyle, provider)).Remainder(BigDecimal.Parse("12", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.800"));
+            TestFmwk.assertTrue("rem150", ((BigDecimal.Parse("0.800", numberStyle, provider)).Remainder(BigDecimal.Parse("1.7", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.800"));
+            TestFmwk.assertTrue("rem151", ((BigDecimal.Parse("2.400", numberStyle, provider)).Remainder(new BigDecimal(2), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.400"));
 
 
             try
@@ -2716,221 +2746,223 @@ namespace ICU4N.Dev.Test.BigDec
             BigDecimal alhs;
             BigDecimal arhs;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
             // [first group are 'quick confidence check']
             TestFmwk.assertTrue("sub301", ((new BigDecimal(2)).Subtract(new BigDecimal(3), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("sub302", ((new BigDecimal("5.75")).Subtract(new BigDecimal("3.3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.45"));
-            TestFmwk.assertTrue("sub303", ((new BigDecimal("5")).Subtract(new BigDecimal("-3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("8"));
-            TestFmwk.assertTrue("sub304", ((new BigDecimal("-5")).Subtract(new BigDecimal("-3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2"));
-            TestFmwk.assertTrue("sub305", ((new BigDecimal("-7")).Subtract(new BigDecimal("2.5"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-9.5"));
-            TestFmwk.assertTrue("sub306", ((new BigDecimal("0.7")).Subtract(new BigDecimal("0.3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
-            TestFmwk.assertTrue("sub307", ((new BigDecimal("1.3")).Subtract(new BigDecimal("0.3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
-            TestFmwk.assertTrue("sub308", ((new BigDecimal("1.25")).Subtract(new BigDecimal("1.25"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("sub309", ((new BigDecimal("1.23456789")).Subtract(new BigDecimal("1.00000000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.23456789"));
+            TestFmwk.assertTrue("sub302", ((BigDecimal.Parse("5.75", numberStyle, provider)).Subtract(BigDecimal.Parse("3.3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.45"));
+            TestFmwk.assertTrue("sub303", ((BigDecimal.Parse("5", numberStyle, provider)).Subtract(BigDecimal.Parse("-3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("8"));
+            TestFmwk.assertTrue("sub304", ((BigDecimal.Parse("-5", numberStyle, provider)).Subtract(BigDecimal.Parse("-3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-2"));
+            TestFmwk.assertTrue("sub305", ((BigDecimal.Parse("-7", numberStyle, provider)).Subtract(BigDecimal.Parse("2.5", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-9.5"));
+            TestFmwk.assertTrue("sub306", ((BigDecimal.Parse("0.7", numberStyle, provider)).Subtract(BigDecimal.Parse("0.3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
+            TestFmwk.assertTrue("sub307", ((BigDecimal.Parse("1.3", numberStyle, provider)).Subtract(BigDecimal.Parse("0.3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
+            TestFmwk.assertTrue("sub308", ((BigDecimal.Parse("1.25", numberStyle, provider)).Subtract(BigDecimal.Parse("1.25", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("sub309", ((BigDecimal.Parse("1.23456789", numberStyle, provider)).Subtract(BigDecimal.Parse("1.00000000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.23456789"));
 
-            TestFmwk.assertTrue("sub310", ((new BigDecimal("1.23456789")).Subtract(new BigDecimal("1.00000089"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.23456700"));
+            TestFmwk.assertTrue("sub310", ((BigDecimal.Parse("1.23456789", numberStyle, provider)).Subtract(BigDecimal.Parse("1.00000089", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.23456700"));
 
-            TestFmwk.assertTrue("sub311", ((new BigDecimal("0.5555555559")).Subtract(new BigDecimal("0.0000000001"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.555555556"));
+            TestFmwk.assertTrue("sub311", ((BigDecimal.Parse("0.5555555559", numberStyle, provider)).Subtract(BigDecimal.Parse("0.0000000001", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.555555556"));
 
-            TestFmwk.assertTrue("sub312", ((new BigDecimal("0.5555555559")).Subtract(new BigDecimal("0.0000000005"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.555555556"));
+            TestFmwk.assertTrue("sub312", ((BigDecimal.Parse("0.5555555559", numberStyle, provider)).Subtract(BigDecimal.Parse("0.0000000005", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.555555556"));
 
-            TestFmwk.assertTrue("sub313", ((new BigDecimal("0.4444444444")).Subtract(new BigDecimal("0.1111111111"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.333333333"));
+            TestFmwk.assertTrue("sub313", ((BigDecimal.Parse("0.4444444444", numberStyle, provider)).Subtract(BigDecimal.Parse("0.1111111111", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.333333333"));
 
-            TestFmwk.assertTrue("sub314", ((new BigDecimal("1.0000000000")).Subtract(new BigDecimal("0.00000001"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.99999999"));
+            TestFmwk.assertTrue("sub314", ((BigDecimal.Parse("1.0000000000", numberStyle, provider)).Subtract(BigDecimal.Parse("0.00000001", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.99999999"));
 
-            TestFmwk.assertTrue("sub315", ((new BigDecimal("0.4444444444999")).Subtract(new BigDecimal("0"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.444444444"));
+            TestFmwk.assertTrue("sub315", ((BigDecimal.Parse("0.4444444444999", numberStyle, provider)).Subtract(BigDecimal.Parse("0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.444444444"));
 
-            TestFmwk.assertTrue("sub316", ((new BigDecimal("0.4444444445000")).Subtract(new BigDecimal("0"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.444444445"));
+            TestFmwk.assertTrue("sub316", ((BigDecimal.Parse("0.4444444445000", numberStyle, provider)).Subtract(BigDecimal.Parse("0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0.444444445"));
 
 
-            TestFmwk.assertTrue("sub317", ((new BigDecimal("70")).Subtract(new BigDecimal("10000e+9"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-1.00000000E+13"));
+            TestFmwk.assertTrue("sub317", ((BigDecimal.Parse("70", numberStyle, provider)).Subtract(BigDecimal.Parse("10000e+9", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-1.00000000E+13"));
 
-            TestFmwk.assertTrue("sub318", ((new BigDecimal("700")).Subtract(new BigDecimal("10000e+9"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-1.00000000E+13"));
+            TestFmwk.assertTrue("sub318", ((BigDecimal.Parse("700", numberStyle, provider)).Subtract(BigDecimal.Parse("10000e+9", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-1.00000000E+13"));
 
-            TestFmwk.assertTrue("sub319", ((new BigDecimal("7000")).Subtract(new BigDecimal("10000e+9"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-1.00000000E+13"));
+            TestFmwk.assertTrue("sub319", ((BigDecimal.Parse("7000", numberStyle, provider)).Subtract(BigDecimal.Parse("10000e+9", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-1.00000000E+13"));
 
-            TestFmwk.assertTrue("sub320", ((new BigDecimal("70000")).Subtract(new BigDecimal("10000e+9"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-9.9999999E+12"));
+            TestFmwk.assertTrue("sub320", ((BigDecimal.Parse("70000", numberStyle, provider)).Subtract(BigDecimal.Parse("10000e+9", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-9.9999999E+12"));
 
-            TestFmwk.assertTrue("sub321", ((new BigDecimal("700000")).Subtract(new BigDecimal("10000e+9"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-9.9999993E+12"));
+            TestFmwk.assertTrue("sub321", ((BigDecimal.Parse("700000", numberStyle, provider)).Subtract(BigDecimal.Parse("10000e+9", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("-9.9999993E+12"));
 
             // symmetry:
-            TestFmwk.assertTrue("sub322", ((new BigDecimal("10000e+9")).Subtract(new BigDecimal("70"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
+            TestFmwk.assertTrue("sub322", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Subtract(BigDecimal.Parse("70", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
 
-            TestFmwk.assertTrue("sub323", ((new BigDecimal("10000e+9")).Subtract(new BigDecimal("700"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
+            TestFmwk.assertTrue("sub323", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Subtract(BigDecimal.Parse("700", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
 
-            TestFmwk.assertTrue("sub324", ((new BigDecimal("10000e+9")).Subtract(new BigDecimal("7000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
+            TestFmwk.assertTrue("sub324", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Subtract(BigDecimal.Parse("7000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("1.00000000E+13"));
 
-            TestFmwk.assertTrue("sub325", ((new BigDecimal("10000e+9")).Subtract(new BigDecimal("70000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("9.9999999E+12"));
+            TestFmwk.assertTrue("sub325", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Subtract(BigDecimal.Parse("70000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("9.9999999E+12"));
 
-            TestFmwk.assertTrue("sub326", ((new BigDecimal("10000e+9")).Subtract(new BigDecimal("700000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("9.9999993E+12"));
+            TestFmwk.assertTrue("sub326", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Subtract(BigDecimal.Parse("700000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("9.9999993E+12"));
 
 
             // [same with fixed point arithmetic]
             TestFmwk.assertTrue("sub001", ((new BigDecimal(2)).Subtract(new BigDecimal(3)).ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("sub002", ((new BigDecimal("5.75")).Subtract(new BigDecimal("3.3")).ToString(CultureInfo.InvariantCulture)).Equals("2.45"));
-            TestFmwk.assertTrue("sub003", ((new BigDecimal("5")).Subtract(new BigDecimal("-3")).ToString(CultureInfo.InvariantCulture)).Equals("8"));
-            TestFmwk.assertTrue("sub004", ((new BigDecimal("-5")).Subtract(new BigDecimal("-3")).ToString(CultureInfo.InvariantCulture)).Equals("-2"));
-            TestFmwk.assertTrue("sub005", ((new BigDecimal("-7")).Subtract(new BigDecimal("2.5")).ToString(CultureInfo.InvariantCulture)).Equals("-9.5"));
-            TestFmwk.assertTrue("sub006", ((new BigDecimal("0.7")).Subtract(new BigDecimal("0.3")).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
-            TestFmwk.assertTrue("sub007", ((new BigDecimal("1.3")).Subtract(new BigDecimal("0.3")).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
-            TestFmwk.assertTrue("sub008", ((new BigDecimal("1.25")).Subtract(new BigDecimal("1.25")).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("sub009", ((new BigDecimal("0.02")).Subtract(new BigDecimal("0.02")).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("sub002", ((BigDecimal.Parse("5.75", numberStyle, provider)).Subtract(BigDecimal.Parse("3.3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.45"));
+            TestFmwk.assertTrue("sub003", ((BigDecimal.Parse("5", numberStyle, provider)).Subtract(BigDecimal.Parse("-3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("8"));
+            TestFmwk.assertTrue("sub004", ((BigDecimal.Parse("-5", numberStyle, provider)).Subtract(BigDecimal.Parse("-3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-2"));
+            TestFmwk.assertTrue("sub005", ((BigDecimal.Parse("-7", numberStyle, provider)).Subtract(BigDecimal.Parse("2.5", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-9.5"));
+            TestFmwk.assertTrue("sub006", ((BigDecimal.Parse("0.7", numberStyle, provider)).Subtract(BigDecimal.Parse("0.3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
+            TestFmwk.assertTrue("sub007", ((BigDecimal.Parse("1.3", numberStyle, provider)).Subtract(BigDecimal.Parse("0.3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
+            TestFmwk.assertTrue("sub008", ((BigDecimal.Parse("1.25", numberStyle, provider)).Subtract(BigDecimal.Parse("1.25", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("sub009", ((BigDecimal.Parse("0.02", numberStyle, provider)).Subtract(BigDecimal.Parse("0.02", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
 
-            TestFmwk.assertTrue("sub010", ((new BigDecimal("1.23456789")).Subtract(new BigDecimal("1.00000000")).ToString(CultureInfo.InvariantCulture)).Equals("0.23456789"));
+            TestFmwk.assertTrue("sub010", ((BigDecimal.Parse("1.23456789", numberStyle, provider)).Subtract(BigDecimal.Parse("1.00000000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.23456789"));
 
-            TestFmwk.assertTrue("sub011", ((new BigDecimal("1.23456789")).Subtract(new BigDecimal("1.00000089")).ToString(CultureInfo.InvariantCulture)).Equals("0.23456700"));
+            TestFmwk.assertTrue("sub011", ((BigDecimal.Parse("1.23456789", numberStyle, provider)).Subtract(BigDecimal.Parse("1.00000089", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.23456700"));
 
-            TestFmwk.assertTrue("sub012", ((new BigDecimal("0.5555555559")).Subtract(new BigDecimal("0.0000000001")).ToString(CultureInfo.InvariantCulture)).Equals("0.5555555558"));
+            TestFmwk.assertTrue("sub012", ((BigDecimal.Parse("0.5555555559", numberStyle, provider)).Subtract(BigDecimal.Parse("0.0000000001", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.5555555558"));
 
-            TestFmwk.assertTrue("sub013", ((new BigDecimal("0.5555555559")).Subtract(new BigDecimal("0.0000000005")).ToString(CultureInfo.InvariantCulture)).Equals("0.5555555554"));
+            TestFmwk.assertTrue("sub013", ((BigDecimal.Parse("0.5555555559", numberStyle, provider)).Subtract(BigDecimal.Parse("0.0000000005", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.5555555554"));
 
-            TestFmwk.assertTrue("sub014", ((new BigDecimal("0.4444444444")).Subtract(new BigDecimal("0.1111111111")).ToString(CultureInfo.InvariantCulture)).Equals("0.3333333333"));
+            TestFmwk.assertTrue("sub014", ((BigDecimal.Parse("0.4444444444", numberStyle, provider)).Subtract(BigDecimal.Parse("0.1111111111", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.3333333333"));
 
-            TestFmwk.assertTrue("sub015", ((new BigDecimal("1.0000000000")).Subtract(new BigDecimal("0.00000001")).ToString(CultureInfo.InvariantCulture)).Equals("0.9999999900"));
+            TestFmwk.assertTrue("sub015", ((BigDecimal.Parse("1.0000000000", numberStyle, provider)).Subtract(BigDecimal.Parse("0.00000001", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.9999999900"));
 
-            TestFmwk.assertTrue("sub016", ((new BigDecimal("0.4444444444999")).Subtract(new BigDecimal("0")).ToString(CultureInfo.InvariantCulture)).Equals("0.4444444444999"));
+            TestFmwk.assertTrue("sub016", ((BigDecimal.Parse("0.4444444444999", numberStyle, provider)).Subtract(BigDecimal.Parse("0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.4444444444999"));
 
-            TestFmwk.assertTrue("sub017", ((new BigDecimal("0.4444444445000")).Subtract(new BigDecimal("0")).ToString(CultureInfo.InvariantCulture)).Equals("0.4444444445000"));
+            TestFmwk.assertTrue("sub017", ((BigDecimal.Parse("0.4444444445000", numberStyle, provider)).Subtract(BigDecimal.Parse("0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.4444444445000"));
 
 
-            TestFmwk.assertTrue("sub018", ((new BigDecimal("70")).Subtract(new BigDecimal("10000e+9")).ToString(CultureInfo.InvariantCulture)).Equals("-9999999999930"));
+            TestFmwk.assertTrue("sub018", ((BigDecimal.Parse("70", numberStyle, provider)).Subtract(BigDecimal.Parse("10000e+9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-9999999999930"));
 
-            TestFmwk.assertTrue("sub019", ((new BigDecimal("700")).Subtract(new BigDecimal("10000e+9")).ToString(CultureInfo.InvariantCulture)).Equals("-9999999999300"));
+            TestFmwk.assertTrue("sub019", ((BigDecimal.Parse("700", numberStyle, provider)).Subtract(BigDecimal.Parse("10000e+9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-9999999999300"));
 
-            TestFmwk.assertTrue("sub020", ((new BigDecimal("7000")).Subtract(new BigDecimal("10000e+9")).ToString(CultureInfo.InvariantCulture)).Equals("-9999999993000"));
+            TestFmwk.assertTrue("sub020", ((BigDecimal.Parse("7000", numberStyle, provider)).Subtract(BigDecimal.Parse("10000e+9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-9999999993000"));
 
-            TestFmwk.assertTrue("sub021", ((new BigDecimal("70000")).Subtract(new BigDecimal("10000e+9")).ToString(CultureInfo.InvariantCulture)).Equals("-9999999930000"));
+            TestFmwk.assertTrue("sub021", ((BigDecimal.Parse("70000", numberStyle, provider)).Subtract(BigDecimal.Parse("10000e+9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-9999999930000"));
 
-            TestFmwk.assertTrue("sub022", ((new BigDecimal("700000")).Subtract(new BigDecimal("10000e+9")).ToString(CultureInfo.InvariantCulture)).Equals("-9999999300000"));
+            TestFmwk.assertTrue("sub022", ((BigDecimal.Parse("700000", numberStyle, provider)).Subtract(BigDecimal.Parse("10000e+9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-9999999300000"));
 
             // symmetry:
-            TestFmwk.assertTrue("sub023", ((new BigDecimal("10000e+9")).Subtract(new BigDecimal("70")).ToString(CultureInfo.InvariantCulture)).Equals("9999999999930"));
+            TestFmwk.assertTrue("sub023", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Subtract(BigDecimal.Parse("70", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9999999999930"));
 
-            TestFmwk.assertTrue("sub024", ((new BigDecimal("10000e+9")).Subtract(new BigDecimal("700")).ToString(CultureInfo.InvariantCulture)).Equals("9999999999300"));
+            TestFmwk.assertTrue("sub024", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Subtract(BigDecimal.Parse("700", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9999999999300"));
 
-            TestFmwk.assertTrue("sub025", ((new BigDecimal("10000e+9")).Subtract(new BigDecimal("7000")).ToString(CultureInfo.InvariantCulture)).Equals("9999999993000"));
+            TestFmwk.assertTrue("sub025", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Subtract(BigDecimal.Parse("7000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9999999993000"));
 
-            TestFmwk.assertTrue("sub026", ((new BigDecimal("10000e+9")).Subtract(new BigDecimal("70000")).ToString(CultureInfo.InvariantCulture)).Equals("9999999930000"));
+            TestFmwk.assertTrue("sub026", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Subtract(BigDecimal.Parse("70000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9999999930000"));
 
-            TestFmwk.assertTrue("sub027", ((new BigDecimal("10000e+9")).Subtract(new BigDecimal("700000")).ToString(CultureInfo.InvariantCulture)).Equals("9999999300000"));
+            TestFmwk.assertTrue("sub027", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Subtract(BigDecimal.Parse("700000", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("9999999300000"));
 
             // MC
-            TestFmwk.assertTrue("sub030", ((new BigDecimal("10000e+9")).Subtract(new BigDecimal("70000"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("9.9999999E+12"));
+            TestFmwk.assertTrue("sub030", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Subtract(BigDecimal.Parse("70000", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("9.9999999E+12"));
 
-            TestFmwk.assertTrue("sub031", ((new BigDecimal("10000e+9")).Subtract(new BigDecimal("70000"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.00000E+13"));
+            TestFmwk.assertTrue("sub031", ((BigDecimal.Parse("10000e+9", numberStyle, provider)).Subtract(BigDecimal.Parse("70000", numberStyle, provider), mc6).ToString(CultureInfo.InvariantCulture)).Equals("1.00000E+13"));
 
 
             // some of the next group are really constructor tests
-            TestFmwk.assertTrue("sub040", ((new BigDecimal("00.0")).Subtract(new BigDecimal("0.0")).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("sub041", ((new BigDecimal("00.0")).Subtract(new BigDecimal("0.00")).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("sub042", ((new BigDecimal("0.00")).Subtract(new BigDecimal("00.0")).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("sub043", ((new BigDecimal("00.0")).Subtract(new BigDecimal("0.00"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("sub044", ((new BigDecimal("0.00")).Subtract(new BigDecimal("00.0"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("sub045", ((new BigDecimal("3")).Subtract(new BigDecimal(".3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.7"));
-            TestFmwk.assertTrue("sub046", ((new BigDecimal("3.")).Subtract(new BigDecimal(".3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.7"));
-            TestFmwk.assertTrue("sub047", ((new BigDecimal("3.0")).Subtract(new BigDecimal(".3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.7"));
-            TestFmwk.assertTrue("sub048", ((new BigDecimal("3.00")).Subtract(new BigDecimal(".3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.70"));
-            TestFmwk.assertTrue("sub049", ((new BigDecimal("3")).Subtract(new BigDecimal("3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("sub050", ((new BigDecimal("3")).Subtract(new BigDecimal("+3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("sub051", ((new BigDecimal("3")).Subtract(new BigDecimal("-3"), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("6"));
-            TestFmwk.assertTrue("sub052", ((new BigDecimal("3")).Subtract(new BigDecimal(".3")).ToString(CultureInfo.InvariantCulture)).Equals("2.7"));
-            TestFmwk.assertTrue("sub053", ((new BigDecimal("3.")).Subtract(new BigDecimal(".3")).ToString(CultureInfo.InvariantCulture)).Equals("2.7"));
-            TestFmwk.assertTrue("sub054", ((new BigDecimal("3.0")).Subtract(new BigDecimal(".3")).ToString(CultureInfo.InvariantCulture)).Equals("2.7"));
-            TestFmwk.assertTrue("sub055", ((new BigDecimal("3.00")).Subtract(new BigDecimal(".3")).ToString(CultureInfo.InvariantCulture)).Equals("2.70"));
-            TestFmwk.assertTrue("sub056", ((new BigDecimal("3")).Subtract(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("sub057", ((new BigDecimal("3")).Subtract(new BigDecimal("+3")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("sub058", ((new BigDecimal("3")).Subtract(new BigDecimal("-3")).ToString(CultureInfo.InvariantCulture)).Equals("6"));
+            TestFmwk.assertTrue("sub040", ((BigDecimal.Parse("00.0", numberStyle, provider)).Subtract(BigDecimal.Parse("0.0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("sub041", ((BigDecimal.Parse("00.0", numberStyle, provider)).Subtract(BigDecimal.Parse("0.00", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("sub042", ((BigDecimal.Parse("0.00", numberStyle, provider)).Subtract(BigDecimal.Parse("00.0", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("sub043", ((BigDecimal.Parse("00.0", numberStyle, provider)).Subtract(BigDecimal.Parse("0.00", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("sub044", ((BigDecimal.Parse("0.00", numberStyle, provider)).Subtract(BigDecimal.Parse("00.0", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("sub045", ((BigDecimal.Parse("3", numberStyle, provider)).Subtract(BigDecimal.Parse(".3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.7"));
+            TestFmwk.assertTrue("sub046", ((BigDecimal.Parse("3.", numberStyle, provider)).Subtract(BigDecimal.Parse(".3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.7"));
+            TestFmwk.assertTrue("sub047", ((BigDecimal.Parse("3.0", numberStyle, provider)).Subtract(BigDecimal.Parse(".3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.7"));
+            TestFmwk.assertTrue("sub048", ((BigDecimal.Parse("3.00", numberStyle, provider)).Subtract(BigDecimal.Parse(".3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("2.70"));
+            TestFmwk.assertTrue("sub049", ((BigDecimal.Parse("3", numberStyle, provider)).Subtract(BigDecimal.Parse("3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("sub050", ((BigDecimal.Parse("3", numberStyle, provider)).Subtract(BigDecimal.Parse("+3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("sub051", ((BigDecimal.Parse("3", numberStyle, provider)).Subtract(BigDecimal.Parse("-3", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)).Equals("6"));
+            TestFmwk.assertTrue("sub052", ((BigDecimal.Parse("3", numberStyle, provider)).Subtract(BigDecimal.Parse(".3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.7"));
+            TestFmwk.assertTrue("sub053", ((BigDecimal.Parse("3.", numberStyle, provider)).Subtract(BigDecimal.Parse(".3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.7"));
+            TestFmwk.assertTrue("sub054", ((BigDecimal.Parse("3.0", numberStyle, provider)).Subtract(BigDecimal.Parse(".3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.7"));
+            TestFmwk.assertTrue("sub055", ((BigDecimal.Parse("3.00", numberStyle, provider)).Subtract(BigDecimal.Parse(".3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("2.70"));
+            TestFmwk.assertTrue("sub056", ((BigDecimal.Parse("3", numberStyle, provider)).Subtract(BigDecimal.Parse("3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("sub057", ((BigDecimal.Parse("3", numberStyle, provider)).Subtract(BigDecimal.Parse("+3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("sub058", ((BigDecimal.Parse("3", numberStyle, provider)).Subtract(BigDecimal.Parse("-3", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("6"));
 
             // the above all from add; massaged and extended. Now some new ones...
             // [particularly important for comparisons]
             // NB: -1E-7 below were non-exponents pre-ANSI
-            TestFmwk.assertTrue("sub080", ("-1E-7").Equals((new BigDecimal("10.23456784")).Subtract(new BigDecimal("10.23456789"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub081", "0".Equals((new BigDecimal("10.23456785")).Subtract(new BigDecimal("10.23456789"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub082", "0".Equals((new BigDecimal("10.23456786")).Subtract(new BigDecimal("10.23456789"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub083", "0".Equals((new BigDecimal("10.23456787")).Subtract(new BigDecimal("10.23456789"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub084", "0".Equals((new BigDecimal("10.23456788")).Subtract(new BigDecimal("10.23456789"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub085", "0".Equals((new BigDecimal("10.23456789")).Subtract(new BigDecimal("10.23456789"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub086", "0".Equals((new BigDecimal("10.23456790")).Subtract(new BigDecimal("10.23456789"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub087", "0".Equals((new BigDecimal("10.23456791")).Subtract(new BigDecimal("10.23456789"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub088", "0".Equals((new BigDecimal("10.23456792")).Subtract(new BigDecimal("10.23456789"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub089", "0".Equals((new BigDecimal("10.23456793")).Subtract(new BigDecimal("10.23456789"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub090", "0".Equals((new BigDecimal("10.23456794")).Subtract(new BigDecimal("10.23456789"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub091", ("-1E-7").Equals((new BigDecimal("10.23456781")).Subtract(new BigDecimal("10.23456786"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub092", ("-1E-7").Equals((new BigDecimal("10.23456782")).Subtract(new BigDecimal("10.23456786"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub093", ("-1E-7").Equals((new BigDecimal("10.23456783")).Subtract(new BigDecimal("10.23456786"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub094", ("-1E-7").Equals((new BigDecimal("10.23456784")).Subtract(new BigDecimal("10.23456786"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub095", "0".Equals((new BigDecimal("10.23456785")).Subtract(new BigDecimal("10.23456786"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub096", "0".Equals((new BigDecimal("10.23456786")).Subtract(new BigDecimal("10.23456786"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub097", "0".Equals((new BigDecimal("10.23456787")).Subtract(new BigDecimal("10.23456786"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub098", "0".Equals((new BigDecimal("10.23456788")).Subtract(new BigDecimal("10.23456786"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub099", "0".Equals((new BigDecimal("10.23456789")).Subtract(new BigDecimal("10.23456786"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub100", "0".Equals((new BigDecimal("10.23456790")).Subtract(new BigDecimal("10.23456786"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub101", "0".Equals((new BigDecimal("10.23456791")).Subtract(new BigDecimal("10.23456786"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub102", "0".Equals(BigDecimal.One.Subtract(new BigDecimal("0.999999999"), mcdef).ToString(CultureInfo.InvariantCulture)));
-            TestFmwk.assertTrue("sub103", "0".Equals((new BigDecimal("0.999999999")).Subtract(BigDecimal.One, mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub080", ("-1E-7").Equals((BigDecimal.Parse("10.23456784", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456789", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub081", "0".Equals((BigDecimal.Parse("10.23456785", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456789", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub082", "0".Equals((BigDecimal.Parse("10.23456786", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456789", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub083", "0".Equals((BigDecimal.Parse("10.23456787", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456789", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub084", "0".Equals((BigDecimal.Parse("10.23456788", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456789", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub085", "0".Equals((BigDecimal.Parse("10.23456789", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456789", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub086", "0".Equals((BigDecimal.Parse("10.23456790", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456789", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub087", "0".Equals((BigDecimal.Parse("10.23456791", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456789", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub088", "0".Equals((BigDecimal.Parse("10.23456792", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456789", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub089", "0".Equals((BigDecimal.Parse("10.23456793", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456789", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub090", "0".Equals((BigDecimal.Parse("10.23456794", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456789", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub091", ("-1E-7").Equals((BigDecimal.Parse("10.23456781", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456786", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub092", ("-1E-7").Equals((BigDecimal.Parse("10.23456782", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456786", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub093", ("-1E-7").Equals((BigDecimal.Parse("10.23456783", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456786", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub094", ("-1E-7").Equals((BigDecimal.Parse("10.23456784", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456786", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub095", "0".Equals((BigDecimal.Parse("10.23456785", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456786", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub096", "0".Equals((BigDecimal.Parse("10.23456786", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456786", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub097", "0".Equals((BigDecimal.Parse("10.23456787", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456786", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub098", "0".Equals((BigDecimal.Parse("10.23456788", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456786", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub099", "0".Equals((BigDecimal.Parse("10.23456789", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456786", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub100", "0".Equals((BigDecimal.Parse("10.23456790", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456786", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub101", "0".Equals((BigDecimal.Parse("10.23456791", numberStyle, provider)).Subtract(BigDecimal.Parse("10.23456786", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub102", "0".Equals(BigDecimal.One.Subtract(BigDecimal.Parse("0.999999999", numberStyle, provider), mcdef).ToString(CultureInfo.InvariantCulture)));
+            TestFmwk.assertTrue("sub103", "0".Equals((BigDecimal.Parse("0.999999999", numberStyle, provider)).Subtract(BigDecimal.One, mcdef).ToString(CultureInfo.InvariantCulture)));
 
-            alhs = new BigDecimal("12345678900000");
-            arhs = new BigDecimal("9999999999999");
+            alhs = BigDecimal.Parse("12345678900000", numberStyle, provider);
+            arhs = BigDecimal.Parse("9999999999999", numberStyle, provider);
             TestFmwk.assertTrue("sub110", (alhs.Subtract(arhs, mc3).ToString(CultureInfo.InvariantCulture)).Equals("2.3E+12"));
             TestFmwk.assertTrue("sub111", (arhs.Subtract(alhs, mc3).ToString(CultureInfo.InvariantCulture)).Equals("-2.3E+12"));
             TestFmwk.assertTrue("sub112", (alhs.Subtract(arhs).ToString(CultureInfo.InvariantCulture)).Equals("2345678900001"));
             TestFmwk.assertTrue("sub113", (arhs.Subtract(alhs).ToString(CultureInfo.InvariantCulture)).Equals("-2345678900001"));
 
             // additional scaled arithmetic tests [0.97 problem]
-            TestFmwk.assertTrue("sub120", ((new BigDecimal("0")).Subtract(new BigDecimal(".1")).ToString(CultureInfo.InvariantCulture)).Equals("-0.1"));
-            TestFmwk.assertTrue("sub121", ((new BigDecimal("00")).Subtract(new BigDecimal(".97983")).ToString(CultureInfo.InvariantCulture)).Equals("-0.97983"));
-            TestFmwk.assertTrue("sub122", ((new BigDecimal("0")).Subtract(new BigDecimal(".9")).ToString(CultureInfo.InvariantCulture)).Equals("-0.9"));
-            TestFmwk.assertTrue("sub123", ((new BigDecimal("0")).Subtract(new BigDecimal("0.102")).ToString(CultureInfo.InvariantCulture)).Equals("-0.102"));
-            TestFmwk.assertTrue("sub124", ((new BigDecimal("0")).Subtract(new BigDecimal(".4")).ToString(CultureInfo.InvariantCulture)).Equals("-0.4"));
-            TestFmwk.assertTrue("sub125", ((new BigDecimal("0")).Subtract(new BigDecimal(".307")).ToString(CultureInfo.InvariantCulture)).Equals("-0.307"));
-            TestFmwk.assertTrue("sub126", ((new BigDecimal("0")).Subtract(new BigDecimal(".43822")).ToString(CultureInfo.InvariantCulture)).Equals("-0.43822"));
-            TestFmwk.assertTrue("sub127", ((new BigDecimal("0")).Subtract(new BigDecimal(".911")).ToString(CultureInfo.InvariantCulture)).Equals("-0.911"));
-            TestFmwk.assertTrue("sub128", ((new BigDecimal(".0")).Subtract(new BigDecimal(".02")).ToString(CultureInfo.InvariantCulture)).Equals("-0.02"));
-            TestFmwk.assertTrue("sub129", ((new BigDecimal("00")).Subtract(new BigDecimal(".392")).ToString(CultureInfo.InvariantCulture)).Equals("-0.392"));
-            TestFmwk.assertTrue("sub130", ((new BigDecimal("0")).Subtract(new BigDecimal(".26")).ToString(CultureInfo.InvariantCulture)).Equals("-0.26"));
-            TestFmwk.assertTrue("sub131", ((new BigDecimal("0")).Subtract(new BigDecimal("0.51")).ToString(CultureInfo.InvariantCulture)).Equals("-0.51"));
-            TestFmwk.assertTrue("sub132", ((new BigDecimal("0")).Subtract(new BigDecimal(".2234")).ToString(CultureInfo.InvariantCulture)).Equals("-0.2234"));
-            TestFmwk.assertTrue("sub133", ((new BigDecimal("0")).Subtract(new BigDecimal(".2")).ToString(CultureInfo.InvariantCulture)).Equals("-0.2"));
-            TestFmwk.assertTrue("sub134", ((new BigDecimal(".0")).Subtract(new BigDecimal(".0008")).ToString(CultureInfo.InvariantCulture)).Equals("-0.0008"));
+            TestFmwk.assertTrue("sub120", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse(".1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.1"));
+            TestFmwk.assertTrue("sub121", ((BigDecimal.Parse("00", numberStyle, provider)).Subtract(BigDecimal.Parse(".97983", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.97983"));
+            TestFmwk.assertTrue("sub122", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse(".9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.9"));
+            TestFmwk.assertTrue("sub123", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("0.102", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.102"));
+            TestFmwk.assertTrue("sub124", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse(".4", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.4"));
+            TestFmwk.assertTrue("sub125", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse(".307", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.307"));
+            TestFmwk.assertTrue("sub126", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse(".43822", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.43822"));
+            TestFmwk.assertTrue("sub127", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse(".911", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.911"));
+            TestFmwk.assertTrue("sub128", ((BigDecimal.Parse(".0", numberStyle, provider)).Subtract(BigDecimal.Parse(".02", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.02"));
+            TestFmwk.assertTrue("sub129", ((BigDecimal.Parse("00", numberStyle, provider)).Subtract(BigDecimal.Parse(".392", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.392"));
+            TestFmwk.assertTrue("sub130", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse(".26", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.26"));
+            TestFmwk.assertTrue("sub131", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("0.51", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.51"));
+            TestFmwk.assertTrue("sub132", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse(".2234", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.2234"));
+            TestFmwk.assertTrue("sub133", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse(".2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.2"));
+            TestFmwk.assertTrue("sub134", ((BigDecimal.Parse(".0", numberStyle, provider)).Subtract(BigDecimal.Parse(".0008", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("-0.0008"));
             // 0. on left
-            TestFmwk.assertTrue("sub140", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-.1")).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("sub141", ((new BigDecimal("0.00")).Subtract(new BigDecimal("-.97983")).ToString(CultureInfo.InvariantCulture)).Equals("0.97983"));
-            TestFmwk.assertTrue("sub142", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-.9")).ToString(CultureInfo.InvariantCulture)).Equals("0.9"));
-            TestFmwk.assertTrue("sub143", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-0.102")).ToString(CultureInfo.InvariantCulture)).Equals("0.102"));
-            TestFmwk.assertTrue("sub144", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-.4")).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
-            TestFmwk.assertTrue("sub145", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-.307")).ToString(CultureInfo.InvariantCulture)).Equals("0.307"));
-            TestFmwk.assertTrue("sub146", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-.43822")).ToString(CultureInfo.InvariantCulture)).Equals("0.43822"));
-            TestFmwk.assertTrue("sub147", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-.911")).ToString(CultureInfo.InvariantCulture)).Equals("0.911"));
-            TestFmwk.assertTrue("sub148", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-.02")).ToString(CultureInfo.InvariantCulture)).Equals("0.02"));
-            TestFmwk.assertTrue("sub149", ((new BigDecimal("0.00")).Subtract(new BigDecimal("-.392")).ToString(CultureInfo.InvariantCulture)).Equals("0.392"));
-            TestFmwk.assertTrue("sub150", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-.26")).ToString(CultureInfo.InvariantCulture)).Equals("0.26"));
-            TestFmwk.assertTrue("sub151", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-0.51")).ToString(CultureInfo.InvariantCulture)).Equals("0.51"));
-            TestFmwk.assertTrue("sub152", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-.2234")).ToString(CultureInfo.InvariantCulture)).Equals("0.2234"));
-            TestFmwk.assertTrue("sub153", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-.2")).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
-            TestFmwk.assertTrue("sub154", ((new BigDecimal("0.0")).Subtract(new BigDecimal("-.0008")).ToString(CultureInfo.InvariantCulture)).Equals("0.0008"));
+            TestFmwk.assertTrue("sub140", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("sub141", ((BigDecimal.Parse("0.00", numberStyle, provider)).Subtract(BigDecimal.Parse("-.97983", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.97983"));
+            TestFmwk.assertTrue("sub142", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.9"));
+            TestFmwk.assertTrue("sub143", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-0.102", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.102"));
+            TestFmwk.assertTrue("sub144", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.4", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
+            TestFmwk.assertTrue("sub145", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.307", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.307"));
+            TestFmwk.assertTrue("sub146", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.43822", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.43822"));
+            TestFmwk.assertTrue("sub147", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.911", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.911"));
+            TestFmwk.assertTrue("sub148", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.02", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.02"));
+            TestFmwk.assertTrue("sub149", ((BigDecimal.Parse("0.00", numberStyle, provider)).Subtract(BigDecimal.Parse("-.392", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.392"));
+            TestFmwk.assertTrue("sub150", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.26", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.26"));
+            TestFmwk.assertTrue("sub151", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-0.51", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.51"));
+            TestFmwk.assertTrue("sub152", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.2234", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.2234"));
+            TestFmwk.assertTrue("sub153", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("sub154", ((BigDecimal.Parse("0.0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.0008", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.0008"));
             // negatives of same
-            TestFmwk.assertTrue("sub160", ((new BigDecimal("0")).Subtract(new BigDecimal("-.1")).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("sub161", ((new BigDecimal("00")).Subtract(new BigDecimal("-.97983")).ToString(CultureInfo.InvariantCulture)).Equals("0.97983"));
-            TestFmwk.assertTrue("sub162", ((new BigDecimal("0")).Subtract(new BigDecimal("-.9")).ToString(CultureInfo.InvariantCulture)).Equals("0.9"));
-            TestFmwk.assertTrue("sub163", ((new BigDecimal("0")).Subtract(new BigDecimal("-0.102")).ToString(CultureInfo.InvariantCulture)).Equals("0.102"));
-            TestFmwk.assertTrue("sub164", ((new BigDecimal("0")).Subtract(new BigDecimal("-.4")).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
-            TestFmwk.assertTrue("sub165", ((new BigDecimal("0")).Subtract(new BigDecimal("-.307")).ToString(CultureInfo.InvariantCulture)).Equals("0.307"));
-            TestFmwk.assertTrue("sub166", ((new BigDecimal("0")).Subtract(new BigDecimal("-.43822")).ToString(CultureInfo.InvariantCulture)).Equals("0.43822"));
-            TestFmwk.assertTrue("sub167", ((new BigDecimal("0")).Subtract(new BigDecimal("-.911")).ToString(CultureInfo.InvariantCulture)).Equals("0.911"));
-            TestFmwk.assertTrue("sub168", ((new BigDecimal(".0")).Subtract(new BigDecimal("-.02")).ToString(CultureInfo.InvariantCulture)).Equals("0.02"));
-            TestFmwk.assertTrue("sub169", ((new BigDecimal("00")).Subtract(new BigDecimal("-.392")).ToString(CultureInfo.InvariantCulture)).Equals("0.392"));
-            TestFmwk.assertTrue("sub170", ((new BigDecimal("0")).Subtract(new BigDecimal("-.26")).ToString(CultureInfo.InvariantCulture)).Equals("0.26"));
-            TestFmwk.assertTrue("sub171", ((new BigDecimal("0")).Subtract(new BigDecimal("-0.51")).ToString(CultureInfo.InvariantCulture)).Equals("0.51"));
-            TestFmwk.assertTrue("sub172", ((new BigDecimal("0")).Subtract(new BigDecimal("-.2234")).ToString(CultureInfo.InvariantCulture)).Equals("0.2234"));
-            TestFmwk.assertTrue("sub173", ((new BigDecimal("0")).Subtract(new BigDecimal("-.2")).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
-            TestFmwk.assertTrue("sub174", ((new BigDecimal(".0")).Subtract(new BigDecimal("-.0008")).ToString(CultureInfo.InvariantCulture)).Equals("0.0008"));
+            TestFmwk.assertTrue("sub160", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.1", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("sub161", ((BigDecimal.Parse("00", numberStyle, provider)).Subtract(BigDecimal.Parse("-.97983", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.97983"));
+            TestFmwk.assertTrue("sub162", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.9", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.9"));
+            TestFmwk.assertTrue("sub163", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("-0.102", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.102"));
+            TestFmwk.assertTrue("sub164", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.4", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
+            TestFmwk.assertTrue("sub165", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.307", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.307"));
+            TestFmwk.assertTrue("sub166", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.43822", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.43822"));
+            TestFmwk.assertTrue("sub167", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.911", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.911"));
+            TestFmwk.assertTrue("sub168", ((BigDecimal.Parse(".0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.02", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.02"));
+            TestFmwk.assertTrue("sub169", ((BigDecimal.Parse("00", numberStyle, provider)).Subtract(BigDecimal.Parse("-.392", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.392"));
+            TestFmwk.assertTrue("sub170", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.26", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.26"));
+            TestFmwk.assertTrue("sub171", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("-0.51", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.51"));
+            TestFmwk.assertTrue("sub172", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.2234", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.2234"));
+            TestFmwk.assertTrue("sub173", ((BigDecimal.Parse("0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.2", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
+            TestFmwk.assertTrue("sub174", ((BigDecimal.Parse(".0", numberStyle, provider)).Subtract(BigDecimal.Parse("-.0008", numberStyle, provider)).ToString(CultureInfo.InvariantCulture)).Equals("0.0008"));
 
             // more fixed, LHS swaps [really same as testcases under add]
-            TestFmwk.assertTrue("sub180", ((new BigDecimal("-56267E-10")).Subtract(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000056267"));
-            TestFmwk.assertTrue("sub181", ((new BigDecimal("-56267E-5")).Subtract(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.56267"));
-            TestFmwk.assertTrue("sub182", ((new BigDecimal("-56267E-2")).Subtract(zero).ToString(CultureInfo.InvariantCulture)).Equals("-562.67"));
-            TestFmwk.assertTrue("sub183", ((new BigDecimal("-56267E-1")).Subtract(zero).ToString(CultureInfo.InvariantCulture)).Equals("-5626.7"));
-            TestFmwk.assertTrue("sub185", ((new BigDecimal("-56267E-0")).Subtract(zero).ToString(CultureInfo.InvariantCulture)).Equals("-56267"));
+            TestFmwk.assertTrue("sub180", ((BigDecimal.Parse("-56267E-10", numberStyle, provider)).Subtract(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000056267"));
+            TestFmwk.assertTrue("sub181", ((BigDecimal.Parse("-56267E-5", numberStyle, provider)).Subtract(zero).ToString(CultureInfo.InvariantCulture)).Equals("-0.56267"));
+            TestFmwk.assertTrue("sub182", ((BigDecimal.Parse("-56267E-2", numberStyle, provider)).Subtract(zero).ToString(CultureInfo.InvariantCulture)).Equals("-562.67"));
+            TestFmwk.assertTrue("sub183", ((BigDecimal.Parse("-56267E-1", numberStyle, provider)).Subtract(zero).ToString(CultureInfo.InvariantCulture)).Equals("-5626.7"));
+            TestFmwk.assertTrue("sub185", ((BigDecimal.Parse("-56267E-0", numberStyle, provider)).Subtract(zero).ToString(CultureInfo.InvariantCulture)).Equals("-56267"));
 
             try
             {
@@ -2996,16 +3028,18 @@ namespace ICU4N.Dev.Test.BigDec
             string[] badstrings;
             int i = 0;
             string norm = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            TestFmwk.assertTrue("byv001", ((((sbyte)-128))) == ((new BigDecimal("-128")).ToSByte()));
-            TestFmwk.assertTrue("byv002", ((0)) == ((new BigDecimal("0")).ToSByte()));
-            TestFmwk.assertTrue("byv003", ((1)) == ((new BigDecimal("1")).ToSByte()));
-            TestFmwk.assertTrue("byv004", ((99)) == ((new BigDecimal("99")).ToSByte()));
-            TestFmwk.assertTrue("byv005", ((127)) == ((new BigDecimal("127")).ToSByte()));
-            TestFmwk.assertTrue("byv006", ((-128)) == ((new BigDecimal("128")).ToSByte()));
-            TestFmwk.assertTrue("byv007", ((-127)) == ((new BigDecimal("129")).ToSByte()));
-            TestFmwk.assertTrue("byv008", ((127)) == ((new BigDecimal("-129")).ToSByte()));
-            TestFmwk.assertTrue("byv009", ((126)) == ((new BigDecimal("-130")).ToSByte()));
+            TestFmwk.assertTrue("byv001", ((((sbyte)-128))) == ((BigDecimal.Parse("-128", numberStyle, provider)).ToSByte()));
+            TestFmwk.assertTrue("byv002", ((0)) == ((BigDecimal.Parse("0", numberStyle, provider)).ToSByte()));
+            TestFmwk.assertTrue("byv003", ((1)) == ((BigDecimal.Parse("1", numberStyle, provider)).ToSByte()));
+            TestFmwk.assertTrue("byv004", ((99)) == ((BigDecimal.Parse("99", numberStyle, provider)).ToSByte()));
+            TestFmwk.assertTrue("byv005", ((127)) == ((BigDecimal.Parse("127", numberStyle, provider)).ToSByte()));
+            TestFmwk.assertTrue("byv006", ((-128)) == ((BigDecimal.Parse("128", numberStyle, provider)).ToSByte()));
+            TestFmwk.assertTrue("byv007", ((-127)) == ((BigDecimal.Parse("129", numberStyle, provider)).ToSByte()));
+            TestFmwk.assertTrue("byv008", ((127)) == ((BigDecimal.Parse("-129", numberStyle, provider)).ToSByte()));
+            TestFmwk.assertTrue("byv009", ((126)) == ((BigDecimal.Parse("-130", numberStyle, provider)).ToSByte()));
             TestFmwk.assertTrue("byv010", ((bmax)) == ((new BigDecimal(bmax)).ToSByte()));
             TestFmwk.assertTrue("byv011", ((bmin)) == ((new BigDecimal(bmin)).ToSByte()));
             TestFmwk.assertTrue("byv012", ((bneg)) == ((new BigDecimal(bneg)).ToSByte()));
@@ -3014,20 +3048,21 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("byv015", ((bmin)) == ((new BigDecimal(bmax + 1)).ToSByte()));
             TestFmwk.assertTrue("byv016", ((bmax)) == ((new BigDecimal(bmin - 1)).ToSByte()));
 
-            TestFmwk.assertTrue("byv021", (((unchecked((sbyte)-128)))) == ((new BigDecimal("-128")).ToSByteExact()));
-            TestFmwk.assertTrue("byv022", ((0)) == ((new BigDecimal("0")).ToSByteExact()));
-            TestFmwk.assertTrue("byv023", ((1)) == ((new BigDecimal("1")).ToSByteExact()));
-            TestFmwk.assertTrue("byv024", ((99)) == ((new BigDecimal("99")).ToSByteExact()));
-            TestFmwk.assertTrue("byv025", ((127)) == ((new BigDecimal("127")).ToSByteExact()));
+            TestFmwk.assertTrue("byv021", (((unchecked((sbyte)-128)))) == ((BigDecimal.Parse("-128", numberStyle, provider)).ToSByteExact()));
+            TestFmwk.assertTrue("byv022", ((0)) == ((BigDecimal.Parse("0", numberStyle, provider)).ToSByteExact()));
+            TestFmwk.assertTrue("byv023", ((1)) == ((BigDecimal.Parse("1", numberStyle, provider)).ToSByteExact()));
+            TestFmwk.assertTrue("byv024", ((99)) == ((BigDecimal.Parse("99", numberStyle, provider)).ToSByteExact()));
+            TestFmwk.assertTrue("byv025", ((127)) == ((BigDecimal.Parse("127", numberStyle, provider)).ToSByteExact()));
             TestFmwk.assertTrue("byv026", ((bmax)) == ((new BigDecimal(bmax)).ToSByteExact()));
             TestFmwk.assertTrue("byv027", ((bmin)) == ((new BigDecimal(bmin)).ToSByteExact()));
             TestFmwk.assertTrue("byv028", ((bneg)) == ((new BigDecimal(bneg)).ToSByteExact()));
             TestFmwk.assertTrue("byv029", ((bzer)) == ((new BigDecimal(bzer)).ToSByteExact()));
             TestFmwk.assertTrue("byv030", ((bpos)) == ((new BigDecimal(bpos)).ToSByteExact()));
+
             try
             {
                 v = "-129";
-                (new BigDecimal(v)).ToByteExact();
+                (BigDecimal.Parse(v, numberStyle, provider)).ToByteExact();
                 flag = false;
             }
             catch (ArithmeticException e87)
@@ -3039,7 +3074,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 v = "128";
-                (new BigDecimal(v)).ToByteExact();
+                (BigDecimal.Parse(v, numberStyle, provider)).ToByteExact();
                 flag = false;
             }
             catch (ArithmeticException e88)
@@ -3051,7 +3086,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 v = "1.5";
-                (new BigDecimal(v)).ToByteExact();
+                (BigDecimal.Parse(v, numberStyle, provider)).ToByteExact();
                 flag = false;
             }
             catch (ArithmeticException e89)
@@ -3125,13 +3160,13 @@ namespace ICU4N.Dev.Test.BigDec
                     try
                     {
                         v = badstrings[i];
-                        (new BigDecimal(v)).ToByteExact();
+                        (BigDecimal.Parse(v, numberStyle, provider)).ToByteExact();
                         flag = false;
                     }
                     catch (ArithmeticException e91)
                     {
                         ae = e91;
-                        norm = (new BigDecimal(v)).ToString(CultureInfo.InvariantCulture);
+                        norm = (BigDecimal.Parse(v, numberStyle, provider)).ToString(CultureInfo.InvariantCulture);
                         flag = (ae.Message).Equals("Conversion overflow:"
                                 + " " + norm);
                     }
@@ -3194,23 +3229,26 @@ namespace ICU4N.Dev.Test.BigDec
         [Test]
         public void diagdoublevalue()
         {
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
+
 #if FEATURE_IKVM
             string val;
             // 1999.03.07 Infinities no longer errors
             val = "-1";
-            TestFmwk.assertTrue("dov001", ((new BigDecimal(val)).ToDouble()) == ((new java.lang.Double(val)).doubleValue()));
+            TestFmwk.assertTrue("dov001", ((BigDecimal.Parse(val, numberStyle, provider)).ToDouble()) == ((new java.lang.Double(val)).doubleValue()));
             val = "-0.1";
-            TestFmwk.assertTrue("dov002", ((new BigDecimal(val)).ToDouble()) == ((new java.lang.Double(val)).doubleValue()));
+            TestFmwk.assertTrue("dov002", ((BigDecimal.Parse(val, numberStyle, provider)).ToDouble()) == ((new java.lang.Double(val)).doubleValue()));
             val = "0";
-            TestFmwk.assertTrue("dov003", ((new BigDecimal(val)).ToDouble()) == ((new java.lang.Double(val)).doubleValue()));
+            TestFmwk.assertTrue("dov003", ((BigDecimal.Parse(val, numberStyle, provider)).ToDouble()) == ((new java.lang.Double(val)).doubleValue()));
             val = "0.1";
-            TestFmwk.assertTrue("dov004", ((new BigDecimal(val)).ToDouble()) == ((new java.lang.Double(val)).doubleValue()));
+            TestFmwk.assertTrue("dov004", ((BigDecimal.Parse(val, numberStyle, provider)).ToDouble()) == ((new java.lang.Double(val)).doubleValue()));
             val = "1";
-            TestFmwk.assertTrue("dov005", ((new BigDecimal(val)).ToDouble()) == ((new java.lang.Double(val)).doubleValue()));
+            TestFmwk.assertTrue("dov005", ((BigDecimal.Parse(val, numberStyle, provider)).ToDouble()) == ((new java.lang.Double(val)).doubleValue()));
             val = "1e1000";
-            TestFmwk.assertTrue("dov006", ((new BigDecimal(val)).ToDouble()) == java.lang.Double.POSITIVE_INFINITY);
+            TestFmwk.assertTrue("dov006", ((BigDecimal.Parse(val, numberStyle, provider)).ToDouble()) == java.lang.Double.POSITIVE_INFINITY);
             val = "-1e1000";
-            TestFmwk.assertTrue("dov007", ((new BigDecimal(val)).ToDouble()) == java.lang.Double.NEGATIVE_INFINITY);
+            TestFmwk.assertTrue("dov007", ((BigDecimal.Parse(val, numberStyle, provider)).ToDouble()) == java.lang.Double.NEGATIVE_INFINITY);
 #endif
         }
 
@@ -3237,27 +3275,30 @@ namespace ICU4N.Dev.Test.BigDec
         [Test]
         public void diagfloatvalue()
         {
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
+
 #if FEATURE_IKVM
             string val;
             // 1999.03.07 Infinities no longer errors
             val = "-1";
-            TestFmwk.assertTrue("flv001", ((new BigDecimal(val)).ToSingle()) == ((new java.lang.Float(val)).floatValue()));
+            TestFmwk.assertTrue("flv001", ((BigDecimal.Parse(val, numberStyle, provider)).ToSingle()) == ((new java.lang.Float(val)).floatValue()));
             val = "-0.1";
-            TestFmwk.assertTrue("flv002", ((new BigDecimal(val)).ToSingle()) == ((new java.lang.Float(val)).floatValue()));
+            TestFmwk.assertTrue("flv002", ((BigDecimal.Parse(val, numberStyle, provider)).ToSingle()) == ((new java.lang.Float(val)).floatValue()));
             val = "0";
-            TestFmwk.assertTrue("flv003", ((new BigDecimal(val)).ToSingle()) == ((new java.lang.Float(val)).floatValue()));
+            TestFmwk.assertTrue("flv003", ((BigDecimal.Parse(val, numberStyle, provider)).ToSingle()) == ((new java.lang.Float(val)).floatValue()));
             val = "0.1";
-            TestFmwk.assertTrue("flv004", ((new BigDecimal(val)).ToSingle()) == ((new java.lang.Float(val)).floatValue()));
+            TestFmwk.assertTrue("flv004", ((BigDecimal.Parse(val, numberStyle, provider)).ToSingle()) == ((new java.lang.Float(val)).floatValue()));
             val = "1";
-            TestFmwk.assertTrue("flv005", ((new BigDecimal(val)).ToSingle()) == ((new java.lang.Float(val)).floatValue()));
+            TestFmwk.assertTrue("flv005", ((BigDecimal.Parse(val, numberStyle, provider)).ToSingle()) == ((new java.lang.Float(val)).floatValue()));
             val = "1e200";
-            TestFmwk.assertTrue("flv006", ((new BigDecimal(val)).ToSingle()) == java.lang.Float.POSITIVE_INFINITY);
+            TestFmwk.assertTrue("flv006", ((BigDecimal.Parse(val, numberStyle, provider)).ToSingle()) == java.lang.Float.POSITIVE_INFINITY);
             val = "-1e200";
-            TestFmwk.assertTrue("flv007", ((new BigDecimal(val)).ToSingle()) == java.lang.Float.NEGATIVE_INFINITY);
+            TestFmwk.assertTrue("flv007", ((BigDecimal.Parse(val, numberStyle, provider)).ToSingle()) == java.lang.Float.NEGATIVE_INFINITY);
             val = "1e1000";
-            TestFmwk.assertTrue("flv008", ((new BigDecimal(val)).ToSingle()) == java.lang.Float.POSITIVE_INFINITY);
+            TestFmwk.assertTrue("flv008", ((BigDecimal.Parse(val, numberStyle, provider)).ToSingle()) == java.lang.Float.POSITIVE_INFINITY);
             val = "-1e1000";
-            TestFmwk.assertTrue("flv009", ((new BigDecimal(val)).ToSingle()) == java.lang.Float.NEGATIVE_INFINITY);
+            TestFmwk.assertTrue("flv009", ((BigDecimal.Parse(val, numberStyle, provider)).ToSingle()) == java.lang.Float.NEGATIVE_INFINITY);
 #endif
         }
 
@@ -3285,98 +3326,100 @@ namespace ICU4N.Dev.Test.BigDec
             BigDecimal d000;
             BigDecimal d500;
             ArithmeticException ae = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
             // 1999.02.09 now only two signatures for format(), so some tests below
             // may now be redundant
 
-            TestFmwk.assertTrue("for001", ((new BigDecimal("12.3")).Format(-1, -1)).Equals("12.3"));
-            TestFmwk.assertTrue("for002", ((new BigDecimal("-12.73")).Format(-1, -1)).Equals("-12.73"));
-            TestFmwk.assertTrue("for003", ((new BigDecimal("0.000")).Format(-1, -1)).Equals("0.000"));
-            TestFmwk.assertTrue("for004", ((new BigDecimal("3E+3")).Format(-1, -1)).Equals("3000"));
-            TestFmwk.assertTrue("for005", ((new BigDecimal("3")).Format(4, -1)).Equals("   3"));
-            TestFmwk.assertTrue("for006", ((new BigDecimal("1.73")).Format(4, 0)).Equals("   2"));
-            TestFmwk.assertTrue("for007", ((new BigDecimal("1.73")).Format(4, 1)).Equals("   1.7"));
-            TestFmwk.assertTrue("for008", ((new BigDecimal("1.75")).Format(4, 1)).Equals("   1.8"));
-            TestFmwk.assertTrue("for009", ((new BigDecimal("0.5")).Format(4, 1)).Equals("   0.5"));
-            TestFmwk.assertTrue("for010", ((new BigDecimal("0.05")).Format(4, 1)).Equals("   0.1"));
-            TestFmwk.assertTrue("for011", ((new BigDecimal("0.04")).Format(4, 1)).Equals("   0.0"));
-            TestFmwk.assertTrue("for012", ((new BigDecimal("0")).Format(4, 0)).Equals("   0"));
-            TestFmwk.assertTrue("for013", ((new BigDecimal("0")).Format(4, 1)).Equals("   0.0"));
-            TestFmwk.assertTrue("for014", ((new BigDecimal("0")).Format(4, 2)).Equals("   0.00"));
-            TestFmwk.assertTrue("for015", ((new BigDecimal("0")).Format(4, 3)).Equals("   0.000"));
-            TestFmwk.assertTrue("for016", ((new BigDecimal("0")).Format(4, 4)).Equals("   0.0000"));
-            TestFmwk.assertTrue("for017", ((new BigDecimal("0.005")).Format(4, 0)).Equals("   0"));
-            TestFmwk.assertTrue("for018", ((new BigDecimal("0.005")).Format(4, 1)).Equals("   0.0"));
-            TestFmwk.assertTrue("for019", ((new BigDecimal("0.005")).Format(4, 2)).Equals("   0.01"));
-            TestFmwk.assertTrue("for020", ((new BigDecimal("0.004")).Format(4, 2)).Equals("   0.00"));
-            TestFmwk.assertTrue("for021", ((new BigDecimal("0.005")).Format(4, 3)).Equals("   0.005"));
-            TestFmwk.assertTrue("for022", ((new BigDecimal("0.005")).Format(4, 4)).Equals("   0.0050"));
+            TestFmwk.assertTrue("for001", ((BigDecimal.Parse("12.3", numberStyle, provider)).Format(-1, -1)).Equals("12.3"));
+            TestFmwk.assertTrue("for002", ((BigDecimal.Parse("-12.73", numberStyle, provider)).Format(-1, -1)).Equals("-12.73"));
+            TestFmwk.assertTrue("for003", ((BigDecimal.Parse("0.000", numberStyle, provider)).Format(-1, -1)).Equals("0.000"));
+            TestFmwk.assertTrue("for004", ((BigDecimal.Parse("3E+3", numberStyle, provider)).Format(-1, -1)).Equals("3000"));
+            TestFmwk.assertTrue("for005", ((BigDecimal.Parse("3", numberStyle, provider)).Format(4, -1)).Equals("   3"));
+            TestFmwk.assertTrue("for006", ((BigDecimal.Parse("1.73", numberStyle, provider)).Format(4, 0)).Equals("   2"));
+            TestFmwk.assertTrue("for007", ((BigDecimal.Parse("1.73", numberStyle, provider)).Format(4, 1)).Equals("   1.7"));
+            TestFmwk.assertTrue("for008", ((BigDecimal.Parse("1.75", numberStyle, provider)).Format(4, 1)).Equals("   1.8"));
+            TestFmwk.assertTrue("for009", ((BigDecimal.Parse("0.5", numberStyle, provider)).Format(4, 1)).Equals("   0.5"));
+            TestFmwk.assertTrue("for010", ((BigDecimal.Parse("0.05", numberStyle, provider)).Format(4, 1)).Equals("   0.1"));
+            TestFmwk.assertTrue("for011", ((BigDecimal.Parse("0.04", numberStyle, provider)).Format(4, 1)).Equals("   0.0"));
+            TestFmwk.assertTrue("for012", ((BigDecimal.Parse("0", numberStyle, provider)).Format(4, 0)).Equals("   0"));
+            TestFmwk.assertTrue("for013", ((BigDecimal.Parse("0", numberStyle, provider)).Format(4, 1)).Equals("   0.0"));
+            TestFmwk.assertTrue("for014", ((BigDecimal.Parse("0", numberStyle, provider)).Format(4, 2)).Equals("   0.00"));
+            TestFmwk.assertTrue("for015", ((BigDecimal.Parse("0", numberStyle, provider)).Format(4, 3)).Equals("   0.000"));
+            TestFmwk.assertTrue("for016", ((BigDecimal.Parse("0", numberStyle, provider)).Format(4, 4)).Equals("   0.0000"));
+            TestFmwk.assertTrue("for017", ((BigDecimal.Parse("0.005", numberStyle, provider)).Format(4, 0)).Equals("   0"));
+            TestFmwk.assertTrue("for018", ((BigDecimal.Parse("0.005", numberStyle, provider)).Format(4, 1)).Equals("   0.0"));
+            TestFmwk.assertTrue("for019", ((BigDecimal.Parse("0.005", numberStyle, provider)).Format(4, 2)).Equals("   0.01"));
+            TestFmwk.assertTrue("for020", ((BigDecimal.Parse("0.004", numberStyle, provider)).Format(4, 2)).Equals("   0.00"));
+            TestFmwk.assertTrue("for021", ((BigDecimal.Parse("0.005", numberStyle, provider)).Format(4, 3)).Equals("   0.005"));
+            TestFmwk.assertTrue("for022", ((BigDecimal.Parse("0.005", numberStyle, provider)).Format(4, 4)).Equals("   0.0050"));
 
-            TestFmwk.assertTrue("for023", ((new BigDecimal("1.73")).Format(4, 2)).Equals("   1.73"));
-            TestFmwk.assertTrue("for024", ((new BigDecimal("1.73")).Format(4, 3)).Equals("   1.730"));
-            TestFmwk.assertTrue("for025", ((new BigDecimal("-.76")).Format(4, 1)).Equals("  -0.8"));
-            TestFmwk.assertTrue("for026", ((new BigDecimal("-12.73")).Format(-1, 4)).Equals("-12.7300"));
+            TestFmwk.assertTrue("for023", ((BigDecimal.Parse("1.73", numberStyle, provider)).Format(4, 2)).Equals("   1.73"));
+            TestFmwk.assertTrue("for024", ((BigDecimal.Parse("1.73", numberStyle, provider)).Format(4, 3)).Equals("   1.730"));
+            TestFmwk.assertTrue("for025", ((BigDecimal.Parse("-.76", numberStyle, provider)).Format(4, 1)).Equals("  -0.8"));
+            TestFmwk.assertTrue("for026", ((BigDecimal.Parse("-12.73", numberStyle, provider)).Format(-1, 4)).Equals("-12.7300"));
 
-            TestFmwk.assertTrue("for027", ((new BigDecimal("3.03")).Format(4, -1)).Equals("   3.03"));
-            TestFmwk.assertTrue("for028", ((new BigDecimal("3.03")).Format(4, 1)).Equals("   3.0"));
-            TestFmwk.assertTrue("for029", ((new BigDecimal("3.03")).Format(4, -1, 3, -1, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("   3.03     "));
-            TestFmwk.assertTrue("for030", ((new BigDecimal("3.03")).Format(-1, -1, 3, -1, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("3.03     "));
-            TestFmwk.assertTrue("for031", ((new BigDecimal("12345.73")).Format(-1, -1, -1, 4, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.234573E+4"));
-            TestFmwk.assertTrue("for032", ((new BigDecimal("12345.73")).Format(-1, -1, -1, 5, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("12345.73"));
-            TestFmwk.assertTrue("for033", ((new BigDecimal("12345.73")).Format(-1, -1, -1, 6, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("12345.73"));
+            TestFmwk.assertTrue("for027", ((BigDecimal.Parse("3.03", numberStyle, provider)).Format(4, -1)).Equals("   3.03"));
+            TestFmwk.assertTrue("for028", ((BigDecimal.Parse("3.03", numberStyle, provider)).Format(4, 1)).Equals("   3.0"));
+            TestFmwk.assertTrue("for029", ((BigDecimal.Parse("3.03", numberStyle, provider)).Format(4, -1, 3, -1, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("   3.03     "));
+            TestFmwk.assertTrue("for030", ((BigDecimal.Parse("3.03", numberStyle, provider)).Format(-1, -1, 3, -1, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("3.03     "));
+            TestFmwk.assertTrue("for031", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, -1, -1, 4, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.234573E+4"));
+            TestFmwk.assertTrue("for032", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, -1, -1, 5, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("12345.73"));
+            TestFmwk.assertTrue("for033", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, -1, -1, 6, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("12345.73"));
 
-            TestFmwk.assertTrue("for034", ((new BigDecimal("12345.73")).Format(-1, 8, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.23457300E+4"));
-            TestFmwk.assertTrue("for035", ((new BigDecimal("12345.73")).Format(-1, 7, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.2345730E+4"));
-            TestFmwk.assertTrue("for036", ((new BigDecimal("12345.73")).Format(-1, 6, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.234573E+4"));
-            TestFmwk.assertTrue("for037", ((new BigDecimal("12345.73")).Format(-1, 5, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.23457E+4"));
-            TestFmwk.assertTrue("for038", ((new BigDecimal("12345.73")).Format(-1, 4, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.2346E+4"));
-            TestFmwk.assertTrue("for039", ((new BigDecimal("12345.73")).Format(-1, 3, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.235E+4"));
-            TestFmwk.assertTrue("for040", ((new BigDecimal("12345.73")).Format(-1, 2, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.23E+4"));
-            TestFmwk.assertTrue("for041", ((new BigDecimal("12345.73")).Format(-1, 1, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.2E+4"));
-            TestFmwk.assertTrue("for042", ((new BigDecimal("12345.73")).Format(-1, 0, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1E+4"));
+            TestFmwk.assertTrue("for034", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, 8, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.23457300E+4"));
+            TestFmwk.assertTrue("for035", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, 7, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.2345730E+4"));
+            TestFmwk.assertTrue("for036", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, 6, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.234573E+4"));
+            TestFmwk.assertTrue("for037", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, 5, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.23457E+4"));
+            TestFmwk.assertTrue("for038", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, 4, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.2346E+4"));
+            TestFmwk.assertTrue("for039", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, 3, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.235E+4"));
+            TestFmwk.assertTrue("for040", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, 2, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.23E+4"));
+            TestFmwk.assertTrue("for041", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, 1, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.2E+4"));
+            TestFmwk.assertTrue("for042", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, 0, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1E+4"));
 
-            TestFmwk.assertTrue("for043", ((new BigDecimal("99999.99")).Format(-1, 6, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("9.999999E+4"));
-            TestFmwk.assertTrue("for044", ((new BigDecimal("99999.99")).Format(-1, 5, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.00000E+5"));
-            TestFmwk.assertTrue("for045", ((new BigDecimal("99999.99")).Format(-1, 2, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.00E+5"));
-            TestFmwk.assertTrue("for046", ((new BigDecimal("99999.99")).Format(-1, 0, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1E+5"));
-            TestFmwk.assertTrue("for047", ((new BigDecimal("99999.99")).Format(3, 0, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("  1E+5"));
+            TestFmwk.assertTrue("for043", ((BigDecimal.Parse("99999.99", numberStyle, provider)).Format(-1, 6, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("9.999999E+4"));
+            TestFmwk.assertTrue("for044", ((BigDecimal.Parse("99999.99", numberStyle, provider)).Format(-1, 5, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.00000E+5"));
+            TestFmwk.assertTrue("for045", ((BigDecimal.Parse("99999.99", numberStyle, provider)).Format(-1, 2, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.00E+5"));
+            TestFmwk.assertTrue("for046", ((BigDecimal.Parse("99999.99", numberStyle, provider)).Format(-1, 0, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1E+5"));
+            TestFmwk.assertTrue("for047", ((BigDecimal.Parse("99999.99", numberStyle, provider)).Format(3, 0, -1, 3, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("  1E+5"));
 
-            TestFmwk.assertTrue("for048", ((new BigDecimal("12345.73")).Format(-1, -1, 2, 2, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.234573E+04"));
-            TestFmwk.assertTrue("for049", ((new BigDecimal("12345.73")).Format(-1, 3, -1, 0, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.235E+4"));
-            TestFmwk.assertTrue("for050", ((new BigDecimal("1.234573")).Format(-1, 3, -1, 0, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.235"));
-            TestFmwk.assertTrue("for051", ((new BigDecimal("123.45")).Format(-1, 3, 2, 0, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.235E+02"));
+            TestFmwk.assertTrue("for048", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, -1, 2, 2, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.234573E+04"));
+            TestFmwk.assertTrue("for049", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, 3, -1, 0, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.235E+4"));
+            TestFmwk.assertTrue("for050", ((BigDecimal.Parse("1.234573", numberStyle, provider)).Format(-1, 3, -1, 0, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.235"));
+            TestFmwk.assertTrue("for051", ((BigDecimal.Parse("123.45", numberStyle, provider)).Format(-1, 3, 2, 0, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.235E+02"));
 
-            TestFmwk.assertTrue("for052", ((new BigDecimal("0.444")).Format(-1, 0)).Equals("0"));
-            TestFmwk.assertTrue("for053", ((new BigDecimal("-0.444")).Format(-1, 0)).Equals("0"));
-            TestFmwk.assertTrue("for054", ((new BigDecimal("0.4")).Format(-1, 0)).Equals("0"));
-            TestFmwk.assertTrue("for055", ((new BigDecimal("-0.4")).Format(-1, 0)).Equals("0"));
+            TestFmwk.assertTrue("for052", ((BigDecimal.Parse("0.444", numberStyle, provider)).Format(-1, 0)).Equals("0"));
+            TestFmwk.assertTrue("for053", ((BigDecimal.Parse("-0.444", numberStyle, provider)).Format(-1, 0)).Equals("0"));
+            TestFmwk.assertTrue("for054", ((BigDecimal.Parse("0.4", numberStyle, provider)).Format(-1, 0)).Equals("0"));
+            TestFmwk.assertTrue("for055", ((BigDecimal.Parse("-0.4", numberStyle, provider)).Format(-1, 0)).Equals("0"));
 
             eng = MathContext.Engineering;
             sci = MathContext.Scientific;
-            TestFmwk.assertTrue("for060", ((new BigDecimal("1234.5")).Format(-1, 3, 2, 0, eng, (RoundingMode)(-1))).Equals("1.235E+03"));
-            TestFmwk.assertTrue("for061", ((new BigDecimal("12345")).Format(-1, 3, 3, 0, eng, (RoundingMode)(-1))).Equals("12.345E+003"));
-            TestFmwk.assertTrue("for062", ((new BigDecimal("12345")).Format(-1, 3, 3, 0, sci, (RoundingMode)(-1))).Equals("1.235E+004"));
-            TestFmwk.assertTrue("for063", ((new BigDecimal("1234.5")).Format(4, 3, 2, 0, eng, (RoundingMode)(-1))).Equals("   1.235E+03"));
-            TestFmwk.assertTrue("for064", ((new BigDecimal("12345")).Format(5, 3, 3, 0, eng, (RoundingMode)(-1))).Equals("   12.345E+003"));
-            TestFmwk.assertTrue("for065", ((new BigDecimal("12345")).Format(6, 3, 3, 0, sci, (RoundingMode)(-1))).Equals("     1.235E+004"));
+            TestFmwk.assertTrue("for060", ((BigDecimal.Parse("1234.5", numberStyle, provider)).Format(-1, 3, 2, 0, eng, (RoundingMode)(-1))).Equals("1.235E+03"));
+            TestFmwk.assertTrue("for061", ((BigDecimal.Parse("12345", numberStyle, provider)).Format(-1, 3, 3, 0, eng, (RoundingMode)(-1))).Equals("12.345E+003"));
+            TestFmwk.assertTrue("for062", ((BigDecimal.Parse("12345", numberStyle, provider)).Format(-1, 3, 3, 0, sci, (RoundingMode)(-1))).Equals("1.235E+004"));
+            TestFmwk.assertTrue("for063", ((BigDecimal.Parse("1234.5", numberStyle, provider)).Format(4, 3, 2, 0, eng, (RoundingMode)(-1))).Equals("   1.235E+03"));
+            TestFmwk.assertTrue("for064", ((BigDecimal.Parse("12345", numberStyle, provider)).Format(5, 3, 3, 0, eng, (RoundingMode)(-1))).Equals("   12.345E+003"));
+            TestFmwk.assertTrue("for065", ((BigDecimal.Parse("12345", numberStyle, provider)).Format(6, 3, 3, 0, sci, (RoundingMode)(-1))).Equals("     1.235E+004"));
 
-            TestFmwk.assertTrue("for066", ((new BigDecimal("1.2345")).Format(-1, 3, 2, 0, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.235    "));
-            TestFmwk.assertTrue("for067", ((new BigDecimal("12345.73")).Format(-1, -1, 3, 6, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("12345.73     "));
-            TestFmwk.assertTrue("for068", ((new BigDecimal("12345e+5")).Format(-1, 0)).Equals("1234500000"));
-            TestFmwk.assertTrue("for069", ((new BigDecimal("12345e+5")).Format(-1, 1)).Equals("1234500000.0"));
-            TestFmwk.assertTrue("for070", ((new BigDecimal("12345e+5")).Format(-1, 2)).Equals("1234500000.00"));
-            TestFmwk.assertTrue("for071", ((new BigDecimal("12345e+5")).Format(-1, 3)).Equals("1234500000.000"));
-            TestFmwk.assertTrue("for072", ((new BigDecimal("12345e+5")).Format(-1, 4)).Equals("1234500000.0000"));
+            TestFmwk.assertTrue("for066", ((BigDecimal.Parse("1.2345", numberStyle, provider)).Format(-1, 3, 2, 0, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.235    "));
+            TestFmwk.assertTrue("for067", ((BigDecimal.Parse("12345.73", numberStyle, provider)).Format(-1, -1, 3, 6, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("12345.73     "));
+            TestFmwk.assertTrue("for068", ((BigDecimal.Parse("12345e+5", numberStyle, provider)).Format(-1, 0)).Equals("1234500000"));
+            TestFmwk.assertTrue("for069", ((BigDecimal.Parse("12345e+5", numberStyle, provider)).Format(-1, 1)).Equals("1234500000.0"));
+            TestFmwk.assertTrue("for070", ((BigDecimal.Parse("12345e+5", numberStyle, provider)).Format(-1, 2)).Equals("1234500000.00"));
+            TestFmwk.assertTrue("for071", ((BigDecimal.Parse("12345e+5", numberStyle, provider)).Format(-1, 3)).Equals("1234500000.000"));
+            TestFmwk.assertTrue("for072", ((BigDecimal.Parse("12345e+5", numberStyle, provider)).Format(-1, 4)).Equals("1234500000.0000"));
 
             // some from ANSI Dallas [Nov 1998]
-            TestFmwk.assertTrue("for073", ((new BigDecimal("99.999")).Format(-1, 2, -1, 2, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("100.00"));
-            TestFmwk.assertTrue("for074", ((new BigDecimal("0.99999")).Format(-1, 4, 2, 2, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.0000    "));
+            TestFmwk.assertTrue("for073", ((BigDecimal.Parse("99.999", numberStyle, provider)).Format(-1, 2, -1, 2, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("100.00"));
+            TestFmwk.assertTrue("for074", ((BigDecimal.Parse("0.99999", numberStyle, provider)).Format(-1, 4, 2, 2, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("1.0000    "));
 
             // try some rounding modes [default ROUND_HALF_UP widely tested above]
             // the first few also tests that defaults are accepted for the others
-            d04 = new BigDecimal("0.04");
-            d05 = new BigDecimal("0.05");
-            d06 = new BigDecimal("0.06");
-            d15 = new BigDecimal("0.15");
+            d04 = BigDecimal.Parse("0.04", numberStyle, provider);
+            d05 = BigDecimal.Parse("0.05", numberStyle, provider);
+            d06 = BigDecimal.Parse("0.06", numberStyle, provider);
+            d15 = BigDecimal.Parse("0.15", numberStyle, provider);
             TestFmwk.assertTrue("for080", (d05.Format(-1, 1)).Equals("0.1"));
             TestFmwk.assertTrue("for081", (d05.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundHalfUp)).Equals("0.1"));
             TestFmwk.assertTrue("for082", (d05.Format(-1, 1, -1, -1, (ExponentForm)(-1), (RoundingMode)(-1))).Equals("0.1"));
@@ -3404,16 +3447,16 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("for096", (d05.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundHalfEven)).Equals("0.0"));
             TestFmwk.assertTrue("for097", (d06.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundHalfEven)).Equals("0.1"));
             TestFmwk.assertTrue("for098", (d15.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundHalfEven)).Equals("0.2"));
-            d050 = new BigDecimal("0.050");
-            d150 = new BigDecimal("0.150");
+            d050 = BigDecimal.Parse("0.050", numberStyle, provider);
+            d150 = BigDecimal.Parse("0.150", numberStyle, provider);
             TestFmwk.assertTrue("for099", (d050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundHalfEven)).Equals("0.0"));
             TestFmwk.assertTrue("for100", (d150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundHalfEven)).Equals("0.2"));
-            m050 = new BigDecimal("-0.050");
-            m150 = new BigDecimal("-0.150");
+            m050 = BigDecimal.Parse("-0.050", numberStyle, provider);
+            m150 = BigDecimal.Parse("-0.150", numberStyle, provider);
             TestFmwk.assertTrue("for101", (m050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundHalfEven)).Equals("0.0"));
             TestFmwk.assertTrue("for102", (m150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundHalfEven)).Equals("-0.2"));
-            d051 = new BigDecimal("0.051");
-            d151 = new BigDecimal("0.151");
+            d051 = BigDecimal.Parse("0.051", numberStyle, provider);
+            d151 = BigDecimal.Parse("0.151", numberStyle, provider);
             TestFmwk.assertTrue("for103", (d051.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundHalfEven)).Equals("0.1"));
             TestFmwk.assertTrue("for104", (d151.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundHalfEven)).Equals("0.2"));
 
@@ -3437,8 +3480,8 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("for119", (d050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundDown)).Equals("0.0"));
             TestFmwk.assertTrue("for120", (d150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundDown)).Equals("0.1"));
 
-            d000 = new BigDecimal("0.000");
-            d500 = new BigDecimal("0.500");
+            d000 = BigDecimal.Parse("0.000", numberStyle, provider);
+            d500 = BigDecimal.Parse("0.500", numberStyle, provider);
             TestFmwk.assertTrue("for121", (d000.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundUnnecessary)).Equals("0.0"));
             TestFmwk.assertTrue("for122", (d000.Format(-1, 2, -1, -1, (ExponentForm)(-1), MathContext.RoundUnnecessary)).Equals("0.00"));
             TestFmwk.assertTrue("for123", (d000.Format(-1, 3, -1, -1, (ExponentForm)(-1), MathContext.RoundUnnecessary)).Equals("0.000"));
@@ -3531,14 +3574,17 @@ namespace ICU4N.Dev.Test.BigDec
         {
             string hs;
             BigDecimal d;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
+
             hs = "27827817";
-            d = new BigDecimal(hs);
+            d = BigDecimal.Parse(hs, numberStyle, provider);
             TestFmwk.assertTrue("has001", (d.GetHashCode()) == (hs.GetHashCode()));
             hs = "1.265E+200";
-            d = new BigDecimal(hs);
+            d = BigDecimal.Parse(hs, numberStyle, provider);
             TestFmwk.assertTrue("has002", (d.GetHashCode()) == (hs.GetHashCode()));
             hs = "126.5E+200";
-            d = new BigDecimal(hs);
+            d = BigDecimal.Parse(hs, numberStyle, provider);
             TestFmwk.assertTrue("has003", (d.GetHashCode()) != (hs.GetHashCode()));
         }
 
@@ -3559,48 +3605,50 @@ namespace ICU4N.Dev.Test.BigDec
             BigDecimal num = null;
             BigDecimal dv = null;
             BigDecimal dimin;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
             // intValue --
 
             TestFmwk.assertTrue("inv001", imin == ((new BigDecimal(imin)).ToInt32()));
-            TestFmwk.assertTrue("inv002", ((99)) == ((new BigDecimal("99")).ToInt32()));
-            TestFmwk.assertTrue("inv003", ((1)) == ((new BigDecimal("1")).ToInt32()));
-            TestFmwk.assertTrue("inv004", ((0)) == ((new BigDecimal("0")).ToInt32()));
-            TestFmwk.assertTrue("inv005", ((-1)) == ((new BigDecimal("-1")).ToInt32()));
-            TestFmwk.assertTrue("inv006", ((-99)) == ((new BigDecimal("-99")).ToInt32()));
+            TestFmwk.assertTrue("inv002", ((99)) == ((BigDecimal.Parse("99", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv003", ((1)) == ((BigDecimal.Parse("1", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv004", ((0)) == ((BigDecimal.Parse("0", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv005", ((-1)) == ((BigDecimal.Parse("-1", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv006", ((-99)) == ((BigDecimal.Parse("-99", numberStyle, provider)).ToInt32()));
             TestFmwk.assertTrue("inv007", imax == ((new BigDecimal(imax)).ToInt32()));
-            TestFmwk.assertTrue("inv008", ((5)) == ((new BigDecimal("5.0")).ToInt32()));
-            TestFmwk.assertTrue("inv009", ((5)) == ((new BigDecimal("5.3")).ToInt32()));
-            TestFmwk.assertTrue("inv010", ((5)) == ((new BigDecimal("5.5")).ToInt32()));
-            TestFmwk.assertTrue("inv011", ((5)) == ((new BigDecimal("5.7")).ToInt32()));
-            TestFmwk.assertTrue("inv012", ((5)) == ((new BigDecimal("5.9")).ToInt32()));
-            TestFmwk.assertTrue("inv013", ((-5)) == ((new BigDecimal("-5.0")).ToInt32()));
-            TestFmwk.assertTrue("inv014", ((-5)) == ((new BigDecimal("-5.3")).ToInt32()));
-            TestFmwk.assertTrue("inv015", ((-5)) == ((new BigDecimal("-5.5")).ToInt32()));
-            TestFmwk.assertTrue("inv016", ((-5)) == ((new BigDecimal("-5.7")).ToInt32()));
-            TestFmwk.assertTrue("inv017", ((-5)) == ((new BigDecimal("-5.9")).ToInt32()));
-            TestFmwk.assertTrue("inv018", ((new BigDecimal("88888888888")).ToInt32()) == (-1305424328)); // ugh
-            TestFmwk.assertTrue("inv019", ((new BigDecimal("-88888888888")).ToInt32()) == 1305424328); // ugh
+            TestFmwk.assertTrue("inv008", ((5)) == ((BigDecimal.Parse("5.0", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv009", ((5)) == ((BigDecimal.Parse("5.3", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv010", ((5)) == ((BigDecimal.Parse("5.5", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv011", ((5)) == ((BigDecimal.Parse("5.7", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv012", ((5)) == ((BigDecimal.Parse("5.9", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv013", ((-5)) == ((BigDecimal.Parse("-5.0", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv014", ((-5)) == ((BigDecimal.Parse("-5.3", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv015", ((-5)) == ((BigDecimal.Parse("-5.5", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv016", ((-5)) == ((BigDecimal.Parse("-5.7", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv017", ((-5)) == ((BigDecimal.Parse("-5.9", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv018", ((BigDecimal.Parse("88888888888", numberStyle, provider)).ToInt32()) == (-1305424328)); // ugh
+            TestFmwk.assertTrue("inv019", ((BigDecimal.Parse("-88888888888", numberStyle, provider)).ToInt32()) == 1305424328); // ugh
             TestFmwk.assertTrue("inv020", ((imin)) == ((new BigDecimal((((long)imax)) + 1)).ToInt32()));
             TestFmwk.assertTrue("inv021", ((imax)) == ((new BigDecimal((((long)imin)) - 1)).ToInt32()));
 
             // intValueExact --
 
             TestFmwk.assertTrue("inv101", imin == ((new BigDecimal(imin)).ToInt32Exact()));
-            TestFmwk.assertTrue("inv102", ((99)) == ((new BigDecimal("99")).ToInt32()));
-            TestFmwk.assertTrue("inv103", ((1)) == ((new BigDecimal("1")).ToInt32()));
-            TestFmwk.assertTrue("inv104", ((0)) == ((new BigDecimal("0")).ToInt32()));
-            TestFmwk.assertTrue("inv105", ((-1)) == ((new BigDecimal("-1")).ToInt32()));
-            TestFmwk.assertTrue("inv106", ((-99)) == ((new BigDecimal("-99")).ToInt32()));
+            TestFmwk.assertTrue("inv102", ((99)) == ((BigDecimal.Parse("99", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv103", ((1)) == ((BigDecimal.Parse("1", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv104", ((0)) == ((BigDecimal.Parse("0", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv105", ((-1)) == ((BigDecimal.Parse("-1", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv106", ((-99)) == ((BigDecimal.Parse("-99", numberStyle, provider)).ToInt32()));
             TestFmwk.assertTrue("inv107", imax == ((new BigDecimal(imax)).ToInt32()));
-            TestFmwk.assertTrue("inv108", ((5)) == ((new BigDecimal("5.0")).ToInt32()));
-            TestFmwk.assertTrue("inv109", ((-5)) == ((new BigDecimal("-5.0")).ToInt32()));
+            TestFmwk.assertTrue("inv108", ((5)) == ((BigDecimal.Parse("5.0", numberStyle, provider)).ToInt32()));
+            TestFmwk.assertTrue("inv109", ((-5)) == ((BigDecimal.Parse("-5.0", numberStyle, provider)).ToInt32()));
             TestFmwk.assertTrue("inv110", imax == ((new BigDecimal(imax)).ToInt32Exact()));
 
             try
             {
                 v = "-88588688888";
-                (new BigDecimal(v)).ToInt32Exact();
+                (BigDecimal.Parse(v, numberStyle, provider)).ToInt32Exact();
                 flag = false;
             }
             catch (ArithmeticException e102)
@@ -3614,7 +3662,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 v = "88088818888.00001";
-                (new BigDecimal(v)).ToInt32Exact();
+                (BigDecimal.Parse(v, numberStyle, provider)).ToInt32Exact();
                 flag = false;
             }
             catch (ArithmeticException e103)
@@ -3728,13 +3776,13 @@ namespace ICU4N.Dev.Test.BigDec
                     try
                     {
                         v = badstrings[i];
-                        (new BigDecimal(v)).ToInt32Exact();
+                        (BigDecimal.Parse(v, numberStyle, provider)).ToInt32Exact();
                         flag = false;
                     }
                     catch (ArithmeticException e105)
                     {
                         ae = e105;
-                        norm = (new BigDecimal(v)).ToString(CultureInfo.InvariantCulture);
+                        norm = (BigDecimal.Parse(v, numberStyle, provider)).ToString(CultureInfo.InvariantCulture);
                         flag = (ae.Message).Equals("Conversion overflow:"
                                 + " " + norm);
                     }
@@ -3809,13 +3857,13 @@ namespace ICU4N.Dev.Test.BigDec
                     try
                     {
                         v = badstrings[i];
-                        (new BigDecimal(v)).ToInt32Exact();
+                        (BigDecimal.Parse(v, numberStyle, provider)).ToInt32Exact();
                         flag = false;
                     }
                     catch (ArithmeticException e109)
                     {
                         ae = e109;
-                        norm = (new BigDecimal(v)).ToString(CultureInfo.InvariantCulture);
+                        norm = (BigDecimal.Parse(v, numberStyle, provider)).ToString(CultureInfo.InvariantCulture);
                         flag = (ae.Message).Equals("Decimal part non-zero:"
                                 + " " + norm);
                     }
@@ -3841,45 +3889,47 @@ namespace ICU4N.Dev.Test.BigDec
             BigDecimal num = null;
             BigDecimal dv = null;
             BigDecimal dlmin;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
             // longValue --
 
             TestFmwk.assertTrue("lov001", lmin == ((new BigDecimal(lmin)).ToInt64()));
-            TestFmwk.assertTrue("lov002", ((99)) == ((new BigDecimal("99")).ToInt64()));
-            TestFmwk.assertTrue("lov003", ((1)) == ((new BigDecimal("1")).ToInt64()));
-            TestFmwk.assertTrue("lov004", ((0)) == ((new BigDecimal("0")).ToInt64()));
-            TestFmwk.assertTrue("lov005", ((-1)) == ((new BigDecimal("-1")).ToInt64()));
-            TestFmwk.assertTrue("lov006", ((-99)) == ((new BigDecimal("-99")).ToInt64()));
+            TestFmwk.assertTrue("lov002", ((99)) == ((BigDecimal.Parse("99", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov003", ((1)) == ((BigDecimal.Parse("1", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov004", ((0)) == ((BigDecimal.Parse("0", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov005", ((-1)) == ((BigDecimal.Parse("-1", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov006", ((-99)) == ((BigDecimal.Parse("-99", numberStyle, provider)).ToInt64()));
             TestFmwk.assertTrue("lov007", lmax == ((new BigDecimal(lmax)).ToInt64()));
-            TestFmwk.assertTrue("lov008", ((5)) == ((new BigDecimal("5.0")).ToInt64()));
-            TestFmwk.assertTrue("lov009", ((5)) == ((new BigDecimal("5.3")).ToInt64()));
-            TestFmwk.assertTrue("lov010", ((5)) == ((new BigDecimal("5.5")).ToInt64()));
-            TestFmwk.assertTrue("lov011", ((5)) == ((new BigDecimal("5.7")).ToInt64()));
-            TestFmwk.assertTrue("lov012", ((5)) == ((new BigDecimal("5.9")).ToInt64()));
-            TestFmwk.assertTrue("lov013", ((-5)) == ((new BigDecimal("-5.0")).ToInt64()));
-            TestFmwk.assertTrue("lov014", ((-5)) == ((new BigDecimal("-5.3")).ToInt64()));
-            TestFmwk.assertTrue("lov015", ((-5)) == ((new BigDecimal("-5.5")).ToInt64()));
-            TestFmwk.assertTrue("lov016", ((-5)) == ((new BigDecimal("-5.7")).ToInt64()));
-            TestFmwk.assertTrue("lov017", ((-5)) == ((new BigDecimal("-5.9")).ToInt64()));
-            TestFmwk.assertTrue("lov018", ((new BigDecimal("888888888899999999998")).ToInt64()) == 3445173361941522430L); // ugh
-            TestFmwk.assertTrue("lov019", ((new BigDecimal("-888888888899999999998")).ToInt64()) == (-3445173361941522430L)); // ugh
+            TestFmwk.assertTrue("lov008", ((5)) == ((BigDecimal.Parse("5.0", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov009", ((5)) == ((BigDecimal.Parse("5.3", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov010", ((5)) == ((BigDecimal.Parse("5.5", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov011", ((5)) == ((BigDecimal.Parse("5.7", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov012", ((5)) == ((BigDecimal.Parse("5.9", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov013", ((-5)) == ((BigDecimal.Parse("-5.0", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov014", ((-5)) == ((BigDecimal.Parse("-5.3", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov015", ((-5)) == ((BigDecimal.Parse("-5.5", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov016", ((-5)) == ((BigDecimal.Parse("-5.7", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov017", ((-5)) == ((BigDecimal.Parse("-5.9", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov018", ((BigDecimal.Parse("888888888899999999998", numberStyle, provider)).ToInt64()) == 3445173361941522430L); // ugh
+            TestFmwk.assertTrue("lov019", ((BigDecimal.Parse("-888888888899999999998", numberStyle, provider)).ToInt64()) == (-3445173361941522430L)); // ugh
 
             // longValueExact --
 
             TestFmwk.assertTrue("lov101", lmin == ((new BigDecimal(lmin)).ToInt64()));
-            TestFmwk.assertTrue("lov102", ((99)) == ((new BigDecimal("99")).ToInt64()));
-            TestFmwk.assertTrue("lov103", ((1)) == ((new BigDecimal("1")).ToInt64()));
-            TestFmwk.assertTrue("lov104", ((0)) == ((new BigDecimal("0")).ToInt64()));
-            TestFmwk.assertTrue("lov105", ((-1)) == ((new BigDecimal("-1")).ToInt64()));
-            TestFmwk.assertTrue("lov106", ((-99)) == ((new BigDecimal("-99")).ToInt64()));
+            TestFmwk.assertTrue("lov102", ((99)) == ((BigDecimal.Parse("99", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov103", ((1)) == ((BigDecimal.Parse("1", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov104", ((0)) == ((BigDecimal.Parse("0", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov105", ((-1)) == ((BigDecimal.Parse("-1", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov106", ((-99)) == ((BigDecimal.Parse("-99", numberStyle, provider)).ToInt64()));
             TestFmwk.assertTrue("lov107", lmax == ((new BigDecimal(lmax)).ToInt64()));
-            TestFmwk.assertTrue("lov108", ((5)) == ((new BigDecimal("5.0")).ToInt64()));
-            TestFmwk.assertTrue("lov109", ((-5)) == ((new BigDecimal("-5.0")).ToInt64()));
+            TestFmwk.assertTrue("lov108", ((5)) == ((BigDecimal.Parse("5.0", numberStyle, provider)).ToInt64()));
+            TestFmwk.assertTrue("lov109", ((-5)) == ((BigDecimal.Parse("-5.0", numberStyle, provider)).ToInt64()));
 
             try
             {
                 v = "-888888888899999999998";
-                (new BigDecimal(v)).ToInt64Exact();
+                (BigDecimal.Parse(v, numberStyle, provider)).ToInt64Exact();
                 flag = false;
             }
             catch (ArithmeticException e110)
@@ -3891,7 +3941,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 v = "88888887487487479488888";
-                (new BigDecimal(v)).ToInt64Exact();
+                (BigDecimal.Parse(v, numberStyle, provider)).ToInt64Exact();
                 flag = false;
             }
             catch (ArithmeticException e111)
@@ -3903,7 +3953,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 v = "1.5";
-                (new BigDecimal(v)).ToInt64Exact();
+                (BigDecimal.Parse(v, numberStyle, provider)).ToInt64Exact();
                 flag = false;
             }
             catch (ArithmeticException e112)
@@ -3967,13 +4017,13 @@ namespace ICU4N.Dev.Test.BigDec
                     try
                     {
                         v = badstrings[i];
-                        (new BigDecimal(v)).ToInt64Exact();
+                        (BigDecimal.Parse(v, numberStyle, provider)).ToInt64Exact();
                         flag = false;
                     }
                     catch (ArithmeticException e114)
                     {
                         ae = e114;
-                        norm = (new BigDecimal(v)).ToString(CultureInfo.InvariantCulture);
+                        norm = (BigDecimal.Parse(v, numberStyle, provider)).ToString(CultureInfo.InvariantCulture);
                         flag = (ae.Message).Equals("Conversion overflow:"
                                 + " " + norm);
                     }
@@ -4035,37 +4085,40 @@ namespace ICU4N.Dev.Test.BigDec
         [Test]
         public void diagmovepointleft()
         {
-            TestFmwk.assertTrue("mpl001", ((new BigDecimal("-1")).MovePointLeft(-10).ToString(CultureInfo.InvariantCulture)).Equals("-10000000000"));
-            TestFmwk.assertTrue("mpl002", ((new BigDecimal("-1")).MovePointLeft(-5).ToString(CultureInfo.InvariantCulture)).Equals("-100000"));
-            TestFmwk.assertTrue("mpl003", ((new BigDecimal("-1")).MovePointLeft(-1).ToString(CultureInfo.InvariantCulture)).Equals("-10"));
-            TestFmwk.assertTrue("mpl004", ((new BigDecimal("-1")).MovePointLeft(0).ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("mpl005", ((new BigDecimal("-1")).MovePointLeft(+1).ToString(CultureInfo.InvariantCulture)).Equals("-0.1"));
-            TestFmwk.assertTrue("mpl006", ((new BigDecimal("-1")).MovePointLeft(+5).ToString(CultureInfo.InvariantCulture)).Equals("-0.00001"));
-            TestFmwk.assertTrue("mpl007", ((new BigDecimal("-1")).MovePointLeft(+10).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000000001"));
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            TestFmwk.assertTrue("mpl010", ((new BigDecimal("0")).MovePointLeft(-10).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("mpl010", ((new BigDecimal("0")).MovePointLeft(-5).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("mpl010", ((new BigDecimal("0")).MovePointLeft(-1).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("mpl010", ((new BigDecimal("0")).MovePointLeft(0).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("mpl010", ((new BigDecimal("0")).MovePointLeft(+1).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("mpl010", ((new BigDecimal("0")).MovePointLeft(+5).ToString(CultureInfo.InvariantCulture)).Equals("0.00000"));
-            TestFmwk.assertTrue("mpl010", ((new BigDecimal("0")).MovePointLeft(+10).ToString(CultureInfo.InvariantCulture)).Equals("0.0000000000"));
+            TestFmwk.assertTrue("mpl001", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointLeft(-10).ToString(CultureInfo.InvariantCulture)).Equals("-10000000000"));
+            TestFmwk.assertTrue("mpl002", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointLeft(-5).ToString(CultureInfo.InvariantCulture)).Equals("-100000"));
+            TestFmwk.assertTrue("mpl003", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointLeft(-1).ToString(CultureInfo.InvariantCulture)).Equals("-10"));
+            TestFmwk.assertTrue("mpl004", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointLeft(0).ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("mpl005", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointLeft(+1).ToString(CultureInfo.InvariantCulture)).Equals("-0.1"));
+            TestFmwk.assertTrue("mpl006", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointLeft(+5).ToString(CultureInfo.InvariantCulture)).Equals("-0.00001"));
+            TestFmwk.assertTrue("mpl007", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointLeft(+10).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000000001"));
 
-            TestFmwk.assertTrue("mpl020", ((new BigDecimal("+1")).MovePointLeft(-10).ToString(CultureInfo.InvariantCulture)).Equals("10000000000"));
-            TestFmwk.assertTrue("mpl021", ((new BigDecimal("+1")).MovePointLeft(-5).ToString(CultureInfo.InvariantCulture)).Equals("100000"));
-            TestFmwk.assertTrue("mpl022", ((new BigDecimal("+1")).MovePointLeft(-1).ToString(CultureInfo.InvariantCulture)).Equals("10"));
-            TestFmwk.assertTrue("mpl023", ((new BigDecimal("+1")).MovePointLeft(0).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("mpl024", ((new BigDecimal("+1")).MovePointLeft(+1).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("mpl025", ((new BigDecimal("+1")).MovePointLeft(+5).ToString(CultureInfo.InvariantCulture)).Equals("0.00001"));
-            TestFmwk.assertTrue("mpl026", ((new BigDecimal("+1")).MovePointLeft(+10).ToString(CultureInfo.InvariantCulture)).Equals("0.0000000001"));
+            TestFmwk.assertTrue("mpl010", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointLeft(-10).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("mpl010", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointLeft(-5).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("mpl010", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointLeft(-1).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("mpl010", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointLeft(0).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("mpl010", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointLeft(+1).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("mpl010", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointLeft(+5).ToString(CultureInfo.InvariantCulture)).Equals("0.00000"));
+            TestFmwk.assertTrue("mpl010", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointLeft(+10).ToString(CultureInfo.InvariantCulture)).Equals("0.0000000000"));
 
-            TestFmwk.assertTrue("mpl030", ((new BigDecimal("0.5E+1")).MovePointLeft(-10).ToString(CultureInfo.InvariantCulture)).Equals("50000000000"));
-            TestFmwk.assertTrue("mpl031", ((new BigDecimal("0.5E+1")).MovePointLeft(-5).ToString(CultureInfo.InvariantCulture)).Equals("500000"));
-            TestFmwk.assertTrue("mpl032", ((new BigDecimal("0.5E+1")).MovePointLeft(-1).ToString(CultureInfo.InvariantCulture)).Equals("50"));
-            TestFmwk.assertTrue("mpl033", ((new BigDecimal("0.5E+1")).MovePointLeft(0).ToString(CultureInfo.InvariantCulture)).Equals("5"));
-            TestFmwk.assertTrue("mpl034", ((new BigDecimal("0.5E+1")).MovePointLeft(+1).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
-            TestFmwk.assertTrue("mpl035", ((new BigDecimal("0.5E+1")).MovePointLeft(+5).ToString(CultureInfo.InvariantCulture)).Equals("0.00005"));
-            TestFmwk.assertTrue("mpl036", ((new BigDecimal("0.5E+1")).MovePointLeft(+10).ToString(CultureInfo.InvariantCulture)).Equals("0.0000000005"));
+            TestFmwk.assertTrue("mpl020", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointLeft(-10).ToString(CultureInfo.InvariantCulture)).Equals("10000000000"));
+            TestFmwk.assertTrue("mpl021", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointLeft(-5).ToString(CultureInfo.InvariantCulture)).Equals("100000"));
+            TestFmwk.assertTrue("mpl022", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointLeft(-1).ToString(CultureInfo.InvariantCulture)).Equals("10"));
+            TestFmwk.assertTrue("mpl023", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointLeft(0).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("mpl024", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointLeft(+1).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("mpl025", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointLeft(+5).ToString(CultureInfo.InvariantCulture)).Equals("0.00001"));
+            TestFmwk.assertTrue("mpl026", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointLeft(+10).ToString(CultureInfo.InvariantCulture)).Equals("0.0000000001"));
+
+            TestFmwk.assertTrue("mpl030", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointLeft(-10).ToString(CultureInfo.InvariantCulture)).Equals("50000000000"));
+            TestFmwk.assertTrue("mpl031", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointLeft(-5).ToString(CultureInfo.InvariantCulture)).Equals("500000"));
+            TestFmwk.assertTrue("mpl032", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointLeft(-1).ToString(CultureInfo.InvariantCulture)).Equals("50"));
+            TestFmwk.assertTrue("mpl033", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointLeft(0).ToString(CultureInfo.InvariantCulture)).Equals("5"));
+            TestFmwk.assertTrue("mpl034", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointLeft(+1).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
+            TestFmwk.assertTrue("mpl035", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointLeft(+5).ToString(CultureInfo.InvariantCulture)).Equals("0.00005"));
+            TestFmwk.assertTrue("mpl036", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointLeft(+10).ToString(CultureInfo.InvariantCulture)).Equals("0.0000000005"));
         }
 
         /* ----------------------------------------------------------------- */
@@ -4075,37 +4128,40 @@ namespace ICU4N.Dev.Test.BigDec
         [Test]
         public void diagmovepointright()
         {
-            TestFmwk.assertTrue("mpr001", ((new BigDecimal("-1")).MovePointRight(+10).ToString(CultureInfo.InvariantCulture)).Equals("-10000000000"));
-            TestFmwk.assertTrue("mpr002", ((new BigDecimal("-1")).MovePointRight(+5).ToString(CultureInfo.InvariantCulture)).Equals("-100000"));
-            TestFmwk.assertTrue("mpr003", ((new BigDecimal("-1")).MovePointRight(+1).ToString(CultureInfo.InvariantCulture)).Equals("-10"));
-            TestFmwk.assertTrue("mpr004", ((new BigDecimal("-1")).MovePointRight(0).ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("mpr005", ((new BigDecimal("-1")).MovePointRight(-1).ToString(CultureInfo.InvariantCulture)).Equals("-0.1"));
-            TestFmwk.assertTrue("mpr006", ((new BigDecimal("-1")).MovePointRight(-5).ToString(CultureInfo.InvariantCulture)).Equals("-0.00001"));
-            TestFmwk.assertTrue("mpr007", ((new BigDecimal("-1")).MovePointRight(-10).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000000001"));
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            TestFmwk.assertTrue("mpr010", ((new BigDecimal("0")).MovePointRight(+10).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("mpr011", ((new BigDecimal("0")).MovePointRight(+5).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("mpr012", ((new BigDecimal("0")).MovePointRight(+1).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("mpr013", ((new BigDecimal("0")).MovePointRight(0).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("mpr014", ((new BigDecimal("0")).MovePointRight(-1).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("mpr015", ((new BigDecimal("0")).MovePointRight(-5).ToString(CultureInfo.InvariantCulture)).Equals("0.00000"));
-            TestFmwk.assertTrue("mpr016", ((new BigDecimal("0")).MovePointRight(-10).ToString(CultureInfo.InvariantCulture)).Equals("0.0000000000"));
+            TestFmwk.assertTrue("mpr001", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointRight(+10).ToString(CultureInfo.InvariantCulture)).Equals("-10000000000"));
+            TestFmwk.assertTrue("mpr002", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointRight(+5).ToString(CultureInfo.InvariantCulture)).Equals("-100000"));
+            TestFmwk.assertTrue("mpr003", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointRight(+1).ToString(CultureInfo.InvariantCulture)).Equals("-10"));
+            TestFmwk.assertTrue("mpr004", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointRight(0).ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("mpr005", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointRight(-1).ToString(CultureInfo.InvariantCulture)).Equals("-0.1"));
+            TestFmwk.assertTrue("mpr006", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointRight(-5).ToString(CultureInfo.InvariantCulture)).Equals("-0.00001"));
+            TestFmwk.assertTrue("mpr007", ((BigDecimal.Parse("-1", numberStyle, provider)).MovePointRight(-10).ToString(CultureInfo.InvariantCulture)).Equals("-0.0000000001"));
 
-            TestFmwk.assertTrue("mpr020", ((new BigDecimal("+1")).MovePointRight(+10).ToString(CultureInfo.InvariantCulture)).Equals("10000000000"));
-            TestFmwk.assertTrue("mpr021", ((new BigDecimal("+1")).MovePointRight(+5).ToString(CultureInfo.InvariantCulture)).Equals("100000"));
-            TestFmwk.assertTrue("mpr022", ((new BigDecimal("+1")).MovePointRight(+1).ToString(CultureInfo.InvariantCulture)).Equals("10"));
-            TestFmwk.assertTrue("mpr023", ((new BigDecimal("+1")).MovePointRight(0).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("mpr024", ((new BigDecimal("+1")).MovePointRight(-1).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("mpr025", ((new BigDecimal("+1")).MovePointRight(-5).ToString(CultureInfo.InvariantCulture)).Equals("0.00001"));
-            TestFmwk.assertTrue("mpr026", ((new BigDecimal("+1")).MovePointRight(-10).ToString(CultureInfo.InvariantCulture)).Equals("0.0000000001"));
+            TestFmwk.assertTrue("mpr010", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointRight(+10).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("mpr011", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointRight(+5).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("mpr012", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointRight(+1).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("mpr013", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointRight(0).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("mpr014", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointRight(-1).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("mpr015", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointRight(-5).ToString(CultureInfo.InvariantCulture)).Equals("0.00000"));
+            TestFmwk.assertTrue("mpr016", ((BigDecimal.Parse("0", numberStyle, provider)).MovePointRight(-10).ToString(CultureInfo.InvariantCulture)).Equals("0.0000000000"));
 
-            TestFmwk.assertTrue("mpr030", ((new BigDecimal("0.5E+1")).MovePointRight(+10).ToString(CultureInfo.InvariantCulture)).Equals("50000000000"));
-            TestFmwk.assertTrue("mpr031", ((new BigDecimal("0.5E+1")).MovePointRight(+5).ToString(CultureInfo.InvariantCulture)).Equals("500000"));
-            TestFmwk.assertTrue("mpr032", ((new BigDecimal("0.5E+1")).MovePointRight(+1).ToString(CultureInfo.InvariantCulture)).Equals("50"));
-            TestFmwk.assertTrue("mpr033", ((new BigDecimal("0.5E+1")).MovePointRight(0).ToString(CultureInfo.InvariantCulture)).Equals("5"));
-            TestFmwk.assertTrue("mpr034", ((new BigDecimal("0.5E+1")).MovePointRight(-1).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
-            TestFmwk.assertTrue("mpr035", ((new BigDecimal("0.5E+1")).MovePointRight(-5).ToString(CultureInfo.InvariantCulture)).Equals("0.00005"));
-            TestFmwk.assertTrue("mpr036", ((new BigDecimal("0.5E+1")).MovePointRight(-10).ToString(CultureInfo.InvariantCulture)).Equals("0.0000000005"));
+            TestFmwk.assertTrue("mpr020", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointRight(+10).ToString(CultureInfo.InvariantCulture)).Equals("10000000000"));
+            TestFmwk.assertTrue("mpr021", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointRight(+5).ToString(CultureInfo.InvariantCulture)).Equals("100000"));
+            TestFmwk.assertTrue("mpr022", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointRight(+1).ToString(CultureInfo.InvariantCulture)).Equals("10"));
+            TestFmwk.assertTrue("mpr023", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointRight(0).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("mpr024", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointRight(-1).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("mpr025", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointRight(-5).ToString(CultureInfo.InvariantCulture)).Equals("0.00001"));
+            TestFmwk.assertTrue("mpr026", ((BigDecimal.Parse("+1", numberStyle, provider)).MovePointRight(-10).ToString(CultureInfo.InvariantCulture)).Equals("0.0000000001"));
+
+            TestFmwk.assertTrue("mpr030", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointRight(+10).ToString(CultureInfo.InvariantCulture)).Equals("50000000000"));
+            TestFmwk.assertTrue("mpr031", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointRight(+5).ToString(CultureInfo.InvariantCulture)).Equals("500000"));
+            TestFmwk.assertTrue("mpr032", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointRight(+1).ToString(CultureInfo.InvariantCulture)).Equals("50"));
+            TestFmwk.assertTrue("mpr033", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointRight(0).ToString(CultureInfo.InvariantCulture)).Equals("5"));
+            TestFmwk.assertTrue("mpr034", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointRight(-1).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
+            TestFmwk.assertTrue("mpr035", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointRight(-5).ToString(CultureInfo.InvariantCulture)).Equals("0.00005"));
+            TestFmwk.assertTrue("mpr036", ((BigDecimal.Parse("0.5E+1", numberStyle, provider)).MovePointRight(-10).ToString(CultureInfo.InvariantCulture)).Equals("0.0000000005"));
         }
 
         /* ----------------------------------------------------------------- */
@@ -4115,23 +4171,26 @@ namespace ICU4N.Dev.Test.BigDec
         [Test]
         public void diagscale()
         {
-            TestFmwk.assertTrue("sca001", ((new BigDecimal("-1")).Scale) == 0);
-            TestFmwk.assertTrue("sca002", ((new BigDecimal("-10")).Scale) == 0);
-            TestFmwk.assertTrue("sca003", ((new BigDecimal("+1")).Scale) == 0);
-            TestFmwk.assertTrue("sca004", ((new BigDecimal("+10")).Scale) == 0);
-            TestFmwk.assertTrue("sca005", ((new BigDecimal("1E+10")).Scale) == 0);
-            TestFmwk.assertTrue("sca006", ((new BigDecimal("1E-10")).Scale) == 10);
-            TestFmwk.assertTrue("sca007", ((new BigDecimal("0E-10")).Scale) == 0);
-            TestFmwk.assertTrue("sca008", ((new BigDecimal("0.000")).Scale) == 3);
-            TestFmwk.assertTrue("sca009", ((new BigDecimal("0.00")).Scale) == 2);
-            TestFmwk.assertTrue("sca010", ((new BigDecimal("0.0")).Scale) == 1);
-            TestFmwk.assertTrue("sca011", ((new BigDecimal("0.1")).Scale) == 1);
-            TestFmwk.assertTrue("sca012", ((new BigDecimal("0.12")).Scale) == 2);
-            TestFmwk.assertTrue("sca013", ((new BigDecimal("0.123")).Scale) == 3);
-            TestFmwk.assertTrue("sca014", ((new BigDecimal("-0.0")).Scale) == 1);
-            TestFmwk.assertTrue("sca015", ((new BigDecimal("-0.1")).Scale) == 1);
-            TestFmwk.assertTrue("sca016", ((new BigDecimal("-0.12")).Scale) == 2);
-            TestFmwk.assertTrue("sca017", ((new BigDecimal("-0.123")).Scale) == 3);
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
+
+            TestFmwk.assertTrue("sca001", ((BigDecimal.Parse("-1", numberStyle, provider)).Scale) == 0);
+            TestFmwk.assertTrue("sca002", ((BigDecimal.Parse("-10", numberStyle, provider)).Scale) == 0);
+            TestFmwk.assertTrue("sca003", ((BigDecimal.Parse("+1", numberStyle, provider)).Scale) == 0);
+            TestFmwk.assertTrue("sca004", ((BigDecimal.Parse("+10", numberStyle, provider)).Scale) == 0);
+            TestFmwk.assertTrue("sca005", ((BigDecimal.Parse("1E+10", numberStyle, provider)).Scale) == 0);
+            TestFmwk.assertTrue("sca006", ((BigDecimal.Parse("1E-10", numberStyle, provider)).Scale) == 10);
+            TestFmwk.assertTrue("sca007", ((BigDecimal.Parse("0E-10", numberStyle, provider)).Scale) == 0);
+            TestFmwk.assertTrue("sca008", ((BigDecimal.Parse("0.000", numberStyle, provider)).Scale) == 3);
+            TestFmwk.assertTrue("sca009", ((BigDecimal.Parse("0.00", numberStyle, provider)).Scale) == 2);
+            TestFmwk.assertTrue("sca010", ((BigDecimal.Parse("0.0", numberStyle, provider)).Scale) == 1);
+            TestFmwk.assertTrue("sca011", ((BigDecimal.Parse("0.1", numberStyle, provider)).Scale) == 1);
+            TestFmwk.assertTrue("sca012", ((BigDecimal.Parse("0.12", numberStyle, provider)).Scale) == 2);
+            TestFmwk.assertTrue("sca013", ((BigDecimal.Parse("0.123", numberStyle, provider)).Scale) == 3);
+            TestFmwk.assertTrue("sca014", ((BigDecimal.Parse("-0.0", numberStyle, provider)).Scale) == 1);
+            TestFmwk.assertTrue("sca015", ((BigDecimal.Parse("-0.1", numberStyle, provider)).Scale) == 1);
+            TestFmwk.assertTrue("sca016", ((BigDecimal.Parse("-0.12", numberStyle, provider)).Scale) == 2);
+            TestFmwk.assertTrue("sca017", ((BigDecimal.Parse("-0.123", numberStyle, provider)).Scale) == 3);
         }
 
         /* ----------------------------------------------------------------- */
@@ -4143,79 +4202,81 @@ namespace ICU4N.Dev.Test.BigDec
         {
             bool flag = false;
             Exception e = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            TestFmwk.assertTrue("ssc001", ((new BigDecimal("-1")).SetScale(0).ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("ssc002", ((new BigDecimal("-1")).SetScale(1).ToString(CultureInfo.InvariantCulture)).Equals("-1.0"));
-            TestFmwk.assertTrue("ssc003", ((new BigDecimal("-1")).SetScale(2).ToString(CultureInfo.InvariantCulture)).Equals("-1.00"));
-            TestFmwk.assertTrue("ssc004", ((new BigDecimal("0")).SetScale(0).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("ssc005", ((new BigDecimal("0")).SetScale(1).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("ssc006", ((new BigDecimal("0")).SetScale(2).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("ssc007", ((new BigDecimal("+1")).SetScale(0).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("ssc008", ((new BigDecimal("+1")).SetScale(1).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
-            TestFmwk.assertTrue("ssc009", ((new BigDecimal("+1")).SetScale(2).ToString(CultureInfo.InvariantCulture)).Equals("1.00"));
-            TestFmwk.assertTrue("ssc010", ((new BigDecimal("-1")).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("ssc011", ((new BigDecimal("-1")).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("-1.0"));
-            TestFmwk.assertTrue("ssc012", ((new BigDecimal("-1")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("-1.00"));
-            TestFmwk.assertTrue("ssc013", ((new BigDecimal("0")).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("ssc014", ((new BigDecimal("0")).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("ssc015", ((new BigDecimal("0")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("ssc016", ((new BigDecimal("+1")).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("ssc017", ((new BigDecimal("+1")).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
-            TestFmwk.assertTrue("ssc018", ((new BigDecimal("+1")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.00"));
+            TestFmwk.assertTrue("ssc001", ((BigDecimal.Parse("-1", numberStyle, provider)).SetScale(0).ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("ssc002", ((BigDecimal.Parse("-1", numberStyle, provider)).SetScale(1).ToString(CultureInfo.InvariantCulture)).Equals("-1.0"));
+            TestFmwk.assertTrue("ssc003", ((BigDecimal.Parse("-1", numberStyle, provider)).SetScale(2).ToString(CultureInfo.InvariantCulture)).Equals("-1.00"));
+            TestFmwk.assertTrue("ssc004", ((BigDecimal.Parse("0", numberStyle, provider)).SetScale(0).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("ssc005", ((BigDecimal.Parse("0", numberStyle, provider)).SetScale(1).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("ssc006", ((BigDecimal.Parse("0", numberStyle, provider)).SetScale(2).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("ssc007", ((BigDecimal.Parse("+1", numberStyle, provider)).SetScale(0).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("ssc008", ((BigDecimal.Parse("+1", numberStyle, provider)).SetScale(1).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
+            TestFmwk.assertTrue("ssc009", ((BigDecimal.Parse("+1", numberStyle, provider)).SetScale(2).ToString(CultureInfo.InvariantCulture)).Equals("1.00"));
+            TestFmwk.assertTrue("ssc010", ((BigDecimal.Parse("-1", numberStyle, provider)).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("ssc011", ((BigDecimal.Parse("-1", numberStyle, provider)).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("-1.0"));
+            TestFmwk.assertTrue("ssc012", ((BigDecimal.Parse("-1", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("-1.00"));
+            TestFmwk.assertTrue("ssc013", ((BigDecimal.Parse("0", numberStyle, provider)).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("ssc014", ((BigDecimal.Parse("0", numberStyle, provider)).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("ssc015", ((BigDecimal.Parse("0", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("ssc016", ((BigDecimal.Parse("+1", numberStyle, provider)).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("ssc017", ((BigDecimal.Parse("+1", numberStyle, provider)).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
+            TestFmwk.assertTrue("ssc018", ((BigDecimal.Parse("+1", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.00"));
 
-            TestFmwk.assertTrue("ssc020", ((new BigDecimal("1.04")).SetScale(3, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.040"));
-            TestFmwk.assertTrue("ssc021", ((new BigDecimal("1.04")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.04"));
-            TestFmwk.assertTrue("ssc022", ((new BigDecimal("1.04")).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
-            TestFmwk.assertTrue("ssc023", ((new BigDecimal("1.04")).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("ssc024", ((new BigDecimal("1.05")).SetScale(3, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.050"));
-            TestFmwk.assertTrue("ssc025", ((new BigDecimal("1.05")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.05"));
-            TestFmwk.assertTrue("ssc026", ((new BigDecimal("1.05")).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.1"));
-            TestFmwk.assertTrue("ssc027", ((new BigDecimal("1.05")).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("ssc028", ((new BigDecimal("1.05")).SetScale(3, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("1.050"));
-            TestFmwk.assertTrue("ssc029", ((new BigDecimal("1.05")).SetScale(2, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("1.05"));
-            TestFmwk.assertTrue("ssc030", ((new BigDecimal("1.05")).SetScale(1, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
-            TestFmwk.assertTrue("ssc031", ((new BigDecimal("1.05")).SetScale(0, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("ssc032", ((new BigDecimal("1.06")).SetScale(3, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.060"));
-            TestFmwk.assertTrue("ssc033", ((new BigDecimal("1.06")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.06"));
-            TestFmwk.assertTrue("ssc034", ((new BigDecimal("1.06")).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.1"));
-            TestFmwk.assertTrue("ssc035", ((new BigDecimal("1.06")).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("ssc020", ((BigDecimal.Parse("1.04", numberStyle, provider)).SetScale(3, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.040"));
+            TestFmwk.assertTrue("ssc021", ((BigDecimal.Parse("1.04", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.04"));
+            TestFmwk.assertTrue("ssc022", ((BigDecimal.Parse("1.04", numberStyle, provider)).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
+            TestFmwk.assertTrue("ssc023", ((BigDecimal.Parse("1.04", numberStyle, provider)).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("ssc024", ((BigDecimal.Parse("1.05", numberStyle, provider)).SetScale(3, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.050"));
+            TestFmwk.assertTrue("ssc025", ((BigDecimal.Parse("1.05", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.05"));
+            TestFmwk.assertTrue("ssc026", ((BigDecimal.Parse("1.05", numberStyle, provider)).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.1"));
+            TestFmwk.assertTrue("ssc027", ((BigDecimal.Parse("1.05", numberStyle, provider)).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("ssc028", ((BigDecimal.Parse("1.05", numberStyle, provider)).SetScale(3, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("1.050"));
+            TestFmwk.assertTrue("ssc029", ((BigDecimal.Parse("1.05", numberStyle, provider)).SetScale(2, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("1.05"));
+            TestFmwk.assertTrue("ssc030", ((BigDecimal.Parse("1.05", numberStyle, provider)).SetScale(1, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
+            TestFmwk.assertTrue("ssc031", ((BigDecimal.Parse("1.05", numberStyle, provider)).SetScale(0, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("ssc032", ((BigDecimal.Parse("1.06", numberStyle, provider)).SetScale(3, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.060"));
+            TestFmwk.assertTrue("ssc033", ((BigDecimal.Parse("1.06", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.06"));
+            TestFmwk.assertTrue("ssc034", ((BigDecimal.Parse("1.06", numberStyle, provider)).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.1"));
+            TestFmwk.assertTrue("ssc035", ((BigDecimal.Parse("1.06", numberStyle, provider)).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
 
-            TestFmwk.assertTrue("ssc040", ((new BigDecimal("-10")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("-10.00"));
-            TestFmwk.assertTrue("ssc041", ((new BigDecimal("+1")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.00"));
-            TestFmwk.assertTrue("ssc042", ((new BigDecimal("+10")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("10.00"));
-            TestFmwk.assertTrue("ssc043", ((new BigDecimal("1E+10")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("10000000000.00"));
-            TestFmwk.assertTrue("ssc044", ((new BigDecimal("1E-10")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("ssc045", ((new BigDecimal("1E-2")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
-            TestFmwk.assertTrue("ssc046", ((new BigDecimal("0E-10")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("ssc040", ((BigDecimal.Parse("-10", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("-10.00"));
+            TestFmwk.assertTrue("ssc041", ((BigDecimal.Parse("+1", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("1.00"));
+            TestFmwk.assertTrue("ssc042", ((BigDecimal.Parse("+10", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("10.00"));
+            TestFmwk.assertTrue("ssc043", ((BigDecimal.Parse("1E+10", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("10000000000.00"));
+            TestFmwk.assertTrue("ssc044", ((BigDecimal.Parse("1E-10", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("ssc045", ((BigDecimal.Parse("1E-2", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
+            TestFmwk.assertTrue("ssc046", ((BigDecimal.Parse("0E-10", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
 
             // check rounding
-            TestFmwk.assertTrue("ssc050", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
-            TestFmwk.assertTrue("ssc051", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("ssc052", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("ssc053", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("ssc054", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("ssc055", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("ssc056", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("ssc057", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("ssc058", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("ssc059", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("ssc060", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("ssc061", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("ssc062", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("ssc063", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("ssc064", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("ssc065", ((new BigDecimal("0.015")).SetScale(2, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.02"));
-            TestFmwk.assertTrue("ssc066", ((new BigDecimal("0.015")).SetScale(1, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("ssc067", ((new BigDecimal("0.015")).SetScale(0, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("ssc068", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
-            TestFmwk.assertTrue("ssc069", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("ssc070", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("ssc071", ((new BigDecimal("0.095")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.10"));
-            TestFmwk.assertTrue("ssc072", ((new BigDecimal("0.095")).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("ssc073", ((new BigDecimal("0.095")).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("ssc074", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
-            TestFmwk.assertTrue("ssc075", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("ssc076", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("ssc050", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(2, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
+            TestFmwk.assertTrue("ssc051", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(1, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("ssc052", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(0, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("ssc053", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(2, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("ssc054", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(1, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("ssc055", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(0, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("ssc056", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(2, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("ssc057", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(1, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("ssc058", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(0, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("ssc059", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(2, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("ssc060", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(1, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("ssc061", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(0, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("ssc062", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(2, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("ssc063", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(1, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("ssc064", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(0, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("ssc065", ((BigDecimal.Parse("0.015", numberStyle, provider)).SetScale(2, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.02"));
+            TestFmwk.assertTrue("ssc066", ((BigDecimal.Parse("0.015", numberStyle, provider)).SetScale(1, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("ssc067", ((BigDecimal.Parse("0.015", numberStyle, provider)).SetScale(0, MathContext.RoundHalfEven).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("ssc068", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
+            TestFmwk.assertTrue("ssc069", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("ssc070", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("ssc071", ((BigDecimal.Parse("0.095", numberStyle, provider)).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.10"));
+            TestFmwk.assertTrue("ssc072", ((BigDecimal.Parse("0.095", numberStyle, provider)).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("ssc073", ((BigDecimal.Parse("0.095", numberStyle, provider)).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("ssc074", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(2, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
+            TestFmwk.assertTrue("ssc075", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(1, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("ssc076", ((BigDecimal.Parse("0.005", numberStyle, provider)).SetScale(0, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
 
             try
             {
@@ -4265,10 +4326,12 @@ namespace ICU4N.Dev.Test.BigDec
             string[] badstrings;
             int i = 0;
             string norm = null;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            TestFmwk.assertTrue("shv002", (((short)0)) == ((new BigDecimal("0")).ToInt16()));
-            TestFmwk.assertTrue("shv003", (((short)1)) == ((new BigDecimal("1")).ToInt16()));
-            TestFmwk.assertTrue("shv004", (((short)99)) == ((new BigDecimal("99")).ToInt16()));
+            TestFmwk.assertTrue("shv002", (((short)0)) == ((BigDecimal.Parse("0", numberStyle, provider)).ToInt16()));
+            TestFmwk.assertTrue("shv003", (((short)1)) == ((BigDecimal.Parse("1", numberStyle, provider)).ToInt16()));
+            TestFmwk.assertTrue("shv004", (((short)99)) == ((BigDecimal.Parse("99", numberStyle, provider)).ToInt16()));
             TestFmwk.assertTrue("shv006", ((smax)) == ((new BigDecimal(smax)).ToInt16()));
             TestFmwk.assertTrue("shv007", ((smin)) == ((new BigDecimal(smin)).ToInt16()));
             TestFmwk.assertTrue("shv008", ((sneg)) == ((new BigDecimal(sneg)).ToInt16()));
@@ -4277,9 +4340,9 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("shv011", ((smin)) == ((new BigDecimal(smax + 1)).ToInt16()));
             TestFmwk.assertTrue("shv012", ((smax)) == ((new BigDecimal(smin - 1)).ToInt16()));
 
-            TestFmwk.assertTrue("shv022", (((short)0)) == ((new BigDecimal("0")).ToInt16Exact()));
-            TestFmwk.assertTrue("shv023", (((short)1)) == ((new BigDecimal("1")).ToInt16Exact()));
-            TestFmwk.assertTrue("shv024", (((short)99)) == ((new BigDecimal("99")).ToInt16Exact()));
+            TestFmwk.assertTrue("shv022", (((short)0)) == ((BigDecimal.Parse("0", numberStyle, provider)).ToInt16Exact()));
+            TestFmwk.assertTrue("shv023", (((short)1)) == ((BigDecimal.Parse("1", numberStyle, provider)).ToInt16Exact()));
+            TestFmwk.assertTrue("shv024", (((short)99)) == ((BigDecimal.Parse("99", numberStyle, provider)).ToInt16Exact()));
             TestFmwk.assertTrue("shv026", ((smax)) == ((new BigDecimal(smax)).ToInt16Exact()));
             TestFmwk.assertTrue("shv027", ((smin)) == ((new BigDecimal(smin)).ToInt16Exact()));
             TestFmwk.assertTrue("shv028", ((sneg)) == ((new BigDecimal(sneg)).ToInt16Exact()));
@@ -4288,7 +4351,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 v = "-88888888888";
-                (new BigDecimal(v)).ToInt16Exact();
+                (BigDecimal.Parse(v, numberStyle, provider)).ToInt16Exact();
                 flag = false;
             }
             catch (ArithmeticException e120)
@@ -4300,7 +4363,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 v = "88888888888";
-                (new BigDecimal(v)).ToInt16Exact();
+                (BigDecimal.Parse(v, numberStyle, provider)).ToInt16Exact();
                 flag = false;
             }
             catch (ArithmeticException e121)
@@ -4312,7 +4375,7 @@ namespace ICU4N.Dev.Test.BigDec
             try
             {
                 v = "1.5";
-                (new BigDecimal(v)).ToInt16Exact();
+                (BigDecimal.Parse(v, numberStyle, provider)).ToInt16Exact();
                 flag = false;
             }
             catch (ArithmeticException e122)
@@ -4362,13 +4425,13 @@ namespace ICU4N.Dev.Test.BigDec
                     try
                     {
                         v = badstrings[i];
-                        (new BigDecimal(v)).ToInt16Exact();
+                        (BigDecimal.Parse(v, numberStyle, provider)).ToInt16Exact();
                         flag = false;
                     }
                     catch (ArithmeticException e124)
                     {
                         ae = e124;
-                        norm = (new BigDecimal(v)).ToString(CultureInfo.InvariantCulture);
+                        norm = (BigDecimal.Parse(v, numberStyle, provider)).ToString(CultureInfo.InvariantCulture);
                         flag = (ae.Message).Equals("Conversion overflow:"
                                 + " " + norm);
                     }
@@ -4384,24 +4447,27 @@ namespace ICU4N.Dev.Test.BigDec
         [Test]
         public void diagsignum()
         {
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
+
             // necessarily checks some obscure constructions, too
-            TestFmwk.assertTrue("sig001", (-1) == ((new BigDecimal("-1")).Sign));
-            TestFmwk.assertTrue("sig002", (-1) == ((new BigDecimal("-0.0010")).Sign));
-            TestFmwk.assertTrue("sig003", (-1) == ((new BigDecimal("-0.001")).Sign));
-            TestFmwk.assertTrue("sig004", 0 == ((new BigDecimal("-0.00")).Sign));
-            TestFmwk.assertTrue("sig005", 0 == ((new BigDecimal("-0")).Sign));
-            TestFmwk.assertTrue("sig006", 0 == ((new BigDecimal("0")).Sign));
-            TestFmwk.assertTrue("sig007", 0 == ((new BigDecimal("00")).Sign));
-            TestFmwk.assertTrue("sig008", 0 == ((new BigDecimal("00.0")).Sign));
-            TestFmwk.assertTrue("sig009", 1 == ((new BigDecimal("00.01")).Sign));
-            TestFmwk.assertTrue("sig010", 1 == ((new BigDecimal("00.01")).Sign));
-            TestFmwk.assertTrue("sig011", 1 == ((new BigDecimal("00.010")).Sign));
-            TestFmwk.assertTrue("sig012", 1 == ((new BigDecimal("01.01")).Sign));
-            TestFmwk.assertTrue("sig013", 1 == ((new BigDecimal("+0.01")).Sign));
-            TestFmwk.assertTrue("sig014", 1 == ((new BigDecimal("+0.001")).Sign));
-            TestFmwk.assertTrue("sig015", 1 == ((new BigDecimal("1")).Sign));
-            TestFmwk.assertTrue("sig016", 1 == ((new BigDecimal("1e+12")).Sign));
-            TestFmwk.assertTrue("sig017", 0 == ((new BigDecimal("00e+12")).Sign));
+            TestFmwk.assertTrue("sig001", (-1) == ((BigDecimal.Parse("-1", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig002", (-1) == ((BigDecimal.Parse("-0.0010", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig003", (-1) == ((BigDecimal.Parse("-0.001", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig004", 0 == ((BigDecimal.Parse("-0.00", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig005", 0 == ((BigDecimal.Parse("-0", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig006", 0 == ((BigDecimal.Parse("0", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig007", 0 == ((BigDecimal.Parse("00", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig008", 0 == ((BigDecimal.Parse("00.0", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig009", 1 == ((BigDecimal.Parse("00.01", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig010", 1 == ((BigDecimal.Parse("00.01", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig011", 1 == ((BigDecimal.Parse("00.010", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig012", 1 == ((BigDecimal.Parse("01.01", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig013", 1 == ((BigDecimal.Parse("+0.01", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig014", 1 == ((BigDecimal.Parse("+0.001", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig015", 1 == ((BigDecimal.Parse("1", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig016", 1 == ((BigDecimal.Parse("1e+12", numberStyle, provider)).Sign));
+            TestFmwk.assertTrue("sig017", 0 == ((BigDecimal.Parse("00e+12", numberStyle, provider)).Sign));
         }
 
         /* ----------------------------------------------------------------- */
@@ -4412,20 +4478,23 @@ namespace ICU4N.Dev.Test.BigDec
         //[Test]
         //public void diagtobigdecimal()
         //{
-        //    TestFmwk.assertTrue("tbd001", ((new BigDecimal("0")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-        //    TestFmwk.assertTrue("tbd002", ((new BigDecimal("-1")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-        //    TestFmwk.assertTrue("tbd003", ((new BigDecimal("+1")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-        //    TestFmwk.assertTrue("tbd004", ((new BigDecimal("1")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-        //    TestFmwk.assertTrue("tbd005", ((new BigDecimal("1E+2")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("100"));
-        //    TestFmwk.assertTrue("tbd006", ((new BigDecimal("1E-2")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
+        //    NumberStyle numberStyle = NumberStyle.Float;
+        //    CultureInfo provider = CultureInfo.InvariantCulture;
+
+        //    TestFmwk.assertTrue("tbd001", ((BigDecimal.Parse("0", numberStyle, provider)).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+        //    TestFmwk.assertTrue("tbd002", ((BigDecimal.Parse("-1", numberStyle, provider)).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+        //    TestFmwk.assertTrue("tbd003", ((BigDecimal.Parse("+1", numberStyle, provider)).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+        //    TestFmwk.assertTrue("tbd004", ((BigDecimal.Parse("1", numberStyle, provider)).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+        //    TestFmwk.assertTrue("tbd005", ((BigDecimal.Parse("1E+2", numberStyle, provider)).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("100"));
+        //    TestFmwk.assertTrue("tbd006", ((BigDecimal.Parse("1E-2", numberStyle, provider)).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
         //    //if (!isJDK15OrLater) {
-        //    TestFmwk.assertTrue("tbd007", ((new BigDecimal("1E-8")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0.00000001"));
+        //    //    TestFmwk.assertTrue("tbd007", ((BigDecimal.Parse("1E-8", numberStyle, provider)).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0.00000001"));
         //    //}
         //    //if (!isJDK15OrLater) {
-        //    TestFmwk.assertTrue("tbd008", ((new BigDecimal("1E-9")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0.000000001"));
+        //    //    TestFmwk.assertTrue("tbd008", ((BigDecimal.Parse("1E-9", numberStyle, provider)).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("0.000000001"));
         //    //}
-        //    TestFmwk.assertTrue("tbd009", ((new BigDecimal("1E10")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("10000000000"));
-        //    TestFmwk.assertTrue("tbd010", ((new BigDecimal("1E12")).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("1000000000000"));
+        //    TestFmwk.assertTrue("tbd009", ((BigDecimal.Parse("1E10", numberStyle, provider)).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("10000000000"));
+        //    TestFmwk.assertTrue("tbd010", ((BigDecimal.Parse("1E12", numberStyle, provider)).ToBigDecimal().ToString(CultureInfo.InvariantCulture)).Equals("1000000000000"));
         //}
 
         /* ----------------------------------------------------------------- */
@@ -4438,73 +4507,76 @@ namespace ICU4N.Dev.Test.BigDec
             bool flag = false;
             string[] badstrings;
             int i = 0;
-            TestFmwk.assertTrue("tbi001", ((new BigDecimal("-1")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi002", ((new BigDecimal("0")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi003", ((new BigDecimal("+1")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi004", ((new BigDecimal("10")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("10"));
-            TestFmwk.assertTrue("tbi005", ((new BigDecimal("1000")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1000"));
-            TestFmwk.assertTrue("tbi006", ((new BigDecimal("-1E+0")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi007", ((new BigDecimal("0E+0")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi008", ((new BigDecimal("+1E+0")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi009", ((new BigDecimal("10E+0")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("10"));
-            TestFmwk.assertTrue("tbi010", ((new BigDecimal("1E+3")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1000"));
-            TestFmwk.assertTrue("tbi011", ((new BigDecimal("0.00")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi012", ((new BigDecimal("0.01")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi013", ((new BigDecimal("0.0")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi014", ((new BigDecimal("0.1")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi015", ((new BigDecimal("-0.00")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi016", ((new BigDecimal("-0.01")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi017", ((new BigDecimal("-0.0")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi018", ((new BigDecimal("-0.1")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi019", ((new BigDecimal("1.00")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi020", ((new BigDecimal("1.01")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi021", ((new BigDecimal("1.0")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi022", ((new BigDecimal("1.1")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi023", ((new BigDecimal("-1.00")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi024", ((new BigDecimal("-1.01")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi025", ((new BigDecimal("-1.0")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi026", ((new BigDecimal("-1.1")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi027", ((new BigDecimal("-111.111")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-111"));
-            TestFmwk.assertTrue("tbi028", ((new BigDecimal("+111.111")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("111"));
-            TestFmwk.assertTrue("tbi029", ((new BigDecimal("0.09")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi030", ((new BigDecimal("0.9")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi031", ((new BigDecimal("1.09")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi032", ((new BigDecimal("1.05")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi033", ((new BigDecimal("1.04")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi034", ((new BigDecimal("1.99")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi034", ((new BigDecimal("1.9")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi035", ((new BigDecimal("1.5")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi036", ((new BigDecimal("1.4")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi037", ((new BigDecimal("-1.09")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi038", ((new BigDecimal("-1.05")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi039", ((new BigDecimal("-1.04")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi040", ((new BigDecimal("-1.99")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi041", ((new BigDecimal("-1.9")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi042", ((new BigDecimal("-1.5")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi043", ((new BigDecimal("-1.4")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi044", ((new BigDecimal("1E-1000")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi045", ((new BigDecimal("-1E-1000")).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
+
+            TestFmwk.assertTrue("tbi001", ((BigDecimal.Parse("-1", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi002", ((BigDecimal.Parse("0", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi003", ((BigDecimal.Parse("+1", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi004", ((BigDecimal.Parse("10", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("10"));
+            TestFmwk.assertTrue("tbi005", ((BigDecimal.Parse("1000", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1000"));
+            TestFmwk.assertTrue("tbi006", ((BigDecimal.Parse("-1E+0", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi007", ((BigDecimal.Parse("0E+0", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi008", ((BigDecimal.Parse("+1E+0", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi009", ((BigDecimal.Parse("10E+0", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("10"));
+            TestFmwk.assertTrue("tbi010", ((BigDecimal.Parse("1E+3", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1000"));
+            TestFmwk.assertTrue("tbi011", ((BigDecimal.Parse("0.00", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi012", ((BigDecimal.Parse("0.01", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi013", ((BigDecimal.Parse("0.0", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi014", ((BigDecimal.Parse("0.1", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi015", ((BigDecimal.Parse("-0.00", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi016", ((BigDecimal.Parse("-0.01", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi017", ((BigDecimal.Parse("-0.0", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi018", ((BigDecimal.Parse("-0.1", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi019", ((BigDecimal.Parse("1.00", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi020", ((BigDecimal.Parse("1.01", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi021", ((BigDecimal.Parse("1.0", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi022", ((BigDecimal.Parse("1.1", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi023", ((BigDecimal.Parse("-1.00", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi024", ((BigDecimal.Parse("-1.01", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi025", ((BigDecimal.Parse("-1.0", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi026", ((BigDecimal.Parse("-1.1", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi027", ((BigDecimal.Parse("-111.111", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-111"));
+            TestFmwk.assertTrue("tbi028", ((BigDecimal.Parse("+111.111", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("111"));
+            TestFmwk.assertTrue("tbi029", ((BigDecimal.Parse("0.09", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi030", ((BigDecimal.Parse("0.9", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi031", ((BigDecimal.Parse("1.09", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi032", ((BigDecimal.Parse("1.05", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi033", ((BigDecimal.Parse("1.04", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi034", ((BigDecimal.Parse("1.99", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi034", ((BigDecimal.Parse("1.9", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi035", ((BigDecimal.Parse("1.5", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi036", ((BigDecimal.Parse("1.4", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi037", ((BigDecimal.Parse("-1.09", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi038", ((BigDecimal.Parse("-1.05", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi039", ((BigDecimal.Parse("-1.04", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi040", ((BigDecimal.Parse("-1.99", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi041", ((BigDecimal.Parse("-1.9", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi042", ((BigDecimal.Parse("-1.5", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi043", ((BigDecimal.Parse("-1.4", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi044", ((BigDecimal.Parse("1E-1000", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi045", ((BigDecimal.Parse("-1E-1000", numberStyle, provider)).ToBigInteger().ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
             // Exact variety --
-            TestFmwk.assertTrue("tbi101", ((new BigDecimal("-1")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi102", ((new BigDecimal("0")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi103", ((new BigDecimal("+1")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi104", ((new BigDecimal("10")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("10"));
-            TestFmwk.assertTrue("tbi105", ((new BigDecimal("1000")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1000"));
-            TestFmwk.assertTrue("tbi106", ((new BigDecimal("-1E+0")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi107", ((new BigDecimal("0E+0")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi108", ((new BigDecimal("+1E+0")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi109", ((new BigDecimal("10E+0")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("10"));
-            TestFmwk.assertTrue("tbi110", ((new BigDecimal("1E+3")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1000"));
-            TestFmwk.assertTrue("tbi111", ((new BigDecimal("0.00")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi112", ((new BigDecimal("0.0")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi113", ((new BigDecimal("-0.00")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi114", ((new BigDecimal("-0.0")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("tbi115", ((new BigDecimal("1.00")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi116", ((new BigDecimal("1.0")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("tbi117", ((new BigDecimal("-1.00")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi118", ((new BigDecimal("-1.0")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("tbi119", ((new BigDecimal("1.00000000000000000000000000000")).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi101", ((BigDecimal.Parse("-1", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi102", ((BigDecimal.Parse("0", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi103", ((BigDecimal.Parse("+1", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi104", ((BigDecimal.Parse("10", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("10"));
+            TestFmwk.assertTrue("tbi105", ((BigDecimal.Parse("1000", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1000"));
+            TestFmwk.assertTrue("tbi106", ((BigDecimal.Parse("-1E+0", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi107", ((BigDecimal.Parse("0E+0", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi108", ((BigDecimal.Parse("+1E+0", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi109", ((BigDecimal.Parse("10E+0", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("10"));
+            TestFmwk.assertTrue("tbi110", ((BigDecimal.Parse("1E+3", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1000"));
+            TestFmwk.assertTrue("tbi111", ((BigDecimal.Parse("0.00", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi112", ((BigDecimal.Parse("0.0", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi113", ((BigDecimal.Parse("-0.00", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi114", ((BigDecimal.Parse("-0.0", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("tbi115", ((BigDecimal.Parse("1.00", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi116", ((BigDecimal.Parse("1.0", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("tbi117", ((BigDecimal.Parse("-1.00", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi118", ((BigDecimal.Parse("-1.0", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("tbi119", ((BigDecimal.Parse("1.00000000000000000000000000000", numberStyle, provider)).ToBigIntegerExact().ToString(CultureInfo.InvariantCulture)).Equals("1"));
 
 
             // the following should all raise exceptions
@@ -4532,7 +4604,7 @@ namespace ICU4N.Dev.Test.BigDec
                 {
                     try
                     {
-                        (new BigDecimal(badstrings[i]))
+                        (BigDecimal.Parse(badstrings[i], numberStyle, provider))
                                 .ToBigIntegerExact();
                         flag = false;
                     }
@@ -4556,11 +4628,14 @@ namespace ICU4N.Dev.Test.BigDec
             char[] car;
             BigDecimal d;
             char[] ca;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
+
             // the function of this has been tested above, this is simply an
             // existence proof and type-check
             str = "-123.45";
             car = (str).ToCharArray();
-            d = new BigDecimal(str);
+            d = BigDecimal.Parse(str, numberStyle, provider);
             ca = d.ToCharArray();
             TestFmwk.assertTrue("tca001", ca.Length == car.Length);
             TestFmwk.assertTrue("tca002", (new string(ca))
@@ -4581,11 +4656,14 @@ namespace ICU4N.Dev.Test.BigDec
             BigDecimal d;
             char[] ca;
             string cs;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
+
             // the function of this has been tested above, this is simply an
             // existence proof and type-check
             str = "123.45";
             car = (str).ToCharArray();
-            d = new BigDecimal(car, 0, car.Length);
+            d = BigDecimal.Parse(car, 0, car.Length, numberStyle, provider);
             ca = d.ToCharArray();
             cs = d.ToString(CultureInfo.InvariantCulture);
             TestFmwk.assertTrue("tos001", (str.ToCharArray().Length) == ca.Length);
@@ -4603,35 +4681,38 @@ namespace ICU4N.Dev.Test.BigDec
         [Test]
         public void diagunscaledvalue()
         {
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
+
             // just like toBigInteger, but scaly bits are preserved [without dots]
-            TestFmwk.assertTrue("uns001", ((new BigDecimal("-1")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("uns002", ((new BigDecimal("0")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("uns003", ((new BigDecimal("+1")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("uns004", ((new BigDecimal("10")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("10"));
-            TestFmwk.assertTrue("uns005", ((new BigDecimal("1000")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("1000"));
-            TestFmwk.assertTrue("uns006", ((new BigDecimal("-1E+0")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("uns007", ((new BigDecimal("0E+0")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("uns008", ((new BigDecimal("+1E+0")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("uns009", ((new BigDecimal("10E+0")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("10"));
-            TestFmwk.assertTrue("uns010", ((new BigDecimal("1E+3")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("1000"));
-            TestFmwk.assertTrue("uns011", ((new BigDecimal("0.00")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("uns012", ((new BigDecimal("0.01")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("uns013", ((new BigDecimal("0.0")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("uns014", ((new BigDecimal("0.1")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("uns015", ((new BigDecimal("-0.00")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("uns016", ((new BigDecimal("-0.01")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("uns017", ((new BigDecimal("-0.0")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("uns018", ((new BigDecimal("-0.1")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
-            TestFmwk.assertTrue("uns019", ((new BigDecimal("1.00")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("100"));
-            TestFmwk.assertTrue("uns020", ((new BigDecimal("1.01")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("101"));
-            TestFmwk.assertTrue("uns021", ((new BigDecimal("1.0")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("10"));
-            TestFmwk.assertTrue("uns022", ((new BigDecimal("1.1")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("11"));
-            TestFmwk.assertTrue("uns023", ((new BigDecimal("-1.00")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-100"));
-            TestFmwk.assertTrue("uns024", ((new BigDecimal("-1.01")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-101"));
-            TestFmwk.assertTrue("uns025", ((new BigDecimal("-1.0")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-10"));
-            TestFmwk.assertTrue("uns026", ((new BigDecimal("-1.1")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-11"));
-            TestFmwk.assertTrue("uns027", ((new BigDecimal("-111.111")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-111111"));
-            TestFmwk.assertTrue("uns028", ((new BigDecimal("+111.111")).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("111111"));
+            TestFmwk.assertTrue("uns001", ((BigDecimal.Parse("-1", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("uns002", ((BigDecimal.Parse("0", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("uns003", ((BigDecimal.Parse("+1", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("uns004", ((BigDecimal.Parse("10", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("10"));
+            TestFmwk.assertTrue("uns005", ((BigDecimal.Parse("1000", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("1000"));
+            TestFmwk.assertTrue("uns006", ((BigDecimal.Parse("-1E+0", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("uns007", ((BigDecimal.Parse("0E+0", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("uns008", ((BigDecimal.Parse("+1E+0", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("uns009", ((BigDecimal.Parse("10E+0", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("10"));
+            TestFmwk.assertTrue("uns010", ((BigDecimal.Parse("1E+3", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("1000"));
+            TestFmwk.assertTrue("uns011", ((BigDecimal.Parse("0.00", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("uns012", ((BigDecimal.Parse("0.01", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("uns013", ((BigDecimal.Parse("0.0", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("uns014", ((BigDecimal.Parse("0.1", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("uns015", ((BigDecimal.Parse("-0.00", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("uns016", ((BigDecimal.Parse("-0.01", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("uns017", ((BigDecimal.Parse("-0.0", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("uns018", ((BigDecimal.Parse("-0.1", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-1"));
+            TestFmwk.assertTrue("uns019", ((BigDecimal.Parse("1.00", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("100"));
+            TestFmwk.assertTrue("uns020", ((BigDecimal.Parse("1.01", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("101"));
+            TestFmwk.assertTrue("uns021", ((BigDecimal.Parse("1.0", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("10"));
+            TestFmwk.assertTrue("uns022", ((BigDecimal.Parse("1.1", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("11"));
+            TestFmwk.assertTrue("uns023", ((BigDecimal.Parse("-1.00", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-100"));
+            TestFmwk.assertTrue("uns024", ((BigDecimal.Parse("-1.01", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-101"));
+            TestFmwk.assertTrue("uns025", ((BigDecimal.Parse("-1.0", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-10"));
+            TestFmwk.assertTrue("uns026", ((BigDecimal.Parse("-1.1", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-11"));
+            TestFmwk.assertTrue("uns027", ((BigDecimal.Parse("-111.111", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("-111111"));
+            TestFmwk.assertTrue("uns028", ((BigDecimal.Parse("+111.111", numberStyle, provider)).ToUnscaledValue().ToString(CultureInfo.InvariantCulture)).Equals("111111"));
         }
 
         /* ----------------------------------------------------------------- */
@@ -5503,9 +5584,11 @@ namespace ICU4N.Dev.Test.BigDec
             string res = null;
             string sn = null;
             int e = 0;
+            NumberStyle numberStyle = NumberStyle.Float;
+            CultureInfo provider = CultureInfo.InvariantCulture;
 
-            lhs = new BigDecimal(slhs);
-            rhs = new BigDecimal(srhs);
+            lhs = BigDecimal.Parse(slhs, numberStyle, provider);
+            rhs = BigDecimal.Parse(srhs, numberStyle, provider);
 
             try
             {
@@ -5580,9 +5663,9 @@ namespace ICU4N.Dev.Test.BigDec
                 e = sn.IndexOf("E", 0);
                 if (e > 0)
                     sn = sn.Substring(0, e); // ICU4N: Checked 2nd parameter
-                sn = (new BigDecimal(sn)).Format(-1, 0);
+                sn = (BigDecimal.Parse(sn, numberStyle, provider)).Format(-1, 0);
 
-                res = lhs.Pow(new BigDecimal(sn), mc).ToString(CultureInfo.InvariantCulture);
+                res = lhs.Pow(BigDecimal.Parse(sn, numberStyle, provider), mc).ToString(CultureInfo.InvariantCulture);
             }
             catch (ArithmeticException e143)
             {
@@ -5789,7 +5872,7 @@ namespace ICU4N.Dev.Test.BigDec
                         //                            id  | char sequence | style | provider | expected
 #if FEATURE_IKVM
 
-                        yield return new TestCaseData("cca101", new java.math.BigDecimal("0").ToString(), style, provider, "0");
+                        yield return new TestCaseData("cbd001", new java.math.BigDecimal("0").ToString(), style, provider, "0");
                         yield return new TestCaseData("cbd002", new java.math.BigDecimal("1").ToString(), style, provider, "1");
                         yield return new TestCaseData("cbd003", new java.math.BigDecimal("10").ToString(), style, provider, "10");
                         yield return new TestCaseData("cbd004", new java.math.BigDecimal("1000").ToString(), style, provider, "1000");
@@ -5808,11 +5891,159 @@ namespace ICU4N.Dev.Test.BigDec
                         num = "0.00000123456789";
                         yield return new TestCaseData("cbd013", new java.math.BigDecimal(num).ToString(), style, provider, num);
 
-#else
-                        return new List<TestCaseData>();
 #endif
 
+                        // strings without E cannot generate E in result
+                        yield return new TestCaseData("cst001", "12", style, provider, "12");
+                        yield return new TestCaseData("cst002", "-76", style, provider, "-76");
+                        yield return new TestCaseData("cst003", "12.76", style, provider, "12.76");
+                        yield return new TestCaseData("cst004", "+12.76", style, provider, "12.76");
+                        yield return new TestCaseData("cst005", "012.76", style, provider, "12.76");
+                        yield return new TestCaseData("cst006", "+0.003", style, provider, "0.003");
+                        yield return new TestCaseData("cst007", "17.", style, provider, "17");
+                        yield return new TestCaseData("cst008", ".5", style, provider, "0.5");
+                        yield return new TestCaseData("cst009", "044", style, provider, "44");
+                        yield return new TestCaseData("cst010", "0044", style, provider, "44");
+                        yield return new TestCaseData("cst011", "0.0005", style, provider, "0.0005");
+                        yield return new TestCaseData("cst012", "00.00005", style, provider, "0.00005");
+                        yield return new TestCaseData("cst013", "0.000005", style, provider, "0.000005");
+                        yield return new TestCaseData("cst014", "0.0000005", style, provider, "0.0000005"); // \NR
+                        yield return new TestCaseData("cst015", "0.00000005", style, provider, "0.00000005"); // \NR
+                        yield return new TestCaseData("cst016", "12345678.876543210", style, provider, "12345678.876543210");
+                        yield return new TestCaseData("cst017", "2345678.876543210", style, provider, "2345678.876543210");
+                        yield return new TestCaseData("cst018", "345678.876543210", style, provider, "345678.876543210");
+                        yield return new TestCaseData("cst019", "0345678.87654321", style, provider, "345678.87654321");
+                        yield return new TestCaseData("cst020", "345678.8765432", style, provider, "345678.8765432");
+                        yield return new TestCaseData("cst021", "+345678.8765432", style, provider, "345678.8765432");
+                        yield return new TestCaseData("cst022", "+0345678.8765432", style, provider, "345678.8765432");
+                        yield return new TestCaseData("cst023", "+00345678.8765432", style, provider, "345678.8765432");
+                        yield return new TestCaseData("cst024", "-345678.8765432", style, provider, "-345678.8765432");
+                        yield return new TestCaseData("cst025", "-0345678.8765432", style, provider, "-345678.8765432");
+                        yield return new TestCaseData("cst026", "-00345678.8765432", style, provider, "-345678.8765432");
 
+                        // exotics --
+                        yield return new TestCaseData("cst035", "\u0e57.\u0e50", style, provider, "7.0");
+                        yield return new TestCaseData("cst036", "\u0b66.\u0b67", style, provider, "0.1");
+                        yield return new TestCaseData("cst037", "\u0b66\u0b66", style, provider, "0");
+                        yield return new TestCaseData("cst038", "\u0b6a\u0b66", style, provider, "40");
+
+                        // strings with E
+                        yield return new TestCaseData("cst040", "1E+9", style, provider, "1E+9");
+                        yield return new TestCaseData("cst041", "1e+09", style, provider, "1E+9");
+                        yield return new TestCaseData("cst042", "1E+90", style, provider, "1E+90");
+                        yield return new TestCaseData("cst043", "+1E+009", style, provider, "1E+9");
+                        yield return new TestCaseData("cst044", "0E+9", style, provider, "0");
+                        yield return new TestCaseData("cst045", "1E+9", style, provider, "1E+9");
+                        yield return new TestCaseData("cst046", "1E+09", style, provider, "1E+9");
+                        yield return new TestCaseData("cst047", "1e+90", style, provider, "1E+90");
+                        yield return new TestCaseData("cst048", "1E+009", style, provider, "1E+9");
+                        yield return new TestCaseData("cst049", "0E+9", style, provider, "0");
+                        yield return new TestCaseData("cst050", "1E9", style, provider, "1E+9");
+                        yield return new TestCaseData("cst051", "1e09", style, provider, "1E+9");
+                        yield return new TestCaseData("cst052", "1E90", style, provider, "1E+90");
+                        yield return new TestCaseData("cst053", "1E009", style, provider, "1E+9");
+                        yield return new TestCaseData("cst054", "0E9", style, provider, "0");
+                        yield return new TestCaseData("cst055", "0.000e+0", style, provider, "0");
+                        yield return new TestCaseData("cst056", "0.000E-1", style, provider, "0");
+                        yield return new TestCaseData("cst057", "4E+9", style, provider, "4E+9");
+                        yield return new TestCaseData("cst058", "44E+9", style, provider, "4.4E+10");
+                        yield return new TestCaseData("cst059", "0.73e-7", style, provider, "7.3E-8");
+                        yield return new TestCaseData("cst060", "00E+9", style, provider, "0");
+                        yield return new TestCaseData("cst061", "00E-9", style, provider, "0");
+                        yield return new TestCaseData("cst062", "10E+9", style, provider, "1.0E+10");
+                        yield return new TestCaseData("cst063", "10E+09", style, provider, "1.0E+10");
+                        yield return new TestCaseData("cst064", "10e+90", style, provider, "1.0E+91");
+                        yield return new TestCaseData("cst065", "10E+009", style, provider, "1.0E+10");
+                        yield return new TestCaseData("cst066", "100e+9", style, provider, "1.00E+11");
+                        yield return new TestCaseData("cst067", "100e+09", style, provider, "1.00E+11");
+                        yield return new TestCaseData("cst068", "100E+90", style, provider, "1.00E+92");
+                        yield return new TestCaseData("cst069", "100e+009", style, provider, "1.00E+11");
+
+                        yield return new TestCaseData("cst070", "1.265", style, provider, "1.265");
+                        yield return new TestCaseData("cst071", "1.265E-20", style, provider, "1.265E-20");
+                        yield return new TestCaseData("cst072", "1.265E-8", style, provider, "1.265E-8");
+                        yield return new TestCaseData("cst073", "1.265E-4", style, provider, "1.265E-4");
+                        yield return new TestCaseData("cst074", "1.265E-3", style, provider, "1.265E-3");
+                        yield return new TestCaseData("cst075", "1.265E-2", style, provider, "1.265E-2");
+                        yield return new TestCaseData("cst076", "1.265E-1", style, provider, "1.265E-1");
+                        yield return new TestCaseData("cst077", "1.265E-0", style, provider, "1.265");
+                        yield return new TestCaseData("cst078", "1.265E+1", style, provider, "1.265E+1");
+                        yield return new TestCaseData("cst079", "1.265E+2", style, provider, "1.265E+2");
+                        yield return new TestCaseData("cst080", "1.265E+3", style, provider, "1.265E+3");
+                        yield return new TestCaseData("cst081", "1.265E+4", style, provider, "1.265E+4");
+                        yield return new TestCaseData("cst082", "1.265E+8", style, provider, "1.265E+8");
+                        yield return new TestCaseData("cst083", "1.265E+20", style, provider, "1.265E+20");
+
+                        yield return new TestCaseData("cst090", "12.65", style, provider, "12.65");
+                        yield return new TestCaseData("cst091", "12.65E-20", style, provider, "1.265E-19");
+                        yield return new TestCaseData("cst092", "12.65E-8", style, provider, "1.265E-7");
+                        yield return new TestCaseData("cst093", "12.65E-4", style, provider, "1.265E-3");
+                        yield return new TestCaseData("cst094", "12.65E-3", style, provider, "1.265E-2");
+                        yield return new TestCaseData("cst095", "12.65E-2", style, provider, "1.265E-1");
+                        yield return new TestCaseData("cst096", "12.65E-1", style, provider, "1.265");
+                        yield return new TestCaseData("cst097", "12.65E-0", style, provider, "1.265E+1");
+                        yield return new TestCaseData("cst098", "12.65E+1", style, provider, "1.265E+2");
+                        yield return new TestCaseData("cst099", "12.65E+2", style, provider, "1.265E+3");
+                        yield return new TestCaseData("cst100", "12.65E+3", style, provider, "1.265E+4");
+                        yield return new TestCaseData("cst101", "12.65E+4", style, provider, "1.265E+5");
+                        yield return new TestCaseData("cst102", "12.65E+8", style, provider, "1.265E+9");
+                        yield return new TestCaseData("cst103", "12.65E+20", style, provider, "1.265E+21");
+
+                        yield return new TestCaseData("cst110", "126.5", style, provider, "126.5");
+                        yield return new TestCaseData("cst111", "126.5E-20", style, provider, "1.265E-18");
+                        yield return new TestCaseData("cst112", "126.5E-8", style, provider, "1.265E-6");
+                        yield return new TestCaseData("cst113", "126.5E-4", style, provider, "1.265E-2");
+                        yield return new TestCaseData("cst114", "126.5E-3", style, provider, "1.265E-1");
+                        yield return new TestCaseData("cst115", "126.5E-2", style, provider, "1.265");
+                        yield return new TestCaseData("cst116", "126.5E-1", style, provider, "1.265E+1");
+                        yield return new TestCaseData("cst117", "126.5E-0", style, provider, "1.265E+2");
+                        yield return new TestCaseData("cst118", "126.5E+1", style, provider, "1.265E+3");
+                        yield return new TestCaseData("cst119", "126.5E+2", style, provider, "1.265E+4");
+                        yield return new TestCaseData("cst120", "126.5E+3", style, provider, "1.265E+5");
+                        yield return new TestCaseData("cst121", "126.5E+4", style, provider, "1.265E+6");
+                        yield return new TestCaseData("cst122", "126.5E+8", style, provider, "1.265E+10");
+                        yield return new TestCaseData("cst123", "126.5E+20", style, provider, "1.265E+22");
+
+                        yield return new TestCaseData("cst130", "1265", style, provider, "1265");
+                        yield return new TestCaseData("cst131", "1265E-20", style, provider, "1.265E-17");
+                        yield return new TestCaseData("cst132", "1265E-8", style, provider, "1.265E-5");
+                        yield return new TestCaseData("cst133", "1265E-4", style, provider, "1.265E-1");
+                        yield return new TestCaseData("cst134", "1265E-3", style, provider, "1.265");
+                        yield return new TestCaseData("cst135", "1265E-2", style, provider, "1.265E+1");
+                        yield return new TestCaseData("cst136", "1265E-1", style, provider, "1.265E+2");
+                        yield return new TestCaseData("cst137", "1265E-0", style, provider, "1.265E+3");
+                        yield return new TestCaseData("cst138", "1265E+1", style, provider, "1.265E+4");
+                        yield return new TestCaseData("cst139", "1265E+2", style, provider, "1.265E+5");
+                        yield return new TestCaseData("cst140", "1265E+3", style, provider, "1.265E+6");
+                        yield return new TestCaseData("cst141", "1265E+4", style, provider, "1.265E+7");
+                        yield return new TestCaseData("cst142", "1265E+8", style, provider, "1.265E+11");
+                        yield return new TestCaseData("cst143", "1265E+20", style, provider, "1.265E+23");
+
+                        yield return new TestCaseData("cst150", "0.1265", style, provider, "0.1265");
+                        yield return new TestCaseData("cst151", "0.1265E-20", style, provider, "1.265E-21");
+                        yield return new TestCaseData("cst152", "0.1265E-8", style, provider, "1.265E-9");
+                        yield return new TestCaseData("cst153", "0.1265E-4", style, provider, "1.265E-5");
+                        yield return new TestCaseData("cst154", "0.1265E-3", style, provider, "1.265E-4");
+                        yield return new TestCaseData("cst155", "0.1265E-2", style, provider, "1.265E-3");
+                        yield return new TestCaseData("cst156", "0.1265E-1", style, provider, "1.265E-2");
+                        yield return new TestCaseData("cst157", "0.1265E-0", style, provider, "1.265E-1");
+                        yield return new TestCaseData("cst158", "0.1265E+1", style, provider, "1.265");
+                        yield return new TestCaseData("cst159", "0.1265E+2", style, provider, "1.265E+1");
+                        yield return new TestCaseData("cst160", "0.1265E+3", style, provider, "1.265E+2");
+                        yield return new TestCaseData("cst161", "0.1265E+4", style, provider, "1.265E+3");
+                        yield return new TestCaseData("cst162", "0.1265E+8", style, provider, "1.265E+7");
+                        yield return new TestCaseData("cst163", "0.1265E+20", style, provider, "1.265E+19");
+
+                        yield return new TestCaseData("cst170", "0.09e999999999", style, provider, "9E+999999997");
+                        yield return new TestCaseData("cst171", "0.9e999999999", style, provider, "9E+999999998");
+                        yield return new TestCaseData("cst172", "9e999999999", style, provider, "9E+999999999");
+                        yield return new TestCaseData("cst173", "9.9e999999999", style, provider, "9.9E+999999999");
+                        yield return new TestCaseData("cst174", "9.99e999999999", style, provider, "9.99E+999999999");
+                        yield return new TestCaseData("cst175", "9.99e-999999999", style, provider, "9.99E-999999999");
+                        yield return new TestCaseData("cst176", "9.9e-999999999", style, provider, "9.9E-999999999");
+                        yield return new TestCaseData("cst177", "9e-999999999", style, provider, "9E-999999999");
+                        yield return new TestCaseData("cst179", "99e-999999999", style, provider, "9.9E-999999998");
+                        yield return new TestCaseData("cst180", "999e-999999999", style, provider, "9.99E-999999997");
                     }
                 }
 
@@ -5830,9 +6061,47 @@ namespace ICU4N.Dev.Test.BigDec
                         // ICU4N specific tests
 
                         //                            id,  expected                       value, style, provider, expected message (or null to skip)
-                        yield return new TestCaseData("cca300", typeof(ArgumentNullException), null, style, provider, null);
-                        yield return new TestCaseData("cca301", typeof(FormatException), "", style, provider, null);
-                        yield return new TestCaseData("cca302", typeof(FormatException), "<Garbage>", style, provider, null);
+                        yield return new TestCaseData("cst300", typeof(ArgumentNullException), null, style, provider, null);
+                        yield return new TestCaseData("cst301", typeof(FormatException), "", style, provider, null);
+                        yield return new TestCaseData("cst302", typeof(FormatException), "<Garbage>", style, provider, null);
+
+                        // ICU4J tests
+
+                        // baddies --
+                        string[] badstrings = new string[] { "1..2", ".", "..", "++1", "--1",
+                            "-+1", "+-1", "12e", "12e++", "12f4", " +1", "+ 1", "12 ",
+                            " + 1", " - 1 ", "x", "-1-", "12-", "3+", "", "1e-",
+                            "7e1000000000", "", "e100", "\u0e5a", "\u0b65", "99e999999999",
+                            "999e999999999", "0.9e-999999999", "0.09e-999999999",
+                            "0.1e1000000000", "10e-1000000000", "0.9e9999999999",
+                            "99e-9999999999", "111e9999999999",
+                            "1111e-9999999999" + " " + "111e*123", "111e123-", "111e+12+",
+                            "111e1-3-", "111e1*23", "111e1e+3", "1e1.0", "1e123e", "ten",
+                            "ONE", "1e.1", "1e1.", "1ee", "e+1" }; // 200-203
+                                                                   // 204-207
+                                                                   // 208-211
+                                                                   // 211-214
+                                                                   // 215-219
+                                                                   // 220-222
+                                                                   // 223-224
+                                                                   // 225-226
+                                                                   // 227-228
+                                                                   // 229-230
+                                                                   // 231-232
+                                                                   // 233-234
+                                                                   // 235-237
+                                                                   // 238-240
+                                                                   // 241-244
+                                                                   // 245-248
+
+                        // watch out for commas on continuation lines
+
+                        int len16 = badstrings.Length;
+                        int i = 0;
+                        for (; len16 > 0; len16--, i++)
+                        {
+                            yield return new TestCaseData("cst" + (200 + i).ToString(CultureInfo.InvariantCulture), typeof(FormatException), badstrings[i], style, provider, null);
+                        }
                     }
                 }
 
@@ -5939,7 +6208,7 @@ namespace ICU4N.Dev.Test.BigDec
             {
                 private protected override BigDecimal GetResult(string value, NumberStyle style, IFormatProvider provider)
                 {
-                    return BigDecimal.Parse(value.ToCharArray(), style, provider);
+                    return BigDecimal.Parse(value?.ToCharArray(), style, provider);
                 }
             }
 

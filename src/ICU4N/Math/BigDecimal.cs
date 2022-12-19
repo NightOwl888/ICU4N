@@ -326,43 +326,50 @@ namespace ICU4N.Numerics
             this.exp = exponent;
         }
 
-        ///**
-        // * Constructs a <code>BigDecimal</code> object from a <code>java.math.BigDecimal</code>.
-        // * <p>
-        // * Constructs a <code>BigDecimal</code> as though the parameter had been represented as a <code>String</code> (using
-        // * its <code>toString</code> method) and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
-        // * The parameter must not be <code>null</code>.
-        // * <p>
-        // * <i>(Note: this constructor is provided only in the <code>com.ibm.icu.math</code> version of the BigDecimal class.
-        // * It would not be present in a <code>java.math</code> version.)</i>
-        // *
-        // * @param bd The <code>BigDecimal</code> to be translated.
-        // * @stable ICU 2.0
-        // */
+        private BigDecimal(string value) // ICU4N TODO: Ideally, factor this constructor out and use more efficient methods to convert other numeric types to this one
+        {
+            BigDecimal bd = Parse(value, J2N.Globalization.NumberStyle.Float, NumberFormatInfo.InvariantInfo);
+            this.ind = bd.ind;
+            this.form = bd.form;
+            this.mant = bd.mant;
+            this.exp = bd.exp;
+        }
 
-        //public BigDecimal(Deveel.Math.BigDecimal bd)
-        //    : this(bd?.ToString(CultureInfo.InvariantCulture))
-        //{
-        //    //this(bd.toString());
-        //    //return;
-        //}
+        /////**
+        //// * Constructs a <code>BigDecimal</code> object from a <code>java.math.BigDecimal</code>.
+        //// * <p>
+        //// * Constructs a <code>BigDecimal</code> as though the parameter had been represented as a <code>String</code> (using
+        //// * its <code>toString</code> method) and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
+        //// * The parameter must not be <code>null</code>.
+        //// * <p>
+        //// * <i>(Note: this constructor is provided only in the <code>com.ibm.icu.math</code> version of the BigDecimal class.
+        //// * It would not be present in a <code>java.math</code> version.)</i>
+        //// *
+        //// * @param bd The <code>BigDecimal</code> to be translated.
+        //// * @stable ICU 2.0
+        //// */
 
-        /**
-         * Constructs a <code>BigDecimal</code> object from a <code>BigInteger</code>, with scale 0.
-         * <p>
-         * Constructs a <code>BigDecimal</code> which is the exact decimal representation of the <code>BigInteger</code>,
-         * with a scale of zero. The value of the <code>BigDecimal</code> is identical to the value of the <code>BigInteger
-         * </code>. The parameter must not be <code>null</code>.
-         * <p>
-         * The <code>BigDecimal</code> will contain only decimal digits, prefixed with a leading minus sign (hyphen) if the
-         * <code>BigInteger</code> is negative. A leading zero will be present only if the <code>BigInteger</code> is zero.
-         *
-         * @param bi The <code>BigInteger</code> to be converted.
-         * @stable ICU 2.0
-         */
+        ////public BigDecimal(Deveel.Math.BigDecimal bd)
+        ////    : this(bd?.ToString(CultureInfo.InvariantCulture))
+        ////{
+        ////    //this(bd.toString());
+        ////    //return;
+        ////}
 
-        public BigDecimal(BigInteger bi)
-            : this(bi.ToString(CultureInfo.InvariantCulture)) // ICU4N TODO: Revisit approach to loading char array
+
+        /// <summary>
+        /// Constructs a <see cref="BigDecimal"/> from a <see cref="BigInteger"/> with scale 0.
+        /// <para/>
+        /// Constructs a <see cref="BigDecimal"/> which is the exact decimal representation of the <see cref="BigInteger"/>,
+        /// with a scale of zero. The value of the <see cref="BigDecimal"/> is identical to the value of the see cref="BigInteger"/>.
+        /// <para/>
+        /// The <see cref="BigDecimal"/> will contain only decimal digits, prefixed with a leading minus sign (hyphen) if the
+        /// <see cref="BigInteger"/> is negative. A leading zero will be present only if the <see cref="BigInteger"/> is zero.
+        /// </summary>
+        /// <param name="value">The <see cref="BigInteger"/> to be converted.</param>
+        /// <stable>ICU 2.0</stable>
+        public BigDecimal(BigInteger value)
+            : this(value.ToString(CultureInfo.InvariantCulture))
         {
         }
 
@@ -385,303 +392,306 @@ namespace ICU4N.Numerics
          * @throws NumberFormatException If the scale is negative.
          * @stable ICU 2.0
          */
-
-        public BigDecimal(BigInteger bi, int scale)
-            : this(bi.ToString(CultureInfo.InvariantCulture)) // ICU4N TODO: Revisit approach to loading char array
+        public BigDecimal(BigInteger value, int scale)
+            : this(value.ToString(CultureInfo.InvariantCulture))
         {
             if (scale < 0)
                 throw new ArgumentOutOfRangeException(nameof(scale), "Negative scale:" + " " + scale);
             exp = -scale; // exponent is -scale
         }
 
-        /**
-         * Constructs a <code>BigDecimal</code> object from an array of characters.
-         * <p>
-         * Constructs a <code>BigDecimal</code> as though a <code>String</code> had been constructed from the character
-         * array and the {@link #BigDecimal(java.lang.String)} constructor had then been used. The parameter must not be
-         * <code>null</code>.
-         * <p>
-         * Using this constructor is faster than using the <code>BigDecimal(String)</code> constructor if the string is
-         * already available in character array form.
-         *
-         * @param inchars The <code>char[]</code> array containing the number to be converted.
-         * @throws NumberFormatException If the parameter is not a valid number.
-         * @stable ICU 2.0
-         */
+        // ICU4N: Converted constructor to Parse/TryParse static methods
 
-        public BigDecimal(char[] inchars)
-            : this(inchars, 0, inchars?.Length ?? 0)
-        {
-        }
+        /////**
+        //// * Constructs a <code>BigDecimal</code> object from an array of characters.
+        //// * <p>
+        //// * Constructs a <code>BigDecimal</code> as though a <code>String</code> had been constructed from the character
+        //// * array and the {@link #BigDecimal(java.lang.String)} constructor had then been used. The parameter must not be
+        //// * <code>null</code>.
+        //// * <p>
+        //// * Using this constructor is faster than using the <code>BigDecimal(String)</code> constructor if the string is
+        //// * already available in character array form.
+        //// *
+        //// * @param inchars The <code>char[]</code> array containing the number to be converted.
+        //// * @throws NumberFormatException If the parameter is not a valid number.
+        //// * @stable ICU 2.0
+        //// */
 
-        /**
-         * Constructs a <code>BigDecimal</code> object from an array of characters.
-         * <p>
-         * Constructs a <code>BigDecimal</code> as though a <code>String</code> had been constructed from the character
-         * array (or a subarray of that array) and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
-         * The first parameter must not be <code>null</code>, and the subarray must be wholly contained within it.
-         * <p>
-         * Using this constructor is faster than using the <code>BigDecimal(String)</code> constructor if the string is
-         * already available within a character array.
-         *
-         * @param inchars The <code>char[]</code> array containing the number to be converted.
-         * @param offset The <code>int</code> offset into the array of the start of the number to be converted.
-         * @param length The <code>int</code> length of the number.
-         * @throws NumberFormatException If the parameter is not a valid number for any reason.
-         * @stable ICU 2.0
-         */
+        ////public BigDecimal(char[] inchars)
+        ////    : this(inchars, 0, inchars?.Length ?? 0)
+        ////{
+        ////}
 
-        public BigDecimal(char[] inchars, int startIndex, int length)
-        {
-            // ICU4N: Added guard clauses
-            if (inchars is null)
-                throw new ArgumentNullException(nameof(inchars));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex), SR.ArgumentOutOfRange_NeedNonNegNum);
-            if (length < 0)
-                throw new ArgumentOutOfRangeException(nameof(length), SR.ArgumentOutOfRange_NeedNonNegNum);
-            if (startIndex > inchars.Length - length) // Checks for int overflow
-                throw new ArgumentOutOfRangeException(nameof(length), SR.ArgumentOutOfRange_IndexLength);
+        // ICU4N: Converted constructor to Parse/TryParse static methods
 
-            bool exotic;
-            bool hadexp;
-            int d;
-            int dotoff;
-            int last;
-            int i = 0;
-            char si = (char)0;
-            bool eneg = false;
-            int k = 0;
-            int elen = 0;
-            int j = 0;
-            char sj = (char)0;
-            int dvalue = 0;
-            int mag = 0;
-            // This is the primary constructor; all incoming strings end up
-            // here; it uses explicit (inline) parsing for speed and to avoid
-            // generating intermediate (temporary) objects of any kind.
-            // 1998.06.25: exponent form built only if E/e in string
-            // 1998.06.25: trailing zeros not removed for zero
-            // 1999.03.06: no embedded blanks; allow offset and length
-            if (length <= 0) /// ICU4N: Already checked this above
-                Bad(inchars); // bad conversion (empty string)
-                              // [bad offset will raise array bounds exception]
+        /////**
+        //// * Constructs a <code>BigDecimal</code> object from an array of characters.
+        //// * <p>
+        //// * Constructs a <code>BigDecimal</code> as though a <code>String</code> had been constructed from the character
+        //// * array (or a subarray of that array) and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
+        //// * The first parameter must not be <code>null</code>, and the subarray must be wholly contained within it.
+        //// * <p>
+        //// * Using this constructor is faster than using the <code>BigDecimal(String)</code> constructor if the string is
+        //// * already available within a character array.
+        //// *
+        //// * @param inchars The <code>char[]</code> array containing the number to be converted.
+        //// * @param offset The <code>int</code> offset into the array of the start of the number to be converted.
+        //// * @param length The <code>int</code> length of the number.
+        //// * @throws NumberFormatException If the parameter is not a valid number for any reason.
+        //// * @stable ICU 2.0
+        //// */
 
-            /* Handle and step past sign */
-            ind = ispos; // assume positive
-            if (inchars[startIndex] == '-')
-            {
-                length--;
-                if (length == 0)
-                    Bad(inchars); // nothing after sign
-                ind = isneg;
-                startIndex++;
-            }
-            else if (inchars[startIndex] == '+')
-            {
-                length--;
-                if (length == 0)
-                    Bad(inchars); // nothing after sign
-                startIndex++;
-            }
+        ////public BigDecimal(char[] inchars, int startIndex, int length)
+        ////{
+        ////    // ICU4N: Added guard clauses
+        ////    if (inchars is null)
+        ////        throw new ArgumentNullException(nameof(inchars));
+        ////    if (startIndex < 0)
+        ////        throw new ArgumentOutOfRangeException(nameof(startIndex), SR.ArgumentOutOfRange_NeedNonNegNum);
+        ////    if (length < 0)
+        ////        throw new ArgumentOutOfRangeException(nameof(length), SR.ArgumentOutOfRange_NeedNonNegNum);
+        ////    if (startIndex > inchars.Length - length) // Checks for int overflow
+        ////        throw new ArgumentOutOfRangeException(nameof(length), SR.ArgumentOutOfRange_IndexLength);
 
-            /* We're at the start of the number */
-            exotic = false; // have extra digits
-            hadexp = false; // had explicit exponent
-            d = 0; // count of digits found
-            dotoff = -1; // offset where dot was found
-            last = -1; // last character of mantissa
-            {
-                int len = length;
-                i = startIndex;
-                /*i:*/
-                for (; len > 0; len--, i++)
-                {
-                    si = inchars[i];
-                    if (si >= '0') // test for Arabic digit
-                        if (si <= '9')
-                        {
-                            last = i;
-                            d++; // still in mantissa
-                            continue;// i;
-                        }
-                    if (si == '.')
-                    { // record and ignore
-                        if (dotoff >= 0)
-                            Bad(inchars); // two dots
-                        dotoff = i - startIndex; // offset into mantissa
-                        continue; // i;
-                    }
-                    if (si != 'e')
-                        if (si != 'E')
-                        { // expect an extra digit
-                            if (!UChar.IsDigit(si))
-                                Bad(inchars); // not a number
-                                              // defer the base 10 check until later to avoid extra method call
-                            exotic = true; // will need conversion later
-                            last = i;
-                            d++; // still in mantissa
-                            continue; // i;
-                        }
-                    /* Found 'e' or 'E' -- now process explicit exponent */
-                    // 1998.07.11: sign no longer required
-                    if ((i - startIndex) > (length - 2))
-                        Bad(inchars); // no room for even one digit
-                    eneg = false;
-                    if (inchars[i + 1] == '-')
-                    {
-                        eneg = true;
-                        k = i + 2;
-                    }
-                    else if (inchars[i + 1] == '+')
-                        k = i + 2;
-                    else
-                        k = i + 1;
-                    // k is offset of first expected digit
-                    elen = length - (k - startIndex); // possible number of digits
-                    if ((elen == 0) || (elen > 9))
-                        Bad(inchars); // 0 or more than 9 digits
-                    {
-                        int len2 = elen;
-                        j = k;
-                        for (; len2 > 0; len2--, j++)
-                        {
-                            sj = inchars[j];
-                            if (sj < '0')
-                                Bad(inchars); // always bad
-                            if (sj > '9')
-                            { // maybe an exotic digit
-                                if (!UChar.IsDigit(sj))
-                                    Bad(inchars); // not a number
-                                dvalue = UChar.Digit(sj, 10); // check base
-                                if (dvalue < 0)
-                                    Bad(inchars); // not base 10
-                            }
-                            else
-                                dvalue = sj - '0';
-                            exp = (exp * 10) + dvalue;
-                        }
-                    }/* j */
-                    if (eneg)
-                        exp = -exp; // was negative
-                    hadexp = true; // remember we had one
-                    break; // i; // we are done
-                }
-            }/* i */
+        ////    bool exotic;
+        ////    bool hadexp;
+        ////    int d;
+        ////    int dotoff;
+        ////    int last;
+        ////    int i = 0;
+        ////    char si = (char)0;
+        ////    bool eneg = false;
+        ////    int k = 0;
+        ////    int elen = 0;
+        ////    int j = 0;
+        ////    char sj = (char)0;
+        ////    int dvalue = 0;
+        ////    int mag = 0;
+        ////    // This is the primary constructor; all incoming strings end up
+        ////    // here; it uses explicit (inline) parsing for speed and to avoid
+        ////    // generating intermediate (temporary) objects of any kind.
+        ////    // 1998.06.25: exponent form built only if E/e in string
+        ////    // 1998.06.25: trailing zeros not removed for zero
+        ////    // 1999.03.06: no embedded blanks; allow offset and length
+        ////    if (length <= 0) /// ICU4N: Already checked this above
+        ////        Bad(inchars); // bad conversion (empty string)
+        ////                      // [bad offset will raise array bounds exception]
 
-            /* Here when all inspected */
-            if (d == 0)
-                Bad(inchars); // no mantissa digits
-            if (dotoff >= 0)
-                exp = (exp + dotoff) - d; // adjust exponent if had dot
+        ////    /* Handle and step past sign */
+        ////    ind = ispos; // assume positive
+        ////    if (inchars[startIndex] == '-')
+        ////    {
+        ////        length--;
+        ////        if (length == 0)
+        ////            Bad(inchars); // nothing after sign
+        ////        ind = isneg;
+        ////        startIndex++;
+        ////    }
+        ////    else if (inchars[startIndex] == '+')
+        ////    {
+        ////        length--;
+        ////        if (length == 0)
+        ////            Bad(inchars); // nothing after sign
+        ////        startIndex++;
+        ////    }
 
-            /* strip leading zeros/dot (leave final if all 0's) */
-            {
-                int len3 = last - 1;
-                i = startIndex;
-                /*i:*/
-                for (; i <= len3; i++)
-                {
-                    si = inchars[i];
-                    if (si == '0')
-                    {
-                        startIndex++;
-                        dotoff--;
-                        d--;
-                    }
-                    else if (si == '.')
-                    {
-                        startIndex++; // step past dot
-                        dotoff--;
-                    }
-                    else if (si <= '9')
-                        break; // i;/* non-0 */
-                    else
-                    {/* exotic */
-                        if (UChar.Digit(si, 10) != 0)
-                            break; // i; // non-0 or bad
-                                   // is 0 .. strip like '0'
-                        startIndex++;
-                        dotoff--;
-                        d--;
-                    }
-                }
-            }/* i */
+        ////    /* We're at the start of the number */
+        ////    exotic = false; // have extra digits
+        ////    hadexp = false; // had explicit exponent
+        ////    d = 0; // count of digits found
+        ////    dotoff = -1; // offset where dot was found
+        ////    last = -1; // last character of mantissa
+        ////    {
+        ////        int len = length;
+        ////        i = startIndex;
+        ////        /*i:*/
+        ////        for (; len > 0; len--, i++)
+        ////        {
+        ////            si = inchars[i];
+        ////            if (si >= '0') // test for Arabic digit
+        ////                if (si <= '9')
+        ////                {
+        ////                    last = i;
+        ////                    d++; // still in mantissa
+        ////                    continue;// i;
+        ////                }
+        ////            if (si == '.')
+        ////            { // record and ignore
+        ////                if (dotoff >= 0)
+        ////                    Bad(inchars); // two dots
+        ////                dotoff = i - startIndex; // offset into mantissa
+        ////                continue; // i;
+        ////            }
+        ////            if (si != 'e')
+        ////                if (si != 'E')
+        ////                { // expect an extra digit
+        ////                    if (!UChar.IsDigit(si))
+        ////                        Bad(inchars); // not a number
+        ////                                      // defer the base 10 check until later to avoid extra method call
+        ////                    exotic = true; // will need conversion later
+        ////                    last = i;
+        ////                    d++; // still in mantissa
+        ////                    continue; // i;
+        ////                }
+        ////            /* Found 'e' or 'E' -- now process explicit exponent */
+        ////            // 1998.07.11: sign no longer required
+        ////            if ((i - startIndex) > (length - 2))
+        ////                Bad(inchars); // no room for even one digit
+        ////            eneg = false;
+        ////            if (inchars[i + 1] == '-')
+        ////            {
+        ////                eneg = true;
+        ////                k = i + 2;
+        ////            }
+        ////            else if (inchars[i + 1] == '+')
+        ////                k = i + 2;
+        ////            else
+        ////                k = i + 1;
+        ////            // k is offset of first expected digit
+        ////            elen = length - (k - startIndex); // possible number of digits
+        ////            if ((elen == 0) || (elen > 9))
+        ////                Bad(inchars); // 0 or more than 9 digits
+        ////            {
+        ////                int len2 = elen;
+        ////                j = k;
+        ////                for (; len2 > 0; len2--, j++)
+        ////                {
+        ////                    sj = inchars[j];
+        ////                    if (sj < '0')
+        ////                        Bad(inchars); // always bad
+        ////                    if (sj > '9')
+        ////                    { // maybe an exotic digit
+        ////                        if (!UChar.IsDigit(sj))
+        ////                            Bad(inchars); // not a number
+        ////                        dvalue = UChar.Digit(sj, 10); // check base
+        ////                        if (dvalue < 0)
+        ////                            Bad(inchars); // not base 10
+        ////                    }
+        ////                    else
+        ////                        dvalue = sj - '0';
+        ////                    exp = (exp * 10) + dvalue;
+        ////                }
+        ////            }/* j */
+        ////            if (eneg)
+        ////                exp = -exp; // was negative
+        ////            hadexp = true; // remember we had one
+        ////            break; // i; // we are done
+        ////        }
+        ////    }/* i */
 
-            /* Create the mantissa array */
-            mant = new byte[d]; // we know the length
-            j = startIndex; // input offset
-            if (exotic)
-            {
+        ////    /* Here when all inspected */
+        ////    if (d == 0)
+        ////        Bad(inchars); // no mantissa digits
+        ////    if (dotoff >= 0)
+        ////        exp = (exp + dotoff) - d; // adjust exponent if had dot
 
-                // slow: check for exotica
-                int len4 = d;
-                i = 0;
-                for (; len4 > 0; len4--, i++)
-                {
-                    if (i == dotoff)
-                        j++; // at dot
-                    sj = inchars[j];
-                    if (sj <= '9')
-                        mant[i] = (byte)(sj - '0');/* easy */
-                    else
-                    {
-                        dvalue = UChar.Digit(sj, 10);
-                        if (dvalue < 0)
-                            Bad(inchars); // not a number after all
-                        mant[i] = (byte)dvalue;
-                    }
-                    j++;
-                }
-            }/* exotica */
-            else
-            {
+        ////    /* strip leading zeros/dot (leave final if all 0's) */
+        ////    {
+        ////        int len3 = last - 1;
+        ////        i = startIndex;
+        ////        /*i:*/
+        ////        for (; i <= len3; i++)
+        ////        {
+        ////            si = inchars[i];
+        ////            if (si == '0')
+        ////            {
+        ////                startIndex++;
+        ////                dotoff--;
+        ////                d--;
+        ////            }
+        ////            else if (si == '.')
+        ////            {
+        ////                startIndex++; // step past dot
+        ////                dotoff--;
+        ////            }
+        ////            else if (si <= '9')
+        ////                break; // i;/* non-0 */
+        ////            else
+        ////            {/* exotic */
+        ////                if (UChar.Digit(si, 10) != 0)
+        ////                    break; // i; // non-0 or bad
+        ////                           // is 0 .. strip like '0'
+        ////                startIndex++;
+        ////                dotoff--;
+        ////                d--;
+        ////            }
+        ////        }
+        ////    }/* i */
 
-                int len5 = d;
-                i = 0;
-                for (; len5 > 0; len5--, i++)
-                {
-                    if (i == dotoff)
-                        j++;
-                    mant[i] = (byte)(inchars[j] - '0');
-                    j++;
-                }
+        ////    /* Create the mantissa array */
+        ////    mant = new byte[d]; // we know the length
+        ////    j = startIndex; // input offset
+        ////    if (exotic)
+        ////    {
 
-            }/* simple */
+        ////        // slow: check for exotica
+        ////        int len4 = d;
+        ////        i = 0;
+        ////        for (; len4 > 0; len4--, i++)
+        ////        {
+        ////            if (i == dotoff)
+        ////                j++; // at dot
+        ////            sj = inchars[j];
+        ////            if (sj <= '9')
+        ////                mant[i] = (byte)(sj - '0');/* easy */
+        ////            else
+        ////            {
+        ////                dvalue = UChar.Digit(sj, 10);
+        ////                if (dvalue < 0)
+        ////                    Bad(inchars); // not a number after all
+        ////                mant[i] = (byte)dvalue;
+        ////            }
+        ////            j++;
+        ////        }
+        ////    }/* exotica */
+        ////    else
+        ////    {
 
-            /* Looks good. Set the sign indicator and form, as needed. */
-            // Trailing zeros are preserved
-            // The rule here for form is:
-            // If no E-notation, then request plain notation
-            // Otherwise act as though add(0,DEFAULT) and request scientific notation
-            // [form is already PLAIN]
-            if (mant[0] == 0)
-            {
-                ind = iszero; // force to show zero
-                              // negative exponent is significant (e.g., -3 for 0.000) if plain
-                if (exp > 0)
-                    exp = 0; // positive exponent can be ignored
-                if (hadexp)
-                { // zero becomes single digit from add
-                    mant = Zero.mant;
-                    exp = 0;
-                }
-            }
-            else
-            { // non-zero
-              // [ind was set earlier]
-              // now determine form
-                if (hadexp)
-                {
-                    form = (byte)ExponentForm.Scientific;
-                    // 1999.06.29 check for overflow
-                    mag = (exp + mant.Length) - 1; // true exponent in scientific notation
-                    if ((mag < MinExp) | (mag > MaxExp))
-                        Bad(inchars);
-                }
-            }
-            // say 'BD(c[]): mant[0] mantlen exp ind form:' mant[0] mant.length exp ind form
-        }
+        ////        int len5 = d;
+        ////        i = 0;
+        ////        for (; len5 > 0; len5--, i++)
+        ////        {
+        ////            if (i == dotoff)
+        ////                j++;
+        ////            mant[i] = (byte)(inchars[j] - '0');
+        ////            j++;
+        ////        }
+
+        ////    }/* simple */
+
+        ////    /* Looks good. Set the sign indicator and form, as needed. */
+        ////    // Trailing zeros are preserved
+        ////    // The rule here for form is:
+        ////    // If no E-notation, then request plain notation
+        ////    // Otherwise act as though add(0,DEFAULT) and request scientific notation
+        ////    // [form is already PLAIN]
+        ////    if (mant[0] == 0)
+        ////    {
+        ////        ind = iszero; // force to show zero
+        ////                      // negative exponent is significant (e.g., -3 for 0.000) if plain
+        ////        if (exp > 0)
+        ////            exp = 0; // positive exponent can be ignored
+        ////        if (hadexp)
+        ////        { // zero becomes single digit from add
+        ////            mant = Zero.mant;
+        ////            exp = 0;
+        ////        }
+        ////    }
+        ////    else
+        ////    { // non-zero
+        ////      // [ind was set earlier]
+        ////      // now determine form
+        ////        if (hadexp)
+        ////        {
+        ////            form = (byte)ExponentForm.Scientific;
+        ////            // 1999.06.29 check for overflow
+        ////            mag = (exp + mant.Length) - 1; // true exponent in scientific notation
+        ////            if ((mag < MinExp) | (mag > MaxExp))
+        ////                Bad(inchars);
+        ////        }
+        ////    }
+        ////    // say 'BD(c[]): mant[0] mantlen exp ind form:' mant[0] mant.length exp ind form
+        ////}
 
         /**
          * Constructs a <code>BigDecimal</code> object directly from a <code>double</code>.
@@ -859,50 +869,52 @@ namespace ICU4N.Numerics
             }/* i */
         }
 
-        /**
-         * Constructs a <code>BigDecimal</code> object from a <code>String</code>.
-         * <p>
-         * Constructs a <code>BigDecimal</code> from the parameter, which must not be <code>null</code> and must represent a
-         * valid <i>number</i>, as described formally in the documentation referred to {@link BigDecimal above}.
-         * <p>
-         * In summary, numbers in <code>String</code> form must have at least one digit, may have a leading sign, may have a
-         * decimal point, and exponential notation may be used. They follow conventional syntax, and may not contain blanks.
-         * <p>
-         * Some valid strings from which a <code>BigDecimal</code> might be constructed are:
-         *
-         * <pre>
-         *
-         * "0" -- Zero "12" -- A whole number "-76" -- A signed whole number "12.70" -- Some decimal places "+0.003" -- Plus
-         * sign is allowed "17." -- The same as 17 ".5" -- The same as 0.5 "4E+9" -- Exponential notation "0.73e-7" --
-         * Exponential notation
-         *
-         * </pre>
-         * <p>
-         * (Exponential notation means that the number includes an optional sign and a power of ten following an
-         * '<code>E</code>' that indicates how the decimal point will be shifted. Thus the <code>"4E+9"</code> above is
-         * just a short way of writing <code>4000000000</code>, and the <code>"0.73e-7"</code> is short for <code>
-         * 0.000000073</code>.)
-         * <p>
-         * The <code>BigDecimal</code> constructed from the String is in a standard form, with no blanks, as though the
-         * {@link #add(BigDecimal)} method had been used to add zero to the number with unlimited precision. If the string
-         * uses exponential notation (that is, includes an <code>e</code> or an <code>E</code>), then the <code>BigDecimal
-         * </code> number will be expressed in scientific notation (where the power of ten is adjusted so there is a single
-         * non-zero digit to the left of the decimal point); in this case if the number is zero then it will be expressed as
-         * the single digit 0, and if non-zero it will have an exponent unless that exponent would be 0. The exponent must
-         * fit in nine digits both before and after it is expressed in scientific notation.
-         * <p>
-         * Any digits in the parameter must be decimal; that is, <code>Character.digit(c, 10)</code> (where <code>c</code>
-         * is the character in question) would not return -1.
-         *
-         * @param string The <code>String</code> to be converted.
-         * @throws NumberFormatException If the parameter is not a valid number.
-         * @stable ICU 2.0
-         */
+        // ICU4N: Converted constructor to Parse/TryParse static methods
 
-        public BigDecimal(string str)
-            : this(str?.ToCharArray(), 0, str?.Length ?? 0) // ICU4N TODO: Remove this allocation and copy logic from char[] constructors
-        {
-        }
+        /////**
+        //// * Constructs a <code>BigDecimal</code> object from a <code>String</code>.
+        //// * <p>
+        //// * Constructs a <code>BigDecimal</code> from the parameter, which must not be <code>null</code> and must represent a
+        //// * valid <i>number</i>, as described formally in the documentation referred to {@link BigDecimal above}.
+        //// * <p>
+        //// * In summary, numbers in <code>String</code> form must have at least one digit, may have a leading sign, may have a
+        //// * decimal point, and exponential notation may be used. They follow conventional syntax, and may not contain blanks.
+        //// * <p>
+        //// * Some valid strings from which a <code>BigDecimal</code> might be constructed are:
+        //// *
+        //// * <pre>
+        //// *
+        //// * "0" -- Zero "12" -- A whole number "-76" -- A signed whole number "12.70" -- Some decimal places "+0.003" -- Plus
+        //// * sign is allowed "17." -- The same as 17 ".5" -- The same as 0.5 "4E+9" -- Exponential notation "0.73e-7" --
+        //// * Exponential notation
+        //// *
+        //// * </pre>
+        //// * <p>
+        //// * (Exponential notation means that the number includes an optional sign and a power of ten following an
+        //// * '<code>E</code>' that indicates how the decimal point will be shifted. Thus the <code>"4E+9"</code> above is
+        //// * just a short way of writing <code>4000000000</code>, and the <code>"0.73e-7"</code> is short for <code>
+        //// * 0.000000073</code>.)
+        //// * <p>
+        //// * The <code>BigDecimal</code> constructed from the String is in a standard form, with no blanks, as though the
+        //// * {@link #add(BigDecimal)} method had been used to add zero to the number with unlimited precision. If the string
+        //// * uses exponential notation (that is, includes an <code>e</code> or an <code>E</code>), then the <code>BigDecimal
+        //// * </code> number will be expressed in scientific notation (where the power of ten is adjusted so there is a single
+        //// * non-zero digit to the left of the decimal point); in this case if the number is zero then it will be expressed as
+        //// * the single digit 0, and if non-zero it will have an exponent unless that exponent would be 0. The exponent must
+        //// * fit in nine digits both before and after it is expressed in scientific notation.
+        //// * <p>
+        //// * Any digits in the parameter must be decimal; that is, <code>Character.digit(c, 10)</code> (where <code>c</code>
+        //// * is the character in question) would not return -1.
+        //// *
+        //// * @param string The <code>String</code> to be converted.
+        //// * @throws NumberFormatException If the parameter is not a valid number.
+        //// * @stable ICU 2.0
+        //// */
+
+        ////public BigDecimal(string str)
+        ////    : this(str?.ToCharArray(), 0, str?.Length ?? 0)
+        ////{
+        ////}
 
         /* <sgml> Make a default BigDecimal object for local use. </sgml> */
 
