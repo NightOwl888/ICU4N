@@ -20,7 +20,7 @@ namespace ICU4N.Numerics
 #if FEATURE_SERIALIZABLE
     [Serializable]
 #endif
-    internal class BigDecimal : Number, IComparable<BigDecimal> // ICU4N TODO: API - this was public in ICU4J
+    internal partial class BigDecimal : Number, IComparable<BigDecimal> // ICU4N TODO: API - this was public in ICU4J
     {
         // private static final java.lang.String $0="BigDecimal.nrx";
 
@@ -60,69 +60,122 @@ namespace ICU4N.Numerics
         public static readonly BigDecimal Ten = new BigDecimal(10);
 
         // the rounding modes (copied here for upwards compatibility)
-        /**
-         * Rounding mode to round to a more positive number.
-         *
-         * @see MathContext#ROUND_CEILING
-         * @stable ICU 2.0
-         */
-        public const RoundingMode RoundToPositiveInfinity = RoundingMode.ToPositiveInfinity;
 
-        /**
-         * Rounding mode to round towards zero.
-         *
-         * @see MathContext#ROUND_DOWN
-         * @stable ICU 2.0
-         */
-        public const RoundingMode RoundToZero = RoundingMode.ToZero;
+        /// <summary>
+        /// Rounding mode to round to a more positive number.
+        /// Used as a setting to control the rounding mode used during a
+        /// <see cref="BigDecimal"/> operation.
+        /// <para/>
+        /// If any of the discarded digits are non-zero then the result
+        /// should be rounded towards the next more positive digit.
+        /// <para/>
+        /// This is named ROUND_CEILING in ICU4J.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public const RoundingMode RoundCeiling = RoundingMode.Ceiling;
 
-        /**
-         * Rounding mode to round to a more negative number.
-         *
-         * @see MathContext#ROUND_FLOOR
-         * @stable ICU 2.0
-         */
-        public const RoundingMode RoundToNegativeInfinity = RoundingMode.ToNegativeInfinity;
+        /// <summary>
+        /// Rounding mode to round towards zero.
+        /// Used as a setting to control the rounding mode used during a
+        /// <see cref="BigDecimal"/> operation.
+        /// <para/>
+        /// All discarded digits are ignored (truncated). The result is
+        /// neither incremented nor decremented.
+        /// <para/>
+        /// This is named ROUND_DOWN in ICU4J.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public const RoundingMode RoundDown = RoundingMode.Down;
 
-        /**
-         * Rounding mode to round to nearest neighbor, where an equidistant value is rounded down.
-         *
-         * @see MathContext#ROUND_HALF_DOWN
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Rounding mode to round to a more negative number.
+        /// Used as a setting to control the rounding mode used during a
+        /// <see cref="BigDecimal"/> operation.
+        /// <para/>
+        /// If any of the discarded digits are non-zero then the result
+        /// should be rounded towards the next more negative digit.
+        /// <para/>
+        /// This is named ROUND_FLOOR in ICU4J.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public const RoundingMode RoundFloor = RoundingMode.Floor;
+
+        /// <summary>
+        /// Rounding mode to round to nearest neighbor, where an equidistant
+        /// value is rounded down.
+        /// Used as a setting to control the rounding mode used during a
+        /// <see cref="BigDecimal"/> operation.
+        /// <para/>
+        /// If the discarded digits represent greater than half (0.5 times)
+        /// the value of a one in the next position then the result should be
+        /// rounded up (away from zero).  Otherwise the discarded digits are
+        /// ignored.
+        /// <para/>
+        /// This is named ROUND_HALF_DOWN in ICU4J.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public const RoundingMode RoundHalfDown = RoundingMode.HalfDown;
 
-        /**
-         * Rounding mode to round to nearest neighbor, where an equidistant value is rounded to the nearest even neighbor.
-         *
-         * @see MathContext#ROUND_HALF_EVEN
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Rounding mode to round to nearest neighbor, where an equidistant
+        /// value is rounded to the nearest even neighbor.
+        /// Used as a setting to control the rounding mode used during a
+        /// <see cref="BigDecimal"/> operation.
+        /// <para/>
+        /// If the discarded digits represent greater than half (0.5 times)
+        /// the value of a one in the next position then the result should be
+        /// rounded up (away from zero).  If they represent less than half,
+        /// then the result should be rounded down.
+        /// <para/>
+        /// Otherwise (they represent exactly half) the result is rounded
+        /// down if its rightmost digit is even, or rounded up if its
+        /// rightmost digit is odd (to make an even digit).
+        /// <para/>
+        /// This is named ROUND_HALF_EVEN in ICU4J.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public const RoundingMode RoundHalfEven = RoundingMode.HalfEven;
 
-        /**
-         * Rounding mode to round to nearest neighbor, where an equidistant value is rounded up.
-         *
-         * @see MathContext#ROUND_HALF_UP
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Rounding mode to round to nearest neighbor, where an equidistant
+        /// value is rounded up.
+        /// Used as a setting to control the rounding mode used during a
+        /// <see cref="BigDecimal"/> operation.
+        /// <para/>
+        /// If the discarded digits represent greater than or equal to half
+        /// (0.5 times) the value of a one in the next position then the result
+        /// should be rounded up (away from zero).  Otherwise the discarded
+        /// digits are ignored.
+        /// <para/>
+        /// This is named ROUND_HALF_UP in ICU4J.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public const RoundingMode RoundHalfUp = RoundingMode.HalfUp;
 
-        /**
-         * Rounding mode to assert that no rounding is necessary.
-         *
-         * @see MathContext#ROUND_UNNECESSARY
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Rounding mode to assert that no rounding is necessary.
+        /// Used as a setting to control the rounding mode used during a
+        /// <see cref="BigDecimal"/> operation.
+        /// <para/>
+        /// Rounding (potential loss of information) is not permitted.
+        /// If any of the discarded digits are non-zero then an
+        /// <see cref="ArithmeticException"/> should be thrown.
+        /// <para/>
+        /// This is named ROUND_UNNECESSARY in ICU4J.
+        /// </summary>
         public const RoundingMode RoundUnnecessary = RoundingMode.Unnecessary;
 
-        /**
-         * Rounding mode to round away from zero.
-         *
-         * @see MathContext#ROUND_UP
-         * @stable ICU 2.0
-         */
-        public const RoundingMode RoundAwayFromZero = RoundingMode.AwayFromZero;
+        /// <summary>
+        /// Rounding mode to round away from zero.
+        /// Used as a setting to control the rounding mode used during a
+        /// <see cref="BigDecimal"/> operation.
+        /// <para/>
+        /// If any of the discarded digits are non-zero then the result will
+        /// be rounded up (away from zero).
+        /// <para/>
+        /// This is named ROUND_UP in ICU4J.
+        /// </summary>
+        public const RoundingMode RoundUp = RoundingMode.Up;
 
         /* properties constant private */// locals
         private const sbyte ispos = 1; // ind: indicates positive (must be 1)
@@ -199,7 +252,7 @@ namespace ICU4N.Numerics
         /**
          * The exponent.
          * <p>
-         * For fixed point arithmetic, scale is <code>-exp</code>, and can apply to zero.
+         * For fixed point arithmetic, scale is <c>-exp</c>, and can apply to zero.
          *
          * Note that this property can have a value less than MinExp when the mantissa has more than one digit.
          *
@@ -212,6 +265,66 @@ namespace ICU4N.Numerics
         /* ---------------------------------------------------------------- */
         /* Constructors */
         /* ---------------------------------------------------------------- */
+
+        /// <summary>
+        /// Private constructor used by parsers to create a BigDecimal instance.
+        /// </summary>
+        /// <param name="indicator">
+        /// The indicator. This may take the values:
+        /// <list type="table">
+        ///     <item>
+        ///         <term><see cref="ispos"/></term>
+        ///         <description>The number is positive.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="iszero"/></term>
+        ///         <description>The number is zero.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="isneg"/></term>
+        ///         <description>The number is negative.</description>
+        ///     </item>
+        /// </list>
+        /// </param>
+        /// <param name="form">
+        /// The formatting style. This may take the values:
+        /// <list type="table">
+        ///     <item>
+        ///         <term><see cref="ExponentForm.Plain"/></term>
+        ///         <description>No exponent needed.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="ExponentForm.Scientific"/></term>
+        ///         <description>Scientific notation required.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term><see cref="ExponentForm.Engineering"/></term>
+        ///         <description>Engineering notation required.</description>
+        ///     </item>
+        /// </list>
+        /// </param>
+        /// <param name="mantissa">
+        /// The value of the mantissa.
+        /// <para/>
+        /// For efficiency (speed), this is a byte array, with each byte taking a value of 0 -&gt; 9.
+        /// <para/>
+        /// If the first byte is 0 then the value of the number is zero (and <c>mantissa.Length=1</c>, except when constructed from a
+        /// plain number, for example, 0.000).
+        /// </param>
+        /// <param name="exponent">
+        /// The exponent.
+        /// <para/>
+        /// For fixed point arithmetic, scale is <c>-exp</c>, and can apply to zero.
+        /// <para/>
+        /// Note that this property can have a value less than MinExp when the mantissa has more than one digit.
+        /// </param>
+        private BigDecimal(sbyte indicator, byte form, byte[] mantissa, int exponent)
+        {
+            this.ind = indicator;
+            this.form = form;
+            this.mant = mantissa ?? throw new ArgumentNullException(nameof(mantissa));
+            this.exp = exponent;
+        }
 
         ///**
         // * Constructs a <code>BigDecimal</code> object from a <code>java.math.BigDecimal</code>.
@@ -3965,7 +4078,7 @@ namespace ICU4N.Numerics
                         if (first >= 5)
                             increment = sign;
                     }
-                    else if (mode == RoundUnnecessary)
+                    else if (mode == RoundingMode.Unnecessary)
                     { // default for setScale()
                       // discarding any non-zero digits is an error
                         if ((!(AllZero(oldmant, len))))
@@ -3979,7 +4092,7 @@ namespace ICU4N.Numerics
                             if ((!(AllZero(oldmant, len + 1))))
                                 increment = sign;
                     }
-                    else if (mode == RoundHalfEven)
+                    else if (mode == RoundingMode.HalfEven)
                     { // 0.5000 goes down if left digit even
                         if (first > 5)
                             increment = sign;
@@ -3992,22 +4105,22 @@ namespace ICU4N.Numerics
                                 increment = sign;
                         }
                     }
-                    else if (mode == RoundToZero)
+                    else if (mode == RoundingMode.Down)
                     {
                         // never increment
                     }
-                    else if (mode == RoundAwayFromZero)
+                    else if (mode == RoundingMode.Up)
                     { // increment if discarded non-zero
                         if ((!(AllZero(oldmant, len))))
                             increment = sign;
                     }
-                    else if (mode == RoundToPositiveInfinity)
+                    else if (mode == RoundingMode.Ceiling)
                     { // more positive
                         if (sign > 0)
                             if ((!(AllZero(oldmant, len))))
                                 increment = sign;
                     }
-                    else if (mode == RoundToNegativeInfinity)
+                    else if (mode == RoundingMode.Floor)
                     { // more negative
                         if (sign < 0)
                             if ((!(AllZero(oldmant, len))))
@@ -4207,13 +4320,14 @@ namespace ICU4N.Numerics
         }
 
 
-        private static class SR
+        internal static class SR
         {
             public const string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
             public const string ArgumentOutOfRange_IndexLength = "Index and length must refer to a location within the string.";
             public const string ArgumentOutOfRange_NeedPositiveNum = "Positive non-zero number required.";
             public const string Overflow_NotANumber = "The value is not a number.";
             public const string Overflow_BigDecInfinity = "Value was either too large or too small for a BigDecimal.";
+            public const string Format_InvalidString = "Input string was not in a correct format. Value: {0}";
         }
 
     }

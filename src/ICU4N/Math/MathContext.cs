@@ -44,7 +44,7 @@ namespace ICU4N.Numerics
     /// Rounding mode to be used during a <see cref="BigDecimal"/> operation.
     /// </summary>
     /// <stable>ICU 2.0</stable>
-    internal enum RoundingMode
+    internal enum RoundingMode // ICU4N TODO: API Align names with .NET
     {
         /// <summary>
         /// Rounding mode to round to a more positive number.
@@ -57,7 +57,7 @@ namespace ICU4N.Numerics
         /// This is named ROUND_CEILING in ICU4J.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        ToPositiveInfinity = 2,
+        Ceiling = 2,
 
         /// <summary>
         /// Rounding mode to round towards zero.
@@ -70,7 +70,7 @@ namespace ICU4N.Numerics
         /// This is named ROUND_DOWN in ICU4J.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        ToZero = 1,
+        Down = 1,
 
         /// <summary>
         /// Rounding mode to round to a more negative number.
@@ -83,7 +83,7 @@ namespace ICU4N.Numerics
         /// This is named ROUND_FLOOR in ICU4J.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        ToNegativeInfinity = 3,
+        Floor = 3,
 
         /// <summary>
         /// Rounding mode to round to nearest neighbor, where an equidistant
@@ -160,7 +160,7 @@ namespace ICU4N.Numerics
         /// <para/>
         /// This is named ROUND_UP in ICU4J.
         /// </summary>
-        AwayFromZero = 0,
+        Up = 0, // ICU4N TODO: Rearrange this to make HalfUp the default (with a value of 0) so we don't need to use -1.
     }
 
     /// <summary>
@@ -178,7 +178,7 @@ namespace ICU4N.Numerics
         /// more zeros.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        Plain = 0, // [no exponent]
+        Plain = 0, // [no exponent] // ICU4N TODO: Rearrange this to make Scientific the default (with a value of 0) so we don't need to use -1.
 
         /// <summary>
         /// Standard floating point notation (with scientific exponential
@@ -315,7 +315,7 @@ namespace ICU4N.Numerics
         /// This is named ROUND_CEILING in ICU4J.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const RoundingMode RoundToPositiveInfinity = Numerics.RoundingMode.ToPositiveInfinity;
+        public const RoundingMode RoundCeiling = RoundingMode.Ceiling;
 
         /// <summary>
         /// Rounding mode to round towards zero.
@@ -328,7 +328,7 @@ namespace ICU4N.Numerics
         /// This is named ROUND_DOWN in ICU4J.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const RoundingMode RoundToZero = Numerics.RoundingMode.ToZero;
+        public const RoundingMode RoundDown = RoundingMode.Down;
 
         /// <summary>
         /// Rounding mode to round to a more negative number.
@@ -341,7 +341,7 @@ namespace ICU4N.Numerics
         /// This is named ROUND_FLOOR in ICU4J.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const RoundingMode RoundToNegativeInfinity = Numerics.RoundingMode.ToNegativeInfinity;
+        public const RoundingMode RoundFloor = RoundingMode.Floor;
 
         /// <summary>
         /// Rounding mode to round to nearest neighbor, where an equidistant
@@ -357,7 +357,7 @@ namespace ICU4N.Numerics
         /// This is named ROUND_HALF_DOWN in ICU4J.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const RoundingMode RoundHalfDown = Numerics.RoundingMode.HalfDown;
+        public const RoundingMode RoundHalfDown = RoundingMode.HalfDown;
 
         /// <summary>
         /// Rounding mode to round to nearest neighbor, where an equidistant
@@ -377,7 +377,7 @@ namespace ICU4N.Numerics
         /// This is named ROUND_HALF_EVEN in ICU4J.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const RoundingMode RoundHalfEven = Numerics.RoundingMode.HalfEven;
+        public const RoundingMode RoundHalfEven = RoundingMode.HalfEven;
 
         /// <summary>
         /// Rounding mode to round to nearest neighbor, where an equidistant
@@ -393,7 +393,7 @@ namespace ICU4N.Numerics
         /// This is named ROUND_HALF_UP in ICU4J.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const RoundingMode RoundHalfUp = Numerics.RoundingMode.HalfUp;
+        public const RoundingMode RoundHalfUp = RoundingMode.HalfUp;
 
         /// <summary>
         /// Rounding mode to assert that no rounding is necessary.
@@ -406,7 +406,7 @@ namespace ICU4N.Numerics
         /// <para/>
         /// This is named ROUND_UNNECESSARY in ICU4J.
         /// </summary>
-        public const RoundingMode RoundUnnecessary = Numerics.RoundingMode.Unnecessary;
+        public const RoundingMode RoundUnnecessary = RoundingMode.Unnecessary;
 
         /// <summary>
         /// Rounding mode to round away from zero.
@@ -418,7 +418,7 @@ namespace ICU4N.Numerics
         /// <para/>
         /// This is named ROUND_UP in ICU4J.
         /// </summary>
-        public const RoundingMode RoundAwayFromZero = Numerics.RoundingMode.AwayFromZero;
+        public const RoundingMode RoundUp = RoundingMode.Up;
 
 
         /* properties shared */
@@ -483,7 +483,7 @@ namespace ICU4N.Numerics
         private const int MAX_DIGITS = 999999999;   // largest value for DIGITS.  If increased,
                                                     // the BigDecimal class may need update.
                                                     // list of valid rounding mode values, most common two first
-        private static readonly RoundingMode[] ROUNDS = new RoundingMode[] { RoundingMode.HalfUp, RoundingMode.Unnecessary, RoundingMode.ToPositiveInfinity, RoundingMode.ToZero, RoundingMode.ToNegativeInfinity, RoundingMode.HalfDown, RoundingMode.HalfEven, RoundingMode.AwayFromZero };
+        private static readonly RoundingMode[] ROUNDS = new RoundingMode[] { RoundingMode.HalfUp, RoundingMode.Unnecessary, RoundingMode.Ceiling, RoundingMode.Down, RoundingMode.Floor, RoundingMode.HalfDown, RoundingMode.HalfEven, RoundingMode.Up };
 
         // ICU4N TODO: Revisit these names - we should make them match the RoundingMode enum, ideally.
         private static readonly string[] ROUNDWORDS= new string[] { "ROUND_HALF_UP", "ROUND_UNNECESSARY", "ROUND_CEILING", "ROUND_DOWN", "ROUND_FLOOR", "ROUND_HALF_DOWN", "ROUND_HALF_EVEN", "ROUND_UP" }; // matching names of the ROUNDS values

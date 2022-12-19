@@ -1,4 +1,6 @@
 ﻿using ICU4N.Numerics;
+using J2N;
+using J2N.Globalization;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -184,43 +186,44 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("con005", (BigDecimal.One.ToInt32Exact()) == 1);
             TestFmwk.assertTrue("con006", (BigDecimal.Ten.ToInt32Exact()) == 10);
 
-#if FEATURE_IKVM
-            // [java.math.] BigDecimal
-            TestFmwk.assertTrue("cbd001", ((new BigDecimal(new java.math.BigDecimal("0").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("cbd002", ((new BigDecimal(new java.math.BigDecimal("1").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("cbd003", ((new BigDecimal(new java.math.BigDecimal("10").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("10"));
-            TestFmwk.assertTrue("cbd004", ((new BigDecimal(new java.math.BigDecimal("1000").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("1000"));
-            TestFmwk.assertTrue("cbd005", ((new BigDecimal(new java.math.BigDecimal("10.0").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("10.0"));
-            TestFmwk.assertTrue("cbd006", ((new BigDecimal(new java.math.BigDecimal("10.1").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("10.1"));
-            TestFmwk.assertTrue("cbd007", ((new BigDecimal(new java.math.BigDecimal("-1.1").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("-1.1"));
-            TestFmwk.assertTrue("cbd008", ((new BigDecimal(new java.math.BigDecimal("-9.0").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("-9.0"));
-            TestFmwk.assertTrue("cbd009", ((new BigDecimal(new java.math.BigDecimal("0.9").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("0.9"));
+            // ICU4N: Made BigDecimal(string) constructor into BigDecimal.Parse(string)
+//#if FEATURE_IKVM
+//            // [java.math.] BigDecimal
+//            TestFmwk.assertTrue("cbd001", ((new BigDecimal(new java.math.BigDecimal("0").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+//            TestFmwk.assertTrue("cbd002", ((new BigDecimal(new java.math.BigDecimal("1").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+//            TestFmwk.assertTrue("cbd003", ((new BigDecimal(new java.math.BigDecimal("10").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("10"));
+//            TestFmwk.assertTrue("cbd004", ((new BigDecimal(new java.math.BigDecimal("1000").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("1000"));
+//            TestFmwk.assertTrue("cbd005", ((new BigDecimal(new java.math.BigDecimal("10.0").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("10.0"));
+//            TestFmwk.assertTrue("cbd006", ((new BigDecimal(new java.math.BigDecimal("10.1").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("10.1"));
+//            TestFmwk.assertTrue("cbd007", ((new BigDecimal(new java.math.BigDecimal("-1.1").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("-1.1"));
+//            TestFmwk.assertTrue("cbd008", ((new BigDecimal(new java.math.BigDecimal("-9.0").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("-9.0"));
+//            TestFmwk.assertTrue("cbd009", ((new BigDecimal(new java.math.BigDecimal("0.9").ToString())).ToString(CultureInfo.InvariantCulture)).Equals("0.9"));
 
-            num = "123456789.123456789";
-            TestFmwk.assertTrue("cbd010", ((new BigDecimal(new java.math.BigDecimal(num).ToString())).ToString(CultureInfo.InvariantCulture)).Equals(num));
-            num = "123456789.000000000";
-            TestFmwk.assertTrue("cbd011", ((new BigDecimal(new java.math.BigDecimal(num).ToString())).ToString(CultureInfo.InvariantCulture)).Equals(num));
-            num = "123456789000000000";
-            TestFmwk.assertTrue("cbd012", ((new BigDecimal(new java.math.BigDecimal(num).ToString())).ToString(CultureInfo.InvariantCulture)).Equals(num));
-            num = "0.00000123456789";
-            TestFmwk.assertTrue("cbd013", ((new BigDecimal(new java.math.BigDecimal(num).ToString())).ToString(CultureInfo.InvariantCulture)).Equals(num));
-            num = "0.000000123456789";
+//            num = "123456789.123456789";
+//            TestFmwk.assertTrue("cbd010", ((new BigDecimal(new java.math.BigDecimal(num).ToString())).ToString(CultureInfo.InvariantCulture)).Equals(num));
+//            num = "123456789.000000000";
+//            TestFmwk.assertTrue("cbd011", ((new BigDecimal(new java.math.BigDecimal(num).ToString())).ToString(CultureInfo.InvariantCulture)).Equals(num));
+//            num = "123456789000000000";
+//            TestFmwk.assertTrue("cbd012", ((new BigDecimal(new java.math.BigDecimal(num).ToString())).ToString(CultureInfo.InvariantCulture)).Equals(num));
+//            num = "0.00000123456789";
+//            TestFmwk.assertTrue("cbd013", ((new BigDecimal(new java.math.BigDecimal(num).ToString())).ToString(CultureInfo.InvariantCulture)).Equals(num));
+//            num = "0.000000123456789";
 
-            // ignore format change issues with 1.5
-            //if (!isJDK15OrLater)
-            //    TestFmwk.assertTrue("cbd014", ((new BigDecimal(new java.math.BigDecimal(num).ToString())).ToString(CultureInfo.InvariantCulture)).Equals(num));
+//            // ignore format change issues with 1.5
+//            //if (!isJDK15OrLater)
+//            //    TestFmwk.assertTrue("cbd014", ((new BigDecimal(new java.math.BigDecimal(num).ToString())).ToString(CultureInfo.InvariantCulture)).Equals(num));
 
-            // ICU4N TODO: java.math.BigDecimal constructor overload
-            //try
-            //{
-            //    new BigDecimal((Deveel.Math.BigDecimal)null);
-            //    flag = false;
-            //}
-            //catch (ArgumentNullException e3) {
-            //    flag = true;
-            //}/* checknull */
-            //TestFmwk.assertTrue("cbi015", flag);
-
+//            // ICU4N TODO: java.math.BigDecimal constructor overload
+//            //try
+//            //{
+//            //    new BigDecimal((Deveel.Math.BigDecimal)null);
+//            //    flag = false;
+//            //}
+//            //catch (ArgumentNullException e3) {
+//            //    flag = true;
+//            //}/* checknull */
+//            //TestFmwk.assertTrue("cbi015", flag);
+//#endif
             // BigInteger
             bip = BigInteger.Parse("987654321987654321987654321", CultureInfo.InvariantCulture); // biggie +ve
             biz = BigInteger.Parse("0", CultureInfo.InvariantCulture); // biggie 0
@@ -228,7 +231,6 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("cbi001", ((new BigDecimal(bip)).ToString(CultureInfo.InvariantCulture)).Equals(bip.ToString(CultureInfo.InvariantCulture)));
             TestFmwk.assertTrue("cbi002", ((new BigDecimal(biz)).ToString(CultureInfo.InvariantCulture)).Equals("0"));
             TestFmwk.assertTrue("cbi003", ((new BigDecimal(bin)).ToString(CultureInfo.InvariantCulture)).Equals(bin.ToString(CultureInfo.InvariantCulture)));
-#endif
 
             // ICU4N: Struct cannot be null
             //try
@@ -298,102 +300,104 @@ namespace ICU4N.Dev.Test.BigDec
             }/* checknull */
             TestFmwk.assertTrue("cca010", flag);
 
-            // char[],int,int
-            // We just test it's there, and that offsets work.
-            // Functionality is tested by BigDecimal(String).
-            ca = ("123.45").ToCharArray();
-            TestFmwk.assertTrue("cca101", ((new BigDecimal(ca, 0, 6)).ToString(CultureInfo.InvariantCulture)).Equals("123.45"));
-            TestFmwk.assertTrue("cca102", ((new BigDecimal(ca, 1, 5)).ToString(CultureInfo.InvariantCulture)).Equals("23.45"));
-            TestFmwk.assertTrue("cca103", ((new BigDecimal(ca, 2, 4)).ToString(CultureInfo.InvariantCulture)).Equals("3.45"));
-            TestFmwk.assertTrue("cca104", ((new BigDecimal(ca, 3, 3)).ToString(CultureInfo.InvariantCulture)).Equals("0.45"));
-            TestFmwk.assertTrue("cca105", ((new BigDecimal(ca, 4, 2)).ToString(CultureInfo.InvariantCulture)).Equals("45"));
-            TestFmwk.assertTrue("cca106", ((new BigDecimal(ca, 5, 1)).ToString(CultureInfo.InvariantCulture)).Equals("5"));
+            // ICU4N: Constructor made into BigDecimal.Parse(char[], int, int, NumberStyle, NumberFormatInfo)
 
-            TestFmwk.assertTrue("cca110", ((new BigDecimal(ca, 0, 1)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("cca111", ((new BigDecimal(ca, 1, 1)).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("cca112", ((new BigDecimal(ca, 2, 1)).ToString(CultureInfo.InvariantCulture)).Equals("3"));
-            TestFmwk.assertTrue("cca113", ((new BigDecimal(ca, 4, 1)).ToString(CultureInfo.InvariantCulture)).Equals("4"));
+            ////// char[],int,int
+            ////// We just test it's there, and that offsets work.
+            ////// Functionality is tested by BigDecimal(String).
+            ////ca = ("123.45").ToCharArray();
+            ////TestFmwk.assertTrue("cca101", ((new BigDecimal(ca, 0, 6)).ToString(CultureInfo.InvariantCulture)).Equals("123.45"));
+            ////TestFmwk.assertTrue("cca102", ((new BigDecimal(ca, 1, 5)).ToString(CultureInfo.InvariantCulture)).Equals("23.45"));
+            ////TestFmwk.assertTrue("cca103", ((new BigDecimal(ca, 2, 4)).ToString(CultureInfo.InvariantCulture)).Equals("3.45"));
+            ////TestFmwk.assertTrue("cca104", ((new BigDecimal(ca, 3, 3)).ToString(CultureInfo.InvariantCulture)).Equals("0.45"));
+            ////TestFmwk.assertTrue("cca105", ((new BigDecimal(ca, 4, 2)).ToString(CultureInfo.InvariantCulture)).Equals("45"));
+            ////TestFmwk.assertTrue("cca106", ((new BigDecimal(ca, 5, 1)).ToString(CultureInfo.InvariantCulture)).Equals("5"));
 
-            TestFmwk.assertTrue("cca120", ((new BigDecimal(ca, 0, 2)).ToString(CultureInfo.InvariantCulture)).Equals("12"));
-            TestFmwk.assertTrue("cca121", ((new BigDecimal(ca, 1, 2)).ToString(CultureInfo.InvariantCulture)).Equals("23"));
-            TestFmwk.assertTrue("cca122", ((new BigDecimal(ca, 2, 2)).ToString(CultureInfo.InvariantCulture)).Equals("3"));
-            TestFmwk.assertTrue("cca123", ((new BigDecimal(ca, 3, 2)).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
+            ////TestFmwk.assertTrue("cca110", ((new BigDecimal(ca, 0, 1)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            ////TestFmwk.assertTrue("cca111", ((new BigDecimal(ca, 1, 1)).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            ////TestFmwk.assertTrue("cca112", ((new BigDecimal(ca, 2, 1)).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+            ////TestFmwk.assertTrue("cca113", ((new BigDecimal(ca, 4, 1)).ToString(CultureInfo.InvariantCulture)).Equals("4"));
 
-            TestFmwk.assertTrue("cca130", ((new BigDecimal(ca, 0, 3)).ToString(CultureInfo.InvariantCulture)).Equals("123"));
-            TestFmwk.assertTrue("cca131", ((new BigDecimal(ca, 1, 3)).ToString(CultureInfo.InvariantCulture)).Equals("23"));
-            TestFmwk.assertTrue("cca132", ((new BigDecimal(ca, 2, 3)).ToString(CultureInfo.InvariantCulture)).Equals("3.4"));
+            ////TestFmwk.assertTrue("cca120", ((new BigDecimal(ca, 0, 2)).ToString(CultureInfo.InvariantCulture)).Equals("12"));
+            ////TestFmwk.assertTrue("cca121", ((new BigDecimal(ca, 1, 2)).ToString(CultureInfo.InvariantCulture)).Equals("23"));
+            ////TestFmwk.assertTrue("cca122", ((new BigDecimal(ca, 2, 2)).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+            ////TestFmwk.assertTrue("cca123", ((new BigDecimal(ca, 3, 2)).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
 
-            TestFmwk.assertTrue("cca140", ((new BigDecimal(ca, 0, 4)).ToString(CultureInfo.InvariantCulture)).Equals("123"));
-            TestFmwk.assertTrue("cca141", ((new BigDecimal(ca, 1, 4)).ToString(CultureInfo.InvariantCulture)).Equals("23.4"));
+            ////TestFmwk.assertTrue("cca130", ((new BigDecimal(ca, 0, 3)).ToString(CultureInfo.InvariantCulture)).Equals("123"));
+            ////TestFmwk.assertTrue("cca131", ((new BigDecimal(ca, 1, 3)).ToString(CultureInfo.InvariantCulture)).Equals("23"));
+            ////TestFmwk.assertTrue("cca132", ((new BigDecimal(ca, 2, 3)).ToString(CultureInfo.InvariantCulture)).Equals("3.4"));
 
-            TestFmwk.assertTrue("cca150", ((new BigDecimal(ca, 0, 5)).ToString(CultureInfo.InvariantCulture)).Equals("123.4"));
+            ////TestFmwk.assertTrue("cca140", ((new BigDecimal(ca, 0, 4)).ToString(CultureInfo.InvariantCulture)).Equals("123"));
+            ////TestFmwk.assertTrue("cca141", ((new BigDecimal(ca, 1, 4)).ToString(CultureInfo.InvariantCulture)).Equals("23.4"));
 
-            // a couple of oddies
-            ca = ("x23.4x").ToCharArray();
-            TestFmwk.assertTrue("cca160", ((new BigDecimal(ca, 1, 4)).ToString(CultureInfo.InvariantCulture)).Equals("23.4"));
-            TestFmwk.assertTrue("cca161", ((new BigDecimal(ca, 1, 1)).ToString(CultureInfo.InvariantCulture)).Equals("2"));
-            TestFmwk.assertTrue("cca162", ((new BigDecimal(ca, 4, 1)).ToString(CultureInfo.InvariantCulture)).Equals("4"));
+            ////TestFmwk.assertTrue("cca150", ((new BigDecimal(ca, 0, 5)).ToString(CultureInfo.InvariantCulture)).Equals("123.4"));
 
-            ca = ("0123456789.9876543210").ToCharArray();
-            TestFmwk.assertTrue("cca163", ((new BigDecimal(ca, 0, 21)).ToString(CultureInfo.InvariantCulture)).Equals("123456789.9876543210"));
-            TestFmwk.assertTrue("cca164", ((new BigDecimal(ca, 1, 20)).ToString(CultureInfo.InvariantCulture)).Equals("123456789.9876543210"));
-            TestFmwk.assertTrue("cca165", ((new BigDecimal(ca, 2, 19)).ToString(CultureInfo.InvariantCulture)).Equals("23456789.9876543210"));
-            TestFmwk.assertTrue("cca166", ((new BigDecimal(ca, 2, 18)).ToString(CultureInfo.InvariantCulture)).Equals("23456789.987654321"));
-            TestFmwk.assertTrue("cca167", ((new BigDecimal(ca, 2, 17)).ToString(CultureInfo.InvariantCulture)).Equals("23456789.98765432"));
-            TestFmwk.assertTrue("cca168", ((new BigDecimal(ca, 2, 16)).ToString(CultureInfo.InvariantCulture)).Equals("23456789.9876543"));
+            ////// a couple of oddies
+            ////ca = ("x23.4x").ToCharArray();
+            ////TestFmwk.assertTrue("cca160", ((new BigDecimal(ca, 1, 4)).ToString(CultureInfo.InvariantCulture)).Equals("23.4"));
+            ////TestFmwk.assertTrue("cca161", ((new BigDecimal(ca, 1, 1)).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+            ////TestFmwk.assertTrue("cca162", ((new BigDecimal(ca, 4, 1)).ToString(CultureInfo.InvariantCulture)).Equals("4"));
 
-            try
-            {
-                new BigDecimal((char[])null, 0, 1);
-                flag = false;
-            }
-            catch (ArgumentNullException e8)
-            {
-                flag = true;
-            }/* checknull */
-            TestFmwk.assertTrue("cca200", flag);
+            ////ca = ("0123456789.9876543210").ToCharArray();
+            ////TestFmwk.assertTrue("cca163", ((new BigDecimal(ca, 0, 21)).ToString(CultureInfo.InvariantCulture)).Equals("123456789.9876543210"));
+            ////TestFmwk.assertTrue("cca164", ((new BigDecimal(ca, 1, 20)).ToString(CultureInfo.InvariantCulture)).Equals("123456789.9876543210"));
+            ////TestFmwk.assertTrue("cca165", ((new BigDecimal(ca, 2, 19)).ToString(CultureInfo.InvariantCulture)).Equals("23456789.9876543210"));
+            ////TestFmwk.assertTrue("cca166", ((new BigDecimal(ca, 2, 18)).ToString(CultureInfo.InvariantCulture)).Equals("23456789.987654321"));
+            ////TestFmwk.assertTrue("cca167", ((new BigDecimal(ca, 2, 17)).ToString(CultureInfo.InvariantCulture)).Equals("23456789.98765432"));
+            ////TestFmwk.assertTrue("cca168", ((new BigDecimal(ca, 2, 16)).ToString(CultureInfo.InvariantCulture)).Equals("23456789.9876543"));
 
-            try
-            {
-                new BigDecimal("123".ToCharArray(), 0, 0);
-                flag = false;
-            }
-            catch (FormatException e9) // ICU4N TODO: Handle parse with 0 length
-            {
-                flag = true;
-            }/* checklen */
-            TestFmwk.assertTrue("cca201", flag);
+            ////try
+            ////{
+            ////    new BigDecimal((char[])null, 0, 1);
+            ////    flag = false;
+            ////}
+            ////catch (ArgumentNullException e8)
+            ////{
+            ////    flag = true;
+            ////}/* checknull */
+            ////TestFmwk.assertTrue("cca200", flag);
 
-            try
-            {
-                new BigDecimal("123".ToCharArray(), 2, 4);
-                flag = false;
-            }
-            catch (ArgumentOutOfRangeException e10)
-            { // anything OK
-                flag = true;
-            }/* checkbound */
-            TestFmwk.assertTrue("cca202", flag);
-            try
-            {
-                new BigDecimal("123".ToCharArray(), -1, 2);
-                flag = false;
-            }
-            catch (ArgumentOutOfRangeException e11)
-            { // anything OK
-                flag = true;
-            }/* checkbound2 */
-            TestFmwk.assertTrue("cca203", flag);
-            try
-            {
-                new BigDecimal("123".ToCharArray(), 1, -2);
-                flag = false;
-            }
-            catch (ArgumentOutOfRangeException e12)
-            { // anything OK
-                flag = true;
-            }/* checkbound3 */
-            TestFmwk.assertTrue("cca204", flag);
+            ////try
+            ////{
+            ////    new BigDecimal("123".ToCharArray(), 0, 0);
+            ////    flag = false;
+            ////}
+            ////catch (FormatException e9) // ICU4N TODO: Handle parse with 0 length
+            ////{
+            ////    flag = true;
+            ////}/* checklen */
+            ////TestFmwk.assertTrue("cca201", flag);
+
+            ////try
+            ////{
+            ////    new BigDecimal("123".ToCharArray(), 2, 4);
+            ////    flag = false;
+            ////}
+            ////catch (ArgumentOutOfRangeException e10)
+            ////{ // anything OK
+            ////    flag = true;
+            ////}/* checkbound */
+            ////TestFmwk.assertTrue("cca202", flag);
+            ////try
+            ////{
+            ////    new BigDecimal("123".ToCharArray(), -1, 2);
+            ////    flag = false;
+            ////}
+            ////catch (ArgumentOutOfRangeException e11)
+            ////{ // anything OK
+            ////    flag = true;
+            ////}/* checkbound2 */
+            ////TestFmwk.assertTrue("cca203", flag);
+            ////try
+            ////{
+            ////    new BigDecimal("123".ToCharArray(), 1, -2);
+            ////    flag = false;
+            ////}
+            ////catch (ArgumentOutOfRangeException e12)
+            ////{ // anything OK
+            ////    flag = true;
+            ////}/* checkbound3 */
+            ////TestFmwk.assertTrue("cca204", flag);
 
             // double [deprecated]
             // Note that many of these differ from the valueOf(double) results.
@@ -744,14 +748,14 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("cuc003", (BigDecimal.Ten.ToString(CultureInfo.InvariantCulture)).Equals("10"));
 
             RoundingMode constantVal; // workaround for "Comparing identical expressions" warnings
-            TestFmwk.assertTrue("cuc010", BigDecimal.RoundToPositiveInfinity == (constantVal = RoundingMode.ToPositiveInfinity));
-            TestFmwk.assertTrue("cuc011", BigDecimal.RoundToZero == (constantVal = RoundingMode.ToZero));
-            TestFmwk.assertTrue("cuc012", BigDecimal.RoundToNegativeInfinity == (constantVal = RoundingMode.ToNegativeInfinity));
+            TestFmwk.assertTrue("cuc010", BigDecimal.RoundCeiling == (constantVal = RoundingMode.Ceiling));
+            TestFmwk.assertTrue("cuc011", BigDecimal.RoundDown == (constantVal = RoundingMode.Down));
+            TestFmwk.assertTrue("cuc012", BigDecimal.RoundFloor == (constantVal = RoundingMode.Floor));
             TestFmwk.assertTrue("cuc013", BigDecimal.RoundHalfDown == (constantVal = RoundingMode.HalfDown));
             TestFmwk.assertTrue("cuc014", BigDecimal.RoundHalfEven == (constantVal = RoundingMode.HalfEven));
             TestFmwk.assertTrue("cuc015", BigDecimal.RoundHalfUp == (constantVal = RoundingMode.HalfUp));
             TestFmwk.assertTrue("cuc016", BigDecimal.RoundUnnecessary == (constantVal = RoundingMode.Unnecessary));
-            TestFmwk.assertTrue("cuc017", BigDecimal.RoundAwayFromZero == (constantVal = RoundingMode.AwayFromZero));
+            TestFmwk.assertTrue("cuc017", BigDecimal.RoundUp == (constantVal = RoundingMode.Up));
 
             TestFmwk.assertTrue("cuc020", (MathContext.Default.Digits) == 9);
             TestFmwk.assertTrue("cuc021", (MathContext.Default.Form) == ExponentForm.Scientific);
@@ -1258,14 +1262,14 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("div328", ((new BigDecimal("999999")).Divide(new BigDecimal("1"), mc6).ToString(CultureInfo.InvariantCulture)).Equals("999999"));
 
             // check rounding explicitly [note: digits+1 truncation]
-            rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundToPositiveInfinity);
+            rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundCeiling);
             TestFmwk.assertTrue("div330", ((new BigDecimal("1.50")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
             TestFmwk.assertTrue("div331", ((new BigDecimal("1.51")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
             TestFmwk.assertTrue("div332", ((new BigDecimal("1.55")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
-            rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundToZero);
+            rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundDown);
             TestFmwk.assertTrue("div333", ((new BigDecimal("1.55")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
             TestFmwk.assertTrue("div334", ((new BigDecimal("1.59")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
-            rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundToNegativeInfinity);
+            rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundFloor);
             TestFmwk.assertTrue("div335", ((new BigDecimal("1.55")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
             TestFmwk.assertTrue("div336", ((new BigDecimal("1.59")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
             rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundHalfDown);
@@ -1280,7 +1284,7 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("div343", ((new BigDecimal("1.45")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
             TestFmwk.assertTrue("div344", ((new BigDecimal("1.50")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
             TestFmwk.assertTrue("div345", ((new BigDecimal("1.55")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
-            rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundAwayFromZero);
+            rmcd = new MathContext(2, MathContext.Scientific, false, MathContext.RoundUp);
             TestFmwk.assertTrue("div346", ((new BigDecimal("1.50")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.5"));
             TestFmwk.assertTrue("div347", ((new BigDecimal("1.51")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
             TestFmwk.assertTrue("div348", ((new BigDecimal("1.55")).Divide(one, rmcd).ToString(CultureInfo.InvariantCulture)).Equals("1.6"));
@@ -1317,7 +1321,7 @@ namespace ICU4N.Dev.Test.BigDec
 
             // - Fixed point; explicit scales & rounds [old BigDecimal divides]
             rhu = MathContext.RoundHalfUp;
-            rd = MathContext.RoundToZero;
+            rd = MathContext.RoundDown;
             TestFmwk.assertTrue("div001", ((new BigDecimal("0")).Divide(new BigDecimal("3")).ToString(CultureInfo.InvariantCulture)).Equals("0"));
             TestFmwk.assertTrue("div002", ((new BigDecimal("0")).Divide(new BigDecimal("3"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("0"));
             TestFmwk.assertTrue("div003", ((new BigDecimal("0")).Divide(new BigDecimal("3"), 0, rhu).ToString(CultureInfo.InvariantCulture)).Equals("0"));
@@ -1378,7 +1382,7 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("div070", ((new BigDecimal("9.7")).Divide(new BigDecimal("9.9"), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1.0"));
             TestFmwk.assertTrue("div071", ((new BigDecimal("9.")).Divide(new BigDecimal("9."), rhu).ToString(CultureInfo.InvariantCulture)).Equals("1"));
 
-            rd = MathContext.RoundToZero; // test this is actually being used
+            rd = MathContext.RoundDown; // test this is actually being used
             TestFmwk.assertTrue("div080", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 0, rd).ToString(CultureInfo.InvariantCulture)).Equals("0"));
             TestFmwk.assertTrue("div081", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 1, rd).ToString(CultureInfo.InvariantCulture)).Equals("0.6"));
             TestFmwk.assertTrue("div082", ((new BigDecimal("2")).Divide(new BigDecimal("3"), 2, rd).ToString(CultureInfo.InvariantCulture)).Equals("0.66"));
@@ -1395,15 +1399,15 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("div096", ((new BigDecimal("1000")).Divide(new BigDecimal("5000"), 1, ru).ToString(CultureInfo.InvariantCulture)).Equals("0.2"));
 
             // check rounding explicitly
-            TestFmwk.assertTrue("div101", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundToPositiveInfinity).ToString(CultureInfo.InvariantCulture)).Equals("0.06"));
-            TestFmwk.assertTrue("div102", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundToPositiveInfinity).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("div103", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundToPositiveInfinity).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("div104", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundToZero).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
-            TestFmwk.assertTrue("div105", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundToZero).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("div106", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundToZero).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("div107", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundToNegativeInfinity).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
-            TestFmwk.assertTrue("div108", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundToNegativeInfinity).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("div109", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundToNegativeInfinity).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div101", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("0.06"));
+            TestFmwk.assertTrue("div102", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("div103", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div104", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
+            TestFmwk.assertTrue("div105", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("div106", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("div107", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0.05"));
+            TestFmwk.assertTrue("div108", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("div109", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
             TestFmwk.assertTrue("div110", ((new BigDecimal("0.045")).Divide(one, 2, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.04"));
             TestFmwk.assertTrue("div111", ((new BigDecimal("0.045")).Divide(one, 1, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
@@ -1438,9 +1442,9 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("div147", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
             TestFmwk.assertTrue("div148", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
 
-            TestFmwk.assertTrue("div150", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundAwayFromZero).ToString(CultureInfo.InvariantCulture)).Equals("0.06"));
-            TestFmwk.assertTrue("div151", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundAwayFromZero).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("div52.", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundAwayFromZero).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("div150", ((new BigDecimal("0.055")).Divide(one, 2, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("0.06"));
+            TestFmwk.assertTrue("div151", ((new BigDecimal("0.055")).Divide(one, 1, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("div52.", ((new BigDecimal("0.055")).Divide(one, 0, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
 
             // - error conditions ---
             try
@@ -3413,25 +3417,25 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("for103", (d051.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundHalfEven)).Equals("0.1"));
             TestFmwk.assertTrue("for104", (d151.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundHalfEven)).Equals("0.2"));
 
-            TestFmwk.assertTrue("for105", (m050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundToPositiveInfinity)).Equals("0.0"));
-            TestFmwk.assertTrue("for106", (m150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundToPositiveInfinity)).Equals("-0.1"));
-            TestFmwk.assertTrue("for107", (d050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundToPositiveInfinity)).Equals("0.1"));
-            TestFmwk.assertTrue("for108", (d150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundToPositiveInfinity)).Equals("0.2"));
+            TestFmwk.assertTrue("for105", (m050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundCeiling)).Equals("0.0"));
+            TestFmwk.assertTrue("for106", (m150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundCeiling)).Equals("-0.1"));
+            TestFmwk.assertTrue("for107", (d050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundCeiling)).Equals("0.1"));
+            TestFmwk.assertTrue("for108", (d150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundCeiling)).Equals("0.2"));
 
-            TestFmwk.assertTrue("for109", (m050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundToNegativeInfinity)).Equals("-0.1"));
-            TestFmwk.assertTrue("for110", (m150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundToNegativeInfinity)).Equals("-0.2"));
-            TestFmwk.assertTrue("for111", (d050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundToNegativeInfinity)).Equals("0.0"));
-            TestFmwk.assertTrue("for112", (d150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundToNegativeInfinity)).Equals("0.1"));
+            TestFmwk.assertTrue("for109", (m050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundFloor)).Equals("-0.1"));
+            TestFmwk.assertTrue("for110", (m150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundFloor)).Equals("-0.2"));
+            TestFmwk.assertTrue("for111", (d050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundFloor)).Equals("0.0"));
+            TestFmwk.assertTrue("for112", (d150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundFloor)).Equals("0.1"));
 
-            TestFmwk.assertTrue("for113", (m050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundAwayFromZero)).Equals("-0.1"));
-            TestFmwk.assertTrue("for114", (m150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundAwayFromZero)).Equals("-0.2"));
-            TestFmwk.assertTrue("for115", (d050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundAwayFromZero)).Equals("0.1"));
-            TestFmwk.assertTrue("for116", (d150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundAwayFromZero)).Equals("0.2"));
+            TestFmwk.assertTrue("for113", (m050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundUp)).Equals("-0.1"));
+            TestFmwk.assertTrue("for114", (m150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundUp)).Equals("-0.2"));
+            TestFmwk.assertTrue("for115", (d050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundUp)).Equals("0.1"));
+            TestFmwk.assertTrue("for116", (d150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundUp)).Equals("0.2"));
 
-            TestFmwk.assertTrue("for117", (m050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundToZero)).Equals("0.0"));
-            TestFmwk.assertTrue("for118", (m150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundToZero)).Equals("-0.1"));
-            TestFmwk.assertTrue("for119", (d050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundToZero)).Equals("0.0"));
-            TestFmwk.assertTrue("for120", (d150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundToZero)).Equals("0.1"));
+            TestFmwk.assertTrue("for117", (m050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundDown)).Equals("0.0"));
+            TestFmwk.assertTrue("for118", (m150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundDown)).Equals("-0.1"));
+            TestFmwk.assertTrue("for119", (d050.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundDown)).Equals("0.0"));
+            TestFmwk.assertTrue("for120", (d150.Format(-1, 1, -1, -1, (ExponentForm)(-1), MathContext.RoundDown)).Equals("0.1"));
 
             d000 = new BigDecimal("0.000");
             d500 = new BigDecimal("0.500");
@@ -4185,15 +4189,15 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("ssc046", ((new BigDecimal("0E-10")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
 
             // check rounding
-            TestFmwk.assertTrue("ssc050", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundToPositiveInfinity).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
-            TestFmwk.assertTrue("ssc051", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundToPositiveInfinity).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("ssc052", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundToPositiveInfinity).ToString(CultureInfo.InvariantCulture)).Equals("1"));
-            TestFmwk.assertTrue("ssc053", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundToZero).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("ssc054", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundToZero).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("ssc055", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundToZero).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("ssc056", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundToNegativeInfinity).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
-            TestFmwk.assertTrue("ssc057", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundToNegativeInfinity).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
-            TestFmwk.assertTrue("ssc058", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundToNegativeInfinity).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("ssc050", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
+            TestFmwk.assertTrue("ssc051", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("ssc052", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundCeiling).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("ssc053", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("ssc054", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("ssc055", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
+            TestFmwk.assertTrue("ssc056", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
+            TestFmwk.assertTrue("ssc057", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
+            TestFmwk.assertTrue("ssc058", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundFloor).ToString(CultureInfo.InvariantCulture)).Equals("0"));
             TestFmwk.assertTrue("ssc059", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.00"));
             TestFmwk.assertTrue("ssc060", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0.0"));
             TestFmwk.assertTrue("ssc061", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundHalfDown).ToString(CultureInfo.InvariantCulture)).Equals("0"));
@@ -4209,9 +4213,9 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("ssc071", ((new BigDecimal("0.095")).SetScale(2, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.10"));
             TestFmwk.assertTrue("ssc072", ((new BigDecimal("0.095")).SetScale(1, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
             TestFmwk.assertTrue("ssc073", ((new BigDecimal("0.095")).SetScale(0, MathContext.RoundHalfUp).ToString(CultureInfo.InvariantCulture)).Equals("0"));
-            TestFmwk.assertTrue("ssc074", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundAwayFromZero).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
-            TestFmwk.assertTrue("ssc075", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundAwayFromZero).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
-            TestFmwk.assertTrue("ssc076", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundAwayFromZero).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+            TestFmwk.assertTrue("ssc074", ((new BigDecimal("0.005")).SetScale(2, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("0.01"));
+            TestFmwk.assertTrue("ssc075", ((new BigDecimal("0.005")).SetScale(1, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("0.1"));
+            TestFmwk.assertTrue("ssc076", ((new BigDecimal("0.005")).SetScale(0, MathContext.RoundUp).ToString(CultureInfo.InvariantCulture)).Equals("1"));
 
             try
             {
@@ -4796,14 +4800,14 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("mcn005", (MathContext.Default.LostDigits ? 1 : 0) == 0);
             TestFmwk.assertTrue("mcn006", (MathContext.Default.RoundingMode) == MathContext.RoundHalfUp);
 
-            TestFmwk.assertTrue("mcn010", MathContext.RoundToPositiveInfinity >= 0);
-            TestFmwk.assertTrue("mcn011", MathContext.RoundToZero >= 0);
-            TestFmwk.assertTrue("mcn012", MathContext.RoundToNegativeInfinity >= 0);
+            TestFmwk.assertTrue("mcn010", MathContext.RoundCeiling >= 0);
+            TestFmwk.assertTrue("mcn011", MathContext.RoundDown >= 0);
+            TestFmwk.assertTrue("mcn012", MathContext.RoundFloor >= 0);
             TestFmwk.assertTrue("mcn013", MathContext.RoundHalfDown >= 0);
             TestFmwk.assertTrue("mcn014", MathContext.RoundHalfEven >= 0);
             TestFmwk.assertTrue("mcn015", MathContext.RoundHalfUp >= 0);
             TestFmwk.assertTrue("mcn016", MathContext.RoundUnnecessary >= 0);
-            TestFmwk.assertTrue("mcn017", MathContext.RoundAwayFromZero >= 0);
+            TestFmwk.assertTrue("mcn017", MathContext.RoundUp >= 0);
 
             mccon1 = new MathContext(111);
             TestFmwk.assertTrue("mcn021", (mccon1.Digits) == 111);
@@ -4823,11 +4827,11 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("mcn043", (mccon3.LostDigits ? 1 : 0) == 1);
             TestFmwk.assertTrue("mcn044", (mccon3.RoundingMode) == MathContext.RoundHalfUp);
 
-            mccon4 = new MathContext(0, MathContext.Scientific, false, MathContext.RoundToNegativeInfinity);
+            mccon4 = new MathContext(0, MathContext.Scientific, false, MathContext.RoundFloor);
             TestFmwk.assertTrue("mcn051", (mccon4.Digits) == 0);
             TestFmwk.assertTrue("mcn052", (mccon4.Form) == MathContext.Scientific);
             TestFmwk.assertTrue("mcn053", (mccon4.LostDigits ? 1 : 0) == 0);
-            TestFmwk.assertTrue("mcn054", (mccon4.RoundingMode) == MathContext.RoundToNegativeInfinity);
+            TestFmwk.assertTrue("mcn054", (mccon4.RoundingMode) == MathContext.RoundFloor);
 
             // ICU4N TODO: Change the form/rounding mode to return same case
             TestFmwk.assertTrue("mcn061", (mccon1.ToString()).Equals("digits=111 form=SCIENTIFIC lostDigits=0 roundingMode=ROUND_HALF_UP"));
@@ -4839,14 +4843,14 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("mcn064", (mccon4.ToString()).Equals("digits=0 form=SCIENTIFIC lostDigits=0 roundingMode=ROUND_FLOOR"));
 
             // complete testing rounding modes round trips
-            mcrmc = new MathContext(0, MathContext.Plain, false, MathContext.RoundToPositiveInfinity);
-            mcrmd = new MathContext(0, MathContext.Plain, false, MathContext.RoundToZero);
-            mcrmf = new MathContext(0, MathContext.Plain, false, MathContext.RoundToNegativeInfinity);
+            mcrmc = new MathContext(0, MathContext.Plain, false, MathContext.RoundCeiling);
+            mcrmd = new MathContext(0, MathContext.Plain, false, MathContext.RoundDown);
+            mcrmf = new MathContext(0, MathContext.Plain, false, MathContext.RoundFloor);
             mcrmhd = new MathContext(0, MathContext.Plain, false, MathContext.RoundHalfDown);
             mcrmhe = new MathContext(0, MathContext.Plain, false, MathContext.RoundHalfEven);
             mcrmhu = new MathContext(0, MathContext.Plain, false, MathContext.RoundHalfUp);
             mcrmun = new MathContext(0, MathContext.Plain, false, MathContext.RoundUnnecessary);
-            mcrmu = new MathContext(0, MathContext.Plain, false, MathContext.RoundAwayFromZero);
+            mcrmu = new MathContext(0, MathContext.Plain, false, MathContext.RoundUp);
 
             // ICU4N TODO: Change the form/rounding mode to return same case
             TestFmwk.assertTrue("mcn071", (mcrmc.ToString()).Equals("digits=0 form=PLAIN lostDigits=0 roundingMode=ROUND_CEILING"));
@@ -5687,5 +5691,363 @@ namespace ICU4N.Dev.Test.BigDec
                 s = "  ";
             Logln(s);
         }
+
+
+        public class CharSequences : TestFmwk
+        {
+
+            #region ParseTestCase
+
+            public abstract class ParseTestCase
+            {
+                #region TestParse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider_ForFloatStyle_Data
+
+                public static IEnumerable<TestCaseData> TestParse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider_ForFloatStyle_Data
+                {
+                    get
+                    {
+                        var style = NumberStyle.Float;
+                        var provider = CultureInfo.InvariantCulture;
+                        string charSequence = "123.45";
+                        //                            id  | char sequence | startIndex | length | expected
+                        yield return new TestCaseData("cca101", charSequence, 0, 6, style, provider, "123.45");
+                        yield return new TestCaseData("cca102", charSequence, 1, 5, style, provider, "23.45");
+                        yield return new TestCaseData("cca103", charSequence, 2, 4, style, provider, "3.45");
+                        yield return new TestCaseData("cca104", charSequence, 3, 3, style, provider, "0.45");
+                        yield return new TestCaseData("cca105", charSequence, 4, 2, style, provider, "45");
+                        yield return new TestCaseData("cca106", charSequence, 5, 1, style, provider, "5");
+  
+
+                        yield return new TestCaseData("cca110", charSequence, 0, 1, style, provider, "1");
+                        yield return new TestCaseData("cca111", charSequence, 1, 1, style, provider, "2");
+                        yield return new TestCaseData("cca112", charSequence, 2, 1, style, provider, "3");
+                        yield return new TestCaseData("cca113", charSequence, 4, 1, style, provider, "4");
+
+                        yield return new TestCaseData("cca120", charSequence, 0, 2, style, provider, "12");
+                        yield return new TestCaseData("cca121", charSequence, 1, 2, style, provider, "23");
+                        yield return new TestCaseData("cca122", charSequence, 2, 2, style, provider, "3");
+                        yield return new TestCaseData("cca123", charSequence, 3, 2, style, provider, "0.4");
+
+                        yield return new TestCaseData("cca130", charSequence, 0, 3, style, provider, "123");
+                        yield return new TestCaseData("cca131", charSequence, 1, 3, style, provider, "23");
+                        yield return new TestCaseData("cca132", charSequence, 2, 3, style, provider, "3.4");
+
+                        yield return new TestCaseData("cca140", charSequence, 0, 4, style, provider, "123");
+                        yield return new TestCaseData("cca141", charSequence, 1, 4, style, provider, "23.4");
+
+                        yield return new TestCaseData("cca150", charSequence, 0, 5, style, provider, "123.4");
+
+                        // a couple of oddies
+                        charSequence = "x23.4x";
+                        yield return new TestCaseData("cca160", charSequence, 1, 4, style, provider, "23.4");
+                        yield return new TestCaseData("cca161", charSequence, 1, 1, style, provider, "2");
+                        yield return new TestCaseData("cca162", charSequence, 4, 1, style, provider, "4");
+
+                        charSequence = "0123456789.9876543210";
+                        yield return new TestCaseData("cca163", charSequence, 0, 21, style, provider, "123456789.9876543210");
+                        yield return new TestCaseData("cca164", charSequence, 1, 20, style, provider, "123456789.9876543210");
+                        yield return new TestCaseData("cca165", charSequence, 2, 19, style, provider, "23456789.9876543210");
+                        yield return new TestCaseData("cca166", charSequence, 2, 18, style, provider, "23456789.987654321");
+                        yield return new TestCaseData("cca167", charSequence, 2, 17, style, provider, "23456789.98765432");
+                        yield return new TestCaseData("cca168", charSequence, 02, 16, style, provider, "23456789.9876543");
+                        
+                    }
+                }
+
+                #endregion TestParse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider_ForFloatStyle_Data
+
+                #region TestParse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider_ForFloatStyleException_Data
+
+                public static IEnumerable<TestCaseData> TestParse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider_ForFloatStyleException_Data
+                {
+                    get
+                    {
+                        var style = NumberStyle.Float;
+                        var provider = CultureInfo.InvariantCulture;
+
+                        //                            id,  expected                       value, startIndex, length,  style, provider, expected message (or null to skip)
+                        yield return new TestCaseData("cca200", typeof(ArgumentNullException), null, 0, 1, style, provider, null);
+                        yield return new TestCaseData("cca201", typeof(FormatException), "123", 0, 0, style, provider, null);
+                        yield return new TestCaseData("cca202", typeof(ArgumentOutOfRangeException), "123", 2, 4, style, provider, null);
+                        yield return new TestCaseData("cca203", typeof(ArgumentOutOfRangeException), "123", -1, 2, style, provider, null);
+                        yield return new TestCaseData("cca204", typeof(ArgumentOutOfRangeException), "123", 1, -2, style, provider, null);
+
+                    }
+                }
+
+                #endregion TestParse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider_ForFloatStyleException_Data
+
+                #region TestParse_CharSequence_NumberStyle_IFormatProvider_ForFloatStyle_Data
+
+                public static IEnumerable<TestCaseData> TestParse_CharSequence_NumberStyle_IFormatProvider_ForFloatStyle_Data
+                {
+                    get
+                    {
+                        var style = NumberStyle.Float;
+                        var provider = CultureInfo.InvariantCulture;
+                        string num;
+                        //                            id  | char sequence | style | provider | expected
+#if FEATURE_IKVM
+
+                        yield return new TestCaseData("cca101", new java.math.BigDecimal("0").ToString(), style, provider, "0");
+                        yield return new TestCaseData("cbd002", new java.math.BigDecimal("1").ToString(), style, provider, "1");
+                        yield return new TestCaseData("cbd003", new java.math.BigDecimal("10").ToString(), style, provider, "10");
+                        yield return new TestCaseData("cbd004", new java.math.BigDecimal("1000").ToString(), style, provider, "1000");
+                        yield return new TestCaseData("cbd005", new java.math.BigDecimal("10.0").ToString(), style, provider, "10.0");
+                        yield return new TestCaseData("cbd006", new java.math.BigDecimal("10.1").ToString(), style, provider, "10.1");
+                        yield return new TestCaseData("cbd007", new java.math.BigDecimal("-1.1").ToString(), style, provider, "-1.1");
+                        yield return new TestCaseData("cbd008", new java.math.BigDecimal("-9.0").ToString(), style, provider, "-9.0");
+                        yield return new TestCaseData("cbd009", new java.math.BigDecimal("0.9").ToString(), style, provider, "0.9");
+
+                        num = "123456789.123456789";
+                        yield return new TestCaseData("cbd010", new java.math.BigDecimal(num).ToString(), style, provider, num);
+                        num = "123456789.000000000";
+                        yield return new TestCaseData("cbd011", new java.math.BigDecimal(num).ToString(), style, provider, num);
+                        num = "123456789000000000";
+                        yield return new TestCaseData("cbd012", new java.math.BigDecimal(num).ToString(), style, provider, num);
+                        num = "0.00000123456789";
+                        yield return new TestCaseData("cbd013", new java.math.BigDecimal(num).ToString(), style, provider, num);
+
+#else
+                        return new List<TestCaseData>();
+#endif
+
+
+                    }
+                }
+
+                #endregion TestParse_CharSequence_NumberStyle_IFormatProvider_ForFloatStyle_Data
+
+                #region TestParse_CharSequence_NumberStyle_IFormatProvider_ForFloatStyleException_Data
+
+                public static IEnumerable<TestCaseData> TestParse_CharSequence_NumberStyle_IFormatProvider_ForFloatStyleException_Data
+                {
+                    get
+                    {
+                        var style = NumberStyle.Float;
+                        var provider = CultureInfo.InvariantCulture;
+
+                        // ICU4N specific tests
+
+                        //                            id,  expected                       value, style, provider, expected message (or null to skip)
+                        yield return new TestCaseData("cca300", typeof(ArgumentNullException), null, style, provider, null);
+                        yield return new TestCaseData("cca301", typeof(FormatException), "", style, provider, null);
+                        yield return new TestCaseData("cca302", typeof(FormatException), "<Garbage>", style, provider, null);
+                    }
+                }
+
+                #endregion TestParse_CharSequence_NumberStyle_IFormatProvider_ForFloatStyleException_Data
+            }
+
+            #endregion
+
+            #region Parse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider
+
+            public abstract class Parse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider_TestCase : ParseTestCase
+            {
+                protected virtual bool IsNullableType => true;
+
+                private protected abstract BigDecimal GetResult(string value, int startIndex, int length, NumberStyle style, IFormatProvider provider);
+
+                [TestCaseSource(typeof(ParseTestCase), "TestParse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider_ForFloatStyle_Data")]
+                public void TestParse_CharSequence_IFormatProvider_ForFloatStyle(string id, string value, int startIndex, int length, NumberStyle style, IFormatProvider provider, string expectedString)
+                {
+                    Assume.That(IsNullableType || (!IsNullableType && value != null), "null is not supported by this character sequence type.");
+                    Assume.That((style & ~(NumberStyle.Float | NumberStyle.AllowThousands)) == 0, "Custom NumberStyles are not supported on this overload.");
+
+                    BigDecimal actual = GetResult(value, startIndex, length, style, provider);
+
+                    string actualString = actual.ToString(CultureInfo.InvariantCulture);
+                    string errorMsg = $"input string is:<{value}>. "
+                        + $"The expected result should be:<{expectedString}>, "
+                        + $"but was: <{actualString}>. ";
+
+                    assertEquals(errorMsg, expectedString, actualString);
+                }
+
+                [TestCaseSource(typeof(ParseTestCase), "TestParse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider_ForFloatStyleException_Data")]
+                public void TestParse_CharSequence_IFormatProvider_ForFloatStyleException(string id, Type expectedExceptionType, string value, int startIndex, int length, NumberStyle style, IFormatProvider provider, string message)
+                {
+                    Assume.That(IsNullableType || (!IsNullableType && value != null), "null is not supported by this character sequence type.");
+                    Assume.That((style & ~(NumberStyle.Float | NumberStyle.AllowThousands)) == 0, "Custom NumberStyles are not supported on this overload.");
+
+                    Assert.Throws(expectedExceptionType, () => GetResult(value, startIndex, length, style, provider), message);
+                }
+            }
+
+            public class Parse_String_Int32_Int32_NumberStyle_IFormatProvider : Parse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider_TestCase
+            {
+                private protected override BigDecimal GetResult(string value, int startIndex, int length, NumberStyle style, IFormatProvider provider)
+                {
+                    return BigDecimal.Parse(value, startIndex, length, style, provider);
+                }
+            }
+
+            public class Parse_CharArray_Int32_Int32_NumberStyle_IFormatProvider : Parse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider_TestCase
+            {
+                private protected override BigDecimal GetResult(string value, int startIndex, int length, NumberStyle style, IFormatProvider provider)
+                {
+                    return BigDecimal.Parse(value?.ToCharArray(), startIndex, length, style, provider);
+                }
+            }
+
+            #endregion Parse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider
+
+            #region Parse_CharSequence_NumberStyle_IFormatProvider
+
+            public abstract class Parse_CharSequence_NumberStyle_IFormatProvider_TestCase : ParseTestCase
+            {
+                protected virtual bool IsNullableType => true;
+
+                private protected abstract BigDecimal GetResult(string value, NumberStyle style, IFormatProvider provider);
+
+                [TestCaseSource(typeof(ParseTestCase), "TestParse_CharSequence_NumberStyle_IFormatProvider_ForFloatStyle_Data")]
+                public void TestParse_CharSequence_IFormatProvider_ForFloatStyle(string id, string value, NumberStyle style, IFormatProvider provider, string expectedString)
+                {
+                    Assume.That(IsNullableType || (!IsNullableType && value != null), "null is not supported by this character sequence type.");
+                    Assume.That((style & ~(NumberStyle.Float | NumberStyle.AllowThousands)) == 0, "Custom NumberStyles are not supported on this overload.");
+
+                    BigDecimal actual = GetResult(value, style, provider);
+
+                    string actualString = actual.ToString(CultureInfo.InvariantCulture);
+                    string errorMsg = $"input string is:<{value}>. "
+                        + $"The expected result should be:<{expectedString}>, "
+                        + $"but was: <{actualString}>. ";
+
+                    assertEquals(errorMsg, expectedString, actualString);
+                }
+
+                [TestCaseSource(typeof(ParseTestCase), "TestParse_CharSequence_NumberStyle_IFormatProvider_ForFloatStyleException_Data")]
+                public void TestParse_CharSequence_IFormatProvider_ForFloatStyleException(string id, Type expectedExceptionType, string value, NumberStyle style, IFormatProvider provider, string message)
+                {
+                    Assume.That(IsNullableType || (!IsNullableType && value != null), "null is not supported by this character sequence type.");
+                    Assume.That((style & ~(NumberStyle.Float | NumberStyle.AllowThousands)) == 0, "Custom NumberStyles are not supported on this overload.");
+
+                    Assert.Throws(expectedExceptionType, () => GetResult(value, style, provider), message);
+                }
+            }
+
+            public class Parse_String_NumberStyle_IFormatProvider : Parse_CharSequence_NumberStyle_IFormatProvider_TestCase
+            {
+                private protected override BigDecimal GetResult(string value, NumberStyle style, IFormatProvider provider)
+                {
+                    return BigDecimal.Parse(value, style, provider);
+                }
+            }
+
+            public class Parse_CharArray_NumberStyle_IFormatProvider : Parse_CharSequence_NumberStyle_IFormatProvider_TestCase
+            {
+                private protected override BigDecimal GetResult(string value, NumberStyle style, IFormatProvider provider)
+                {
+                    return BigDecimal.Parse(value.ToCharArray(), style, provider);
+                }
+            }
+
+            #endregion Parse_CharSequence_NumberStyle_IFormatProvider
+        }
+
+
+
+
+        //[Test]
+        //public void TestParse_CharSequence_Int32_Int32_NumberStyle_IFormatProvider_ForFloatStyle()
+        //{
+        //    // char[],int,int
+        //    // We just test it's there, and that offsets work.
+        //    // Functionality is tested by BigDecimal(String).
+        //    char[] ca = ("123.45").ToCharArray();
+        //    TestFmwk.assertTrue("cca101", ((new BigDecimal(ca, 0, 6)).ToString(CultureInfo.InvariantCulture)).Equals("123.45"));
+        //    TestFmwk.assertTrue("cca102", ((new BigDecimal(ca, 1, 5)).ToString(CultureInfo.InvariantCulture)).Equals("23.45"));
+        //    TestFmwk.assertTrue("cca103", ((new BigDecimal(ca, 2, 4)).ToString(CultureInfo.InvariantCulture)).Equals("3.45"));
+        //    TestFmwk.assertTrue("cca104", ((new BigDecimal(ca, 3, 3)).ToString(CultureInfo.InvariantCulture)).Equals("0.45"));
+        //    TestFmwk.assertTrue("cca105", ((new BigDecimal(ca, 4, 2)).ToString(CultureInfo.InvariantCulture)).Equals("45"));
+        //    TestFmwk.assertTrue("cca106", ((new BigDecimal(ca, 5, 1)).ToString(CultureInfo.InvariantCulture)).Equals("5"));
+
+        //    TestFmwk.assertTrue("cca110", ((new BigDecimal(ca, 0, 1)).ToString(CultureInfo.InvariantCulture)).Equals("1"));
+        //    TestFmwk.assertTrue("cca111", ((new BigDecimal(ca, 1, 1)).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+        //    TestFmwk.assertTrue("cca112", ((new BigDecimal(ca, 2, 1)).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+        //    TestFmwk.assertTrue("cca113", ((new BigDecimal(ca, 4, 1)).ToString(CultureInfo.InvariantCulture)).Equals("4"));
+
+        //    TestFmwk.assertTrue("cca120", ((new BigDecimal(ca, 0, 2)).ToString(CultureInfo.InvariantCulture)).Equals("12"));
+        //    TestFmwk.assertTrue("cca121", ((new BigDecimal(ca, 1, 2)).ToString(CultureInfo.InvariantCulture)).Equals("23"));
+        //    TestFmwk.assertTrue("cca122", ((new BigDecimal(ca, 2, 2)).ToString(CultureInfo.InvariantCulture)).Equals("3"));
+        //    TestFmwk.assertTrue("cca123", ((new BigDecimal(ca, 3, 2)).ToString(CultureInfo.InvariantCulture)).Equals("0.4"));
+
+        //    TestFmwk.assertTrue("cca130", ((new BigDecimal(ca, 0, 3)).ToString(CultureInfo.InvariantCulture)).Equals("123"));
+        //    TestFmwk.assertTrue("cca131", ((new BigDecimal(ca, 1, 3)).ToString(CultureInfo.InvariantCulture)).Equals("23"));
+        //    TestFmwk.assertTrue("cca132", ((new BigDecimal(ca, 2, 3)).ToString(CultureInfo.InvariantCulture)).Equals("3.4"));
+
+        //    TestFmwk.assertTrue("cca140", ((new BigDecimal(ca, 0, 4)).ToString(CultureInfo.InvariantCulture)).Equals("123"));
+        //    TestFmwk.assertTrue("cca141", ((new BigDecimal(ca, 1, 4)).ToString(CultureInfo.InvariantCulture)).Equals("23.4"));
+
+        //    TestFmwk.assertTrue("cca150", ((new BigDecimal(ca, 0, 5)).ToString(CultureInfo.InvariantCulture)).Equals("123.4"));
+
+        //    // a couple of oddies
+        //    ca = ("x23.4x").ToCharArray();
+        //    TestFmwk.assertTrue("cca160", ((new BigDecimal(ca, 1, 4)).ToString(CultureInfo.InvariantCulture)).Equals("23.4"));
+        //    TestFmwk.assertTrue("cca161", ((new BigDecimal(ca, 1, 1)).ToString(CultureInfo.InvariantCulture)).Equals("2"));
+        //    TestFmwk.assertTrue("cca162", ((new BigDecimal(ca, 4, 1)).ToString(CultureInfo.InvariantCulture)).Equals("4"));
+
+        //    ca = ("0123456789.9876543210").ToCharArray();
+        //    TestFmwk.assertTrue("cca163", ((new BigDecimal(ca, 0, 21)).ToString(CultureInfo.InvariantCulture)).Equals("123456789.9876543210"));
+        //    TestFmwk.assertTrue("cca164", ((new BigDecimal(ca, 1, 20)).ToString(CultureInfo.InvariantCulture)).Equals("123456789.9876543210"));
+        //    TestFmwk.assertTrue("cca165", ((new BigDecimal(ca, 2, 19)).ToString(CultureInfo.InvariantCulture)).Equals("23456789.9876543210"));
+        //    TestFmwk.assertTrue("cca166", ((new BigDecimal(ca, 2, 18)).ToString(CultureInfo.InvariantCulture)).Equals("23456789.987654321"));
+        //    TestFmwk.assertTrue("cca167", ((new BigDecimal(ca, 2, 17)).ToString(CultureInfo.InvariantCulture)).Equals("23456789.98765432"));
+        //    TestFmwk.assertTrue("cca168", ((new BigDecimal(ca, 2, 16)).ToString(CultureInfo.InvariantCulture)).Equals("23456789.9876543"));
+
+        //    try
+        //    {
+        //        new BigDecimal((char[])null, 0, 1);
+        //        flag = false;
+        //    }
+        //    catch (ArgumentNullException e8)
+        //    {
+        //        flag = true;
+        //    }/* checknull */
+        //    TestFmwk.assertTrue("cca200", flag);
+
+        //    try
+        //    {
+        //        new BigDecimal("123".ToCharArray(), 0, 0);
+        //        flag = false;
+        //    }
+        //    catch (FormatException e9) // ICU4N TODO: Handle parse with 0 length
+        //    {
+        //        flag = true;
+        //    }/* checklen */
+        //    TestFmwk.assertTrue("cca201", flag);
+
+        //    try
+        //    {
+        //        new BigDecimal("123".ToCharArray(), 2, 4);
+        //        flag = false;
+        //    }
+        //    catch (ArgumentOutOfRangeException e10)
+        //    { // anything OK
+        //        flag = true;
+        //    }/* checkbound */
+        //    TestFmwk.assertTrue("cca202", flag);
+        //    try
+        //    {
+        //        new BigDecimal("123".ToCharArray(), -1, 2);
+        //        flag = false;
+        //    }
+        //    catch (ArgumentOutOfRangeException e11)
+        //    { // anything OK
+        //        flag = true;
+        //    }/* checkbound2 */
+        //    TestFmwk.assertTrue("cca203", flag);
+        //    try
+        //    {
+        //        new BigDecimal("123".ToCharArray(), 1, -2);
+        //        flag = false;
+        //    }
+        //    catch (ArgumentOutOfRangeException e12)
+        //    { // anything OK
+        //        flag = true;
+        //    }/* checkbound3 */
+        //    TestFmwk.assertTrue("cca204", flag);
+        //}
     }
 }
