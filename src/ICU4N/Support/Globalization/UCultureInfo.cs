@@ -1445,7 +1445,7 @@ namespace ICU4N.Globalization
                 UCultureInfo displayLocale)
         {
             keyword = AsciiUtil.ToLower(keyword.Trim());
-            locale.Keywords.TryGetValue(keyword, out string value);
+            locale.Keywords.TryGetValue(keyword, out string value); // ICU4N TODO: If this returns a null value, the below line will throw NullReferenceException. Need to find a solution.
             return CultureDisplayNames.GetInstance(displayLocale).GetKeyValueDisplayName(keyword, value);
         }
 
