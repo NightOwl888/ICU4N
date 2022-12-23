@@ -374,6 +374,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Norm2AllModesExtension.tt</DependentUpon>
     </None>
+    <None Include="Impl\Number\NumberStringBuilderExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>NumberStringBuilderExtension.tt</DependentUpon>
+    </None>
     <None Include="Impl\TextTrieMapExtension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -431,6 +436,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Normalizer2ImplExtension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\Number\NumberStringBuilderExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>NumberStringBuilderExtension.tt</DependentUpon>
     </Compile>
     <Compile Update="Impl\PatternPropsExtension.cs">
       <DesignTime>True</DesignTime>
@@ -582,6 +592,10 @@
     <None Update="Impl\Normalizer2ImplExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Normalizer2ImplExtension.cs</LastGenOutput>
+    </None>
+    <None Update="Impl\Number\NumberStringBuilderExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NumberStringBuilderExtension.cs</LastGenOutput>
     </None>
     <None Update="Impl\PatternPropsExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
