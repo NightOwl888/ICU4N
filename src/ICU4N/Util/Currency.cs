@@ -771,7 +771,7 @@ namespace ICU4N.Util
         /// <c>null</c> if there is no match.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal static string Parse(UCultureInfo locale, string text, int type, ParsePosition pos) // ICU4N specific - made internal rather than public
+        internal static string Parse(UCultureInfo locale, string text, CurrencyNameStyle type, ParsePosition pos) // ICU4N specific - made internal rather than public
         {
             IList<TextTrieMap<CurrencyStringInfo>> currencyTrieVec = GetCurrencyTrieVec(locale);
             int maxLength = 0;
@@ -784,7 +784,7 @@ namespace ICU4N.Util
             isoResult = handler.BestCurrencyISOCode;
             maxLength = handler.BestMatchLength;
 
-            if (type != (int)CurrencyNameStyle.LongName)
+            if (type != CurrencyNameStyle.LongName)
             {  // not long name only
                 TextTrieMap<CurrencyStringInfo> currencySymbolTrie = currencyTrieVec[0];
                 handler = new CurrencyNameResultHandler();
@@ -803,10 +803,10 @@ namespace ICU4N.Util
         /// <internal/>
         //[Obsolete("This API is ICU internal only.")]
         internal static TextTrieMap<CurrencyStringInfo>.ParseState OpenParseState(
-            UCultureInfo locale, int startingCp, int type) // ICU4N specific - made internal rather than public
+            UCultureInfo locale, int startingCp, CurrencyNameStyle type) // ICU4N specific - made internal rather than public
         {
             IList<TextTrieMap<CurrencyStringInfo>> currencyTrieVec = GetCurrencyTrieVec(locale);
-            if (type == (int)CurrencyNameStyle.LongName)
+            if (type == CurrencyNameStyle.LongName)
             {
                 return currencyTrieVec[0].OpenParseState(startingCp);
             }
