@@ -71,10 +71,7 @@ namespace ICU4N.Numerics
 
 
 
-        public virtual int CodePointCount()
-        {
-            return Character.CodePointCount(this, 0, Length);
-        }
+        public virtual int CodePointCount => Character.CodePointCount(this, 0, Length);
 
         public virtual char this[int index]
         {
@@ -330,6 +327,17 @@ namespace ICU4N.Numerics
         public override string ToString()
         {
             return new string(chars, zero, length);
+        }
+
+        /// <summary>
+        /// Returns a slice of the string represented by the characters in this string builder.
+        /// <para/>
+        /// For a string intended be used for debugging, use <see cref="ToDebugString()"/>.
+        /// </summary>
+        /// <returns></returns>
+        public virtual string ToString(int startIndex, int length) // ICU4N specific
+        {
+            return new string(chars, startIndex, length);
         }
 
         private static readonly IDictionary<Field, char> fieldToDebugChar = new Dictionary<Field, char>
