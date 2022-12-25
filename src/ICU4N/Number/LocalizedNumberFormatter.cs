@@ -1,7 +1,9 @@
 ﻿using ICU4N.Util;
+using J2N.Threading.Atomic;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using Number = J2N.Numerics.Number;
 
 namespace ICU4N.Numerics
@@ -17,7 +19,10 @@ namespace ICU4N.Numerics
         //internal static readonly AtomicLongFieldUpdater<LocalizedNumberFormatter> callCount = AtomicLongFieldUpdater
         //    .NewUpdater(typeof(LocalizedNumberFormatter), "callCountInternal");
 
-    volatile long callCountInternal; // do not access directly; use callCount instead
+        //volatile long callCountInternal; // do not access directly; use callCount instead
+
+        //readonly AtomicInt64 callCount = new AtomicInt64(); // ICU4N TODO: Revisit this approach
+        private long callCount = 0;
         volatile LocalizedNumberFormatter savedWithUnit;
         volatile NumberFormatterImpl compiled;
 
@@ -132,7 +137,7 @@ namespace ICU4N.Numerics
             // NOTE: In Java, the atomic increment logic is slightly different than ICU4C.
             // It seems to be more efficient to make just one function call instead of two.
             // Further benchmarking is required.
-            long currentCount = callCount.IncrementAndGet(this);
+            long currentCount = Interlocked.Increment(ref callCount); //callCount.IncrementAndGet(); //callCount.IncrementAndGet(this);
             NumberStringBuilder str = new NumberStringBuilder();
             MicroProps micros;
             if (currentCount == macros.threshold.ToInt64())
