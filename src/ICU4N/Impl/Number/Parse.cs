@@ -235,11 +235,11 @@ namespace ICU4N.Numerics
             internal StateName? returnTo1;
             internal StateName? returnTo2;
             // For string literals:
-            internal ICharSequence currentString;
+            internal string currentString;
             internal int currentOffset;
             internal bool currentTrailing;
             // For affix patterns:
-            internal ICharSequence currentAffixPattern;
+            internal string currentAffixPattern;
             internal long currentStepwiseParserTag;
             // For currency:
             internal TextTrieMap<CurrencyStringInfo>.ParseState currentCurrencyTrieState;
@@ -594,7 +594,7 @@ namespace ICU4N.Numerics
             // Properties and Symbols memory:
             internal DecimalFormatProperties properties;
             internal DecimalFormatSymbols symbols;
-            internal ParseMode mode;
+            internal ParseMode? mode;
             internal bool caseSensitive;
             internal bool parseCurrency;
             internal GroupingMode? groupingMode;
@@ -1042,8 +1042,9 @@ namespace ICU4N.Numerics
          *     symbols for grouping/decimal separators, digit strings, and prefix/suffix substitutions.
          * @return A Number matching the parser's best interpretation of the string.
          */
+        // ICU4N TODO: API Revisit making this a ReadOnlySpan<char> and accepting both string and ReadOnlySpan<char> on the API.
         public static Number Parse(
-            ICharSequence input,
+            string input,
             ParsePosition ppos,
             DecimalFormatProperties properties,
             DecimalFormatSymbols symbols)
@@ -1058,8 +1059,9 @@ namespace ICU4N.Numerics
             return ParseCurrency(input, null, properties, symbols);
         }
 
+        // ICU4N TODO: API Revisit making this a ReadOnlySpan<char> and accepting both string and ReadOnlySpan<char> on the API.
         public static CurrencyAmount ParseCurrency(
-            ICharSequence input, ParsePosition ppos, DecimalFormatProperties properties, DecimalFormatSymbols symbols)
+            string input, ParsePosition ppos, DecimalFormatProperties properties, DecimalFormatSymbols symbols)
         // throws ParseException
         {
             if (ppos == null)
@@ -1073,7 +1075,7 @@ namespace ICU4N.Numerics
         }
 
         private static StateItem ParseImpl(
-            ICharSequence input,
+            string input, // ICU4N TODO: API Revisit making this a ReadOnlySpan<char> and accepting both string and ReadOnlySpan<char> on the API.
             ParsePosition ppos,
             bool parseCurrency,
             DecimalFormatProperties properties,
@@ -1913,7 +1915,7 @@ namespace ICU4N.Numerics
 
         private static void AcceptNan(int cp, StateName nextName, ParserState state, StateItem item)
         {
-            ICharSequence nan = state.symbols.NaN;
+            string nan = state.symbols.NaN;
             long added = AcceptString(cp, nextName, null, state, item, nan, 0, false);
 
             // Set state in the items that were added by the function call
@@ -1929,7 +1931,7 @@ namespace ICU4N.Numerics
         private static void AcceptInfinity(
             int cp, StateName nextName, ParserState state, StateItem item)
         {
-            ICharSequence inf = state.symbols.Infinity;
+            string inf = state.symbols.Infinity;
             long added = AcceptString(cp, nextName, null, state, item, inf, 0, false);
 
             // Set state in the items that were added by the function call
@@ -1945,7 +1947,7 @@ namespace ICU4N.Numerics
         private static void AcceptExponentSeparator(
             int cp, StateName nextName, ParserState state, StateItem item)
         {
-            ICharSequence exp = state.symbols.ExponentSeparator;
+            string exp = state.symbols.ExponentSeparator;
             AcceptString(cp, nextName, null, state, item, exp, 0, true);
         }
 
@@ -2049,7 +2051,7 @@ namespace ICU4N.Numerics
             StateName? ret2,
             ParserState state,
             StateItem item,
-            ICharSequence str,
+            string str,
             int offset,
             bool trailing)
         {
@@ -2064,7 +2066,7 @@ namespace ICU4N.Numerics
             StateName? ret2,
             ParserState state,
             StateItem item,
-            ICharSequence str,
+            string str,
             bool trailing,
             int referenceCp,
             long firstOffsetOrTag,
@@ -2111,7 +2113,7 @@ namespace ICU4N.Numerics
             StateName? returnTo2,
             ParserState state,
             StateItem item,
-            ICharSequence str,
+            string str,
             int newOffset,
             bool trailing)
         {
@@ -2157,7 +2159,7 @@ namespace ICU4N.Numerics
         /// <returns>A bitmask where the bits correspond to the items that were added. Set to 0L if no items
         /// were added.</returns>
         private static long AcceptAffixPattern(
-            int cp, StateName? ret1, ParserState state, StateItem item, ICharSequence str, long tag)
+            int cp, StateName? ret1, ParserState state, StateItem item, string str, long tag)
         {
             if (str == null || str.Length == 0) return 0L;
             return AcceptStringOrAffixPatternWithIgnorables(
@@ -2169,7 +2171,7 @@ namespace ICU4N.Numerics
             StateName? returnTo,
             ParserState state,
             StateItem item,
-            ICharSequence str,
+            string str,
             int typeOrCp,
             long firstTag,
             long nextTag)
@@ -2177,7 +2179,7 @@ namespace ICU4N.Numerics
 
             // Convert from the returned tag to a code point, string, or currency to check
             int resolvedCp = -1;
-            ICharSequence resolvedStr = null;
+            string resolvedStr = null;
             bool resolvedMinusSign = false;
             bool resolvedPlusSign = false;
             bool resolvedCurrency = false;
@@ -2318,11 +2320,11 @@ namespace ICU4N.Numerics
         /// Internal method that is used to step to the next token of a affix pattern or exit the affix
         /// pattern if at the end.
         /// </summary>
-        /// <param name="cp">See <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>.</param>
-        /// <param name="returnTo">See <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>.</param>
-        /// <param name="state">See <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>.</param>
-        /// <param name="item">See <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>.</param>
-        /// <param name="str">See <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>.</param>
+        /// <param name="cp">See <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, string, long)"/>.</param>
+        /// <param name="returnTo">See <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, string, long)"/>.</param>
+        /// <param name="state">See <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, string, long)"/>.</param>
+        /// <param name="item">See <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, string, long)"/>.</param>
+        /// <param name="str">See <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, string, long)"/>.</param>
         /// <param name="newTag">The tag corresponding to the next token in the affix pattern that should be
         /// recorded and consumed in a future call to <see cref="AcceptAffixPatternOffset(int, ParserState, StateItem)"/>.</param>
         /// <returns>Bitmask containing one entry, the one that was added.</returns>
@@ -2331,7 +2333,7 @@ namespace ICU4N.Numerics
             StateName? returnTo,
             ParserState state,
             StateItem item,
-            ICharSequence str,
+            string str,
             long newTag)
         {
             StateItem next = state.GetNext().CopyFrom(item, null, cp);
@@ -2357,10 +2359,10 @@ namespace ICU4N.Numerics
         /// <summary>
         /// Consumes tokens from a string or affix pattern following ICU's rules for handling of whitespace
         /// and bidi control characters (collectively called "ignorables"). The methods
-        /// <see cref="AcceptStringHelper(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>,
-        /// <see cref="AcceptAffixPatternHelper(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>,
-        /// <see cref="AcceptStringNonIgnorable(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, bool, int, long, long)"/>
-        /// and <see cref="AcceptAffixPatternNonIgnorable(int, StateName?, ParserState, StateItem, ICharSequence, int, long, long)"/>
+        /// <see cref="AcceptStringHelper(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>,
+        /// <see cref="AcceptAffixPatternHelper(int, StateName?, ParserState, StateItem, string, long)"/>,
+        /// <see cref="AcceptStringNonIgnorable(int, StateName?, StateName?, ParserState, StateItem, string, bool, int, long, long)"/>
+        /// and <see cref="AcceptAffixPatternNonIgnorable(int, StateName?, ParserState, StateItem, string, int, long, long)"/>
         /// will be called by this method to actually add parse paths.
         /// <para/>
         /// In the "NonIgnorable" functions, two arguments are passed: firstOffsetOrTag and
@@ -2402,7 +2404,7 @@ namespace ICU4N.Numerics
             StateName? ret2 /* String only */,
             ParserState state,
             StateItem item,
-            ICharSequence str,
+            string str,
             long offsetOrTag /* offset for string; tag for affix pattern */,
             bool trailing /* String only */,
             bool isString)
