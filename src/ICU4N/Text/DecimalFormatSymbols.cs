@@ -956,46 +956,45 @@ namespace ICU4N.Text
         //    intlCurrencySymbol = currency;
         //}
 
-        // ICU4N TODO: Currency
-        /////**
-        //// * Returns the currency symbol, for {@link DecimalFormatSymbols#getCurrency()} API
-        //// * compatibility only. ICU clients should use the Currency API directly.
-        //// * @return the currency used, or null
-        //// * @stable ICU 3.4
-        //// */
-        ////public virtual Currency Currency
-        ////{
-        ////    get => currency;
-        ////    set => SetCurrency(currency);
-        ////}
+        /**
+         * Returns the currency symbol, for {@link DecimalFormatSymbols#getCurrency()} API
+         * compatibility only. ICU clients should use the Currency API directly.
+         * @return the currency used, or null
+         * @stable ICU 3.4
+         */
+        public virtual Currency Currency
+        {
+            get => currency;
+            set => SetCurrency(currency);
+        }
 
-        /////**
-        //// * Sets the currency.
-        //// *
-        //// * <p><strong>Note:</strong> ICU does not use the DecimalFormatSymbols for the currency
-        //// * any more.  This API is present for API compatibility only.
-        //// *
-        //// * <p>This also sets the currency symbol attribute to the currency's symbol
-        //// * in the DecimalFormatSymbols' locale, and the international currency
-        //// * symbol attribute to the currency's ISO 4217 currency code.
-        //// *
-        //// * @param currency the new currency to be used
-        //// * @throws NullPointerException if <code>currency</code> is null
-        //// * @see #setCurrencySymbol
-        //// * @see #setInternationalCurrencySymbol
-        //// *
-        //// * @stable ICU 3.4
-        //// */
-        ////private void SetCurrency(Currency currency)
-        ////{
-        ////    if (currency == null)
-        ////    {
-        ////        throw new ArgumentNullException(nameof(currency));
-        ////    }
-        ////    this.currency = currency;
-        ////    intlCurrencySymbol = currency.CurrencyCode;
-        ////    currencySymbol = currency.GetSymbol(requestedLocale);
-        ////}
+        /**
+         * Sets the currency.
+         *
+         * <p><strong>Note:</strong> ICU does not use the DecimalFormatSymbols for the currency
+         * any more.  This API is present for API compatibility only.
+         *
+         * <p>This also sets the currency symbol attribute to the currency's symbol
+         * in the DecimalFormatSymbols' locale, and the international currency
+         * symbol attribute to the currency's ISO 4217 currency code.
+         *
+         * @param currency the new currency to be used
+         * @throws NullPointerException if <code>currency</code> is null
+         * @see #setCurrencySymbol
+         * @see #setInternationalCurrencySymbol
+         *
+         * @stable ICU 3.4
+         */
+        private void SetCurrency(Currency currency)
+        {
+            if (currency == null)
+            {
+                throw new ArgumentNullException(nameof(currency));
+            }
+            this.currency = currency;
+            intlCurrencySymbol = currency.CurrencyCode;
+            currencySymbol = currency.GetSymbol(requestedLocale);
+        }
 
         /**
          * Returns the monetary decimal separator.
@@ -2251,10 +2250,9 @@ namespace ICU4N.Text
          */
         private UCultureInfo actualLocale;
 
-        // ICU4N TODO: Currency
-        //// not serialized, reconstructed from intlCurrencyCode
-        //[NonSerialized]
-        //private Currency currency;
+        // not serialized, reconstructed from intlCurrencyCode
+        [NonSerialized]
+        private Currency currency;
 
         // -------- END ULocale boilerplate --------
 

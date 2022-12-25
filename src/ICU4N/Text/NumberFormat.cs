@@ -141,19 +141,19 @@ namespace ICU4N.Text
             {
                 return Format(bigInteger, toAppendTo, pos);
             }
-            // ICU4N TODO: BigDecimal, CurrencyAmount
+            // ICU4N TODO: BigDecimal
             //else if (number is java.math.BigDecimal)
             //{
             //    return Format((java.math.BigDecimal)number, toAppendTo, pos);
             //}
-            //else if (number is com.ibm.icu.math.BigDecimal)
-            //{
-            //    return Format((com.ibm.icu.math.BigDecimal)number, toAppendTo, pos);
-            //}
-            //else if (number is CurrencyAmount)
-            //{
-            //    return Format((CurrencyAmount)number, toAppendTo, pos);
-            //}
+            else if (number is BigDecimal bigDecimal)
+            {
+                return Format(bigDecimal, toAppendTo, pos);
+            }
+            else if (number is CurrencyAmount currencyAmount)
+            {
+                return Format(currencyAmount, toAppendTo, pos);
+            }
             else if (number is Double @double)
             {
                 return Format(@double.ToDouble(), toAppendTo, pos);
@@ -220,8 +220,6 @@ namespace ICU4N.Text
                           new FieldPosition(0)).ToString();
         }
 
-        // ICU4N TODO: CurrencyAmount
-
         /**
          * Convenience method to format a BigDecimal.
          * @stable ICU 2.0
@@ -242,15 +240,15 @@ namespace ICU4N.Text
         ////                  new FieldPosition(0)).toString();
         ////}
 
-        /////**
-        //// * {@icu} Convenience method to format a CurrencyAmount.
-        //// * @stable ICU 3.0
-        //// */
-        ////public final String format(CurrencyAmount currAmt)
-        ////{
-        ////    return format(currAmt, new StringBuffer(),
-        ////                  new FieldPosition(0)).toString();
-        ////}
+        /**
+         * {@icu} Convenience method to format a CurrencyAmount.
+         * @stable ICU 3.0
+         */
+        public string Format(CurrencyAmount currAmt)
+        {
+            return Format(currAmt, new StringBuffer(),
+                          new FieldPosition(0)).ToString();
+        }
 
         /**
          * Specialization of format.
@@ -277,7 +275,9 @@ namespace ICU4N.Text
         public abstract StringBuffer Format(BigInteger number,
                                             StringBuffer toAppendTo,
                                             FieldPosition pos);
-        // ICU4N TODO: BigDecimal, CurrencyAmount
+
+        
+        // ICU4N TODO: BigDecimal
         /////**
         //// * {@icu} Formats a BigDecimal. Specialization of format.
         //// * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
@@ -294,25 +294,27 @@ namespace ICU4N.Text
         public abstract StringBuffer Format(BigDecimal number,
                                             StringBuffer toAppendTo,
                                             FieldPosition pos);
-        /////**
-        //// * {@icu} Formats a CurrencyAmount. Specialization of format.
-        //// * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
-        //// * @stable ICU 3.0
-        //// */
-        ////public virtual StringBuffer Format(CurrencyAmount currAmt,
-        ////                           StringBuffer toAppendTo,
-        ////                           FieldPosition pos)
-        ////{
-        ////    // Default implementation -- subclasses may override
-        ////    synchronized(this) {
-        ////        Currency save = getCurrency(), curr = currAmt.getCurrency();
-        ////        boolean same = curr.equals(save);
-        ////        if (!same) setCurrency(curr);
-        ////        format(currAmt.getNumber(), toAppendTo, pos);
-        ////        if (!same) setCurrency(save);
-        ////    }
-        ////    return toAppendTo;
-        ////}
+
+        /**
+         * {@icu} Formats a CurrencyAmount. Specialization of format.
+         * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
+         * @stable ICU 3.0
+         */
+        public virtual StringBuffer Format(CurrencyAmount currAmt,
+                                   StringBuffer toAppendTo,
+                                   FieldPosition pos)
+        {
+            // Default implementation -- subclasses may override
+            lock (this)
+            {
+                Currency save = Currency, curr = currAmt.Currency;
+                bool same = curr.Equals(save);
+                if (!same) Currency = curr;
+                Format(currAmt.Number, toAppendTo, pos);
+                if (!same) Currency = save;
+            }
+            return toAppendTo;
+        }
 
         /// <summary>
         /// Returns a <see cref="long"/> if possible (e.g., within the range [<see cref="long.MinValue"/>,
@@ -360,32 +362,31 @@ namespace ICU4N.Text
             return result;
         }
 
-        // ICU4N TODO: CurrencyAmount
-        /////**
-        //// * Parses text from the given string as a CurrencyAmount.  Unlike
-        //// * the parse() method, this method will attempt to parse a generic
-        //// * currency name, searching for a match of this object's locale's
-        //// * currency display names, or for a 3-letter ISO currency code.
-        //// * This method will fail if this format is not a currency format,
-        //// * that is, if it does not contain the currency pattern symbol
-        //// * (U+00A4) in its prefix or suffix.
-        //// *
-        //// * @param text the text to parse
-        //// * @param pos input-output position; on input, the position within
-        //// * text to match; must have 0 &lt;= pos.getIndex() &lt; text.length();
-        //// * on output, the position after the last matched character. If
-        //// * the parse fails, the position in unchanged upon output.
-        //// * @return a CurrencyAmount, or null upon failure
-        //// * @stable ICU 49
-        //// */
-        ////public virtual CurrencyAmount ParseCurrency(ICharSequence text, ParsePosition pos)
-        ////{
-        ////    ////CLOVER:OFF
-        ////    // Default implementation only -- subclasses should override
-        ////    Number n = parse(text.toString(), pos);
-        ////    return n == null ? null : new CurrencyAmount(n, getEffectiveCurrency());
-        ////    ////CLOVER:ON
-        ////}
+        /**
+         * Parses text from the given string as a CurrencyAmount.  Unlike
+         * the parse() method, this method will attempt to parse a generic
+         * currency name, searching for a match of this object's locale's
+         * currency display names, or for a 3-letter ISO currency code.
+         * This method will fail if this format is not a currency format,
+         * that is, if it does not contain the currency pattern symbol
+         * (U+00A4) in its prefix or suffix.
+         *
+         * @param text the text to parse
+         * @param pos input-output position; on input, the position within
+         * text to match; must have 0 &lt;= pos.getIndex() &lt; text.length();
+         * on output, the position after the last matched character. If
+         * the parse fails, the position in unchanged upon output.
+         * @return a CurrencyAmount, or null upon failure
+         * @stable ICU 49
+         */
+        public virtual CurrencyAmount ParseCurrency(ICharSequence text, ParsePosition pos)
+        {
+            ////CLOVER:OFF
+            // Default implementation only -- subclasses should override
+            J2N.Numerics.Number n = Parse(text.ToString(), pos);
+            return n == null ? null : new CurrencyAmount(n, EffectiveCurrency);
+            ////CLOVER:ON
+        }
 
         /**
          * Returns true if this format will parse numbers as integers only.
@@ -1097,39 +1098,43 @@ namespace ICU4N.Text
         ////    currency = theCurrency;
         ////}
 
-        /////**
-        //// * Returns the <tt>Currency</tt> object used to display currency
-        //// * amounts.  This may be null.
-        //// * @stable ICU 2.6
-        //// */
-        ////public virtual Currency getCurrency()
-        ////{
-        ////    return currency;
-        ////}
+        /**
+         * Returns the <tt>Currency</tt> object used to display currency
+         * amounts.  This may be null.
+         * @stable ICU 2.6
+         */
+        public virtual Currency Currency
+        {
+            get => currency;
+            set => currency = value;
+        }
 
-        /////**
-        //// * Returns the currency in effect for this formatter.  Subclasses
-        //// * should override this method as needed.  Unlike getCurrency(),
-        //// * this method should never return null.
-        //// * @return a non-null Currency
-        //// * @internal
-        //// * @deprecated This API is ICU internal only.
-        //// */
-        ////@Deprecated
-        ////protected virtual Currency getEffectiveCurrency()
-        ////{
-        ////    Currency c = getCurrency();
-        ////    if (c == null)
-        ////    {
-        ////        ULocale uloc = getLocale(ULocale.VALID_LOCALE);
-        ////        if (uloc == null)
-        ////        {
-        ////            uloc = ULocale.getDefault(Category.FORMAT);
-        ////        }
-        ////        c = Currency.getInstance(uloc);
-        ////    }
-        ////    return c;
-        ////}
+        /**
+         * Returns the currency in effect for this formatter.  Subclasses
+         * should override this method as needed.  Unlike getCurrency(),
+         * this method should never return null.
+         * @return a non-null Currency
+         * @internal
+         * @deprecated This API is ICU internal only.
+         */
+        [Obsolete("his API is ICU internal only.")]
+        protected virtual Currency EffectiveCurrency
+        {
+            get
+            {
+                Currency c = Currency;
+                if (c == null)
+                {
+                    UCultureInfo uloc = ValidCulture;
+                    if (uloc == null)
+                    {
+                        uloc = UCultureInfo.CurrentCulture;
+                    }
+                    c = Currency.GetInstance(uloc);
+                }
+                return c;
+            }
+        }
 
         // ICU4N specific - no need to add properties that cannot be supported
         /**
@@ -1624,14 +1629,13 @@ namespace ICU4N.Text
          */
         private int minimumFractionDigits = 0;
 
-        // ICU4N TODO: Currency
-        /////**
-        //// * Currency object used to format currencies.  Subclasses may
-        //// * ignore this if they are not currency formats.  This will be
-        //// * null unless a subclass sets it to a non-null value.
-        //// * @since ICU 2.6
-        //// */
-        ////private Currency currency;
+        /**
+         * Currency object used to format currencies.  Subclasses may
+         * ignore this if they are not currency formats.  This will be
+         * null unless a subclass sets it to a non-null value.
+         * @since ICU 2.6
+         */
+        private Currency currency;
 
         internal static readonly int currentSerialVersion = 2;
 

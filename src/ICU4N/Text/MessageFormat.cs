@@ -28,10 +28,31 @@ namespace ICU4N.Text
     internal class DateFormat { } // ICU4N TODO: Remove when DateFormat is ported
     internal class DecimalFormat : NumberFormat // ICU4N TODO: Remove when DecimalFormat is ported
     {
+
+        // ICU4N TODO: Move to DecimalFormat when it is ported
+        public enum PadPosition
+        {
+            BeforePrefix,
+            AfterPrefix,
+            BeforeSuffix,
+            AfterSuffix,
+        }
+
+
         // ICU4N TODO: This class should have all synchronized properties to match ICU4J
 
         [NonSerialized]
-        private volatile DecimalFormatSymbols symbols;
+        internal volatile DecimalFormatSymbols symbols;
+
+        internal DecimalFormatProperties properties;
+        internal DecimalFormatProperties exportedProperties;
+
+        protected void RefreshFormatter()
+        {
+            // ICU4N TODO
+        }
+
+        protected DecimalFormat() { }
 
         //public DecimalFormat(string pattern)
         //{
