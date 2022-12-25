@@ -1,4 +1,5 @@
-﻿using System;
+﻿using J2N.Collections.Generic.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -44,7 +45,7 @@ namespace ICU4N.Impl
     /// </summary>
     public static partial class StandardPluralUtil
     {
-        private static readonly IList<StandardPlural> values = ((StandardPlural[])Enum.GetValues(typeof(StandardPlural))).ToList();
+        private static readonly IList<StandardPlural> values = ((StandardPlural[])Enum.GetValues(typeof(StandardPlural))).AsReadOnly();
 
         /// <summary>
         /// Gets an unmodifiable List of all standard plural form constants.
