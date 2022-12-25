@@ -374,6 +374,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Norm2AllModesExtension.tt</DependentUpon>
     </None>
+    <None Include="Impl\Number\AffixUtilsExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AffixUtilsExtension.tt</DependentUpon>
+    </None>
     <None Include="Impl\Number\NumberStringBuilderExtension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -436,6 +441,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Normalizer2ImplExtension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\Number\AffixUtilsExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AffixUtilsExtension.tt</DependentUpon>
     </Compile>
     <Compile Update="Impl\Number\NumberStringBuilderExtension.cs">
       <DesignTime>True</DesignTime>
@@ -592,6 +602,10 @@
     <None Update="Impl\Normalizer2ImplExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Normalizer2ImplExtension.cs</LastGenOutput>
+    </None>
+    <None Update="Impl\Number\AffixUtilsExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>AffixUtilsExtension.cs</LastGenOutput>
     </None>
     <None Update="Impl\Number\NumberStringBuilderExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
