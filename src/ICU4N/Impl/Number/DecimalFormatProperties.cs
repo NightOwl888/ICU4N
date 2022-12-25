@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using static ICU4N.Numerics.Padder;
-using static ICU4N.Numerics.Parse;
+using static ICU4N.Numerics.Parser;
 using static ICU4N.Text.CompactDecimalFormat;
 
 namespace ICU4N.Numerics //ICU4N.Impl.Number

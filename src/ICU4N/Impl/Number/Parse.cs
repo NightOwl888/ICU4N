@@ -28,7 +28,7 @@ namespace ICU4N.Numerics
     /// the grouping separator. Since the second option has a longer parse path (consumes more of the
     /// input string), the parser will accept the second option.
     /// </summary>
-    internal class Parse // ICU4N TODO: API - this was public in ICU4J
+    internal class Parser // ICU4N TODO: API - this was public in ICU4J
     {
         /// <summary>
         /// Controls the set of rules for parsing a string.
@@ -1154,7 +1154,7 @@ namespace ICU4N.Numerics
 
                     switch (item.name)
                     {
-                        case Parse.StateName.BeforePrefix:
+                        case StateName.BeforePrefix:
                             // Beginning of string
                             if (mode == ParseMode.Lenient || mode == ParseMode.Fast)
                             {
