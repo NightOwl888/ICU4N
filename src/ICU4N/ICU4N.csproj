@@ -507,6 +507,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>UTS46Extension.tt</DependentUpon>
     </Compile>
+    <Compile Update="Support\Numerics\BigMath\Messages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
     <Compile Update="Support\Text\UnicodeSetExtensionsExtension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -583,6 +588,10 @@
     <EmbeddedResource Update="ICUConfig.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ICUConfig.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Support\Numerics\BigMath\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
