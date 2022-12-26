@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Numerics;
 using System.Text;
 using static ICU4N.Text.PluralRules;
 
@@ -176,14 +175,17 @@ namespace ICU4N.Numerics
             }
         }
 
-        public virtual void RoundToIncrement(BigDecimal roundingIncrement, MathContext mathContext)
+        public virtual void RoundToIncrement(BigMath.BigDecimal roundingIncrement, BigMath.MathContext mathContext)
         {
             // TODO: Avoid converting back and forth to BigDecimal.
-            BigDecimal temp = ToBigDecimal();
-            temp =
-                temp.Divide(roundingIncrement, 0, mathContext.RoundingMode)
-                    .Multiply(roundingIncrement)
-                    .Round(mathContext);
+            BigMath.BigDecimal temp = ToBigDecimal();
+            temp = BigMath.BigMath.Divide(roundingIncrement, 0, mathContext.RoundingMode);
+            temp = temp * roundingIncrement;
+            temp = BigMath.BigMath.Round(temp, mathContext);
+            //temp =
+            //    temp.Divide(roundingIncrement, 0, mathContext.RoundingMode)
+            //        .Multiply(roundingIncrement)
+            //        .Round(mathContext);
             if (temp.Sign == 0)
             {
                 SetBcdToZero(); // keeps negative flag for -0.0
@@ -194,14 +196,15 @@ namespace ICU4N.Numerics
             }
         }
 
-        public virtual void MultiplyBy(BigDecimal multiplicand)
+        public virtual void MultiplyBy(BigMath.BigDecimal multiplicand)
         {
             if (IsInfinity || IsZero || IsNaN)
             {
                 return;
             }
-            BigDecimal temp = ToBigDecimal();
-            temp = temp.Multiply(multiplicand);
+            BigMath.BigDecimal temp = ToBigDecimal();
+            //temp = temp.Multiply(multiplicand);
+            temp = temp * multiplicand;
             SetToBigDecimal(temp);
         }
 
@@ -387,7 +390,7 @@ namespace ICU4N.Numerics
             }
         }
 
-        public void SetToBigInteger(BigInteger n)
+        public void SetToBigInteger(BigMath.BigInteger n)
         {
             SetBcdToZero();
             flags = 0;
@@ -403,7 +406,7 @@ namespace ICU4N.Numerics
             }
         }
 
-        private void SetToBigIntegerImpl(BigInteger n)
+        private void SetToBigIntegerImpl(BigMath.BigInteger n)
         {
             int bitLength = n.ToByteArray().Length * sizeof(byte);
             if (bitLength < 32)
@@ -570,7 +573,7 @@ namespace ICU4N.Numerics
          *
          * @param n The value to consume.
          */
-        public virtual void SetToBigDecimal(BigDecimal n)
+        public virtual void SetToBigDecimal(ICU4N.Numerics.BigMath.BigDecimal n)
         {
             SetBcdToZero();
             flags = 0;
@@ -586,11 +589,13 @@ namespace ICU4N.Numerics
             }
         }
 
-        private void SetToBigDecimalImpl(BigDecimal n)
+        private void SetToBigDecimalImpl(ICU4N.Numerics.BigMath.BigDecimal n)
         {
             int fracLength = n.Scale;
-            n = n.ScaleByPowerOfTen(fracLength);
-            BigInteger bi = (BigInteger)n;
+            //n = n.ScaleByPowerOfTen(fracLength);
+            n = BigMath.BigMath.ScaleByPowerOfTen(n, fracLength);
+            //BigInteger bi = (BigInteger)n.ToBigInteger();
+            BigMath.BigInteger bi = n.ToBigInteger();
             SetToBigInteger(bi);
             scale -= fracLength;
         }
@@ -678,7 +683,7 @@ namespace ICU4N.Numerics
             return result;
         }
 
-        public virtual BigDecimal ToBigDecimal()
+        public virtual BigMath.BigDecimal ToBigDecimal()
         {
             if (isApproximate)
             {
@@ -719,7 +724,7 @@ namespace ICU4N.Numerics
         private const int SectionLowerEdge = -1;
         private const int SectionUpperEdge = -2;
 
-        public virtual void RoundToMagnitude(int magnitude, MathContext mathContext)
+        public virtual void RoundToMagnitude(int magnitude, BigMath.MathContext mathContext)
         {
             // The position in the BCD at which rounding will be performed; digits to the right of position
             // will be rounded away.
@@ -728,7 +733,7 @@ namespace ICU4N.Numerics
             int position = SafeSubtract(magnitude, scale);
 
             // Enforce the number of digits required by the MathContext.
-            int _mcPrecision = mathContext.getPrecision();
+            int _mcPrecision = mathContext.Precision;
             if (magnitude == int.MaxValue
                 || (_mcPrecision > 0 && precision - position > _mcPrecision))
             {
@@ -1044,14 +1049,14 @@ namespace ICU4N.Numerics
          *
          * @param n The value to consume.
          */
-        protected abstract void ReadBigIntegerToBcd(BigInteger input);
+        protected abstract void ReadBigIntegerToBcd(BigMath.BigInteger input);
 
         /**
          * Returns a BigDecimal encoding the internal BCD value.
          *
          * @return A BigDecimal representation of the internal BCD.
          */
-        protected abstract BigDecimal BcdToBigDecimal();
+        protected abstract BigMath.BigDecimal BcdToBigDecimal();
 
         protected abstract void CopyBcdFrom(IDecimalQuantity other);
 

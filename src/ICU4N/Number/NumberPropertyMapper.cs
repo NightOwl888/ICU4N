@@ -2,10 +2,7 @@
 using ICU4N.Impl;
 using ICU4N.Text;
 using ICU4N.Util;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using static ICU4N.Numerics.NumberFormatter;
 using static ICU4N.Numerics.PatternStringParser;
 using static ICU4N.Numerics.Rounder;
@@ -118,8 +115,8 @@ namespace ICU4N.Numerics
             int minFrac = properties.MinimumFractionDigits;
             int minSig = properties.MinimumSignificantDigits;
             int maxSig = properties.MaximumSignificantDigits;
-            BigDecimal roundingIncrement = properties.RoundingIncrement;
-            MathContext mathContext = RoundingUtils.GetMathContextOrUnlimited(properties);
+            BigMath.BigDecimal roundingIncrement = properties.RoundingIncrement;
+            BigMath.MathContext mathContext = RoundingUtils.GetMathContextOrUnlimited(properties);
             bool explicitMinMaxFrac = minFrac != -1 || maxFrac != -1;
             bool explicitMinMaxSig = minSig != -1 || maxSig != -1;
             // Validate min/max int/frac.
@@ -334,7 +331,7 @@ namespace ICU4N.Numerics
                 int maxFrac_ = maxFrac;
                 int minSig_ = minSig;
                 int maxSig_ = maxSig;
-                BigDecimal increment_ = null;
+                BigMath.BigDecimal increment_ = null;
                 if (rounding_ is FractionRounderImpl)
                 {
                     minFrac_ = ((FractionRounderImpl)rounding_).minFrac;

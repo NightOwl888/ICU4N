@@ -20,7 +20,7 @@ namespace ICU4N.Numerics
 #endif
     {
         /* package-private final */
-        internal MathContext mathContext;
+        internal BigMath.MathContext mathContext;
 
         /* package-private */
         internal Rounder()
@@ -310,9 +310,9 @@ namespace ICU4N.Numerics
          * @provisional This API might change or be removed in a future release.
          * @see NumberFormatter
          */
-        public static Rounder Increment(BigDecimal roundingIncrement)
+        public static Rounder Increment(BigMath.BigDecimal roundingIncrement)
         {
-            if (roundingIncrement != null && roundingIncrement.CompareTo(BigDecimal.Zero) > 0)
+            if (roundingIncrement != null && roundingIncrement.CompareTo(BigMath.BigDecimal.Zero) > 0)
             {
                 return ConstructIncrement(roundingIncrement);
             }
@@ -363,7 +363,7 @@ namespace ICU4N.Numerics
          * @provisional This API might change or be removed in a future release.
          * @see NumberFormatter
          */
-        public Rounder WithMode(RoundingMode roundingMode)
+        public Rounder WithMode(BigMath.RoundingMode roundingMode)
         {
             return WithMode(RoundingUtils.MathContextUnlimited(roundingMode));
         }
@@ -375,7 +375,7 @@ namespace ICU4N.Numerics
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
-        public Rounder WithMode(MathContext mathContext)
+        public Rounder WithMode(BigMath.MathContext mathContext)
         {
             if (this.mathContext.Equals(mathContext))
             {
@@ -419,7 +419,7 @@ namespace ICU4N.Numerics
 
         internal static readonly FracSigRounderImpl COMPACT_STRATEGY = new FracSigRounderImpl(0, 0, 2, -1);
 
-        internal static readonly IncrementRounderImpl NICKEL = new IncrementRounderImpl(BigDecimal.GetInstance(0.05));
+        internal static readonly IncrementRounderImpl NICKEL = new IncrementRounderImpl(0.05);
 
         internal static readonly CurrencyRounderImpl MONETARY_STANDARD = new CurrencyRounderImpl(CurrencyUsage.Standard);
         internal static readonly CurrencyRounderImpl MONETARY_CASH = new CurrencyRounderImpl(CurrencyUsage.Cash);
@@ -487,7 +487,7 @@ namespace ICU4N.Numerics
             }
         }
 
-        internal static Rounder ConstructIncrement(BigDecimal increment)
+        internal static Rounder ConstructIncrement(BigMath.BigDecimal increment)
         {
             // NOTE: .equals() is what we want, not .compareTo()
             if (increment.Equals(NICKEL.increment))
@@ -523,7 +523,7 @@ namespace ICU4N.Numerics
             double incrementDouble = currency.GetRoundingIncrement(@base.usage);
             if (incrementDouble != 0.0)
             {
-                BigDecimal increment = BigDecimal.GetInstance(incrementDouble);
+                BigMath.BigDecimal increment = incrementDouble;
                 return ConstructIncrement(increment);
             }
             else
@@ -686,9 +686,9 @@ namespace ICU4N.Numerics
 
         internal class IncrementRounderImpl : Rounder
         {
-            internal readonly BigDecimal increment;
+            internal readonly BigMath.BigDecimal increment;
 
-            public IncrementRounderImpl(BigDecimal increment)
+            public IncrementRounderImpl(BigMath.BigDecimal increment)
             {
                 this.increment = increment;
             }

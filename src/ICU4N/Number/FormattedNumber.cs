@@ -4,9 +4,7 @@ using ICU4N.Util;
 using J2N.Collections;
 using J2N.Text;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using static ICU4N.Text.PluralRules;
 
 namespace ICU4N.Numerics
@@ -138,7 +136,7 @@ namespace ICU4N.Numerics
          * @provisional This API might change or be removed in a future release.
          * @see NumberFormatter
          */
-        public virtual BigDecimal ToBigDecimal()
+        public virtual BigMath.BigDecimal ToBigDecimal()
         {
             return fq.ToBigDecimal();
         }

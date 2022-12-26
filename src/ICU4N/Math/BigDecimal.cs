@@ -3006,11 +3006,10 @@ namespace ICU4N.Numerics
          * @stable ICU 2.0
          */
 
-        // ICU4N TODO: Complete implementation
-        //public Deveel.Math.BigDecimal ToBigDecimal()
-        //{
-        //    return new Deveel.Math.BigDecimal(new Deveel.Math.BigInteger(this.ToUnscaledValue().ToByteArray()), this.Scale);
-        //}
+        public BigMath.BigDecimal ToBigDecimal()
+        {
+            return new BigMath.BigDecimal(new BigMath.BigInteger(this.ToUnscaledValue().ToByteArray()), this.Scale);
+        }
 
         /**
          * Converts this <code>BigDecimal</code> to a <code>java.math.BigInteger</code>.

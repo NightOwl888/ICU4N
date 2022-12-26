@@ -48,7 +48,7 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
          * @param mathContext The {@link MathContext} to use if rounding is necessary. Undefined behavior
          *     if null.
          */
-        void RoundToIncrement(BigDecimal roundingInterval, MathContext mathContext);
+        void RoundToIncrement(BigMath.BigDecimal roundingInterval, BigMath.MathContext mathContext);
 
         /**
          * Rounds the number to a specified magnitude (power of ten).
@@ -58,7 +58,7 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
          * @param mathContext The {@link MathContext} to use if rounding is necessary. Undefined behavior
          *     if null.
          */
-        void RoundToMagnitude(int roundingMagnitude, MathContext mathContext);
+        void RoundToMagnitude(int roundingMagnitude, BigMath.MathContext mathContext);
 
         /**
          * Rounds the number to an infinite number of decimal points. This has no effect except for
@@ -71,7 +71,7 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
          *
          * @param multiplicand The value by which to multiply.
          */
-        void MultiplyBy(BigDecimal multiplicand);
+        void MultiplyBy(BigMath.BigDecimal multiplicand);
 
         /**
          * Scales the number by a power of ten. For example, if the value is currently "1234.56", calling
@@ -102,9 +102,9 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
         /** @return The value contained in this {@link DecimalQuantity} approximated as a double. */
         double ToDouble();
 
-        BigDecimal ToBigDecimal();
+        BigMath.BigDecimal ToBigDecimal();
 
-        void SetToBigDecimal(BigDecimal input);
+        void SetToBigDecimal(BigMath.BigDecimal input);
 
         int MaxRepresentableDigits { get; }
 

@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
-using Long = J2N.Numerics.Int64;
-using Integer = J2N.Numerics.Int32;
-using Double = J2N.Numerics.Double;
+﻿using J2N;
 using J2N.Numerics;
+using System;
 using System.Diagnostics;
-using J2N;
 using System.Globalization;
+using System.Text;
+using Double = J2N.Numerics.Double;
+using Integer = J2N.Numerics.Int32;
+using Long = J2N.Numerics.Int64;
+using Number = J2N.Numerics.Number;
 
 namespace ICU4N.Numerics
 {
@@ -56,12 +55,12 @@ namespace ICU4N.Numerics
             SetToDouble(input);
         }
 
-        public DecimalQuantity_DualStorageBCD(BigInteger input)
+        public DecimalQuantity_DualStorageBCD(BigMath.BigInteger input)
         {
             SetToBigInteger(input);
         }
 
-        public DecimalQuantity_DualStorageBCD(BigDecimal input)
+        public DecimalQuantity_DualStorageBCD(BigMath.BigDecimal input)
         {
             SetToBigDecimal(input);
         }
@@ -71,34 +70,45 @@ namespace ICU4N.Numerics
             CopyFrom(other);
         }
 
-        public DecimalQuantity_DualStorageBCD(J2N.Numerics.Number number)
+        public DecimalQuantity_DualStorageBCD(Number number)
         {
-            if (number is Long) {
+            if (number is Long)
+            {
                 SetToLong(number.ToInt64());
-            } else if (number is Integer) {
+            }
+            else if (number is Integer)
+            {
                 SetToInt(number.ToInt32());
-            } else if (number is Double) {
+            }
+            else if (number is Double)
+            {
                 SetToDouble(number.ToDouble());
-            } else if (number is BigInteger) {
-                //SetToBigInteger((BigInteger)number); // ICU4N TODO:
-                
-            //} else if (number is BigDecimal) {
-            //    SetToBigDecimal((BigDecimal)number);
-            } else if (number is BigDecimal) {
+            }
+            else if (number is BigMath.BigInteger)
+            {
+                SetToBigInteger((BigMath.BigInteger)number);
+            }
+            else if (number is BigMath.BigDecimal bd1) // like java.math.BigDecimal
+            {
+                SetToBigDecimal(bd1);
+            }
+            else if (number is BigDecimal)
+            {
                 SetToBigDecimal(((BigDecimal)number).ToBigDecimal()); // This converts to java.math.BigDecimal
-            } else
+            }
+            else
             {
                 throw new ArgumentException(
                     "Number is of an unsupported type: " + number.GetType().Name);
             }
         }
 
-  public override IDecimalQuantity CreateCopy()
+        public override IDecimalQuantity CreateCopy()
         {
             return new DecimalQuantity_DualStorageBCD(this);
         }
 
-  protected override byte GetDigitPos(int position)
+        protected override byte GetDigitPos(int position)
         {
             if (usingBytes)
             {
@@ -112,7 +122,7 @@ namespace ICU4N.Numerics
             }
         }
 
-  protected override void SetDigitPos(int position, byte value)
+        protected override void SetDigitPos(int position, byte value)
         {
             if (position < 0)
                 throw new ArgumentOutOfRangeException(nameof(position)); // ICU4N TODO: Error message
@@ -135,7 +145,7 @@ namespace ICU4N.Numerics
             }
         }
 
-  protected override void ShiftLeft(int numDigits)
+        protected override void ShiftLeft(int numDigits)
         {
             if (!usingBytes && precision + numDigits > 16)
             {
@@ -162,7 +172,7 @@ namespace ICU4N.Numerics
             precision += numDigits;
         }
 
-  protected override void ShiftRight(int numDigits)
+        protected override void ShiftRight(int numDigits)
         {
             if (usingBytes)
             {
@@ -185,7 +195,7 @@ namespace ICU4N.Numerics
             precision -= numDigits;
         }
 
-  protected override void SetBcdToZero()
+        protected override void SetBcdToZero()
         {
             if (usingBytes)
             {
@@ -200,7 +210,7 @@ namespace ICU4N.Numerics
             origDelta = 0;
         }
 
-  protected override void ReadIntToBcd(int n)
+        protected override void ReadIntToBcd(int n)
         {
             //assert n != 0;
             if (n == 0)
@@ -218,7 +228,7 @@ namespace ICU4N.Numerics
             precision = 16 - i;
         }
 
-  protected override void ReadLongToBcd(long n)
+        protected override void ReadLongToBcd(long n)
         {
             //assert n != 0;
             if (n == 0)
@@ -231,7 +241,7 @@ namespace ICU4N.Numerics
                 {
                     bcdBytes[i] = (byte)(n % 10);
                 }
-                Debug.Assert( usingBytes);
+                Debug.Assert(usingBytes);
                 scale = 0;
                 precision = i;
             }
@@ -243,7 +253,7 @@ namespace ICU4N.Numerics
                 {
                     result = (result.TripleShift(4)) + ((n % 10) << 60);
                 }
-                Debug.Assert( i >= 0);
+                Debug.Assert(i >= 0);
                 Debug.Assert(!usingBytes);
                 bcdLong = result.TripleShift(i * 4);
                 scale = 0;
@@ -251,7 +261,7 @@ namespace ICU4N.Numerics
             }
         }
 
-  protected override void ReadBigIntegerToBcd(BigInteger n)
+        protected override void ReadBigIntegerToBcd(BigMath.BigInteger n)
         {
             if (n.Sign == 0)
                 throw new ArgumentException("BigInteger sign must not be zero.");
@@ -260,26 +270,28 @@ namespace ICU4N.Numerics
             int i = 0;
             for (; n.Sign != 0; i++)
             {
-                //BigInteger[] temp = n.DivideAndRemainder(BigInteger.TEN);
-                var result = BigInteger.DivRem(n, 10, out BigInteger remainder);
+                var result = BigMath.BigIntegerMath.DivideAndRemainder(n, 10, out BigMath.BigInteger remainder);
+
+                ////BigInteger[] temp = n.DivideAndRemainder(BigInteger.TEN);
+                //var result = BigInteger.DivRem(n, 10, out BigInteger remainder);
                 //EnsureCapacity(i + 1);
                 //bcdBytes[i] = temp[1].byteValue();
                 //n = temp[0];
                 EnsureCapacity(i + 1);
-                bcdBytes[i] = (byte)remainder;
+                bcdBytes[i] = remainder.ToByte();
                 n = result;
             }
             scale = 0;
             precision = i;
         }
 
-  protected override BigDecimal BcdToBigDecimal()
+        protected override BigMath.BigDecimal BcdToBigDecimal()
         {
             if (usingBytes)
             {
                 // Converting to a string here is faster than doing BigInteger/BigDecimal arithmetic.
                 //BigDecimal result = new BigDecimal(ToNumberString());
-                BigDecimal result = BigDecimal.Parse(ToNumberString(), J2N.Globalization.NumberStyle.Float, CultureInfo.InvariantCulture);
+                BigMath.BigDecimal result = BigMath.BigDecimal.Parse(ToNumberString(), CultureInfo.InvariantCulture);
                 if (IsNegative)
                 {
                     result = -result; //.negate();
@@ -293,14 +305,18 @@ namespace ICU4N.Numerics
                 {
                     tempLong = tempLong * 10 + GetDigitPos(shift);
                 }
-                BigDecimal result = BigDecimal.GetInstance(tempLong);
-                result = result.ScaleByPowerOfTen(scale);
-                if (IsNegative) result = -result; //.negate();
+                BigMath.BigDecimal result = new BigMath.BigDecimal(tempLong);
+                result = BigMath.BigMath.ScaleByPowerOfTen(result, scale);
+                if (IsNegative) result = -result;
                 return result;
+                //BigDecimal result = BigDecimal.GetInstance(tempLong);
+                //result = result.ScaleByPowerOfTen(scale);
+                //if (IsNegative) result = -result; //.negate();
+                //return result;
             }
         }
 
-  protected override void Compact()
+        protected override void Compact()
         {
             if (usingBytes)
             {
@@ -398,11 +414,11 @@ namespace ICU4N.Numerics
                     //bcdLong >>>= 4;
                     bcdLong = bcdLong.TripleShift(4);
                 }
-                Debug.Assert( usingBytes);
+                Debug.Assert(usingBytes);
             }
         }
 
-  protected override void CopyBcdFrom(IDecimalQuantity other)
+        protected override void CopyBcdFrom(IDecimalQuantity other)
         {
             DecimalQuantity_DualStorageBCD other_ = (DecimalQuantity_DualStorageBCD)other; // ICU4N TODO: Safe cast
             SetBcdToZero();
@@ -425,7 +441,7 @@ namespace ICU4N.Numerics
          * @deprecated This API is for ICU internal use only.
          */
         [Obsolete("This API is for ICU internal use only.")]
-  public string CheckHealth()
+        public string CheckHealth()
         {
             if (usingBytes)
             {
@@ -483,7 +499,7 @@ namespace ICU4N.Numerics
         [Obsolete("This API is for ICU internal use only.")]
         public bool IsUsingBytes => usingBytes;
 
-  public override string ToString()
+        public override string ToString()
         {
             return string.Format("<DecimalQuantity {0}:{1}:{2}:{3} {4} {5}>",
                 (lOptPos > 1000 ? "999" : lOptPos.ToString(CultureInfo.InvariantCulture)),

@@ -3,7 +3,7 @@
     internal class Multiplier : IMicroPropsGenerator// ICU4N TODO: API - this was public in ICU4J
     {
         internal readonly int magnitudeMultiplier;
-        internal readonly BigDecimal bigDecimalMultiplier;
+        internal readonly BigMath.BigDecimal bigDecimalMultiplier;
         internal readonly IMicroPropsGenerator parent;
 
         public Multiplier(int magnitudeMultiplier)
@@ -13,7 +13,7 @@
             parent = null;
         }
 
-        public Multiplier(BigDecimal bigDecimalMultiplier)
+        public Multiplier(BigMath.BigDecimal bigDecimalMultiplier)
         {
             this.magnitudeMultiplier = 0;
             this.bigDecimalMultiplier = bigDecimalMultiplier;

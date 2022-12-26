@@ -1,5 +1,4 @@
-﻿using Deveel.Math;
-using ICU4N.Globalization;
+﻿using ICU4N.Globalization;
 using ICU4N.Impl;
 using ICU4N.Text;
 using ICU4N.Util;
@@ -18,6 +17,10 @@ using Long = J2N.Numerics.Int64;
 
 namespace ICU4N.Numerics
 {
+    using BigDecimal = BigMath.BigDecimal;
+    using BigInteger = BigMath.BigInteger;
+
+
     /// <summary>
     /// A parser designed to convert an arbitrary human-generated string to its best representation as a
     /// number: a <see cref="long"/>, a <see cref="BigInteger"/>, or a <see cref="BigDecimal"/>.
@@ -150,8 +153,8 @@ namespace ICU4N.Numerics
             new UnicodeSet("[\\ '\\u00A0\\u066C\\u2000-\\u200A\\u2018\\u2019\\u202F\\u205F\\u3000\\uFF07]").Freeze();
 
         // For parse return value calculation.
-        internal static readonly BigDecimal MIN_LONG_AS_BIG_DECIMAL = new BigDecimal(long.MinValue);
-        internal static readonly BigDecimal MAX_LONG_AS_BIG_DECIMAL = new BigDecimal(long.MaxValue);
+        internal static readonly BigMath.BigDecimal MIN_LONG_AS_BIG_DECIMAL = new BigMath.BigDecimal(long.MinValue);
+        internal static readonly BigMath.BigDecimal MAX_LONG_AS_BIG_DECIMAL = new BigMath.BigDecimal(long.MaxValue);
 
         internal enum SeparatorType
         {
@@ -472,31 +475,39 @@ namespace ICU4N.Numerics
                 }
 
                 // Multipliers must be applied in reverse.
-                BigDecimal multiplier = properties.Multiplier;
+                BigMath.BigDecimal multiplier = properties.Multiplier;
                 if (properties.MagnitudeMultiplier != 0)
                 {
-                    if (multiplier == null) multiplier = BigDecimal.One;
-                    multiplier = multiplier.ScaleByPowerOfTen(properties.MagnitudeMultiplier);
+                    if (multiplier == null) multiplier = BigMath.BigDecimal.One;
+                    //multiplier = multiplier.ScaleByPowerOfTen(properties.MagnitudeMultiplier);
+                    multiplier = BigMath.BigMath.ScaleByPowerOfTen(multiplier, properties.MagnitudeMultiplier);
                 }
                 int delta = (sawNegativeExponent ? -1 : 1) * exponent;
 
                 // We need to use a math context in order to prevent non-terminating decimal expansions.
                 // This is only used when dividing by the multiplier.
-                MathContext mc = RoundingUtils.GetMathContextOr34Digits(properties);
+                BigMath.MathContext mc = RoundingUtils.GetMathContextOr34Digits(properties);
 
                 // Construct the output number.
                 // This is the only step during fast-mode parsing that incurs object creations.
-                BigDecimal result = fq.ToBigDecimal();
+                BigMath.BigDecimal result = fq.ToBigDecimal();
                 if (sawNegative) result = -result;
-                ///Deveel.Math.BigDecimal foo = new Deveel.Math.BigDecimal(9);
-                
+                ////Deveel.Math.BigDecimal foo = new Deveel.Math.BigDecimal(9);
 
-                result = result.ScaleByPowerOfTen(delta);
+                result = BigMath.BigMath.ScaleByPowerOfTen(result, delta);
                 if (multiplier != null)
                 {
-                    result = result.Divide(multiplier, mc);
+                    result = BigMath.BigMath.Divide(result, multiplier, mc);
                 }
-                result = result.StripTrailingZeros();
+                result = BigMath.BigMath.StripTrailingZeros(result);
+
+
+                //result = result.ScaleByPowerOfTen(delta);
+                //if (multiplier != null)
+                //{
+                //    result = result.Divide(multiplier, mc);
+                //}
+                //result = result.StripTrailingZeros();
                 if (forceBigDecimal || result.Scale > 0)
                 {
                     return result;

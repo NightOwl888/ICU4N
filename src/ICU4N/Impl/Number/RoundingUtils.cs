@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Numerics
 {
@@ -21,7 +19,7 @@ namespace ICU4N.Numerics
         /**
          * The default rounding mode.
          */
-        public const RoundingMode DefaultRoundingMode = RoundingMode.HalfEven;
+        public const BigMath.RoundingMode DefaultRoundingMode = BigMath.RoundingMode.HalfEven;
 
         /**
          * The maximum number of fraction places, integer numerals, or significant digits.
@@ -49,27 +47,27 @@ namespace ICU4N.Numerics
          *     infinity.
          */
         public static bool GetRoundingDirection(
-            bool isEven, bool isNegative, Section section, RoundingMode roundingMode, object reference)
+            bool isEven, bool isNegative, Section section, BigMath.RoundingMode roundingMode, object reference)
         {
             switch (roundingMode)
             {
-                case BigDecimal.RoundUp:
+                case BigMath.RoundingMode.Up:
                     // round away from zero
                     return false;
 
-                case BigDecimal.RoundDown:
+                case BigMath.RoundingMode.Down:
                     // round toward zero
                     return true;
 
-                case BigDecimal.RoundCeiling:
+                case BigMath.RoundingMode.Ceiling:
                     // round toward positive infinity
                     return isNegative;
 
-                case BigDecimal.RoundFloor:
+                case BigMath.RoundingMode.Floor:
                     // round toward negative infinity
                     return !isNegative;
 
-                case BigDecimal.RoundHalfUp:
+                case BigMath.RoundingMode.HalfUp:
                     switch (section)
                     {
                         case Section.MidPoint:
@@ -81,7 +79,7 @@ namespace ICU4N.Numerics
                     }
                     break;
 
-                case BigDecimal.RoundHalfDown:
+                case BigMath.RoundingMode.HalfDown:
                     switch (section)
                     {
                         case Section.MidPoint:
@@ -93,7 +91,7 @@ namespace ICU4N.Numerics
                     }
                     break;
 
-                case BigDecimal.RoundHalfEven:
+                case BigMath.RoundingMode.HalfEven:
                     switch (section)
                     {
                         case Section.MidPoint:
@@ -120,14 +118,14 @@ namespace ICU4N.Numerics
          * @param roundingMode The integer version of the {@link RoundingMode}.
          * @return true if rounding mode is HALF_EVEN, HALF_UP, or HALF_DOWN; false otherwise.
          */
-        public static bool RoundsAtMidpoint(RoundingMode roundingMode)
+        public static bool RoundsAtMidpoint(BigMath.RoundingMode roundingMode)
         {
             switch (roundingMode)
             {
-                case BigDecimal.RoundUp:
-                case BigDecimal.RoundDown:
-                case BigDecimal.RoundCeiling:
-                case BigDecimal.RoundFloor:
+                case BigMath.RoundingMode.Up:
+                case BigMath.RoundingMode.Down:
+                case BigMath.RoundingMode.Ceiling:
+                case BigMath.RoundingMode.Floor:
                     return false;
 
                 default:
@@ -135,28 +133,28 @@ namespace ICU4N.Numerics
             }
         }
 
-        private static readonly MathContext[] MATH_CONTEXT_BY_ROUNDING_MODE_UNLIMITED = LoadUnlimited();
+        private static readonly BigMath.MathContext[] MATH_CONTEXT_BY_ROUNDING_MODE_UNLIMITED = LoadUnlimited();
 
-        private static readonly MathContext[] MATH_CONTEXT_BY_ROUNDING_MODE_34_DIGITS = Load34Digits();
+        private static readonly BigMath.MathContext[] MATH_CONTEXT_BY_ROUNDING_MODE_34_DIGITS = Load34Digits();
 
-        private static MathContext[] LoadUnlimited() // ICU4N: This logic depends on the RoundingMode being zero based and sequential.
+        private static BigMath.MathContext[] LoadUnlimited() // ICU4N: This logic depends on the RoundingMode being zero based and sequential.
         {
-            int length = Enum.GetValues(typeof(RoundingMode)).Length;
-            var result = new MathContext[length];
+            int length = Enum.GetValues(typeof(BigMath.RoundingMode)).Length;
+            var result = new BigMath.MathContext[length];
             for (int i = 0; i < length; i++)
             {
-                result[i] = new MathContext(0, (RoundingMode)i);
+                result[i] = new BigMath.MathContext(0, (BigMath.RoundingMode)i);
             }
             return result;
         }
 
-        private static MathContext[] Load34Digits() // ICU4N: This logic depends on the RoundingMode being zero based and sequential.
+        private static BigMath.MathContext[] Load34Digits() // ICU4N: This logic depends on the RoundingMode being zero based and sequential.
         {
-            int length = Enum.GetValues(typeof(RoundingMode)).Length;
-            var result = new MathContext[length];
+            int length = Enum.GetValues(typeof(BigMath.RoundingMode)).Length;
+            var result = new BigMath.MathContext[length];
             for (int i = 0; i < length; i++)
             {
-                result[i] = new MathContext(34);
+                result[i] = new BigMath.MathContext(34);
             }
             return result;
         }
@@ -176,13 +174,13 @@ namespace ICU4N.Numerics
          * @param properties The property bag.
          * @return A {@link MathContext}. Never null.
          */
-        public static MathContext GetMathContextOrUnlimited(DecimalFormatProperties properties)
+        public static BigMath.MathContext GetMathContextOrUnlimited(DecimalFormatProperties properties)
         {
-            MathContext mathContext = properties.MathContext;
+            BigMath.MathContext mathContext = properties.MathContext;
             if (mathContext == null)
             {
-                RoundingMode? roundingMode = properties.RoundingMode;
-                if (roundingMode == null) roundingMode = RoundingMode.HalfEven;
+                BigMath.RoundingMode? roundingMode = properties.RoundingMode;
+                if (roundingMode == null) roundingMode = BigMath.RoundingMode.HalfEven;
                 mathContext = MATH_CONTEXT_BY_ROUNDING_MODE_UNLIMITED[(int)roundingMode];
             }
             return mathContext;
@@ -196,13 +194,13 @@ namespace ICU4N.Numerics
          * @param properties The property bag.
          * @return A {@link MathContext}. Never null.
          */
-        public static MathContext GetMathContextOr34Digits(DecimalFormatProperties properties)
+        public static BigMath.MathContext GetMathContextOr34Digits(DecimalFormatProperties properties)
         {
-            MathContext mathContext = properties.MathContext;
+            BigMath.MathContext mathContext = properties.MathContext;
             if (mathContext == null)
             {
-                RoundingMode? roundingMode = properties.RoundingMode;
-                if (roundingMode == null) roundingMode = RoundingMode.HalfEven;
+                BigMath.RoundingMode? roundingMode = properties.RoundingMode;
+                if (roundingMode == null) roundingMode = BigMath.RoundingMode.HalfEven;
                 mathContext = MATH_CONTEXT_BY_ROUNDING_MODE_34_DIGITS[(int)roundingMode];
             }
             return mathContext;
@@ -215,7 +213,7 @@ namespace ICU4N.Numerics
          * @param roundingMode The {@link RoundingMode} to use.
          * @return The corresponding {@link MathContext}.
          */
-        public static MathContext MathContextUnlimited(RoundingMode roundingMode)
+        public static BigMath.MathContext MathContextUnlimited(BigMath.RoundingMode roundingMode)
         {
             return MATH_CONTEXT_BY_ROUNDING_MODE_UNLIMITED[(int)roundingMode];
         }

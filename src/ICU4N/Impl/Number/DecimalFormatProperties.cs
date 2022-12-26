@@ -85,7 +85,7 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
 #if FEATURE_SERIALIZABLE
         [NonSerialized]
 #endif
-        private MathContext mathContext;
+        private BigMath.MathContext mathContext;
 #if FEATURE_SERIALIZABLE
         [NonSerialized]
 #endif
@@ -121,7 +121,7 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
 #if FEATURE_SERIALIZABLE
         [NonSerialized]
 #endif
-        private BigDecimal multiplier;
+        private BigMath.BigDecimal multiplier;
 #if FEATURE_SERIALIZABLE
         [NonSerialized]
 #endif
@@ -194,11 +194,11 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
 #if FEATURE_SERIALIZABLE
         [NonSerialized]
 #endif
-        private BigDecimal roundingIncrement;
+        private BigMath.BigDecimal roundingIncrement;
 #if FEATURE_SERIALIZABLE
         [NonSerialized]
 #endif
-        private RoundingMode? roundingMode;
+        private BigMath.RoundingMode? roundingMode;
 #if FEATURE_SERIALIZABLE
         [NonSerialized]
 #endif
@@ -567,7 +567,7 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
             set => magnitudeMultiplier = value;
         }
 
-        public MathContext MathContext
+        public BigMath.MathContext MathContext
         {
             get => mathContext;
             set => mathContext = value;
@@ -621,7 +621,7 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
             set => minimumSignificantDigits = value;
         }
 
-        public BigDecimal Multiplier
+        public BigMath.BigDecimal Multiplier
         {
             get => multiplier;
             set => multiplier = value;
@@ -729,13 +729,13 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
             set => positiveSuffixPattern = value;
         }
 
-        public BigDecimal RoundingIncrement
+        public BigMath.BigDecimal RoundingIncrement
         {
             get => roundingIncrement;
             set => roundingIncrement = value;
         }
 
-        public RoundingMode? RoundingMode
+        public BigMath.RoundingMode? RoundingMode
         {
             get => roundingMode;
             set => roundingMode = value;

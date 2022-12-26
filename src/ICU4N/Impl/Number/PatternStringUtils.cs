@@ -1,9 +1,7 @@
 ﻿using ICU4N.Support.Collections;
 using ICU4N.Text;
-using J2N;
 using J2N.Text;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using static ICU4N.Numerics.Padder;
@@ -94,7 +92,7 @@ namespace ICU4N.Numerics
             int groupingLength = grouping1 + grouping2 + 1;
 
             // Figure out the digits we need to put in the pattern.
-            BigDecimal roundingInterval = properties.RoundingIncrement;
+            BigMath.BigDecimal roundingInterval = properties.RoundingIncrement;
             StringBuilder digitsString = new StringBuilder();
             int digitsStringScale = 0;
             if (maxSig != Math.Min(dosMax, -1))
@@ -114,7 +112,8 @@ namespace ICU4N.Numerics
                 // Rounding Interval.
                 digitsStringScale = -roundingInterval.Scale;
                 // TODO: Check for DoS here?
-                string str = roundingInterval.ScaleByPowerOfTen(roundingInterval.Scale).ToPlainString();
+                //string str = roundingInterval.ScaleByPowerOfTen(roundingInterval.Scale).ToPlainString();
+                string str = BigMath.BigMath.ScaleByPowerOfTen(roundingInterval, roundingInterval.Scale).ToPlainString();
                 if (str[0] == '-')
                 {
                     // TODO: Unsupported operation exception or fail silently?
