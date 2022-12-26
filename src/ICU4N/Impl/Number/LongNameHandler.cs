@@ -110,11 +110,10 @@ namespace ICU4N.Numerics
         public static LongNameHandler ForCurrencyLongNames(UCultureInfo locale, Currency currency, PluralRules rules,
                 IMicroPropsGenerator parent)
         {
-            // ICU4N TODO: EnumMaps
-            IDictionary<StandardPlural, string> simpleFormats = null; // new EnumMap<StandardPlural, String>(StandardPlural.class);
+            IDictionary<StandardPlural, string> simpleFormats = new Dictionary<StandardPlural, string>();// null; // new EnumMap<StandardPlural, String>(StandardPlural.class);
             GetCurrencyLongNameData(locale, currency, simpleFormats);
             // TODO(ICU4J): Reduce the number of object creations here?
-            IDictionary<StandardPlural, SimpleModifier> modifiers = null; // new EnumMap<StandardPlural, SimpleModifier>(StandardPlural.class);
+            IDictionary<StandardPlural, SimpleModifier> modifiers = new Dictionary<StandardPlural, SimpleModifier>(); // null; // new EnumMap<StandardPlural, SimpleModifier>(StandardPlural.class);
             SimpleFormatsToModifiers(simpleFormats, null, modifiers);
             return new LongNameHandler(modifiers, rules, parent);
         }
@@ -123,11 +122,11 @@ namespace ICU4N.Numerics
                 IMicroPropsGenerator parent)
         {
             // ICU4N TODO: EnumMaps
-            IDictionary<StandardPlural, string> simpleFormats = null; //new EnumMap<StandardPlural, string>(StandardPlural.class);
+            IDictionary<StandardPlural, string> simpleFormats = new Dictionary<StandardPlural, string>(); //new EnumMap<StandardPlural, string>(StandardPlural.class);
             GetMeasureData(locale, unit, width, simpleFormats);
             // TODO: What field to use for units?
             // TODO(ICU4J): Reduce the number of object creations here?
-            IDictionary<StandardPlural, SimpleModifier> modifiers = null; //new EnumMap<StandardPlural, SimpleModifier>(StandardPlural.class);
+            IDictionary<StandardPlural, SimpleModifier> modifiers = new Dictionary<StandardPlural, SimpleModifier>(); //new EnumMap<StandardPlural, SimpleModifier>(StandardPlural.class);
             SimpleFormatsToModifiers(simpleFormats, null, modifiers);
             return new LongNameHandler(modifiers, rules, parent);
         }
