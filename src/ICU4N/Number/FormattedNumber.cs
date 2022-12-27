@@ -5,6 +5,7 @@ using J2N.Collections;
 using J2N.Text;
 using System;
 using System.IO;
+using System.Text;
 using static ICU4N.Text.PluralRules;
 
 namespace ICU4N.Numerics
@@ -60,6 +61,37 @@ namespace ICU4N.Numerics
          */
         //public <A extends Appendable> A appendTo(A appendable)
         public virtual TAppendable AppendTo<TAppendable>(TAppendable appendable) where TAppendable : IAppendable
+        {
+            try
+            {
+                appendable.Append(nsb);
+            }
+            catch (IOException e)
+            {
+                // Throw as an unchecked exception to avoid users needing try/catch
+                throw new ICUUncheckedIOException(e);
+            }
+            return appendable;
+        }
+
+        /**
+         * Append the formatted number to an Appendable, such as a StringBuilder. This may be slightly more efficient than
+         * creating a String.
+         *
+         * <p>
+         * If an IOException occurs when appending to the Appendable, an unchecked {@link ICUUncheckedIOException} is thrown
+         * instead.
+         *
+         * @param appendable
+         *            The Appendable to which to append the formatted number string.
+         * @return The same Appendable, for chaining.
+         * @draft ICU 60
+         * @provisional This API might change or be removed in a future release.
+         * @see Appendable
+         * @see NumberFormatter
+         */
+        //public <A extends Appendable> A appendTo(A appendable)
+        public virtual StringBuilder AppendTo(StringBuilder appendable)
         {
             try
             {

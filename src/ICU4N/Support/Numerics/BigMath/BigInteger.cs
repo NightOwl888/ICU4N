@@ -929,32 +929,39 @@ namespace ICU4N.Numerics.BigMath
             return a == b || a < b;
         }
 
-        #region Implicit Operators
+        #region Explicit Operators
 
-        public static implicit operator Int32(BigInteger i)
+        public static explicit operator int(BigInteger i)
         {
             return i.ToInt32();
         }
 
-        public static implicit operator Int64(BigInteger i)
+        public static explicit operator long(BigInteger i)
         {
             return i.ToInt64();
         }
 
-        public static implicit operator Single(BigInteger i)
+        public static explicit operator float(BigInteger i)
         {
             return i.ToSingle();
         }
 
-        public static implicit operator Double(BigInteger i)
+        public static explicit operator double(BigInteger i)
         {
             return i.ToDouble();
         }
 
-        public static implicit operator String(BigInteger i)
-        {
-            return i.ToString();
-        }
+        //public static explicit operator string(BigInteger i)
+        //{
+        //    return i.ToString();
+        //}
+
+        #endregion
+
+
+        #region Implicit Operators
+
+
 
         public static implicit operator BigInteger(int value)
         {

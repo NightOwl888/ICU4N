@@ -34,7 +34,7 @@ namespace ICU4N.Numerics
             int groupingSize = Math.Min(properties.SecondaryGroupingSize, dosMax);
             int firstGroupingSize = Math.Min(properties.GroupingSize, dosMax);
             int paddingWidth = Math.Min(properties.FormatWidth, dosMax);
-            PadPosition? paddingLocation = properties.PadPosition;
+            Padder.PadPosition? paddingLocation = properties.PadPosition;
             string paddingString = properties.PadString;
             int minInt = Math.Max(Math.Min(properties.MinimumIntegerDigits, dosMax), 0);
             int maxInt = Math.Min(properties.MaximumIntegerDigits, dosMax);
@@ -196,23 +196,23 @@ namespace ICU4N.Numerics
                 int addedLength;
                 switch (paddingLocation)
                 {
-                    case PadPosition.BeforePrefix:
+                    case Padder.PadPosition.BeforePrefix:
                         addedLength = PatternStringUtils.EscapePaddingString(paddingString, sb, 0);
                         sb.Insert(0, '*');
                         afterPrefixPos += addedLength + 1;
                         beforeSuffixPos += addedLength + 1;
                         break;
-                    case PadPosition.AfterPrefix:
+                    case Padder.PadPosition.AfterPrefix:
                         addedLength = PatternStringUtils.EscapePaddingString(paddingString, sb, afterPrefixPos);
                         sb.Insert(afterPrefixPos, '*');
                         afterPrefixPos += addedLength + 1;
                         beforeSuffixPos += addedLength + 1;
                         break;
-                    case PadPosition.BeforeSuffix:
+                    case Padder.PadPosition.BeforeSuffix:
                         PatternStringUtils.EscapePaddingString(paddingString, sb, beforeSuffixPos);
                         sb.Insert(beforeSuffixPos, '*');
                         break;
-                    case PadPosition.AfterSuffix:
+                    case Padder.PadPosition.AfterSuffix:
                         sb.Append('*');
                         PatternStringUtils.EscapePaddingString(paddingString, sb, sb.Length);
                         break;

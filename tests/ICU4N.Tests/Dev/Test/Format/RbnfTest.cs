@@ -1792,7 +1792,7 @@ namespace ICU4N.Dev.Test.Format
             doTest(enFormatter, enTestFullData, false);
 
             enFormatter.MaximumFractionDigits = 0;
-            enFormatter.RoundingMode = (BigDecimal.RoundHalfEven);
+            enFormatter.RoundingMode = (BigDecimal.RoundHalfEven).ToRoundingMode();
             string[][] enTestIntegerData = new string[][] {
                 new string[] {"0", "zero"},
                 new string[] {"0.4", "zero"},
@@ -1809,7 +1809,7 @@ namespace ICU4N.Dev.Test.Format
             doTest(enFormatter, enTestIntegerData, false);
 
             enFormatter.MaximumFractionDigits = 1;
-            enFormatter.RoundingMode = (BigDecimal.RoundHalfEven);
+            enFormatter.RoundingMode = (BigDecimal.RoundHalfEven).ToRoundingMode();
             string[][] enTestTwoDigitsData = new string[][] {
                 new string[] {"0", "zero"},
                 new string[] {"0.04", "zero"},
@@ -1825,7 +1825,7 @@ namespace ICU4N.Dev.Test.Format
             doTest(enFormatter, enTestTwoDigitsData, false);
 
             enFormatter.MaximumFractionDigits = 3;
-            enFormatter.RoundingMode = (BigDecimal.RoundDown);
+            enFormatter.RoundingMode = (BigDecimal.RoundDown).ToRoundingMode();
             string[][] enTestThreeDigitsDownData = new string[][] {
                 new string[] {"4.3", "four point three"}, // Not 4.299!
             };
@@ -1907,7 +1907,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestRoundingUnrealNumbers()
         {
             RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(new UCultureInfo("en-US"), NumberPresentation.SpellOut);
-            rbnf.RoundingMode = (BigDecimal.RoundHalfUp);
+            rbnf.RoundingMode = (BigDecimal.RoundHalfUp).ToRoundingMode();
             rbnf.MaximumFractionDigits = (3);
             assertEquals("zero point one", rbnf.Format(0.1));
             assertEquals("zero point zero zero one", rbnf.Format(0.0005));

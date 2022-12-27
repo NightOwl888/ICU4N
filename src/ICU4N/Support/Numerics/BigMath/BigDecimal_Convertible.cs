@@ -154,7 +154,7 @@ namespace ICU4N.Numerics.BigMath
         /// Returns a string representation of this number in engineering 
         /// notation if necessary.
         /// </returns>
-        public String ToEngineeringString()
+        public string ToEngineeringString()
         {
             return ToEngineeringString(null);
         }
@@ -178,7 +178,7 @@ namespace ICU4N.Numerics.BigMath
         /// Returns a string representation of this number in engineering 
         /// notation if necessary.
         /// </returns>
-        public String ToEngineeringString(IFormatProvider provider)
+        public string ToEngineeringString(IFormatProvider provider)
         {
             return DecimalString.ToEngineeringString(this, provider);
         }
@@ -198,7 +198,7 @@ namespace ICU4N.Numerics.BigMath
         *
         * @return a string representation of {@code this} without exponent part.
         */
-        public String ToPlainString(IFormatProvider provider)
+        public string ToPlainString(IFormatProvider provider)
         {
             if (provider == null)
                 provider = CultureInfo.InvariantCulture;
@@ -206,7 +206,7 @@ namespace ICU4N.Numerics.BigMath
             return DecimalString.ToPlainString(this, provider);
         }
 
-        public String ToPlainString()
+        public string ToPlainString()
         {
             return ToPlainString(null);
         }
@@ -568,14 +568,15 @@ namespace ICU4N.Numerics.BigMath
         // TODO: must be verified
         public decimal ToDecimal()
         {
-            var scaleDivisor = BigMath.Pow(BigInteger.FromInt64(10), _scale);
-            var remainder = BigMath.Remainder(GetUnscaledValue(), scaleDivisor);
-            var scaledValue = GetUnscaledValue() / scaleDivisor;
+            //var scaleDivisor = BigMath.Pow(BigInteger.FromInt64(10), _scale);
+            //var remainder = BigMath.Remainder(GetUnscaledValue(), scaleDivisor);
+            //var scaledValue = GetUnscaledValue() / scaleDivisor;
 
-            var leftOfDecimal = (decimal)scaledValue;
-            var rightOfDecimal = (remainder) / ((decimal)scaleDivisor);
+            //var leftOfDecimal = (decimal)scaledValue;
+            //var rightOfDecimal = (remainder) / ((decimal)scaleDivisor);
 
-            return leftOfDecimal + rightOfDecimal;
+            //return (decimal)(leftOfDecimal + rightOfDecimal);
+            throw new NotImplementedException(); // ICU4N TODO: complete implementation
         }
 
 

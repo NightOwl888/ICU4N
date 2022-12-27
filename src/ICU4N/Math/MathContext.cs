@@ -163,6 +163,53 @@ namespace ICU4N.Numerics
         Up = 0, // ICU4N TODO: Rearrange this to make HalfUp the default (with a value of 0) so we don't need to use -1.
     }
 
+    internal static class RoundingModeExtensions
+    {
+        public static RoundingMode ToICURoundingMode(this BigMath.RoundingMode roundingMode)
+        {
+            switch (roundingMode)
+            {
+                case BigMath.RoundingMode.Ceiling:
+                    return RoundingMode.Ceiling;
+                case BigMath.RoundingMode.Down:
+                    return RoundingMode.Down;
+                case BigMath.RoundingMode.Floor:
+                    return RoundingMode.Floor;
+                case BigMath.RoundingMode.HalfDown:
+                    return RoundingMode.HalfDown;
+                case BigMath.RoundingMode.HalfEven:
+                    return RoundingMode.HalfEven;
+                case BigMath.RoundingMode.HalfUp:
+                    return RoundingMode.HalfUp;
+                case BigMath.RoundingMode.Up:
+                    return RoundingMode.Up;
+                default: throw new ArgumentOutOfRangeException(nameof(roundingMode));
+            }
+        }
+
+        public static BigMath.RoundingMode ToRoundingMode(this RoundingMode roundingMode)
+        {
+            switch (roundingMode)
+            {
+                case RoundingMode.Ceiling:
+                    return BigMath.RoundingMode.Ceiling;
+                case RoundingMode.Down:
+                    return BigMath.RoundingMode.Down;
+                case RoundingMode.Floor:
+                    return BigMath.RoundingMode.Floor;
+                case RoundingMode.HalfDown:
+                    return BigMath.RoundingMode.HalfDown;
+                case RoundingMode.HalfEven:
+                    return BigMath.RoundingMode.HalfEven;
+                case RoundingMode.HalfUp:
+                    return BigMath.RoundingMode.HalfUp;
+                case RoundingMode.Up:
+                    return BigMath.RoundingMode.Up;
+                default: throw new ArgumentOutOfRangeException(nameof(roundingMode));
+            }
+        }
+    }
+
     /// <summary>
     /// Exponent form to be used during a <see cref="BigDecimal"/> operation.
     /// </summary>

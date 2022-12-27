@@ -124,7 +124,7 @@ namespace ICU4N.Text
         /// <returns></returns>
         /// <exception cref="NotSupportedException">Always.</exception>
         /// <stable>ICU 49</stable>
-        public override CurrencyAmount ParseCurrency(ICharSequence text, ParsePosition parsePosition)
+        public override CurrencyAmount ParseCurrency(string text, ParsePosition parsePosition)
         {
             throw new NotSupportedException();
         }

@@ -7,38 +7,28 @@ namespace ICU4N.Numerics
 {
     internal static class PadPositionExtensions // ICU4N TODO: API - this was public in ICU4J
     {
-        public static DecimalFormat.PadPosition ToOld(this Padder.PadPosition padPosition)
+        public static PadPosition ToOld(this Padder.PadPosition padPosition)
         {
-            switch (padPosition)
+            return padPosition switch
             {
-                case Padder.PadPosition.BeforePrefix:
-                    return DecimalFormat.PadPosition.BeforePrefix;
-                case Padder.PadPosition.AfterPrefix:
-                    return DecimalFormat.PadPosition.AfterPrefix;
-                case Padder.PadPosition.BeforeSuffix:
-                    return DecimalFormat.PadPosition.BeforeSuffix;
-                case Padder.PadPosition.AfterSuffix:
-                    return DecimalFormat.PadPosition.AfterSuffix;
-                default:
-                    return (DecimalFormat.PadPosition)(-1); // silence compiler errors
-            }
+                Padder.PadPosition.BeforePrefix => PadPosition.BeforePrefix,
+                Padder.PadPosition.AfterPrefix => PadPosition.AfterPrefix,
+                Padder.PadPosition.BeforeSuffix => PadPosition.BeforeSuffix,
+                Padder.PadPosition.AfterSuffix => PadPosition.AfterSuffix,
+                _ => (PadPosition)(-1),// silence compiler errors
+            };
         }
 
-        public static Padder.PadPosition ToNew(this DecimalFormat.PadPosition padPosition)
+        public static Padder.PadPosition ToNew(this PadPosition padPosition)
         {
-            switch (padPosition)
+            return padPosition switch
             {
-                case DecimalFormat.PadPosition.BeforePrefix:
-                    return Padder.PadPosition.BeforePrefix;
-                case DecimalFormat.PadPosition.AfterPrefix:
-                    return Padder.PadPosition.AfterPrefix;
-                case DecimalFormat.PadPosition.BeforeSuffix:
-                    return Padder.PadPosition.BeforeSuffix;
-                case DecimalFormat.PadPosition.AfterSuffix:
-                    return Padder.PadPosition.AfterSuffix;
-                default:
-                    throw new ArgumentException("Don't know how to map " + padPosition);
-            }
+                PadPosition.BeforePrefix => Padder.PadPosition.BeforePrefix,
+                PadPosition.AfterPrefix => Padder.PadPosition.AfterPrefix,
+                PadPosition.BeforeSuffix => Padder.PadPosition.BeforeSuffix,
+                PadPosition.AfterSuffix => Padder.PadPosition.AfterSuffix,
+                _ => throw new ArgumentException("Don't know how to map " + padPosition),
+            };
         }
     }
 

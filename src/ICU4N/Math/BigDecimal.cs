@@ -335,26 +335,24 @@ namespace ICU4N.Numerics
             this.exp = bd.exp;
         }
 
-        /////**
-        //// * Constructs a <code>BigDecimal</code> object from a <code>java.math.BigDecimal</code>.
-        //// * <p>
-        //// * Constructs a <code>BigDecimal</code> as though the parameter had been represented as a <code>String</code> (using
-        //// * its <code>toString</code> method) and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
-        //// * The parameter must not be <code>null</code>.
-        //// * <p>
-        //// * <i>(Note: this constructor is provided only in the <code>com.ibm.icu.math</code> version of the BigDecimal class.
-        //// * It would not be present in a <code>java.math</code> version.)</i>
-        //// *
-        //// * @param bd The <code>BigDecimal</code> to be translated.
-        //// * @stable ICU 2.0
-        //// */
+        /**
+         * Constructs a <code>BigDecimal</code> object from a <code>java.math.BigDecimal</code>.
+         * <p>
+         * Constructs a <code>BigDecimal</code> as though the parameter had been represented as a <code>String</code> (using
+         * its <code>toString</code> method) and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
+         * The parameter must not be <code>null</code>.
+         * <p>
+         * <i>(Note: this constructor is provided only in the <code>com.ibm.icu.math</code> version of the BigDecimal class.
+         * It would not be present in a <code>java.math</code> version.)</i>
+         *
+         * @param bd The <code>BigDecimal</code> to be translated.
+         * @stable ICU 2.0
+         */
 
-        ////public BigDecimal(Deveel.Math.BigDecimal bd)
-        ////    : this(bd?.ToString(CultureInfo.InvariantCulture))
-        ////{
-        ////    //this(bd.toString());
-        ////    //return;
-        ////}
+        public BigDecimal(Numerics.BigMath.BigDecimal bd)
+            : this(bd?.ToString(CultureInfo.InvariantCulture))
+        {
+        }
 
 
         /// <summary>

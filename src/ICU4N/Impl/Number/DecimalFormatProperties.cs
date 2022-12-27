@@ -141,7 +141,7 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
 #if FEATURE_SERIALIZABLE
         [NonSerialized]
 #endif
-        private PadPosition? padPosition;
+        private Padder.PadPosition? padPosition;
 #if FEATURE_SERIALIZABLE
         [NonSerialized]
 #endif
@@ -651,7 +651,7 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
             set => negativeSuffixPattern = value;
         }
 
-        public PadPosition? PadPosition
+        public Padder.PadPosition? PadPosition
         {
             get => padPosition;
             set => padPosition = value;

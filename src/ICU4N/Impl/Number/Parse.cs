@@ -419,11 +419,11 @@ namespace ICU4N.Numerics
             public bool HasNumber => numDigits > 0 || sawNaN || sawInfinity;
 
             /// <summary>
-            /// Converts the internal digits from this instance into a <see cref="Number"/>, preferring a <see cref="Long"/>, then a
+            /// Converts the internal digits from this instance into a <see cref="J2N.Numerics.Number"/>, preferring a <see cref="Long"/>, then a
             /// <see cref="BigInteger"/>, then a <see cref="BigDecimal"/>. A <see cref="Double"/> is used for NaN, infinity, and -0.0.
             /// </summary>
             /// <param name="properties"></param>
-            /// <returns>The <see cref="Number"/>. Never null.</returns>
+            /// <returns>The <see cref="J2N.Numerics.Number"/>. Never null.</returns>
             internal Number ToNumber(DecimalFormatProperties properties) // ICU4N TODO: Ideally, the decision about which type to parse into will be delegated to the user.
             {
                 // Check for NaN, infinity, and -0.0

@@ -27,7 +27,7 @@ namespace ICU4N.Text
         /// <icu/> Constant to specify normal number style of format.
         /// </summary>
         /// <stable>ICU 4.2</stable>
-        NumberStyle = 0,
+        NumberStyle = 0, // ICU4N TODO: API - remove the suffix Currency in this enum, as it is redundant
 
         /// <summary>
         /// <icu/> Constant to specify general currency style of format. Defaults to
@@ -141,11 +141,10 @@ namespace ICU4N.Text
             {
                 return Format(bigInteger, toAppendTo, pos);
             }
-            // ICU4N TODO: BigDecimal
-            //else if (number is java.math.BigDecimal)
-            //{
-            //    return Format((java.math.BigDecimal)number, toAppendTo, pos);
-            //}
+            else if (number is Numerics.BigMath.BigDecimal javaBigDecimal)
+            {
+                return Format(javaBigDecimal, toAppendTo, pos);
+            }
             else if (number is BigDecimal bigDecimal)
             {
                 return Format(bigDecimal, toAppendTo, pos);
@@ -214,7 +213,7 @@ namespace ICU4N.Text
          * {@icu} Convenience method to format a BigInteger.
          * @stable ICU 2.0
          */
-        public string Format(BigInteger number)
+        public string Format(Numerics.BigMath.BigInteger number)
         {
             return Format(number, new StringBuffer(),
                           new FieldPosition(0)).ToString();
@@ -224,27 +223,27 @@ namespace ICU4N.Text
          * Convenience method to format a BigDecimal.
          * @stable ICU 2.0
          */
-        public string Format(BigDecimal number)
+        public string Format(Numerics.BigMath.BigDecimal number)
         {
             return Format(number, new StringBuffer(),
                           new FieldPosition(0)).ToString();
         }
 
-        //////**
-        //// * {@icu} Convenience method to format an ICU BigDecimal.
-        //// * @stable ICU 2.0
-        //// */
-        ////public final String format(com.ibm.icu.math.BigDecimal number)
-        ////{
-        ////    return format(number, new StringBuffer(),
-        ////                  new FieldPosition(0)).toString();
-        ////}
-
         /**
-         * {@icu} Convenience method to format a CurrencyAmount.
-         * @stable ICU 3.0
+         * {@icu} Convenience method to format an ICU BigDecimal.
+         * @stable ICU 2.0
          */
-        public string Format(CurrencyAmount currAmt)
+        public string Format(Numerics.BigDecimal number) // ICU BigDecimal
+    {
+        return Format(number, new StringBuffer(),
+                      new FieldPosition(0)).ToString();
+    }
+
+    /**
+     * {@icu} Convenience method to format a CurrencyAmount.
+     * @stable ICU 3.0
+     */
+    public string Format(CurrencyAmount currAmt)
         {
             return Format(currAmt, new StringBuffer(),
                           new FieldPosition(0)).ToString();
@@ -267,33 +266,34 @@ namespace ICU4N.Text
         public abstract StringBuffer Format(long number,
                                             StringBuffer toAppendTo,
                                             FieldPosition pos);
+
+        // ICU4N TODO: System.Numerics.BigInteger overload
         /**
          * {@icu} Formats a BigInteger. Specialization of format.
          * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
          * @stable ICU 2.0
          */
-        public abstract StringBuffer Format(BigInteger number,
+        public abstract StringBuffer Format(Numerics.BigMath.BigInteger number,
                                             StringBuffer toAppendTo,
                                             FieldPosition pos);
 
-        
-        // ICU4N TODO: BigDecimal
-        /////**
-        //// * {@icu} Formats a BigDecimal. Specialization of format.
-        //// * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
-        //// * @stable ICU 2.0
-        //// */
-        ////public abstract StringBuffer Format(java.math.BigDecimal number,
-        ////                                    StringBuffer toAppendTo,
-        ////                                    FieldPosition pos);
+
+        /**
+         * {@icu} Formats a BigDecimal. Specialization of format.
+         * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
+         * @stable ICU 2.0
+         */
+        public abstract StringBuffer Format(Numerics.BigMath.BigDecimal number,
+                                            StringBuffer toAppendTo,
+                                            FieldPosition pos);
         /**
          * {@icu} Formats an ICU BigDecimal. Specialization of format.
          * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
          * @stable ICU 2.0
          */
-        public abstract StringBuffer Format(BigDecimal number,
+        public abstract StringBuffer Format(Numerics.BigDecimal number,
                                             StringBuffer toAppendTo,
-                                            FieldPosition pos);
+                                            FieldPosition pos); // ICU BigDecimal
 
         /**
          * {@icu} Formats a CurrencyAmount. Specialization of format.
@@ -305,7 +305,7 @@ namespace ICU4N.Text
                                    FieldPosition pos)
         {
             // Default implementation -- subclasses may override
-            lock (this)
+            lock (this) // ICU4N TODO: Create specialized lock object - Note this is shared with subclasses
             {
                 Currency save = Currency, curr = currAmt.Currency;
                 bool same = curr.Equals(save);
@@ -379,7 +379,7 @@ namespace ICU4N.Text
          * @return a CurrencyAmount, or null upon failure
          * @stable ICU 49
          */
-        public virtual CurrencyAmount ParseCurrency(ICharSequence text, ParsePosition pos)
+        public virtual CurrencyAmount ParseCurrency(string text, ParsePosition pos) // ICU4N - converted ICharSequence to string
         {
             ////CLOVER:OFF
             // Default implementation only -- subclasses should override
@@ -1145,7 +1145,7 @@ namespace ICU4N.Text
          * @see #setRoundingMode(int)
          * @stable ICU 4.0
          */
-        public virtual RoundingMode RoundingMode
+        public virtual Numerics.BigMath.RoundingMode RoundingMode
         {
             get => throw new NotSupportedException("RoundingMode getter must be implemented by the subclass implementation.");
             set => throw new NotSupportedException("RoundingMode setter must be implemented by the subclass implementation.");
@@ -1193,7 +1193,6 @@ namespace ICU4N.Text
             //              return getShim().createInstance(desiredLocale, choice);
             //          }
             return GetShim().CreateInstance(desiredLocale, choice);
-            //return CreateInstance(desiredLocale, choice);
         }
 
         // =======================privates===============================
@@ -1291,13 +1290,11 @@ namespace ICU4N.Text
                 }
                 if (choice == NumberFormatStyle.CashCurrencyStyle)
                 {
-                    throw new NotImplementedException("Currency not yet supported by DecimalFormat");
-                    //f.SetCurrencyUsage(CurrencyUsage.CASH);
+                    f.CurrencyUsage = CurrencyUsage.Cash;
                 }
                 if (choice == NumberFormatStyle.PluralCurrencyStyle)
                 {
-                    throw new NotImplementedException("Currency not yet supported by DecimalFormat");
-                    //f.SetCurrencyPluralInfo(CurrencyPluralInfo.GetInstance(desiredLocale));
+                    f.CurrencyPluralInfo = CurrencyPluralInfo.GetInstance(desiredLocale);
                 }
                 format = f;
             }

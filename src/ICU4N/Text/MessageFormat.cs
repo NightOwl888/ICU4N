@@ -26,171 +26,171 @@ namespace ICU4N.Text
 {
     // ICU4N TODO: Missing dependencies, DateFormat, DecimalFormat, others
     internal class DateFormat { } // ICU4N TODO: Remove when DateFormat is ported
-    internal class DecimalFormat : NumberFormat // ICU4N TODO: Remove when DecimalFormat is ported
-    {
+    //internal class DecimalFormat : NumberFormat // ICU4N TODO: Remove when DecimalFormat is ported
+    //{
 
-        // ICU4N TODO: Move to DecimalFormat when it is ported
-        public enum PadPosition
-        {
-            BeforePrefix,
-            AfterPrefix,
-            BeforeSuffix,
-            AfterSuffix,
-        }
+    //    // ICU4N TODO: Move to DecimalFormat when it is ported
+    //    public enum PadPosition
+    //    {
+    //        BeforePrefix,
+    //        AfterPrefix,
+    //        BeforeSuffix,
+    //        AfterSuffix,
+    //    }
 
 
-        // ICU4N TODO: This class should have all synchronized properties to match ICU4J
+    //    // ICU4N TODO: This class should have all synchronized properties to match ICU4J
 
-        [NonSerialized]
-        internal volatile DecimalFormatSymbols symbols;
+    //    [NonSerialized]
+    //    internal volatile DecimalFormatSymbols symbols;
 
-        internal DecimalFormatProperties properties;
-        internal DecimalFormatProperties exportedProperties;
+    //    internal DecimalFormatProperties properties;
+    //    internal DecimalFormatProperties exportedProperties;
 
-        protected void RefreshFormatter()
-        {
-            // ICU4N TODO
-        }
+    //    protected void RefreshFormatter()
+    //    {
+    //        // ICU4N TODO
+    //    }
 
-        protected DecimalFormat() { }
+    //    protected DecimalFormat() { }
 
-        //public DecimalFormat(string pattern)
-        //{
-        //    symbols = DefaultSymbols;
-        //    //properties = new DecimalFormatProperties();
-        //    //exportedProperties = new DecimalFormatProperties();
-        //    //// Regression: ignore pattern rounding information if the pattern has currency symbols.
-        //    //setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_IF_CURRENCY);
-        //    //refreshFormatter();
-        //}
+    //    //public DecimalFormat(string pattern)
+    //    //{
+    //    //    symbols = DefaultSymbols;
+    //    //    //properties = new DecimalFormatProperties();
+    //    //    //exportedProperties = new DecimalFormatProperties();
+    //    //    //// Regression: ignore pattern rounding information if the pattern has currency symbols.
+    //    //    //setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_IF_CURRENCY);
+    //    //    //refreshFormatter();
+    //    //}
 
-        public DecimalFormat(string pattern, DecimalFormatSymbols symbols)
-        {
-            this.symbols = (DecimalFormatSymbols)symbols.Clone();
-            //properties = new DecimalFormatProperties();
-            //exportedProperties = new DecimalFormatProperties();
-            //// Regression: ignore pattern rounding information if the pattern has currency symbols.
-            //setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_IF_CURRENCY);
-            //refreshFormatter();
-        }
+    //    public DecimalFormat(string pattern, DecimalFormatSymbols symbols)
+    //    {
+    //        this.symbols = (DecimalFormatSymbols)symbols.Clone();
+    //        //properties = new DecimalFormatProperties();
+    //        //exportedProperties = new DecimalFormatProperties();
+    //        //// Regression: ignore pattern rounding information if the pattern has currency symbols.
+    //        //setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_IF_CURRENCY);
+    //        //refreshFormatter();
+    //    }
 
-        /// <summary>
-        /// Internal constructor used by <see cref="NumberFormat"/>.
-        /// </summary>
-        internal DecimalFormat(string pattern, DecimalFormatSymbols symbols, NumberFormatStyle choice)
-        {
-            this.symbols = (DecimalFormatSymbols)symbols.Clone();
-            //properties = new DecimalFormatProperties();
-            //exportedProperties = new DecimalFormatProperties();
-            //// If choice is a currency type, ignore the rounding information.
-            //if (choice == CURRENCYSTYLE
-            //    || choice == ISOCURRENCYSTYLE
-            //    || choice == ACCOUNTINGCURRENCYSTYLE
-            //    || choice == CASHCURRENCYSTYLE
-            //    || choice == STANDARDCURRENCYSTYLE
-            //    || choice == PLURALCURRENCYSTYLE)
-            //{
-            //    setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_ALWAYS);
-            //}
-            //else
-            //{
-            //    setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_IF_CURRENCY);
-            //}
-            //refreshFormatter();
-        }
+    //    /// <summary>
+    //    /// Internal constructor used by <see cref="NumberFormat"/>.
+    //    /// </summary>
+    //    internal DecimalFormat(string pattern, DecimalFormatSymbols symbols, NumberFormatStyle choice)
+    //    {
+    //        this.symbols = (DecimalFormatSymbols)symbols.Clone();
+    //        //properties = new DecimalFormatProperties();
+    //        //exportedProperties = new DecimalFormatProperties();
+    //        //// If choice is a currency type, ignore the rounding information.
+    //        //if (choice == CURRENCYSTYLE
+    //        //    || choice == ISOCURRENCYSTYLE
+    //        //    || choice == ACCOUNTINGCURRENCYSTYLE
+    //        //    || choice == CASHCURRENCYSTYLE
+    //        //    || choice == STANDARDCURRENCYSTYLE
+    //        //    || choice == PLURALCURRENCYSTYLE)
+    //        //{
+    //        //    setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_ALWAYS);
+    //        //}
+    //        //else
+    //        //{
+    //        //    setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_IF_CURRENCY);
+    //        //}
+    //        //refreshFormatter();
+    //    }
 
-        public bool ParseBigDecimal { get; set; }
+    //    public bool ParseBigDecimal { get; set; }
 
-        public bool DecimalSeparatorAlwaysShown { get; set; }
+    //    public bool DecimalSeparatorAlwaysShown { get; set; }
 
-        /**
-        * Sets the decimal format symbols used by this formatter. The formatter uses a copy of the
-        * provided symbols.
-        *
-        * @param newSymbols desired DecimalFormatSymbols
-        * @see DecimalFormatSymbols
-        * @stable ICU 2.0
-        */
-        public /*synchronized*/ void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
-        {
-            symbols = (DecimalFormatSymbols)newSymbols.Clone();
-            //refreshFormatter();
-        }
+    //    /**
+    //    * Sets the decimal format symbols used by this formatter. The formatter uses a copy of the
+    //    * provided symbols.
+    //    *
+    //    * @param newSymbols desired DecimalFormatSymbols
+    //    * @see DecimalFormatSymbols
+    //    * @stable ICU 2.0
+    //    */
+    //    public /*synchronized*/ void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
+    //    {
+    //        symbols = (DecimalFormatSymbols)newSymbols.Clone();
+    //        //refreshFormatter();
+    //    }
 
-        public /*synchronized*/ void ApplyPattern(string pattern)
-        {
-            // ICU4N TODO: Parse properties from pattern
-        }
+    //    public /*synchronized*/ void ApplyPattern(string pattern)
+    //    {
+    //        // ICU4N TODO: Parse properties from pattern
+    //    }
 
-        public /*synchronized*/ string ToPattern()
-        {
-            return string.Empty; // ICU4N TODO: Finish implementation
-        }
+    //    public /*synchronized*/ string ToPattern()
+    //    {
+    //        return string.Empty; // ICU4N TODO: Finish implementation
+    //    }
 
-        public IFixedDecimal GetFixedDecimal(double number)
-        {
-            return new FixedDecimal(number, MaximumFractionDigits); // No places to the right of the decimal
-        }
+    //    public IFixedDecimal GetFixedDecimal(double number)
+    //    {
+    //        return new FixedDecimal(number, MaximumFractionDigits); // No places to the right of the decimal
+    //    }
 
-        public override J2N.Numerics.Number Parse(string text, ParsePosition parsePosition)
-        {
-            int startIndex = parsePosition.Index;
+    //    public override J2N.Numerics.Number Parse(string text, ParsePosition parsePosition)
+    //    {
+    //        int startIndex = parsePosition.Index;
 
-            // ICU4N TODO: Parse into long
-            //throw new NotImplementedException();
-            return Double.GetInstance(double.Parse(text.Substring(startIndex), NumberStyles.Integer, CultureInfo.InvariantCulture));
-        }
+    //        // ICU4N TODO: Parse into long
+    //        //throw new NotImplementedException();
+    //        return Double.GetInstance(double.Parse(text.Substring(startIndex), NumberStyles.Integer, CultureInfo.InvariantCulture));
+    //    }
 
-        public override StringBuffer Format(long number, StringBuffer result, FieldPosition fieldPosition)
-        {
-            string formatted = number.ToString(CultureInfo.InvariantCulture);
-            return result.Append(formatted);
+    //    public override StringBuffer Format(long number, StringBuffer result, FieldPosition fieldPosition)
+    //    {
+    //        string formatted = number.ToString(CultureInfo.InvariantCulture);
+    //        return result.Append(formatted);
 
-            //int startIndex = fieldPosition.BeginIndex;
-            //int length = fieldPosition.EndIndex - startIndex;
-            //// ICU4N TODO: Format number
-            ////throw new NotImplementedException();
-            //char[] chars = new char[length];
-            //string formatted = number.ToString(CultureInfo.InvariantCulture);
-            //formatted.CopyTo(0, chars, 0, length);
-            //return result.Insert(startIndex, chars, startIndex, length);
-        }
+    //        //int startIndex = fieldPosition.BeginIndex;
+    //        //int length = fieldPosition.EndIndex - startIndex;
+    //        //// ICU4N TODO: Format number
+    //        ////throw new NotImplementedException();
+    //        //char[] chars = new char[length];
+    //        //string formatted = number.ToString(CultureInfo.InvariantCulture);
+    //        //formatted.CopyTo(0, chars, 0, length);
+    //        //return result.Insert(startIndex, chars, startIndex, length);
+    //    }
 
-        public override StringBuffer Format(double number, StringBuffer result, FieldPosition fieldPosition)
-        {
-            string formatted = number.ToString("#,##0.################", CultureInfo.InvariantCulture);
-            return result.Append(formatted);
+    //    public override StringBuffer Format(double number, StringBuffer result, FieldPosition fieldPosition)
+    //    {
+    //        string formatted = number.ToString("#,##0.################", CultureInfo.InvariantCulture);
+    //        return result.Append(formatted);
 
-            //int startIndex = fieldPosition.BeginIndex;
-            //int length = fieldPosition.EndIndex - startIndex;
-            //// ICU4N TODO: Format number
-            ////throw new NotImplementedException();
-            //char[] chars = new char[length];
-            //string formatted = number.ToString("#,##0.################", CultureInfo.InvariantCulture);
-            //formatted.CopyTo(0, chars, 0, length);
-            //return toAppendTo.Insert(startIndex, chars, startIndex, length);
-        }
+    //        //int startIndex = fieldPosition.BeginIndex;
+    //        //int length = fieldPosition.EndIndex - startIndex;
+    //        //// ICU4N TODO: Format number
+    //        ////throw new NotImplementedException();
+    //        //char[] chars = new char[length];
+    //        //string formatted = number.ToString("#,##0.################", CultureInfo.InvariantCulture);
+    //        //formatted.CopyTo(0, chars, 0, length);
+    //        //return toAppendTo.Insert(startIndex, chars, startIndex, length);
+    //    }
 
-        public override StringBuffer Format(BigInteger number, StringBuffer result, FieldPosition fieldPosition)
-        {
-            string formatted = number.ToString(CultureInfo.InvariantCulture);
-            return result.Append(formatted);
+    //    public override StringBuffer Format(BigInteger number, StringBuffer result, FieldPosition fieldPosition)
+    //    {
+    //        string formatted = number.ToString(CultureInfo.InvariantCulture);
+    //        return result.Append(formatted);
 
-            //int startIndex = fieldPosition.BeginIndex;
-            //int length = fieldPosition.EndIndex - startIndex;
-            //// ICU4N TODO: Format number
-            ////throw new NotImplementedException();
-            //char[] chars = new char[length];
-            //string formatted = number.ToString(CultureInfo.InvariantCulture);
-            //formatted.CopyTo(0, chars, 0, length);
-            //return toAppendTo.Insert(startIndex, chars, startIndex, length);
-        }
+    //        //int startIndex = fieldPosition.BeginIndex;
+    //        //int length = fieldPosition.EndIndex - startIndex;
+    //        //// ICU4N TODO: Format number
+    //        ////throw new NotImplementedException();
+    //        //char[] chars = new char[length];
+    //        //string formatted = number.ToString(CultureInfo.InvariantCulture);
+    //        //formatted.CopyTo(0, chars, 0, length);
+    //        //return toAppendTo.Insert(startIndex, chars, startIndex, length);
+    //    }
 
-        public override StringBuffer Format(BigDecimal number, StringBuffer toAppendTo, FieldPosition pos)
-        {
-            throw new NotImplementedException();
-        }
-    }
+    //    public override StringBuffer Format(BigDecimal number, StringBuffer toAppendTo, FieldPosition pos)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
 
     /// <icuenhanced><see cref="MessageFormat"/></icuenhanced><icu>_usage_</icu>
     /// <summary>

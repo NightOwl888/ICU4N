@@ -375,6 +375,8 @@ namespace ICU4N.Util
         //
         // Start generated MeasureUnit constants
 
+        // ICU4N TODO: API: These are showing up Currency (a subclass) in Intellisense. This needs to be changed
+        // because clearly they do not all apply to currencies.
 
         /// <summary>
         /// Constant for unit of acceleration: g-force.</summary>

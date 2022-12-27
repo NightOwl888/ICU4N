@@ -90,12 +90,11 @@ namespace ICU4N.Text
          */
         private UCultureInfo locale = null;
 
-        // ICU4N TODO: BigDecimal
         /**
          * The formatter's rounding mode.
          * @serial
          */
-        private RoundingMode roundingMode = BigDecimal.RoundUnnecessary;
+        private Numerics.BigMath.RoundingMode roundingMode = Numerics.BigMath.RoundingMode.Unnecessary;
 
         /**
          * Collator to be used in lenient parsing.  This variable is lazy-evaluated:
@@ -787,34 +786,32 @@ namespace ICU4N.Text
             return toAppendTo;
         }
 
+        // ICU4N TODO: System.Numerics.BigInteger overload
+        ///**
+        // * <strong style="font-family: helvetica; color: red;">NEW</strong>
+        // * Implement com.ibm.icu.text.NumberFormat:
+        // * Format a BigInteger.
+        // * @stable ICU 2.0
+        // */
+        //public override StringBuffer Format(BigInteger number,
+        //                           StringBuffer toAppendTo,
+        //                           FieldPosition pos)
+        //{
+        //    return Format(new BigDecimal(number), toAppendTo, pos);
+        //}
+
         /**
          * <strong style="font-family: helvetica; color: red;">NEW</strong>
          * Implement com.ibm.icu.text.NumberFormat:
          * Format a BigInteger.
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(BigInteger number,
+        public override StringBuffer Format(Numerics.BigMath.BigInteger number,
                                    StringBuffer toAppendTo,
                                    FieldPosition pos)
         {
-            return Format(new BigDecimal(number), toAppendTo, pos);
+            return Format(new Numerics.BigDecimal(number), toAppendTo, pos);
         }
-
-        ///**
-        // * <strong style="font-family: helvetica; color: red;">NEW</strong>
-        // * Implement com.ibm.icu.text.NumberFormat:
-        // * Format a BigDecimal.
-        // * @stable ICU 2.0
-        // */
-        //public override StringBuffer Format(java.math.BigDecimal number,
-        //                                StringBuffer toAppendTo,
-        //                                FieldPosition pos)
-        //{
-        //    //return Format(new com.ibm.icu.math.BigDecimal(number), toAppendTo, pos);
-        //}
-
-        private static readonly BigDecimal MAX_VALUE = BigDecimal.GetInstance(long.MaxValue);
-        private static readonly BigDecimal MIN_VALUE = BigDecimal.GetInstance(long.MinValue);
 
         /**
          * <strong style="font-family: helvetica; color: red;">NEW</strong>
@@ -822,7 +819,23 @@ namespace ICU4N.Text
          * Format a BigDecimal.
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(BigDecimal number,
+        public override StringBuffer Format(Numerics.BigMath.BigDecimal number,
+                                        StringBuffer toAppendTo,
+                                        FieldPosition pos)
+        {
+            return Format(new Numerics.BigDecimal(number), toAppendTo, pos);
+        }
+
+        private static readonly Numerics.BigDecimal MAX_VALUE = Numerics.BigDecimal.GetInstance(long.MaxValue);
+        private static readonly Numerics.BigDecimal MIN_VALUE = Numerics.BigDecimal.GetInstance(long.MinValue);
+
+        /**
+         * <strong style="font-family: helvetica; color: red;">NEW</strong>
+         * Implement com.ibm.icu.text.NumberFormat:
+         * Format a BigDecimal.
+         * @stable ICU 2.0
+         */
+        public override StringBuffer Format(Numerics.BigDecimal number,
                                    StringBuffer toAppendTo,
                                    FieldPosition pos)
         {
@@ -1145,12 +1158,15 @@ namespace ICU4N.Text
          * @stable ICU 56
          */
 
-        public override RoundingMode RoundingMode
+        public override Numerics.BigMath.RoundingMode RoundingMode
         {
             get => roundingMode;
             set
             {
-                if (value < BigDecimal.RoundUp || value > BigDecimal.RoundUnnecessary)
+                // ICU4N TODO: In Java, this is supposed to be the ICU BigDecimal RoundingMode (it was an int), but
+                // the DecimalFormat class uses java.math.RoundingMode instead. Need to fix this so either both
+                // can fit here or we have a way to make a conversion.
+                if (value < Numerics.BigMath.RoundingMode.Up || value > Numerics.BigMath.RoundingMode.Unnecessary)
                 {
                     throw new ArgumentException("Invalid rounding mode: " + value);
                 }
@@ -1640,10 +1656,11 @@ namespace ICU4N.Text
             // for formatting
             StringBuilder result = new StringBuilder();
 
-            if (RoundingMode != BigDecimal.RoundUnnecessary && !double.IsNaN(number) && !double.IsInfinity(number))
+            if (RoundingMode != Numerics.BigMath.RoundingMode.Unnecessary && !double.IsNaN(number) && !double.IsInfinity(number))
             {
                 // We convert to a string because BigDecimal insists on excessive precision.
-                number = BigDecimal.Parse(Double.ToString(number, CultureInfo.InvariantCulture), NumberStyle.Float, CultureInfo.InvariantCulture).SetScale(MaximumFractionDigits, roundingMode).ToDouble();
+                number = Numerics.BigDecimal.Parse(Double.ToString(number, CultureInfo.InvariantCulture), NumberStyle.Float, CultureInfo.InvariantCulture).SetScale(MaximumFractionDigits, roundingMode.ToICURoundingMode()).ToDouble();
+            //RoundingModeExtensions
             }
             ruleSet.Format((long)number, result, 0, 0); // ICU4N TODO: Remove cast to long when we add support for double
             PostProcess(result, ruleSet);

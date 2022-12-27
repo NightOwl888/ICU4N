@@ -14,9 +14,10 @@ namespace ICU4N.Numerics
     /// </summary>
     internal class PatternStringParser // ICU4N TODO: API - this was public in ICU4J
     {
-        public const int IGNORE_ROUNDING_NEVER = 0;
-        public const int IGNORE_ROUNDING_IF_CURRENCY = 1;
-        public const int IGNORE_ROUNDING_ALWAYS = 2;
+        // ICU4N TODO: API - make into enum?
+        public const int IGNORE_ROUNDING_NEVER = 0; // ICU4N TODO: API - Naming
+        public const int IGNORE_ROUNDING_IF_CURRENCY = 1; // ICU4N TODO: API - Naming
+        public const int IGNORE_ROUNDING_ALWAYS = 2; // ICU4N TODO: API - Naming
 
         /**
          * Runs the recursive descent parser on the given pattern string, returning a data structure with raw information
