@@ -14,13 +14,14 @@
 //    limitations under the License.
 
 using ICU4N.Support.Numerics.BigMath;
+using J2N.Numerics;
 using System;
 
 namespace ICU4N.Numerics.BigMath
 {
-    /**
- * Static library that provides all multiplication of {@link BigInteger} methods.
- */
+    /// <summary>
+    /// Static library that provides all multiplication of <see cref="BigInteger"/> methods.
+    /// </summary>
     static class Multiplication
     {
         /**
@@ -238,7 +239,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 long val = UnsignedMultAddAdd(a.Digits[0], b.Digits[0], 0, 0);
                 int valueLo = (int)val;
-                int valueHi = (int)Utils.URShift(val, 32);
+                int valueHi = (int)val.TripleShift(32);
                 return ((valueHi == 0)
                 ? new BigInteger(resSign, valueLo)
                 : new BigInteger(resSign, 2, new int[] { valueLo, valueHi }));
@@ -287,7 +288,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     carry = UnsignedMultAddAdd(aI, b[j], t[i + j], (int)carry);
                     t[i + j] = (int)carry;
-                    carry = Utils.URShift(carry, 32);
+                    carry = carry.TripleShift(32);
                 }
                 t[i + bLen] = (int)carry;
             }
@@ -308,7 +309,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 carry = UnsignedMultAddAdd(a[i], factor, (int)carry, 0);
                 res[i] = (int)carry;
-                carry = Utils.URShift(carry, 32);
+                carry = carry.TripleShift(32);
             }
             return (int)carry;
         }
@@ -346,7 +347,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 long res = UnsignedMultAddAdd(aDigits[0], factor, 0, 0);
                 int resLo = (int)res;
-                int resHi = (int)Utils.URShift(res, 32);
+                int resHi = (int)res.TripleShift(32);
                 return ((resHi == 0)
                 ? new BigInteger(resSign, resLo)
                 : new BigInteger(resSign, 2, new int[] { resLo, resHi }));
@@ -406,7 +407,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     carry = UnsignedMultAddAdd(a[i], a[j], res[i + j], (int)carry);
                     res[i + j] = (int)carry;
-                    carry = Utils.URShift(carry, 32);
+                    carry = carry.TripleShift(32);
                 }
                 res[i + aLen] = (int)carry;
             }
@@ -418,11 +419,11 @@ namespace ICU4N.Numerics.BigMath
             {
                 carry = UnsignedMultAddAdd(a[i], a[i], res[index], (int)carry);
                 res[index] = (int)carry;
-                carry = Utils.URShift(carry, 32);
+                carry = carry.TripleShift(32);
                 index++;
                 carry += res[index] & 0xFFFFFFFFL;
                 res[index] = (int)carry;
-                carry = Utils.URShift(carry, 32);
+                carry = carry.TripleShift(32);
             }
             return res;
         }
@@ -463,12 +464,12 @@ namespace ICU4N.Numerics.BigMath
             else if (exp <= 50)
             {
                 // To calculate:    10^exp
-                return BigMath.Pow(BigInteger.Ten, intExp);
+                return BigInteger.Pow(BigInteger.Ten, intExp);
             }
             else if (exp <= 1000)
             {
                 // To calculate:    5^exp * 2^exp
-                return BigMath.Pow(BigFivePows[1], intExp) << intExp;
+                return BigInteger.Pow(BigFivePows[1], intExp) << intExp;
             }
             // "LARGE POWERS"
             /*
@@ -486,10 +487,10 @@ namespace ICU4N.Numerics.BigMath
             if (byteArraySize > (128 * 1024))
                 throw new ArithmeticException(Messages.math01);
 
-            if (exp <= Int32.MaxValue)
+            if (exp <= int.MaxValue)
             {
                 // To calculate:    5^exp * 2^exp
-                return BigMath.Pow(BigFivePows[1], intExp) << intExp;
+                return BigInteger.Pow(BigFivePows[1], intExp) << intExp;
             }
             /*
             * "HUGE POWERS"
@@ -498,24 +499,24 @@ namespace ICU4N.Numerics.BigMath
             * big.
             */
             // To calculate:    5^exp
-            BigInteger powerOfFive = BigMath.Pow(BigFivePows[1], Int32.MaxValue);
+            BigInteger powerOfFive = BigInteger.Pow(BigFivePows[1], int.MaxValue);
             BigInteger res = powerOfFive;
-            long longExp = exp - Int32.MaxValue;
+            long longExp = exp - int.MaxValue;
 
-            intExp = (int)(exp % Int32.MaxValue);
-            while (longExp > Int32.MaxValue)
+            intExp = (int)(exp % int.MaxValue);
+            while (longExp > int.MaxValue)
             {
                 res = res * powerOfFive;
-                longExp -= Int32.MaxValue;
+                longExp -= int.MaxValue;
             }
-            res = res * BigMath.Pow(BigFivePows[1], intExp);
+            res = res * BigInteger.Pow(BigFivePows[1], intExp);
             // To calculate:    5^exp << exp
-            res = res << Int32.MaxValue;
-            longExp = exp - Int32.MaxValue;
-            while (longExp > Int32.MaxValue)
+            res = res << int.MaxValue;
+            longExp = exp - int.MaxValue;
+            while (longExp > int.MaxValue)
             {
-                res = res << Int32.MaxValue;
-                longExp -= Int32.MaxValue;
+                res = res << int.MaxValue;
+                longExp -= int.MaxValue;
             }
             res = res << intExp;
             return res;
@@ -541,7 +542,7 @@ namespace ICU4N.Numerics.BigMath
             }
             else
             {// Large powers of five
-                return val * BigMath.Pow(BigFivePows[1], exp);
+                return val * BigInteger.Pow(BigFivePows[1], exp);
             }
         }
 

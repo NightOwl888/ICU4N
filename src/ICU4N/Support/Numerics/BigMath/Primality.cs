@@ -14,6 +14,7 @@
 //    limitations under the License.
 
 using ICU4N.Support.Numerics.BigMath;
+using J2N.Numerics;
 using System;
 
 namespace ICU4N.Numerics.BigMath
@@ -126,7 +127,7 @@ namespace ICU4N.Numerics.BigMath
             // To fix N to the "next odd number"
             if (BigInteger.TestBit(n, 0))
             {
-                Elementary.inplaceAdd(startPoint, 2);
+                Elementary.InplaceAdd(startPoint, 2);
             }
             else
             {
@@ -168,7 +169,7 @@ namespace ICU4N.Numerics.BigMath
                     if (!isDivisible[j])
                     {
                         probPrime = startPoint.Copy();
-                        Elementary.inplaceAdd(probPrime, j);
+                        Elementary.InplaceAdd(probPrime, j);
 
                         if (MillerRabin(probPrime, certainty))
                         {
@@ -176,7 +177,7 @@ namespace ICU4N.Numerics.BigMath
                         }
                     }
                 }
-                Elementary.inplaceAdd(startPoint, gapSize);
+                Elementary.InplaceAdd(startPoint, gapSize);
             }
         }
 
@@ -209,8 +210,8 @@ namespace ICU4N.Numerics.BigMath
                 }
                 // To fix to the correct bitLength
                 // n.digits[last] |= 0x80000000;
-                n.Digits[last] |= Int32.MinValue;
-                n.Digits[last] = Utils.URShift(n.Digits[last], shiftCount);
+                n.Digits[last] |= int.MinValue;
+                n.Digits[last] = n.Digits[last].TripleShift(shiftCount);
                 // To create an odd number
                 n.Digits[0] |= 1;
             } while (!IsProbablePrime(n, certainty));
@@ -256,7 +257,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 ;
             }
-            certainty = System.Math.Min(i, 1 + ((certainty - 1) >> 1));
+            certainty = Math.Min(i, 1 + ((certainty - 1) >> 1));
 
             return MillerRabin(n, certainty);
         }
@@ -302,7 +303,7 @@ namespace ICU4N.Numerics.BigMath
                     } while ((x.CompareTo(n) >= BigInteger.EQUALS) || (x.Sign == 0)
                             || x.IsOne);
                 }
-                y = BigMath.ModPow(x, q, n);
+                y = BigInteger.ModPow(x, q, n);
                 if (y.IsOne || y.Equals(n_minus_1))
                 {
                     continue;

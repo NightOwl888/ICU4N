@@ -480,7 +480,7 @@ namespace ICU4N.Numerics
                 {
                     if (multiplier == null) multiplier = BigMath.BigDecimal.One;
                     //multiplier = multiplier.ScaleByPowerOfTen(properties.MagnitudeMultiplier);
-                    multiplier = BigMath.BigMath.ScaleByPowerOfTen(multiplier, properties.MagnitudeMultiplier);
+                    multiplier = BigMath.BigDecimal.ScaleByPowerOfTen(multiplier, properties.MagnitudeMultiplier);
                 }
                 int delta = (sawNegativeExponent ? -1 : 1) * exponent;
 
@@ -494,12 +494,12 @@ namespace ICU4N.Numerics
                 if (sawNegative) result = -result;
                 ////Deveel.Math.BigDecimal foo = new Deveel.Math.BigDecimal(9);
 
-                result = BigMath.BigMath.ScaleByPowerOfTen(result, delta);
+                result = BigMath.BigDecimal.ScaleByPowerOfTen(result, delta);
                 if (multiplier != null)
                 {
-                    result = BigMath.BigMath.Divide(result, multiplier, mc);
+                    result = BigMath.BigDecimal.Divide(result, multiplier, mc);
                 }
-                result = BigMath.BigMath.StripTrailingZeros(result);
+                result = BigMath.BigDecimal.StripTrailingZeros(result);
 
 
                 //result = result.ScaleByPowerOfTen(delta);

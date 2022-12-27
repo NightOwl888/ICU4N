@@ -14,6 +14,7 @@
 //    limitations under the License.
 
 using ICU4N.Support.Numerics.BigMath;
+using J2N;
 using System;
 #if !PORTABLE
 using System.Runtime.Serialization;
@@ -280,23 +281,22 @@ namespace ICU4N.Numerics.BigMath
         }
 #endif
 
-        private static bool TryParse(string s, out MathContext context, out Exception exception)
+        private static bool TryParse(string s, out MathContext context)
         {
-            char[] charVal = s.ToCharArray();
             int i; // Index of charVal
             int j; // Index of chRoundingMode
             int digit; // It will contain the digit parsed
 
-            if ((charVal.Length < 27) || (charVal.Length > 45))
+            if ((s.Length < 27) || (s.Length > 45))
             {
                 // math.0E=bad string format
-                exception = new FormatException(Messages.math0E); //$NON-NLS-1$
+                //exception = new FormatException(Messages.math0E); //$NON-NLS-1$
                 context = null;
                 return false;
             }
 
             // Parsing "precision=" String
-            for (i = 0; (i < chPrecision.Length) && (charVal[i] == chPrecision[i]); i++) { }
+            for (i = 0; (i < chPrecision.Length) && (s[i] == chPrecision[i]); i++) { }
 
             if (i < chPrecision.Length)
             {
@@ -304,11 +304,11 @@ namespace ICU4N.Numerics.BigMath
                 throw new FormatException(Messages.math0E); //$NON-NLS-1$
             }
             // Parsing the value for "precision="...
-            digit = CharHelper.toDigit(charVal[i], 10);
+            digit = Character.Digit(s[i], 10);
             if (digit == -1)
             {
                 // math.0E=bad string format
-                exception = new FormatException(Messages.math0E); //$NON-NLS-1$
+                //exception = new FormatException(Messages.math0E); //$NON-NLS-1$
                 context = null;
                 return false;
             }
@@ -318,10 +318,10 @@ namespace ICU4N.Numerics.BigMath
 
             do
             {
-                digit = CharHelper.toDigit(charVal[i], 10);
+                digit = Character.Digit(s[i], 10);
                 if (digit == -1)
                 {
-                    if (charVal[i] == ' ')
+                    if (s[i] == ' ')
                     {
                         // It parsed all the digits
                         i++;
@@ -330,7 +330,7 @@ namespace ICU4N.Numerics.BigMath
 
                     // It isn't  a valid digit, and isn't a white space
                     // math.0E=bad string format
-                    exception = new ArgumentException(Messages.math0E); //$NON-NLS-1$
+                    //exception = new ArgumentException(Messages.math0E); //$NON-NLS-1$
                     context = null;
                     return false;
                 }
@@ -339,7 +339,7 @@ namespace ICU4N.Numerics.BigMath
                 if (precision < 0)
                 {
                     // math.0E=bad string format
-                    exception = new ArgumentException(Messages.math0E); //$NON-NLS-1$
+                    //exception = new ArgumentException(Messages.math0E); //$NON-NLS-1$
                     context = null;
                     return false;
                 }
@@ -348,7 +348,7 @@ namespace ICU4N.Numerics.BigMath
             } while (true);
             // Parsing "roundingMode="
             for (j = 0; (j < chRoundingMode.Length)
-                    && (charVal[i] == chRoundingMode[j]); i++, j++)
+                    && (s[i] == chRoundingMode[j]); i++, j++)
             {
                 ;
             }
@@ -356,40 +356,50 @@ namespace ICU4N.Numerics.BigMath
             if (j < chRoundingMode.Length)
             {
                 // math.0E=bad string format
-                throw new FormatException(Messages.math0E); //$NON-NLS-1$
-            }
-
-            RoundingMode roundingMode;
-
-            try
-            {
-                // Parsing the value for "roundingMode"...
-                roundingMode = (RoundingMode)Enum.Parse(typeof(RoundingMode), new string(charVal, i, charVal.Length - i), true);
-            }
-            catch (Exception ex)
-            {
-                exception = ex;
+                //throw new FormatException(Messages.math0E); //$NON-NLS-1$
                 context = null;
                 return false;
             }
 
-            exception = null;
+            if (!Enum.TryParse(s.Substring(i, s.Length - i), out RoundingMode roundingMode))
+            {
+                context = null;
+                return false;
+            }
+
+            //RoundingMode roundingMode;
+
+            //try
+            //{
+                
+
+            //    // Parsing the value for "roundingMode"...
+            //    roundingMode = (RoundingMode)Enum.Parse(typeof(RoundingMode), s.Substring(i, s.Length - 1), true);
+            //}
+            //catch (Exception ex)
+            //{
+            //    exception = ex;
+            //    context = null;
+            //    return false;
+            //}
+
+            //exception = null;
             context = new MathContext(precision, roundingMode);
             return true;
         }
 
-        public static bool TryParse(string s, out MathContext context)
-        {
-            Exception error;
-            return TryParse(s, out context, out error);
-        }
+        //public static bool TryParse(string s, out MathContext context)
+        //{
+        //    Exception error;
+        //    return TryParse(s, out context, out error);
+        //}
 
         public static MathContext Parse(string s)
         {
             Exception error;
             MathContext context;
-            if (!TryParse(s, out context, out error))
-                throw error;
+            if (!TryParse(s, out context))
+                throw new FormatException(Messages.math0E); //$NON-NLS-1$
 
             return context;
         }

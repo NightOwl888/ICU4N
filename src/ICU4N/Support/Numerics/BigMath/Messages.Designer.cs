@@ -61,6 +61,15 @@ namespace ICU4N.Support.Numerics.BigMath {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The enumeration value &apos;{0}&apos; was out of range of the &apos;{1}&apos; enum..
+        /// </summary>
+        internal static string ArgumentOutOfRange_Enum {
+            get {
+                return ResourceManager.GetString("ArgumentOutOfRange_Enum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid rounding mode.
         /// </summary>
         internal static string math00 {

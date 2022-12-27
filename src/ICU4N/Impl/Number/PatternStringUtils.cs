@@ -113,7 +113,7 @@ namespace ICU4N.Numerics
                 digitsStringScale = -roundingInterval.Scale;
                 // TODO: Check for DoS here?
                 //string str = roundingInterval.ScaleByPowerOfTen(roundingInterval.Scale).ToPlainString();
-                string str = BigMath.BigMath.ScaleByPowerOfTen(roundingInterval, roundingInterval.Scale).ToPlainString();
+                string str = BigMath.BigDecimal.ScaleByPowerOfTen(roundingInterval, roundingInterval.Scale).ToPlainString();
                 if (str[0] == '-')
                 {
                     // TODO: Unsupported operation exception or fail silently?

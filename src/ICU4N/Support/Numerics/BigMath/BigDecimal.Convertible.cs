@@ -14,6 +14,7 @@
 //    limitations under the License.
 
 using ICU4N.Support.Numerics.BigMath;
+using J2N.Numerics;
 using System;
 using System.Globalization;
 using System.Text;
@@ -266,7 +267,7 @@ namespace ICU4N.Numerics.BigMath
                     throw new ArithmeticException(Messages.math08); //$NON-NLS-1$
                 }
 
-                integer = BigMath.DivideAndRemainder(GetUnscaledValue(), Multiplication.PowerOf10(_scale), out fraction);
+                integer = BigInteger.DivideAndRemainder(GetUnscaledValue(), Multiplication.PowerOf10(_scale), out fraction);
                 if (fraction.Sign != 0)
                 {
                     // It exists a non-zero fractional part 
@@ -395,7 +396,7 @@ namespace ICU4N.Numerics.BigMath
             else if (powerOfTwo > 129)
             {
                 // Cases which 'this' is very large
-                floatResult *= Single.PositiveInfinity;
+                floatResult *= float.PositiveInfinity;
             }
             else
             {
@@ -442,10 +443,10 @@ namespace ICU4N.Numerics.BigMath
             else if (powerOfTwo > 1025)
             {
                 // Cases which 'this' is very large            
-                return (sign * Double.PositiveInfinity);
+                return (sign * double.PositiveInfinity);
             }
 
-            mantisa = BigMath.Abs(GetUnscaledValue());
+            mantisa = BigInteger.Abs(GetUnscaledValue());
 
             // Let be:  this = [u,s], with s > 0
             if (_scale <= 0)
@@ -471,7 +472,7 @@ namespace ICU4N.Numerics.BigMath
                 }
 
                 // Computing (mantisa * 2^k) / 10^s
-                quotient = BigMath.DivideAndRemainder(mantisa, powerOfTen, out remainder);
+                quotient = BigInteger.DivideAndRemainder(mantisa, powerOfTen, out remainder);
 
                 // To check if the fractional part >= 0.5
                 compRem = remainder.ShiftLeftOneBit().CompareTo(powerOfTen);
@@ -530,7 +531,7 @@ namespace ICU4N.Numerics.BigMath
             if (exponent > 2046)
             {
                 // (exponent - bias > 1023)
-                return (sign * Double.PositiveInfinity);
+                return (sign * double.PositiveInfinity);
             }
 
             if (exponent <= 0)
@@ -546,7 +547,7 @@ namespace ICU4N.Numerics.BigMath
                 // -1076 <= exponent - bias <= -1023 
                 // To discard '- exponent + 1' bits
                 bits = tempBits >> 1;
-                tempBits = bits & Utils.URShift(-1L, (63 + exponent));
+                tempBits = bits & (-1L).TripleShift(63 + exponent);
                 bits >>= (-exponent);
 
                 // To test if after discard bits, a new carry is generated
@@ -561,7 +562,9 @@ namespace ICU4N.Numerics.BigMath
 
             // Construct the 64 double bits: [sign(1), exponent(11), mantisa(52)]
             // bits = (long)((ulong)sign & 0x8000000000000000L) | ((long)exponent << 52) | (bits & 0xFFFFFFFFFFFFFL);
-            bits = sign & Int64.MinValue | ((long)exponent << 52) | (bits & 0xFFFFFFFFFFFFFL);
+            //bits = sign & long.MinValue | ((long)exponent << 52) | (bits & 0xFFFFFFFFFFFFFL);
+            bits = (sign & -9223372036854775808L) | ((long)exponent << 52)
+                | (bits & 0xFFFFFFFFFFFFFL);
             return BitConverter.Int64BitsToDouble(bits);
         }
 

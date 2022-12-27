@@ -152,7 +152,7 @@ namespace ICU4N.Numerics.BigMath
                     // Accumulating all remaining digits
                     string scaleString = new String(inData, begin, last + 1 - begin); // buffer for scale
                                                                                       // Checking if the scale is defined            
-                    long newScale = (long)v.Scale - Int32.Parse(scaleString, provider); // the new scale
+                    long newScale = (long)v.Scale - int.Parse(scaleString, provider); // the new scale
                     v.Scale = (int)newScale;
                     if (newScale != v.Scale)
                     {
@@ -248,7 +248,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     result.Insert(++end, new[] { '+' });
                 }
-                result.Insert(++end, Convert.ToString(exponent));
+                result.Insert(++end, exponent.ToString(CultureInfo.InvariantCulture));
             }
             value.toStringImage = result.ToString();
             return value.toStringImage;
@@ -327,7 +327,7 @@ namespace ICU4N.Numerics.BigMath
                     {
                         result.Insert(++end, new[] { '+' });
                     }
-                    result.Insert(++end, Convert.ToString(exponent));
+                    result.Insert(++end, exponent.ToString(CultureInfo.InvariantCulture));
                 }
             }
             return result.ToString();

@@ -68,4 +68,22 @@ namespace ICU4N.Numerics.BigMath
         /// </summary>
         Unnecessary = 7
     }
+
+    /// <summary>
+    /// Extensions to <see cref="RoundingMode"/>.
+    /// </summary>
+    internal static class RoundingModeExtensions
+    {
+        /// <summary>
+        /// Returns a boolean telling whether a given integral value, or its name as a string, exists in
+        /// a specified enumeration.
+        /// </summary>
+        /// <param name="roundingMode">The value or name of a constant.</param>
+        /// <returns><c>true</c> if a given integral value, or its name as a string, exists in a specified
+        /// enumeration; <c>false</c> otherwise.</returns>
+        public static bool IsDefined(this RoundingMode roundingMode)
+        {
+            return roundingMode >= RoundingMode.Up && roundingMode <= RoundingMode.Unnecessary;
+        }
+    }
 }

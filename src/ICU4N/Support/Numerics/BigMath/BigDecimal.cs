@@ -17,6 +17,7 @@ using ICU4N.Support.Numerics.BigMath;
 using System;
 using System.Globalization;
 using System.Text;
+using J2N.Numerics;
 #if !PORTABLE
 using System.Runtime.Serialization;
 #endif
@@ -260,7 +261,7 @@ namespace ICU4N.Numerics.BigMath
         /// </exception>
         public BigDecimal(double val)
         {
-            if (Double.IsInfinity(val) || Double.IsNaN(val))
+            if (double.IsInfinity(val) || double.IsNaN(val))
             {
                 // math.03=Infinity or NaN
                 throw new FormatException(Messages.math03); //$NON-NLS-1$
@@ -280,9 +281,9 @@ namespace ICU4N.Numerics.BigMath
             // To simplify all factors '2' in the mantisa 
             if (_scale > 0)
             {
-                int trailingZeros = System.Math.Min(_scale, Utils.NumberOfTrailingZeros(mantisa));
-                long mantisa2 = (long)(((ulong)mantisa) >> trailingZeros);
-                mantisa = Utils.URShift(mantisa, trailingZeros);
+                int trailingZeros = System.Math.Min(_scale, mantisa.TrailingZeroCount());
+                //long mantisa2 = (long)(((ulong)mantisa) >> trailingZeros);
+                mantisa = mantisa.TripleShift(trailingZeros);
                 _scale -= trailingZeros;
             }
             // Calculating the new unscaled value and the new scale
@@ -636,7 +637,7 @@ namespace ICU4N.Numerics.BigMath
         /// Returns a <see cref="BigDecimal"/> instance with the value <c><see cref="unscaledVal"/> 
         /// * 10^(-<see cref="scale"/>)</c>.
         /// </returns>
-        public static BigDecimal Create(long unscaledVal, int scale)
+        public static BigDecimal Create(long unscaledVal, int scale) // ICU4N TODO: API - Rename GetInstance() to match J2N
         {
             if (scale == 0)
                 return Create(unscaledVal);
@@ -658,7 +659,7 @@ namespace ICU4N.Numerics.BigMath
         /// <returns>
         /// Returns a <see cref="BigDecimal"/> instance with the value <paramref name="unscaledVal"/>.
         /// </returns>
-        public static BigDecimal Create(long unscaledVal)
+        public static BigDecimal Create(long unscaledVal) // ICU4N TODO: API - Rename GetInstance() to match J2N
         {
             if ((unscaledVal >= 0) && (unscaledVal < BiScaledByZeroLength))
             {
@@ -732,6 +733,34 @@ namespace ICU4N.Numerics.BigMath
             {
                 return 1;
             }
+        }
+
+        /**
+         * Returns the minimum of this {@code BigDecimal} and {@code val}.
+         *
+         * @param val
+         *            value to be used to compute the minimum with this.
+         * @return {@code min(this, val}.
+         * @throws NullPointerException
+         *             if {@code val == null}.
+         */
+        public static BigDecimal Min(BigDecimal a, BigDecimal val)
+        {
+            return ((a.CompareTo(val) <= 0) ? a : val);
+        }
+
+        /**
+        * Returns the maximum of this {@code BigDecimal} and {@code val}.
+        *
+        * @param val
+        *            value to be used to compute the maximum with this.
+        * @return {@code max(this, val}.
+        * @throws NullPointerException
+        *             if {@code val == null}.
+        */
+        public static BigDecimal Max(BigDecimal a, BigDecimal val)
+        {
+            return ((a.CompareTo(val) >= 0) ? a : val);
         }
 
         /**
@@ -823,7 +852,7 @@ namespace ICU4N.Numerics.BigMath
             // Getting the integer part and the discarded fraction
             BigInteger sizeOfFraction = Multiplication.PowerOf10(discardedPrecision);
             BigInteger fraction;
-            BigInteger integer = BigMath.DivideAndRemainder(GetUnscaledValue(), sizeOfFraction, out fraction);
+            BigInteger integer = BigInteger.DivideAndRemainder(GetUnscaledValue(), sizeOfFraction, out fraction);
             long newScale = (long)_scale - discardedPrecision;
             int compRem;
             BigDecimal tempBD;
@@ -831,7 +860,7 @@ namespace ICU4N.Numerics.BigMath
             if (fraction.Sign != 0)
             {
                 // To check if the discarded fraction >= 0.5
-                compRem = (BigMath.Abs(fraction).ShiftLeftOneBit().CompareTo(sizeOfFraction));
+                compRem = (BigInteger.Abs(fraction).ShiftLeftOneBit().CompareTo(sizeOfFraction));
                 // To look if there is a carry
                 compRem = RoundingBehavior(BigInteger.TestBit(integer, 0) ? 1 : 0, fraction.Sign * (5 + compRem),
                     mc.RoundingMode);
@@ -881,12 +910,12 @@ namespace ICU4N.Numerics.BigMath
             if (fraction != 0)
             {
                 // To check if the discarded fraction >= 0.5
-                compRem = LongCompareTo(System.Math.Abs(fraction) << 1, sizeOfFraction);
+                compRem = LongCompareTo(Math.Abs(fraction) << 1, sizeOfFraction);
                 // To look if there is a carry
-                integer += RoundingBehavior(((int)integer) & 1, System.Math.Sign(fraction) * (5 + compRem),
+                integer += RoundingBehavior(((int)integer) & 1, Math.Sign(fraction) * (5 + compRem),
                     mc.RoundingMode);
                 // If after to add the increment the precision changed, we normalize the size
-                if (System.Math.Log10(System.Math.Abs(integer)) >= mc.Precision)
+                if (Math.Log10(Math.Abs(integer)) >= mc.Precision)
                 {
                     integer /= 10;
                     newScale--;
@@ -927,32 +956,32 @@ namespace ICU4N.Numerics.BigMath
                     }
                     break;
                 case RoundingMode.Up:
-                    increment = System.Math.Sign(fraction);
+                    increment = Math.Sign(fraction);
                     break;
                 case RoundingMode.Down:
                     break;
                 case RoundingMode.Ceiling:
-                    increment = System.Math.Max(System.Math.Sign(fraction), 0);
+                    increment = Math.Max(Math.Sign(fraction), 0);
                     break;
                 case RoundingMode.Floor:
-                    increment = System.Math.Min(System.Math.Sign(fraction), 0);
+                    increment = Math.Min(Math.Sign(fraction), 0);
                     break;
                 case RoundingMode.HalfUp:
-                    if (System.Math.Abs(fraction) >= 5)
+                    if (Math.Abs(fraction) >= 5)
                     {
-                        increment = System.Math.Sign(fraction);
+                        increment = Math.Sign(fraction);
                     }
                     break;
                 case RoundingMode.HalfDown:
-                    if (System.Math.Abs(fraction) > 5)
+                    if (Math.Abs(fraction) > 5)
                     {
-                        increment = System.Math.Sign(fraction);
+                        increment = Math.Sign(fraction);
                     }
                     break;
                 case RoundingMode.HalfEven:
-                    if (System.Math.Abs(fraction) + parityBit > 5)
+                    if (Math.Abs(fraction) + parityBit > 5)
                     {
-                        increment = System.Math.Sign(fraction);
+                        increment = Math.Sign(fraction);
                     }
                     break;
             }
@@ -1014,11 +1043,11 @@ namespace ICU4N.Numerics.BigMath
         */
         internal static int ToIntScale(long longScale)
         {
-            if (longScale < Int32.MinValue)
+            if (longScale < int.MinValue)
                 // math.09=Overflow
                 throw new ArithmeticException(Messages.math09); //$NON-NLS-1$
 
-            if (longScale > Int32.MaxValue)
+            if (longScale > int.MaxValue)
                 // math.0A=Underflow
                 throw new ArithmeticException(Messages.math0A); //$NON-NLS-1$
 
@@ -1046,9 +1075,9 @@ namespace ICU4N.Numerics.BigMath
             }
             if (longScale >= 0)
             {
-                return new BigDecimal(0, Int32.MaxValue);
+                return new BigDecimal(0, int.MaxValue);
             }
-            return new BigDecimal(0, Int32.MinValue);
+            return new BigDecimal(0, int.MinValue);
         }
 
         private BigInteger GetUnscaledValue()
@@ -1074,7 +1103,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 smallValue = ~smallValue;
             }
-            return 64 - Utils.NumberOfLeadingZeros(smallValue);
+            return 64 - smallValue.LeadingZeroCount();
         }
 
         internal static int CalcBitLength(int smallValue)
@@ -1083,7 +1112,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 smallValue = ~smallValue;
             }
-            return 32 - Utils.NumberOfLeadingZeros(smallValue);
+            return 32 - smallValue.LeadingZeroCount();
         }
 
         /*
@@ -1282,8 +1311,10 @@ namespace ICU4N.Numerics.BigMath
 
         public static BigDecimal Parse(string s, MathContext context, IFormatProvider provider)
         {
-            if (String.IsNullOrEmpty(s))
-                throw new FormatException();
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            if (s.Length == 0)
+                throw new FormatException(string.Format("Input string was not in a correct format. Value: '{0}'.", s));
 
             var data = s.ToCharArray();
 
@@ -1306,41 +1337,41 @@ namespace ICU4N.Numerics.BigMath
         public static BigDecimal operator +(BigDecimal a, BigDecimal b)
         {
             // In case of implicit operators apply the precision of the dividend
-            return BigMath.Add(a, b);
+            return Add(a, b);
         }
 
         public static BigDecimal operator -(BigDecimal a, BigDecimal b)
         {
             // In case of implicit operators apply the precision of the dividend
-            return BigMath.Subtract(a, b);
+            return Subtract(a, b);
         }
 
         public static BigDecimal operator /(BigDecimal a, BigDecimal b)
         {
             // In case of implicit operators apply the precision of the dividend
-            return BigDecimalMath.Divide(a, b);
+            return Divide(a, b);
         }
 
         public static BigDecimal operator %(BigDecimal a, BigDecimal b)
         {
             // In case of implicit operators apply the precision of the dividend
-            return BigMath.Remainder(a, b);
+            return Remainder(a, b); // ICU4N TODO: Shouldn't this be Mod? It is on BigInteger.
         }
 
         public static BigDecimal operator *(BigDecimal a, BigDecimal b)
         {
             // In case of implicit operators apply the precision of the dividend
-            return BigMath.Multiply(a, b);
+            return Multiply(a, b);
         }
 
         public static BigDecimal operator +(BigDecimal a)
         {
-            return BigMath.Plus(a);
+            return Plus(a);
         }
 
         public static BigDecimal operator -(BigDecimal a)
         {
-            return BigMath.Negate(a);
+            return Negate(a);
         }
 
         public static bool operator ==(BigDecimal a, BigDecimal b)
@@ -1379,12 +1410,12 @@ namespace ICU4N.Numerics.BigMath
 
         public static BigDecimal operator >>(BigDecimal a, int b)
         {
-            return BigMath.ShiftRight((BigInteger)a, b);
+            return BigInteger.ShiftRight((BigInteger)a, b);
         }
 
         public static BigDecimal operator <<(BigDecimal a, int b)
         {
-            return BigMath.ShiftLeft((BigInteger)a, b);
+            return BigInteger.ShiftLeft((BigInteger)a, b);
         }
 
         #endregion

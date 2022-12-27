@@ -14,6 +14,7 @@
 //    limitations under the License.
 
 using ICU4N.Support.Numerics.BigMath;
+using J2N.Numerics;
 using System;
 
 namespace ICU4N.Numerics.BigMath
@@ -65,7 +66,7 @@ namespace ICU4N.Numerics.BigMath
             * Step D1: normalize a and b and put the results to a1 and b1 the
             * normalized divisor's first digit must be >= 2^31
             */
-            int divisorShift = Utils.NumberOfLeadingZeros(b[bLength - 1]);
+            int divisorShift = b[bLength - 1].LeadingZeroCount();
             if (divisorShift != 0)
             {
                 BitLevel.ShiftLeft(normB, b, 0, divisorShift);
@@ -126,11 +127,14 @@ namespace ICU4N.Numerics.BigMath
                             * this ensures that rightHand will overflow unsigned
                             * long in the next step
                             */
-                            if (Utils.NumberOfLeadingZeros((int)Utils.URShift(longR, 32)) < 32)
+                            //if (Utils.NumberOfLeadingZeros((int)Utils.URShift(longR, 32)) < 32)
+                            if (((int)longR.TripleShift(32)).LeadingZeroCount() < 32)
                                 rOverflowed = true;
                             else
                                 rem = (int)longR;
-                        } while ((leftHand ^ Int64.MinValue) > (rightHand ^ Int64.MinValue));
+                        } while ((leftHand ^ unchecked((long)0x8000000000000000L)) > (rightHand ^ unchecked((long)0x8000000000000000L)));
+
+                        //while ((leftHand ^ long.MinValue) > (rightHand ^ long.MinValue));
 
                         //} while ((leftHand ^ Int64.MaxValue) > (rightHand ^ Int64.MaxValue));
                         // while (((leftHand ^ 0x8000000000000000L) > (rightHand ^ 0x8000000000000000L))) ;
@@ -152,7 +156,7 @@ namespace ICU4N.Numerics.BigMath
                             carry += (normA[j - normBLength + k] & 0xffffffffL)
                                      + (normB[k] & 0xffffffffL);
                             normA[j - normBLength + k] = (int)carry;
-                            carry = Utils.URShift(carry, 32);
+                            carry = carry.TripleShift(32);
                         }
                     }
                 }
@@ -205,8 +209,8 @@ namespace ICU4N.Numerics.BigMath
                     * make the dividend positive shifting it right by 1 bit then
                     * get the quotient an remainder and correct them properly
                     */
-                    long aPos = Utils.URShift(temp, 1);
-                    long bPos = Utils.URShift(divisor, 1);
+                    long aPos = temp.TripleShift(1);
+                    long bPos = divisor.TripleShift(1);
                     quot = aPos / bPos;
                     rem = aPos % bPos;
                     // double the remainder and add 1 if a is odd
@@ -297,8 +301,8 @@ namespace ICU4N.Numerics.BigMath
                 * Make the dividend positive shifting it right by 1 bit then get
                 * the quotient an remainder and correct them properly
                 */
-                long aPos = Utils.URShift(a, 1);
-                long bPos = Utils.URShift(b, 1);
+                long aPos = a.TripleShift(1);
+                long bPos = b.TripleShift(1);
                 quot = aPos / bPos;
                 rem = aPos % bPos;
                 // double the remainder and add 1 if a is odd
@@ -395,7 +399,7 @@ namespace ICU4N.Numerics.BigMath
                 carry1 = (a[start + i] & 0xffffffffL) - (carry0 & 0xffffffffL) + carry1;
                 a[start + i] = (int)carry1;
                 carry1 >>= 32; // -1 or 0
-                carry0 = Utils.URShift(carry0, 32);
+                carry0 = carry0.TripleShift(32);
             }
 
             carry1 = (a[start + bLen] & 0xffffffffL) - carry0 + carry1;
@@ -424,7 +428,7 @@ namespace ICU4N.Numerics.BigMath
             */
             int lsb1 = op1.LowestSetBit;
             int lsb2 = op2.LowestSetBit;
-            int pow2Count = System.Math.Min(lsb1, lsb2);
+            int pow2Count = Math.Min(lsb1, lsb2);
 
             BitLevel.InplaceShiftRight(op1, lsb1);
             BitLevel.InplaceShiftRight(op2, lsb2);
@@ -456,7 +460,7 @@ namespace ICU4N.Numerics.BigMath
                 // To reduce one operand if it's much smaller than the other one
                 if (op2.numberLength > op1.numberLength * 1.2)
                 {
-                    op2 = BigMath.Remainder(op2, op1);
+                    op2 = BigInteger.Remainder(op2, op1);
                     if (op2.Sign != 0)
                         BitLevel.InplaceShiftRight(op2, op2.LowestSetBit);
                 }
@@ -465,7 +469,7 @@ namespace ICU4N.Numerics.BigMath
                     // Use Knuth's algorithm of successive subtract and shifting
                     do
                     {
-                        Elementary.inplaceSubtract(op2, op1); // both are odd
+                        Elementary.InplaceSubtract(op2, op1); // both are odd
                         BitLevel.InplaceShiftRight(op2, op2.LowestSetBit); // op2 is even
                     } while (op2.CompareTo(op1) >= BigInteger.EQUALS);
                 }
@@ -492,25 +496,25 @@ namespace ICU4N.Numerics.BigMath
         public static long GcdBinary(long op1, long op2)
         {
             // PRE: (op1 > 0) and (op2 > 0)
-            int lsb1 = Utils.NumberOfTrailingZeros(op1);
-            int lsb2 = Utils.NumberOfTrailingZeros(op2);
-            int pow2Count = System.Math.Min(lsb1, lsb2);
+            int lsb1 = op1.TrailingZeroCount();
+            int lsb2 = op2.TrailingZeroCount();
+            int pow2Count = Math.Min(lsb1, lsb2);
 
             if (lsb1 != 0)
-                op1 = Utils.URShift(op1, lsb1);
+                op1 = op1.TripleShift(lsb1);
             if (lsb2 != 0)
-                op2 = Utils.URShift(op2, lsb2);
+                op2 = op2.TripleShift(lsb2);
             do
             {
                 if (op1 >= op2)
                 {
                     op1 -= op2;
-                    op1 = Utils.URShift(op1, Utils.NumberOfTrailingZeros(op1));
+                    op1 = op1.TripleShift(op1.TrailingZeroCount());
                 }
                 else
                 {
                     op2 -= op1;
-                    op2 = Utils.URShift(op2, Utils.NumberOfTrailingZeros(op2));
+                    op2 = op2.TripleShift(op2.TrailingZeroCount());
                 }
             } while (op1 != 0);
             return (op2 << pow2Count);
@@ -574,22 +578,22 @@ namespace ICU4N.Numerics.BigMath
 
                 while (u.CompareTo(v) > BigInteger.EQUALS)
                 {
-                    Elementary.inplaceSubtract(u, v);
+                    Elementary.InplaceSubtract(u, v);
                     toShift = u.LowestSetBit;
                     BitLevel.InplaceShiftRight(u, toShift);
-                    Elementary.inplaceAdd(r, s);
+                    Elementary.InplaceAdd(r, s);
                     BitLevel.InplaceShiftLeft(s, toShift);
                     k += toShift;
                 }
 
                 while (u.CompareTo(v) <= BigInteger.EQUALS)
                 {
-                    Elementary.inplaceSubtract(v, u);
+                    Elementary.InplaceSubtract(v, u);
                     if (v.Sign == 0)
                         break;
                     toShift = v.LowestSetBit;
                     BitLevel.InplaceShiftRight(v, toShift);
-                    Elementary.inplaceAdd(s, r);
+                    Elementary.InplaceAdd(s, r);
                     BitLevel.InplaceShiftLeft(r, toShift);
                     k += toShift;
                 }
@@ -601,7 +605,7 @@ namespace ICU4N.Numerics.BigMath
                 throw new ArithmeticException(Messages.math19);
             }
             if (r.CompareTo(p) >= BigInteger.EQUALS)
-                Elementary.inplaceSubtract(r, p);
+                Elementary.InplaceSubtract(r, p);
 
             r = p - r;
 
@@ -743,26 +747,26 @@ namespace ICU4N.Numerics.BigMath
                 {
                     if (coefU <= coefV)
                     {
-                        Elementary.completeInPlaceSubtract(u, v);
-                        Elementary.completeInPlaceSubtract(r, s);
+                        Elementary.CompleteInPlaceSubtract(u, v);
+                        Elementary.CompleteInPlaceSubtract(r, s);
                     }
                     else
                     {
-                        Elementary.completeInPlaceSubtract(v, u);
-                        Elementary.completeInPlaceSubtract(s, r);
+                        Elementary.CompleteInPlaceSubtract(v, u);
+                        Elementary.CompleteInPlaceSubtract(s, r);
                     }
                 }
                 else
                 {
                     if (coefU <= coefV)
                     {
-                        Elementary.completeInPlaceAdd(u, v);
-                        Elementary.completeInPlaceAdd(r, s);
+                        Elementary.CompleteInPlaceAdd(u, v);
+                        Elementary.CompleteInPlaceAdd(r, s);
                     }
                     else
                     {
-                        Elementary.completeInPlaceAdd(v, u);
-                        Elementary.completeInPlaceAdd(s, r);
+                        Elementary.CompleteInPlaceAdd(v, u);
+                        Elementary.CompleteInPlaceAdd(s, r);
                     }
                 }
                 if (v.Sign == 0 || u.Sign == 0)
@@ -974,12 +978,12 @@ namespace ICU4N.Numerics.BigMath
                 {
                     innnerCarry = Multiplication.UnsignedMultAddAdd(m, modulusDigits[j], res[i + j], (int)innnerCarry);
                     res[i + j] = (int)innnerCarry;
-                    innnerCarry = Utils.URShift(innnerCarry, 32);
+                    innnerCarry = innnerCarry.TripleShift(32);
                 }
 
                 outerCarry += (res[i + modulusLen] & 0xFFFFFFFFL) + innnerCarry;
                 res[i + modulusLen] = (int)outerCarry;
-                outerCarry = Utils.URShift(outerCarry, 32);
+                outerCarry = outerCarry.TripleShift(32);
             }
 
             res[modulusLen << 1] = (int)outerCarry;
@@ -1043,7 +1047,7 @@ namespace ICU4N.Numerics.BigMath
 
             // if (res >= modulusDigits) compute (res - modulusDigits)
             if (doSub)
-                Elementary.inplaceSubtract(result, modulus);
+                Elementary.InplaceSubtract(result, modulus);
 
             result.CutOffLeadingZeroes();
             return result;
@@ -1089,7 +1093,7 @@ namespace ICU4N.Numerics.BigMath
                 return;
             leadingZeros = 32 - (n & 31);
             x.numberLength = fd + 1;
-            x.Digits[fd] &= (leadingZeros < 32) ? (Utils.URShift(-1, leadingZeros)) : 0;
+            x.Digits[fd] &= (leadingZeros < 32) ? (-1).TripleShift(leadingZeros) : 0;
             x.CutOffLeadingZeroes();
         }
     }

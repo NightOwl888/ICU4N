@@ -179,9 +179,9 @@ namespace ICU4N.Numerics
         {
             // TODO: Avoid converting back and forth to BigDecimal.
             BigMath.BigDecimal temp = ToBigDecimal();
-            temp = BigMath.BigMath.Divide(roundingIncrement, 0, mathContext.RoundingMode);
+            temp = BigMath.BigDecimal.Divide(roundingIncrement, 0, mathContext.RoundingMode);
             temp = temp * roundingIncrement;
-            temp = BigMath.BigMath.Round(temp, mathContext);
+            temp = BigMath.BigDecimal.Round(temp, mathContext);
             //temp =
             //    temp.Divide(roundingIncrement, 0, mathContext.RoundingMode)
             //        .Multiply(roundingIncrement)
@@ -593,7 +593,7 @@ namespace ICU4N.Numerics
         {
             int fracLength = n.Scale;
             //n = n.ScaleByPowerOfTen(fracLength);
-            n = BigMath.BigMath.ScaleByPowerOfTen(n, fracLength);
+            n = BigMath.BigDecimal.ScaleByPowerOfTen(n, fracLength);
             //BigInteger bi = (BigInteger)n.ToBigInteger();
             BigMath.BigInteger bi = n.ToBigInteger();
             SetToBigInteger(bi);

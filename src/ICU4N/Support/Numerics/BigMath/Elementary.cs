@@ -14,6 +14,7 @@
 //    limitations under the License.
 
 using ICU4N.Support.Numerics.BigMath;
+using J2N.Numerics;
 using System;
 
 namespace ICU4N.Numerics.BigMath
@@ -83,7 +84,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     res = a + b;
                     valueLo = (int)res;
-                    valueHi = (int)Utils.URShift(res, 32);
+                    valueHi = (int)res.TripleShift(32);
                     return ((valueHi == 0)
                                 ? new BigInteger(op1Sign, valueLo)
                                 : new BigInteger(op1Sign, 2, new int[] {
@@ -98,9 +99,9 @@ namespace ICU4N.Numerics.BigMath
                 resSign = op1Sign;
                 // an augend should not be shorter than addend
                 resDigits = (op1Len >= op2Len)
-                                ? add(op1.Digits, op1Len,
+                                ? Add(op1.Digits, op1Len,
                                       op2.Digits, op2Len)
-                                : add(op2.Digits, op2Len, op1.Digits,
+                                : Add(op2.Digits, op2Len, op1.Digits,
                                       op1Len);
             }
             else
@@ -118,12 +119,12 @@ namespace ICU4N.Numerics.BigMath
                 if (cmp == BigInteger.GREATER)
                 {
                     resSign = op1Sign;
-                    resDigits = subtract(op1.Digits, op1Len, op2.Digits, op2Len);
+                    resDigits = Subtract(op1.Digits, op1Len, op2.Digits, op2Len);
                 }
                 else
                 {
                     resSign = op2Sign;
-                    resDigits = subtract(op2.Digits, op2Len, op1.Digits, op1Len);
+                    resDigits = Subtract(op2.Digits, op2Len, op1.Digits, op1Len);
                 }
             }
             BigInteger result = new BigInteger(resSign, resDigits.Length, resDigits);
@@ -134,7 +135,7 @@ namespace ICU4N.Numerics.BigMath
         /**
         * Performs {@code res = a + b}. 
         */
-        private static void add(int[] res, int[] a, int aSize, int[] b, int bSize)
+        private static void Add(int[] res, int[] a, int aSize, int[] b, int bSize)
         {
             // PRE: a.length < max(aSize, bSize)
 
@@ -181,7 +182,7 @@ namespace ICU4N.Numerics.BigMath
         }
 
         /** @see BigInteger#subtract(BigInteger) */
-        internal static BigInteger subtract(BigInteger op1, BigInteger op2)
+        internal static BigInteger Subtract(BigInteger op1, BigInteger op2)
         {
             int resSign;
             int[] resDigits;
@@ -218,8 +219,8 @@ namespace ICU4N.Numerics.BigMath
             if (cmp == BigInteger.LESS)
             {
                 resSign = -op2Sign;
-                resDigits = (op1Sign == op2Sign) ? subtract(op2.Digits, op2Len,
-                        op1.Digits, op1Len) : add(op2.Digits, op2Len, op1.Digits,
+                resDigits = (op1Sign == op2Sign) ? Subtract(op2.Digits, op2Len,
+                        op1.Digits, op1Len) : Add(op2.Digits, op2Len, op1.Digits,
                         op1Len);
             }
             else
@@ -231,11 +232,11 @@ namespace ICU4N.Numerics.BigMath
                     {
                         return BigInteger.Zero;
                     }
-                    resDigits = subtract(op1.Digits, op1Len, op2.Digits, op2Len);
+                    resDigits = Subtract(op1.Digits, op1Len, op2.Digits, op2Len);
                 }
                 else
                 {
-                    resDigits = add(op1.Digits, op1Len, op2.Digits, op2Len);
+                    resDigits = Add(op1.Digits, op1Len, op2.Digits, op2Len);
                 }
             }
             BigInteger res = new BigInteger(resSign, resDigits.Length, resDigits);
@@ -247,7 +248,7 @@ namespace ICU4N.Numerics.BigMath
         * Performs {@code res = a - b}. It is assumed the magnitude of a is not
         * less than the magnitude of b.
         */
-        private static void subtract(int[] res, int[] a, int aSize, int[] b, int bSize)
+        private static void Subtract(int[] res, int[] a, int aSize, int[] b, int bSize)
         {
             // PRE: a[] >= b[]
             int i;
@@ -274,11 +275,11 @@ namespace ICU4N.Numerics.BigMath
         * 
         * @return {@code a + b}
         */
-        private static int[] add(int[] a, int aSize, int[] b, int bSize)
+        private static int[] Add(int[] a, int aSize, int[] b, int bSize)
         {
             // PRE: a[] >= b[]
             int[] res = new int[aSize + 1];
-            add(res, a, aSize, b, bSize);
+            Add(res, a, aSize, b, bSize);
             return res;
         }
 
@@ -290,12 +291,12 @@ namespace ICU4N.Numerics.BigMath
         * @param op1 the input minuend, and the output result.
         * @param op2 the addend
         */
-        internal static void inplaceAdd(BigInteger op1, BigInteger op2)
+        internal static void InplaceAdd(BigInteger op1, BigInteger op2)
         {
             // PRE: op1 >= op2 > 0
-            add(op1.Digits, op1.Digits, op1.numberLength, op2.Digits,
+            Add(op1.Digits, op1.Digits, op1.numberLength, op2.Digits,
                     op2.numberLength);
-            op1.numberLength = System.Math.Min(System.Math.Max(op1.numberLength, op2.numberLength) + 1, op1.Digits.Length);
+            op1.numberLength = Math.Min(Math.Max(op1.numberLength, op2.numberLength) + 1, op1.Digits.Length);
             op1.CutOffLeadingZeroes();
             op1.UnCache();
         }
@@ -305,7 +306,7 @@ namespace ICU4N.Numerics.BigMath
         * 
         * @return a possible generated carry (0 or 1)
         */
-        internal static int inplaceAdd(int[] a, int aSize, int addend)
+        internal static int InplaceAdd(int[] a, int aSize, int addend)
         {
             long carry = addend & 0xFFFFFFFFL;
 
@@ -322,9 +323,9 @@ namespace ICU4N.Numerics.BigMath
         * Performs: {@code op1 += addend}. The number must to have place to hold a
         * possible carry.
         */
-        internal static void inplaceAdd(BigInteger op1, int addend)
+        internal static void InplaceAdd(BigInteger op1, int addend)
         {
-            int carry = inplaceAdd(op1.Digits, op1.numberLength, addend);
+            int carry = InplaceAdd(op1.Digits, op1.numberLength, addend);
             if (carry == 1)
             {
                 op1.Digits[op1.numberLength] = 1;
@@ -343,10 +344,10 @@ namespace ICU4N.Numerics.BigMath
         * @param op2
         *            the subtrahend
         */
-        internal static void inplaceSubtract(BigInteger op1, BigInteger op2)
+        internal static void InplaceSubtract(BigInteger op1, BigInteger op2)
         {
             // PRE: op1 >= op2 > 0
-            subtract(op1.Digits, op1.Digits, op1.numberLength, op2.Digits,
+            Subtract(op1.Digits, op1.Digits, op1.numberLength, op2.Digits,
                     op2.numberLength);
             op1.CutOffLeadingZeroes();
             op1.UnCache();
@@ -355,7 +356,7 @@ namespace ICU4N.Numerics.BigMath
         /**
         * Performs {@code res = b - a}
         */
-        private static void inverseSubtract(int[] res, int[] a, int aSize, int[] b, int bSize)
+        private static void InverseSubtract(int[] res, int[] a, int aSize, int[] b, int bSize)
         {
             int i;
             long borrow = 0;
@@ -399,11 +400,11 @@ namespace ICU4N.Numerics.BigMath
         * 
         * @return {@code a - b}
         */
-        private static int[] subtract(int[] a, int aSize, int[] b, int bSize)
+        private static int[] Subtract(int[] a, int aSize, int[] b, int bSize)
         {
             // PRE: a[] >= b[]
             int[] res = new int[aSize];
-            subtract(res, a, aSize, b, bSize);
+            Subtract(res, a, aSize, b, bSize);
             return res;
         }
 
@@ -416,7 +417,7 @@ namespace ICU4N.Numerics.BigMath
         *            should have enough space to save the result
         * @param op2
         */
-        internal static void completeInPlaceSubtract(BigInteger op1, BigInteger op2)
+        internal static void CompleteInPlaceSubtract(BigInteger op1, BigInteger op2)
         {
             int resultSign = op1.CompareTo(op2);
             if (op1.Sign == 0)
@@ -426,28 +427,28 @@ namespace ICU4N.Numerics.BigMath
             }
             else if (op1.Sign != op2.Sign)
             {
-                add(op1.Digits, op1.Digits, op1.numberLength, op2.Digits,
+                Add(op1.Digits, op1.Digits, op1.numberLength, op2.Digits,
                     op2.numberLength);
                 op1.Sign = resultSign;
             }
             else
             {
-                int sign = unsignedArraysCompare(op1.Digits,
+                int sign = UnsignedArraysCompare(op1.Digits,
                         op2.Digits, op1.numberLength, op2.numberLength);
                 if (sign > 0)
                 {
-                    subtract(op1.Digits, op1.Digits, op1.numberLength, op2.Digits,
+                    Subtract(op1.Digits, op1.Digits, op1.numberLength, op2.Digits,
                             op2.numberLength);  // op1 = op1 - op2
                                                 // op1.sign remains equal
                 }
                 else
                 {
-                    inverseSubtract(op1.Digits, op1.Digits, op1.numberLength,
+                    InverseSubtract(op1.Digits, op1.Digits, op1.numberLength,
                             op2.Digits, op2.numberLength);  // op1 = op2 - op1
                     op1.Sign = -op1.Sign;
                 }
             }
-            op1.numberLength = System.Math.Max(op1.numberLength, op2.numberLength) + 1;
+            op1.numberLength = Math.Max(op1.numberLength, op2.numberLength) + 1;
             op1.CutOffLeadingZeroes();
             op1.UnCache();
         }
@@ -458,30 +459,30 @@ namespace ICU4N.Numerics.BigMath
         * @param op1 any number
         * @param op2 any number
         */
-        internal static void completeInPlaceAdd(BigInteger op1, BigInteger op2)
+        internal static void CompleteInPlaceAdd(BigInteger op1, BigInteger op2)
         {
             if (op1.Sign == 0)
                 Array.Copy(op2.Digits, 0, op1.Digits, 0, op2.numberLength);
             else if (op2.Sign == 0)
                 return;
             else if (op1.Sign == op2.Sign)
-                add(op1.Digits, op1.Digits, op1.numberLength, op2.Digits,
+                Add(op1.Digits, op1.Digits, op1.numberLength, op2.Digits,
                         op2.numberLength);
             else
             {
-                int sign = unsignedArraysCompare(op1.Digits,
+                int sign = UnsignedArraysCompare(op1.Digits,
                         op2.Digits, op1.numberLength, op2.numberLength);
                 if (sign > 0)
-                    subtract(op1.Digits, op1.Digits, op1.numberLength, op2.Digits,
+                    Subtract(op1.Digits, op1.Digits, op1.numberLength, op2.Digits,
                             op2.numberLength);
                 else
                 {
-                    inverseSubtract(op1.Digits, op1.Digits, op1.numberLength,
+                    InverseSubtract(op1.Digits, op1.Digits, op1.numberLength,
                             op2.Digits, op2.numberLength);
                     op1.Sign = -op1.Sign;
                 }
             }
-            op1.numberLength = System.Math.Max(op1.numberLength, op2.numberLength) + 1;
+            op1.numberLength = Math.Max(op1.numberLength, op2.numberLength) + 1;
             op1.CutOffLeadingZeroes();
             op1.UnCache();
         }
@@ -490,7 +491,7 @@ namespace ICU4N.Numerics.BigMath
         * Compares two arrays, representing unsigned integer in little-endian order.
         * Returns +1,0,-1 if a is - respective - greater, equal or lesser then b 
         */
-        private static int unsignedArraysCompare(int[] a, int[] b, int aSize, int bSize)
+        private static int UnsignedArraysCompare(int[] a, int[] b, int aSize, int bSize)
         {
             if (aSize > bSize)
                 return 1;

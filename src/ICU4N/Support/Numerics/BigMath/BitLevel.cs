@@ -14,6 +14,8 @@
 //    limitations under the License.
 
 using ICU4N.Support.Numerics.BigMath;
+using J2N;
+using J2N.Numerics;
 using System;
 
 namespace ICU4N.Numerics.BigMath
@@ -64,7 +66,7 @@ namespace ICU4N.Numerics.BigMath
                 }
             }
             // Subtracting all sign bits
-            bLength -= Utils.NumberOfLeadingZeros(highDigit);
+            bLength -= highDigit.LeadingZeroCount();
             return bLength;
         }
 
@@ -83,17 +85,17 @@ namespace ICU4N.Numerics.BigMath
             {
                 for (; i < val.numberLength; i++)
                 {
-                    bCount += Utils.BitCount(val.Digits[i]);
+                    bCount += val.Digits[i].PopCount();
                 }
             }
             else
             {
                 // (sign < 0)
                 // this digit absorbs the carry
-                bCount += Utils.BitCount(-val.Digits[i]);
+                bCount += -val.Digits[i].PopCount();
                 for (i++; i < val.numberLength; i++)
                 {
-                    bCount += Utils.BitCount(~val.Digits[i]);
+                    bCount += (~val.Digits[i]).PopCount();
                 }
                 // We take the complement sum:
                 bCount = (val.numberLength << 5) - bCount;
@@ -158,7 +160,7 @@ namespace ICU4N.Numerics.BigMath
         {
             int intCount = count >> 5; // count of integers
             val.numberLength += intCount
-                                + (Utils.NumberOfLeadingZeros(val.Digits[val.numberLength - 1])
+                                + (val.Digits[val.numberLength - 1].LeadingZeroCount()
                                    - (count & 31) >= 0
                                     ? 0
                                     : 1);
@@ -189,7 +191,7 @@ namespace ICU4N.Numerics.BigMath
                 result[result.Length - 1] = 0;
                 for (int i = result.Length - 1; i > intCount; i--)
                 {
-                    result[i] |= Utils.URShift(source[i - intCount - 1], rightShiftCount);
+                    result[i] |= source[i - intCount - 1].TripleShift(rightShiftCount);
                     result[i - 1] = source[i - intCount - 1] << count;
                 }
             }
@@ -219,7 +221,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 int val = source[i];
                 result[i] = (val << 1) | carry;
-                carry = Utils.URShift(val, 31);
+                carry = val.TripleShift(31);
             }
             if (carry != 0)
             {
@@ -344,10 +346,10 @@ namespace ICU4N.Numerics.BigMath
                 allZero &= (source[i] << leftShiftCount) == 0;
                 for (i = 0; i < resultLen - 1; i++)
                 {
-                    result[i] = Utils.URShift(source[i + intCount], count) |
+                    result[i] = source[i + intCount].TripleShift(count) |
                                 (source[i + intCount + 1] << leftShiftCount);
                 }
-                result[i] = Utils.URShift(source[i + intCount], count);
+                result[i] = source[i + intCount].TripleShift(count);
                 i++;
             }
 

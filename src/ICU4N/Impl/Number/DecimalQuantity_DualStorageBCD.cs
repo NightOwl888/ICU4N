@@ -270,7 +270,7 @@ namespace ICU4N.Numerics
             int i = 0;
             for (; n.Sign != 0; i++)
             {
-                var result = BigMath.BigIntegerMath.DivideAndRemainder(n, 10, out BigMath.BigInteger remainder);
+                var result = BigMath.BigInteger.DivideAndRemainder(n, 10, out BigMath.BigInteger remainder);
 
                 ////BigInteger[] temp = n.DivideAndRemainder(BigInteger.TEN);
                 //var result = BigInteger.DivRem(n, 10, out BigInteger remainder);
@@ -306,7 +306,7 @@ namespace ICU4N.Numerics
                     tempLong = tempLong * 10 + GetDigitPos(shift);
                 }
                 BigMath.BigDecimal result = new BigMath.BigDecimal(tempLong);
-                result = BigMath.BigMath.ScaleByPowerOfTen(result, scale);
+                result = BigMath.BigDecimal.ScaleByPowerOfTen(result, scale);
                 if (IsNegative) result = -result;
                 return result;
                 //BigDecimal result = BigDecimal.GetInstance(tempLong);

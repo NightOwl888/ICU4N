@@ -14,6 +14,8 @@
 //    limitations under the License.
 
 using ICU4N.Support.Numerics.BigMath;
+using J2N;
+using J2N.Numerics;
 using System;
 using System.Globalization;
 using System.IO;
@@ -43,7 +45,7 @@ namespace ICU4N.Numerics.BigMath
 #if !PORTABLE
     [Serializable]
 #endif
-    internal sealed class BigInteger : J2N.Numerics.Number, IComparable<BigInteger>, IEquatable<BigInteger> // ICU4N TODO: Clean up and make public
+    internal sealed partial class BigInteger : J2N.Numerics.Number, IComparable<BigInteger>, IEquatable<BigInteger> // ICU4N TODO: Clean up and make public
 #if !PORTABLE
         , ISerializable //, IConvertible
 #endif
@@ -157,7 +159,7 @@ namespace ICU4N.Numerics.BigMath
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("sign", sign);
-            byte[] magn = BigMath.Abs(this).ToByteArray();
+            byte[] magn = Abs(this).ToByteArray();
             info.AddValue("magnitude", magn, typeof(byte[]));
         }
 
@@ -197,7 +199,7 @@ namespace ICU4N.Numerics.BigMath
                     digits[i] = rnd.Next();
                 }
                 // Using only the necessary bits
-                digits[numberLength - 1] = Utils.URShift(digits[numberLength - 1], (-numBits) & 31);
+                digits[numberLength - 1] = digits[numberLength - 1].TripleShift((-numBits) & 31);
                 CutOffLeadingZeroes();
             }
         }
@@ -391,7 +393,14 @@ namespace ICU4N.Numerics.BigMath
             }
         }
 
-        #endregion
+        #region .NET BigInteger constructors
+
+        // ICU4N TODO: Add constructors from .NET BigInteger here
+
+        #endregion .NET BigInteger constructors
+
+
+        #endregion .ctor
 
         public int Sign
         {
@@ -414,7 +423,7 @@ namespace ICU4N.Numerics.BigMath
                 }
                 // (sign != 0) implies that exists some non zero digit
                 int i = FirstNonZeroDigit;
-                return ((i << 5) + Utils.NumberOfTrailingZeros(digits[i]));
+                return ((i << 5) + digits[i].TrailingZeroCount());
             }
         }
 
@@ -491,6 +500,45 @@ namespace ICU4N.Numerics.BigMath
             // Equal sign and equal numberLength
             return (sign * Elementary.CompareArrays(digits, other.digits,
                         numberLength));
+        }
+
+        /**
+         * Returns the position of the lowest set bit in the two's complement
+         * representation of this {@code BigInteger}. If all bits are zero (this=0)
+         * then -1 is returned as result.
+         * <p>
+         * <b>Implementation Note:</b> Usage of this method is not recommended as
+         * the current implementation is not efficient.
+         *
+         * @return position of lowest bit if {@code this != 0}, {@code -1} otherwise
+         */
+        public static BigInteger Min(BigInteger a, BigInteger b)
+        {
+            if (a is null)
+                throw new ArgumentNullException(nameof(a));
+            if (b is null)
+                throw new ArgumentNullException(nameof(b));
+
+            return ((a.CompareTo(b) == LESS) ? a : b);
+        }
+
+        /**
+        * Returns the maximum of this {@code BigInteger} and {@code val}.
+        *
+        * @param val
+        *            value to be used to compute the maximum with {@code this}
+        * @return {@code max(this, val)}
+        * @throws NullPointerException
+        *             if {@code val == null}
+        */
+        public static BigInteger Max(BigInteger a, BigInteger b)
+        {
+            if (a is null)
+                throw new ArgumentNullException(nameof(a));
+            if (b is null)
+                throw new ArgumentNullException(nameof(b));
+
+            return ((a.CompareTo(b) == GREATER) ? a : b);
         }
 
         /// <inheritdoc cref="object.GetHashCode"/>
@@ -685,7 +733,7 @@ namespace ICU4N.Numerics.BigMath
         /// Returns an instance of <see cref="BigInteger"/> that is created
         /// from the source value specified.
         /// </returns>
-        public static BigInteger FromInt64(long value)
+        public static BigInteger FromInt64(long value) // ICU4N TODO: API nix the cache and convert this into a constructor. We should add constructors for converting every .NET type in an efficient manner.
         {
             if (value < 0)
             {
@@ -719,7 +767,7 @@ namespace ICU4N.Numerics.BigMath
                 value = null;
                 return false;
             }
-            if ((radix < CharHelper.MIN_RADIX) || (radix > CharHelper.MAX_RADIX))
+            if ((radix < Character.MinRadix) || (radix > Character.MaxRadix))
             {
                 // math.11=Radix out of range
                 exception = new FormatException(Messages.math12);
@@ -777,7 +825,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     int bigRadixDigit = Convert.ToInt32(s.Substring(substrStart, substrEnd - substrStart), radix);
                     newDigit = Multiplication.MultiplyByInt(digits, digitIndex, bigRadix);
-                    newDigit += Elementary.inplaceAdd(digits, digitIndex, bigRadixDigit);
+                    newDigit += Elementary.InplaceAdd(digits, digitIndex, bigRadixDigit);
                     digits[digitIndex++] = newDigit;
                 }
 
@@ -837,72 +885,72 @@ namespace ICU4N.Numerics.BigMath
 
         public static BigInteger operator +(BigInteger a, BigInteger b)
         {
-            return BigMath.Add(a, b);
+            return Add(a, b);
         }
 
         public static BigInteger operator -(BigInteger a, BigInteger b)
         {
-            return BigMath.Subtract(a, b);
+            return Subtract(a, b);
         }
 
         public static BigInteger operator *(BigInteger a, BigInteger b)
         {
-            return BigMath.Multiply(a, b);
+            return Multiply(a, b);
         }
 
         public static BigInteger operator /(BigInteger a, BigInteger b)
         {
-            return BigMath.Divide(a, b);
+            return Divide(a, b);
         }
 
         public static BigInteger operator %(BigInteger a, BigInteger b)
         {
-            return BigMath.Mod(a, b);
+            return Mod(a, b);
         }
 
         public static BigInteger operator &(BigInteger a, BigInteger b)
         {
-            return BigMath.And(a, b);
+            return And(a, b);
         }
 
         public static BigInteger operator |(BigInteger a, BigInteger b)
         {
-            return BigMath.Or(a, b);
+            return Or(a, b);
         }
 
         public static BigInteger operator ^(BigInteger a, BigInteger b)
         {
-            return BigMath.XOr(a, b);
+            return XOr(a, b);
         }
 
         public static BigInteger operator ~(BigInteger a)
         {
-            return BigMath.Not(a);
+            return Not(a);
         }
 
         public static BigInteger operator -(BigInteger a)
         {
-            return BigMath.Negate(a);
+            return Negate(a);
         }
 
         public static BigInteger operator >>(BigInteger a, int b)
         {
-            return BigMath.ShiftRight(a, b);
+            return ShiftRight(a, b);
         }
 
         public static BigInteger operator <<(BigInteger a, int b)
         {
-            return BigMath.ShiftLeft(a, b);
+            return ShiftLeft(a, b);
         }
 
         public static bool operator >(BigInteger a, BigInteger b)
         {
-            return a.CompareTo(b) > 0;
+            return a.CompareTo(b) > 0; // ICU4N TODO: null
         }
 
         public static bool operator <(BigInteger a, BigInteger b)
         {
-            return a.CompareTo(b) < 0;
+            return a.CompareTo(b) < 0; // ICU4N TODO: null
         }
 
         public static bool operator ==(BigInteger a, BigInteger b)
@@ -979,182 +1027,14 @@ namespace ICU4N.Numerics.BigMath
 
         #region Bit Utils
 
-        /**
-         * Tests whether the bit at position n in {@code this} is set. The result is
-         * equivalent to {@code this & (2^n) != 0}.
-         * <p>
-         * <b>Implementation Note:</b> Usage of this method is not recommended as
-         * the current implementation is not efficient.
-         *
-         * @param n
-         *            position where the bit in {@code this} has to be inspected.
-         * @return {@code this & (2^n) != 0}.
-         * @throws ArithmeticException
-         *             if {@code n < 0}.
-         */
-        public static bool TestBit(BigInteger value, int n)
-        {
-            if (n == 0)
-            {
-                return ((value.digits[0] & 1) != 0);
-            }
-            if (n < 0)
-            {
-                // math.15=Negative bit address
-                throw new ArithmeticException(Messages.math15); //$NON-NLS-1$
-            }
-            int intCount = n >> 5;
-            if (intCount >= value.numberLength)
-            {
-                return (value.sign < 0);
-            }
-            int digit = value.digits[intCount];
-            n = (1 << (n & 31)); // int with 1 set to the needed position
-            if (value.Sign < 0)
-            {
-                int firstNonZeroDigit = value.FirstNonZeroDigit;
-                if (intCount < firstNonZeroDigit)
-                {
-                    return false;
-                }
-                else if (firstNonZeroDigit == intCount)
-                {
-                    digit = -digit;
-                }
-                else
-                {
-                    digit = ~digit;
-                }
-            }
-            return ((digit & n) != 0);
-        }
-
-        /**
-        * Returns a new {@code BigInteger} which has the same binary representation
-        * as {@code this} but with the bit at position n set. The result is
-        * equivalent to {@code this | 2^n}.
-        * <p>
-        * <b>Implementation Note:</b> Usage of this method is not recommended as
-        * the current implementation is not efficient.
-        *
-        * @param n
-        *            position where the bit in {@code this} has to be set.
-        * @return {@code this | 2^n}.
-        * @throws ArithmeticException
-        *             if {@code n < 0}.
-        */
-        public static BigInteger SetBit(BigInteger value, int n)
-        {
-            if (!TestBit(value, n))
-            {
-                return BitLevel.FlipBit(value, n);
-            }
-            return value;
-        }
-
-        /**
-        * Returns a new {@code BigInteger} which has the same binary representation
-        * as {@code this} but with the bit at position n cleared. The result is
-        * equivalent to {@code this & ~(2^n)}.
-        * <p>
-        * <b>Implementation Note:</b> Usage of this method is not recommended as
-        * the current implementation is not efficient.
-        *
-        * @param n
-        *            position where the bit in {@code this} has to be cleared.
-        * @return {@code this & ~(2^n)}.
-        * @throws ArithmeticException
-        *             if {@code n < 0}.
-        */
-        public static BigInteger ClearBit(BigInteger value, int n)
-        {
-            if (TestBit(value, n))
-            {
-                return BitLevel.FlipBit(value, n);
-            }
-            return value;
-        }
 
 
-        /**
-        * Tests whether this {@code BigInteger} is probably prime. If {@code true}
-        * is returned, then this is prime with a probability beyond
-        * (1-1/2^certainty). If {@code false} is returned, then this is definitely
-        * composite. If the argument {@code certainty} <= 0, then this method
-        * returns true.
-        *
-        * @param certainty
-        *            tolerated primality uncertainty.
-        * @return {@code true}, if {@code this} is probably prime, {@code false}
-        *         otherwise.
-        */
-        public static bool IsProbablePrime(BigInteger value, int certainty)
-        {
-            return Primality.IsProbablePrime(BigMath.Abs(value), certainty);
-        }
+        
 
-        /**
-        * Returns the smallest integer x > {@code this} which is probably prime as
-        * a {@code BigInteger} instance. The probability that the returned {@code
-        * BigInteger} is prime is beyond (1-1/2^80).
-        *
-        * @return smallest integer > {@code this} which is robably prime.
-        * @throws ArithmeticException
-        *             if {@code this < 0}.
-        */
-        public static BigInteger NextProbablePrime(BigInteger value)
-        {
-            if (value.Sign < 0)
-            {
-                // math.1A=start < 0: {0}
-                throw new ArithmeticException(String.Format(Messages.math1A, value)); //$NON-NLS-1$
-            }
-            return Primality.NextProbablePrime(value);
-        }
 
-        /**
-        * Returns a random positive {@code BigInteger} instance in the range [0,
-        * 2^(bitLength)-1] which is probably prime. The probability that the
-        * returned {@code BigInteger} is prime is beyond (1-1/2^80).
-        * <p>
-        * <b>Implementation Note:</b> Currently {@code rnd} is ignored.
-        *
-        * @param bitLength
-        *            length of the new {@code BigInteger} in bits.
-        * @param rnd
-        *            random generator used to generate the new {@code BigInteger}.
-        * @return probably prime random {@code BigInteger} instance.
-        * @throws IllegalArgumentException
-        *             if {@code bitLength < 2}.
-        */
-        public static BigInteger ProbablePrime(int bitLength, Random rnd)
-        {
-            return new BigInteger(bitLength, 100, rnd);
-        }
+       
 
-        /**
-        * Returns a new {@code BigInteger} which has the same binary representation
-        * as {@code this} but with the bit at position n flipped. The result is
-        * equivalent to {@code this ^ 2^n}.
-        * <p>
-        * <b>Implementation Note:</b> Usage of this method is not recommended as
-        * the current implementation is not efficient.
-        *
-        * @param n
-        *            position where the bit in {@code this} has to be flipped.
-        * @return {@code this ^ 2^n}.
-        * @throws ArithmeticException
-        *             if {@code n < 0}.
-        */
-        public static BigInteger FlipBit(BigInteger value, int n)
-        {
-            if (n < 0)
-            {
-                // math.15=Negative bit address
-                throw new ArithmeticException(Messages.math15); //$NON-NLS-1$
-            }
-            return BitLevel.FlipBit(value, n);
-        }
+
 
         #endregion
 

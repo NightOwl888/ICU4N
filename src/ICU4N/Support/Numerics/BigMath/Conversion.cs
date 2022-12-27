@@ -14,7 +14,10 @@
 //    limitations under the License.
 
 using ICU4N.Support.Numerics.BigMath;
+using J2N;
+using J2N.Numerics;
 using System;
+using System.Globalization;
 using System.Text;
 
 namespace ICU4N.Numerics.BigMath
@@ -66,18 +69,18 @@ namespace ICU4N.Numerics.BigMath
                 if (sign < 0)
                 {
                     // Long.ToString has different semantic from C# for negative numbers
-                    return "-" + Convert.ToString(v, radix);
+                    return "-" + v.ToString(radix); // Convert.ToString(v, radix);
                 }
-                return Convert.ToString(v, radix);
+                return v.ToString(radix); // Convert.ToString(v, radix);
             }
-            if ((radix == 10) || (radix < CharHelper.MIN_RADIX)
-                    || (radix > CharHelper.MAX_RADIX))
+            if ((radix == 10) || (radix < Character.MinRadix)
+                    || (radix > Character.MaxRadix))
             {
                 return val.ToString();
             }
             double bitsForRadixDigit;
             bitsForRadixDigit = System.Math.Log(radix) / System.Math.Log(2);
-            int resLengthInChars = (int)(BigMath.Abs(val).BitLength / bitsForRadixDigit + ((sign < 0) ? 1
+            int resLengthInChars = (int)(BigInteger.Abs(val).BitLength / bitsForRadixDigit + ((sign < 0) ? 1
                     : 0)) + 1;
 
             char[] result = new char[resLengthInChars];
@@ -100,7 +103,7 @@ namespace ICU4N.Numerics.BigMath
                     int previous = currentChar;
                     do
                     {
-                        result[--currentChar] = CharHelper.forDigit(
+                        result[--currentChar] = Character.ForDigit(
                                 resDigit % radix, radix);
                     } while (((resDigit /= radix) != 0) && (currentChar != 0));
                     int delta = charsPerInt - previous + currentChar;
@@ -127,7 +130,7 @@ namespace ICU4N.Numerics.BigMath
                     for (int j = 0; (j < 8) && (currentChar > 0); j++)
                     {
                         resDigit = digits[i] >> (j << 2) & 0xf;
-                        result[--currentChar] = CharHelper.forDigit(resDigit, 16);
+                        result[--currentChar] = Character.ForDigit(resDigit, 16);
                     }
                 }
             }
@@ -139,7 +142,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 result[--currentChar] = '-';
             }
-            return new String(result, currentChar, resLengthInChars - currentChar);
+            return new string(result, currentChar, resLengthInChars - currentChar);
         }
 
         /**
@@ -281,7 +284,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     result[--currentChar] = '-';
                 }
-                return new String(result, currentChar, resLengthInChars
+                return new string(result, currentChar, resLengthInChars
                         - currentChar);
             }
             if ((scale > 0) && (exponent >= -6))
@@ -299,7 +302,7 @@ namespace ICU4N.Numerics.BigMath
                     {
                         result[--currentChar] = '-';
                     }
-                    return new String(result, currentChar, resLengthInChars
+                    return new string(result, currentChar, resLengthInChars
                             - currentChar + 1);
                 }
                 // special case 2
@@ -313,7 +316,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     result[--currentChar] = '-';
                 }
-                return new String(result, currentChar, resLengthInChars
+                return new string(result, currentChar, resLengthInChars
                         - currentChar);
             }
             int startPoint = currentChar + 1;
@@ -340,12 +343,12 @@ namespace ICU4N.Numerics.BigMath
             {
                 result1.Append('+');
             }
-            result1.Append(Convert.ToString(exponent));
+            result1.Append(exponent.ToString(CultureInfo.InvariantCulture));
             return result1.ToString();
         }
 
         /* can process only 32-bit numbers */
-        public static String ToDecimalScaledString(long value, int scale)
+        public static string ToDecimalScaledString(long value, int scale)
         {
             int resLengthInChars;
             int currentChar;
@@ -376,7 +379,7 @@ namespace ICU4N.Numerics.BigMath
                         {
                             result2.Append("0E"); //$NON-NLS-1$
                         }
-                        result2.Append((scale == Int32.MinValue) ? "2147483648" : Convert.ToString(-scale)); //$NON-NLS-1$
+                        result2.Append((scale == int.MinValue) ? "2147483648" : (-scale).ToString(CultureInfo.InvariantCulture)); //$NON-NLS-1$
                         return result2.ToString();
                 }
             }
@@ -405,7 +408,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     result[--currentChar] = '-';
                 }
-                return new String(result, currentChar, resLengthInChars - currentChar);
+                return new string(result, currentChar, resLengthInChars - currentChar);
             }
             if (scale > 0 && exponent >= -6)
             {
@@ -422,7 +425,7 @@ namespace ICU4N.Numerics.BigMath
                     {
                         result[--currentChar] = '-';
                     }
-                    return new String(result, currentChar, resLengthInChars - currentChar + 1);
+                    return new string(result, currentChar, resLengthInChars - currentChar + 1);
                 }
                 // special case 2
                 for (int j = 2; j < -exponent + 1; j++)
@@ -435,7 +438,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     result[--currentChar] = '-';
                 }
-                return new String(result, currentChar, resLengthInChars - currentChar);
+                return new string(result, currentChar, resLengthInChars - currentChar);
             }
             int startPoint = currentChar + 1;
             int endPoint = resLengthInChars;
@@ -459,7 +462,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 result1.Append('+');
             }
-            result1.Append(Convert.ToString(exponent));
+            result1.Append(exponent.ToString(CultureInfo.InvariantCulture));
             return result1.ToString();
         }
 
@@ -480,8 +483,8 @@ namespace ICU4N.Numerics.BigMath
                 * Make the dividend positive shifting it right by 1 bit then get
                 * the quotient an remainder and correct them properly
                 */
-                long aPos = Utils.URShift(a, 1);
-                long bPos = Utils.URShift(1000000000L, 1);
+                long aPos = a.TripleShift(1);
+                long bPos = (1000000000L).TripleShift(1);
                 quot = aPos / bPos;
                 rem = aPos % bPos;
                 // double the remainder and add 1 if 'a' is odd
@@ -503,14 +506,14 @@ namespace ICU4N.Numerics.BigMath
             // val.bitLength() >= 33 * 32 > 1024
             if (val.numberLength > 32)
             {
-                return ((val.Sign > 0) ? Double.PositiveInfinity
-                        : Double.NegativeInfinity);
+                return ((val.Sign > 0) ? double.PositiveInfinity
+                        : double.NegativeInfinity);
             }
-            int bitLen = BigMath.Abs(val).BitLength;
+            int bitLen = BigInteger.Abs(val).BitLength;
             long exponent = bitLen - 1;
             int delta = bitLen - 54;
             // We need 54 top bits from this, the 53th bit is always 1 in lVal.
-            long lVal = (BigMath.Abs(val) >> delta).ToInt64();
+            long lVal = (BigInteger.Abs(val) >> delta).ToInt64();
             /*
             * Take 53 bits from lVal to mantissa. The least significant bit is
             * needed for rounding.
@@ -520,12 +523,12 @@ namespace ICU4N.Numerics.BigMath
             {
                 if (mantissa == 0X1FFFFFFFFFFFFFL)
                 {
-                    return ((val.Sign > 0) ? Double.PositiveInfinity
-                            : Double.NegativeInfinity);
+                    return ((val.Sign > 0) ? double.PositiveInfinity
+                            : double.NegativeInfinity);
                 }
                 if (mantissa == 0x1FFFFFFFFFFFFEL)
                 {
-                    return ((val.Sign > 0) ? Double.MaxValue : -Double.MaxValue);
+                    return ((val.Sign > 0) ? double.MaxValue : -double.MaxValue);
                 }
             }
             // Round the mantissa
@@ -537,7 +540,7 @@ namespace ICU4N.Numerics.BigMath
             }
             mantissa >>= 1; // drop the rounding bit
                             // long resSign = (val.sign < 0) ? 0x8000000000000000L : 0;
-            long resSign = (val.Sign < 0) ? Int64.MinValue : 0;
+            long resSign = (val.Sign < 0) ? long.MinValue : 0;
             exponent = ((1023 + exponent) << 52) & 0x7FF0000000000000L;
             long result = resSign | exponent | mantissa;
             return BitConverter.Int64BitsToDouble(result);
