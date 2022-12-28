@@ -299,7 +299,7 @@ namespace ICU4N.Numerics.BigMath
         /// <exception cref="ArgumentNullException">If the provided <paramref name="val"/> 
         /// is <c>null</c></exception>
         /// <exception cref="FormatException">If the length of <paramref name="val"/> is zero</exception>
-        public BigInteger(byte[] val)
+        public BigInteger(byte[] val) // ICU4N TODO: Allow switching between big and little endian like the .NET BigInteger
         {
             if (val is null)
                 throw new ArgumentNullException(nameof(val));
@@ -308,7 +308,7 @@ namespace ICU4N.Numerics.BigMath
                 // math.12=Zero length BigInteger
                 throw new FormatException(Messages.math12); //$NON-NLS-1$
             }
-            if (val[0] > sbyte.MaxValue)
+            if (val[0] > sbyte.MaxValue) // ICU4N TODO: Check this - I think it should be byte.MaxValue
             {
                 sign = -1;
                 PutBytesNegativeToIntegers(val);
