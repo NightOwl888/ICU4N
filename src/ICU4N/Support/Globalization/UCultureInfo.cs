@@ -287,7 +287,7 @@ namespace ICU4N.Globalization
         /// is less than, equal to, or greater than <paramref name="other"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="other"/> is <c>null</c>.</exception>
         /// <stable>ICU4N 60</stable>
-        public int CompareTo(UCultureInfo other)
+        public int CompareTo(UCultureInfo other) // ICU4N TODO: Null reference check (should never throw in .NET here)
         {
             if (other == null)
                 throw new ArgumentNullException(nameof(other));
@@ -1745,7 +1745,7 @@ namespace ICU4N.Globalization
                 this.serial = serial;
             }
 
-            public int CompareTo(CultureAcceptLanguageQ other)
+            public int CompareTo(CultureAcceptLanguageQ other) // ICU4N TODO: Null reference check (should never throw in .NET here)
             {
                 if (q > other.q)
                 { // reverse - to sort in descending order

@@ -91,7 +91,7 @@ namespace ICU4N.Impl
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
-        public int CompareTo(<#=charSequence#> cs)
+        public int CompareTo(<#=charSequence#> cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
         {
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;
