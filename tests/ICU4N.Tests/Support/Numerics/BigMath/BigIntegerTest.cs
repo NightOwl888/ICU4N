@@ -690,34 +690,34 @@ namespace ICU4N.Numerics.BigMath
                 var _ = largePos / (zero);
                 fail("ArithmeticException expected");
             }
-            catch (ArithmeticException e)
+            catch (DivideByZeroException e) // ICU4N: .NET has a specialized exception for this
             {
             }
 
             try
             {
                 var _ = bi1 / (zero);
-                fail("ArithmeticException expected");
+                fail("ArithmeticException expected"); // ICU4N: .NET has a specialized exception for this
             }
-            catch (ArithmeticException e)
+            catch (DivideByZeroException e)
             {
             }
 
             try
             {
                 var _ = (-bi3) / (zero);
-                fail("ArithmeticException expected");
+                fail("ArithmeticException expected"); // ICU4N: .NET has a specialized exception for this
             }
-            catch (ArithmeticException e)
+            catch (DivideByZeroException e)
             {
             }
 
             try
             {
                 var _ = zero / (zero);
-                fail("ArithmeticException expected");
+                fail("ArithmeticException expected"); // ICU4N: .NET has a specialized exception for this
             }
-            catch (ArithmeticException e)
+            catch (DivideByZeroException e)
             {
             }
         }

@@ -253,7 +253,7 @@ namespace ICU4N.Numerics.BigMath
                 BigDecimal.Divide(divd1, divd2, RoundingMode.Down);
                 fail("divide by zero is not caught");
             }
-            catch (ArithmeticException e)
+            catch (DivideByZeroException e) // ICU4N: .NET has a specialized exception for this
             {
             }
         }
@@ -282,7 +282,7 @@ namespace ICU4N.Numerics.BigMath
                 BigDecimal.Divide(divd1, divd2, 4, RoundingMode.Down);
                 fail("divide by zero is not caught");
             }
-            catch (ArithmeticException e)
+            catch (DivideByZeroException e) // ICU4N: .NET has a specialized exception for this
             {
             }
         }

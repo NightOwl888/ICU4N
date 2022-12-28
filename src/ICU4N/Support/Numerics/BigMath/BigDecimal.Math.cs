@@ -360,12 +360,14 @@ namespace ICU4N.Numerics.BigMath
                 throw new ArgumentNullException(nameof(dividend));
             if (divisor is null)
                 throw new ArgumentNullException(nameof(divisor));
+            if (!roundingMode.IsDefined())
+                throw new ArgumentOutOfRangeException(nameof(roundingMode), string.Format(Messages.ArgumentOutOfRange_Enum, roundingMode, nameof(RoundingMode)));
 
             // Let be: this = [u1,s1]  and  divisor = [u2,s2]
             if (divisor.IsZero)
             {
                 // math.04=Division by zero
-                throw new ArithmeticException(Messages.math04); //$NON-NLS-1$
+                throw new DivideByZeroException(Messages.math04); //$NON-NLS-1$
             }
 
             long diffScale = ((long)dividend.Scale - divisor.Scale) - scale;
@@ -415,6 +417,8 @@ namespace ICU4N.Numerics.BigMath
                 throw new ArgumentNullException(nameof(scaledDividend));
             if (scaledDivisor is null)
                 throw new ArgumentNullException(nameof(scaledDivisor));
+            if (!roundingMode.IsDefined())
+                throw new ArgumentOutOfRangeException(nameof(roundingMode), string.Format(Messages.ArgumentOutOfRange_Enum, roundingMode, nameof(RoundingMode)));
 
             BigInteger quotient = BigInteger.DivideAndRemainder(scaledDividend, scaledDivisor, out BigInteger remainder);
             if (remainder.Sign == 0)
@@ -496,10 +500,6 @@ namespace ICU4N.Numerics.BigMath
         {
             if (a is null)
                 throw new ArgumentNullException(nameof(a));
-            if (b is null)
-                throw new ArgumentNullException(nameof(b));
-            if (!roundingMode.IsDefined())
-                throw new ArgumentOutOfRangeException(nameof(roundingMode), string.Format(Messages.ArgumentOutOfRange_Enum, roundingMode, nameof(RoundingMode)));
 
             return Divide(a, b, a.Scale, roundingMode);
         }
@@ -543,7 +543,7 @@ namespace ICU4N.Numerics.BigMath
             if (divisor.IsZero)
             {
                 // math.04=Division by zero
-                throw new ArithmeticException(Messages.math04); //$NON-NLS-1$
+                throw new DivideByZeroException(Messages.math04); //$NON-NLS-1$
             }
             if (p.Sign == 0)
             {
@@ -724,7 +724,7 @@ namespace ICU4N.Numerics.BigMath
             if (divisor.IsZero)
             {
                 // math.04=Division by zero
-                throw new ArithmeticException(Messages.math04); //$NON-NLS-1$
+                throw new DivideByZeroException(Messages.math04); //$NON-NLS-1$
             }
             if ((divisor.AproxPrecision() + newScale > dividend.AproxPrecision() + 1L)
                 || (dividend.IsZero))
@@ -1540,88 +1540,5 @@ namespace ICU4N.Numerics.BigMath
         {
             return BigDecimal.Create(1, value.Scale);
         }
-
-
-        // ICU4N: This got duplicated, I think. Double check the other implementation is identical to this one.
-        //public static BigDecimal Divide(BigDecimal dividend, BigDecimal divisor)
-        //{
-        //    if (dividend is null)
-        //        throw new ArgumentNullException(nameof(dividend));
-        //    if (divisor is null)
-        //        throw new ArgumentNullException(nameof(divisor));
-
-        //    BigInteger p = dividend.UnscaledValue;
-        //    BigInteger q = divisor.UnscaledValue;
-        //    BigInteger gcd; // greatest common divisor between 'p' and 'q'
-        //    BigInteger quotient;
-        //    BigInteger remainder;
-        //    long diffScale = (long)dividend.Scale - divisor.Scale;
-        //    int newScale; // the new scale for final quotient
-        //    int k; // number of factors "2" in 'q'
-        //    int l = 0; // number of factors "5" in 'q'
-        //    int i = 1;
-        //    int lastPow = FivePow.Length - 1;
-
-        //    if (divisor.IsZero)
-        //    {
-        //        // math.04=Division by zero
-        //        throw new ArithmeticException(Messages.math04); //$NON-NLS-1$
-        //    }
-        //    if (p.Sign == 0)
-        //    {
-        //        return BigDecimal.GetZeroScaledBy(diffScale);
-        //    }
-        //    // To divide both by the GCD
-        //    gcd = BigInteger.Gcd(p, q);
-        //    p = p / gcd;
-        //    q = q / gcd;
-        //    // To simplify all "2" factors of q, dividing by 2^k
-        //    k = q.LowestSetBit;
-        //    q = q >> k;
-        //    // To simplify all "5" factors of q, dividing by 5^l
-        //    do
-        //    {
-        //        quotient = BigInteger.DivideAndRemainder(q, FivePow[i], out remainder);
-        //        if (remainder.Sign == 0)
-        //        {
-        //            l += i;
-        //            if (i < lastPow)
-        //            {
-        //                i++;
-        //            }
-        //            q = quotient;
-        //        }
-        //        else
-        //        {
-        //            if (i == 1)
-        //            {
-        //                break;
-        //            }
-        //            i = 1;
-        //        }
-        //    } while (true);
-        //    // If  abs(q) != 1  then the quotient is periodic
-        //    if (!BigInteger.Abs(q).Equals(BigInteger.One))
-        //    {
-        //        // math.05=Non-terminating decimal expansion; no exact representable decimal result.
-        //        throw new ArithmeticException(Messages.math05); //$NON-NLS-1$
-        //    }
-        //    // The sign of the is fixed and the quotient will be saved in 'p'
-        //    if (q.Sign < 0)
-        //    {
-        //        p = -p;
-        //    }
-        //    // Checking if the new scale is out of range
-        //    newScale = BigDecimal.ToIntScale(diffScale + Math.Max(k, l));
-        //    // k >= 0  and  l >= 0  implies that  k - l  is in the 32-bit range
-        //    i = k - l;
-
-        //    p = (i > 0)
-        //        ? Multiplication.MultiplyByFivePow(p, i)
-        //        : p << -i;
-        //    return new BigDecimal(p, newScale);
-        //}
-
-
     }
 }
