@@ -486,7 +486,7 @@ namespace ICU4N.Numerics.BigMath
             if (divisorSign == 0)
             {
                 // math.17=BigInteger divide by zero
-                throw new ArithmeticException(Messages.math17); //$NON-NLS-1$
+                throw new DivideByZeroException(Messages.math17); //$NON-NLS-1$
             }
             int divisorLen = divisor.numberLength;
             int[] divisorDigits = divisor.digits;
@@ -544,7 +544,7 @@ namespace ICU4N.Numerics.BigMath
             if (divisor.Sign == 0)
             {
                 // math.17=BigInteger divide by zero
-                throw new ArithmeticException(Messages.math17); //$NON-NLS-1$
+                throw new DivideByZeroException(Messages.math17); //$NON-NLS-1$
             }
             int divisorSign = divisor.Sign;
             if (divisor.IsOne)
@@ -616,7 +616,7 @@ namespace ICU4N.Numerics.BigMath
             if (divisor.Sign == 0)
             {
                 // math.17=BigInteger divide by zero
-                throw new ArithmeticException(Messages.math17); //$NON-NLS-1$
+                throw new DivideByZeroException(Messages.math17); //$NON-NLS-1$
             }
             int thisLen = dividend.numberLength;
             int divisorLen = divisor.numberLength;

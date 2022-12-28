@@ -173,7 +173,7 @@ namespace ICU4N.Numerics.BigMath
         /// </summary>
         /// <param name="numBits">The maximum length of the new <see cref="BigInteger"/> in bits.</param>
         /// <param name="rnd">An optional random number generator to be used.</param>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// If the given <paramref name="numBits"/> value is less than 0.
         /// </exception>
         public BigInteger(int numBits, Random rnd)
@@ -181,7 +181,7 @@ namespace ICU4N.Numerics.BigMath
             if (numBits < 0)
             {
                 // math.1B=numBits must be non-negative
-                throw new ArgumentException(Messages.math1B); //$NON-NLS-1$
+                throw new ArgumentOutOfRangeException(nameof(numBits), Messages.math1B); //$NON-NLS-1$
             }
             if (numBits == 0)
             {
@@ -251,7 +251,7 @@ namespace ICU4N.Numerics.BigMath
 
             if ((signum < -1) || (signum > 1))
                 // math.13=Invalid signum value
-                throw new FormatException(Messages.math13); //$NON-NLS-1$
+                throw new FormatException(Messages.math13); //$NON-NLS-1$ // ICU4N TODO: This doesn't seem like the right exception for .NET
 
             if (signum == 0)
             {
@@ -443,7 +443,7 @@ namespace ICU4N.Numerics.BigMath
         /// implementation is not efficient.
         /// </para>
         /// </remarks>
-        public int BitCount
+        public int BitCount // ICU4N TODO: API - Rename GetBitCount() to match .NET ? Need to choose between this and BitLength
         {
             get { return BitLevel.BitCount(this); }
         }
