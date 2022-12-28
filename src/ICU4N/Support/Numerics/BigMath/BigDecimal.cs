@@ -1463,6 +1463,18 @@ namespace ICU4N.Numerics.BigMath
 
         #region Explicit Operators
 
+        public static explicit operator byte(BigDecimal d)
+        {
+            if (d is null) return default;
+            return d.ToByte();
+        }
+
+        public static explicit operator sbyte(BigDecimal d)
+        {
+            if (d is null) return default;
+            return d.ToSByte();
+        }
+
         public static explicit operator short(BigDecimal d)
         {
             if (d is null) return default;
