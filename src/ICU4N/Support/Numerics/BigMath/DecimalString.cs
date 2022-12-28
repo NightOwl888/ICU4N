@@ -165,7 +165,7 @@ namespace ICU4N.Numerics.BigMath
                 if (bufLength < 19)
                 {
                     long smallValue;
-                    if (!Int64.TryParse(unscaledBuffer.ToString(), NumberStyles.Integer, provider, out smallValue))
+                    if (!long.TryParse(unscaledBuffer.ToString(), NumberStyles.Integer, provider, out smallValue))
                     {
                         value = null;
                         exception = new FormatException();
