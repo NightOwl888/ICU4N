@@ -301,7 +301,7 @@ namespace ICU4N.Numerics.BigMath
                 }
                 else
                 {
-                    intVal = BigInteger.FromInt64(mantisa) << (-_scale);
+                    intVal = BigInteger.GetInstance(mantisa) << (-_scale);
                 }
                 _scale = 0;
             }
@@ -315,7 +315,7 @@ namespace ICU4N.Numerics.BigMath
                 }
                 else
                 {
-                    SetUnscaledValue(Multiplication.MultiplyByFivePow(BigInteger.FromInt64(mantisa), _scale));
+                    SetUnscaledValue(Multiplication.MultiplyByFivePow(BigInteger.GetInstance(mantisa), _scale));
                 }
             }
             else
@@ -628,19 +628,19 @@ namespace ICU4N.Numerics.BigMath
         /// <summary>
         /// Returns a new <see cref="BigDecimal"/> instance whose value is equal to 
         /// <paramref name="unscaledVal"/> 10^(-<paramref name="scale"/>). The scale 
-        /// of the result is <see cref="scale"/>, and its unscaled value is <see cref="unscaledVal"/>.
+        /// of the result is <paramref name="scale"/>, and its unscaled value is <paramref name="unscaledVal"/>.
         /// </summary>
         /// <param name="unscaledVal">The unscaled value to be used to construct 
         /// the new <see cref="BigDecimal"/>.</param>
         /// <param name="scale">The scale to be used to construct the new <see cref="BigDecimal"/>.</param>
         /// <returns>
-        /// Returns a <see cref="BigDecimal"/> instance with the value <c><see cref="unscaledVal"/> 
-        /// * 10^(-<see cref="scale"/>)</c>.
+        /// Returns a <see cref="BigDecimal"/> instance with the value <paramref name="unscaledVal"/> 
+        /// * 10^(-<paramref name="scale"/>).
         /// </returns>
-        public static BigDecimal Create(long unscaledVal, int scale) // ICU4N TODO: API - Rename GetInstance() to match J2N
+        public static BigDecimal GetInstance(long unscaledVal, int scale) // ICU4N TODO: API - Ideally, this would be made into a constructor if/when BigDecimal is made into a struct.
         {
             if (scale == 0)
-                return Create(unscaledVal);
+                return GetInstance(unscaledVal);
             if ((unscaledVal == 0) && (scale >= 0) &&
                 (scale < ZeroScaledBy.Length))
             {
@@ -659,7 +659,7 @@ namespace ICU4N.Numerics.BigMath
         /// <returns>
         /// Returns a <see cref="BigDecimal"/> instance with the value <paramref name="unscaledVal"/>.
         /// </returns>
-        public static BigDecimal Create(long unscaledVal) // ICU4N TODO: API - Rename GetInstance() to match J2N
+        public static BigDecimal GetInstance(long unscaledVal) // ICU4N TODO: API - Ideally, this would be made into a constructor if/when BigDecimal is made into a struct.
         {
             if ((unscaledVal >= 0) && (unscaledVal < BiScaledByZeroLength))
             {
@@ -866,7 +866,7 @@ namespace ICU4N.Numerics.BigMath
                     mc.RoundingMode);
                 if (compRem != 0)
                 {
-                    integer += BigInteger.FromInt64(compRem);
+                    integer += BigInteger.GetInstance(compRem);
                 }
                 tempBD = new BigDecimal(integer);
                 // If after to add the increment the precision changed, we normalize the size
@@ -1071,7 +1071,7 @@ namespace ICU4N.Numerics.BigMath
         {
             if (longScale == (int)longScale)
             {
-                return Create(0, (int)longScale);
+                return GetInstance(0, (int)longScale);
             }
             if (longScale >= 0)
             {
@@ -1083,7 +1083,7 @@ namespace ICU4N.Numerics.BigMath
         private BigInteger GetUnscaledValue()
         {
             if (intVal == null)
-                intVal = BigInteger.FromInt64(smallValue);
+                intVal = BigInteger.GetInstance(smallValue);
             return intVal;
         }
 

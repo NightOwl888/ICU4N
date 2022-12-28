@@ -382,7 +382,7 @@ namespace ICU4N.Numerics.BigMath
             if (((val1.numberLength == 1) || ((val1.numberLength == 2) && (val1.digits[1] > 0)))
                 && (val2.numberLength == 1 || (val2.numberLength == 2 && val2.digits[1] > 0)))
             {
-                return BigInteger.FromInt64(Division.GcdBinary(val1.ToInt64(), val2.ToInt64()));
+                return BigInteger.GetInstance(Division.GcdBinary(val1.ToInt64(), val2.ToInt64()));
             }
 
             return Division.GcdBinary(val1.Copy(), val2.Copy());
@@ -562,7 +562,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     val = -val;
                 }
-                return BigInteger.FromInt64(val);
+                return BigInteger.GetInstance(val);
             }
             int cmp = ((thisLen != divisorLen)
                 ? ((thisLen > divisorLen) ? 1 : -1)

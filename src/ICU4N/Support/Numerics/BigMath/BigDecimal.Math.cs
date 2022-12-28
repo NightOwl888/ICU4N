@@ -68,13 +68,13 @@ namespace ICU4N.Numerics.BigMath
             if (largerSignum == smaller.Sign)
             {
                 tempBi = Multiplication.MultiplyByPositiveInt(larger.UnscaledValue, 10) +
-                         BigInteger.FromInt64(largerSignum);
+                         BigInteger.GetInstance(largerSignum);
             }
             else
             {
-                tempBi = larger.UnscaledValue - BigInteger.FromInt64(largerSignum);
+                tempBi = larger.UnscaledValue - BigInteger.GetInstance(largerSignum);
                 tempBi = Multiplication.MultiplyByPositiveInt(tempBi, 10) +
-                         BigInteger.FromInt64(largerSignum * 9);
+                         BigInteger.GetInstance(largerSignum * 9);
             }
             // Rounding the improved adding 
             larger = new BigDecimal(tempBi, larger.Scale + 1);
@@ -119,7 +119,7 @@ namespace ICU4N.Numerics.BigMath
                 // case s1 == s2: [u1 + u2 , s1]
                 if (System.Math.Max(value.BitLength, augend.BitLength) + 1 < 64)
                 {
-                    return BigDecimal.Create(value.SmallValue + augend.SmallValue, value.Scale);
+                    return BigDecimal.GetInstance(value.SmallValue + augend.SmallValue, value.Scale);
                 }
                 return new BigDecimal(value.UnscaledValue + augend.UnscaledValue, value.Scale);
             }
@@ -178,7 +178,7 @@ namespace ICU4N.Numerics.BigMath
                 // case s1 = s2 : [u1 - u2 , s1]
                 if (System.Math.Max(value.BitLength, subtrahend.BitLength) + 1 < 64)
                 {
-                    return BigDecimal.Create(value.SmallValue - subtrahend.SmallValue, value.Scale);
+                    return BigDecimal.GetInstance(value.SmallValue - subtrahend.SmallValue, value.Scale);
                 }
                 return new BigDecimal(value.UnscaledValue - subtrahend.UnscaledValue, value.Scale);
             }
@@ -188,7 +188,7 @@ namespace ICU4N.Numerics.BigMath
                 if (diffScale < BigDecimal.LongTenPow.Length &&
                     System.Math.Max(value.BitLength, subtrahend.BitLength + BigDecimal.LongTenPowBitLength[diffScale]) + 1 < 64)
                 {
-                    return BigDecimal.Create(value.SmallValue - subtrahend.SmallValue * BigDecimal.LongTenPow[diffScale], value.Scale);
+                    return BigDecimal.GetInstance(value.SmallValue - subtrahend.SmallValue * BigDecimal.LongTenPow[diffScale], value.Scale);
                 }
                 return new BigDecimal(
                     value.UnscaledValue - Multiplication.MultiplyByTenPow(subtrahend.UnscaledValue, diffScale),
@@ -200,7 +200,7 @@ namespace ICU4N.Numerics.BigMath
             if (diffScale < BigDecimal.LongTenPow.Length &&
                 System.Math.Max(value.BitLength + BigDecimal.LongTenPowBitLength[diffScale], subtrahend.BitLength) + 1 < 64)
             {
-                return BigDecimal.Create(value.SmallValue * BigDecimal.LongTenPow[diffScale] - subtrahend.SmallValue, subtrahend.Scale);
+                return BigDecimal.GetInstance(value.SmallValue * BigDecimal.LongTenPow[diffScale] - subtrahend.SmallValue, subtrahend.Scale);
             }
 
             return new BigDecimal(Multiplication.MultiplyByTenPow(value.UnscaledValue, diffScale) -
@@ -251,13 +251,13 @@ namespace ICU4N.Numerics.BigMath
                     if (thisSignum != subtrahend.Sign)
                     {
                         tempBI = Multiplication.MultiplyByPositiveInt(value.UnscaledValue, 10) +
-                                 BigInteger.FromInt64(thisSignum);
+                                 BigInteger.GetInstance(thisSignum);
                     }
                     else
                     {
-                        tempBI = value.UnscaledValue - BigInteger.FromInt64(thisSignum);
+                        tempBI = value.UnscaledValue - BigInteger.GetInstance(thisSignum);
                         tempBI = Multiplication.MultiplyByPositiveInt(tempBI, 10) +
-                                 BigInteger.FromInt64(thisSignum * 9);
+                                 BigInteger.GetInstance(thisSignum * 9);
                     }
                     // Rounding the improved subtracting
                     var leftOperand = new BigDecimal(tempBI, value.Scale + 1); // it will be only the left operand (this) 
@@ -297,7 +297,7 @@ namespace ICU4N.Numerics.BigMath
              * this x multiplicand = [ s1 * s2 , s1 + s2 ] */
             if (value.BitLength + multiplicand.BitLength < 64)
             {
-                return BigDecimal.Create(value.SmallValue * multiplicand.SmallValue, ToIntScale(newScale));
+                return BigDecimal.GetInstance(value.SmallValue * multiplicand.SmallValue, ToIntScale(newScale));
             }
             return new BigDecimal(value.UnscaledValue * multiplicand.UnscaledValue, ToIntScale(newScale));
         }
@@ -449,9 +449,9 @@ namespace ICU4N.Numerics.BigMath
             {
                 if (quotient.BitLength < 63)
                 {
-                    return BigDecimal.Create(quotient.ToInt64() + compRem, scale);
+                    return BigDecimal.GetInstance(quotient.ToInt64() + compRem, scale);
                 }
-                quotient += BigInteger.FromInt64(compRem);
+                quotient += BigInteger.GetInstance(compRem);
                 return new BigDecimal(quotient, scale);
             }
             // Constructing the result with the appropriate unscaled value
@@ -473,7 +473,7 @@ namespace ICU4N.Numerics.BigMath
                 quotient += RoundingBehavior(((int)quotient) & 1, sign * (5 + compRem), roundingMode);
             }
             // Constructing the result with the appropriate unscaled value
-            return BigDecimal.Create(quotient, scale);
+            return BigDecimal.GetInstance(quotient, scale);
         }
 
         /**
@@ -659,7 +659,7 @@ namespace ICU4N.Numerics.BigMath
                 compRem = remainder.ShiftLeftOneBit().CompareTo(divisor.UnscaledValue);
                 // quot := quot * 10 + r;     with 'r' in {-6,-5,-4, 0,+4,+5,+6}
                 integerQuot = (integerQuot * BigInteger.Ten) +
-                              BigInteger.FromInt64(quotient.Sign * (5 + compRem));
+                              BigInteger.GetInstance(quotient.Sign * (5 + compRem));
                 newScale++;
             }
             else
@@ -1192,7 +1192,7 @@ namespace ICU4N.Numerics.BigMath
 
             if (number.BitLength < 63 || (number.BitLength == 63 && number.SmallValue != long.MinValue))
             {
-                return BigDecimal.Create(-number.SmallValue, number.Scale);
+                return BigDecimal.GetInstance(-number.SmallValue, number.Scale);
             }
 
             return new BigDecimal(-number.UnscaledValue, number.Scale);
@@ -1322,7 +1322,7 @@ namespace ICU4N.Numerics.BigMath
                 if (diffScale < LongTenPow.Length &&
                     (number.BitLength + LongTenPowBitLength[(int)diffScale]) < 64)
                 {
-                    return BigDecimal.Create(number.SmallValue * LongTenPow[(int)diffScale], newScale);
+                    return BigDecimal.GetInstance(number.SmallValue * LongTenPow[(int)diffScale], newScale);
                 }
                 return new BigDecimal(Multiplication.MultiplyByTenPow(number.UnscaledValue, (int)diffScale), newScale);
             }
@@ -1391,14 +1391,14 @@ namespace ICU4N.Numerics.BigMath
             {
                 if (number.BitLength < 64)
                 {
-                    return BigDecimal.Create(number.SmallValue, ToIntScale(newScale));
+                    return BigDecimal.GetInstance(number.SmallValue, ToIntScale(newScale));
                 }
                 return new BigDecimal(number.UnscaledValue, ToIntScale(newScale));
             }
             if (-newScale < LongTenPow.Length &&
                 number.BitLength + LongTenPowBitLength[(int)-newScale] < 64)
             {
-                return BigDecimal.Create(number.SmallValue * LongTenPow[(int)-newScale], 0);
+                return BigDecimal.GetInstance(number.SmallValue * LongTenPow[(int)-newScale], 0);
             }
             return new BigDecimal(Multiplication.MultiplyByTenPow(number.UnscaledValue, (int)-newScale), 0);
         }
@@ -1447,7 +1447,7 @@ namespace ICU4N.Numerics.BigMath
                     return GetZeroScaledBy(newScale);
                 }
 
-                return BigDecimal.Create(number.SmallValue, ToIntScale(newScale));
+                return BigDecimal.GetInstance(number.SmallValue, ToIntScale(newScale));
             }
 
             return new BigDecimal(number.UnscaledValue, ToIntScale(newScale));
@@ -1513,7 +1513,7 @@ namespace ICU4N.Numerics.BigMath
             if (diffScale < LongTenPow.Length &&
                 Math.Max(thisValue.BitLength, augend.BitLength + LongTenPowBitLength[diffScale]) + 1 < 64)
             {
-                return BigDecimal.Create(thisValue.SmallValue + augend.SmallValue * LongTenPow[diffScale], thisValue.Scale);
+                return BigDecimal.GetInstance(thisValue.SmallValue + augend.SmallValue * LongTenPow[diffScale], thisValue.Scale);
             }
             return new BigDecimal(
                 thisValue.UnscaledValue + Multiplication.MultiplyByTenPow(augend.UnscaledValue, diffScale),
@@ -1538,7 +1538,7 @@ namespace ICU4N.Numerics.BigMath
          */
         public static BigDecimal Ulp(BigDecimal value)
         {
-            return BigDecimal.Create(1, value.Scale);
+            return BigDecimal.GetInstance(1, value.Scale);
         }
     }
 }

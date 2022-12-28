@@ -126,7 +126,7 @@ namespace ICU4N.Numerics.BigMath
             TwoPows = new BigInteger[32];
             for (int i = 0; i < TwoPows.Length; i++)
             {
-                TwoPows[i] = BigInteger.FromInt64(1L << i);
+                TwoPows[i] = BigInteger.GetInstance(1L << i);
             }
         }
 
@@ -733,7 +733,7 @@ namespace ICU4N.Numerics.BigMath
         /// Returns an instance of <see cref="BigInteger"/> that is created
         /// from the source value specified.
         /// </returns>
-        public static BigInteger FromInt64(long value) // ICU4N TODO: API nix the cache and convert this into a constructor. We should add constructors for converting every .NET type in an efficient manner.
+        public static BigInteger GetInstance(long value) // ICU4N TODO: API nix the cache and convert this into a constructor. We should add constructors for converting every .NET type in an efficient manner.
         {
             if (value < 0)
             {
@@ -1013,12 +1013,12 @@ namespace ICU4N.Numerics.BigMath
 
         public static implicit operator BigInteger(int value)
         {
-            return FromInt64(value);
+            return GetInstance(value);
         }
 
         public static implicit operator BigInteger(long value)
         {
-            return FromInt64(value);
+            return GetInstance(value);
         }
 
         #endregion

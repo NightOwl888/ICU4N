@@ -908,7 +908,7 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_valueOfJ()
         {
-            BigDecimal valueOfL = BigDecimal.Create(9223372036854775806L);
+            BigDecimal valueOfL = BigDecimal.GetInstance(9223372036854775806L);
             assertTrue("the bigDecimal equivalent of 9223372036854775806 is wrong",
                     valueOfL.UnscaledValue.ToString().Equals(
                             "9223372036854775806")
@@ -916,7 +916,7 @@ namespace ICU4N.Numerics.BigMath
             assertTrue(
                     "the toString representation of 9223372036854775806 is wrong",
                     valueOfL.ToString().Equals("9223372036854775806"));
-            valueOfL = BigDecimal.Create(0L);
+            valueOfL = BigDecimal.GetInstance(0L);
             assertTrue("the bigDecimal equivalent of 0 is wrong", valueOfL
                     .UnscaledValue.ToString().Equals("0")
                     && valueOfL.Scale == 0);
@@ -928,7 +928,7 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_valueOfJI()
         {
-            BigDecimal valueOfJI = BigDecimal.Create(9223372036854775806L, 5);
+            BigDecimal valueOfJI = BigDecimal.GetInstance(9223372036854775806L, 5);
             assertTrue(
                     "the bigDecimal equivalent of 92233720368547.75806 is wrong",
                     valueOfJI.UnscaledValue.ToString().Equals(
@@ -937,7 +937,7 @@ namespace ICU4N.Numerics.BigMath
             assertTrue(
                     "the toString representation of 9223372036854775806 is wrong",
                     valueOfJI.ToString().Equals("92233720368547.75806"));
-            valueOfJI = BigDecimal.Create(1234L, 8);
+            valueOfJI = BigDecimal.GetInstance(1234L, 8);
             assertTrue(
                     "the bigDecimal equivalent of 92233720368547.75806 is wrong",
                     valueOfJI.UnscaledValue.ToString().Equals("1234")
@@ -945,7 +945,7 @@ namespace ICU4N.Numerics.BigMath
             assertTrue(
                     "the toString representation of 9223372036854775806 is wrong",
                     valueOfJI.ToString().Equals("0.00001234"));
-            valueOfJI = BigDecimal.Create(0, 3);
+            valueOfJI = BigDecimal.GetInstance(0, 3);
             assertTrue(
                     "the bigDecimal equivalent of 92233720368547.75806 is wrong",
                     valueOfJI.UnscaledValue.ToString().Equals("0")

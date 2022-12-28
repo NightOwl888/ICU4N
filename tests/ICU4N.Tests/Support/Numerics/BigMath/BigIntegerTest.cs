@@ -243,7 +243,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 fail("isProbablePrime failed for: " + bi);
             }
-            bi = BigInteger.FromInt64(17L * 13L);
+            bi = BigInteger.GetInstance(17L * 13L);
             if (BigInteger.IsProbablePrime(bi, 17))
             {
                 fail("isProbablePrime failed for: " + bi);
@@ -253,9 +253,9 @@ namespace ICU4N.Numerics.BigMath
                 if (isPrime(a))
                 {
                     assertTrue("false negative on prime number <1000", BigInteger.IsProbablePrime(BigInteger
-                            .FromInt64(a), 5));
+                            .GetInstance(a), 5));
                 }
-                else if (BigInteger.IsProbablePrime(BigInteger.FromInt64(a), 17))
+                else if (BigInteger.IsProbablePrime(BigInteger.GetInstance(a), 17))
                 {
                     Console.Out.WriteLine("isProbablePrime failed for: " + a);
                     fails++;
@@ -263,8 +263,8 @@ namespace ICU4N.Numerics.BigMath
             }
             for (int a = 0; a < 1000; a++)
             {
-                bi = BigInteger.FromInt64(rand.Next(1000000)) * (
-                        BigInteger.FromInt64(rand.Next(1000000)));
+                bi = BigInteger.GetInstance(rand.Next(1000000)) * (
+                        BigInteger.GetInstance(rand.Next(1000000)));
                 if (BigInteger.IsProbablePrime(bi, 17))
                 {
                     Console.Out.WriteLine("isProbablePrime failed for: " + bi);
@@ -290,9 +290,9 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_equalsLjava_lang_Object()
         {
-            assertTrue("0=0", zero.Equals(BigInteger.FromInt64(0)));
-            assertTrue("-123=-123", BigInteger.FromInt64(-123).Equals(
-                    BigInteger.FromInt64(-123)));
+            assertTrue("0=0", zero.Equals(BigInteger.GetInstance(0)));
+            assertTrue("-123=-123", BigInteger.GetInstance(-123).Equals(
+                    BigInteger.GetInstance(-123)));
             assertTrue("0=1", !zero.Equals(one));
             assertTrue("0=-1", !zero.Equals(minusOne));
             assertTrue("1=-1", !one.Equals(minusOne));
@@ -342,10 +342,10 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_valueOfJ()
         {
-            assertTrue("Incurred number returned for 2", BigInteger.FromInt64(2L)
+            assertTrue("Incurred number returned for 2", BigInteger.GetInstance(2L)
                     .Equals(two));
-            assertTrue("Incurred number returned for 200", BigInteger.FromInt64(200L)
-                    .Equals(BigInteger.FromInt64(139) + (BigInteger.FromInt64(61))));
+            assertTrue("Incurred number returned for 200", BigInteger.GetInstance(200L)
+                    .Equals(BigInteger.GetInstance(139) + (BigInteger.GetInstance(61))));
         }
 
         /**
@@ -403,9 +403,9 @@ namespace ICU4N.Numerics.BigMath
             assertTrue("2.neg", (-two).Equals(minusTwo));
             assertTrue("-1.neg", (-minusOne).Equals(one));
             assertTrue("-2.neg", (-minusTwo).Equals(two));
-            assertTrue("0x62EB40FEF85AA9EBL*2.neg", (-BigInteger.FromInt64(
+            assertTrue("0x62EB40FEF85AA9EBL*2.neg", (-BigInteger.GetInstance(
                     unchecked(0x62EB40FEF85AA9EBL * 2))).Equals(
-                    BigInteger.FromInt64(unchecked(-0x62EB40FEF85AA9EBL * 2))));
+                    BigInteger.GetInstance(unchecked(-0x62EB40FEF85AA9EBL * 2))));
             for (int i = 0; i < 200; i++)
             {
                 BigInteger midbit = BigInteger.SetBit(zero, i);
@@ -466,12 +466,12 @@ namespace ICU4N.Numerics.BigMath
             BigInteger a = zero, mod, inv;
             for (int j = 3; j < 50; j++)
             {
-                mod = BigInteger.FromInt64(j);
+                mod = BigInteger.GetInstance(j);
                 for (int i = -j + 1; i < j; i++)
                 {
                     try
                     {
-                        a = BigInteger.FromInt64(i);
+                        a = BigInteger.GetInstance(i);
                         inv = BigInteger.ModInverse(a, mod);
                         assertTrue("bad inverse: " + a + " inv mod " + mod
                                 + " equals " + inv, one.Equals(BigInteger.Mod(a * inv,
@@ -492,12 +492,12 @@ namespace ICU4N.Numerics.BigMath
             }
             for (int j = 1; j < 10; j++)
             {
-                mod = bi2 + (BigInteger.FromInt64(j));
+                mod = bi2 + (BigInteger.GetInstance(j));
                 for (int i = 0; i < 20; i++)
                 {
                     try
                     {
-                        a = bi3 + (BigInteger.FromInt64(i));
+                        a = bi3 + (BigInteger.GetInstance(i));
                         inv = BigInteger.ModInverse(a, mod);
                         assertTrue("bad inverse: " + a + " inv mod " + mod
                                 + " equals " + inv, one.Equals(BigInteger.Mod((a * inv),
@@ -524,29 +524,29 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_shiftRightI()
         {
-            assertTrue("1 >> 0", BigInteger.FromInt64(1) >> (0) == (
+            assertTrue("1 >> 0", BigInteger.GetInstance(1) >> (0) == (
                     BigInteger.One));
-            assertTrue("1 >> 1", BigInteger.FromInt64(1) >> (1) == (
+            assertTrue("1 >> 1", BigInteger.GetInstance(1) >> (1) == (
                     BigInteger.Zero));
-            assertTrue("1 >> 63", BigInteger.FromInt64(1) >> (63) == (
+            assertTrue("1 >> 63", BigInteger.GetInstance(1) >> (63) == (
                     BigInteger.Zero));
-            assertTrue("1 >> 64", BigInteger.FromInt64(1) >> (64) == (
+            assertTrue("1 >> 64", BigInteger.GetInstance(1) >> (64) == (
                     BigInteger.Zero));
-            assertTrue("1 >> 65", BigInteger.FromInt64(1) >> (65) == (
+            assertTrue("1 >> 65", BigInteger.GetInstance(1) >> (65) == (
                     BigInteger.Zero));
-            assertTrue("1 >> 1000", BigInteger.FromInt64(1) >> (1000) == (
+            assertTrue("1 >> 1000", BigInteger.GetInstance(1) >> (1000) == (
                     BigInteger.Zero));
-            assertTrue("-1 >> 0", BigInteger.FromInt64(-1) >> (0) == (
+            assertTrue("-1 >> 0", BigInteger.GetInstance(-1) >> (0) == (
                     minusOne));
-            assertTrue("-1 >> 1", BigInteger.FromInt64(-1) >> (1) == (
+            assertTrue("-1 >> 1", BigInteger.GetInstance(-1) >> (1) == (
                     minusOne));
-            assertTrue("-1 >> 63", BigInteger.FromInt64(-1) >> (63) == (
+            assertTrue("-1 >> 63", BigInteger.GetInstance(-1) >> (63) == (
                     minusOne));
-            assertTrue("-1 >> 64", BigInteger.FromInt64(-1) >> (64) == (
+            assertTrue("-1 >> 64", BigInteger.GetInstance(-1) >> (64) == (
                     minusOne));
-            assertTrue("-1 >> 65", BigInteger.FromInt64(-1) >> (65) == (
+            assertTrue("-1 >> 65", BigInteger.GetInstance(-1) >> (65) == (
                     minusOne));
-            assertTrue("-1 >> 1000", BigInteger.FromInt64(-1) >> (1000)
+            assertTrue("-1 >> 1000", BigInteger.GetInstance(-1) >> (1000)
                     == (minusOne));
 
             BigInteger a = BigInteger.One;
@@ -682,8 +682,8 @@ namespace ICU4N.Numerics.BigMath
             testDivRanges(smallPos);
             testDivRanges(largePos);
             testDivRanges(BigInteger.Parse("62EB40FEF85AA9EB", 16));
-            testAllDivs(BigInteger.FromInt64(0xCC0225953CL), BigInteger
-                    .FromInt64(0x1B937B765L));
+            testAllDivs(BigInteger.GetInstance(0xCC0225953CL), BigInteger
+                    .GetInstance(0x1B937B765L));
 
             try
             {
@@ -857,14 +857,14 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_ConstructorLjava_lang_String()
         {
-            assertTrue("new(0)", BigInteger.Parse("0") == (BigInteger.FromInt64(0)));
-            assertTrue("new(1)", BigInteger.Parse("1") == (BigInteger.FromInt64(1)));
+            assertTrue("new(0)", BigInteger.Parse("0") == (BigInteger.GetInstance(0)));
+            assertTrue("new(1)", BigInteger.Parse("1") == (BigInteger.GetInstance(1)));
             assertTrue("new(12345678901234)", BigInteger.Parse("12345678901234")
-                    == (BigInteger.FromInt64(12345678901234L)));
+                    == (BigInteger.GetInstance(12345678901234L)));
             assertTrue("new(-1)", BigInteger.Parse("-1") == (BigInteger
-                    .FromInt64(-1)));
+                    .GetInstance(-1)));
             assertTrue("new(-12345678901234)", BigInteger.Parse("-12345678901234")
-                     == (BigInteger.FromInt64(-12345678901234L)));
+                     == (BigInteger.GetInstance(-12345678901234L)));
         }
 
         /**
@@ -874,23 +874,23 @@ namespace ICU4N.Numerics.BigMath
         public void test_ConstructorLjava_lang_StringI()
         {
             assertTrue("new(0,16)", BigInteger.Parse("0", 16) == (BigInteger
-                    .FromInt64(0)));
+                    .GetInstance(0)));
             assertTrue("new(1,16)", BigInteger.Parse("1", 16) == (BigInteger
-                    .FromInt64(1)));
+                    .GetInstance(1)));
             assertTrue("new(ABF345678901234,16)", BigInteger.Parse("ABF345678901234",
-                    16) == (BigInteger.FromInt64(0xABF345678901234L)));
+                    16) == (BigInteger.GetInstance(0xABF345678901234L)));
             assertTrue("new(abf345678901234,16)", BigInteger.Parse("abf345678901234",
-                    16) == (BigInteger.FromInt64(0xABF345678901234L)));
+                    16) == (BigInteger.GetInstance(0xABF345678901234L)));
             assertTrue("new(-1,16)", BigInteger.Parse("-1", 16) == (BigInteger
-                    .FromInt64(-1)));
+                    .GetInstance(-1)));
             assertTrue("new(-ABF345678901234,16)", BigInteger.Parse(
                     "-ABF345678901234", 16) == (BigInteger
-                    .FromInt64(-0xABF345678901234L)));
+                    .GetInstance(-0xABF345678901234L)));
             assertTrue("new(-abf345678901234,16)", BigInteger.Parse(
                     "-abf345678901234", 16) == (BigInteger
-                    .FromInt64(-0xABF345678901234L)));
+                    .GetInstance(-0xABF345678901234L)));
             assertTrue("new(-101010101,2)", BigInteger.Parse("-101010101", 2)
-                     == (BigInteger.FromInt64(-341)));
+                     == (BigInteger.GetInstance(-341)));
         }
 
         /**
@@ -899,14 +899,14 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_toString()
         {
-            assertTrue("0.toString", "0".Equals(BigInteger.FromInt64(0).ToString()));
-            assertTrue("1.toString", "1".Equals(BigInteger.FromInt64(1).ToString()));
+            assertTrue("0.toString", "0".Equals(BigInteger.GetInstance(0).ToString()));
+            assertTrue("1.toString", "1".Equals(BigInteger.GetInstance(1).ToString()));
             assertTrue("12345678901234.toString", "12345678901234"
-                    .Equals(BigInteger.FromInt64(12345678901234L).ToString()));
+                    .Equals(BigInteger.GetInstance(12345678901234L).ToString()));
             assertTrue("-1.toString", "-1"
-                    .Equals(BigInteger.FromInt64(-1).ToString()));
+                    .Equals(BigInteger.GetInstance(-1).ToString()));
             assertTrue("-12345678901234.toString", "-12345678901234"
-                    .Equals(BigInteger.FromInt64(-12345678901234L).ToString()));
+                    .Equals(BigInteger.GetInstance(-12345678901234L).ToString()));
         }
 
         /**
@@ -915,18 +915,18 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_toStringI()
         {
-            assertTrue("0.toString(16)", "0".Equals(BigInteger.FromInt64(0).ToString(
+            assertTrue("0.toString(16)", "0".Equals(BigInteger.GetInstance(0).ToString(
                     16)));
-            assertTrue("1.toString(16)", "1".Equals(BigInteger.FromInt64(1).ToString(
+            assertTrue("1.toString(16)", "1".Equals(BigInteger.GetInstance(1).ToString(
                     16)));
             assertTrue("ABF345678901234.toString(16)", "abf345678901234"
-                    .Equals(BigInteger.FromInt64(0xABF345678901234L).ToString(16)));
-            assertTrue("-1.toString(16)", "-1".Equals(BigInteger.FromInt64(-1)
+                    .Equals(BigInteger.GetInstance(0xABF345678901234L).ToString(16)));
+            assertTrue("-1.toString(16)", "-1".Equals(BigInteger.GetInstance(-1)
                     .ToString(16)));
             assertTrue("-ABF345678901234.toString(16)", "-abf345678901234"
-                    .Equals(BigInteger.FromInt64(-0xABF345678901234L).ToString(16)));
+                    .Equals(BigInteger.GetInstance(-0xABF345678901234L).ToString(16)));
             assertTrue("-101010101.toString(2)", "-101010101".Equals(BigInteger
-                    .FromInt64(-341).ToString(2)));
+                    .GetInstance(-341).ToString(2)));
         }
 
         /**

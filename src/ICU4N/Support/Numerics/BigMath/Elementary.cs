@@ -92,7 +92,7 @@ namespace ICU4N.Numerics.BigMath
                                                                            valueHi
                                                                        }));
                 }
-                return BigInteger.FromInt64((op1Sign < 0) ? (b - a) : (a - b));
+                return BigInteger.GetInstance((op1Sign < 0) ? (b - a) : (a - b));
             }
             else if (op1Sign == op2Sign)
             {
@@ -211,7 +211,7 @@ namespace ICU4N.Numerics.BigMath
                 {
                     b = -b;
                 }
-                return BigInteger.FromInt64(a - b);
+                return BigInteger.GetInstance(a - b);
             }
             int cmp = ((op1Len != op2Len) ? ((op1Len > op2Len) ? 1 : -1)
                     : Elementary.CompareArrays(op1.Digits, op2.Digits, op1Len));

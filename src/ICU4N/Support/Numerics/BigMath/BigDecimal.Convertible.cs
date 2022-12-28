@@ -478,7 +478,7 @@ namespace ICU4N.Numerics.BigMath
                 compRem = remainder.ShiftLeftOneBit().CompareTo(powerOfTen);
 
                 // To add two rounded bits at end of mantisa
-                mantisa = (quotient << 2) + BigInteger.FromInt64((compRem * (compRem + 3)) / 2 + 1);
+                mantisa = (quotient << 2) + BigInteger.GetInstance((compRem * (compRem + 3)) / 2 + 1);
                 exponent -= 2;
             }
             lowestSetBit = mantisa.LowestSetBit;

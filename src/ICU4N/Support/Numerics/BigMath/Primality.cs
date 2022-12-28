@@ -71,7 +71,7 @@ namespace ICU4N.Numerics.BigMath
         {// To initialize the dual table of BigInteger primes
             for (int i = 0; i < primes.Length; i++)
             {
-                BIprimes[i] = BigInteger.FromInt64(primes[i]);
+                BIprimes[i] = BigInteger.GetInstance(primes[i]);
             }
 
             offsetPrimes = new int[11][];

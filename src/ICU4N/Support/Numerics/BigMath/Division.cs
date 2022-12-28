@@ -353,8 +353,8 @@ namespace ICU4N.Numerics.BigMath
                 if (valSign < 0)
                     rem = -rem;
                 return new BigInteger[] {
-                    BigInteger.FromInt64(quo),
-                    BigInteger.FromInt64(rem)
+                    BigInteger.GetInstance(quo),
+                    BigInteger.GetInstance(rem)
                 };
             }
             int quotientLength = valLen;
@@ -451,7 +451,7 @@ namespace ICU4N.Numerics.BigMath
                 if ((op2.numberLength == 1)
                     || ((op2.numberLength == 2) && (op2.Digits[1] > 0)))
                 {
-                    op2 = BigInteger.FromInt64(Division.GcdBinary(op1.ToInt64(),
+                    op2 = BigInteger.GetInstance(Division.GcdBinary(op1.ToInt64(),
                         op2.ToInt64()));
                     break;
                 }
