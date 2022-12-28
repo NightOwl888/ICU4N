@@ -172,11 +172,12 @@ namespace ICU4N.Numerics.BigMath
         /// Constructs a random non-negative big integer instance in the range [0, 2^(numBits)-1]
         /// </summary>
         /// <param name="numBits">The maximum length of the new <see cref="BigInteger"/> in bits.</param>
-        /// <param name="rnd">An optional random number generator to be used.</param>
+        /// <param name="random">The source of randomness to be used in computing the new <see cref="BigInteger"/>.</param>
         /// <exception cref="ArgumentOutOfRangeException">
         /// If the given <paramref name="numBits"/> value is less than 0.
         /// </exception>
-        public BigInteger(int numBits, Random rnd)
+        /// <exception cref="ArgumentNullException"><paramref name="random"/> is <c>null</c>.</exception>
+        public BigInteger(int numBits, Random random)
         {
             if (numBits < 0)
             {
@@ -191,12 +192,15 @@ namespace ICU4N.Numerics.BigMath
             }
             else
             {
+                if (random is null)
+                    throw new ArgumentNullException(nameof(random)); // ICU4N: Added guard clause to ensure we don't throw NullReferenceException here
+
                 sign = 1;
                 numberLength = (numBits + 31) >> 5;
                 digits = new int[numberLength];
                 for (int i = 0; i < numberLength; i++)
                 {
-                    digits[i] = rnd.Next();
+                    digits[i] = random.Next();
                 }
                 // Using only the necessary bits
                 digits[numberLength - 1] = digits[numberLength - 1].TripleShift((-numBits) & 31);
@@ -210,7 +214,7 @@ namespace ICU4N.Numerics.BigMath
         /// </summary>
         /// <param name="bitLength">The length of the new big integer in bits.</param>
         /// <param name="certainty">The tolerated primality uncertainty.</param>
-        /// <param name="random">An optional random generator to be used.</param>
+        /// <param name="random">The source of randomness to be used in computing the new <see cref="BigInteger"/>.</param>
         /// <remarks>
         /// The probability that the returned <see cref="BigInteger"/> is prime 
         /// is beyond(1-1/2^certainty).
@@ -218,8 +222,11 @@ namespace ICU4N.Numerics.BigMath
         /// <exception cref="ArithmeticException">
         /// If the given <paramref name="bitLength"/> is smaller than 2.
         /// </exception>
+        /// <exception cref="ArgumentNullException"><paramref name="random"/> is <c>null</c>.</exception>
         public BigInteger(int bitLength, int certainty, Random random)
         {
+            if (random is null)
+                throw new ArgumentNullException(nameof(random)); // ICU4N: Added guard clause to ensure we don't throw NullReferenceException here
             if (bitLength < 2)
             {
                 // math.1C=bitLength < 2
@@ -246,8 +253,8 @@ namespace ICU4N.Numerics.BigMath
         /// </exception>
         public BigInteger(int signum, byte[] magnitude)
         {
-            if (magnitude == null)
-                throw new ArgumentNullException("magnitude");
+            if (magnitude is null)
+                throw new ArgumentNullException(nameof(magnitude));
 
             if ((signum < -1) || (signum > 1))
                 // math.13=Invalid signum value
@@ -257,7 +264,6 @@ namespace ICU4N.Numerics.BigMath
             {
                 foreach (byte element in magnitude)
                 {
-
                     if (element != 0)
                     {
                         // math.14=signum-magnitude mismatch
@@ -295,8 +301,8 @@ namespace ICU4N.Numerics.BigMath
         /// <exception cref="FormatException">If the length of <paramref name="val"/> is zero</exception>
         public BigInteger(byte[] val)
         {
-            if (val == null)
-                throw new ArgumentNullException("val");
+            if (val is null)
+                throw new ArgumentNullException(nameof(val));
             if (val.Length == 0)
             {
                 // math.12=Zero length BigInteger
@@ -478,9 +484,11 @@ namespace ICU4N.Numerics.BigMath
         }
 
 
-        /// <inheritdoc cref="IComparable{T}.CompareTo"/>
+        /// <inheritdoc cref="IComparable{T}.CompareTo(T)"/>
         public int CompareTo(BigInteger other)
         {
+            if (other is null) return 1; // Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
+
             if (sign > other.sign)
             {
                 return GREATER;
@@ -502,6 +510,40 @@ namespace ICU4N.Numerics.BigMath
                         numberLength));
         }
 
+        /// <summary>
+        /// Compares two <see cref="BigDecimal"/> values and returns an integer that indicates whether the first
+        /// value is less than, equal to, or greater than the second value.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns>
+        /// A signed integer that indicates the relative values of <paramref name="left"/> and <paramref name="right"/>, as shown in the following table.
+        /// <list type="table">
+        ///     <listheader>
+        ///         <term>Value</term>
+        ///         <term>Meaning</term>
+        ///     </listheader>
+        ///     <item>
+        ///         <term>Less than zero </term>
+        ///         <term><paramref name="left"/> precedes y in the sort order. -or- <paramref name="left"/> is <c>null</c> and <paramref name="right"/> is not <c>null</c>.</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>Zero </term>
+        ///         <term><paramref name="left"/> is equal to <paramref name="right"/>. -or- <paramref name="left"/> and <paramref name="right"/> are both <c>null</c>.</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>Greater than zero </term>
+        ///         <term><paramref name="left"/> follows <paramref name="right"/> in the sort order. -or- <paramref name="right"/> is <c>null</c> and <paramref name="left"/> is not <c>null</c>.</term>
+        ///     </item>
+        /// </list>
+        /// </returns>
+        public static int Compare(BigInteger left, BigInteger right) // ICU4N: Added to match .NET BigInteger
+        {
+            if (!(left is null))
+                return left.CompareTo(right);
+            return -1;
+        }
+
         /**
          * Returns the position of the lowest set bit in the two's complement
          * representation of this {@code BigInteger}. If all bits are zero (this=0)
@@ -514,12 +556,7 @@ namespace ICU4N.Numerics.BigMath
          */
         public static BigInteger Min(BigInteger a, BigInteger b)
         {
-            if (a is null)
-                throw new ArgumentNullException(nameof(a));
-            if (b is null)
-                throw new ArgumentNullException(nameof(b));
-
-            return ((a.CompareTo(b) == LESS) ? a : b);
+            return ((Compare(a, b) == LESS) ? a : b);
         }
 
         /**
@@ -533,12 +570,7 @@ namespace ICU4N.Numerics.BigMath
         */
         public static BigInteger Max(BigInteger a, BigInteger b)
         {
-            if (a is null)
-                throw new ArgumentNullException(nameof(a));
-            if (b is null)
-                throw new ArgumentNullException(nameof(b));
-
-            return ((a.CompareTo(b) == GREATER) ? a : b);
+            return ((Compare(a, b) == GREATER) ? a : b);
         }
 
         /// <inheritdoc cref="object.GetHashCode"/>
@@ -559,17 +591,19 @@ namespace ICU4N.Numerics.BigMath
         /// <inheritdoc cref="object.Equals(object)"/>
         public override bool Equals(object obj)
         {
+            if (obj is null)
+                return false;
             if (ReferenceEquals(this, obj))
                 return true;
-            if (!(obj is BigInteger))
+            if (!(obj is BigInteger bigInteger))
                 return false;
-            return Equals((BigInteger)obj);
+            return Equals(bigInteger);
         }
 
         /// <inheritdoc cref="IEquatable{T}.Equals(T)"/>
         public bool Equals(BigInteger other)
         {
-            if (other == null)
+            if (other is null)
                 return false;
 
             return sign == other.sign &&
@@ -577,7 +611,7 @@ namespace ICU4N.Numerics.BigMath
                    EqualsArrays(other.digits);
         }
 
-        bool EqualsArrays(int[] b)
+        private bool EqualsArrays(int[] b)
         {
             int i;
             for (i = numberLength - 1; (i >= 0) && (digits[i] == b[i]); i--)
@@ -761,7 +795,7 @@ namespace ICU4N.Numerics.BigMath
 
         private static bool TryParse(string s, int radix, out BigInteger value, out Exception exception)
         {
-            if (String.IsNullOrEmpty(s))
+            if (string.IsNullOrEmpty(s))
             {
                 exception = new FormatException(Messages.math11);
                 value = null;
@@ -860,7 +894,7 @@ namespace ICU4N.Numerics.BigMath
         public static bool TryParse(string s, int radix, out BigInteger value)
         {
             Exception error;
-            return TryParse(s, radix, out value, out error);
+            return TryParse(s, radix, out value, out error); // ICU4N TODO: Eliminate allocation of exception here
         }
 
         public static BigInteger Parse(string s, int radix)
@@ -945,12 +979,12 @@ namespace ICU4N.Numerics.BigMath
 
         public static bool operator >(BigInteger a, BigInteger b)
         {
-            return a.CompareTo(b) > 0; // ICU4N TODO: null
+            return Compare(a, b) > 0;
         }
 
         public static bool operator <(BigInteger a, BigInteger b)
         {
-            return a.CompareTo(b) < 0; // ICU4N TODO: null
+            return Compare(a, b) < 0;
         }
 
         public static bool operator ==(BigInteger a, BigInteger b)
@@ -979,30 +1013,47 @@ namespace ICU4N.Numerics.BigMath
 
         #region Explicit Operators
 
+        public static explicit operator byte(BigInteger i)
+        {
+            if (i is null) return default;
+            return i.ToByte();
+        }
+
+        public static explicit operator sbyte(BigInteger i)
+        {
+            if (i is null) return default;
+            return i.ToSByte();
+        }
+
+        public static explicit operator short(BigInteger i)
+        {
+            if (i is null) return default;
+            return i.ToInt16();
+        }
+
         public static explicit operator int(BigInteger i)
         {
+            if (i is null) return default;
             return i.ToInt32();
         }
 
         public static explicit operator long(BigInteger i)
         {
+            if (i is null) return default;
             return i.ToInt64();
         }
 
         public static explicit operator float(BigInteger i)
         {
+            if (i is null) return default;
             return i.ToSingle();
         }
 
         public static explicit operator double(BigInteger i)
         {
+            if (i is null) return default;
             return i.ToDouble();
         }
-
-        //public static explicit operator string(BigInteger i)
-        //{
-        //    return i.ToString();
-        //}
 
         #endregion
 
@@ -1022,19 +1073,6 @@ namespace ICU4N.Numerics.BigMath
         }
 
         #endregion
-
-        #endregion
-
-        #region Bit Utils
-
-
-
-        
-
-
-       
-
-
 
         #endregion
 
@@ -1271,7 +1309,7 @@ namespace ICU4N.Numerics.BigMath
             return Conversion.BigInteger2Double(this);
         }
 
-        public override String ToString()
+        public override string ToString()
         {
             return Conversion.ToDecimalScaledString(this, 0);
         }
@@ -1287,7 +1325,7 @@ namespace ICU4N.Numerics.BigMath
          *            base to be used for the string representation.
          * @return a string representation of this with radix 10.
          */
-        public String ToString(int radix)
+        public string ToString(int radix)
         {
             return Conversion.BigInteger2String(this, radix);
         }

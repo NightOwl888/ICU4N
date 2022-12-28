@@ -71,7 +71,7 @@ namespace ICU4N.Numerics.BigMath
         /// An array of <see cref="char"/> containing: <c>'p','r','e','c','i','s','i','o','n','='</c>. 
         /// It's used to improve the methods related to <see cref="string"/> conversion.
         /// </summary>
-        /// <seealso cref="MathContext(string)"/>
+        /// <seealso cref="MathContext.Parse(string)"/>
         /// <seealso cref="ToString"/>
         private static readonly char[] chPrecision = { 'p', 'r', 'e', 'c', 'i', 's', 'i', 'o', 'n', '=' };
 
@@ -79,7 +79,7 @@ namespace ICU4N.Numerics.BigMath
         /// An array of <see cref="char"/> containing: <c>'r','o','u','n','d','i','n','g','M','o','d','e','='</c>. 
         /// It's used to improve the methods related to <see cref="string"/> conversion.
         /// </summary>
-        /// <seealso cref="MathContext(string)"/>
+        /// <seealso cref="MathContext.Parse(string)"/>
         /// <seealso cref="ToString"/>
         private static readonly char[] chRoundingMode = { 'r', 'o', 'u', 'n', 'd', 'i', 'n', 'g', 'M', 'o', 'd', 'e', '=' };
 
@@ -115,10 +115,13 @@ namespace ICU4N.Numerics.BigMath
         /// </exception>
         public MathContext(int precision, RoundingMode roundingMode)
         {
+            if (!roundingMode.IsDefined())
+                throw new ArgumentOutOfRangeException(nameof(roundingMode), string.Format(Messages.ArgumentOutOfRange_Enum, roundingMode, nameof(RoundingMode)));
+
             if (precision < 0)
             {
                 // math.0C=Digits < 0
-                throw new ArgumentException(Messages.math0C); //$NON-NLS-1$
+                throw new ArgumentOutOfRangeException(nameof(precision), Messages.math0C); //$NON-NLS-1$
             }
             this.precision = precision;
             this.roundingMode = roundingMode;
@@ -141,7 +144,7 @@ namespace ICU4N.Numerics.BigMath
         ///// <exception cref="ArgumentException">
         ///// If the precision value parsed from the string is less than zero.
         ///// </exception>
-        //public MathContext(String val) {
+        //public MathContext(string val) {
         //	char[] charVal = val.ToCharArray();
         //	int i; // Index of charVal
         //	int j; // Index of chRoundingMode
@@ -234,10 +237,12 @@ namespace ICU4N.Numerics.BigMath
 
         public override bool Equals(object obj)
         {
-            if (!(obj is MathContext))
+            if (obj is null)
+                return false;
+            if (!(obj is MathContext mathContext))
                 return false;
 
-            return Equals((MathContext)obj);
+            return Equals(mathContext);
         }
 
         public override int GetHashCode()
@@ -301,7 +306,9 @@ namespace ICU4N.Numerics.BigMath
             if (i < chPrecision.Length)
             {
                 // math.0E=bad string format
-                throw new FormatException(Messages.math0E); //$NON-NLS-1$
+                //throw new FormatException(Messages.math0E); //$NON-NLS-1$
+                context = null;
+                return false;
             }
             // Parsing the value for "precision="...
             digit = Character.Digit(s[i], 10);

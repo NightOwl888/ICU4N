@@ -79,7 +79,7 @@ namespace ICU4N.Numerics.BigMath
                 return val.ToString();
             }
             double bitsForRadixDigit;
-            bitsForRadixDigit = System.Math.Log(radix) / System.Math.Log(2);
+            bitsForRadixDigit = Math.Log(radix) / Math.Log(2);
             int resLengthInChars = (int)(BigInteger.Abs(val).BitLength / bitsForRadixDigit + ((sign < 0) ? 1
                     : 0)) + 1;
 
@@ -152,7 +152,7 @@ namespace ICU4N.Numerics.BigMath
         * @see BigInteger#ToString()
         * @see BigDecimal#ToString()
         */
-        public static String ToDecimalScaledString(BigInteger val, int scale)
+        public static string ToDecimalScaledString(BigInteger val, int scale)
         {
             int sign = val.Sign;
             int numberLength = val.numberLength;

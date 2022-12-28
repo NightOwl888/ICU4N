@@ -150,7 +150,7 @@ namespace ICU4N.Numerics.BigMath
                     }
 
                     // Accumulating all remaining digits
-                    string scaleString = new String(inData, begin, last + 1 - begin); // buffer for scale
+                    string scaleString = new string(inData, begin, last + 1 - begin); // buffer for scale
                                                                                       // Checking if the scale is defined            
                     long newScale = (long)v.Scale - int.Parse(scaleString, provider); // the new scale
                     v.Scale = (int)newScale;
@@ -213,7 +213,7 @@ namespace ICU4N.Numerics.BigMath
                 value.toStringImage = Conversion.ToDecimalScaledString(value.SmallValue, value.Scale);
                 return value.toStringImage;
             }
-            String intString = value.UnscaledValue.ToString();
+            string intString = value.UnscaledValue.ToString();
             if (value.Scale == 0)
             {
                 return intString;
@@ -264,7 +264,7 @@ namespace ICU4N.Numerics.BigMath
             if (decimalSep.Length > 1)
                 throw new NotSupportedException("Decimal separators with more than one character are not supported (yet).");
 
-            String intString = value.UnscaledValue.ToString();
+            string intString = value.UnscaledValue.ToString();
             if (value.Scale == 0)
             {
                 return intString;
@@ -334,9 +334,9 @@ namespace ICU4N.Numerics.BigMath
         }
 
 
-        public static String ToPlainString(BigDecimal value, IFormatProvider provider)
+        public static string ToPlainString(BigDecimal value, IFormatProvider provider)
         {
-            String intStr = value.UnscaledValue.ToString();
+            string intStr = value.UnscaledValue.ToString();
             if ((value.Scale == 0) || ((value.IsZero) && (value.Scale < 0)))
             {
                 return intStr;

@@ -405,10 +405,9 @@ namespace ICU4N.Numerics.BigMath
         /// </exception>
         public BigDecimal(BigInteger unscaledValue, int scale)
         {
-            if (unscaledValue == null)
-            {
-                throw new NullReferenceException();
-            }
+            if (unscaledValue is null)
+                throw new ArgumentNullException(nameof(unscaledValue));
+
             _scale = scale;
             SetUnscaledValue(unscaledValue);
         }
@@ -512,7 +511,7 @@ namespace ICU4N.Numerics.BigMath
             get
             {
                 if (_bitLength < 64)
-                    return System.Math.Sign(smallValue);
+                    return Math.Sign(smallValue);
                 return GetUnscaledValue().Sign;
             }
         }
@@ -591,7 +590,7 @@ namespace ICU4N.Numerics.BigMath
                     {
                         doubleUnsc = smallValue;
                     }
-                    decimalDigits += (int)System.Math.Log10(System.Math.Abs(doubleUnsc));
+                    decimalDigits += (int)Math.Log10(Math.Abs(doubleUnsc));
                 }
                 else
                 {
@@ -689,6 +688,8 @@ namespace ICU4N.Numerics.BigMath
         */
         public int CompareTo(BigDecimal val)
         {
+            if (val is null) return 1; // Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
+
             int thisSign = Sign;
             int valueSign = val.Sign;
 
@@ -735,6 +736,40 @@ namespace ICU4N.Numerics.BigMath
             }
         }
 
+        /// <summary>
+        /// Compares two <see cref="BigDecimal"/> values and returns an integer that indicates whether the first
+        /// value is less than, equal to, or greater than the second value.
+        /// </summary>
+        /// <param name="left">The first value to compare.</param>
+        /// <param name="right">The second value to compare.</param>
+        /// <returns>
+        /// A signed integer that indicates the relative values of <paramref name="left"/> and <paramref name="right"/>, as shown in the following table.
+        /// <list type="table">
+        ///     <listheader>
+        ///         <term>Value</term>
+        ///         <term>Meaning</term>
+        ///     </listheader>
+        ///     <item>
+        ///         <term>Less than zero </term>
+        ///         <term><paramref name="left"/> precedes y in the sort order. -or- <paramref name="left"/> is <c>null</c> and <paramref name="right"/> is not <c>null</c>.</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>Zero </term>
+        ///         <term><paramref name="left"/> is equal to <paramref name="right"/>. -or- <paramref name="left"/> and <paramref name="right"/> are both <c>null</c>.</term>
+        ///     </item>
+        ///     <item>
+        ///         <term>Greater than zero </term>
+        ///         <term><paramref name="left"/> follows <paramref name="right"/> in the sort order. -or- <paramref name="right"/> is <c>null</c> and <paramref name="left"/> is not <c>null</c>.</term>
+        ///     </item>
+        /// </list>
+        /// </returns>
+        public static int Compare(BigDecimal left, BigDecimal right) // ICU4N: Added to match .NET BigInteger
+        {
+            if (!(left is null))
+                return left.CompareTo(right);
+            return -1;
+        }
+
         /**
          * Returns the minimum of this {@code BigDecimal} and {@code val}.
          *
@@ -746,7 +781,7 @@ namespace ICU4N.Numerics.BigMath
          */
         public static BigDecimal Min(BigDecimal a, BigDecimal val)
         {
-            return ((a.CompareTo(val) <= 0) ? a : val);
+            return ((Compare(a, val) <= 0) ? a : val);
         }
 
         /**
@@ -760,7 +795,7 @@ namespace ICU4N.Numerics.BigMath
         */
         public static BigDecimal Max(BigDecimal a, BigDecimal val)
         {
-            return ((a.CompareTo(val) >= 0) ? a : val);
+            return ((Compare(a, val) >= 0) ? a : val);
         }
 
         /**
@@ -776,22 +811,25 @@ namespace ICU4N.Numerics.BigMath
         */
         public override bool Equals(object obj)
         {
+            if (obj is null)
+                return false;
+
             if (ReferenceEquals(this, obj))
                 return true;
 
-            if (!(obj is BigDecimal))
+            if (!(obj is BigDecimal bigDecimal))
                 return false;
 
-            return Equals((BigDecimal)obj);
+            return Equals(bigDecimal);
         }
 
         public bool Equals(BigDecimal other)
         {
+            if (other is null)
+                return false;
+
             if (ReferenceEquals(this, other))
                 return true;
-
-            if (other == null)
-                return false;
 
             return other._scale == _scale
                    && (_bitLength < 64
@@ -1045,11 +1083,11 @@ namespace ICU4N.Numerics.BigMath
         {
             if (longScale < int.MinValue)
                 // math.09=Overflow
-                throw new ArithmeticException(Messages.math09); //$NON-NLS-1$
+                throw new OverflowException(Messages.math09); //$NON-NLS-1$
 
             if (longScale > int.MaxValue)
                 // math.0A=Underflow
-                throw new ArithmeticException(Messages.math0A); //$NON-NLS-1$
+                throw new OverflowException(Messages.math0A); //$NON-NLS-1$
 
             return (int)longScale;
         }
@@ -1082,7 +1120,7 @@ namespace ICU4N.Numerics.BigMath
 
         private BigInteger GetUnscaledValue()
         {
-            if (intVal == null)
+            if (intVal is null)
                 intVal = BigInteger.GetInstance(smallValue);
             return intVal;
         }
@@ -1253,8 +1291,8 @@ namespace ICU4N.Numerics.BigMath
 
         public static BigDecimal Parse(char[] chars, MathContext context, IFormatProvider provider)
         {
-            if (chars == null)
-                throw new ArgumentNullException("chars");
+            if (chars is null)
+                throw new ArgumentNullException(nameof(chars));
 
             return Parse(chars, 0, chars.Length, context, provider);
         }
@@ -1276,16 +1314,19 @@ namespace ICU4N.Numerics.BigMath
 
         public static bool TryParse(string s, MathContext context, IFormatProvider provider, out BigDecimal value)
         {
-            if (String.IsNullOrEmpty(s))
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            if (string.IsNullOrWhiteSpace(s))
             {
                 value = null;
                 return false;
             }
 
-            var data = s.ToCharArray();
+            var data = s.ToCharArray(); // ICU4N TODO: Eliminate allocation
 
             Exception error;
-            if (!DecimalString.TryParse(data, 0, data.Length, provider, out value, out error))
+            if (!DecimalString.TryParse(data, 0, data.Length, provider, out value, out error)) // ICU4N TODO: Don't allocate error within Try method
                 return false;
 
             if (context != null)
@@ -1320,7 +1361,7 @@ namespace ICU4N.Numerics.BigMath
 
             Exception error;
             BigDecimal value;
-            if (!DecimalString.TryParse(data, 0, data.Length, provider, out value, out error))
+            if (!DecimalString.TryParse(data, 0, data.Length, provider, out value, out error)) // ICU4N TODO: Don't allocate error within Try method
                 throw error;
 
             if (context != null)
@@ -1390,12 +1431,12 @@ namespace ICU4N.Numerics.BigMath
 
         public static bool operator >(BigDecimal a, BigDecimal b)
         {
-            return a.CompareTo(b) < 0;
+            return Compare(a, b) < 0;
         }
 
         public static bool operator <(BigDecimal a, BigDecimal b)
         {
-            return a.CompareTo(b) > 0;
+            return Compare(a, b) > 0;
         }
 
         public static bool operator >=(BigDecimal a, BigDecimal b)
@@ -1410,12 +1451,12 @@ namespace ICU4N.Numerics.BigMath
 
         public static BigDecimal operator >>(BigDecimal a, int b)
         {
-            return BigInteger.ShiftRight((BigInteger)a, b);
+            return BigInteger.ShiftRight((BigInteger)a, b); // ICU4N TODO: Need to verify this
         }
 
         public static BigDecimal operator <<(BigDecimal a, int b)
         {
-            return BigInteger.ShiftLeft((BigInteger)a, b);
+            return BigInteger.ShiftLeft((BigInteger)a, b); // ICU4N TODO: Need to verify this
         }
 
         #endregion
@@ -1424,37 +1465,45 @@ namespace ICU4N.Numerics.BigMath
 
         public static explicit operator short(BigDecimal d)
         {
-            return d.ToInt16Exact();
+            if (d is null) return default;
+            return d.ToInt16Exact(); // ICU4N TODO: Is "Exact" right?
         }
 
         public static explicit operator int(BigDecimal d)
         {
+            if (d is null) return default;
             return d.ToInt32();
         }
 
         public static explicit operator long(BigDecimal d)
         {
+            if (d is null) return default;
             return d.ToInt64();
         }
 
         public static explicit operator float(BigDecimal d)
         {
+            if (d is null) return default;
             return d.ToSingle();
         }
 
         public static explicit operator double(BigDecimal d)
         {
+            if (d is null) return default;
             return d.ToDouble();
         }
 
         public static explicit operator BigInteger(BigDecimal d)
         {
+            if (d is null) return default;
             return d.ToBigInteger();
         }
 
         #endregion
 
         #region Implicit Operators
+
+        // ICU4N TODO: Conversion to/from decimal
 
         public static implicit operator BigDecimal(long value)
         {

@@ -455,7 +455,7 @@ namespace ICU4N.Text
          *
          * @stable ICU 2.0
          */
-        public virtual void ApplyPattern(String pattern)
+        public virtual void ApplyPattern(string pattern)
         {
             lock (this) // ICU4N TODO: Create specialized lock object - note this is shared with NumberFormat
             {
@@ -483,7 +483,7 @@ namespace ICU4N.Text
          * @param localizedPattern The pattern string in localized notation.
          * @stable ICU 2.0
          */
-        public virtual void ApplyLocalizedPattern(String localizedPattern)
+        public virtual void ApplyLocalizedPattern(string localizedPattern)
         {
             lock (this) // ICU4N TODO: Create specialized lock object - note this is shared with NumberFormat
             {
