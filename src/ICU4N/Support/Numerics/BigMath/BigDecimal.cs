@@ -264,7 +264,7 @@ namespace ICU4N.Numerics.BigMath
             if (double.IsInfinity(val) || double.IsNaN(val))
             {
                 // math.03=Infinity or NaN
-                throw new FormatException(Messages.math03); //$NON-NLS-1$
+                throw new OverflowException(Messages.math03); //$NON-NLS-1$ // ICU4N: Changed to OverflowException to match .NET
             }
 
             long bits = BitConverter.DoubleToInt64Bits(val); // IEEE-754
