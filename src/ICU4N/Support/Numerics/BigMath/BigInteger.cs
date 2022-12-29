@@ -14,11 +14,8 @@
 //    limitations under the License.
 
 using ICU4N.Support.Numerics.BigMath;
-using J2N;
 using J2N.Numerics;
 using System;
-using System.Globalization;
-using System.IO;
 #if !PORTABLE
 using System.Runtime.Serialization;
 #endif
@@ -79,7 +76,7 @@ namespace ICU4N.Numerics.BigMath
 #if !PORTABLE
         [NonSerialized]
 #endif
-        private int sign;
+        internal int sign; // ICU4N TODO: Make private and add constructors to make this type immutable
 
 
         /// <summary>
@@ -130,7 +127,7 @@ namespace ICU4N.Numerics.BigMath
             }
         }
 
-        private BigInteger()
+        internal BigInteger()
         {
         }
 
@@ -793,119 +790,53 @@ namespace ICU4N.Numerics.BigMath
 
         #region Parse
 
-        private static bool TryParse(string s, int radix, out BigInteger value, out Exception exception)
-        {
-            if (string.IsNullOrEmpty(s))
-            {
-                exception = new FormatException(Messages.math11);
-                value = null;
-                return false;
-            }
-            if ((radix < Character.MinRadix) || (radix > Character.MaxRadix))
-            {
-                // math.11=Radix out of range
-                exception = new FormatException(Messages.math12);
-                value = null;
-                return false;
-            }
 
-            int sign;
-            int[] digits;
-            int numberLength;
-            int stringLength = s.Length;
-            int startChar;
-            int endChar = stringLength;
-
-            if (s[0] == '-')
-            {
-                sign = -1;
-                startChar = 1;
-                stringLength--;
-            }
-            else
-            {
-                sign = 1;
-                startChar = 0;
-            }
-            /*
-            * We use the following algorithm: split a string into portions of n
-            * char and convert each portion to an integer according to the
-            * radix. Then convert an exp(radix, n) based number to binary using the
-            * multiplication method. See D. Knuth, The Art of Computer Programming,
-            * vol. 2.
-            */
-            try
-            {
-                int charsPerInt = Conversion.digitFitInInt[radix];
-                int bigRadixDigitsLength = stringLength / charsPerInt;
-                int topChars = stringLength % charsPerInt;
-
-                if (topChars != 0)
-                {
-                    bigRadixDigitsLength++;
-                }
-                digits = new int[bigRadixDigitsLength];
-                // Get the maximal power of radix that fits in int
-                int bigRadix = Conversion.bigRadices[radix - 2];
-                // Parse an input string and accumulate the BigInteger's magnitude
-                int digitIndex = 0; // index of digits array
-                int substrEnd = startChar + ((topChars == 0) ? charsPerInt : topChars);
-                int newDigit;
-
-                for (int substrStart = startChar;
-                    substrStart < endChar;
-                    substrStart = substrEnd, substrEnd = substrStart
-                                                         + charsPerInt)
-                {
-                    int bigRadixDigit = Convert.ToInt32(s.Substring(substrStart, substrEnd - substrStart), radix);
-                    newDigit = Multiplication.MultiplyByInt(digits, digitIndex, bigRadix);
-                    newDigit += Elementary.InplaceAdd(digits, digitIndex, bigRadixDigit);
-                    digits[digitIndex++] = newDigit;
-                }
-
-                numberLength = digitIndex;
-            }
-            catch (Exception ex)
-            {
-                exception = ex;
-                value = null;
-                return false;
-            }
-
-            value = new BigInteger();
-            value.sign = sign;
-            value.numberLength = numberLength;
-            value.digits = digits;
-            value.CutOffLeadingZeroes();
-            exception = null;
-            return true;
-        }
 
         public static BigInteger Parse(string s)
         {
             return Parse(s, 10);
         }
 
-        public static bool TryParse(string s, out BigInteger value)
-        {
-            return TryParse(s, 10, out value);
-        }
-
-        public static bool TryParse(string s, int radix, out BigInteger value)
-        {
-            Exception error;
-            return TryParse(s, radix, out value, out error); // ICU4N TODO: Eliminate allocation of exception here
-        }
-
         public static BigInteger Parse(string s, int radix)
         {
-            Exception error;
-            BigInteger i;
-            if (!TryParse(s, radix, out i, out error))
-                throw error;
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
 
-            return i;
+            int startIndex = 0;
+            ParseNumbers.ParsingStatus status;
+            if ((status = ParseNumbers.TryStringToBigInteger(s, radix, sign: 1, ref startIndex, s.Length, out BigInteger result)) != ParseNumbers.ParsingStatus.OK)
+                ParseNumbers.ThrowParsingException(status);
+
+            return result;
         }
+
+        
+
+        public static bool TryParse(string s, out BigInteger result)
+        {
+            //return TryParse(s, 10, out result);
+
+            result = default;
+
+            if (s is null)
+                return false;
+
+            int startIndex = 0;
+            return ParseNumbers.TryStringToBigInteger(s, radix: 10, sign: 1, ref startIndex, length: s.Length, out result) == ParseNumbers.ParsingStatus.OK;
+        }
+
+        public static bool TryParse(string s, int radix, out BigInteger result)
+        {
+            result = default;
+
+            if (s is null)
+                return false;
+
+            int startIndex = 0;
+            return ParseNumbers.TryStringToBigInteger(s, radix, sign: 1, ref startIndex, length: s.Length, out result) == ParseNumbers.ParsingStatus.OK;
+        }
+
+        
 
         #endregion
 

@@ -70,6 +70,42 @@ namespace ICU4N.Support.Numerics.BigMath {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Radix must be greater than or equal to Character.MinRadix and less than or equal to Character.MaxRadix..
+        /// </summary>
+        internal static string ArgumentOutOfRange_Radix {
+            get {
+                return ResourceManager.GetString("ArgumentOutOfRange_Radix", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input string was either empty or contained only whitespace..
+        /// </summary>
+        internal static string Format_EmptyInputString {
+            get {
+                return ResourceManager.GetString("Format_EmptyInputString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additional non-parsable characters are at the end of the string..
+        /// </summary>
+        internal static string Format_ExtraJunkAtEnd {
+            get {
+                return ResourceManager.GetString("Format_ExtraJunkAtEnd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find any recognizable digits..
+        /// </summary>
+        internal static string Format_NoParsibleDigits {
+            get {
+                return ResourceManager.GetString("Format_NoParsibleDigits", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid rounding mode.
         /// </summary>
         internal static string math00 {
@@ -327,6 +363,24 @@ namespace ICU4N.Support.Numerics.BigMath {
         internal static string math1C {
             get {
                 return ResourceManager.GetString("math1C", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value was either too large or too small for a BigInteger..
+        /// </summary>
+        internal static string Overflow_BigInteger {
+            get {
+                return ResourceManager.GetString("Overflow_BigInteger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The string was being parsed as an unsigned number and could not have a negative sign..
+        /// </summary>
+        internal static string Overflow_NegativeUnsigned {
+            get {
+                return ResourceManager.GetString("Overflow_NegativeUnsigned", resourceCulture);
             }
         }
     }
