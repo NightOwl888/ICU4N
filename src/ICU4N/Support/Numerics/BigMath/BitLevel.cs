@@ -80,7 +80,6 @@ namespace ICU4N.Numerics.BigMath
             }
 
             int i = val.FirstNonZeroDigit;
-            ;
             if (val.Sign > 0)
             {
                 for (; i < val.numberLength; i++)
@@ -92,7 +91,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 // (sign < 0)
                 // this digit absorbs the carry
-                bCount += -val.Digits[i].PopCount();
+                bCount += (-val.Digits[i]).PopCount();
                 for (i++; i < val.numberLength; i++)
                 {
                     bCount += (~val.Digits[i]).PopCount();
