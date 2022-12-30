@@ -804,7 +804,7 @@ namespace ICU4N.Numerics.BigMath
 
             int startIndex = 0;
             ParseNumbers.ParsingStatus status;
-            if ((status = ParseNumbers.TryStringToBigInteger(s, radix, sign: 1, ref startIndex, s.Length, out BigInteger result)) != ParseNumbers.ParsingStatus.OK)
+            if ((status = ParseNumbers.TryStringToBigInteger(s, radix, flags: ParseNumbers.IsTight, sign: 1, ref startIndex, s.Length, out BigInteger result)) != ParseNumbers.ParsingStatus.OK)
                 ParseNumbers.ThrowParsingException(status);
 
             return result;
@@ -822,7 +822,7 @@ namespace ICU4N.Numerics.BigMath
                 return false;
 
             int startIndex = 0;
-            return ParseNumbers.TryStringToBigInteger(s, radix: 10, sign: 1, ref startIndex, length: s.Length, out result) == ParseNumbers.ParsingStatus.OK;
+            return ParseNumbers.TryStringToBigInteger(s, radix: 10, flags: ParseNumbers.IsTight, sign: 1, ref startIndex, length: s.Length, out result) == ParseNumbers.ParsingStatus.OK;
         }
 
         public static bool TryParse(string s, int radix, out BigInteger result)
@@ -833,7 +833,7 @@ namespace ICU4N.Numerics.BigMath
                 return false;
 
             int startIndex = 0;
-            return ParseNumbers.TryStringToBigInteger(s, radix, sign: 1, ref startIndex, length: s.Length, out result) == ParseNumbers.ParsingStatus.OK;
+            return ParseNumbers.TryStringToBigInteger(s, radix, flags: ParseNumbers.IsTight, sign: 1, ref startIndex, length: s.Length, out result) == ParseNumbers.ParsingStatus.OK;
         }
 
         

@@ -674,9 +674,9 @@ namespace ICU4N.Numerics.BigMath
                 BigInteger.Parse(value, radix);
                 fail("NumberFormatException has not been caught");
             }
-            catch (FormatException e) // ICU4N TODO: FormatExcpetion seems like the wrong type for this overload
+            catch (ArgumentOutOfRangeException e) // ICU4N: Using ArgumentOutOfRangeException to match .NET
             {
-                assertEquals("Improper exception message", "Radix out of range", e.Message);
+                assertEquals("Improper exception message", /*"Radix out of range"*/ "Radix must be greater than or equal to Character.MinRadix and less than or equal to Character.MaxRadix. (Parameter 'radix')", e.Message);
             }
         }
 
@@ -789,7 +789,7 @@ namespace ICU4N.Numerics.BigMath
             resBytes = aNumber.ToByteArray();
             for (int i = 0; i < resBytes.Length; i++)
             {
-                assertTrue("incorrect value", resBytes[i] == rBytes[i]);
+                assertTrue("incorrect value", resBytes[i] == (byte)rBytes[i]);
             }
             assertEquals("incorrect sign", 1, aNumber.Sign);
         }

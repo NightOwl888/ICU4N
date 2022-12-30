@@ -106,6 +106,15 @@ namespace ICU4N.Support.Numerics.BigMath {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to One or more of the input characters were unrecognizable as digits..
+        /// </summary>
+        internal static string Format_UnparsibleDigit {
+            get {
+                return ResourceManager.GetString("Format_UnparsibleDigit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid rounding mode.
         /// </summary>
         internal static string math00 {

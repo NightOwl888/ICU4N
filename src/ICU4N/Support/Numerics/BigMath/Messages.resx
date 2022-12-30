@@ -132,6 +132,9 @@
   <data name="Format_NoParsibleDigits" xml:space="preserve">
     <value>Could not find any recognizable digits.</value>
   </data>
+  <data name="Format_UnparsibleDigit" xml:space="preserve">
+    <value>One or more of the input characters were unrecognizable as digits.</value>
+  </data>
   <data name="math00" xml:space="preserve">
     <value>Invalid rounding mode</value>
   </data>
