@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Integer = J2N.Numerics.Int32;
+using Long = J2N.Numerics.Int64;
 using SR = ICU4N.Support.Numerics.BigMath.Messages;
 
 namespace ICU4N.Numerics.BigMath
@@ -38,6 +40,165 @@ namespace ICU4N.Numerics.BigMath
             Format_UnparsibleDigit, // For BigInteger, BigDecimal where we are considering digits separately
             Overflow_NegativeUnsigned,
             Overflow
+        }
+
+        /**
+         * Constructs a new {@code BigDecimal} instance from a string representation
+         * given as a character array.
+         *
+         * @param in
+         *            array of characters containing the string representation of
+         *            this {@code BigDecimal}.
+         * @param offset
+         *            first index to be copied.
+         * @param len
+         *            number of characters to be used.
+         * @throws NullPointerException
+         *             if {@code in == null}.
+         * @throws NumberFormatException
+         *             if {@code offset < 0} or {@code len <= 0} or {@code
+         *             offset+len-1 < 0} or {@code offset+len-1 >= in.length}.
+         * @throws NumberFormatException
+         *             if in does not contain a valid string representation of a big
+         *             decimal.
+         */
+        public static BigDecimal StringToBigDecimal(string s, int startIndex, int length, MathContext mathContext = null) // ICU4N TODO: Factor out MathContext (use precision and roundingMode instead). Need to work on making BigDecimal immutable.
+        {
+            // State that is part of BigDecimal (and used to create it).
+            int scale;
+
+            // Original state
+            int begin = startIndex; // first index to be copied
+            int last = startIndex + (length - 1); // last index to be copied
+            string scaleString = null; // buffer for scale
+            StringBuilder unscaledBuffer; // buffer for unscaled value
+            long newScale; // the new scale
+
+            if (s == null)
+            {
+                throw new ArgumentNullException(nameof(s));
+            }
+            if ((last >= s.Length) || (startIndex < 0) || (length <= 0) || (last < 0))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            unscaledBuffer = new StringBuilder(length);
+            int bufLength = 0;
+            // To skip a possible '+' symbol
+            if ((startIndex <= last) && (s[startIndex] == '+'))
+            {
+                startIndex++;
+                begin++;
+            }
+            int counter = 0;
+            bool wasNonZero = false;
+            // Accumulating all digits until a possible decimal point
+            for (; (startIndex <= last) && (s[startIndex] != '.')
+                && (s[startIndex] != 'e') && (s[startIndex] != 'E'); startIndex++)
+            {
+                if (!wasNonZero)
+                {
+                    if (s[startIndex] == '0')
+                    {
+                        counter++;
+                    }
+                    else
+                    {
+                        wasNonZero = true;
+                    }
+                }
+
+            }
+            //unscaledBuffer.Append(s, begin, startIndex - begin);
+            unscaledBuffer.Append(s, begin, startIndex - begin); // ICU4N: Checked 2nd arg - Note that in Java we call the char[] overload, which is the same as .NET.
+            bufLength += startIndex - begin;
+            // A decimal point was found
+            if ((startIndex <= last) && (s[startIndex] == '.'))
+            {
+                startIndex++;
+                // Accumulating all digits until a possible exponent
+                begin = startIndex;
+                for (; (startIndex <= last) && (s[startIndex] != 'e')
+                    && (s[startIndex] != 'E'); startIndex++)
+                {
+                    if (!wasNonZero)
+                    {
+                        if (s[startIndex] == '0')
+                        {
+                            counter++;
+                        }
+                        else
+                        {
+                            wasNonZero = true;
+                        }
+                    }
+                }
+                scale = startIndex - begin;
+                bufLength += scale;
+                //unscaledBuffer.Append(s, begin, scale);
+                unscaledBuffer.Append(s, begin, scale); // ICU4N: Checked 2nd arg - Note that in Java we call the char[] overload, which is the same as .NET.
+            }
+            else
+            {
+                scale = 0;
+            }
+            // An exponent was found
+            if ((startIndex <= last) && ((s[startIndex] == 'e') || (s[startIndex] == 'E')))
+            {
+                startIndex++;
+                // Checking for a possible sign of scale
+                begin = startIndex;
+                if ((startIndex <= last) && (s[startIndex] == '+'))
+                {
+                    startIndex++;
+                    if ((startIndex <= last) && (s[startIndex] != '-'))
+                    {
+                        begin++;
+                    }
+                }
+                // Accumulating all remaining digits
+                //scaleString = String.valueOf(s, begin, last + 1 - begin);
+                //scaleString = new string(s, begin, last + 1 - begin);
+                //scaleString = s.Substring(begin, last + 1 - begin); // ICU4N TODO: Use Slice() here, when possible.
+                // Checking if the scale is defined            
+                //newScale = (long)scale - Integer.Parse(scaleString, CultureInfo.InvariantCulture); //Integer.parseInt(scaleString);
+                newScale = (long)scale - Integer.Parse(s, startIndex: begin, length: last + 1 - begin, radix: 10); // ICU4N: Checked 3rd arg - Note that in Java we call the char[] overload, which is the same as .NET.
+                scale = (int)newScale;
+                if (newScale != scale)
+                {
+                    // math.02=Scale out of range.
+                    throw new FormatException(SR.math02); //$NON-NLS-1$
+                }
+            }
+
+            // State that is part of BigDecimal (and used to create it).
+            long smallValue;
+            int precision = 0;
+            int bitLength;
+
+            string unscaledString = unscaledBuffer.ToString();
+            //BigDecimal result = new BigDecimal();
+
+            precision = (unscaledString.Length - counter) - (unscaledString[0] == '-' ? 1 : 0);
+            // Parsing the unscaled value
+            if (bufLength < 19)
+            {
+                //smallValue = Long.Parse(unscaledString, CultureInfo.InvariantCulture);
+                //bitLength = CalcBitLength(smallValue);
+                return new BigDecimal(Long.Parse(unscaledString, radix: 10), scale, precision, mathContext);
+            }
+            else
+            {
+                //SetUnscaledValue(BigInteger.Parse(unscaledString, radix: 10));
+                return new BigDecimal(BigInteger.Parse(unscaledString, radix: 10), scale, precision, mathContext);
+            }
+
+
+            //precision = unscaledString.Length - counter;
+            //if (unscaledString[0] == '-')
+            //{
+            //    precision--;
+            //}
         }
 
         internal static ParsingStatus TryStringToBigInteger(string s, int radix, int flags, int sign, ref int currPos, int length, out BigInteger result)

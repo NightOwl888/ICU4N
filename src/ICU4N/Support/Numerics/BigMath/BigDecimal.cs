@@ -221,6 +221,27 @@ namespace ICU4N.Numerics.BigMath
 
         #region .ctor
 
+        // ICU4N: Overload used by Parse/TryParse
+        internal BigDecimal(BigInteger unscaledValue, int scale, int precision, MathContext mc)
+        {
+            _scale = scale;
+            SetUnscaledValue(unscaledValue);
+            _precision = precision;
+            if (mc != null)
+                InplaceRound(mc); // ICU4N TODO: After rounding is debugged, refactor to use precision and roundingMode as input parameters instead so we can factor out MathContext.
+        }
+
+        // ICU4N: Overload used by Parse/TryParse
+        internal BigDecimal(long smallValue, int scale, int precision, MathContext mc)
+        {
+            this.smallValue = smallValue;
+            _scale = scale;
+            _bitLength = CalcBitLength(smallValue);
+            _precision = precision;
+            if (mc != null)
+                InplaceRound(mc); // ICU4N TODO: After rounding is debugged, refactor to use precision and roundingMode as input parameters instead so we can factor out MathContext.
+        }
+
         private BigDecimal(long smallValue, int scale)
         {
             this.smallValue = smallValue;
@@ -234,6 +255,8 @@ namespace ICU4N.Numerics.BigMath
             _scale = scale;
             _bitLength = CalcBitLength(smallValue);
         }
+
+
 
         internal BigDecimal()
         {
@@ -411,6 +434,8 @@ namespace ICU4N.Numerics.BigMath
             _scale = scale;
             SetUnscaledValue(unscaledValue);
         }
+
+        
 
         /// <summary>
         /// Constructs a new <see cref="BigDecimal"/> instance from a <paramref name="unscaledValue">given unscaled 
@@ -1263,15 +1288,19 @@ namespace ICU4N.Numerics.BigMath
 
         public static BigDecimal Parse(char[] chars, int offset, int length, MathContext context, IFormatProvider provider)
         {
-            Exception error;
-            BigDecimal value;
-            if (!DecimalString.TryParse(chars, offset, length, provider, out value, out error))
-                throw error;
+            if (chars is null)
+                throw new ArgumentNullException(nameof(chars));
+            return Parse(new string(chars, offset, length), context, provider);
 
-            if (context != null)
-                value.InplaceRound(context);
+            //Exception error;
+            //BigDecimal value;
+            //if (!DecimalString.TryParse(chars, offset, length, provider, out value, out error))
+            //    throw error;
 
-            return value;
+            //if (context != null)
+            //    value.InplaceRound(context);
+
+            //return value;
         }
 
         public static BigDecimal Parse(char[] chars, IFormatProvider provider)
@@ -1295,6 +1324,7 @@ namespace ICU4N.Numerics.BigMath
                 throw new ArgumentNullException(nameof(chars));
 
             return Parse(chars, 0, chars.Length, context, provider);
+            //return Parse(new string(chars, 0, chars.Length), )
         }
 
         public static bool TryParse(string s, out BigDecimal value)
@@ -1337,17 +1367,26 @@ namespace ICU4N.Numerics.BigMath
 
         public static BigDecimal Parse(string s, IFormatProvider provider)
         {
-            return Parse(s, null, provider);
+            //return Parse(s, null, provider);
+            return ParseNumbers.StringToBigDecimal(s, startIndex: 0, length: s.Length);
         }
 
         public static BigDecimal Parse(string s)
         {
-            return Parse(s, (MathContext)null);
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            //return Parse(s, (MathContext)null);
+            return ParseNumbers.StringToBigDecimal(s, startIndex: 0, length: s.Length);
         }
 
         public static BigDecimal Parse(string s, MathContext context)
         {
-            return Parse(s, context, NumberFormatInfo.InvariantInfo);
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            //return Parse(s, context, NumberFormatInfo.InvariantInfo);
+            return ParseNumbers.StringToBigDecimal(s, startIndex: 0, length: s.Length, mathContext: context);
         }
 
         public static BigDecimal Parse(string s, MathContext context, IFormatProvider provider)

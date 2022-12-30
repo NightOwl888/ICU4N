@@ -217,7 +217,7 @@ namespace ICU4N.Numerics.BigMath
                 BigDecimal.Parse(value, offset, len, mc);
                 fail("NumberFormatException has not been thrown");
             }
-            catch (FormatException e)
+            catch (ArgumentOutOfRangeException e) // ICU4N: We throw ArgumentOutOfRangeException in this case to match .NET
             {
             }
         }
@@ -239,7 +239,7 @@ namespace ICU4N.Numerics.BigMath
                 BigDecimal.Parse(value, offset, len, mc);
                 fail("NumberFormatException has not been thrown");
             }
-            catch (FormatException e)
+            catch (ArgumentOutOfRangeException e) // ICU4N: We throw ArgumentOutOfRangeException in this case to match .NET
             {
             }
         }
@@ -542,7 +542,7 @@ namespace ICU4N.Numerics.BigMath
                 BigDecimal.Parse(a);
                 fail("NumberFormatException has not been caught");
             }
-            catch (FormatException e)
+            catch (OverflowException e) // ICU4N: We throw OverflowException here to match .NET.
             {
             }
         }
@@ -560,7 +560,7 @@ namespace ICU4N.Numerics.BigMath
                 BigDecimal.Parse(a);
                 fail("NumberFormatException has not been caught");
             }
-            catch (FormatException e)
+            catch (OverflowException e) // ICU4N: We throw OverflowException here to match .NET.
             {
             }
         }
