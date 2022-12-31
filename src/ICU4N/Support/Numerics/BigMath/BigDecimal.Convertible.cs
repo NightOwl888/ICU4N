@@ -14,6 +14,7 @@
 //    limitations under the License.
 
 using ICU4N.Support.Numerics.BigMath;
+using J2N;
 using J2N.Numerics;
 using System;
 using System.Globalization;
@@ -112,25 +113,24 @@ namespace ICU4N.Numerics.BigMath
 
         public override string ToString()
         {
-            if (toStringImage != null)
-            {
-                return toStringImage;
-            }
+            // ICU4N: We don't want a cache here because we want to display the value in multiple cultures
+            // and we want to make BigDecimal immutable.
+            //if (toStringImage != null)
+            //{
+            //    return toStringImage;
+            //}
 
-            return ToString((IFormatProvider)null);
+            return ToString(NumberFormatInfo.InvariantInfo); // ICU4N TODO: Make sure nobody is calling this overload. We want all internal callers to enforce invariant culture.
         }
 
         public override string ToString(IFormatProvider provider)
         {
-            if (provider == null)
-                provider = NumberFormatInfo.InvariantInfo;
-
-            return DecimalString.ToString(this, provider);
+            return DecimalString.ToString(this, NumberFormatInfo.GetInstance(provider));
         }
 
         public override string ToString(string format, IFormatProvider provider)
         {
-            return ToString((IFormatProvider)null);
+            return ToString(NumberFormatInfo.InvariantInfo);
         }
 
 
@@ -155,9 +155,9 @@ namespace ICU4N.Numerics.BigMath
         /// Returns a string representation of this number in engineering 
         /// notation if necessary.
         /// </returns>
-        public string ToEngineeringString()
+        public string ToEngineeringString() // ICU4N TODO: API Eliminate and refactor ToString to accept "E" decimal format
         {
-            return ToEngineeringString(null);
+            return ToEngineeringString(NumberFormatInfo.InvariantInfo);
         }
 
         /// <summary>
@@ -179,9 +179,9 @@ namespace ICU4N.Numerics.BigMath
         /// Returns a string representation of this number in engineering 
         /// notation if necessary.
         /// </returns>
-        public string ToEngineeringString(IFormatProvider provider)
+        public string ToEngineeringString(IFormatProvider provider) // ICU4N TODO: API Eliminate and refactor ToString to accept "E" decimal format
         {
-            return DecimalString.ToEngineeringString(this, provider);
+            return DecimalString.ToEngineeringString(this, NumberFormatInfo.GetInstance(provider));
         }
 
         /**
@@ -199,17 +199,14 @@ namespace ICU4N.Numerics.BigMath
         *
         * @return a string representation of {@code this} without exponent part.
         */
-        public string ToPlainString(IFormatProvider provider)
+        public string ToPlainString(IFormatProvider provider) // ICU4N TODO: API Eliminate and refactor ToString to accept a built in or custom decimal format
         {
-            if (provider == null)
-                provider = CultureInfo.InvariantCulture;
-
-            return DecimalString.ToPlainString(this, provider);
+            return DecimalString.ToPlainString(this, NumberFormatInfo.GetInstance(provider));
         }
 
         public string ToPlainString()
         {
-            return ToPlainString(null);
+            return ToPlainString(NumberFormatInfo.InvariantInfo);
         }
 
         /**
@@ -432,17 +429,17 @@ namespace ICU4N.Numerics.BigMath
             int discardedSize;
             long powerOfTwo = this._bitLength - (long)(_scale / Log10Of2);
             long bits; // IEEE-754 Standard
-            long tempBits; // for temporal calculations     
+            long tempBits; // for temporal calculations
             BigInteger mantisa;
 
             if ((powerOfTwo < -1074) || (sign == 0))
             {
-                // Cases which 'this' is very small            
+                // Cases which 'this' is very small
                 return (sign * 0.0d);
             }
             else if (powerOfTwo > 1025)
             {
-                // Cases which 'this' is very large            
+                // Cases which 'this' is very large
                 return (sign * double.PositiveInfinity);
             }
 
@@ -547,7 +544,7 @@ namespace ICU4N.Numerics.BigMath
                 // -1076 <= exponent - bias <= -1023 
                 // To discard '- exponent + 1' bits
                 bits = tempBits >> 1;
-                tempBits = bits & (-1L).TripleShift(63 + exponent);
+                tempBits = bits & ((-1L).TripleShift(63 + exponent));
                 bits >>= (-exponent);
 
                 // To test if after discard bits, a new carry is generated
@@ -565,7 +562,8 @@ namespace ICU4N.Numerics.BigMath
             //bits = sign & long.MinValue | ((long)exponent << 52) | (bits & 0xFFFFFFFFFFFFFL);
             bits = (sign & -9223372036854775808L) | ((long)exponent << 52)
                 | (bits & 0xFFFFFFFFFFFFFL);
-            return BitConverter.Int64BitsToDouble(bits);
+
+            return BitConversion.Int64BitsToDouble(bits);
         }
 
         // TODO: must be verified
