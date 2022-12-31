@@ -189,12 +189,13 @@ namespace ICU4N.Numerics.BigMath
             }
             else
             {
-                if (random is null)
-                    throw new ArgumentNullException(nameof(random)); // ICU4N: Added guard clause to ensure we don't throw NullReferenceException here
+                //if (random is null)
+                //    throw new ArgumentNullException(nameof(random)); // ICU4N: Added guard clause to ensure we don't throw NullReferenceException here
 
                 sign = 1;
                 numberLength = (numBits + 31) >> 5;
                 digits = new int[numberLength];
+                random ??= new J2N.Randomizer(); // J2N: Added initializer to ensure Random is populated if the user passed null.
                 for (int i = 0; i < numberLength; i++)
                 {
                     digits[i] = random.Next();
