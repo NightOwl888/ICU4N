@@ -290,7 +290,7 @@ namespace ICU4N.Numerics.BigMath
                 throw new OverflowException(Messages.math03); //$NON-NLS-1$ // ICU4N: Changed to OverflowException to match .NET
             }
 
-            long bits = BitConverter.DoubleToInt64Bits(val); // IEEE-754
+            long bits = J2N.BitConversion.DoubleToInt64Bits(val); // IEEE-754
 
             // Extracting the exponent, note that the bias is 1023
             _scale = 1075 - (int)((bits >> 52) & 0x7FFL);

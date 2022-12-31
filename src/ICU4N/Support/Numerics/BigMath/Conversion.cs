@@ -543,7 +543,7 @@ namespace ICU4N.Numerics.BigMath
             long resSign = (val.Sign < 0) ? long.MinValue : 0;
             exponent = ((1023 + exponent) << 52) & 0x7FF0000000000000L;
             long result = resSign | exponent | mantissa;
-            return BitConverter.Int64BitsToDouble(result);
+            return BitConversion.Int64BitsToDouble(result);
         }
     }
 }
