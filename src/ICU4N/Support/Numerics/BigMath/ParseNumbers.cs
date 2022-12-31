@@ -1,10 +1,8 @@
 ﻿using J2N;
 using J2N.Text;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Integer = J2N.Numerics.Int32;
@@ -15,6 +13,7 @@ namespace ICU4N.Numerics.BigMath
 {
     internal static class ParseNumbers // This class is based on ParseNumbers in .NET
     {
+        // ICU4N: These align with the constants in J2N
         internal const int LeftAlign = 0x0001;
         internal const int RightAlign = 0x0004;
         internal const int PrefixSpace = 0x0008;
@@ -29,7 +28,6 @@ namespace ICU4N.Numerics.BigMath
         internal const int IsTight = 0x1000;
         internal const int NoSpace = 0x2000;
         internal const int PrintRadixBase = 0x4000;
-
 
         internal enum ParsingStatus
         {
