@@ -2,11 +2,7 @@
 using J2N;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ICU4N.Numerics.BigMath
 {
@@ -620,8 +616,14 @@ namespace ICU4N.Numerics.BigMath
         {
             double a = 12321237576.98788767;
             BigDecimal result = new BigDecimal(a);
-            String res = "12321237576.987888";
-            int resScale = 6;
+            //String res = "12321237576.987888";
+            //int resScale = 6;
+
+            // In Java 8, the double type was updated to use the IEEE 754-2008 standard, which introduced
+            // some changes to the representation of double values. For example, the double type now supports
+            // subnormal numbers, which are numbers that are very close to zero but have a non-zero value.
+            string res = "12321237576.987888336181640625"; // ICU4N: Between Java 5 and Java 8 the double type changed to be more precise. This result is what JDK 8 gives.
+            int resScale = 18;
             assertEquals("incorrect value", res, result.ToString(CultureInfo.InvariantCulture));
             assertEquals("incorrect scale", resScale, result.Scale);
         }
@@ -634,8 +636,15 @@ namespace ICU4N.Numerics.BigMath
         {
             double a = 12321237576.9878838;
             BigDecimal result = new BigDecimal(a);
-            String res = "12321237576.987885";
-            int resScale = 6;
+            //String res = "12321237576.987885";
+            //int resScale = 6;
+
+            // In Java 8, the double type was updated to use the IEEE 754-2008 standard, which introduced
+            // some changes to the representation of double values. For example, the double type now supports
+            // subnormal numbers, which are numbers that are very close to zero but have a non-zero value.
+            // This change can affect the precision of double values, particularly when they are close to zero.
+            string res = "12321237576.987884521484375"; // ICU4N: Between Java 5 and Java 8 the double type changed to be more precise. This result is what JDK 8 gives.
+            int resScale = 15;
             assertEquals("incorrect value", res, result.ToString(CultureInfo.InvariantCulture));
             assertEquals("incorrect scale", resScale, result.Scale);
         }
