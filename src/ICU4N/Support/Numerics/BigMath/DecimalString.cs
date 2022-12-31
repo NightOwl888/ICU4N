@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace ICU4N.Numerics.BigMath
@@ -11,23 +12,7 @@ namespace ICU4N.Numerics.BigMath
         /// <summary>
         /// An array filled with character <c>'0'</c>.
         /// </summary>
-        private static readonly char[] ChZeros = new char[100];
-
-        static DecimalString()
-        {
-            // To fill all static arrays.
-            int i = 0;
-
-            for (; i < BigDecimal.ZeroScaledBy.Length; i++)
-            {
-                ChZeros[i] = '0';
-            }
-
-            for (; i < ChZeros.Length; i++)
-            {
-                ChZeros[i] = '0';
-            }
-        }
+        private static readonly char[] ChZeros = Enumerable.Repeat('0', 100).ToArray();
 
         public static bool TryParse(char[] inData, int offset, int len, IFormatProvider provider, out BigDecimal value,
             out Exception exception)
@@ -198,22 +183,20 @@ namespace ICU4N.Numerics.BigMath
             }
         }
 
-        public static string ToString(BigDecimal value, IFormatProvider provider)
-        {
-            var numberInfo = provider.GetFormat(typeof(NumberFormatInfo)) as NumberFormatInfo;
-            if (numberInfo == null)
-                numberInfo = NumberFormatInfo.InvariantInfo;
 
-            var decimalSep = numberInfo.NumberDecimalSeparator;
-            if (decimalSep.Length > 1)
-                throw new NotSupportedException("Decimal separators with more than one character are not supported (yet).");
+        public static string ToString(BigDecimal value, NumberFormatInfo info)
+        {
+            // ICU4N TODO: NumberFormatInfo - replace the culture sensitive bits
 
             if (value.BitLength < 32)
             {
-                value.toStringImage = Conversion.ToDecimalScaledString(value.SmallValue, value.Scale);
-                return value.toStringImage;
+                // ICU4N TODO: Do we need a cache? If we do that, it isn't practical to make the format culture-sensitive or
+                // make the BigDecimal type immutable.
+                //value.toStringImage = Conversion.ToDecimalScaledString(value.SmallValue, value.Scale);
+                //return value.toStringImage;
+                return Conversion.ToDecimalScaledString(value.SmallValue, value.Scale);
             }
-            string intString = value.UnscaledValue.ToString();
+            string intString = value.UnscaledValue.ToString(info);
             if (value.Scale == 0)
             {
                 return intString;
@@ -221,18 +204,18 @@ namespace ICU4N.Numerics.BigMath
             int begin = (value.UnscaledValue.Sign < 0) ? 2 : 1;
             int end = intString.Length;
             long exponent = -(long)value.Scale + end - begin;
-            StringBuilder result = new StringBuilder();
 
+            StringBuilder result = new StringBuilder();
             result.Append(intString);
             if ((value.Scale > 0) && (exponent >= -6))
             {
                 if (exponent >= 0)
                 {
-                    result.Insert(end - value.Scale, decimalSep);
+                    result.Insert(end - value.Scale, '.');
                 }
                 else
                 {
-                    result.Insert(begin - 1, "0" + decimalSep); //$NON-NLS-1$
+                    result.Insert(begin - 1, "0."); //$NON-NLS-1$
                     result.Insert(begin + 1, ChZeros, 0, -(int)exponent - 1);
                 }
             }
@@ -240,7 +223,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 if (end - begin >= 1)
                 {
-                    result.Insert(begin, decimalSep);
+                    result.Insert(begin, '.');
                     end++;
                 }
                 result.Insert(end, new[] { 'E' });
@@ -248,22 +231,15 @@ namespace ICU4N.Numerics.BigMath
                 {
                     result.Insert(++end, new[] { '+' });
                 }
-                result.Insert(++end, exponent.ToString(CultureInfo.InvariantCulture));
+                result.Insert(++end, exponent.ToString(info)); // info passed so we get the culture-sensitive negative sign.
             }
-            value.toStringImage = result.ToString();
-            return value.toStringImage;
+            //value.toStringImage = result.ToString();
+            //return value.toStringImage;
+            return result.ToString();
         }
 
-        public static string ToEngineeringString(BigDecimal value, IFormatProvider provider)
+        public static string ToEngineeringString(BigDecimal value, NumberFormatInfo info)
         {
-            var numberInfo = provider.GetFormat(typeof(NumberFormatInfo)) as NumberFormatInfo;
-            if (numberInfo == null)
-                numberInfo = NumberFormatInfo.InvariantInfo;
-
-            var decimalSep = numberInfo.NumberDecimalSeparator;
-            if (decimalSep.Length > 1)
-                throw new NotSupportedException("Decimal separators with more than one character are not supported (yet).");
-
             string intString = value.UnscaledValue.ToString();
             if (value.Scale == 0)
             {
@@ -278,11 +254,11 @@ namespace ICU4N.Numerics.BigMath
             {
                 if (exponent >= 0)
                 {
-                    result.Insert(end - value.Scale, decimalSep);
+                    result.Insert(end - value.Scale, '.');
                 }
                 else
                 {
-                    result.Insert(begin - 1, "0" + decimalSep); //$NON-NLS-1$
+                    result.Insert(begin - 1, "0."); //$NON-NLS-1$
                     result.Insert(begin + 1, ChZeros, 0, -(int)exponent - 1);
                 }
             }
@@ -317,7 +293,7 @@ namespace ICU4N.Numerics.BigMath
                 }
                 if (end - begin >= 1)
                 {
-                    result.Insert(begin, decimalSep);
+                    result.Insert(begin, '.');
                     end++;
                 }
                 if (exponent != 0)
@@ -327,14 +303,14 @@ namespace ICU4N.Numerics.BigMath
                     {
                         result.Insert(++end, new[] { '+' });
                     }
-                    result.Insert(++end, exponent.ToString(CultureInfo.InvariantCulture));
+                    result.Insert(++end, exponent.ToString(info));
                 }
             }
             return result.ToString();
         }
 
 
-        public static string ToPlainString(BigDecimal value, IFormatProvider provider)
+        public static string ToPlainString(BigDecimal value, NumberFormatInfo provider)
         {
             string intStr = value.UnscaledValue.ToString();
             if ((value.Scale == 0) || ((value.IsZero) && (value.Scale < 0)))
