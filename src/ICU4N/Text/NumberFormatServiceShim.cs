@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using ICU4N.Util;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Resources;
@@ -85,15 +86,14 @@ namespace ICU4N.Text
             }
             fmt = (NumberFormat)fmt.Clone();
 
-            // ICU4N TODO: Currency
-            //// If we are creating a currency type formatter, then we may have to set the currency
-            //// explicitly, since the actualLoc may be different than the desiredLocale        
-            //if (choice == NumberFormat.CURRENCYSTYLE ||
-            //     choice == NumberFormat.ISOCURRENCYSTYLE ||
-            //     choice == NumberFormat.PLURALCURRENCYSTYLE)
-            //{
-            //    fmt.SetCurrency(Currency.GetInstance(desiredLocale));
-            //}
+            // If we are creating a currency type formatter, then we may have to set the currency
+            // explicitly, since the actualLoc may be different than the desiredLocale        
+            if (choice == NumberFormatStyle.CurrencyStyle ||
+                 choice == NumberFormatStyle.ISOCurrencyStyle ||
+                 choice == NumberFormatStyle.PluralCurrencyStyle)
+            {
+                fmt.Currency = Currency.GetInstance(desiredLocale);
+            }
 
             UCultureInfo uloc = actualLoc;
             fmt.SetCulture(uloc, uloc); // services make no distinction between actual & valid
