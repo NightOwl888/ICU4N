@@ -31,9 +31,9 @@ namespace ICU4N.Numerics
         internal readonly object value;
         internal volatile MacroProps resolvedMacros;
 
-        private protected NumberFormatterSettings(NumberFormatterSettings parent, int key, object value)
+        private protected NumberFormatterSettings(NumberFormatterSettings parent, int key, object value) // ICU4N TODO: parent is nullable
         {
-            this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            this.parent = parent;
             this.key = key;
             this.value = value;
         }
