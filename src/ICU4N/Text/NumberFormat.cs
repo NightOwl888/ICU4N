@@ -771,7 +771,7 @@ namespace ICU4N.Text
                 catch (Exception e)
                 {
                     // e.printStackTrace();
-                    throw new Exception(e.ToString());
+                    throw new Exception(e.ToString(), e);
                 }
                 ////CLOVER:ON
             }
@@ -800,7 +800,7 @@ namespace ICU4N.Text
          */
         public static UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from GetAvailableULocales
         {
-            if (shim == null)
+            if (shim is null)
             {
                 return ICUResourceBundle.GetUCultures(types);
             }
@@ -821,9 +821,9 @@ namespace ICU4N.Text
         /// <stable>ICU 2.6</stable>
         public static object RegisterFactory(NumberFormatFactory factory)
         {
-            if (factory == null)
+            if (factory is null)
             {
-                throw new ArgumentException("factory must not be null");
+                throw new ArgumentNullException(nameof(factory), "factory must not be null");
             }
             return GetShim().RegisterFactory(factory);
         }
@@ -837,9 +837,9 @@ namespace ICU4N.Text
          */
         public static bool Unregister(object registryKey)
         {
-            if (registryKey == null)
+            if (registryKey is null)
             {
-                throw new ArgumentException("registryKey must not be null");
+                throw new ArgumentNullException(nameof(registryKey), "registryKey must not be null");
             }
 
             if (shim == null)
