@@ -421,7 +421,7 @@ namespace ICU4N.Numerics.BigMath
         /// <param name="unscaledValue">Represents the unscaled value of the decimal.</param>
         /// <param name="scale">The scale of this <see cref="BigDecimal"/></param>
         /// <remarks>
-        /// The value of this instance is <c><paramref name="unscaledValue"/> 10^(-<paramref name="scale"/>)</c>
+        /// The value of this instance is <c><paramref name="unscaledValue"/> x 10^(-<paramref name="scale"/>)</c>
         /// </remarks>
         /// <exception cref="ArgumentNullException">
         /// If <paramref name="unscaledValue"/> is <b>null</b>.
