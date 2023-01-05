@@ -27,7 +27,7 @@ namespace ICU4N.Text
         /// <icu/> Constant to specify normal number style of format.
         /// </summary>
         /// <stable>ICU 4.2</stable>
-        NumberStyle = 0, // ICU4N TODO: API - remove the suffix Currency in this enum, as it is redundant
+        NumberStyle = 0, // ICU4N TODO: API - remove the suffix Style in this enum, as it is redundant
 
         /// <summary>
         /// <icu/> Constant to specify general currency style of format. Defaults to
@@ -1851,7 +1851,7 @@ namespace ICU4N.Text
         /// <param name="formatType">the type of format</param>
         /// <returns>The <see cref="NumberFormat"/>, or null.</returns>
         /// <stable>ICU 3.2</stable>
-        public virtual NumberFormat CreateFormat(UCultureInfo loc, int formatType)
+        public virtual NumberFormat CreateFormat(UCultureInfo loc, int formatType) // ICU4N TODO: API Change formatType to NumberFormatStyle?
         {
             return CreateFormat(loc.ToCultureInfo(), formatType);
         }
@@ -1869,7 +1869,7 @@ namespace ICU4N.Text
         /// <param name="formatType">the type of format</param>
         /// <returns>the NumberFormat, or null.</returns>
         /// <stable>ICU 2.6</stable>
-        public virtual NumberFormat CreateFormat(CultureInfo loc, int formatType)
+        public virtual NumberFormat CreateFormat(CultureInfo loc, int formatType) // ICU4N TODO: API Change formatType to NumberFormatStyle?
         {
             return CreateFormat(loc.ToUCultureInfo(), formatType);
         }

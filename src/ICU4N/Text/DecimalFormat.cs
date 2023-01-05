@@ -795,7 +795,7 @@ namespace ICU4N.Text
          *
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(double number, StringBuffer result, FieldPosition fieldPosition)
+        public override StringBuffer Format(double number, StringBuffer result, FieldPosition fieldPosition) // ICU4N TODO: API - Replace FieldPosition with ReadOnlySpan<char> ?
         {
             FormattedNumber output = formatter.Format(number);
             output.PopulateFieldPosition(fieldPosition, result.Length);
@@ -1084,6 +1084,7 @@ namespace ICU4N.Text
                 lock (this)
                     return formatter.Format(1).GetSuffix();
             }
+            set => SetPositiveSuffix(value);
         }
 
         /**
