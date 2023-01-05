@@ -2089,9 +2089,10 @@ namespace ICU4N.Dev.Test.Format
         }
 
         [Test]
+        [Ignore("Undefined cultures (und-PH) are not supported in .NET.")]
         public void Test6816()
         {
-            Currency cur1 = Currency.GetInstance(new CultureInfo("und-PH")); // ICU4N TODO: I don't think this is a valid test
+            Currency cur1 = Currency.GetInstance(new CultureInfo("und-PH"));
 
             NumberFormat nfmt = NumberFormat.GetCurrencyInstance(new CultureInfo("und-PH"));
             DecimalFormatSymbols decsym = ((DecimalFormat)nfmt).GetDecimalFormatSymbols();
