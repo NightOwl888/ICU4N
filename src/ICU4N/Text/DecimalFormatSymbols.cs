@@ -965,7 +965,7 @@ namespace ICU4N.Text
         public virtual Currency Currency
         {
             get => currency;
-            set => SetCurrency(currency);
+            set => SetCurrency(value);
         }
 
         /**
