@@ -516,7 +516,8 @@ namespace ICU4N.Numerics
             SetBcdToZero();
 
             // Call the slow oracle function (Double.toString in Java, sprintf in C++).
-            string dstr = DoubleConverter.ToExactString(n); //Double.toString(n); // ICU4N TODO: Check this.
+            //string dstr = DoubleConverter.ToExactString(n); //Double.toString(n); // ICU4N TODO: Check this
+            string dstr = J2N.Numerics.Double.ToString(n, CultureInfo.InvariantCulture);
 
             if (dstr.IndexOf('E') != -1)
             {
