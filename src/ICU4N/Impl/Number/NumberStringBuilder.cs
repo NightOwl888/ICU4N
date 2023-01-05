@@ -567,6 +567,7 @@ namespace ICU4N.Numerics
 
     }
 
+    // ICU4N TODO: Add debugger attribute to this so it displays like an array
     internal struct Fields
     {
         private readonly NumberStringBuilder numberStringBuilder;
