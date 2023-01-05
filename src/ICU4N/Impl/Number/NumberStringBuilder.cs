@@ -34,9 +34,10 @@ namespace ICU4N.Numerics
         public static readonly NumberStringBuilder EMPTY = new NumberStringBuilder();
 
         private char[] chars;
-        private Field[] fields;
-        private int zero;
-        private int length;
+        internal Field[] fields;
+        internal int zero;
+        internal int length;
+        private Fields fieldsInstance;
 
         public NumberStringBuilder()
             : this(40)
@@ -48,6 +49,7 @@ namespace ICU4N.Numerics
             fields = new Field[capacity];
             zero = capacity / 2;
             length = 0;
+            fieldsInstance = new Fields(this);
         }
 
         public NumberStringBuilder(NumberStringBuilder source)
@@ -65,6 +67,7 @@ namespace ICU4N.Numerics
             //fields = Arrays.copyOf(source.fields, source.fields.length);
             zero = source.zero;
             length = source.length;
+            fieldsInstance = new Fields(this);
         }
 
         public virtual int Length => length;
@@ -83,7 +86,8 @@ namespace ICU4N.Numerics
             }
         }
 
-        public virtual Field[] Fields => fields;
+        public Fields Fields => fieldsInstance; // ICU4N TODO: This was extensible in ICU
+        
 
         public virtual int GetFirstCodePoint()
         {
@@ -561,5 +565,25 @@ namespace ICU4N.Numerics
             return @as.GetIterator();
         }
 
+    }
+
+    internal struct Fields
+    {
+        private readonly NumberStringBuilder numberStringBuilder;
+
+        internal Fields(NumberStringBuilder numberStringBuilder)
+        {
+            this.numberStringBuilder = numberStringBuilder ?? throw new ArgumentNullException(nameof(numberStringBuilder));
+        }
+
+        public Field this[int index]
+        {
+            get
+            {
+                if (index < 0 || index > numberStringBuilder.length - 1)
+                    throw new IndexOutOfRangeException(nameof(index));
+                return numberStringBuilder.fields[numberStringBuilder.zero + index];
+            }
+        }
     }
 }
