@@ -1556,27 +1556,27 @@ namespace ICU4N.Text
 
             CurrencyDisplayInfo info = CurrencyData.Provider.GetInstance(locale, true);
 
-            //// Obtain currency data from the currency API.  This is strictly
-            //// for backward compatibility; we don't use DecimalFormatSymbols
-            //// for currency data anymore.
-            //currency = Currency.getInstance(locale);
-            //if (currency != null)
-            //{
-            //    intlCurrencySymbol = currency.getCurrencyCode();
-            //    currencySymbol = currency.getName(locale, Currency.SYMBOL_NAME, null);
-            //    CurrencyFormatInfo fmtInfo = info.getFormatInfo(intlCurrencySymbol);
-            //    if (fmtInfo != null)
-            //    {
-            //        currencyPattern = fmtInfo.currencyPattern;
-            //        setMonetaryDecimalSeparatorString(fmtInfo.monetaryDecimalSeparator);
-            //        setMonetaryGroupingSeparatorString(fmtInfo.monetaryGroupingSeparator);
-            //    }
-            //}
-            //else
-            //{
-            intlCurrencySymbol = "XXX";
-            currencySymbol = "\u00A4"; // 'OX' currency symbol
-                                       //}
+            // Obtain currency data from the currency API.  This is strictly
+            // for backward compatibility; we don't use DecimalFormatSymbols
+            // for currency data anymore.
+            currency = Currency.GetInstance(locale);
+            if (currency != null)
+            {
+                intlCurrencySymbol = currency.CurrencyCode;
+                currencySymbol = currency.GetName(locale, CurrencyNameStyle.SymbolName, out bool _);
+                CurrencyFormatInfo fmtInfo = info.GetFormatInfo(intlCurrencySymbol);
+                if (fmtInfo != null)
+                {
+                    currencyPattern = fmtInfo.CurrencyPattern;
+                    MonetaryDecimalSeparatorString = fmtInfo.MonetaryDecimalSeparator;
+                    MonetaryGroupingSeparatorString = fmtInfo.MonetaryGroupingSeparator;
+                }
+            }
+            else
+            {
+                intlCurrencySymbol = "XXX";
+                currencySymbol = "\u00A4"; // 'OX' currency symbol
+            }
 
 
             // Get currency spacing data.
