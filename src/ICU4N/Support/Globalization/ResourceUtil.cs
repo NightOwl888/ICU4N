@@ -9,7 +9,7 @@
         /// </summary>
         public static string ConvertResourceName(string name)
         {
-            return name.Replace('/', '.').Replace("." + ICU4N.Impl.ICUData.PackageName, "");
+            return name.Replace('/', '.').Replace('\\', '.').Replace("." + ICU4N.Impl.ICUData.PackageName, "");
         }
     }
 }
