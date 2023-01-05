@@ -6374,7 +6374,7 @@ namespace ICU4N.Dev.Test.Format
         }
 
         [Test]
-        public void testCurrencyUsageFractionOverrides()
+        public void testCurrencyUsageFractionOverrides() // ICU4N TODO: This test is very slow
         {
             NumberFormat df = DecimalFormat.GetCurrencyInstance(new UCultureInfo("en-US"));
             expect2(df, 35.0, "$35.00");
