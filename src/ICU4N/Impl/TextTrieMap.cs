@@ -323,11 +323,11 @@ namespace ICU4N.Impl
             {
             }
 
-            private Node(char[] text, IList<TValue> values, IList<Node> children)
+            private Node(char[] text, IList<TValue> values, IList<Node> children) // ICU4N NOTE: all params are nullable
             {
-                this.text = text ?? throw new ArgumentNullException(nameof(text));
-                this.values = values ?? throw new ArgumentNullException(nameof(values));
-                this.children = children ?? throw new ArgumentNullException(nameof(children));
+                this.text = text;
+                this.values = values;
+                this.children = children;
             }
 
             public int CharCount => text == null ? 0 : text.Length;
@@ -458,14 +458,14 @@ namespace ICU4N.Impl
 
                 // walk through children
                 int index = 0;
+                bool isPrevious = false;
                 for (; index < children.Count; index++)
                 {
                     Node next = children[index];
                     if (text[offset] < next.text[0])
                     {
-                        // ICU4N: Insert node prior to next
-                        children.Insert(index, new Node(SubArray(text, offset), AddValue(null, value), null));
-                        return;
+                        isPrevious = true;
+                        break;
                     }
                     if (text[offset] == next.text[0])
                     {
@@ -484,6 +484,32 @@ namespace ICU4N.Impl
                         return;
                     }
                 }
+
+                // ICU4N: According to the javadoc for ListIterator:
+                // void add(E e)
+
+                // Inserts the specified element into the list(optional operation).The element is inserted
+                // immediately before the element that would be returned by next(), if any, and after the
+                // element that would be returned by previous(), if any. (If the list contains no elements,
+                // the new element becomes the sole element on the list.) The new element is inserted before
+                // the implicit cursor: a subsequent call to next would be unaffected, and a subsequent call to
+                // previous would return the new element. (This call increases by one the value that would be
+                // returned by a call to nextIndex or previousIndex.)
+
+                if (!isPrevious)
+                    index = Math.Max(index - 1, 0);
+
+                var newNode = new Node(SubArray(text, offset), AddValue(null, value), null);
+                if (index != children.Count)
+                {
+                    children.Insert(index, newNode);
+                }
+                else
+                {
+                    children.Add(newNode);
+                }
+                
+
                 //// walk through children
                 //using var litr = children.GetEnumerator();
                 //while (litr.MoveNext())
@@ -540,11 +566,11 @@ namespace ICU4N.Impl
             private int LenMatches(char[] text, int offset)
             {
                 int textLen = text.Length - offset;
-                int limit = text.Length < textLen ? text.Length : textLen;
+                int limit = this.text.Length < textLen ? this.text.Length : textLen;
                 int len = 0;
                 while (len < limit)
                 {
-                    if (text[len] != text[offset + len])
+                    if (this.text[len] != text[offset + len])
                     {
                         break;
                     }
@@ -598,7 +624,7 @@ namespace ICU4N.Impl
             return sub;
         }
 
-        private static char[] SubArray(char[] array, int start, int limit)
+        private static char[] SubArray(char[] array, int start, int limit) // ICU4N TODO: Change limit to length
         {
             if (start == 0 && limit == array.Length)
             {
