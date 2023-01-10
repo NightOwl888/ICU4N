@@ -4,6 +4,7 @@ using System.Text;
 using Long = J2N.Numerics.Int64;
 using Double = J2N.Numerics.Double;
 using J2N.Text;
+using ICU4N.Numerics;
 
 namespace ICU4N.Text
 {
@@ -335,7 +336,7 @@ namespace ICU4N.Text
                     // the result's fractional part if the formatter it set
                     // to show it), then use that formatter's format() method
                     // to format the result
-                    double numberToFormat = TransformNumber(/*(double)*/number); // ICU4N TODO: support for double
+                    double numberToFormat = TransformNumber((double)number);
                     if (numberFormat.MaximumFractionDigits == 0)
                     {
                         numberToFormat = Math.Floor(numberToFormat);
@@ -358,53 +359,52 @@ namespace ICU4N.Text
             }
         }
 
-        // ICU4N TODO: Support for double
-        ///**
-        // * Performs a mathematical operation on the number, formats it using
-        // * either ruleSet or decimalFormat, and inserts the result into
-        // * toInsertInto.
-        // * @param number The number being formatted.
-        // * @param toInsertInto The string we insert the result into
-        // * @param position The position in toInsertInto where the owning rule's
-        // * rule text begins (this value is added to this substitution's
-        // * position to determine exactly where to insert the new text)
-        // */
-        //public virtual void DoSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount)
-        //{
-        //    // perform a transformation on the number being formatted that
-        //    // is dependent on the type of substitution this is
-        //    double numberToFormat = TransformNumber(number);
+        /**
+         * Performs a mathematical operation on the number, formats it using
+         * either ruleSet or decimalFormat, and inserts the result into
+         * toInsertInto.
+         * @param number The number being formatted.
+         * @param toInsertInto The string we insert the result into
+         * @param position The position in toInsertInto where the owning rule's
+         * rule text begins (this value is added to this substitution's
+         * position to determine exactly where to insert the new text)
+         */
+        public virtual void DoSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount)
+        {
+            // perform a transformation on the number being formatted that
+            // is dependent on the type of substitution this is
+            double numberToFormat = TransformNumber(number);
 
-        //    if (double.IsInfinity(numberToFormat))
-        //    {
-        //        // This is probably a minus rule. Combine it with an infinite rule.
-        //        NFRule infiniteRule = ruleSet.FindRule(double.PositiveInfinity);
-        //        infiniteRule.DoFormat(numberToFormat, toInsertInto, position + pos, recursionCount);
-        //        return;
-        //    }
+            if (double.IsInfinity(numberToFormat))
+            {
+                // This is probably a minus rule. Combine it with an infinite rule.
+                NFRule infiniteRule = ruleSet.FindRule(double.PositiveInfinity);
+                infiniteRule.DoFormat(numberToFormat, toInsertInto, position + pos, recursionCount);
+                return;
+            }
 
-        //    // if the result is an integer, from here on out we work in integer
-        //    // space (saving time and memory and preserving accuracy)
-        //    if (numberToFormat == Math.Floor(numberToFormat) && ruleSet != null) // ICU4N TODO: exact equality for double (bad)
-        //    {
-        //        ruleSet.Format((long)numberToFormat, toInsertInto, position + pos, recursionCount);
+            // if the result is an integer, from here on out we work in integer
+            // space (saving time and memory and preserving accuracy)
+            if (numberToFormat == Math.Floor(numberToFormat) && ruleSet != null) // ICU4N TODO: exact equality for double (bad)
+            {
+                ruleSet.Format((long)numberToFormat, toInsertInto, position + pos, recursionCount);
 
-        //        // if the result isn't an integer, then call either our rule set's
-        //        // format() method or our DecimalFormat's format() method to
-        //        // format the result
-        //    }
-        //    else
-        //    {
-        //        if (ruleSet != null)
-        //        {
-        //            ruleSet.Format(numberToFormat, toInsertInto, position + pos, recursionCount);
-        //        }
-        //        else
-        //        {
-        //            toInsertInto.Insert(position + this.pos, numberFormat.Format(numberToFormat));
-        //        }
-        //    }
-        //}
+                // if the result isn't an integer, then call either our rule set's
+                // format() method or our DecimalFormat's format() method to
+                // format the result
+            }
+            else
+            {
+                if (ruleSet != null)
+                {
+                    ruleSet.Format(numberToFormat, toInsertInto, position + pos, recursionCount);
+                }
+                else
+                {
+                    toInsertInto.Insert(position + this.pos, numberFormat.Format(numberToFormat));
+                }
+            }
+        }
 
         /**
          * Subclasses override this function to perform some kind of
@@ -417,17 +417,16 @@ namespace ICU4N.Text
          */
         public abstract long TransformNumber(long number);
 
-        // ICU4N TODO: Support for double
-        ///**
-        // * Subclasses override this function to perform some kind of
-        // * mathematical operation on the number.  The result of this operation
-        // * is formatted using the rule set or DecimalFormat that this
-        // * substitution refers to, and the result is inserted into the result
-        // * string.
-        // * @param number The number being formatted
-        // * @return The result of performing the opreration on the number
-        // */
-        //public abstract double TransformNumber(double number);
+        /**
+         * Subclasses override this function to perform some kind of
+         * mathematical operation on the number.  The result of this operation
+         * is formatted using the rule set or DecimalFormat that this
+         * substitution refers to, and the result is inserted into the result
+         * string.
+         * @param number The number being formatted
+         * @return The result of performing the opreration on the number
+         */
+        public abstract double TransformNumber(double number);
 
         //-----------------------------------------------------------------------
         // parsing
@@ -643,15 +642,14 @@ namespace ICU4N.Text
             return number;
         }
 
-        // ICU4N TODO: Support for double
-        ///**
-        // * Returns "number" unchanged.
-        // * @return "number"
-        // */
-        //public override double TransformNumber(double number)
-        //{
-        //    return number;
-        //}
+        /**
+         * Returns "number" unchanged.
+         * @return "number"
+         */
+        public override double TransformNumber(double number)
+        {
+            return number;
+        }
 
         //-----------------------------------------------------------------------
         // parsing
@@ -792,27 +790,26 @@ namespace ICU4N.Text
             return (long)Math.Floor((double)number / divisor);
         }
 
-        // ICU4N TODO: Support for double
-        ///**
-        // * Divides the number by the rule's divisor and returns the quotient.
-        // * This is an integral quotient if we're filling in the substitution
-        // * using another rule set, but it's the full quotient (integral and
-        // * fractional parts) if we're filling in the substitution using
-        // * a DecimalFormat.  (This allows things such as "1.2 million".)
-        // * @param number The number being formatted
-        // * @return "number" divided by the rule's divisor
-        // */
-        //public override double TransformNumber(double number)
-        //{
-        //    if (ruleSet == null)
-        //    {
-        //        return number / divisor;
-        //    }
-        //    else
-        //    {
-        //        return Math.Floor(number / divisor);
-        //    }
-        //}
+        /**
+         * Divides the number by the rule's divisor and returns the quotient.
+         * This is an integral quotient if we're filling in the substitution
+         * using another rule set, but it's the full quotient (integral and
+         * fractional parts) if we're filling in the substitution using
+         * a DecimalFormat.  (This allows things such as "1.2 million".)
+         * @param number The number being formatted
+         * @return "number" divided by the rule's divisor
+         */
+        public override double TransformNumber(double number)
+        {
+            if (ruleSet == null)
+            {
+                return number / divisor;
+            }
+            else
+            {
+                return Math.Floor(number / divisor);
+            }
+        }
 
         //-----------------------------------------------------------------------
         // parsing
@@ -1005,33 +1002,32 @@ namespace ICU4N.Text
             }
         }
 
-        // ICU4N TODO: Support for double
-        ///**
-        // * If this is a &gt;&gt;&gt; substitution, use ruleToUse to fill in
-        // * the substitution.  Otherwise, just use the superclass function.
-        // * @param number The number being formatted
-        // * @param toInsertInto The string to insert the result of this substitution
-        // * into
-        // * @param position The position of the rule text in toInsertInto
-        // */
-        //public override void DoSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount)
-        //{
-        //    // if this isn't a >>> substitution, just use the inherited version
-        //    // of this function (which uses either a rule set or a DecimalFormat
-        //    // to format its substitution value)
-        //    if (ruleToUse == null)
-        //    {
-        //        base.DoSubstitution(number, toInsertInto, position, recursionCount);
+        /**
+         * If this is a &gt;&gt;&gt; substitution, use ruleToUse to fill in
+         * the substitution.  Otherwise, just use the superclass function.
+         * @param number The number being formatted
+         * @param toInsertInto The string to insert the result of this substitution
+         * into
+         * @param position The position of the rule text in toInsertInto
+         */
+        public override void DoSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount)
+        {
+            // if this isn't a >>> substitution, just use the inherited version
+            // of this function (which uses either a rule set or a DecimalFormat
+            // to format its substitution value)
+            if (ruleToUse == null)
+            {
+                base.DoSubstitution(number, toInsertInto, position, recursionCount);
 
-        //    }
-        //    else
-        //    {
-        //        // a >>> substitution goes straight to a particular rule to
-        //        // format the substitution value
-        //        double numberToFormat = TransformNumber(number);
-        //        ruleToUse.DoFormat(numberToFormat, toInsertInto, position + pos, recursionCount);
-        //    }
-        //}
+            }
+            else
+            {
+                // a >>> substitution goes straight to a particular rule to
+                // format the substitution value
+                double numberToFormat = TransformNumber(number);
+                ruleToUse.DoFormat(numberToFormat, toInsertInto, position + pos, recursionCount);
+            }
+        }
 
         /**
          * Divides the number being formatted by the rule's divisor and
@@ -1044,17 +1040,16 @@ namespace ICU4N.Text
             return number % divisor;
         }
 
-        // ICU4N TODO: Support for double
-        ///**
-        // * Divides the number being formatted by the rule's divisor and
-        // * returns the remainder.
-        // * @param number The number being formatted
-        // * @return "number" mod divisor
-        // */
-        //public override double TransformNumber(double number)
-        //{
-        //    return Math.Floor(number % divisor);
-        //}
+        /**
+         * Divides the number being formatted by the rule's divisor and
+         * returns the remainder.
+         * @param number The number being formatted
+         * @return "number" mod divisor
+         */
+        public override double TransformNumber(double number)
+        {
+            return Math.Floor(number % divisor);
+        }
 
         //-----------------------------------------------------------------------
         // parsing
@@ -1192,16 +1187,15 @@ namespace ICU4N.Text
             return number;
         }
 
-        // ICU4N TODO: Support for double
-        ///**
-        // * Returns the number's integral part.
-        // * @param number The integral part of the number being formatted
-        // * @return floor(number)
-        // */
-        //public override double TransformNumber(double number)
-        //{
-        //    return Math.Floor(number);
-        //}
+        /**
+         * Returns the number's integral part.
+         * @param number The integral part of the number being formatted
+         * @return floor(number)
+         */
+        public override double TransformNumber(double number)
+        {
+            return Math.Floor(number);
+        }
 
         //-----------------------------------------------------------------------
         // parsing
@@ -1301,54 +1295,52 @@ namespace ICU4N.Text
         // formatting
         //-----------------------------------------------------------------------
 
-        // ICU4N TODO: Support for double
+        /**
+         * If in "by digits" mode, fills in the substitution one decimal digit
+         * at a time using the rule set containing this substitution.
+         * Otherwise, uses the superclass function.
+         * @param number The number being formatted
+         * @param toInsertInto The string to insert the result of formatting
+         * the substitution into
+         * @param position The position of the owning rule's rule text in
+         * toInsertInto
+         */
+        public override void DoSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount)
+        {
+            if (!byDigits)
+            {
+                // if we're not in "byDigits" mode, just use the inherited
+                // doSubstitution() routine
+                base.DoSubstitution(number, toInsertInto, position, recursionCount);
+            }
+            else
+            {
+                // if we're in "byDigits" mode, transform the value into an integer
+                // by moving the decimal point eight places to the right and
+                // pulling digits off the right one at a time, formatting each digit
+                // as an integer using this substitution's owning rule set
+                // (this is slower, but more accurate, than doing it from the
+                // other end)
 
-        ///**
-        // * If in "by digits" mode, fills in the substitution one decimal digit
-        // * at a time using the rule set containing this substitution.
-        // * Otherwise, uses the superclass function.
-        // * @param number The number being formatted
-        // * @param toInsertInto The string to insert the result of formatting
-        // * the substitution into
-        // * @param position The position of the owning rule's rule text in
-        // * toInsertInto
-        // */
-        //public override void DoSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount)
-        //{
-        //    if (!byDigits)
-        //    {
-        //        // if we're not in "byDigits" mode, just use the inherited
-        //        // doSubstitution() routine
-        //        base.DoSubstitution(number, toInsertInto, position, recursionCount);
-        //    }
-        //    else
-        //    {
-        //        // if we're in "byDigits" mode, transform the value into an integer
-        //        // by moving the decimal point eight places to the right and
-        //        // pulling digits off the right one at a time, formatting each digit
-        //        // as an integer using this substitution's owning rule set
-        //        // (this is slower, but more accurate, than doing it from the
-        //        // other end)
+                DecimalQuantity_DualStorageBCD fq = new DecimalQuantity_DualStorageBCD(number);
+                fq.RoundToInfinity(); // ensure doubles are resolved using slow path
 
-        //        DecimalQuantity_DualStorageBCD fq = new DecimalQuantity_DualStorageBCD(number);
-        //        fq.RoundToInfinity(); // ensure doubles are resolved using slow path
-
-        //        bool pad = false;
-        //        int mag = fq.LowerDisplayMagnitude;
-        //        while (mag < 0)
-        //        {
-        //            if (pad && useSpaces)
-        //            {
-        //                toInsertInto.Insert(position + pos, ' ');
-        //            }
-        //            else
-        //            {
-        //                pad = true;
-        //            }
-        //            ruleSet.Format(fq.getDigit(mag++), toInsertInto, position + pos, recursionCount);
-        //        }
-        //    }
-        //}
+                bool pad = false;
+                int mag = fq.LowerDisplayMagnitude;
+                while (mag < 0)
+                {
+                    if (pad && useSpaces)
+                    {
+                        toInsertInto.Insert(position + pos, ' ');
+                    }
+                    else
+                    {
+                        pad = true;
+                    }
+                    ruleSet.Format(fq.GetDigit(mag++), toInsertInto, position + pos, recursionCount);
+                }
+            }
+        }
 
         /**
          * Returns the fractional part of the number, which will always be
@@ -1361,16 +1353,15 @@ namespace ICU4N.Text
             return 0;
         }
 
-        // ICU4N TODO: Support for double
-        ///**
-        // * Returns the fractional part of the number.
-        // * @param number The number being formatted.
-        // * @return number - floor(number)
-        // */
-        //public override double TransformNumber(double number)
-        //{
-        //    return number - Math.Floor(number);
-        //}
+        /**
+         * Returns the fractional part of the number.
+         * @param number The number being formatted.
+         * @return number - floor(number)
+         */
+        public override double TransformNumber(double number)
+        {
+            return number - Math.Floor(number);
+        }
 
         //-----------------------------------------------------------------------
         // parsing
@@ -1403,57 +1394,55 @@ namespace ICU4N.Text
             }
             else
             {
-                // ICU4N TODO: Support for double
-                throw new NotImplementedException();
-                //// if we ARE in byDigits mode, parse the text one digit at a time
-                //// using this substitution's owning rule set (we do this by setting
-                //// upperBound to 10 when calling doParse() ) until we reach
-                //// nonmatching text
-                //string workText = text;
-                //ParsePosition workPos = new ParsePosition(1);
-                //double result;
-                //int digit;
+                // if we ARE in byDigits mode, parse the text one digit at a time
+                // using this substitution's owning rule set (we do this by setting
+                // upperBound to 10 when calling doParse() ) until we reach
+                // nonmatching text
+                string workText = text;
+                ParsePosition workPos = new ParsePosition(1);
+                double result;
+                int digit;
 
-                //DecimalQuantity_DualStorageBCD fq = new DecimalQuantity_DualStorageBCD();
-                //int leadingZeros = 0;
-                //while (workText.Length > 0 && workPos.Index != 0)
-                //{
-                //    workPos.Index = 0;
-                //    digit = ruleSet.Parse(workText, workPos, 10).ToInt32();
-                //    if (lenientParse && workPos.Index == 0)
-                //    {
-                //        Number n = ruleSet.owner.DecimalFormat.Parse(workText, workPos);
-                //        if (n != null)
-                //        {
-                //            digit = n.ToInt32();
-                //        }
-                //    }
+                DecimalQuantity_DualStorageBCD fq = new DecimalQuantity_DualStorageBCD();
+                int leadingZeros = 0;
+                while (workText.Length > 0 && workPos.Index != 0)
+                {
+                    workPos.Index = 0;
+                    digit = ruleSet.Parse(workText, workPos, 10).ToInt32();
+                    if (lenientParse && workPos.Index == 0)
+                    {
+                        Number n = ruleSet.owner.DecimalFormat.Parse(workText, workPos);
+                        if (n != null)
+                        {
+                            digit = n.ToInt32();
+                        }
+                    }
 
-                //    if (workPos.Index != 0)
-                //    {
-                //        if (digit == 0)
-                //        {
-                //            leadingZeros++;
-                //        }
-                //        else
-                //        {
-                //            fq.AppendDigit((byte)digit, leadingZeros, false);
-                //            leadingZeros = 0;
-                //        }
+                    if (workPos.Index != 0)
+                    {
+                        if (digit == 0)
+                        {
+                            leadingZeros++;
+                        }
+                        else
+                        {
+                            fq.AppendDigit((byte)digit, leadingZeros, false);
+                            leadingZeros = 0;
+                        }
 
-                //        parsePosition.Index = parsePosition.Index + workPos.Index;
-                //        workText = workText.Substring(workPos.Index);
-                //        while (workText.Length > 0 && workText[0] == ' ')
-                //        {
-                //            workText = workText.Substring(1);
-                //            parsePosition.Index = parsePosition.Index + 1;
-                //        }
-                //    }
-                //}
-                //result = fq.ToDouble();
+                        parsePosition.Index = parsePosition.Index + workPos.Index;
+                        workText = workText.Substring(workPos.Index);
+                        while (workText.Length > 0 && workText[0] == ' ')
+                        {
+                            workText = workText.Substring(1);
+                            parsePosition.Index = parsePosition.Index + 1;
+                        }
+                    }
+                }
+                result = fq.ToDouble();
 
-                //result = ComposeRuleValue(result, baseValue);
-                //return Double.GetInstance(result);
+                result = ComposeRuleValue(result, baseValue);
+                return Double.GetInstance(result);
             }
         }
 
@@ -1527,16 +1516,15 @@ namespace ICU4N.Text
             return Math.Abs(number);
         }
 
-        // ICU4N TODO: Support for double
-        ///**
-        // * Returns the absolute value of the number.
-        // * @param number The number being formatted.
-        // * @return abs(number)
-        // */
-        //public override double TransformNumber(double number)
-        //{
-        //    return Math.Abs(number);
-        //}
+        /**
+         * Returns the absolute value of the number.
+         * @param number The number being formatted.
+         * @return abs(number)
+         */
+        public override double TransformNumber(double number)
+        {
+            return Math.Abs(number);
+        }
 
         //-----------------------------------------------------------------------
         // parsing
@@ -1666,59 +1654,58 @@ namespace ICU4N.Text
         // formatting
         //-----------------------------------------------------------------------
 
-        // ICU4N TODO: Support for double
-        ///**
-        // * Performs a mathematical operation on the number, formats it using
-        // * either ruleSet or decimalFormat, and inserts the result into
-        // * toInsertInto.
-        // * @param number The number being formatted.
-        // * @param toInsertInto The string we insert the result into
-        // * @param position The position in toInsertInto where the owning rule's
-        // * rule text begins (this value is added to this substitution's
-        // * position to determine exactly where to insert the new text)
-        // */
-        //public override void DoSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount)
-        //{
-        //    // perform a transformation on the number being formatted that
-        //    // is dependent on the type of substitution this is
-        //    //String s = toInsertInto.toString();
-        //    double numberToFormat = TransformNumber(number);
+        /**
+         * Performs a mathematical operation on the number, formats it using
+         * either ruleSet or decimalFormat, and inserts the result into
+         * toInsertInto.
+         * @param number The number being formatted.
+         * @param toInsertInto The string we insert the result into
+         * @param position The position in toInsertInto where the owning rule's
+         * rule text begins (this value is added to this substitution's
+         * position to determine exactly where to insert the new text)
+         */
+        public override void DoSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount)
+        {
+            // perform a transformation on the number being formatted that
+            // is dependent on the type of substitution this is
+            //String s = toInsertInto.toString();
+            double numberToFormat = TransformNumber(number);
 
-        //    if (withZeros && ruleSet != null)
-        //    {
-        //        // if there are leading zeros in the decimal expansion then emit them
-        //        long nf = (long)numberToFormat;
-        //        int len = toInsertInto.Length;
-        //        while ((nf *= 10) < denominator)
-        //        {
-        //            toInsertInto.Insert(position + pos, ' ');
-        //            ruleSet.Format(0, toInsertInto, position + pos, recursionCount);
-        //        }
-        //        position += toInsertInto.Length - len;
-        //    }
+            if (withZeros && ruleSet != null)
+            {
+                // if there are leading zeros in the decimal expansion then emit them
+                long nf = (long)numberToFormat;
+                int len = toInsertInto.Length;
+                while ((nf *= 10) < denominator)
+                {
+                    toInsertInto.Insert(position + pos, ' ');
+                    ruleSet.Format(0, toInsertInto, position + pos, recursionCount);
+                }
+                position += toInsertInto.Length - len;
+            }
 
-        //    // if the result is an integer, from here on out we work in integer
-        //    // space (saving time and memory and preserving accuracy)
-        //    if (numberToFormat == Math.Floor(numberToFormat) && ruleSet != null)
-        //    {
-        //        ruleSet.Format((long)numberToFormat, toInsertInto, position + pos, recursionCount);
+            // if the result is an integer, from here on out we work in integer
+            // space (saving time and memory and preserving accuracy)
+            if (numberToFormat == Math.Floor(numberToFormat) && ruleSet != null)
+            {
+                ruleSet.Format((long)numberToFormat, toInsertInto, position + pos, recursionCount);
 
-        //        // if the result isn't an integer, then call either our rule set's
-        //        // format() method or our DecimalFormat's format() method to
-        //        // format the result
-        //    }
-        //    else
-        //    {
-        //        if (ruleSet != null)
-        //        {
-        //            ruleSet.Format(numberToFormat, toInsertInto, position + pos, recursionCount);
-        //        }
-        //        else
-        //        {
-        //            toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
-        //        }
-        //    }
-        //}
+                // if the result isn't an integer, then call either our rule set's
+                // format() method or our DecimalFormat's format() method to
+                // format the result
+            }
+            else
+            {
+                if (ruleSet != null)
+                {
+                    ruleSet.Format(numberToFormat, toInsertInto, position + pos, recursionCount);
+                }
+                else
+                {
+                    toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
+                }
+            }
+        }
 
         /**
          * Returns the number being formatted times the denominator.
@@ -1730,16 +1717,15 @@ namespace ICU4N.Text
             return (long)Math.Round(number * denominator);
         }
 
-        // ICU4N TODO: Support for double
-        ///**
-        // * Returns the number being formatted times the denominator.
-        // * @param number The number being formatted
-        // * @return number * denominator
-        // */
-        //public override double TransformNumber(double number)
-        //{
-        //    return Math.Round(number * denominator);
-        //}
+        /**
+         * Returns the number being formatted times the denominator.
+         * @param number The number being formatted
+         * @return number * denominator
+         */
+        public override double TransformNumber(double number)
+        {
+            return Math.Round(number * denominator);
+        }
 
         //-----------------------------------------------------------------------
         // parsing

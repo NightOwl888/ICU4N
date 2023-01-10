@@ -1662,7 +1662,7 @@ namespace ICU4N.Text
                 number = Numerics.BigDecimal.Parse(Double.ToString(number, CultureInfo.InvariantCulture), NumberStyle.Float, CultureInfo.InvariantCulture).SetScale(MaximumFractionDigits, roundingMode.ToICURoundingMode()).ToDouble();
             //RoundingModeExtensions
             }
-            ruleSet.Format((long)number, result, 0, 0); // ICU4N TODO: Remove cast to long when we add support for double
+            ruleSet.Format(number, result, 0, 0);
             PostProcess(result, ruleSet);
             return result.ToString();
         }

@@ -472,102 +472,100 @@ namespace ICU4N.Text
             applicableRule.DoFormat(number, toInsertInto, pos, ++recursionCount);
         }
 
-        // ICU4N TODO: Support for double
+        /**
+         * Formats a double.  Selects an appropriate rule and dispatches
+         * control to it.
+         * @param number The number being formatted
+         * @param toInsertInto The string where the result is to be placed
+         * @param pos The position in toInsertInto where the result of
+         * this operation is to be inserted
+         */
+        public void Format(double number, StringBuilder toInsertInto, int pos, int recursionCount)
+        {
+            if (recursionCount >= RECURSION_LIMIT)
+            {
+                throw new InvalidOperationException("Recursion limit exceeded when applying ruleSet " + name);
+            }
+            NFRule applicableRule = FindRule(number);
+            applicableRule.DoFormat(number, toInsertInto, pos, ++recursionCount);
+        }
 
-        ///**
-        // * Formats a double.  Selects an appropriate rule and dispatches
-        // * control to it.
-        // * @param number The number being formatted
-        // * @param toInsertInto The string where the result is to be placed
-        // * @param pos The position in toInsertInto where the result of
-        // * this operation is to be inserted
-        // */
-        //public void Format(double number, StringBuilder toInsertInto, int pos, int recursionCount)
-        //{
-        //    if (recursionCount >= RECURSION_LIMIT)
-        //    {
-        //        throw new InvalidOperationException("Recursion limit exceeded when applying ruleSet " + name);
-        //    }
-        //    NFRule applicableRule = FindRule(number);
-        //    applicableRule.DoFormat(number, toInsertInto, pos, ++recursionCount);
-        //}
+        /**
+         * Selects an appropriate rule for formatting the number.
+         * @param number The number being formatted.
+         * @return The rule that should be used to Format it
+         */
+        internal NFRule FindRule(double number)
+        {
+            // if this is a fraction rule set, use FindFractionRuleSetRule()
+            if (isFractionRuleSet)
+            {
+                return FindFractionRuleSetRule(number);
+            }
 
-        ///**
-        // * Selects an appropriate rule for formatting the number.
-        // * @param number The number being formatted.
-        // * @return The rule that should be used to Format it
-        // */
-        //internal NFRule FindRule(double number)
-        //{
-        //    // if this is a fraction rule set, use FindFractionRuleSetRule()
-        //    if (isFractionRuleSet)
-        //    {
-        //        return FindFractionRuleSetRule(number);
-        //    }
+            if (double.IsNaN(number))
+            {
+                NFRule rule = nonNumericalRules[NAN_RULE_INDEX];
+                if (rule == null)
+                {
+                    rule = owner.DefaultNaNRule;
+                }
+                return rule;
+            }
 
-        //    if (double.IsNaN(number))
-        //    {
-        //        NFRule rule = nonNumericalRules[NAN_RULE_INDEX];
-        //        if (rule == null)
-        //        {
-        //            rule = owner.DefaultNaNRule;
-        //        }
-        //        return rule;
-        //    }
+            // if the number is negative, return the negative number rule
+            // (if there isn't a negative-number rule, we pretend it's a
+            // positive number)
+            if (number < 0)
+            {
+                if (nonNumericalRules[NEGATIVE_RULE_INDEX] != null)
+                {
+                    return nonNumericalRules[NEGATIVE_RULE_INDEX];
+                }
+                else
+                {
+                    number = -number;
+                }
+            }
 
-        //    // if the number is negative, return the negative number rule
-        //    // (if there isn't a negative-number rule, we pretend it's a
-        //    // positive number)
-        //    if (number < 0)
-        //    {
-        //        if (nonNumericalRules[NEGATIVE_RULE_INDEX] != null)
-        //        {
-        //            return nonNumericalRules[NEGATIVE_RULE_INDEX];
-        //        }
-        //        else
-        //        {
-        //            number = -number;
-        //        }
-        //    }
+            if (double.IsInfinity(number))
+            {
+                NFRule rule = nonNumericalRules[INFINITY_RULE_INDEX];
+                if (rule == null)
+                {
+                    rule = owner.DefaultInfinityRule;
+                }
+                return rule;
+            }
 
-        //    if (double.IsInfinity(number))
-        //    {
-        //        NFRule rule = nonNumericalRules[INFINITY_RULE_INDEX];
-        //        if (rule == null)
-        //        {
-        //            rule = owner.DefaultInfinityRule;
-        //        }
-        //        return rule;
-        //    }
+            // if the number isn't an integer, we use one f the fraction rules...
+            if (number != Math.Floor(number))
+            {
+                if (number < 1 && nonNumericalRules[PROPER_FRACTION_RULE_INDEX] != null)
+                {
+                    // if the number is between 0 and 1, return the proper
+                    // fraction rule
+                    return nonNumericalRules[PROPER_FRACTION_RULE_INDEX];
+                }
+                else if (nonNumericalRules[IMPROPER_FRACTION_RULE_INDEX] != null)
+                {
+                    // otherwise, return the improper fraction rule
+                    return nonNumericalRules[IMPROPER_FRACTION_RULE_INDEX];
+                }
+            }
 
-        //    // if the number isn't an integer, we use one f the fraction rules...
-        //    if (number != Math.Floor(number))
-        //    {
-        //        if (number < 1 && nonNumericalRules[PROPER_FRACTION_RULE_INDEX] != null)
-        //        {
-        //            // if the number is between 0 and 1, return the proper
-        //            // fraction rule
-        //            return nonNumericalRules[PROPER_FRACTION_RULE_INDEX];
-        //        }
-        //        else if (nonNumericalRules[IMPROPER_FRACTION_RULE_INDEX] != null)
-        //        {
-        //            // otherwise, return the improper fraction rule
-        //            return nonNumericalRules[IMPROPER_FRACTION_RULE_INDEX];
-        //        }
-        //    }
-
-        //    // if there's a master rule, use it to Format the number
-        //    if (nonNumericalRules[MASTER_RULE_INDEX] != null)
-        //    {
-        //        return nonNumericalRules[MASTER_RULE_INDEX];
-        //    }
-        //    else
-        //    {
-        //        // and if we haven't yet returned a rule, use FindNormalRule()
-        //        // to find the applicable rule
-        //        return FindNormalRule((long)Math.Round(number)); // ICU4N: Added cast to long
-        //    }
-        //}
+            // if there's a master rule, use it to Format the number
+            if (nonNumericalRules[MASTER_RULE_INDEX] != null)
+            {
+                return nonNumericalRules[MASTER_RULE_INDEX];
+            }
+            else
+            {
+                // and if we haven't yet returned a rule, use FindNormalRule()
+                // to find the applicable rule
+                return FindNormalRule((long)Math.Round(number)); // ICU4N: Added cast to long
+            }
+        }
 
         /**
          * If the value passed to FindRule() is a positive integer, FindRule()
