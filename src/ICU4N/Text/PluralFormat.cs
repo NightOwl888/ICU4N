@@ -835,7 +835,7 @@ namespace ICU4N.Text
                     continue;
                 }
 
-                string currArg = pattern.Substring(partStart.Limit, partLimit.Index);
+                string currArg = pattern.Substring(partStart.Limit, partLimit.Index - partStart.Limit); // ICU4N: Corrected 2nd arg
                 if (scanner != null)
                 {
                     // If lenient parsing is turned ON, we've got some time consuming parsing ahead of us.
