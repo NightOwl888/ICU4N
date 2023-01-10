@@ -454,8 +454,6 @@ namespace ICU4N.Impl
                     return;
                 }
 
-                // ICU4N TODO: Check this logic
-
                 // walk through children
                 int index = 0;
                 bool isPrevious = false;
@@ -495,9 +493,6 @@ namespace ICU4N.Impl
                 // the implicit cursor: a subsequent call to next would be unaffected, and a subsequent call to
                 // previous would return the new element. (This call increases by one the value that would be
                 // returned by a call to nextIndex or previousIndex.)
-
-                if (!isPrevious)
-                    index = Math.Max(index - 1, 0);
 
                 var newNode = new Node(SubArray(text, offset), AddValue(null, value), null);
                 if (index != children.Count)
@@ -606,10 +601,11 @@ namespace ICU4N.Impl
         private static char[] ToCharArray(StringBuilder text)
         {
             char[] array = new char[text.Length];
-            for (int i = 0; i < array.Length; i++)
-            {
-                array[i] = text[i];
-            }
+            //for (int i = 0; i < array.Length; i++)
+            //{
+            //    array[i] = text[i];
+            //}
+            text.CopyTo(sourceIndex: 0, array, destinationIndex: 0, array.Length);
             return array;
         }
 
