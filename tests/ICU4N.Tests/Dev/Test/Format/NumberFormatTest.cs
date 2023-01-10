@@ -6227,7 +6227,7 @@ namespace ICU4N.Dev.Test.Format
             df.ParseStrict = (true);
             ParsePosition ppos = new ParsePosition(0);
             Number result0 = df.Parse("123E4", ppos);
-            assertEquals("Should accept number with exponent", 1230000L, result0);
+            assertEquals("Should accept number with exponent", 1230000L, result0.ToInt64());
             assertEquals("Should consume the whole number", 5, ppos.Index);
             ppos.Index = (0);
             result0 = df.Parse("123", ppos);
