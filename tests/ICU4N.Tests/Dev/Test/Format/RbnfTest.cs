@@ -306,8 +306,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "2,345,678", "two million three hundred forty-five "
                         + "thousand six hundred seventy-eight" },
                 new string[] { "-36", "minus thirty-six" },
-                // ICU4N TODO: Support for double
-                //new string[] { "234.567", "two hundred thirty-four point five six seven" }
+                new string[] { "234.567", "two hundred thirty-four point five six seven" }
             };
 
             doTest(formatter, testData, true);
@@ -440,8 +439,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "2,345,678", "deux millions trois cent quarante-cinq mille "
                         + "six cent soixante-dix-huit" },
                 new string[] { "-36", "moins trente-six" },
-                // ICU4N TODO: Support for double
-                //new string[] { "234.567", "deux cent trente-quatre virgule cinq six sept" }
+                new string[] { "234.567", "deux cent trente-quatre virgule cinq six sept" }
             };
 
             doTest(formatter, testData, true);
@@ -482,8 +480,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "2,345,678", "deux millions trois cent quarante-cinq mille "
                         + "six cent septante-huit" },
                 new string[] { "-36", "moins trente-six" },
-                // ICU4N TODO: Support for double
-                //new string[] { "234.567", "deux cent trente-quatre virgule cinq six sept" }
+                new string[] { "234.567", "deux cent trente-quatre virgule cinq six sept" }
             };
 
             doTest(formatter, testData, true);
@@ -517,8 +514,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "4,567", "quattro\u00ADmila\u00ADcinque\u00ADcento\u00ADsessanta\u00ADsette" },
                 new string[] { "15,943", "quindici\u00ADmila\u00ADnove\u00ADcento\u00ADquaranta\u00ADtr\u00E9" },
                 new string[] { "-36", "meno trenta\u00ADsei" },
-                // ICU4N TODO: Support for double
-                //new string[] { "234.567", "due\u00ADcento\u00ADtrenta\u00ADquattro virgola cinque sei sette" }
+                new string[] { "234.567", "due\u00ADcento\u00ADtrenta\u00ADquattro virgola cinque sei sette" }
             };
 
             doTest(formatter, testData, true);
@@ -571,13 +567,12 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "11", "\u0e2a\u0e34\u0e1a\u200b\u0e40\u0e2d\u0e47\u0e14" },
                 new string[] { "21", "\u0e22\u0e35\u0e48\u200b\u0e2a\u0e34\u0e1a\u200b\u0e40\u0e2d\u0e47\u0e14" },
                 new string[] { "101", "\u0e2b\u0e19\u0e36\u0e48\u0e07\u200b\u0e23\u0e49\u0e2d\u0e22\u200b\u0e2b\u0e19\u0e36\u0e48\u0e07" },
-                // ICU4N TODO: Support for double
-                //new string[] { "1.234", "\u0e2b\u0e19\u0e36\u0e48\u0e07\u200b\u0e08\u0e38\u0e14\u200b\u0e2a\u0e2d\u0e07\u0e2a\u0e32\u0e21\u0e2a\u0e35\u0e48" },
-                //new string[] { "21.45", "\u0e22\u0e35\u0e48\u200b\u0e2a\u0e34\u0e1a\u200b\u0e40\u0e2d\u0e47\u0e14\u200b\u0e08\u0e38\u0e14\u200b\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" },
-                //new string[] { "22.45", "\u0e22\u0e35\u0e48\u200b\u0e2a\u0e34\u0e1a\u200b\u0e2a\u0e2d\u0e07\u200b\u0e08\u0e38\u0e14\u200b\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" },
-                //new string[] { "23.45", "\u0e22\u0e35\u0e48\u200b\u0e2a\u0e34\u0e1a\u200b\u0e2a\u0e32\u0e21\u200b\u0e08\u0e38\u0e14\u200b\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" },
-                //new string[] { "123.45", "\u0e2b\u0e19\u0e36\u0e48\u0e07\u200b\u0e23\u0e49\u0e2d\u0e22\u200b\u0e22\u0e35\u0e48\u200b\u0e2a\u0e34\u0e1a\u200b\u0e2a\u0e32\u0e21\u200b\u0e08\u0e38\u0e14\u200b\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" },
-                //new string[] { "12,345.678", "\u0E2B\u0E19\u0E36\u0E48\u0E07\u200b\u0E2B\u0E21\u0E37\u0E48\u0E19\u200b\u0E2A\u0E2D\u0E07\u200b\u0E1E\u0E31\u0E19\u200b\u0E2A\u0E32\u0E21\u200b\u0E23\u0E49\u0E2D\u0E22\u200b\u0E2A\u0E35\u0E48\u200b\u0E2A\u0E34\u0E1A\u200b\u0E2B\u0E49\u0E32\u200b\u0E08\u0E38\u0E14\u200b\u0E2B\u0E01\u0E40\u0E08\u0E47\u0E14\u0E41\u0E1B\u0E14" },
+                new string[] { "1.234", "\u0e2b\u0e19\u0e36\u0e48\u0e07\u200b\u0e08\u0e38\u0e14\u200b\u0e2a\u0e2d\u0e07\u0e2a\u0e32\u0e21\u0e2a\u0e35\u0e48" },
+                new string[] { "21.45", "\u0e22\u0e35\u0e48\u200b\u0e2a\u0e34\u0e1a\u200b\u0e40\u0e2d\u0e47\u0e14\u200b\u0e08\u0e38\u0e14\u200b\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" },
+                new string[] { "22.45", "\u0e22\u0e35\u0e48\u200b\u0e2a\u0e34\u0e1a\u200b\u0e2a\u0e2d\u0e07\u200b\u0e08\u0e38\u0e14\u200b\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" },
+                new string[] { "23.45", "\u0e22\u0e35\u0e48\u200b\u0e2a\u0e34\u0e1a\u200b\u0e2a\u0e32\u0e21\u200b\u0e08\u0e38\u0e14\u200b\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" },
+                new string[] { "123.45", "\u0e2b\u0e19\u0e36\u0e48\u0e07\u200b\u0e23\u0e49\u0e2d\u0e22\u200b\u0e22\u0e35\u0e48\u200b\u0e2a\u0e34\u0e1a\u200b\u0e2a\u0e32\u0e21\u200b\u0e08\u0e38\u0e14\u200b\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" },
+                new string[] { "12,345.678", "\u0E2B\u0E19\u0E36\u0E48\u0E07\u200b\u0E2B\u0E21\u0E37\u0E48\u0E19\u200b\u0E2A\u0E2D\u0E07\u200b\u0E1E\u0E31\u0E19\u200b\u0E2A\u0E32\u0E21\u200b\u0E23\u0E49\u0E2D\u0E22\u200b\u0E2A\u0E35\u0E48\u200b\u0E2A\u0E34\u0E1A\u200b\u0E2B\u0E49\u0E32\u200b\u0E08\u0E38\u0E14\u200b\u0E2B\u0E01\u0E40\u0E08\u0E47\u0E14\u0E41\u0E1B\u0E14" },
             };
 
             doTest(formatter, testData, true);
@@ -669,13 +664,12 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "21,000", "двадцать один тысяча" },
                 new string[] { "22,000", "двадцать два тысячи" },
                 new string[] { "25,001", "двадцать пять тысяч один" },
-                // ICU4N TODO: Support for double
-                //new string[] { "0.1", "один десятая" },
-                //new string[] { "0.2", "два десятых" },
-                //new string[] { "0.21", "двадцать один сотая" },
-                //new string[] { "0.22", "двадцать два сотых" },
-                //new string[] { "21.1", "двадцать один целый один десятая" },
-                //new string[] { "22.2", "двадцать два целых два десятых" },
+                new string[] { "0.1", "один десятая" },
+                new string[] { "0.2", "два десятых" },
+                new string[] { "0.21", "двадцать один сотая" },
+                new string[] { "0.22", "двадцать два сотых" },
+                new string[] { "21.1", "двадцать один целый один десятая" },
+                new string[] { "22.2", "двадцать два целых два десятых" },
             };
 
             doTest(ruFormatter, ruTestData, true);
@@ -889,19 +883,18 @@ namespace ICU4N.Dev.Test.Format
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Missing Dependencies BigDecimal, BigInteger constructor")]
         public void TestBigNumbers()
         {
-            //BigInteger bigI = new BigInteger("1234567890", 10);
-            //StringBuffer buf = new StringBuffer();
-            //RuleBasedNumberFormat fmt = new RuleBasedNumberFormat(NumberPresentation.SpellOut);
-            //fmt.Format(bigI, buf, null);
-            //Logln("big int: " + buf.ToString());
+            ICU4N.Numerics.BigMath.BigInteger bigI = ICU4N.Numerics.BigMath.BigInteger.Parse("1234567890", 10);
+            StringBuffer buf = new StringBuffer();
+            RuleBasedNumberFormat fmt = new RuleBasedNumberFormat(NumberPresentation.SpellOut);
+            fmt.Format(bigI, buf, null);
+            Logln("big int: " + buf.ToString());
 
-            //buf.Length=(0);
-            //java.math.BigDecimal bigD = new java.math.BigDecimal(bigI);
-            //fmt.Format(bigD, buf, null);
-            //Logln("big dec: " + buf.ToString());
+            buf.Length = (0);
+            ICU4N.Numerics.BigMath.BigDecimal bigD = new ICU4N.Numerics.BigMath.BigDecimal(bigI);
+            fmt.Format(bigD, buf, null);
+            Logln("big dec: " + buf.ToString());
         }
 
         [Test]
@@ -944,8 +937,7 @@ namespace ICU4N.Dev.Test.Format
             string[][] testData = new string[][] {
                 new string[] { "0", "\u0e28\u0e39\u0e19\u0e22\u0e4c" },
                 new string[] { "1", "\u0e2b\u0e19\u0e36\u0e48\u0e07" },
-                // ICU4N TODO: Support for double
-                //new string[] { "123.45", "\u0e2b\u0e19\u0e36\u0e48\u0e07\u0e23\u0e49\u0e2d\u0e22\u0e22\u0e35\u0e48\u0e2a\u0e34\u0e1a\u0e2a\u0e32\u0e21\u0e08\u0e38\u0e14\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" }
+                new string[] { "123.45", "\u0e2b\u0e19\u0e36\u0e48\u0e07\u0e23\u0e49\u0e2d\u0e22\u0e22\u0e35\u0e48\u0e2a\u0e34\u0e1a\u0e2a\u0e32\u0e21\u0e08\u0e38\u0e14\u0e2a\u0e35\u0e48\u0e2b\u0e49\u0e32" }
             };
 
             doTest(formatter, testData, true);
@@ -1220,13 +1212,8 @@ namespace ICU4N.Dev.Test.Format
         void doTest(RuleBasedNumberFormat formatter, string[][] testData,
                     bool testParsing)
         {
-            // ICU4N TODO: For now, only test formatting
-            testParsing = false;
-
-            //        NumberFormat decFmt = NumberFormat.GetInstance(new CultureInfo("en-US"));
-#if FEATURE_IKVM
-             com.ibm.icu.text.NumberFormat decFmt = new com.ibm.icu.text.DecimalFormat("#,###.################");
-#endif
+            //        NumberFormat decFmt = NumberFormat.getInstance(Locale.US);
+            NumberFormat decFmt = new DecimalFormat("#,###.################");
             try
             {
                 for (int i = 0; i < testData.Length; i++)
@@ -1237,13 +1224,8 @@ namespace ICU4N.Dev.Test.Format
                     {
                         Logln("test[" + i + "] number: " + number + " target: " + expectedWords);
                     }
-#if FEATURE_IKVM
-                    var num = decFmt.parse(number);
-                    String actualWords = formatter.Format(num.longValue());
-#else
-                    Number num = Double.GetInstance(Double.Parse(number, NumberStyle.Float | NumberStyle.AllowThousands, CultureInfo.InvariantCulture));
+                    Number num = decFmt.Parse(number);
                     String actualWords = formatter.Format(num);
-#endif
 
                     if (!actualWords.Equals(expectedWords))
                     {
@@ -1253,11 +1235,8 @@ namespace ICU4N.Dev.Test.Format
                     }
                     else if (testParsing)
                     {
-#if FEATURE_IKVM
-                        //String actualNumber = formatter
-                        //        .Parse(actualWords).ToString("#,###.################", CultureInfo.InvariantCulture);
-                        String actualNumber = decFmt.format(formatter
-                                .Parse(actualWords).ToInt64());
+                        String actualNumber = decFmt.Format(formatter
+                                .Parse(actualWords));
 
                         if (!actualNumber.Equals(number))
                         {
@@ -1265,63 +1244,16 @@ namespace ICU4N.Dev.Test.Format
                                     ", expected " + number + ", but got " +
                                     actualNumber);
                         }
-#endif
                     }
                 }
             }
             catch (Exception e)
             {
                 Errln("Test failed with exception: " + e.ToString());
-
+                Console.WriteLine(e.ToString());
                 //e.printStackTrace();
                 //Errln("Test failed with exception: " + e.toString());
             }
-
-            // ICU4N TODO: After DecimalFormat is ported, use the below code.
-            //throw new NotImplementedException("Missing DecimalFormat dependency");
-
-            ////        NumberFormat decFmt = NumberFormat.getInstance(Locale.US);
-            //NumberFormat decFmt = new DecimalFormat("#,###.################");
-            //try
-            //{
-            //    for (int i = 0; i < testData.Length; i++)
-            //    {
-            //        String number = testData[i][0];
-            //        String expectedWords = testData[i][1];
-            //        if (IsVerbose())
-            //        {
-            //            Logln("test[" + i + "] number: " + number + " target: " + expectedWords);
-            //        }
-            //        Number num = decFmt.Parse(number);
-            //        String actualWords = formatter.Format(num);
-
-            //        if (!actualWords.Equals(expectedWords))
-            //        {
-            //            Errln("Spot check format failed: for " + number + ", expected\n    "
-            //                    + expectedWords + ", but got\n    " +
-            //                    actualWords);
-            //        }
-            //        else if (testParsing)
-            //        {
-            //            String actualNumber = decFmt.Format(formatter
-            //                    .Parse(actualWords));
-
-            //            if (!actualNumber.Equals(number))
-            //            {
-            //                Errln("Spot check parse failed: for " + actualWords +
-            //                        ", expected " + number + ", but got " +
-            //                        actualNumber);
-            //            }
-            //        }
-            //    }
-            //}
-            //catch (Exception e)
-            //{
-            //    Errln("Test failed with exception: " + e.ToString());
-
-            //    //e.printStackTrace();
-            //    //Errln("Test failed with exception: " + e.toString());
-            //}
         }
 
         /* Tests the method
@@ -1733,7 +1665,6 @@ namespace ICU4N.Dev.Test.Format
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Support for double")]
         public void TestVariableDecimalPoint()
         {
             String enRules = "%spellout-numbering:"
@@ -1861,7 +1792,6 @@ namespace ICU4N.Dev.Test.Format
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Support for double")]
         public void TestCompactDecimalFormatStyle()
         {
             // This is not a common use case, but we're testing it anyway.
