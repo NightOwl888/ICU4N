@@ -6243,14 +6243,14 @@ namespace ICU4N.Dev.Test.Format
             DecimalFormat df = (DecimalFormat)NumberFormat.GetScientificInstance();
             ParsePosition ppos = new ParsePosition(0);
             Number result0 = df.Parse("123E", ppos);
-            assertEquals("Should parse the number in lenient mode", 123L, result0);
+            assertEquals("Should parse the number in lenient mode", 123L, result0.ToInt64());
             assertEquals("Should stop before the E", 3, ppos.Index);
             DecimalFormatSymbols dfs = df.GetDecimalFormatSymbols();
             dfs.ExponentSeparator = ("EE");
             df.SetDecimalFormatSymbols(dfs);
             ppos.Index = (0);
             result0 = df.Parse("123EE", ppos);
-            assertEquals("Should parse the number in lenient mode", 123L, result0);
+            assertEquals("Should parse the number in lenient mode", 123L, result0.ToInt64());
             assertEquals("Should stop before the EE", 3, ppos.Index);
         }
 
