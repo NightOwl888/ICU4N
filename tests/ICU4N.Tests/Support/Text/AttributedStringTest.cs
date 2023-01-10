@@ -196,5 +196,45 @@ namespace ICU4N.Support.Text
                 // expected
             }
         }
+
+#if FEATURE_IKVM
+
+        [Test]
+        public void TestListIteratorBehavior()
+        {
+            java.util.List list = ResetList();
+
+            var it = list.listIterator();
+
+            it.next(); // 0
+            it.next(); // 1
+            it.remove();
+            assertEquals("invalid value", new java.lang.Integer(2), it.next()); // 2
+
+            it.add(new java.lang.Integer(12));
+            it.add(new java.lang.Integer(13));
+
+            assertEquals("invalid value", new java.lang.Integer(3), it.next()); // 3
+            assertEquals("invalid value", new java.lang.Integer(4), it.next()); // 4
+            assertEquals("invalid value", new java.lang.Integer(5), it.next()); // 5
+            assertEquals("invalid value", new java.lang.Integer(6), it.next()); // 6
+            assertEquals("invalid value", new java.lang.Integer(7), it.next()); // 7
+            assertEquals("invalid value", new java.lang.Integer(8), it.next()); // 8
+            assertEquals("invalid value", new java.lang.Integer(9), it.next()); // 9
+            it.add(new java.lang.Integer(20));
+            assertFalse("End of list", it.hasNext());
+            assertEquals("invalid end value", new java.lang.Integer(20), list.get(list.size() - 1));
+        }
+
+        private java.util.List ResetList()
+        {
+            var list = new java.util.ArrayList();
+            for (int i = 0; i < 10; i++)
+            {
+                list.add(new java.lang.Integer(i));
+            }
+            return list;
+        }
+#endif
     }
 }
