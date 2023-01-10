@@ -821,7 +821,7 @@ namespace ICU4N.Util
             return CURRENCY_NAME_CACHE.GetOrAdd(locale, (loc) =>
             {
                 TextTrieMap<CurrencyStringInfo> currencyNameTrie =
-                new TextTrieMap<CurrencyStringInfo>(true);
+                    new TextTrieMap<CurrencyStringInfo>(true);
                 TextTrieMap<CurrencyStringInfo> currencySymbolTrie =
                     new TextTrieMap<CurrencyStringInfo>(false);
                 var currencyTrieVec = new List<TextTrieMap<CurrencyStringInfo>> { currencySymbolTrie, currencyNameTrie };
@@ -842,6 +842,7 @@ namespace ICU4N.Util
             {
                 string symbol = e.Key;
                 string isoCode = e.Value;
+
                 // Register under not just symbol, but under every equivalent symbol as well
                 // e.g short width yen and long width yen.
                 foreach (string equivalentSymbol in EQUIVALENT_CURRENCY_SYMBOLS.Get(symbol))
@@ -1145,7 +1146,7 @@ namespace ICU4N.Util
             {
                 if (!data.TryGetValue(item, out ISet<T> result) || result == null)
                 {
-                    return new HashSet<T> { item };
+                    return new HashSet<T> { item }.AsReadOnly();
                 }
                 return result.AsReadOnly();
             }
