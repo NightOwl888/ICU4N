@@ -6405,7 +6405,7 @@ namespace ICU4N.Dev.Test.Format
                 new object[] {"-1.2E-999999999", BigDecimal.Parse("-1.2E-999999999", NumberStyle.Float, CultureInfo.InvariantCulture) },
                 new object[] {"-1.2E-1000000000", Double.GetInstance(-0.0) },
 
-        };
+            };
 
             foreach (object[] cas in cases)
             {
