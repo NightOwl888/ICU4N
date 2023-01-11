@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Text
 {
@@ -975,7 +976,7 @@ namespace ICU4N.Text
             MessagePattern newMsg = (MessagePattern)base.MemberwiseClone();
 
             // Clone the list
-            var newParts = new List<MessagePatternPart>();
+            var newParts = new JCG.List<MessagePatternPart>(); // ICU4N: This uses structural equality
             foreach (var part in parts)
                 newParts.Add((MessagePatternPart)part.Clone());
 
@@ -1881,7 +1882,7 @@ namespace ICU4N.Text
 
         private ApostropheMode aposMode;
         private string msg;
-        private IList<MessagePatternPart> parts = new List<MessagePatternPart>();
+        private IList<MessagePatternPart> parts = new JCG.List<MessagePatternPart>(); // ICU4N: This uses structural equality
         private IList<double> numericValues;
         private bool hasArgNames;
         private bool hasArgNumbers;
