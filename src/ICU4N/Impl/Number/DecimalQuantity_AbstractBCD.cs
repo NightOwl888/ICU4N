@@ -179,7 +179,7 @@ namespace ICU4N.Numerics
         {
             // TODO: Avoid converting back and forth to BigDecimal.
             BigMath.BigDecimal temp = ToBigDecimal();
-            temp = BigMath.BigDecimal.Divide(roundingIncrement, 0, mathContext.RoundingMode);
+            temp = BigMath.BigDecimal.Divide(temp, roundingIncrement, 0, mathContext.RoundingMode);
             temp = temp * roundingIncrement;
             temp = BigMath.BigDecimal.Round(temp, mathContext);
             //temp =
