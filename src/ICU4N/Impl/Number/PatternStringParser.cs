@@ -701,7 +701,11 @@ namespace ICU4N.Numerics
                 {
                     properties.MinimumFractionDigits = minFrac;
                     properties.MaximumFractionDigits = positive.fractionTotal;
-                    properties.RoundingIncrement = positive.rounding.ToBigDecimal().Scale = positive.fractionNumerals;
+                    // ICU4N: Since we don't have a setScale() method that returns the BigDecimal instance,
+                    // we need to do this in mutiple steps.
+                    var bigDecimal = positive.rounding.ToBigDecimal();
+                    bigDecimal.Scale = positive.fractionNumerals;
+                    properties.RoundingIncrement = bigDecimal;
                 }
                 else
                 {
