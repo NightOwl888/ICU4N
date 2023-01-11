@@ -311,7 +311,7 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        return result.Append(pattern, prevIndex, index).ToString();
+                        return result.Append(pattern, prevIndex, index - prevIndex).ToString(); // ICU4N: Corrected 3rd arg
                     }
                 }
                 else if (type == MessagePatternPartType.SkipSyntax)
@@ -320,7 +320,7 @@ namespace ICU4N.Text
                     {
                         result = new StringBuilder();
                     }
-                    result.Append(pattern, prevIndex, index);
+                    result.Append(pattern, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                     prevIndex = part.Limit;
                 }
                 else if (type == MessagePatternPartType.ArgStart)
@@ -329,7 +329,7 @@ namespace ICU4N.Text
                     {
                         result = new StringBuilder();
                     }
-                    result.Append(pattern, prevIndex, index);
+                    result.Append(pattern, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                     prevIndex = index;
                     i = msgPattern.GetLimitPartIndex(i);
                     index = msgPattern.GetPart(i).Limit;
@@ -353,9 +353,9 @@ namespace ICU4N.Text
         public override StringBuffer Format(object keyword, StringBuffer toAppendTo,
                 FieldPosition pos)
         {
-            if (keyword is string)
+            if (keyword is string str)
             {
-                toAppendTo.Append(Format((string)keyword));
+                toAppendTo.Append(Format(str));
             }
             else
             {
