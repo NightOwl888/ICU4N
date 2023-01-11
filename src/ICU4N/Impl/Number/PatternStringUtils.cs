@@ -117,7 +117,7 @@ namespace ICU4N.Numerics
                 if (str[0] == '-')
                 {
                     // TODO: Unsupported operation exception or fail silently?
-                    digitsString.Append(str, 1, str.Length);
+                    digitsString.Append(str, 1, str.Length - 1); // ICU4N: Corrected 3rd arg
                 }
                 else
                 {
