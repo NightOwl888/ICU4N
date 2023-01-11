@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using static ICU4N.Text.PluralRules;
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Numerics
 {
@@ -433,7 +434,7 @@ namespace ICU4N.Numerics
             SetBcdToZero();
             flags = 0;
             // Double.compare() handles +0.0 vs -0.0
-            if (Comparer<double>.Default.Compare(n, 0.0) < 0)
+            if (JCG.Comparer<double>.Default.Compare(n, 0.0) < 0)
             {
                 flags = (byte)(flags | NegativeFlag);
                 n = -n;
