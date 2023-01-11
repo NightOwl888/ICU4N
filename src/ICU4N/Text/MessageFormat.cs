@@ -2191,7 +2191,7 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        subMsgString = sb.Append(msgString, prevIndex, index).ToString();
+                        subMsgString = sb.Append(msgString, prevIndex, index - prevIndex).ToString(); // ICU4N: Corrected 3rd arg
                     }
                     break;
                 }
@@ -2201,7 +2201,7 @@ namespace ICU4N.Text
                     {
                         sb = new StringBuilder();
                     }
-                    sb.Append(msgString, prevIndex, index);
+                    sb.Append(msgString, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                     if (type == MessagePatternPartType.ReplaceNumber)
                     {
                         if (pluralNumber.forReplaceNumber)
@@ -2222,7 +2222,7 @@ namespace ICU4N.Text
                     {
                         sb = new StringBuilder();
                     }
-                    sb.Append(msgString, prevIndex, index);
+                    sb.Append(msgString, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                     prevIndex = index;
                     i = msgPattern.GetLimitPartIndex(i);
                     index = msgPattern.GetPart(i).Limit;
@@ -2259,7 +2259,7 @@ namespace ICU4N.Text
                 MessagePatternPart part = msgPattern.GetPart(i);
                 MessagePatternPartType type = part.Type;
                 int index = part.Index;
-                b.Append(msgString, prevIndex, index);
+                b.Append(msgString, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                 if (type == MessagePatternPartType.ArgStart || type == MessagePatternPartType.MsgLimit)
                 {
                     return b.ToString();
@@ -3123,7 +3123,7 @@ namespace ICU4N.Text
             {
                 try
                 {
-                    app.Append(s, startIndex, count);
+                    app.Append(s, startIndex, count); // ICU4N: 3rd parameter corrected by the method signature
                     length += count;
                 }
                 catch (IOException e)
@@ -3175,7 +3175,7 @@ namespace ICU4N.Text
             {
                 try
                 {
-                    app.Append(s, startIndex, count);
+                    app.Append(s, startIndex, count); // ICU4N: 3rd parameter corrected by the method signature
                     length += count;
                 }
                 catch (IOException e)
@@ -3201,7 +3201,7 @@ namespace ICU4N.Text
             {
                 try
                 {
-                    app.Append(s, startIndex, count);
+                    app.Append(s, startIndex, count); // ICU4N: 3rd parameter corrected by the method signature
                     length += count;
                 }
                 catch (IOException e)
