@@ -1678,7 +1678,7 @@ namespace ICU4N.Text
                 int i = s.IndexOf('\'', start);
                 if (i < 0 || i >= limit)
                 {
-                    sb.Append(s, start, limit);
+                    sb.Append(s, start, limit - start); // ICU4N: Corrected 3rd arg
                     break;
                 }
                 if (i == doubleApos)
@@ -1691,7 +1691,7 @@ namespace ICU4N.Text
                 else
                 {
                     // Append text between apostrophes and skip this one.
-                    sb.Append(s, start, i);
+                    sb.Append(s, start, i - start); // ICU4N: Corrected 3rd arg
                     doubleApos = start = i + 1;
                 }
             }
@@ -1860,7 +1860,7 @@ namespace ICU4N.Text
                     // remove lead surrogate from the end of the prefix
                     --limit;
                 }
-                prefix.Append(s, start, limit).Append(" ...");
+                prefix.Append(s, start, limit - start).Append(" ..."); // ICU4N: Corrected 3rd arg
             }
             return prefix.Append("\"").ToString();
         }
