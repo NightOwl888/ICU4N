@@ -732,7 +732,7 @@ namespace ICU4N.Text
                     {
                         result = new StringBuilder();
                     }
-                    result.Append(pattern, prevIndex, index);
+                    result.Append(pattern, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                     prevIndex = index;
                     partIndex = msgPattern.GetLimitPartIndex(partIndex);
                     index = msgPattern.GetPart(partIndex).Limit;
