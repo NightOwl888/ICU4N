@@ -566,5 +566,10 @@ namespace ICU4N.Dev.Test.Format
             return (start == fc.start && end == fc.end
                 && attribute == fc.attribute && value.Equals(fc.value));
         }
+
+        public override int GetHashCode()
+        {
+            return start.GetHashCode() ^ end.GetHashCode(); // ICU4N specific: Quick comparison - check the start and end. If these match, then do the equality check.
+        }
     }
 }
