@@ -592,7 +592,7 @@ namespace ICU4N.Text
             if (loc != null && ruleSetDisplayNames != null)
             {
                 //String[] localeNames = { loc.getBaseName(), ULocale.getDefault(Category.DISPLAY).getBaseName() };
-                string[] localeNames = { loc.Name, UCultureInfo.CurrentCulture.Name };
+                string[] localeNames = { loc.Name, UCultureInfo.CurrentUICulture.Name };
                 foreach (string lname in localeNames)
                 {
                     string lname2 = lname;
