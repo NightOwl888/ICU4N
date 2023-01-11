@@ -85,6 +85,29 @@ namespace ICU4N.Numerics
             return result;
         }
 
+        public static BigDecimal Parse(string value, IFormatProvider? provider)
+        {
+            if (value is null)
+                throw new ArgumentNullException(nameof(value));
+
+            // ICU4N TODO: Revisit ToCharArray()
+            if (!BigNumber.TryParseBigDecimalFloatStyle(value.ToCharArray(), startIndex: 0, length: value.Length, styles: NumberStyle.Float | NumberStyle.AllowThousands, NumberFormatInfo.GetInstance(provider), out BigDecimal result))
+                throw new FormatException(string.Format(SR.Format_InvalidString, value));
+
+            return result;
+        }
+
+        public static BigDecimal Parse(char[] value, IFormatProvider? provider)
+        {
+            if (value is null)
+                throw new ArgumentNullException(nameof(value));
+
+            if (!BigNumber.TryParseBigDecimalFloatStyle(value, startIndex: 0, length: value.Length, styles: NumberStyle.Float | NumberStyle.AllowThousands, NumberFormatInfo.GetInstance(provider), out BigDecimal result))
+                throw new FormatException(string.Format(SR.Format_InvalidString, value));
+
+            return result;
+        }
+
         public static BigDecimal Parse(string value, NumberStyle styles, IFormatProvider? provider)
         {
             if (value is null)
