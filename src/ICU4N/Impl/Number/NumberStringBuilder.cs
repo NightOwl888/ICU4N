@@ -341,7 +341,7 @@ namespace ICU4N.Numerics
         /// <returns></returns>
         public virtual string ToString(int startIndex, int length) // ICU4N specific
         {
-            return new string(chars, startIndex, length);
+            return new string(chars, zero + startIndex, length);
         }
 
         private static readonly IDictionary<Field, char> fieldToDebugChar = new Dictionary<Field, char>
