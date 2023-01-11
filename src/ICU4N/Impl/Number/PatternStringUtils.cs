@@ -230,7 +230,7 @@ namespace ICU4N.Numerics
                 AffixUtils.Escape(np, sb);
                 // Copy the positive digit format into the negative.
                 // This is optional; the pattern is the same as if '#' were appended here instead.
-                sb.Append(sb, afterPrefixPos, beforeSuffixPos); // ICU4N TODO: Find a way to append a partial StringBuilder without allocating
+                sb.Append(sb, afterPrefixPos, beforeSuffixPos - afterPrefixPos); // ICU4N: Corrected 3rd arg
                 if (nsp != null)
                     sb.Append(nsp);
                 AffixUtils.Escape(ns, sb);
