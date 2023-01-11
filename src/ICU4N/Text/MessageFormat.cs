@@ -1793,7 +1793,7 @@ namespace ICU4N.Text
 
             if (cachedFormatters != null)
             {
-                other.cachedFormatters = new Dictionary<int, Formatter>();
+                other.cachedFormatters = new JCG.Dictionary<int, Formatter>(); // ICU4N: Use J2N.Collections.Generic.Dictionary<TKey, TValue> because this uses structural equality.
                 foreach (var entry in cachedFormatters)
                 {
                     other.cachedFormatters[entry.Key] = entry.Value;
@@ -2949,7 +2949,7 @@ namespace ICU4N.Text
         {
             if (CachedFormatters == null)
             {
-                CachedFormatters = new Dictionary<int, Formatter>();
+                CachedFormatters = new JCG.Dictionary<int, Formatter>(); // ICU4N: Use J2N.Collections.Generic.Dictionary<TKey, TValue> because this uses structural equality.
             }
             CachedFormatters[argStart] = formatter;
         }
