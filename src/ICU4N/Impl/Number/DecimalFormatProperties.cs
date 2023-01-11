@@ -588,7 +588,7 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
         public int MaximumSignificantDigits
         {
             get => maximumSignificantDigits;
-            set => minimumSignificantDigits = value;
+            set => maximumSignificantDigits = value;
         }
 
         public int MinimumExponentDigits
