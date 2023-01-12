@@ -1,4 +1,5 @@
 ﻿using ICU4N.Numerics;
+using ICU4N.Numerics.BigMath;
 using J2N;
 using J2N.Numerics;
 using System;
@@ -701,11 +702,7 @@ namespace ICU4N.Numerics
                 {
                     properties.MinimumFractionDigits = minFrac;
                     properties.MaximumFractionDigits = positive.fractionTotal;
-                    // ICU4N: Since we don't have a setScale() method that returns the BigDecimal instance,
-                    // we need to do this in mutiple steps.
-                    var bigDecimal = positive.rounding.ToBigDecimal();
-                    bigDecimal.Scale = positive.fractionNumerals;
-                    properties.RoundingIncrement = bigDecimal;
+                    properties.RoundingIncrement = ICU4N.Numerics.BigMath.BigDecimal.SetScale(positive.rounding.ToBigDecimal(), positive.fractionNumerals);
                 }
                 else
                 {
