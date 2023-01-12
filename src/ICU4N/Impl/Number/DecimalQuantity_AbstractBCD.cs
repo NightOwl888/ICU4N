@@ -409,14 +409,14 @@ namespace ICU4N.Numerics
 
         private void SetToBigIntegerImpl(BigMath.BigInteger n)
         {
-            int bitLength = n.ToByteArray().Length * sizeof(byte);
+            int bitLength = n.BitLength;
             if (bitLength < 32)
             {
-                ReadIntToBcd((int)n);
+                ReadIntToBcd(n.ToInt32());
             }
             else if (bitLength < 64)
             {
-                ReadLongToBcd((long)n);
+                ReadLongToBcd(n.ToInt64());
             }
             else
             {
@@ -598,7 +598,7 @@ namespace ICU4N.Numerics
             n = BigMath.BigDecimal.ScaleByPowerOfTen(n, fracLength);
             //BigInteger bi = (BigInteger)n.ToBigInteger();
             BigMath.BigInteger bi = n.ToBigInteger();
-            SetToBigInteger(bi);
+            SetToBigIntegerImpl(bi);
             scale -= fracLength;
         }
 
