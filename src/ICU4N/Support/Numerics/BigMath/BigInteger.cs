@@ -149,7 +149,7 @@ namespace ICU4N.Numerics.BigMath
         {
             sign = info.GetInt32("sign");
             byte[] magn = (byte[])info.GetValue("magnitude", typeof(byte[]));
-            PutBytesPositiveToIntegers(magn);
+            PutBytesPositiveToIntegers(magn, isBigEndian: true);
             CutOffLeadingZeroes();
         }
 
@@ -249,7 +249,7 @@ namespace ICU4N.Numerics.BigMath
         /// If the provided <paramref name="signum"/> is different from -1, 0 or 1 or
         /// if the sign is 0 and the magnitude contains non-zero entries.
         /// </exception>
-        public BigInteger(int signum, byte[] magnitude)
+        public BigInteger(int signum, byte[] magnitude, bool isBigEndian = true) // ICU4N TODO: Add bool value for isUnsigned like System.Numerics.BigInteger?
         {
             if (magnitude is null)
                 throw new ArgumentNullException(nameof(magnitude));
@@ -279,7 +279,7 @@ namespace ICU4N.Numerics.BigMath
             else
             {
                 sign = signum;
-                PutBytesPositiveToIntegers(magnitude);
+                PutBytesPositiveToIntegers(magnitude, isBigEndian);
                 CutOffLeadingZeroes();
             }
         }
@@ -297,7 +297,7 @@ namespace ICU4N.Numerics.BigMath
         /// <exception cref="ArgumentNullException">If the provided <paramref name="val"/> 
         /// is <c>null</c></exception>
         /// <exception cref="FormatException">If the length of <paramref name="val"/> is zero</exception>
-        public BigInteger(byte[] val) // ICU4N TODO: Allow switching between big and little endian like the .NET BigInteger
+        public BigInteger(byte[] val, bool isBigEndian = true) // ICU4N TODO: Add bool value for isUnsigned like System.Numerics.BigInteger?
         {
             if (val is null)
                 throw new ArgumentNullException(nameof(val));
@@ -306,15 +306,31 @@ namespace ICU4N.Numerics.BigMath
                 // math.12=Zero length BigInteger
                 throw new FormatException(Messages.math12); //$NON-NLS-1$
             }
-            if (val[0] > sbyte.MaxValue) // ICU4N TODO: Check this - I think it should be byte.MaxValue
+            if (isBigEndian)
             {
-                sign = -1;
-                PutBytesNegativeToIntegers(val);
+                if (val[0] > sbyte.MaxValue) // ICU4N TODO: Check this - I think it should be byte.MaxValue
+                {
+                    sign = -1;
+                    PutBytesNegativeToIntegers(val, isBigEndian);
+                }
+                else
+                {
+                    sign = 1;
+                    PutBytesPositiveToIntegers(val, isBigEndian);
+                }
             }
             else
             {
-                sign = 1;
-                PutBytesPositiveToIntegers(val);
+                if (val[val.Length - 1] > sbyte.MaxValue)
+                {
+                    sign = -1;
+                    PutBytesNegativeToIntegers(val, isBigEndian);
+                }
+                else
+                {
+                    sign = 1;
+                    PutBytesPositiveToIntegers(val, isBigEndian);
+                }
             }
             CutOffLeadingZeroes();
         }
@@ -645,8 +661,11 @@ namespace ICU4N.Numerics.BigMath
         /**
         * Puts a big-endian byte array into a little-endian int array.
         */
-        private void PutBytesPositiveToIntegers(byte[] byteValues)
+        private void PutBytesPositiveToIntegers(byte[] byteValues, bool isBigEndian)
         {
+            if (!isBigEndian)
+                Array.Reverse(byteValues); // ICU4N TODO: Read little endian values directly rather than mutating the array
+
             int bytesLen = byteValues.Length;
             int highBytes = bytesLen & 3;
             numberLength = (bytesLen >> 2) + ((highBytes == 0) ? 0 : 1);
@@ -656,9 +675,9 @@ namespace ICU4N.Numerics.BigMath
             while (bytesLen > highBytes)
             {
                 digits[i++] = (byteValues[--bytesLen] & 0xFF)
-                              | (byteValues[--bytesLen] & 0xFF) << 8
-                              | (byteValues[--bytesLen] & 0xFF) << 16
-                              | (byteValues[--bytesLen] & 0xFF) << 24;
+                            | (byteValues[--bytesLen] & 0xFF) << 8
+                            | (byteValues[--bytesLen] & 0xFF) << 16
+                            | (byteValues[--bytesLen] & 0xFF) << 24;
             }
             // Put the first bytes in the highest element of the int array
             for (int j = 0; j < bytesLen; j++)
@@ -671,8 +690,11 @@ namespace ICU4N.Numerics.BigMath
         * Puts a big-endian byte array into a little-endian applying two
         * complement.
         */
-        private void PutBytesNegativeToIntegers(byte[] byteValues)
+        private void PutBytesNegativeToIntegers(byte[] byteValues, bool isBigEndian)
         {
+            if (!isBigEndian)
+                Array.Reverse(byteValues); // ICU4N TODO: Read little endian values directly rather than mutating the array
+
             int bytesLen = byteValues.Length;
             int highBytes = bytesLen & 3;
             numberLength = (bytesLen >> 2) + ((highBytes == 0) ? 0 : 1);

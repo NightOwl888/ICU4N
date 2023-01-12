@@ -3006,7 +3006,11 @@ namespace ICU4N.Numerics
 
         public BigMath.BigDecimal ToBigDecimal()
         {
-            return new BigMath.BigDecimal(new BigMath.BigInteger(this.ToUnscaledValue().ToByteArray()), this.Scale);
+#if FEATURE_BIGINTEGER_TOBYTEARRAY_BIGENDIAN
+            return new BigMath.BigDecimal(new BigMath.BigInteger(this.ToUnscaledValue().ToByteArray(isBigEndian: true)), this.Scale);
+#else
+            return new BigMath.BigDecimal(new BigMath.BigInteger(this.ToUnscaledValue().ToByteArray(), isBigEndian: false), this.Scale);
+#endif
         }
 
         /**
