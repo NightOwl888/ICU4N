@@ -3808,7 +3808,9 @@ namespace ICU4N.Dev.Test.Format
             }
 
             // Tests "public static NumberFormat getInstance(Locale inLocale, int style)"
-            string[] localeCases = { "en_US", "fr_FR", "de_DE", "jp_JP" };
+            // ICU4N: Note that ICU4J has a bug here - they are testing an invalid locale. It should be ja_JP, not jp_JP.
+            //string[] localeCases = { "en_US", "fr_FR", "de_DE", "jp_JP" };
+            string[] localeCases = { "en-US", "fr-FR", "de-DE", "ja-JP" };
 
             for (int i = (int)NumberFormatStyle.NumberStyle; i < maxStyle; i++)
             {
