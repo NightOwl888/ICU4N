@@ -379,7 +379,7 @@ namespace ICU4N.Numerics
         {
             if (n == long.MinValue)
             {
-                ReadBigIntegerToBcd(-n);
+                ReadBigIntegerToBcd(-ICU4N.Numerics.BigMath.BigInteger.GetInstance(n));
             }
             else if (n <= int.MaxValue)
             {

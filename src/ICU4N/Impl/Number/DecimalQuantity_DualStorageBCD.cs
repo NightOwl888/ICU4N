@@ -270,13 +270,7 @@ namespace ICU4N.Numerics
             int i = 0;
             for (; n.Sign != 0; i++)
             {
-                var result = BigMath.BigInteger.DivideAndRemainder(n, 10, out BigMath.BigInteger remainder);
-
-                ////BigInteger[] temp = n.DivideAndRemainder(BigInteger.TEN);
-                //var result = BigInteger.DivRem(n, 10, out BigInteger remainder);
-                //EnsureCapacity(i + 1);
-                //bcdBytes[i] = temp[1].byteValue();
-                //n = temp[0];
+                var result = BigMath.BigInteger.DivideAndRemainder(n, BigMath.BigInteger.Ten, out BigMath.BigInteger remainder);
                 EnsureCapacity(i + 1);
                 bcdBytes[i] = remainder.ToByte();
                 n = result;
