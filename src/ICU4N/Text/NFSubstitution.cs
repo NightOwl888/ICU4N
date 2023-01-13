@@ -787,7 +787,10 @@ namespace ICU4N.Text
          */
         public override long TransformNumber(long number)
         {
-            return (long)Math.Floor((double)number / divisor);
+            //return (long)Math.Floor((double)(number / divisor));
+            // ICU4N TODO: Tests for this logic (need to find some edge cases that cause the number to flip in Java)
+            // source: https://stackoverflow.com/a/28060018
+            return (number / divisor - Convert.ToInt32(((number < 0) ^ (divisor < 0)) && (number % divisor != 0)));
         }
 
         /**
