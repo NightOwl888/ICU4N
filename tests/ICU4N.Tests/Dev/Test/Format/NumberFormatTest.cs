@@ -5042,7 +5042,7 @@ namespace ICU4N.Dev.Test.Format
             double number = -350.76;
             DecimalFormat dfUS = (DecimalFormat)DecimalFormat.GetCurrencyInstance(new CultureInfo("en-US"));
             String strUS = dfUS.Format(number);
-            ICollection<AttributedCharacterIteratorAttribute> resultUS = dfUS.FormatToCharacterIterator(number).GetAllAttributeKeys();
+            ICollection<AttributedCharacterIteratorAttribute> resultUS = dfUS.FormatToCharacterIterator((Double)number).GetAllAttributeKeys();
             assertEquals("Negative US Results: " + strUS, 5, resultUS.Count);
 
             // For each test, add assert that all the fields are present and in the right spot.
@@ -5050,32 +5050,32 @@ namespace ICU4N.Dev.Test.Format
 
             DecimalFormat dfDE = (DecimalFormat)DecimalFormat.GetCurrencyInstance(new CultureInfo("de-DE"));
             String strDE = dfDE.Format(number);
-            ICollection<AttributedCharacterIteratorAttribute> resultDE = dfDE.FormatToCharacterIterator(number).GetAllAttributeKeys();
+            ICollection<AttributedCharacterIteratorAttribute> resultDE = dfDE.FormatToCharacterIterator((Double)number).GetAllAttributeKeys();
             assertEquals("Negative DE Results: " + strDE, 5, resultDE.Count);
 
             DecimalFormat dfIN = (DecimalFormat)DecimalFormat.GetCurrencyInstance(new CultureInfo("hi-in"));
             String strIN = dfIN.Format(number);
-            ICollection<AttributedCharacterIteratorAttribute> resultIN = dfIN.FormatToCharacterIterator(number).GetAllAttributeKeys();
+            ICollection<AttributedCharacterIteratorAttribute> resultIN = dfIN.FormatToCharacterIterator((Double)number).GetAllAttributeKeys();
             assertEquals("Negative IN Results: " + strIN, 5, resultIN.Count);
 
             DecimalFormat dfJP = (DecimalFormat)DecimalFormat.GetCurrencyInstance(new CultureInfo("ja-JP"));
             String strJP = dfJP.Format(number);
-            ICollection<AttributedCharacterIteratorAttribute> resultJP = dfJP.FormatToCharacterIterator(number).GetAllAttributeKeys();
+            ICollection<AttributedCharacterIteratorAttribute> resultJP = dfJP.FormatToCharacterIterator((Double)number).GetAllAttributeKeys();
             assertEquals("Negative JA Results: " + strJP, 3, resultJP.Count);
 
             DecimalFormat dfGB = (DecimalFormat)DecimalFormat.GetCurrencyInstance(new CultureInfo("en-gb"));
             String strGB = dfGB.Format(number);
-            ICollection<AttributedCharacterIteratorAttribute> resultGB = dfGB.FormatToCharacterIterator(number).GetAllAttributeKeys();
+            ICollection<AttributedCharacterIteratorAttribute> resultGB = dfGB.FormatToCharacterIterator((Double)number).GetAllAttributeKeys();
             assertEquals("Negative GB Results: " + strGB, 5, resultGB.Count);
 
             DecimalFormat dfPlural = (DecimalFormat)NumberFormat.GetInstance(new CultureInfo("en-gb"),
                     NumberFormatStyle.PluralCurrencyStyle);
             strGB = dfPlural.Format(number);
-            resultGB = dfPlural.FormatToCharacterIterator(number).GetAllAttributeKeys();
+            resultGB = dfPlural.FormatToCharacterIterator((Double)number).GetAllAttributeKeys();
             assertEquals("Negative GB Results: " + strGB, 5, resultGB.Count);
 
             strGB = dfPlural.Format(1);
-            resultGB = dfPlural.FormatToCharacterIterator(1).GetAllAttributeKeys();
+            resultGB = dfPlural.FormatToCharacterIterator((Integer)1).GetAllAttributeKeys();
             assertEquals("Negative GB Results: " + strGB, 4, resultGB.Count);
 
             // Test output with unit value.
@@ -5083,14 +5083,14 @@ namespace ICU4N.Dev.Test.Format
                     NumberFormatStyle.PluralCurrencyStyle);
             String strAU = auPlural.Format(1L);
             ICollection<AttributedCharacterIteratorAttribute> resultAU =
-            auPlural.FormatToCharacterIterator(1L).GetAllAttributeKeys();
+            auPlural.FormatToCharacterIterator((Long)1L).GetAllAttributeKeys();
             assertEquals("Unit AU Result: " + strAU, 4, resultAU.Count);
 
             // Verify Permille fields.
             DecimalFormatSymbols sym = new DecimalFormatSymbols(new CultureInfo("en-gb"));
             DecimalFormat dfPermille = new DecimalFormat("####0.##\u2030", sym);
             strGB = dfPermille.Format(number);
-            resultGB = dfPermille.FormatToCharacterIterator(number).GetAllAttributeKeys();
+            resultGB = dfPermille.FormatToCharacterIterator((Double)number).GetAllAttributeKeys();
             assertEquals("Negative GB Permille Results: " + strGB, 3, resultGB.Count);
         }
 
