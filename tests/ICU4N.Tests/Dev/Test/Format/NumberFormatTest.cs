@@ -5583,10 +5583,11 @@ namespace ICU4N.Dev.Test.Format
                 DecimalFormat df = new DecimalFormat();
                 Type @base = baseClasses[i];
                 String name = names[i];
-                MethodInfo getMinimum = @base.DeclaringType.GetMethod("get_Minimum" + name + "Digits");
-                MethodInfo setMinimum = @base.DeclaringType.GetMethod("set_Minimum" + name + "Digits", new Type[] { typeof(int) });
-                MethodInfo getMaximum = @base.DeclaringType.GetMethod("get_Maximum" + name + "Digits");
-                MethodInfo setMaximum = @base.DeclaringType.GetMethod("set_Maximum" + name + "Digits", new Type[] { typeof(int) });
+                MethodInfo getMinimum = @base.GetMethod("get_Minimum" + name + "Digits");
+                MethodInfo setMinimum = @base.GetMethod("set_Minimum" + name + "Digits", new Type[] { typeof(int) });
+                MethodInfo getMaximum = @base.GetMethod("get_Maximum" + name + "Digits");
+                MethodInfo setMaximum = @base.GetMethod("set_Maximum" + name + "Digits", new Type[] { typeof(int) });
+
 
                 // Check max overrides min
                 setMinimum.Invoke(df, new object[] { 2 });
