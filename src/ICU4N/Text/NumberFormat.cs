@@ -137,6 +137,10 @@ namespace ICU4N.Text
             {
                 return Format(l, toAppendTo, pos);
             }
+            else if (number is Numerics.BigMath.BigInteger javaBigInteger)
+            {
+                return Format(javaBigInteger, toAppendTo, pos);
+            }
             else if (number is BigInteger bigInteger)
             {
                 return Format(bigInteger, toAppendTo, pos);
