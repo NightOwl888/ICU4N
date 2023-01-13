@@ -4401,7 +4401,7 @@ namespace ICU4N.Dev.Test.Format
             {
                 for (int i = 0; i < result.Length; i++)
                 {
-                    AttributedCharacterIterator acitr = fmt.FormatToCharacterIterator(num);
+                    AttributedCharacterIterator acitr = fmt.FormatToCharacterIterator(Integer.GetInstance(num));
                     acitr.First();
                     result[i] = acitr.GetRunLimit();
                 }

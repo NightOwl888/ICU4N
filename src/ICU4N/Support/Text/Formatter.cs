@@ -121,7 +121,7 @@ namespace ICU4N.Support.Text
         /// <returns>An <see cref="AttributedCharacterIterator"/> with the formatted object
         /// and attributes.</returns>
         /// <exception cref="ArgumentException">if the object cannot be formatted by this format.</exception>
-        public virtual AttributedCharacterIterator FormatToCharacterIterator(object obj)
+        public virtual AttributedCharacterIterator FormatToCharacterIterator(object obj) // ICU4N TODO: API - Add overloads for specific number types?
         {
             return new AttributedString(Format(obj)).GetIterator();
         }
