@@ -658,43 +658,61 @@ namespace ICU4N.Numerics.BigMath
             get { return ((numberLength == 1) && (digits[0] == 1)); }
         }
 
-        /**
-        * Puts a big-endian byte array into a little-endian int array.
-        */
+        /// <summary>
+        /// Puts a big-endian or little-endian <see cref="byte"/> array into
+        /// a little-endian int array.
+        /// </summary>
+        /// <param name="byteValues">The byte array.</param>
+        /// <param name="isBigEndian"><c>true</c> to read the bytes in big-endian (Java) format;
+        /// <c>false</c> to read the bytes in little-endian (.NET) format.</param>
         private void PutBytesPositiveToIntegers(byte[] byteValues, bool isBigEndian)
         {
-            if (!isBigEndian)
-                Array.Reverse(byteValues); // ICU4N TODO: Read little endian values directly rather than mutating the array
-
             int bytesLen = byteValues.Length;
             int highBytes = bytesLen & 3;
             numberLength = (bytesLen >> 2) + ((highBytes == 0) ? 0 : 1);
             digits = new int[numberLength];
             int i = 0;
-            // Put bytes to the int array starting from the end of the byte array
-            while (bytesLen > highBytes)
+            if (isBigEndian)
             {
-                digits[i++] = (byteValues[--bytesLen] & 0xFF)
-                            | (byteValues[--bytesLen] & 0xFF) << 8
-                            | (byteValues[--bytesLen] & 0xFF) << 16
-                            | (byteValues[--bytesLen] & 0xFF) << 24;
+                // Put bytes to the int array starting from the end of the byte array
+                while (bytesLen > highBytes)
+                {
+                    digits[i++] = (byteValues[--bytesLen] & 0xFF)
+                                | (byteValues[--bytesLen] & 0xFF) << 8
+                                | (byteValues[--bytesLen] & 0xFF) << 16
+                                | (byteValues[--bytesLen] & 0xFF) << 24;
+                }
+                // Put the first bytes in the highest element of the int array
+                for (int j = 0; j < bytesLen; j++)
+                {
+                    digits[i] = (digits[i] << 8) | (byteValues[j] & 0xFF);
+                }
             }
-            // Put the first bytes in the highest element of the int array
-            for (int j = 0; j < bytesLen; j++)
+            else
             {
-                digits[i] = (digits[i] << 8) | (byteValues[j] & 0xFF);
+                int firstHighByte = bytesLen - highBytes;
+                // Put bytes to the int array starting from the beginning of the byte array
+                for (int l = 0; l < firstHighByte; l += 4)
+                {
+                    digits[i++] = BitConverter.ToInt32(byteValues, l);
+                }
+                // Put the last bytes in the highest element of the int array
+                for (int j = bytesLen - 1; j >= firstHighByte; j--)
+                {
+                    digits[i] = (digits[i] << 8) | (byteValues[j] & 0xFF);
+                }
             }
         }
 
-        /**
-        * Puts a big-endian byte array into a little-endian applying two
-        * complement.
-        */
+        /// <summary>
+        /// Puts a big-endian or little-endian <see cref="byte"/> array into a little-endian applying
+        /// two's complement.
+        /// </summary>
+        /// <param name="byteValues">The byte array.</param>
+        /// <param name="isBigEndian"><c>true</c> to read the bytes in big-endian (Java) format;
+        /// <c>false</c> to read the bytes in little-endian (.NET) format.</param>
         private void PutBytesNegativeToIntegers(byte[] byteValues, bool isBigEndian)
         {
-            if (!isBigEndian)
-                Array.Reverse(byteValues); // ICU4N TODO: Read little endian values directly rather than mutating the array
-
             int bytesLen = byteValues.Length;
             int highBytes = bytesLen & 3;
             numberLength = (bytesLen >> 2) + ((highBytes == 0) ? 0 : 1);
@@ -702,49 +720,92 @@ namespace ICU4N.Numerics.BigMath
             int i = 0;
             // Setting the sign
             digits[numberLength - 1] = -1;
-            // Put bytes to the int array starting from the end of the byte array
-            while (bytesLen > highBytes)
+
+            if (isBigEndian)
             {
-                digits[i] = (byteValues[--bytesLen] & 0xFF)
-                            | (byteValues[--bytesLen] & 0xFF) << 8
-                            | (byteValues[--bytesLen] & 0xFF) << 16
-                            | (byteValues[--bytesLen] & 0xFF) << 24;
-                if (digits[i] != 0)
+                // Put bytes to the int array starting from the end of the byte array
+                while (bytesLen > highBytes)
                 {
-                    digits[i] = -digits[i];
-                    firstNonzeroDigit = i;
-                    i++;
-                    while (bytesLen > highBytes)
+                    digits[i] = (byteValues[--bytesLen] & 0xFF)
+                                | (byteValues[--bytesLen] & 0xFF) << 8
+                                | (byteValues[--bytesLen] & 0xFF) << 16
+                                | (byteValues[--bytesLen] & 0xFF) << 24;
+                    if (digits[i] != 0)
                     {
-                        digits[i] = (byteValues[--bytesLen] & 0xFF)
-                                    | (byteValues[--bytesLen] & 0xFF) << 8
-                                    | (byteValues[--bytesLen] & 0xFF) << 16
-                                    | (byteValues[--bytesLen] & 0xFF) << 24;
-                        digits[i] = ~digits[i];
+                        digits[i] = -digits[i];
+                        firstNonzeroDigit = i;
                         i++;
+                        while (bytesLen > highBytes)
+                        {
+                            digits[i++] = ~((byteValues[--bytesLen] & 0xFF)
+                                        | (byteValues[--bytesLen] & 0xFF) << 8
+                                        | (byteValues[--bytesLen] & 0xFF) << 16
+                                        | (byteValues[--bytesLen] & 0xFF) << 24);
+                        }
+                        break;
                     }
-                    break;
+                    i++;
                 }
-                i++;
+                if (highBytes != 0)
+                {
+                    // Put the first bytes in the highest element of the int array
+                    if (firstNonzeroDigit != -2)
+                    {
+                        for (int j = 0; j < bytesLen; j++)
+                        {
+                            digits[i] = (digits[i] << 8) | (byteValues[j] & 0xFF);
+                        }
+                        digits[i] = ~digits[i];
+                    }
+                    else
+                    {
+                        for (int j = 0; j < bytesLen; j++)
+                        {
+                            digits[i] = (digits[i] << 8) | (byteValues[j] & 0xFF);
+                        }
+                        digits[i] = -digits[i];
+                    }
+                }
             }
-            if (highBytes != 0)
+            else
             {
-                // Put the first bytes in the highest element of the int array
-                if (firstNonzeroDigit != -2)
+                int firstHighByte = bytesLen - highBytes;
+                // Put bytes to the int array starting from the beginning of the byte array
+                for (int l = 0; l < firstHighByte; l += 4)
                 {
-                    for (int j = 0; j < bytesLen; j++)
+                    digits[i] = BitConverter.ToInt32(byteValues, l);
+                    if (digits[i] != 0)
                     {
-                        digits[i] = (digits[i] << 8) | (byteValues[j] & 0xFF);
+                        digits[i] = -digits[i];
+                        firstNonzeroDigit = i;
+                        i++;
+                        for (l += 4; l < firstHighByte; l += 4)
+                        {
+                            digits[i++] = ~BitConverter.ToInt32(byteValues, l);
+                        }
+                        break;
                     }
-                    digits[i] = ~digits[i];
+                    i++;
                 }
-                else
+                if (highBytes != 0)
                 {
-                    for (int j = 0; j < bytesLen; j++)
+                    // Put the first bytes in the highest element of the int array
+                    if (firstNonzeroDigit != -2)
                     {
-                        digits[i] = (digits[i] << 8) | (byteValues[j] & 0xFF);
+                        for (int j = bytesLen - 1; j >= firstHighByte; j--)
+                        {
+                            digits[i] = (digits[i] << 8) | (byteValues[j] & 0xFF);
+                        }
+                        digits[i] = ~digits[i];
                     }
-                    digits[i] = -digits[i];
+                    else
+                    {
+                        for (int j = bytesLen - 1; j >= firstHighByte; j--)
+                        {
+                            digits[i] = (digits[i] << 8) | (byteValues[j] & 0xFF);
+                        }
+                        digits[i] = -digits[i];
+                    }
                 }
             }
         }

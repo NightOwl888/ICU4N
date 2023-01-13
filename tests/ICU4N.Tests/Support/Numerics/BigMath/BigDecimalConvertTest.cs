@@ -666,5 +666,65 @@ namespace ICU4N.Numerics.BigMath
                 return;
             }
         }
+
+        // ICU4N specific
+        /// <summary>
+        /// Tests converting from BigInteger in little-endian format,
+        /// since .NET doesn't support exporting big endian bytes prior
+        /// to .NET Core 2.1/.NET Standard 2.1.
+        /// </summary>
+        [Test]
+        // Positive test cases
+        [TestCase("400000000000030299193828888", "400000000000030299193828888")]
+        [TestCase("2147483648", "2147483648")] // Produces 5 bytes
+        [TestCase("12345678901234567890137641668102549", "12345678901234567890137641668102549")] // Produces 15 bytes
+        [TestCase("123456789012345678904641671296476", "123456789012345678904641671296476")] // Produces 14 bytes
+        [TestCase("123456789012345678901568102528", "123456789012345678901568102528")] // Produces 13 bytes
+
+        // Negative test cases
+        [TestCase("-400000000000030299193828888", "-400000000000030299193828888")]
+        [TestCase("-2147483648", "-2147483648")] // Produces 5 bytes
+        [TestCase("-12345678901234567890137641668102549", "-12345678901234567890137641668102549")] // Produces 15 bytes
+        [TestCase("-123456789012345678904641671296476", "-123456789012345678904641671296476")] // Produces 14 bytes
+        [TestCase("-123456789012345678901568102528", "-123456789012345678901568102528")] // Produces 13 bytes
+        public void TestConvertFromLittleEndianByteArray(string number, string expected)
+        {
+            System.Numerics.BigInteger bi = System.Numerics.BigInteger.Parse(number);
+            byte[] littleEndianBytes = bi.ToByteArray();
+
+            ICU4N.Numerics.BigMath.BigInteger converted = new ICU4N.Numerics.BigMath.BigInteger(littleEndianBytes, isBigEndian: false);
+            string actual = converted.ToString(CultureInfo.InvariantCulture);
+            assertEquals($"incorrect conversion - expected: {expected}, actual: {actual}", expected, actual);
+        }
+
+        // ICU4N specific
+        /// <summary>
+        /// Tests converting from BigInteger in little-endian format,
+        /// since .NET doesn't support exporting big endian bytes prior
+        /// to .NET Core 2.1/.NET Standard 2.1.
+        /// </summary>
+        [Test]
+        // Positive test cases
+        [TestCase("400000000000030299193828888", "400000000000030299193828888")]
+        [TestCase("2147483648", "2147483648")] // Produces 5 bytes
+        [TestCase("12345678901234567890137641668102549", "12345678901234567890137641668102549")] // Produces 15 bytes
+        [TestCase("123456789012345678904641671296476", "123456789012345678904641671296476")] // Produces 14 bytes
+        [TestCase("123456789012345678901568102528", "123456789012345678901568102528")] // Produces 13 bytes
+
+        // Negative test cases
+        [TestCase("-400000000000030299193828888", "-400000000000030299193828888")]
+        [TestCase("-2147483648", "-2147483648")] // Produces 5 bytes
+        [TestCase("-12345678901234567890137641668102549", "-12345678901234567890137641668102549")] // Produces 15 bytes
+        [TestCase("-123456789012345678904641671296476", "-123456789012345678904641671296476")] // Produces 14 bytes
+        [TestCase("-123456789012345678901568102528", "-123456789012345678901568102528")] // Produces 13 bytes
+        public void TestConvertFromBigEndianByteArray(string number, string expected)
+        {
+            ICU4N.Numerics.BigMath.BigInteger bi = ICU4N.Numerics.BigMath.BigInteger.Parse(number);
+            byte[] bigEndianBytes = bi.ToByteArray();
+
+            ICU4N.Numerics.BigMath.BigInteger converted = new ICU4N.Numerics.BigMath.BigInteger(bigEndianBytes, isBigEndian: true);
+            string actual = converted.ToString(CultureInfo.InvariantCulture);
+            assertEquals($"incorrect conversion - expected: {expected}, actual: {actual}", expected, actual);
+        }
     }
 }
