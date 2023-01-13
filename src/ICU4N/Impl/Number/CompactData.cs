@@ -21,7 +21,7 @@ namespace ICU4N.Numerics
         private static readonly string USE_FALLBACK = "<USE FALLBACK>";
 
         private readonly string[] patterns;
-        private readonly byte[] multipliers;
+        private readonly sbyte[] multipliers;
         private byte largestMagnitude;
         private bool isEmpty;
 
@@ -30,7 +30,7 @@ namespace ICU4N.Numerics
         public CompactData()
         {
             patterns = new string[(CompactData.COMPACT_MAX_DIGITS + 1) * StandardPluralUtil.Count];
-            multipliers = new byte[CompactData.COMPACT_MAX_DIGITS + 1];
+            multipliers = new sbyte[CompactData.COMPACT_MAX_DIGITS + 1];
             largestMagnitude = 0;
             isEmpty = true;
         }
@@ -98,7 +98,7 @@ namespace ICU4N.Numerics
                     if (numZeros > 0)
                     { // numZeros==0 in certain cases, like Somali "Kun"
                       // Save the multiplier.
-                        multipliers[magnitude] = (byte)(numZeros - magnitude - 1);
+                        multipliers[magnitude] = (sbyte)(numZeros - magnitude - 1);
                         if (magnitude > largestMagnitude)
                         {
                             largestMagnitude = magnitude;
@@ -176,7 +176,7 @@ namespace ICU4N.Numerics
                     // Assumes that the keys are always of the form "10000" where the magnitude is the
                     // length of the key minus one.  We expect magnitudes to be less than MAX_DIGITS.
                     byte magnitude = (byte)(key.Length - 1);
-                    byte multiplier = data.multipliers[magnitude];
+                    sbyte multiplier = data.multipliers[magnitude];
                     Debug.Assert(magnitude < COMPACT_MAX_DIGITS);
 
                     // Iterate over the plural variants ("one", "other", etc)
@@ -211,7 +211,7 @@ namespace ICU4N.Numerics
                             int numZeros = CountZeros(patternString);
                             if (numZeros > 0)
                             { // numZeros==0 in certain cases, like Somali "Kun"
-                                multiplier = (byte)(numZeros - magnitude - 1);
+                                multiplier = (sbyte)(numZeros - magnitude - 1);
                             }
                         }
                     }
