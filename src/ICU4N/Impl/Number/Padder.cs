@@ -56,7 +56,7 @@ namespace ICU4N.Numerics
             // TODO: Add a few default instances
             this.paddingString = (paddingString is null) ? FallbackPaddingString : paddingString;
             this.targetWidth = targetWidth;
-            this.position = position; // ICU4N: Defaults to BeforePrefix (0) //(position == null) ? PadPosition.BEFORE_PREFIX : position;
+            this.position = position ?? PadPosition.BeforePrefix; // ICU4N: Defaults to BeforePrefix (0) //(position == null) ? PadPosition.BEFORE_PREFIX : position;
         }
 
         public static Padder None => NONE;
