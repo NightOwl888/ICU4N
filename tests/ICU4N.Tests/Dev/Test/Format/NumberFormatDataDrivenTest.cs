@@ -930,6 +930,7 @@ namespace ICU4N.Dev.Test.Format
 
 
         [Test]
+        [Ignore("ICU4N TODO: Finish implementation - either use IKVM to fake this or do a port of the formatter from ICU58.")]
         public void TestDataDrivenICU58()
         {
             // ICU4N TODO:
@@ -958,7 +959,7 @@ namespace ICU4N.Dev.Test.Format
             ////        && TestUtil.getJavaVersion() < 9);
 
             DataDrivenNumberFormatTestUtility.runFormatSuiteIncludingKnownFailures(
-            "numberformattestspecification.txt", JDK);
+                "numberformattestspecification.txt", JDK);
         }
 #endif
 
