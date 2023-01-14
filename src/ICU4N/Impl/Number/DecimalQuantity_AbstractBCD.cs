@@ -204,7 +204,7 @@ namespace ICU4N.Numerics
                 return;
             }
             BigMath.BigDecimal temp = ToBigDecimal();
-            //temp = temp.Multiply(multiplicand);
+            //temp = BigMath.BigDecimal.Multiply(temp, multiplicand);
             temp = temp * multiplicand;
             SetToBigDecimal(temp);
         }

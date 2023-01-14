@@ -293,9 +293,12 @@ namespace ICU4N.Numerics.BigMath
             {
                 return GetZeroScaledBy(newScale);
             }
+
+            // ICU4N specific: In .NET multiplying long.MinValue by -1 results in a negative number.
+            // So, for this case, we need to use BigMath to arrive at the correct (positive) result.
             /* Let be: this = [u1,s1] and multiplicand = [u2,s2] so:
              * this x multiplicand = [ s1 * s2 , s1 + s2 ] */
-            if (value.BitLength + multiplicand.BitLength < 64)
+            if (value.BitLength + multiplicand.BitLength < 64 && value.SmallValue != long.MinValue && multiplicand.SmallValue != long.MinValue)
             {
                 return BigDecimal.GetInstance(value.SmallValue * multiplicand.SmallValue, ToIntScale(newScale));
             }
