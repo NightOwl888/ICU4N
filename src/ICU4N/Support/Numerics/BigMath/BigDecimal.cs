@@ -692,6 +692,31 @@ namespace ICU4N.Numerics.BigMath
             return new BigDecimal(unscaledVal, 0);
         }
 
+        /// <summary>
+        /// Returns a new <see cref="BigDecimal"/> instance whose value is equal to 
+        /// <see cref="J2N.Numerics.Double.ToString(double, IFormatProvider?)"/> of the value
+        /// in the invariant culture. For example, <c>GetInstance(0.1)</c> is converted to
+        /// (unscaled=1, scale=1), although the double <c>0.1</c> cannot be
+        /// represented exactly as a double value. In contrast to that, a new
+        /// <c>BigDecimal(0.1)</c> instance has the value 
+        /// <c>0.1000000000000000055511151231257827021181583404541015625</c> with an
+        /// unscaled value <c>1000000000000000055511151231257827021181583404541015625</c>
+        /// and the scale <c>55</c>.
+        /// </summary>
+        /// <param name="value"><see cref="double"/> value to be converted to a <see cref="BigDecimal"/>.</param>
+        /// <returns></returns>
+        /// <exception cref="OverflowException"><paramref name="value"/> is infinite or not a number.</exception>
+        public static BigDecimal GetInstance(double value)
+        {
+            if (double.IsInfinity(value) || double.IsNaN(value))
+            {
+                // math.03=Infinity or NaN
+                throw new OverflowException(Messages.math03); //$NON-NLS-1$ // ICU4N: Changed to OverflowException to match .NET
+            }
+            // ICU4N TODO: Use the logic from Singulink BigDecimal FromFloat() to do a binary conversion here.
+            return Parse(J2N.Numerics.Double.ToString(value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
+        }
+
 
         #endregion
 

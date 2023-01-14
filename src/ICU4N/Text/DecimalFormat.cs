@@ -1366,7 +1366,7 @@ namespace ICU4N.Text
          * @category Rounding
          * @stable ICU 2.0
          */
-        public virtual void SetRoundingIncrement(double increment) // ICU4N TODO: change this to a single property setter above
+        public virtual void SetRoundingIncrement(double increment) // ICU4N TODO: change this to a single property setter above ?
         {
             lock (this)
             {
@@ -1376,7 +1376,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    Numerics.BigMath.BigDecimal javaBigDecimal = increment;
+                    // ICU4N NOTE: BigDecimal.GetInstance() uses a string to convert the value, since doing a precise
+                    // conversion will result in rounding issues.
+                    Numerics.BigMath.BigDecimal javaBigDecimal = Numerics.BigMath.BigDecimal.GetInstance(increment);
                     SetRoundingIncrement(javaBigDecimal);
                 }
             }
