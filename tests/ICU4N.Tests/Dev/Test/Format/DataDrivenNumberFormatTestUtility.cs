@@ -231,12 +231,6 @@ namespace ICU4N.Dev.Test.Format
                             bool shouldFail = (tuple.output != null && tuple.output.Equals("fail", StringComparison.Ordinal))
                                     ? !breaks(codeUnderTestId)
                                     : breaks(codeUnderTestId);
-
-                            if (tuple.output == "؜+٦")
-                            {
-
-                            }
-
                             try
                             {
                                 errorMessage = isPass(tuple);
