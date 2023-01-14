@@ -419,7 +419,9 @@ namespace ICU4N.Numerics
 
         internal static readonly FracSigRounderImpl COMPACT_STRATEGY = new FracSigRounderImpl(0, 0, 2, -1);
 
-        internal static readonly IncrementRounderImpl NICKEL = new IncrementRounderImpl(0.05);
+        // ICU4N: Using GetInstance() is intentional here because we want the value to be truncated
+        // to match the input double value.
+        internal static readonly IncrementRounderImpl NICKEL = new IncrementRounderImpl(BigMath.BigDecimal.GetInstance(0.05));
 
         internal static readonly CurrencyRounderImpl MONETARY_STANDARD = new CurrencyRounderImpl(CurrencyUsage.Standard);
         internal static readonly CurrencyRounderImpl MONETARY_CASH = new CurrencyRounderImpl(CurrencyUsage.Cash);
@@ -523,7 +525,9 @@ namespace ICU4N.Numerics
             double incrementDouble = currency.GetRoundingIncrement(@base.usage);
             if (incrementDouble != 0.0)
             {
-                BigMath.BigDecimal increment = incrementDouble;
+                // ICU4N: Using GetInstance() is intentional here because we want the value to be truncated
+                // to match the input double value.
+                BigMath.BigDecimal increment = BigMath.BigDecimal.GetInstance(incrementDouble);
                 return ConstructIncrement(increment);
             }
             else
