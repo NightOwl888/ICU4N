@@ -18,9 +18,11 @@ using System;
 using System.Globalization;
 using System.Text;
 using J2N.Numerics;
+using ICU4N.Support;
 #if !PORTABLE
 using System.Runtime.Serialization;
 #endif
+using SR = ICU4N.Support.Numerics.BigMath.Messages;
 
 namespace ICU4N.Numerics.BigMath
 {
@@ -1347,6 +1349,8 @@ namespace ICU4N.Numerics.BigMath
         {
             if (chars is null)
                 throw new ArgumentNullException(nameof(chars));
+            if (chars.Length == 0)
+                throw new FormatException(string.Format(SR.Format_EmptyInputString, chars));
 
             return Parse(chars, 0, chars.Length, context, provider);
             //return Parse(new string(chars, 0, chars.Length), )
@@ -1392,6 +1396,11 @@ namespace ICU4N.Numerics.BigMath
 
         public static BigDecimal Parse(string s, IFormatProvider provider)
         {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            if (s.Length == 0)
+                throw new FormatException(string.Format(SR.Format_EmptyInputString, s));
+
             //return Parse(s, null, provider);
             return ParseNumbers.StringToBigDecimal(s, startIndex: 0, length: s.Length);
         }
@@ -1400,6 +1409,8 @@ namespace ICU4N.Numerics.BigMath
         {
             if (s is null)
                 throw new ArgumentNullException(nameof(s));
+            if (s.Length == 0)
+                throw new FormatException(string.Format(SR.Format_EmptyInputString, s));
 
             //return Parse(s, (MathContext)null);
             return ParseNumbers.StringToBigDecimal(s, startIndex: 0, length: s.Length);
@@ -1409,6 +1420,8 @@ namespace ICU4N.Numerics.BigMath
         {
             if (s is null)
                 throw new ArgumentNullException(nameof(s));
+            if (s.Length == 0)
+                throw new FormatException(string.Format(SR.Format_EmptyInputString, s));
 
             //return Parse(s, context, NumberFormatInfo.InvariantInfo);
             return ParseNumbers.StringToBigDecimal(s, startIndex: 0, length: s.Length, mathContext: context);
@@ -1419,7 +1432,7 @@ namespace ICU4N.Numerics.BigMath
             if (s is null)
                 throw new ArgumentNullException(nameof(s));
             if (s.Length == 0)
-                throw new FormatException(string.Format("Input string was not in a correct format. Value: '{0}'.", s));
+                throw new FormatException(string.Format(SR.Format_EmptyInputString, s));
 
             var data = s.ToCharArray();
 

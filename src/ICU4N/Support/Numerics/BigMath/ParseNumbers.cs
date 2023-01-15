@@ -72,13 +72,11 @@ namespace ICU4N.Numerics.BigMath
             StringBuilder unscaledBuffer; // buffer for unscaled value
             long newScale; // the new scale
 
-            if (s == null)
-            {
+            if (s is null)
                 throw new ArgumentNullException(nameof(s));
-            }
             if ((last >= s.Length) || (startIndex < 0) || (length <= 0) || (last < 0))
             {
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(); // ICU4N TODO: Exception message
             }
             unscaledBuffer = new StringBuilder(length);
             int bufLength = 0;
