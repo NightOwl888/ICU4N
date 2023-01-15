@@ -36,7 +36,7 @@ namespace ICU4N.Dev.Test.Format
             {
                 return Double.GetInstance(double.PositiveInfinity);
             }
-            return ICU4N.Numerics.BigMath.BigDecimal.Parse(s);
+            return ICU4N.Numerics.BigMath.BigDecimal.Parse(s, CultureInfo.InvariantCulture);
         }
 
 #if FEATURE_IKVM

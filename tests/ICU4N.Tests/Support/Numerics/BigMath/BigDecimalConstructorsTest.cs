@@ -128,7 +128,7 @@ namespace ICU4N.Numerics.BigMath
         public void testConstrChar()
         {
             char[] value = new char[] { '-', '1', '2', '3', '8', '0', '.', '4', '7', '3', '8', 'E', '-', '4', '2', '3' };
-            BigDecimal result = BigDecimal.Parse(value);
+            BigDecimal result = BigDecimal.Parse(value, CultureInfo.InvariantCulture);
             String res = "-1.23804738E-419";
             int resScale = 427;
             assertEquals("incorrect value", res, result.ToString(CultureInfo.InvariantCulture));
@@ -137,7 +137,7 @@ namespace ICU4N.Numerics.BigMath
             try
             {
                 // Regression for HARMONY-783
-                BigDecimal.Parse(new char[] { });
+                BigDecimal.Parse(new char[] { }, CultureInfo.InvariantCulture);
                 fail("NumberFormatException has not been thrown");
             }
             catch (FormatException e)
@@ -154,7 +154,7 @@ namespace ICU4N.Numerics.BigMath
             char[] value = new char[] { '-', '1', '2', '3', '8', '0', '.', '4', '7', '3', '8', 'E', '-', '4', '2', '3' };
             int offset = 3;
             int len = 12;
-            BigDecimal result = BigDecimal.Parse(value, offset, len);
+            BigDecimal result = BigDecimal.Parse(value, offset, len, CultureInfo.InvariantCulture);
             String res = "3.804738E-40";
             int resScale = 46;
             assertEquals("incorrect value", res, result.ToString(CultureInfo.InvariantCulture));
@@ -163,7 +163,7 @@ namespace ICU4N.Numerics.BigMath
             try
             {
                 // Regression for HARMONY-783
-                BigDecimal.Parse(new char[] { }, 0, 0);
+                BigDecimal.Parse(new char[] { }, 0, 0, CultureInfo.InvariantCulture);
                 fail("NumberFormatException has not been thrown");
             }
             catch (FormatException e)
@@ -183,7 +183,7 @@ namespace ICU4N.Numerics.BigMath
             int precision = 4;
             RoundingMode rm = RoundingMode.Ceiling;
             MathContext mc = new MathContext(precision, rm);
-            BigDecimal result = BigDecimal.Parse(value, offset, len, mc);
+            BigDecimal result = BigDecimal.Parse(value, offset, len, mc, CultureInfo.InvariantCulture);
             String res = "3.805E-40";
             int resScale = 43;
             assertEquals("incorrect value", res, result.ToString(CultureInfo.InvariantCulture));
@@ -192,7 +192,7 @@ namespace ICU4N.Numerics.BigMath
             try
             {
                 // Regression for HARMONY-783
-                BigDecimal.Parse(new char[] { }, 0, 0, MathContext.Decimal32);
+                BigDecimal.Parse(new char[] { }, 0, 0, MathContext.Decimal32, CultureInfo.InvariantCulture);
                 fail("NumberFormatException has not been thrown");
             }
             catch (FormatException e)
@@ -214,7 +214,7 @@ namespace ICU4N.Numerics.BigMath
             MathContext mc = new MathContext(precision, rm);
             try
             {
-                BigDecimal.Parse(value, offset, len, mc);
+                BigDecimal.Parse(value, offset, len, mc, CultureInfo.InvariantCulture);
                 fail("NumberFormatException has not been thrown");
             }
             catch (ArgumentOutOfRangeException e) // ICU4N: We throw ArgumentOutOfRangeException in this case to match .NET
@@ -236,7 +236,7 @@ namespace ICU4N.Numerics.BigMath
             MathContext mc = new MathContext(precision, rm);
             try
             {
-                BigDecimal.Parse(value, offset, len, mc);
+                BigDecimal.Parse(value, offset, len, mc, CultureInfo.InvariantCulture);
                 fail("NumberFormatException has not been thrown");
             }
             catch (ArgumentOutOfRangeException e) // ICU4N: We throw ArgumentOutOfRangeException in this case to match .NET
@@ -253,7 +253,7 @@ namespace ICU4N.Numerics.BigMath
             try
             {
                 // Regression for HARMONY-783
-                BigDecimal.Parse(new char[] { }, MathContext.Decimal32);
+                BigDecimal.Parse(new char[] { }, MathContext.Decimal32, CultureInfo.InvariantCulture);
                 fail("NumberFormatException has not been thrown");
             }
             catch (FormatException e)
@@ -490,7 +490,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "-238768.787678287a+10";
             try
             {
-                BigDecimal.Parse(a);
+                BigDecimal.Parse(a, CultureInfo.InvariantCulture);
                 fail("NumberFormatException has not been caught");
             }
             catch (FormatException e) { }
@@ -504,7 +504,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "-238768.787678287e";
             try
             {
-                BigDecimal.Parse(a);
+                BigDecimal.Parse(a, CultureInfo.InvariantCulture);
                 fail("NumberFormatException has not been caught");
             }
             catch (FormatException e)
@@ -521,7 +521,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "-238768.787678287e-";
             try
             {
-                BigDecimal.Parse(a);
+                BigDecimal.Parse(a, CultureInfo.InvariantCulture);
                 fail("NumberFormatException has not been caught");
             }
             catch (FormatException e)
@@ -539,7 +539,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "-238768.787678287e214748364767876";
             try
             {
-                BigDecimal.Parse(a);
+                BigDecimal.Parse(a, CultureInfo.InvariantCulture);
                 fail("NumberFormatException has not been caught");
             }
             catch (OverflowException e) // ICU4N: We throw OverflowException here to match .NET.
@@ -557,7 +557,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "-238768.787678287e-214748364767876";
             try
             {
-                BigDecimal.Parse(a);
+                BigDecimal.Parse(a, CultureInfo.InvariantCulture);
                 fail("NumberFormatException has not been caught");
             }
             catch (OverflowException e) // ICU4N: We throw OverflowException here to match .NET.
@@ -575,7 +575,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "-238768.787678287e2147483647";
             int aScale = -2147483638;
             BigInteger bA = BigInteger.Parse("-238768787678287");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -590,7 +590,7 @@ namespace ICU4N.Numerics.BigMath
             String a = ".238768e-2147483648";
             try
             {
-                BigDecimal.Parse(a);
+                BigDecimal.Parse(a, CultureInfo.InvariantCulture);
                 fail("NumberFormatException expected");
             }
             catch (FormatException e)
@@ -609,7 +609,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "732546982374982347892379283571094797.287346782359284756";
             int aScale = 18;
             BigInteger bA = BigInteger.Parse("732546982374982347892379283571094797287346782359284756");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -623,7 +623,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "+732546982374982347892379283571094797.287346782359284756";
             int aScale = 18;
             BigInteger bA = BigInteger.Parse("732546982374982347892379283571094797287346782359284756");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -637,7 +637,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "-732546982374982347892379283571094797.287346782359284756";
             int aScale = 18;
             BigInteger bA = BigInteger.Parse("-732546982374982347892379283571094797287346782359284756");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -652,7 +652,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "-732546982374982347892379283571094797287346782359284756";
             int aScale = 0;
             BigInteger bA = BigInteger.Parse("-732546982374982347892379283571094797287346782359284756");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -667,7 +667,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "-238768787678287e214";
             int aScale = -214;
             BigInteger bA = BigInteger.Parse("-238768787678287");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -682,7 +682,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "-238768787678287e-214";
             int aScale = 214;
             BigInteger bA = BigInteger.Parse("-238768787678287");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -697,7 +697,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "238768787678287e-214";
             int aScale = 214;
             BigInteger bA = BigInteger.Parse("238768787678287");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -712,7 +712,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "238768787678287e+214";
             int aScale = -214;
             BigInteger bA = BigInteger.Parse("238768787678287");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -727,7 +727,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "238768787678287E214";
             int aScale = -214;
             BigInteger bA = BigInteger.Parse("238768787678287");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -742,7 +742,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "23985439837984782435652424523876878.7678287e+214";
             int aScale = -207;
             BigInteger bA = BigInteger.Parse("239854398379847824356524245238768787678287");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -757,7 +757,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "238096483923847545735673567457356356789029578490276878.7678287e-214";
             int aScale = 221;
             BigInteger bA = BigInteger.Parse("2380964839238475457356735674573563567890295784902768787678287");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -772,7 +772,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "2380964839238475457356735674573563567890.295784902768787678287E+21";
             int aScale = 0;
             BigInteger bA = BigInteger.Parse("2380964839238475457356735674573563567890295784902768787678287");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -787,7 +787,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "23809648392384754573567356745735635678.90295784902768787678287E+21";
             int aScale = 2;
             BigInteger bA = BigInteger.Parse("2380964839238475457356735674573563567890295784902768787678287");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -802,7 +802,7 @@ namespace ICU4N.Numerics.BigMath
             String a = "238096483923847545735673567457356356789029.5784902768787678287E+21";
             int aScale = -2;
             BigInteger bA = BigInteger.Parse("2380964839238475457356735674573563567890295784902768787678287");
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", bA, aNumber.UnscaledValue);
             assertEquals("incorrect scale", aScale, aNumber.Scale);
         }
@@ -819,7 +819,7 @@ namespace ICU4N.Numerics.BigMath
             MathContext mc = new MathContext(precision, rm);
             String res = "-23876";
             int resScale = -224;
-            BigDecimal result = BigDecimal.Parse(a, mc);
+            BigDecimal result = BigDecimal.Parse(a, mc, CultureInfo.InvariantCulture);
             assertEquals("incorrect value", res, result.UnscaledValue.ToString(CultureInfo.InvariantCulture));
             assertEquals("incorrect scale", resScale, result.Scale);
         }

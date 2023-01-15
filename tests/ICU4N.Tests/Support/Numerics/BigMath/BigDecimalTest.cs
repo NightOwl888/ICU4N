@@ -1,6 +1,7 @@
 ﻿using ICU4N.Dev.Test;
 using NUnit.Framework;
 using System;
+using System.Globalization;
 
 namespace ICU4N.Numerics.BigMath
 {
@@ -77,20 +78,20 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_ConstructorLjava_lang_String() //throws NumberFormatException
         {
-            BigDecimal big = BigDecimal.Parse("345.23499600293850");
+            BigDecimal big = BigDecimal.Parse("345.23499600293850", CultureInfo.InvariantCulture);
             assertTrue("the BigDecimal value is not initialized properly", big
                     .ToString().Equals("345.23499600293850")
                     && big.Scale == 14);
-            big = BigDecimal.Parse("-12345");
+            big = BigDecimal.Parse("-12345", CultureInfo.InvariantCulture);
             assertTrue("the BigDecimal value is not initialized properly", big
                     .ToString().Equals("-12345")
                     && big.Scale == 0);
-            big = BigDecimal.Parse("123.");
+            big = BigDecimal.Parse("123.", CultureInfo.InvariantCulture);
             assertTrue("the BigDecimal value is not initialized properly", big
                     .ToString().Equals("123")
                     && big.Scale == 0);
 
-            BigDecimal.Parse("1.234E02");
+            BigDecimal.Parse("1.234E02", CultureInfo.InvariantCulture);
         }
 
         /**
@@ -115,7 +116,7 @@ namespace ICU4N.Numerics.BigMath
         {
             try
             {
-                BigDecimal.Parse("");
+                BigDecimal.Parse("", CultureInfo.InvariantCulture);
                 fail("NumberFormatException expected");
             }
             catch (FormatException e)
@@ -131,7 +132,7 @@ namespace ICU4N.Numerics.BigMath
         {
             try
             {
-                BigDecimal.Parse("+35e+-2");
+                BigDecimal.Parse("+35e+-2", CultureInfo.InvariantCulture);
                 fail("NumberFormatException expected");
             }
             catch (FormatException e)
@@ -140,7 +141,7 @@ namespace ICU4N.Numerics.BigMath
 
             try
             {
-                BigDecimal.Parse("-35e-+2");
+                BigDecimal.Parse("-35e-+2", CultureInfo.InvariantCulture);
                 fail("NumberFormatException expected");
             }
             catch (FormatException e)
@@ -156,7 +157,7 @@ namespace ICU4N.Numerics.BigMath
         {
             try
             {
-                BigDecimal.Parse("+35e+-2".ToCharArray());
+                BigDecimal.Parse("+35e+-2".ToCharArray(), CultureInfo.InvariantCulture);
                 fail("NumberFormatException expected");
             }
             catch (FormatException e)
@@ -165,7 +166,7 @@ namespace ICU4N.Numerics.BigMath
 
             try
             {
-                BigDecimal.Parse("-35e-+2".ToCharArray());
+                BigDecimal.Parse("-35e-+2".ToCharArray(), CultureInfo.InvariantCulture);
                 fail("NumberFormatException expected");
             }
             catch (FormatException e)
@@ -179,7 +180,7 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_abs()
         {
-            BigDecimal big = BigDecimal.Parse("-1234");
+            BigDecimal big = BigDecimal.Parse("-1234", CultureInfo.InvariantCulture);
             BigDecimal bigabs = BigDecimal.Abs(big);
             assertTrue("the absolute value of -1234 is not 1234", bigabs.ToString()
                     .Equals("1234"));
@@ -195,8 +196,8 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_addLjava_math_BigDecimal()
         {
-            BigDecimal add1 = BigDecimal.Parse("23.456");
-            BigDecimal add2 = BigDecimal.Parse("3849.235");
+            BigDecimal add1 = BigDecimal.Parse("23.456", CultureInfo.InvariantCulture);
+            BigDecimal add2 = BigDecimal.Parse("3849.235", CultureInfo.InvariantCulture);
             BigDecimal sum = BigDecimal.Add(add1, add2);
             assertTrue("the sum of 23.456 + 3849.235 is wrong", sum.UnscaledValue
                     .ToString().Equals("3872691")
@@ -214,11 +215,11 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_compareToLjava_math_BigDecimal()
         {
-            BigDecimal comp1 = BigDecimal.Parse("1.00");
+            BigDecimal comp1 = BigDecimal.Parse("1.00", CultureInfo.InvariantCulture);
             BigDecimal comp2 = new BigDecimal(1.000000D);
             assertTrue("1.00 and 1.000000 should be equal",
                     comp1.CompareTo(comp2) == 0);
-            BigDecimal comp3 = BigDecimal.Parse("1.02");
+            BigDecimal comp3 = BigDecimal.Parse("1.02", CultureInfo.InvariantCulture);
             assertTrue("1.02 should be bigger than 1.00",
                     comp3.CompareTo(comp1) == 1);
             BigDecimal comp4 = new BigDecimal(0.98D);
@@ -233,7 +234,7 @@ namespace ICU4N.Numerics.BigMath
         public void test_divideLjava_math_BigDecimalI()
         {
             BigDecimal divd1 = new BigDecimal(value, 2);
-            BigDecimal divd2 = BigDecimal.Parse("2.335");
+            BigDecimal divd2 = BigDecimal.Parse("2.335", CultureInfo.InvariantCulture);
             BigDecimal divd3 = BigDecimal.Divide(divd1, divd2, RoundingMode.Up);
             assertTrue("123459.08/2.335 is not correct", divd3.ToString().Equals(
                     "52873.27")
@@ -265,7 +266,7 @@ namespace ICU4N.Numerics.BigMath
         public void test_divideLjava_math_BigDecimalII()
         {
             BigDecimal divd1 = new BigDecimal(value2, 4);
-            BigDecimal divd2 = BigDecimal.Parse("0.0023");
+            BigDecimal divd2 = BigDecimal.Parse("0.0023", CultureInfo.InvariantCulture);
             BigDecimal divd3 = BigDecimal.Divide(divd1, divd2, 3, RoundingMode.HalfUp);
             assertTrue("1233456/0.0023 is not correct", divd3.ToString().Equals(
                     "536285217.391")
@@ -327,22 +328,22 @@ namespace ICU4N.Numerics.BigMath
         public void test_equalsLjava_lang_Object()
         {
             BigDecimal equal1 = new BigDecimal(1.00D);
-            BigDecimal equal2 = BigDecimal.Parse("1.0");
+            BigDecimal equal2 = BigDecimal.Parse("1.0", CultureInfo.InvariantCulture);
             assertFalse("1.00 and 1.0 should not be equal",
                     equal1.Equals(equal2));
             equal2 = new BigDecimal(1.01D);
             assertFalse("1.00 and 1.01 should not be equal",
                     equal1.Equals(equal2));
-            equal2 = BigDecimal.Parse("1.00");
+            equal2 = BigDecimal.Parse("1.00", CultureInfo.InvariantCulture);
             assertFalse("1.00D and 1.00 should not be equal",
                     equal1.Equals(equal2));
             BigInteger val = BigInteger.Parse("100");
-            equal1 = BigDecimal.Parse("1.00");
+            equal1 = BigDecimal.Parse("1.00", CultureInfo.InvariantCulture);
             equal2 = new BigDecimal(val, 2);
             assertTrue("1.00(string) and 1.00(bigInteger) should be equal", equal1
                     .Equals(equal2));
             equal1 = new BigDecimal(100D);
-            equal2 = BigDecimal.Parse("2.34576");
+            equal2 = BigDecimal.Parse("2.34576", CultureInfo.InvariantCulture);
             assertFalse("100D and 2.34576 should not be equal", equal1
                     .Equals(equal2));
             assertFalse("bigDecimal 100D does not equal string 23415", equal1
@@ -355,7 +356,7 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_floatValue()
         {
-            BigDecimal fl1 = BigDecimal.Parse("234563782344567");
+            BigDecimal fl1 = BigDecimal.Parse("234563782344567", CultureInfo.InvariantCulture);
             assertTrue("the float representation of bigDecimal 234563782344567",
                     fl1.ToSingle() == 234563782344567f);
             BigDecimal fl2 = new BigDecimal(2.345E37);
@@ -385,11 +386,11 @@ namespace ICU4N.Numerics.BigMath
         public void test_hashCode()
         {
             // anything that is equal must have the same hashCode
-            BigDecimal hash = BigDecimal.Parse("1.00");
+            BigDecimal hash = BigDecimal.Parse("1.00", CultureInfo.InvariantCulture);
             BigDecimal hash2 = new BigDecimal(1.00D);
             assertTrue("the hashCode of 1.00 and 1.00D is equal",
                     hash.GetHashCode() != hash2.GetHashCode() && !hash.Equals(hash2));
-            hash2 = BigDecimal.Parse("1.0");
+            hash2 = BigDecimal.Parse("1.0", CultureInfo.InvariantCulture);
             assertTrue("the hashCode of 1.0 and 1.00 is equal",
                     hash.GetHashCode() != hash2.GetHashCode() && !hash.Equals(hash2));
             BigInteger val = BigInteger.Parse("100");
@@ -398,7 +399,7 @@ namespace ICU4N.Numerics.BigMath
                     .GetHashCode() == hash2.GetHashCode()
                     && hash.Equals(hash2));
             hash = new BigDecimal(value, 2);
-            hash2 = BigDecimal.Parse("-1233456.0000");
+            hash2 = BigDecimal.Parse("-1233456.0000", CultureInfo.InvariantCulture);
             assertTrue("hashCode of 123459.08 and -1233456.0000 is not equal", hash
                     .GetHashCode() != hash2.GetHashCode()
                     && !hash.Equals(hash2));
@@ -417,9 +418,9 @@ namespace ICU4N.Numerics.BigMath
             BigDecimal int1 = new BigDecimal(value, 3);
             assertTrue("the int value of 12345.908 is not 12345",
                     int1.ToInt32() == 12345);
-            int1 = BigDecimal.Parse("1.99");
+            int1 = BigDecimal.Parse("1.99", CultureInfo.InvariantCulture);
             assertTrue("the int value of 1.99 is not 1", int1.ToInt32() == 1);
-            int1 = BigDecimal.Parse("23423419083091823091283933");
+            int1 = BigDecimal.Parse("23423419083091823091283933", CultureInfo.InvariantCulture);
             // ran JDK and found representation for the above was -249268259
             assertTrue("the int value of 23423419083091823091283933 is wrong", int1
                     .ToInt32() == -249268259);
@@ -440,7 +441,7 @@ namespace ICU4N.Numerics.BigMath
             long1 = new BigDecimal(-1345.348E-123D);
             assertTrue("the long value of -1345.348E-123D is not zero", long1
                     .ToInt64() == 0);
-            long1 = BigDecimal.Parse("31323423423419083091823091283933");
+            long1 = BigDecimal.Parse("31323423423419083091823091283933", CultureInfo.InvariantCulture);
             // ran JDK and found representation for the above was
             // -5251313250005125155
             assertTrue(
@@ -489,7 +490,7 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_movePointLeftI()
         {
-            BigDecimal movePtLeft = BigDecimal.Parse("123456265.34");
+            BigDecimal movePtLeft = BigDecimal.Parse("123456265.34", CultureInfo.InvariantCulture);
             BigDecimal alreadyMoved = BigDecimal.MovePointLeft(movePtLeft, 5);
             assertTrue("move point left 5 failed", alreadyMoved.Scale == 7
                     && alreadyMoved.ToString().Equals("1234.5626534"));
@@ -520,7 +521,7 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_movePointRightI()
         {
-            BigDecimal movePtRight = BigDecimal.Parse("-1.58796521458");
+            BigDecimal movePtRight = BigDecimal.Parse("-1.58796521458", CultureInfo.InvariantCulture);
             BigDecimal alreadyMoved = BigDecimal.MovePointRight(movePtRight, 8);
             assertTrue("move point right 8 failed", alreadyMoved.Scale == 3
                     && alreadyMoved.ToString().Equals("-158796521.458"));
@@ -554,8 +555,8 @@ namespace ICU4N.Numerics.BigMath
             assertTrue("123.45908 * 2.345 is not correct: " + result, result
                     .ToString().StartsWith("289.51154260", StringComparison.Ordinal)
                     && result.Scale == multi1.Scale + multi2.Scale);
-            multi1 = BigDecimal.Parse("34656");
-            multi2 = BigDecimal.Parse("-2");
+            multi1 = BigDecimal.Parse("34656", CultureInfo.InvariantCulture);
+            multi2 = BigDecimal.Parse("-2", CultureInfo.InvariantCulture);
             result = multi1 * multi2;
             assertTrue("34656 * 2 is not correct", result.ToString().Equals(
                     "-69312")
@@ -566,12 +567,12 @@ namespace ICU4N.Numerics.BigMath
             assertTrue("-2.345E-02 * -134E130 is not correct " + result.ToDouble(),
                     result.ToDouble() == 3.1422999999999997E130
                             && result.Scale == multi1.Scale + multi2.Scale);
-            multi1 = BigDecimal.Parse("11235");
-            multi2 = BigDecimal.Parse("0");
+            multi1 = BigDecimal.Parse("11235", CultureInfo.InvariantCulture);
+            multi2 = BigDecimal.Parse("0", CultureInfo.InvariantCulture);
             result = multi1 * multi2;
             assertTrue("11235 * 0 is not correct", result.ToDouble() == 0
                     && result.Scale == 0);
-            multi1 = BigDecimal.Parse("-0.00234");
+            multi1 = BigDecimal.Parse("-0.00234", CultureInfo.InvariantCulture);
             multi2 = new BigDecimal(13.4E10);
             result = multi1 * multi2;
             assertTrue("-0.00234 * 13.4E10 is not correct",
@@ -588,7 +589,7 @@ namespace ICU4N.Numerics.BigMath
             BigDecimal negate1 = new BigDecimal(value2, 7);
             assertTrue("the negate of 1233.4560000 is not -1233.4560000", (-negate1)
                     .ToString().Equals("-1233.4560000"));
-            negate1 = BigDecimal.Parse("-23465839");
+            negate1 = BigDecimal.Parse("-23465839", CultureInfo.InvariantCulture);
             assertTrue("the negate of -23465839 is not 23465839", (-negate1)
                     .ToString().Equals("23465839"));
             negate1 = new BigDecimal(-3.456E6);
@@ -605,18 +606,18 @@ namespace ICU4N.Numerics.BigMath
             BigDecimal scale1 = new BigDecimal(value2, 8);
             assertTrue("the scale of the number 123.34560000 is wrong", scale1
                     .Scale == 8);
-            BigDecimal scale2 = BigDecimal.Parse("29389.");
+            BigDecimal scale2 = BigDecimal.Parse("29389.", CultureInfo.InvariantCulture);
             assertTrue("the scale of the number 29389. is wrong",
                     scale2.Scale == 0);
             BigDecimal scale3 = new BigDecimal(3.374E13);
             assertTrue("the scale of the number 3.374E13 is wrong",
                     scale3.Scale == 0);
-            BigDecimal scale4 = BigDecimal.Parse("-3.45E-203");
+            BigDecimal scale4 = BigDecimal.Parse("-3.45E-203", CultureInfo.InvariantCulture);
             // note the scale is calculated as 15 digits of 345000.... + exponent -
             // 1. -1 for the 3
             assertTrue("the scale of the number -3.45E-203 is wrong: "
                     + scale4.Scale, scale4.Scale == 205);
-            scale4 = BigDecimal.Parse("-345.4E-200");
+            scale4 = BigDecimal.Parse("-345.4E-200", CultureInfo.InvariantCulture);
             assertTrue("the scale of the number -345.4E-200 is wrong", scale4
                     .Scale == 201);
         }
@@ -657,7 +658,7 @@ namespace ICU4N.Numerics.BigMath
                     setScale2.Scale == 4);
             assertTrue("the representation of the number 2.323E102 is wrong",
                     setScale2.ToDouble() == 2.323E102);
-            setScale1 = BigDecimal.Parse("-1.253E-12");
+            setScale1 = BigDecimal.Parse("-1.253E-12", CultureInfo.InvariantCulture);
             setScale2 = BigDecimal.SetScale(setScale1, 17, RoundingMode.Ceiling);
             assertTrue("the number -1.253E-12 after setting scale is wrong",
                     setScale2.Scale == 17);
@@ -712,7 +713,7 @@ namespace ICU4N.Numerics.BigMath
             assertTrue(
                     "the number 123.45908 after setting scale to 1/ROUND_HALF_DOWN is wrong",
                     setScale2.ToString().Equals("123.4") && setScale2.Scale == 1);
-            setScale2 = BigDecimal.SetScale(BigDecimal.Parse("-1234.5000"), 0,
+            setScale2 = BigDecimal.SetScale(BigDecimal.Parse("-1234.5000", CultureInfo.InvariantCulture), 0,
                     RoundingMode.HalfDown);
             assertTrue(
                     "the number -1234.5908 after setting scale to 0/ROUND_HALF_DOWN is wrong",
@@ -729,25 +730,25 @@ namespace ICU4N.Numerics.BigMath
             assertTrue(
                     "the number -1.2335789 after setting scale to 2/ROUND_HALF_EVEN is wrong",
                     setScale2.ToDouble() == -1.23D && setScale2.Scale == 2);
-            setScale2 = BigDecimal.SetScale(BigDecimal.Parse("1.2345000"), 3,
+            setScale2 = BigDecimal.SetScale(BigDecimal.Parse("1.2345000", CultureInfo.InvariantCulture), 3,
                     RoundingMode.HalfEven);
             assertTrue(
                     "the number 1.2345789 after setting scale to 3/ROUND_HALF_EVEN is wrong",
                     setScale2.ToDouble() == 1.234D && setScale2.Scale == 3);
-            setScale2 = BigDecimal.SetScale(BigDecimal.Parse("-1.2345000"), 3,
+            setScale2 = BigDecimal.SetScale(BigDecimal.Parse("-1.2345000", CultureInfo.InvariantCulture), 3,
                     RoundingMode.HalfEven);
             assertTrue(
                     "the number -1.2335789 after setting scale to 3/ROUND_HALF_EVEN is wrong",
                     setScale2.ToDouble() == -1.234D && setScale2.Scale == 3);
 
             // testing rounding Mode ROUND_HALF_UP
-            setScale1 = BigDecimal.Parse("134567.34650");
+            setScale1 = BigDecimal.Parse("134567.34650", CultureInfo.InvariantCulture);
             setScale2 = BigDecimal.SetScale(setScale1, 3, RoundingMode.HalfUp);
             assertTrue(
                     "the number 134567.34658 after setting scale to 3/ROUND_HALF_UP is wrong",
                     setScale2.ToString().Equals("134567.347")
                             && setScale2.Scale == 3);
-            setNeg = BigDecimal.Parse("-1234.4567");
+            setNeg = BigDecimal.Parse("-1234.4567", CultureInfo.InvariantCulture);
             setScale2 = BigDecimal.SetScale(setNeg, 0, RoundingMode.HalfUp);
             assertTrue(
                     "the number -1234.4567 after setting scale to 0/ROUND_HALF_UP is wrong",
@@ -764,7 +765,7 @@ namespace ICU4N.Numerics.BigMath
             }
 
             // testing rounding Mode ROUND_UP
-            setScale1 = BigDecimal.Parse("100000.374");
+            setScale1 = BigDecimal.Parse("100000.374", CultureInfo.InvariantCulture);
             setScale2 = BigDecimal.SetScale(setScale1, 2, RoundingMode.Up);
             assertTrue(
                     "the number 100000.374 after setting scale to 2/ROUND_UP is wrong",
@@ -795,7 +796,7 @@ namespace ICU4N.Numerics.BigMath
         {
             BigDecimal sign = new BigDecimal(123E-104);
             assertTrue("123E-104 is not positive in signum()", sign.Sign == 1);
-            sign = BigDecimal.Parse("-1234.3959");
+            sign = BigDecimal.Parse("-1234.3959", CultureInfo.InvariantCulture);
             assertTrue("-1234.3959 is not negative in signum()",
                     sign.Sign == -1);
             sign = new BigDecimal(000D);
@@ -807,8 +808,8 @@ namespace ICU4N.Numerics.BigMath
          */
         public void test_subtractLjava_math_BigDecimal()
         {
-            BigDecimal sub1 = BigDecimal.Parse("13948");
-            BigDecimal sub2 = BigDecimal.Parse("2839.489");
+            BigDecimal sub1 = BigDecimal.Parse("13948", CultureInfo.InvariantCulture);
+            BigDecimal sub2 = BigDecimal.Parse("2839.489", CultureInfo.InvariantCulture);
             BigDecimal result = sub1 - sub2;
             assertTrue("13948 - 2839.489 is wrong: " + result, result.ToString()
                     .Equals("11108.511")
@@ -820,7 +821,7 @@ namespace ICU4N.Numerics.BigMath
             assertTrue("13948 - 2839.489 is not the negative of 2839.489 - 13948",
                     result.Equals(-result2));
             sub1 = new BigDecimal(value, 1);
-            sub2 = BigDecimal.Parse("0");
+            sub2 = BigDecimal.Parse("0", CultureInfo.InvariantCulture);
             result = sub1 - sub2;
             assertTrue("1234590.8 - 0 is wrong", result.Equals(sub1));
             sub1 = new BigDecimal(1.234E-03);
@@ -841,7 +842,7 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_toBigInteger()
         {
-            BigDecimal sub1 = BigDecimal.Parse("-29830.989");
+            BigDecimal sub1 = BigDecimal.Parse("-29830.989", CultureInfo.InvariantCulture);
             BigInteger result = sub1.ToBigInteger();
 
             assertTrue("the bigInteger equivalent of -29830.989 is wrong", result
@@ -866,13 +867,13 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_toString()
         {
-            BigDecimal toString1 = BigDecimal.Parse("1234.000");
+            BigDecimal toString1 = BigDecimal.Parse("1234.000", CultureInfo.InvariantCulture);
             assertTrue("the toString representation of 1234.000 is wrong",
                     toString1.ToString().Equals("1234.000"));
-            toString1 = BigDecimal.Parse("-123.4E-5");
+            toString1 = BigDecimal.Parse("-123.4E-5", CultureInfo.InvariantCulture);
             assertTrue("the toString representation of -123.4E-5 is wrong: "
                     + toString1, toString1.ToString().Equals("-0.001234"));
-            toString1 = BigDecimal.Parse("-1.455E-20");
+            toString1 = BigDecimal.Parse("-1.455E-20", CultureInfo.InvariantCulture);
             assertTrue("the toString representation of -1.455E-20 is wrong",
                     toString1.ToString().Equals("-1.455E-20"));
             toString1 = new BigDecimal(value2, 4);
@@ -886,13 +887,13 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_unscaledValue()
         {
-            BigDecimal unsVal = BigDecimal.Parse("-2839485.000");
+            BigDecimal unsVal = BigDecimal.Parse("-2839485.000", CultureInfo.InvariantCulture);
             assertTrue("the unscaledValue of -2839485.000 is wrong", unsVal
                     .UnscaledValue.ToString().Equals("-2839485000"));
             unsVal = new BigDecimal(123E10);
             assertTrue("the unscaledValue of 123E10 is wrong", unsVal
                     .UnscaledValue.ToString().Equals("1230000000000"));
-            unsVal = BigDecimal.Parse("-4.56E-13");
+            unsVal = BigDecimal.Parse("-4.56E-13", CultureInfo.InvariantCulture);
             assertTrue("the unscaledValue of -4.56E-13 is wrong: "
                     + unsVal.UnscaledValue, unsVal.UnscaledValue.ToString()
                     .Equals("-456"));
@@ -983,20 +984,20 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void test_stripTrailingZero()
         {
-            BigDecimal sixhundredtest = BigDecimal.Parse("600.0");
+            BigDecimal sixhundredtest = BigDecimal.Parse("600.0", CultureInfo.InvariantCulture);
             assertTrue("stripTrailingZero failed for 600.0",
                     ((BigDecimal.StripTrailingZeros(sixhundredtest)).Scale == -2)
                     );
 
             /* Single digit, no trailing zero, odd number */
-            BigDecimal notrailingzerotest = BigDecimal.Parse("1");
+            BigDecimal notrailingzerotest = BigDecimal.Parse("1", CultureInfo.InvariantCulture);
             assertTrue("stripTrailingZero failed for 1",
                     ((BigDecimal.StripTrailingZeros(notrailingzerotest)).Scale == 0)
                     );
 
             /* Zero */
             //regression for HARMONY-4623, NON-BUG DIFF with RI
-            BigDecimal zerotest = BigDecimal.Parse("0.0000");
+            BigDecimal zerotest = BigDecimal.Parse("0.0000", CultureInfo.InvariantCulture);
             assertTrue("stripTrailingZero failed for 0.0000",
                     ((BigDecimal.StripTrailingZeros(zerotest)).Scale == 0)
                     );
@@ -1006,7 +1007,7 @@ namespace ICU4N.Numerics.BigMath
         public void testMathContextConstruction()
         {
             String a = "-12380945E+61";
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             int precision = 6;
             RoundingMode rm = RoundingMode.HalfDown;
             MathContext mcIntRm = new MathContext(precision, rm);
@@ -1015,7 +1016,7 @@ namespace ICU4N.Numerics.BigMath
             BigDecimal res = BigDecimal.Abs(aNumber, mcInt);
             assertEquals("MathContext Constructer with int precision failed",
                     res,
-                    BigDecimal.Parse("1.23809E+68"));
+                    BigDecimal.Parse("1.23809E+68", CultureInfo.InvariantCulture));
 
             assertEquals("Equal MathContexts are not Equal ",
                     mcIntRm,

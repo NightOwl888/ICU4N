@@ -19,7 +19,7 @@ namespace ICU4N.Numerics.BigMath
         public void testAbsNeg()
         {
             String a = "-123809648392384754573567356745735.63567890295784902768787678287E+21";
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             String result = "123809648392384754573567356745735635678902957849027687.87678287";
             assertEquals("incorrect value", result, BigDecimal.Abs(aNumber).ToString(CultureInfo.InvariantCulture));
         }
@@ -31,7 +31,7 @@ namespace ICU4N.Numerics.BigMath
         public void testAbsPos()
         {
             String a = "123809648392384754573567356745735.63567890295784902768787678287E+21";
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             String result = "123809648392384754573567356745735635678902957849027687.87678287";
             assertEquals("incorrect value", result, BigDecimal.Abs(aNumber).ToString(CultureInfo.InvariantCulture));
         }
@@ -43,7 +43,7 @@ namespace ICU4N.Numerics.BigMath
         public void testAbsMathContextNeg()
         {
             String a = "-123809648392384754573567356745735.63567890295784902768787678287E+21";
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             int precision = 15;
             RoundingMode rm = RoundingMode.HalfDown;
             MathContext mc = new MathContext(precision, rm);
@@ -61,7 +61,7 @@ namespace ICU4N.Numerics.BigMath
         public void testAbsMathContextPos()
         {
             String a = "123809648392384754573567356745735.63567890295784902768787678287E+21";
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             int precision = 41;
             RoundingMode rm = RoundingMode.HalfEven;
             MathContext mc = new MathContext(precision, rm);
@@ -555,8 +555,8 @@ namespace ICU4N.Numerics.BigMath
         [Ignore("ICU4N TODO: This test fails due to the inaccuracy of BigDecimal.AproxPrecision(). See: https://github.com/openjdk/jdk8u-dev/blob/987c7384267be18fe86d3bd2514d389a5d62306c/jdk/src/share/classes/java/math/BigDecimal.java#L3869-L3886")]
         public void testApproxPrecision()
         {
-            BigDecimal testInstance = BigDecimal.Ten * BigDecimal.Parse("0.1");
-            int result = testInstance.CompareTo(BigDecimal.Parse("1.00"));
+            BigDecimal testInstance = BigDecimal.Ten * BigDecimal.Parse("0.1", CultureInfo.InvariantCulture);
+            int result = testInstance.CompareTo(BigDecimal.Parse("1.00", CultureInfo.InvariantCulture));
             assertEquals("incorrect value", 0, result);
         }
     }

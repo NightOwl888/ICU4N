@@ -2,6 +2,7 @@
 using J2N.Numerics;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -1473,7 +1474,7 @@ namespace ICU4N.Numerics.BigMath
 
             if (value.IsZero)
             {
-                return BigDecimal.Parse("0"); // ICU4N TODO: Why not use Zero here?
+                return BigDecimal.Parse("0", CultureInfo.InvariantCulture); // ICU4N TODO: Why not use Zero here?
             }
             BigInteger strippedBI = value.UnscaledValue;
             BigInteger quotient;

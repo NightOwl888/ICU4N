@@ -98,7 +98,7 @@ namespace ICU4N.Numerics.BigMath
         {
             String a = "2.345726458768760000E+10";
             int newScale = 5;
-            BigDecimal aNumber = BigDecimal.Parse(a);
+            BigDecimal aNumber = BigDecimal.Parse(a, CultureInfo.InvariantCulture);
             BigDecimal bNumber = BigDecimal.SetScale(aNumber, newScale);
             assertTrue("incorrect scale", bNumber.Scale == newScale);
             assertEquals("incorrect value", 0, bNumber.CompareTo(aNumber));

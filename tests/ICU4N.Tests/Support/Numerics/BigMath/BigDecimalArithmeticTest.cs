@@ -1433,8 +1433,8 @@ namespace ICU4N.Numerics.BigMath
         [Test]
         public void testDivideLargeScale()
         {
-            BigDecimal arg1 = BigDecimal.Parse("320.0E+2147483647");
-            BigDecimal arg2 = BigDecimal.Parse("6E-2147483647");
+            BigDecimal arg1 = BigDecimal.Parse("320.0E+2147483647", CultureInfo.InvariantCulture);
+            BigDecimal arg2 = BigDecimal.Parse("6E-2147483647", CultureInfo.InvariantCulture);
             try
             {
                 BigDecimal result = BigDecimal.Divide(arg1, arg2, int.MaxValue,
