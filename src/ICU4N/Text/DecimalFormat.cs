@@ -7,6 +7,7 @@ using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 using System.Threading;
 using static ICU4N.Numerics.Padder;
@@ -3035,12 +3036,12 @@ namespace ICU4N.Text
          */
         private Number SafeConvertBigDecimal(Numerics.BigMath.BigDecimal number)
         {
-            try
-            {
-                return new BigDecimal(number);
-            }
-            //catch (NumberFormatException e)
-            catch (OverflowException) // ICU4N TODO: Eliminate this exception
+            if (number is null)
+                throw new ArgumentNullException(nameof(number));
+
+            // ICU4N: Use TryParse so we don't have to deal with exceptions here.
+            string value = number.ToString(CultureInfo.InvariantCulture);
+            if (!BigDecimal.TryParse(value, CultureInfo.InvariantCulture, out BigDecimal result))
             {
                 if (number.Sign > 0 && number.Scale < 0)
                 {
@@ -3059,6 +3060,7 @@ namespace ICU4N.Text
                     return Double.GetInstance(0.0);
                 }
             }
+            return result;
         }
 
         /**

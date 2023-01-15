@@ -41,6 +41,15 @@ namespace ICU4N.Numerics
             return BigNumber.TryParseBigDecimalFloatStyle(value.ToCharArray(), startIndex, length, styles, NumberFormatInfo.GetInstance(provider), out result);
         }
 
+        public static bool TryParse(char[] value, NumberStyle styles, IFormatProvider? provider, out BigDecimal result)
+        {
+            if (value is null)
+                throw new ArgumentNullException(nameof(value));
+
+            // ICU4N TODO: Revisit ToCharArray()
+            return BigNumber.TryParseBigDecimalFloatStyle(value, startIndex: 0, length: value.Length, styles, NumberFormatInfo.GetInstance(provider), out result);
+        }
+
         public static bool TryParse(string value, NumberStyle styles, IFormatProvider? provider, out BigDecimal result)
         {
             if (value is null)
@@ -48,6 +57,23 @@ namespace ICU4N.Numerics
 
             // ICU4N TODO: Revisit ToCharArray()
             return BigNumber.TryParseBigDecimalFloatStyle(value.ToCharArray(), startIndex: 0, length: value.Length, styles, NumberFormatInfo.GetInstance(provider), out result);
+        }
+
+        public static bool TryParse(char[] value, IFormatProvider? provider, out BigDecimal result)
+        {
+            if (value is null)
+                throw new ArgumentNullException(nameof(value));
+
+            return BigNumber.TryParseBigDecimalFloatStyle(value, startIndex: 0, length: value.Length, styles: NumberStyle.Float | NumberStyle.AllowThousands, NumberFormatInfo.GetInstance(provider), out result);
+        }
+
+        public static bool TryParse(string value, IFormatProvider? provider, out BigDecimal result)
+        {
+            if (value is null)
+                throw new ArgumentNullException(nameof(value));
+
+            // ICU4N TODO: Revisit ToCharArray()
+            return BigNumber.TryParseBigDecimalFloatStyle(value.ToCharArray(), startIndex: 0, length: value.Length, styles: NumberStyle.Float | NumberStyle.AllowThousands, NumberFormatInfo.GetInstance(provider), out result);
         }
 
         public static BigDecimal Parse(string value, int startIndex, int length, NumberStyle styles, IFormatProvider? provider)
