@@ -730,7 +730,7 @@ namespace ICU4N.Numerics.BigMath
             }
             BigInteger b = value;
 
-            if (m.IsOne | (exponent.Sign > 0 & b.Sign == 0)) // ICU4N TODO: Setup operators for these? Something is amiss here.
+            if (m.IsOne || (exponent.Sign > 0 && b.Sign == 0))
             {
                 return Zero;
             }
