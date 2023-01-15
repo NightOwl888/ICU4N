@@ -1659,7 +1659,7 @@ namespace ICU4N.Text
             if (RoundingMode != Numerics.BigMath.RoundingMode.Unnecessary && !double.IsNaN(number) && !double.IsInfinity(number))
             {
                 // We convert to a string because BigDecimal insists on excessive precision.
-                number = Numerics.BigDecimal.Parse(Double.ToString(number, CultureInfo.InvariantCulture), NumberStyle.Float, CultureInfo.InvariantCulture).SetScale(MaximumFractionDigits, roundingMode.ToICURoundingMode()).ToDouble();
+                number = Numerics.BigDecimal.Parse(Double.ToString(number, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture).SetScale(MaximumFractionDigits, roundingMode.ToICURoundingMode()).ToDouble();
             //RoundingModeExtensions
             }
             ruleSet.Format(number, result, 0, 0);

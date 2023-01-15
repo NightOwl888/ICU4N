@@ -328,7 +328,7 @@ namespace ICU4N.Numerics
 
         private BigDecimal(string value) // ICU4N TODO: Ideally, factor this constructor out and use more efficient methods to convert other numeric types to this one
         {
-            BigDecimal bd = Parse(value, J2N.Globalization.NumberStyle.Float, NumberFormatInfo.InvariantInfo);
+            BigDecimal bd = Parse(value, NumberFormatInfo.InvariantInfo);
             this.ind = bd.ind;
             this.form = bd.form;
             this.mant = bd.mant;

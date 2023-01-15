@@ -754,7 +754,7 @@ namespace ICU4N.Dev.Test.Format
             //{
             //    CurrencyAmount parsedVal = (CurrencyAmount)curFmt.parseObject(strBuf);
             //    Number val = parsedVal.getNumber();
-            //    if (!val.Equals(BigDecimal.Parse("1234.56", J2N.Globalization.NumberStyle.Float, CultureInfo.InvariantCulture)))
+            //    if (!val.Equals(BigDecimal.Parse("1234.56", CultureInfo.InvariantCulture)))
             //    {
             //        Errln("FAIL: getCurrencyFormat of default locale (en_US) failed roundtripping the number. val=" + val);
             //    }
@@ -784,8 +784,8 @@ namespace ICU4N.Dev.Test.Format
             //    CurrencyAmount ca2 = new CurrencyAmount(123.45, gbpIcu);
             //    assertEquals("CurrencyAmount from both Double constructors should be equal", ca1, ca2);
             //    // Coverage for the Number constructor
-            //    ca1 = new CurrencyAmount(BigDecimal.Parse("543.21", J2N.Globalization.NumberStyle.Float, CultureInfo.InvariantCulture), gbpJava);
-            //    ca2 = new CurrencyAmount(BigDecimal.Parse("543.21", J2N.Globalization.NumberStyle.Float, CultureInfo.InvariantCulture), gbpIcu);
+            //    ca1 = new CurrencyAmount(BigDecimal.Parse("543.21", CultureInfo.InvariantCulture), gbpJava);
+            //    ca2 = new CurrencyAmount(BigDecimal.Parse("543.21", CultureInfo.InvariantCulture), gbpIcu);
             //    assertEquals("CurrencyAmount from both Number constructors should be equal", ca1, ca2);
         }
 
@@ -2689,7 +2689,7 @@ namespace ICU4N.Dev.Test.Format
             if (false)
             { // for debugging specific value
                 nf.RoundingMode = Numerics.BigMath.RoundingMode.HalfUp;// (BigDecimal.ROUND_HALF_UP);
-                checkRounding(nf, BigDecimal.Parse("300.0300000000", NumberStyle.Float, CultureInfo.InvariantCulture), 0, BigDecimal.Parse("0.020000000", NumberStyle.Float, CultureInfo.InvariantCulture));
+                checkRounding(nf, BigDecimal.Parse("300.0300000000", CultureInfo.InvariantCulture), 0, BigDecimal.Parse("0.020000000", CultureInfo.InvariantCulture));
             }
             // full tests
             int[] roundingIncrements = { 1, 2, 5, 20, 50, 100 };
@@ -2704,7 +2704,7 @@ namespace ICU4N.Dev.Test.Format
                         BigDecimal @base = new BigDecimal(testValues[j]);
                         BigDecimal rInc = new BigDecimal(roundingIncrements[increment]);
                         checkRounding(nf, @base, 20, rInc);
-                        rInc = BigDecimal.Parse("1.000000000", NumberStyle.Float, CultureInfo.InvariantCulture) / (rInc);
+                        rInc = BigDecimal.Parse("1.000000000", CultureInfo.InvariantCulture) / (rInc);
                         checkRounding(nf, @base, 20, rInc);
                     }
                 }
@@ -2733,8 +2733,8 @@ namespace ICU4N.Dev.Test.Format
 
 
             TestRoundingPatternItem[] tests = {
-                new TestRoundingPatternItem("##0.65", BigDecimal.Parse("0.65", NumberStyle.Float, CultureInfo.InvariantCulture), 1.234, "1.30"),
-                new TestRoundingPatternItem("#50", BigDecimal.Parse("50", NumberStyle.Float, CultureInfo.InvariantCulture), 1230, "1250")
+                new TestRoundingPatternItem("##0.65", BigDecimal.Parse("0.65", CultureInfo.InvariantCulture), 1.234, "1.30"),
+                new TestRoundingPatternItem("#50", BigDecimal.Parse("50", CultureInfo.InvariantCulture), 1230, "1250")
         };
 
             DecimalFormat df = (DecimalFormat)NumberFormat.GetInstance(new UCultureInfo("en"));
@@ -2766,7 +2766,7 @@ namespace ICU4N.Dev.Test.Format
         {
             String figure = "50.000000004";
             Double dbl = Double.Parse(figure, CultureInfo.InvariantCulture);
-            BigDecimal dec = BigDecimal.Parse(figure, NumberStyle.Float, CultureInfo.InvariantCulture);
+            BigDecimal dec = BigDecimal.Parse(figure, CultureInfo.InvariantCulture);
 
             DecimalFormat f = (DecimalFormat)NumberFormat.GetInstance();
             f.ApplyPattern("00.00######");
@@ -2775,7 +2775,7 @@ namespace ICU4N.Dev.Test.Format
             assertEquals("bigdec format", "50.00", f.Format(dec));
 
             int maxFracDigits = f.MaximumFractionDigits;
-            BigDecimal roundingIncrement = BigDecimal.Parse("1", NumberStyle.Float, CultureInfo.InvariantCulture).MovePointLeft(maxFracDigits);
+            BigDecimal roundingIncrement = BigDecimal.Parse("1", CultureInfo.InvariantCulture).MovePointLeft(maxFracDigits);
 
             f.SetRoundingIncrement(roundingIncrement);
             f.RoundingMode = Numerics.BigMath.RoundingMode.Down; // (BigDecimal.ROUND_DOWN);
@@ -2793,7 +2793,7 @@ namespace ICU4N.Dev.Test.Format
             for (int i = -iterations; i <= iterations; ++i)
             {
                 BigDecimal iValue = @base.Add(increment.Multiply(new BigDecimal(i)).MovePointLeft(1));
-                BigDecimal smallIncrement = BigDecimal.Parse("0.00000001", NumberStyle.Float, CultureInfo.InvariantCulture);
+                BigDecimal smallIncrement = BigDecimal.Parse("0.00000001", CultureInfo.InvariantCulture);
                 if (iValue.Sign != 0)
                 {
                     smallIncrement.Multiply(iValue); // scale unless zero
@@ -3673,7 +3673,7 @@ namespace ICU4N.Dev.Test.Format
             // Tests when "else if (number instanceof com.ibm.icu.math.BigDecimal)" is true
             try
             {
-                nf.Format((Object)ICU4N.Numerics.BigDecimal.Parse("0", NumberStyle.Float, CultureInfo.InvariantCulture), sb, fp);
+                nf.Format((Object)ICU4N.Numerics.BigDecimal.Parse("0", CultureInfo.InvariantCulture), sb, fp);
             }
             catch (Exception e)
             {
@@ -5128,7 +5128,7 @@ namespace ICU4N.Dev.Test.Format
 
             try
             {
-                result = df.Format(BigDecimal.Parse("99999", NumberStyle.Float, CultureInfo.InvariantCulture), result, new FieldPosition(0));
+                result = df.Format(BigDecimal.Parse("99999", CultureInfo.InvariantCulture), result, new FieldPosition(0));
                 fail("Missing ArithmeticException for BigDecimal: " + result);
             }
             catch (ArithmeticException expected)
@@ -5138,7 +5138,7 @@ namespace ICU4N.Dev.Test.Format
 
             try
             {
-                result = df.Format(BigDecimal.Parse("-99999", NumberStyle.Float, CultureInfo.InvariantCulture), result, new FieldPosition(0));
+                result = df.Format(BigDecimal.Parse("-99999", CultureInfo.InvariantCulture), result, new FieldPosition(0));
                 fail("Missing ArithmeticException for BigDecimal: " + result);
             }
             catch (ArithmeticException expected)
@@ -5424,7 +5424,7 @@ namespace ICU4N.Dev.Test.Format
         {
             DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(new UCultureInfo("en-US"));
             DecimalFormat formatter = new DecimalFormat("0.#####E+0", us_symbols);
-            Number number = BigDecimal.Parse("-123456789987654321", NumberStyle.Float, CultureInfo.InvariantCulture);
+            Number number = BigDecimal.Parse("-123456789987654321", CultureInfo.InvariantCulture);
             String bigDecFmtted = formatter.Format(number);
 
             checkFormatWithField("sign", formatter, number, bigDecFmtted,
@@ -5494,7 +5494,7 @@ namespace ICU4N.Dev.Test.Format
             // Check complex positive;negative pattern.
             DecimalFormatSymbols us_symbols = new DecimalFormatSymbols(new UCultureInfo("en-US"));
             DecimalFormat fmtPosNegSign = new DecimalFormat("+0.####E+00;-0.#######E+0", us_symbols);
-            Number negativeExp = BigDecimal.Parse("-0.000000987654321083", NumberStyle.Float, CultureInfo.InvariantCulture);
+            Number negativeExp = BigDecimal.Parse("-0.000000987654321083", CultureInfo.InvariantCulture);
             String negExpFormatted = fmtPosNegSign.Format(negativeExp);
 
             checkFormatWithField("sign", fmtPosNegSign, negativeExp, negExpFormatted,
@@ -5914,7 +5914,7 @@ namespace ICU4N.Dev.Test.Format
         public void Test11913()
         {
             NumberFormat df = DecimalFormat.GetInstance();
-            String result = df.Format(BigDecimal.Parse("1.23456789E400", NumberStyle.Float, CultureInfo.InvariantCulture));
+            String result = df.Format(BigDecimal.Parse("1.23456789E400", CultureInfo.InvariantCulture));
             assertEquals("Should format more than 309 digits", "12,345,678", result.Substring(0, 10)); // ICU4N Checked 2nd arg
             assertEquals("Should format more than 309 digits", 534, result.Length);
         }
@@ -6257,13 +6257,13 @@ namespace ICU4N.Dev.Test.Format
             DecimalFormat df = (DecimalFormat)NumberFormat.GetPercentInstance(loc);
             ParsePosition ppos = new ParsePosition(0);
             Number result = df.Parse("42%", ppos);
-            assertEquals("Should parse as 0.42 even in ar", BigDecimal.Parse("0.42", NumberStyle.Float, CultureInfo.InvariantCulture), result);
+            assertEquals("Should parse as 0.42 even in ar", BigDecimal.Parse("0.42", CultureInfo.InvariantCulture), result);
             assertEquals("Should consume the entire string even in ar", 3, ppos.Index);
             // TODO: Is there a better way to make a localized permille formatter?
             df.ApplyPattern(df.ToPattern().Replace("%", "‰"));
             ppos.Index = (0);
             result = df.Parse("42‰", ppos);
-            assertEquals("Should parse as 0.042 even in ar", BigDecimal.Parse("0.042", NumberStyle.Float, CultureInfo.InvariantCulture), result);
+            assertEquals("Should parse as 0.042 even in ar", BigDecimal.Parse("0.042", CultureInfo.InvariantCulture), result);
             assertEquals("Should consume the entire string even in ar", 3, ppos.Index);
         }
 
@@ -6305,8 +6305,8 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void testParseAmbiguousAffixes()
         {
-            BigDecimal positive = BigDecimal.Parse("0.0567", NumberStyle.Float, CultureInfo.InvariantCulture);
-            BigDecimal negative = BigDecimal.Parse("-0.0567", NumberStyle.Float, CultureInfo.InvariantCulture);
+            BigDecimal positive = BigDecimal.Parse("0.0567", CultureInfo.InvariantCulture);
+            BigDecimal negative = BigDecimal.Parse("-0.0567", CultureInfo.InvariantCulture);
             DecimalFormat df = new DecimalFormat();
             df.ParseToBigDecimal = (true);
 
@@ -6344,11 +6344,11 @@ namespace ICU4N.Dev.Test.Format
             DecimalFormat df = new DecimalFormat("0 %;-0a", dfs);
             ParsePosition ppos = new ParsePosition(0);
             Number result = df.Parse("42\u200E%\u200E ", ppos);
-            assertEquals("Should parse as percentage", BigDecimal.Parse("0.42", NumberStyle.Float, CultureInfo.InvariantCulture), result);
+            assertEquals("Should parse as percentage", BigDecimal.Parse("0.42", CultureInfo.InvariantCulture), result);
             assertEquals("Should consume the trailing bidi since it is in the symbol", 5, ppos.Index);
             ppos.Index = (0);
             result = df.Parse("-42a\u200E ", ppos);
-            assertEquals("Should parse as percent", BigDecimal.Parse("-0.42", NumberStyle.Float, CultureInfo.InvariantCulture), result);
+            assertEquals("Should parse as percent", BigDecimal.Parse("-0.42", CultureInfo.InvariantCulture), result);
             assertEquals("Should not consume the trailing bidi or whitespace", 4, ppos.Index);
 
             // A few more cases based on the docstring:
@@ -6392,13 +6392,13 @@ namespace ICU4N.Dev.Test.Format
 
             object[][] cases = {
                 new object[] {"1.2E+1234567890", Double.GetInstance(double.PositiveInfinity) },
-                new object[] {"1.2E+999999999", BigDecimal.Parse("1.2E+999999999", NumberStyle.Float, CultureInfo.InvariantCulture)},
+                new object[] {"1.2E+999999999", BigDecimal.Parse("1.2E+999999999", CultureInfo.InvariantCulture)},
                 new object[] {"1.2E+1000000000", Double.GetInstance(double.PositiveInfinity) },
-                new object[] {"-1.2E+999999999", BigDecimal.Parse("-1.2E+999999999", NumberStyle.Float, CultureInfo.InvariantCulture) },
+                new object[] {"-1.2E+999999999", BigDecimal.Parse("-1.2E+999999999", CultureInfo.InvariantCulture) },
                 new object[] {"-1.2E+1000000000", Double.GetInstance(double.NegativeInfinity) },
-                new object[] {"1.2E-999999999", BigDecimal.Parse("1.2E-999999999", NumberStyle.Float, CultureInfo.InvariantCulture) },
+                new object[] {"1.2E-999999999", BigDecimal.Parse("1.2E-999999999", CultureInfo.InvariantCulture) },
                 new object[] {"1.2E-1000000000", Double.GetInstance(0.0) },
-                new object[] {"-1.2E-999999999", BigDecimal.Parse("-1.2E-999999999", NumberStyle.Float, CultureInfo.InvariantCulture) },
+                new object[] {"-1.2E-999999999", BigDecimal.Parse("-1.2E-999999999", CultureInfo.InvariantCulture) },
                 new object[] {"-1.2E-1000000000", Double.GetInstance(-0.0) },
 
             };
@@ -6496,14 +6496,14 @@ namespace ICU4N.Dev.Test.Format
                 "12.345"
             };
             BigDecimal[] outputs = {
-                BigDecimal.Parse("12345.67", NumberStyle.Float, CultureInfo.InvariantCulture),
-                BigDecimal.Parse("12345.67", NumberStyle.Float, CultureInfo.InvariantCulture),
-                BigDecimal.Parse("12345.67", NumberStyle.Float, CultureInfo.InvariantCulture),
-                BigDecimal.Parse("12345.67", NumberStyle.Float, CultureInfo.InvariantCulture),
-                BigDecimal.Parse("12345", NumberStyle.Float, CultureInfo.InvariantCulture),
-                BigDecimal.Parse("12345", NumberStyle.Float, CultureInfo.InvariantCulture),
-                BigDecimal.Parse("12345", NumberStyle.Float, CultureInfo.InvariantCulture),
-                BigDecimal.Parse("12345", NumberStyle.Float, CultureInfo.InvariantCulture)
+                BigDecimal.Parse("12345.67", CultureInfo.InvariantCulture),
+                BigDecimal.Parse("12345.67", CultureInfo.InvariantCulture),
+                BigDecimal.Parse("12345.67", CultureInfo.InvariantCulture),
+                BigDecimal.Parse("12345.67", CultureInfo.InvariantCulture),
+                BigDecimal.Parse("12345", CultureInfo.InvariantCulture),
+                BigDecimal.Parse("12345", CultureInfo.InvariantCulture),
+                BigDecimal.Parse("12345", CultureInfo.InvariantCulture),
+                BigDecimal.Parse("12345", CultureInfo.InvariantCulture)
             };
             int[][] expecteds = {
                 // 0 => works in neither default nor restricted
