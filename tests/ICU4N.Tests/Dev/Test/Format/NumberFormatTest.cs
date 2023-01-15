@@ -2145,25 +2145,18 @@ namespace ICU4N.Dev.Test.Format
 
 
         [Test]
-        [Ignore("ICU4N TODO: This test is hanging - fix the port")]
         public void TestThreadedFormat()
         {
-
-
             DecimalFormat fmt = new DecimalFormat("0.####");
             FormatTask[] formatTasks = new FormatTask[8];
-            Task[] tasks = new Task[8];
+            Action[] tasks = new Action[8];
             for (int i = 0; i < tasks.Length; ++i)
             {
-
                 formatTasks[i] = new FormatTask(fmt, i);
-                tasks[i] = new Task(formatTasks[i].Run);
-
+                tasks[i] = formatTasks[i].Run;
             }
 
-            Task.WaitAll(tasks);
-
-            //TestUtil.runUntilDone(tasks);
+            TestUtil.RunUntilDone(tasks);
 
             for (int i = 2; i < formatTasks.Length; i++)
             {
