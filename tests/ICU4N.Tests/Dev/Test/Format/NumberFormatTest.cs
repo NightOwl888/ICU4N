@@ -6421,63 +6421,66 @@ namespace ICU4N.Dev.Test.Format
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Convert Reflection code")]
         public void testStringMethodsNPE()
         {
-            //    string[] npeMethods = {
-            //                "applyLocalizedPattern",
-            //                "applyPattern",
-            //                "setNegativePrefix",
-            //                "setNegativeSuffix",
-            //                "setPositivePrefix",
-            //                "setPositiveSuffix"
-            //        };
-            //    foreach (String npeMethod in npeMethods) {
-            //    DecimalFormat df = new DecimalFormat();
-            //    try
-            //    {
-            //        DecimalFormat.class.getDeclaredMethod(npeMethod, String.class).invoke(df, (String)null);
-            //fail("NullPointerException not thrown in method " + npeMethod);
-            //            } catch (InvocationTargetException e)
-            //{
-            //    assertTrue("Exception should be NullPointerException in method " + npeMethod,
-            //            e.getCause() instanceof NullPointerException);
-            //}
-            //catch (Exception e)
-            //{
-            //    // Other reflection exceptions
-            //    throw new AssertionError("Reflection error in method " + npeMethod + ": " + e.getMessage());
-            //}
-            //        }
+            string[] npeMethods = {
+                            "ApplyLocalizedPattern",
+                            "ApplyPattern",
+                            "set_NegativePrefix",
+                            "set_NegativeSuffix",
+                            "set_PositivePrefix",
+                            "set_PositiveSuffix"
+                    };
+            foreach (string npeMethod in npeMethods)
+            {
+                DecimalFormat df = new DecimalFormat();
+                try
+                {
+                    //DecimalFormat.class.getDeclaredMethod(npeMethod, String.class).invoke(df, (String)null);
+                    typeof(DecimalFormat).GetMethod(npeMethod, new Type[] { typeof(string) }).Invoke(df, new object[] { (string)null });
+                    fail("NullPointerException not thrown in method " + npeMethod);
+                }
+                catch (TargetInvocationException e)
+                {
+                    assertTrue("Exception should be NullPointerException in method " + npeMethod,
+                            e.InnerException is ArgumentNullException);
+                }
+                catch (Exception e)
+                {
+                    // Other reflection exceptions
+                    //throw new AssertionError("Reflection error in method " + npeMethod + ": " + e.getMessage());
+                    throw new AssertionException("Reflection error in method " + npeMethod + ": " + e.Message);
+                }
+            }
 
-            //        // Also test the constructors
-            //        try
-            //{
-            //    new DecimalFormat(null);
-            //    fail("NullPointerException not thrown in 1-parameter constructor");
-            //}
-            //catch (NullPointerException e)
-            //{
-            //    // Expected
-            //}
-            //try
-            //{
-            //    new DecimalFormat(null, new DecimalFormatSymbols());
-            //    fail("NullPointerException not thrown in 2-parameter constructor");
-            //}
-            //catch (NullPointerException e)
-            //{
-            //    // Expected
-            //}
-            //try
-            //{
-            //    new DecimalFormat(null, new DecimalFormatSymbols(), CurrencyPluralInfo.GetInstance(), 0);
-            //    fail("NullPointerException not thrown in 4-parameter constructor");
-            //}
-            //catch (NullPointerException e)
-            //{
-            //    // Expected
-            //}
+            // Also test the constructors
+            try
+            {
+                new DecimalFormat(null);
+                fail("NullPointerException not thrown in 1-parameter constructor");
+            }
+            catch (ArgumentNullException e)
+            {
+                // Expected
+            }
+            try
+            {
+                new DecimalFormat(null, new DecimalFormatSymbols());
+                fail("NullPointerException not thrown in 2-parameter constructor");
+            }
+            catch (ArgumentNullException e)
+            {
+                // Expected
+            }
+            try
+            {
+                new DecimalFormat(null, new DecimalFormatSymbols(), CurrencyPluralInfo.GetInstance(), 0);
+                fail("NullPointerException not thrown in 4-parameter constructor");
+            }
+            catch (ArgumentNullException e)
+            {
+                // Expected
+            }
         }
 
         [Test]
@@ -6488,7 +6491,7 @@ namespace ICU4N.Dev.Test.Format
                 new UCultureInfo("fr-FR"), // space      comma
                 new UCultureInfo("de-CH"), // apostrophe period
                 new UCultureInfo("es-PY")  // period     comma
-        };
+            };
             string[] inputs = {
                 "12,345.67",
                 "12 345,67",
@@ -6498,7 +6501,7 @@ namespace ICU4N.Dev.Test.Format
                 "12 345",
                 "12'345",
                 "12.345"
-        };
+            };
             BigDecimal[] outputs = {
                 BigDecimal.Parse("12345.67", NumberStyle.Float, CultureInfo.InvariantCulture),
                 BigDecimal.Parse("12345.67", NumberStyle.Float, CultureInfo.InvariantCulture),
@@ -6508,7 +6511,7 @@ namespace ICU4N.Dev.Test.Format
                 BigDecimal.Parse("12345", NumberStyle.Float, CultureInfo.InvariantCulture),
                 BigDecimal.Parse("12345", NumberStyle.Float, CultureInfo.InvariantCulture),
                 BigDecimal.Parse("12345", NumberStyle.Float, CultureInfo.InvariantCulture)
-        };
+            };
             int[][] expecteds = {
                 // 0 => works in neither default nor restricted
                 // 1 => works in default but not restricted
@@ -6521,7 +6524,7 @@ namespace ICU4N.Dev.Test.Format
                 new int[] {  0,     3,     0,     1,     0,      3,       3,       1  }, // => fr-FR
                 new int[] {  1,     0,     3,     0,     1,      3,       3,       0  }, // => de-CH
                 new int[] {  0,     1,     0,     3,     0,      1,       1,       3  }  // => es-PY
-        };
+            };
 
             for (int i = 0; i < locales.Length; i++)
             {
