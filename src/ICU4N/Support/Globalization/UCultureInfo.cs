@@ -599,12 +599,13 @@ namespace ICU4N.Globalization
 
             // Split the locale into parts and remove the rightmost part
             const int language = 0;
-            const int country = 1;
-            const int variant = 2;
+            const int script = 1;
+            const int country = 2;
+            const int variant = 3;
 
-            string[] parts = new string[] { parser.GetLanguage(), parser.GetCountry(), parser.GetVariant() };
+            string[] parts = new string[] { parser.GetLanguage(), parser.GetScript(), parser.GetCountry(), parser.GetVariant() };
             int i;
-            for (i = 2; i >= 0; --i)
+            for (i = 3; i >= 0; --i)
             {
                 if (parts[i].Length != 0)
                 {
@@ -613,6 +614,7 @@ namespace ICU4N.Globalization
                 }
             }
             return parts[language] +
+                (parts[script].Length > 0 ? '_' + parts[script] : "") +
                 (parts[country].Length > 0 ? '_' + parts[country] : "") +
                 (parts[variant].Length > 0 ? '_' + parts[variant] : "") + 
                 fallback.Substring(extStart);
@@ -1677,9 +1679,13 @@ namespace ICU4N.Globalization
                             }
                         }
                     }
-                    var parent = (UCultureInfo)aLocale.Parent;
 
-                    if (!UCultureInfo.InvariantCulture.Equals(parent))
+                    // ICU4N: In .NET we don't have fallback behavior for Accept-Language, so use the
+                    // LocaleUtility to simply rewrite the string to the correct culture.
+                    // This differs from UCultureInfo.GetParentString() in that it skips the script tag.
+                    UCultureInfo parent = LocaleUtility.Fallback(aLocale);
+                    
+                    if (parent != null)
                     {
                         aLocale = parent;
                     }

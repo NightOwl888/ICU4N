@@ -199,14 +199,14 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         //        }
 
         /**
- * Fallback from the given locale name by removing the rightmost _-delimited
- * element. If there is none, return the root locale ("", "", ""). If this
- * is the root locale, return null. NOTE: The string "root" is not
- * recognized; do not use it.
- * 
- * @return a new Locale that is a fallback from the given locale, or null.
- */
-        public static CultureInfo Fallback(CultureInfo loc)
+         * Fallback from the given locale name by removing the rightmost _-delimited
+         * element. If there is none, return the root locale ("", "", ""). If this
+         * is the root locale, return null. NOTE: The string "root" is not
+         * recognized; do not use it.
+         * 
+         * @return a new Locale that is a fallback from the given locale, or null.
+         */
+        public static CultureInfo Fallback(CultureInfo loc) // ICU4N TODO: API - remove
         {
             if (CultureInfo.InvariantCulture.Equals(loc))
                 return null;
@@ -283,9 +283,64 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             //            return new CultureInfo(culture);
         }
 
-        public static CultureInfo Fallback(UCultureInfo locale)
+        /// <summary>
+        /// Fallback from the given locale name by removing the rightmost <c>_</c>-delimited or <c>-</c>-delimited
+        /// element. If there is none, returns <see cref="UCultureInfo.InvariantCulture"/>. If <paramref name="loc"/>
+        /// is <see cref="UCultureInfo.InvariantCulture"/>, returns <c>null</c>.
+        /// <para/>
+        /// <b>NOTE:</b> This differs from UCultureInfo.GetParentString() in that it skips the script tag.
+        /// </summary>
+        /// <param name="loc">The culture to fallback for.</param>
+        /// <returns>A new <see cref="UCultureInfo"/> that is a fallback from <paramref name="loc"/>,
+        /// <see cref="UCultureInfo.InvariantCulture"/> if <paramref name="loc"/> is a neutral culture,
+        /// or <c>null</c> if <paramref name="loc"/> is the <see cref="UCultureInfo.InvariantCulture"/>.</returns>
+        public static UCultureInfo Fallback(UCultureInfo loc)
         {
-            return Fallback(locale.FullName);
+            if (UCultureInfo.InvariantCulture.Equals(loc))
+                return null;
+
+            //if (CultureInfo.InvariantCulture.Equals(loc.Parent))
+            //    return null;
+
+            //return loc.Parent;
+
+//#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
+//            // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
+//            // to be created, but will be "unknown" languages. We need to manually
+//            // ignore these.
+//            if (loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
+//            {
+//                return null;
+//            }
+//#endif
+            // ICU4N: We use the original ICU fallback scheme rather than
+            // simply using loc.Parent.
+
+            var parser = new LocaleIDParser(loc.Name);
+
+            // Split the locale into parts and remove the rightmost part
+            const int language = 0;
+            const int country = 1;
+            const int variant = 2;
+
+            string[] parts = new string[] { parser.GetLanguage(), parser.GetCountry(), parser.GetVariant() };
+            int i;
+            for (i = 2; i >= 0; --i)
+            {
+                if (parts[i].Length != 0)
+                {
+                    parts[i] = "";
+                    break;
+                }
+            }
+            if (i < 0)
+            {
+                return UCultureInfo.InvariantCulture; // All parts were empty
+            }
+            return new UCultureInfo(
+                parts[language] +
+                (parts[country].Length > 0 ? '-' + parts[country] : "") +
+                (parts[variant].Length > 0 ? '-' + parts[variant] : ""));
         }
 
         /// <summary>
@@ -293,7 +348,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static CultureInfo Fallback(string name)
+        public static CultureInfo Fallback(string name) // ICU4N TODO: API - remove
         {
             //if (name.Equals("root", StringComparison.OrdinalIgnoreCase) || name.Equals("any", StringComparison.OrdinalIgnoreCase))
             //{
