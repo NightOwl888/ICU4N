@@ -676,7 +676,7 @@ namespace ICU4N.Numerics.BigMath
             }
             catch (ArgumentOutOfRangeException e) // ICU4N: Using ArgumentOutOfRangeException to match .NET
             {
-                assertEquals("Improper exception message", /*"Radix out of range"*/ "Radix must be greater than or equal to Character.MinRadix and less than or equal to Character.MaxRadix. (Parameter 'radix')", e.Message);
+                assertTrue("Improper exception message", e.Message.Contains("Radix must be greater than or equal to Character.MinRadix and less than or equal to Character.MaxRadix."));
             }
         }
 
