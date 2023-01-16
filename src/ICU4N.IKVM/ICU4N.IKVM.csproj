@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="IKVM.Maven.Sdk" Version="$(IKVMPackageReferenceVersion)" />
+    <PackageReference Include="IKVM.Maven.Sdk" Version="$(IKVMMavenSdkPackageReferenceVersion)" />
   </ItemGroup>
 
   <ItemGroup>
