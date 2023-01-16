@@ -147,6 +147,7 @@ namespace ICU4N.Dev.Test.Format
          */
         [Test]
         [Ignore("ICU4N TODO: This test is very slow (4.5 min). In Java, this takes 15 seconds.")]
+        [Timeout(400000)]
         public void TestRussianSpelloutRT()
         {
             RuleBasedNumberFormat formatter
