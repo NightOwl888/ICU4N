@@ -79,7 +79,7 @@ stages:
         cd 'C:\hostedtoolcache\windows\dotnet\sdk'
         dir
         cd $DotNetSDKVersion
-        dir
+        MSBuild.exe -?
       displayName: 'Check for .NET Core SDKs'
     
     - template: '.build/azure-templates/gitversioning-increment-and-persist-versions.yml'
