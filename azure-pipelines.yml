@@ -75,11 +75,9 @@ stages:
         dir
       displayName: 'Check for .NET Framework SDKs'
 
-    - bash: |
+    - pwsh: |
         cd 'C:\hostedtoolcache\windows\dotnet\sdk'
-        dir
-        cd 6.0.101.complete
-        MSBuild.exe -?
+        dir -r  | Where-Object {$_.PsIsContainer -eq $false} | % { $_.FullName }
       displayName: 'Check for .NET Core SDKs'
     
     - template: '.build/azure-templates/gitversioning-increment-and-persist-versions.yml'
