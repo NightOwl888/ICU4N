@@ -74,6 +74,13 @@ stages:
         cd 'C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin'
         dir
       displayName: 'Check for .NET Framework SDKs'
+
+    - bash: |
+        cd 'C:\hostedtoolcache\windows\dotnet\sdk'
+        dir
+        cd $DotNetSDKVersion
+        dir
+      displayName: 'Check for .NET Core SDKs'
     
     - template: '.build/azure-templates/gitversioning-increment-and-persist-versions.yml'
       parameters:
