@@ -62,7 +62,8 @@
     <ICU4JResourcesDirectory>$(ICU4JWorkingDirectory)/icu4j-transformed</ICU4JResourcesDirectory>
   </PropertyGroup>
   
-  <ItemGroup Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)">
+  <ItemGroup Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)"
+             Condition=" '$(IgnoreSatelliteAssemblyCopy)' != 'true' ">
     <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
   </ItemGroup>
   
