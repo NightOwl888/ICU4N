@@ -25,7 +25,7 @@ variables:
 - name: TestTargetFrameworks
   value: 'net6.0;net5.0;netcoreapp3.1;net461;net452'
 - name: DotNetSDKVersion
-  value: '7.0.102'
+  value: '6.0.405'
 - name: BinaryArtifactName
   value: 'testbinaries'
 - name: NuGetArtifactName
