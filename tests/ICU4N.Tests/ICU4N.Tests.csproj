@@ -37,21 +37,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup Condition=" '$(TargetFramework)' != 'net452' ">
-    <ProjectReference Include="..\..\src\ICU4N.IKVM\ICU4N.IKVM.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup Condition=" !$(TargetFramework.StartsWith('net4')) ">
-    <Reference Include="icu4j">
-      <HintPath>..\..\src\ICU4N.IKVM\bin\$(Configuration)\netcoreapp3.1\icu4j.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('net4')) And '$(TargetFramework)' != 'net452' ">
-    <Reference Include="icu4j">
-      <HintPath>..\..\src\ICU4N.IKVM\bin\$(Configuration)\net461\icu4j.dll</HintPath>
-    </Reference>
+    <PackageReference Include="IKVM.Maven.Sdk" Version="$(IKVMMavenSdkPackageReferenceVersion)" />
+    <MavenReference Include="com.ibm.icu:icu4j" Version="$(ICU4JMavenPackageReferenceVersion)" />
   </ItemGroup>
   
   <ItemGroup>
