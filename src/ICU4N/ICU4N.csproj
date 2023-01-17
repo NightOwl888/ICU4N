@@ -62,10 +62,22 @@
     <ICU4JResourcesDirectory>$(ICU4JWorkingDirectory)/icu4j-transformed</ICU4JResourcesDirectory>
   </PropertyGroup>
   
+  <ItemGroup>
+    <SatelliteAssemblies Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll"/>
+  </ItemGroup>
+  
   <ItemGroup Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)"
-             Condition=" '$(IgnoreSatelliteAssemblyCopy)' != 'true' ">
+             Condition=" '$(_IsPublishing)' != 'true' ">
     <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
   </ItemGroup>
+  
+  <Target Name="PublishSatelliteAssemblies" AfterTargets="Publish" Condition=" '$(_IsPublishing)' == 'true' ">
+    <Message Importance="high" Text="Publishing Satellite Assemblies for $(TargetFramework)..."/>
+
+    <Copy SourceFiles="@(SatelliteAssemblies)"
+          DestinationFolder="$(PublishDir)"
+          SkipUnchangedFiles="true" />
+  </Target>
   
   <Target Name="CreateIntermediateTargetsFile" BeforeTargets="DownloadICU4J" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
 

@@ -93,12 +93,7 @@ steps:
     foreach ($framework in $testTargetFrameworks) {
         $outputPath = "$outputRoot/$framework"
         Write-Host "Publishing '$framework' to '$outputPath'..."
-
-        # ICU4N TODO: This is a hack that is needed because IKVM.Maven.Sdk automatically copies the satellite assemblies
-        # and this would duplicate that. Need to revisit. Ideally, IKVM would be fixed not to copy anything that is not in the .deps.json manifest file
-        # unless generation of that file is disabled.
-        $ignoreSatelliteAssemblyCopy = if ($framework -eq 'net452') { 'false' } else { 'true' }
-        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:TestAllTargetFrameworks=true /p:"IgnoreSatelliteAssemblyCopy=$ignoreSatelliteAssemblyCopy"
+        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:TestAllTargetFrameworks=true
     }
   displayName: 'dotnet publish ${{ parameters.testTargetFrameworks }}'
 
