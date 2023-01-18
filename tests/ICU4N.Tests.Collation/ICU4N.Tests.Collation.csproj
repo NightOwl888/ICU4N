@@ -12,11 +12,4 @@
     <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj" />
   </ItemGroup>
 
-  <!-- ICU4N TODO: HACK: When doing a solution-level publish, IKVM looks for .rsp files in this project even though it doesn't actually use IKVM.
-      So, to work around we add a reference to generate the .rsp file. -->
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net452' ">
-    <PackageReference Include="IKVM.Maven.Sdk" Version="$(IKVMMavenSdkPackageReferenceVersion)" />
-    <MavenReference Include="com.ibm.icu:icu4j" Version="$(ICU4JMavenPackageReferenceVersion)" />
-  </ItemGroup>
-
 </Project>
