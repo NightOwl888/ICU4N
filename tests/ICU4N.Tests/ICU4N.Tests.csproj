@@ -8,7 +8,7 @@
     <NoWarn>$(NoWarn);1701;1702</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' != 'net452' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' != 'net452' And '$(DisableIkvm)' != 'true' ">
     <DefineConstants>$(DefineConstants);FEATURE_IKVM</DefineConstants>
   </PropertyGroup>
 
@@ -38,7 +38,7 @@
     <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net452' ">
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net452' And '$(DisableIkvm)' != 'true' ">
     <PackageReference Include="IKVM.Maven.Sdk" Version="$(IKVMMavenSdkPackageReferenceVersion)" />
     <MavenReference Include="com.ibm.icu:icu4j" Version="$(ICU4JMavenPackageReferenceVersion)" />
   </ItemGroup>
