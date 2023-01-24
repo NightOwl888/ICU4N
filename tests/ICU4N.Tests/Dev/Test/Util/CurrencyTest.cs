@@ -226,7 +226,7 @@ namespace ICU4N.Dev.Test.Util
         public void TestCoverage()
         {
             Currency usd = Currency.GetInstance("USD");
-            assertEquals("USD.getSymbol()",
+            assertEquals($"USD.GetSymbol() in {UCultureInfo.CurrentUICulture.FullName}",
                     "$",
                     usd.GetSymbol());
         }
