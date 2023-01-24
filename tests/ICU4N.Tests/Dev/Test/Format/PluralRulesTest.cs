@@ -840,7 +840,6 @@ namespace ICU4N.Dev.Test.Format
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Port DecimalFormatSymbols")]
         public void TestBasicFraction()
         {
             string[][] tests = new string[][] { new string[] { "en", "one: j is 1" }, new string[] { "1", "0", "1", "one" }, new string[] { "1", "2", "1.00", "other" }, };
@@ -860,7 +859,7 @@ namespace ICU4N.Dev.Test.Format
                     case 4:
                         double n = Double.Parse(row[0], CultureInfo.InvariantCulture);
                         int minFracDigits = Integer.Parse(row[1], CultureInfo.InvariantCulture);
-                        nf.MaximumFractionDigits = (minFracDigits);
+                        nf.MinimumFractionDigits = (minFracDigits);
                         String expectedFormat = row[2];
                         String expectedKeyword = row[3];
 
