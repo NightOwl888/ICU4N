@@ -1199,25 +1199,26 @@ namespace ICU4N.Dev.Test.Format
         //    }
         //}
 
-        //[Test]
-        //    public void TestSerialization()
-        //{
-        //    Output<Integer> size = new Output<Integer>();
-        //    int max = 0;
-        //    for (ULocale locale : PluralRules.getAvailableULocales()) {
-        //    PluralRules item = PluralRules.forLocale(locale);
-        //    PluralRules item2 = serializeAndDeserialize(item, size);
-        //    Logln(locale + "\tsize:\t" + size.value);
-        //    max = Math.max(max, size.value);
-        //    if (!assertEquals(locale + "\tPlural rules before and after serialization", item, item2))
-        //    {
-        //        // for debugging
-        //        PluralRules item3 = serializeAndDeserialize(item, size);
-        //        item.equals(item3);
-        //    }
-        //}
-        //Logln("max \tsize:\t" + max);
-        //    }
+        [Test]
+        [Ignore("ICU4N TODO: Serialization")]
+        public void TestSerialization()
+        {
+            //    Output<Integer> size = new Output<Integer>();
+            //    int max = 0;
+            //    for (ULocale locale : PluralRules.getAvailableULocales()) {
+            //    PluralRules item = PluralRules.forLocale(locale);
+            //    PluralRules item2 = serializeAndDeserialize(item, size);
+            //    Logln(locale + "\tsize:\t" + size.value);
+            //    max = Math.max(max, size.value);
+            //    if (!assertEquals(locale + "\tPlural rules before and after serialization", item, item2))
+            //    {
+            //        // for debugging
+            //        PluralRules item3 = serializeAndDeserialize(item, size);
+            //        item.equals(item3);
+            //    }
+            //}
+            //Logln("max \tsize:\t" + max);
+        }
 
         //    public static class FixedDecimalHandler implements SerializableTestUtility.Handler
         //{
@@ -1238,12 +1239,13 @@ namespace ICU4N.Dev.Test.Format
         //}
         //    }
 
-        //    [Test]
-        //    public void TestSerial()
-        //{
-        //    PluralRules s = PluralRules.forLocale(ULocale.ENGLISH);
-        //    checkStreamingEquality(s);
-        //}
+        [Test]
+        [Ignore("ICU4N TODO: Serialization")]
+        public void TestSerial()
+        {
+            //    PluralRules s = PluralRules.forLocale(ULocale.ENGLISH);
+            //    checkStreamingEquality(s);
+        }
 
         //public void checkStreamingEquality(PluralRules s)
         //{
