@@ -1536,7 +1536,8 @@ namespace ICU4N.Text
                 for (int i = 1; i < localizations.Length; ++i)
                 {
                     string[] data = localizations[i];
-                    string loc = data[0];
+                    // ICU4N: Convert any culture names to use underscore instead of dash
+                    string loc = new LocaleIDParser(data[0]).GetBaseName();
                     string[] names = new string[data.Length - 1];
                     if (names.Length != publicRuleSetNames.Length)
                     {
