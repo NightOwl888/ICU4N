@@ -324,8 +324,13 @@ namespace ICU4N.Util
                 throw new ArgumentException(
                         "The input currency code is not 3-letter alphabetic code.");
             }
-            return (Currency)MeasureUnit.InternalGetInstance("currency", theISOCode.ToUpperInvariant()  /*toUpperCase(Locale.ENGLISH)*/);
+#pragma warning disable CS0618 // Type or member is obsolete
+            //return (Currency)MeasureUnit.InternalGetInstance("currency", theISOCode.ToUpperInvariant()  /*toUpperCase(Locale.ENGLISH)*/);
+            return (Currency)MeasureUnit.InternalGetInstance("currency", theISOCode.ToUpper(English));
+#pragma warning restore CS0618 // Type or member is obsolete
         }
+
+        private static readonly CultureInfo English = new CultureInfo("en");
 
 
         private static bool IsAlpha3Code(string code)
@@ -1089,7 +1094,7 @@ namespace ICU4N.Util
                 throw new ArgumentException("To is before from");
             }
 
-            code = code.ToUpperInvariant();
+            code = code.ToUpper(English);
             bool isKnown = GetAllCurrenciesAsSet().Contains(code);
             if (isKnown == false)
             {
