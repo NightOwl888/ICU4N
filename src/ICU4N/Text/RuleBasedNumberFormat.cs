@@ -645,7 +645,7 @@ namespace ICU4N.Text
          */
         public virtual string[] GetRuleSetDisplayNames()
         {
-            return GetRuleSetDisplayNames(UCultureInfo.CurrentCulture);
+            return GetRuleSetDisplayNames(UCultureInfo.CurrentUICulture);
         }
 
         /**
@@ -684,7 +684,7 @@ namespace ICU4N.Text
          */
         public virtual string GetRuleSetDisplayName(string ruleSetName)
         {
-            return GetRuleSetDisplayName(ruleSetName, UCultureInfo.CurrentCulture);
+            return GetRuleSetDisplayName(ruleSetName, UCultureInfo.CurrentUICulture);
         }
 
         /**
