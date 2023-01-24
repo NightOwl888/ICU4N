@@ -1088,9 +1088,9 @@ namespace ICU4N.Dev.Test.Format
             {
                 Logln("Rule set name: " + ruleSetNames[i]);
                 String RSName_defLoc = formatter.GetRuleSetDisplayName(ruleSetNames[i]);
-                assertEquals($"Display name in default locale ({UCultureInfo.CurrentUICulture.FullName}).", localizations[1][i + 1], RSName_defLoc);
+                assertEquals($"Display name in default locale ({UCultureInfo.CurrentUICulture.FullName}) for index {i}.", localizations[1][i + 1], RSName_defLoc);
                 String RSName_loc = formatter.GetRuleSetDisplayName(ruleSetNames[i], new UCultureInfo("zh_Hans_CN"));
-                assertEquals("Display name in Chinese", localizations[2][i + 1], RSName_loc);
+                assertEquals($"Display name in Chinese for index {i}.", localizations[2][i + 1], RSName_loc);
             }
 
             // getDefaultRuleSetName
