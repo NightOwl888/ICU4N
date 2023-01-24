@@ -280,23 +280,22 @@ namespace ICU4N.Dev.Test.Format
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Missing dependency DecimalFormat")]
         public void TestPropagateZeroDigit()
         {
-            //DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-            //dfs.ZeroDigit = ('\u1040');
-            //DecimalFormat df = new DecimalFormat("0");
-            //df.SetDecimalFormatSymbols(dfs);
-            //assertEquals("Should propagate char with number property zero",
-            //        '\u1041', dfs.Digits[1]);
-            //assertEquals("Should propagate char with number property zero",
-            //        "\u1044\u1040\u1041\u1042\u1043", df.Format(40123));
-            //dfs.ZeroDigit = ('a');
-            //df.SetDecimalFormatSymbols(dfs);
-            //assertEquals("Should propagate char WITHOUT number property zero",
-            //        'b', dfs.Digits[1]);
-            //assertEquals("Should propagate char WITHOUT number property zero",
-            //        "eabcd", df.Format(40123));
+            DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+            dfs.ZeroDigit = ('\u1040');
+            DecimalFormat df = new DecimalFormat("0");
+            df.SetDecimalFormatSymbols(dfs);
+            assertEquals("Should propagate char with number property zero",
+                    '\u1041', dfs.Digits[1]);
+            assertEquals("Should propagate char with number property zero",
+                    "\u1044\u1040\u1041\u1042\u1043", df.Format(40123));
+            dfs.ZeroDigit = ('a');
+            df.SetDecimalFormatSymbols(dfs);
+            assertEquals("Should propagate char WITHOUT number property zero",
+                    'b', dfs.Digits[1]);
+            assertEquals("Should propagate char WITHOUT number property zero",
+                    "eabcd", df.Format(40123));
         }
 
         [Test]
