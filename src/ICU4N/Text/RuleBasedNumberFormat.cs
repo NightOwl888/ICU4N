@@ -576,7 +576,7 @@ namespace ICU4N.Text
             {
                 ICollection<string> s = ruleSetDisplayNames.Keys;
                 string[] locales = s.ToArray();
-                Array.Sort(locales, StringComparer.OrdinalIgnoreCase);
+                Array.Sort(locales, CaseInsensitiveComparer.Default  /*StringComparer.OrdinalIgnoreCase*/);
                 UCultureInfo[] result = new UCultureInfo[locales.Length];
                 for (int i = 0; i < locales.Length; ++i)
                 {
