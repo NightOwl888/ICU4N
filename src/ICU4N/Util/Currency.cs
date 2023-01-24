@@ -569,7 +569,7 @@ namespace ICU4N.Util
         /// <stable>ICU 3.4</stable>
         public virtual string GetSymbol()
         {
-            return GetSymbol(UCultureInfo.CurrentUICulture);
+            return GetSymbol(UCultureInfo.CurrentUICulture.ToCultureInfo());
         }
 
         /// <summary>
