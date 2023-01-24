@@ -15,8 +15,12 @@ using System.Numerics;
 using System.Text;
 using JCG = J2N.Collections.Generic;
 using Double = J2N.Numerics.Double;
+using Float = J2N.Numerics.Single;
 using Integer = J2N.Numerics.Int32;
 using Long = J2N.Numerics.Int64;
+using Short = J2N.Numerics.Int16;
+using Byte = J2N.Numerics.Byte;
+using SByte = J2N.Numerics.SByte;
 using StringBuffer = System.Text.StringBuilder;
 using static ICU4N.Text.PluralRules;
 using J2N.Numerics;
@@ -2104,17 +2108,17 @@ namespace ICU4N.Text
                 }
                 else if (argType == MessagePatternArgType.Choice)
                 {
-                    if (!(arg is J2N.Numerics.Number)) 
+                    if (!TryConvertNumber(arg, out J2N.Numerics.Number num)) 
                     {
                         throw new ArgumentException("'" + arg + "' is not a Number");
                     }
-                    double number = ((J2N.Numerics.Number)arg).ToDouble();
+                    double number = num.ToDouble();
                     int subMsgStart = FindChoiceSubMessage(msgPattern, i, number);
                     FormatComplexSubMessage(subMsgStart, null, args, argsMap, dest);
                 }
                 else if (argType.HasPluralStyle())
                 {
-                    if (!(arg is J2N.Numerics.Number number))
+                    if (!TryConvertNumber(arg, out J2N.Numerics.Number number))
                     {
                         throw new ArgumentException("'" + arg + "' is not a Number");
                     }
@@ -2240,6 +2244,65 @@ namespace ICU4N.Text
             {
                 dest.Append(subMsgString);
             }
+        }
+
+        // ICU4N specific - since we don't have a common number type, we make the determination if it is
+        // a number by attempting to cast it to each numeric type and wrapping into a J2N.Numerics.Number if it
+        // is not already. In Java, this step is handled automatically by the compiler.
+        private static bool TryConvertNumber(object value, out J2N.Numerics.Number result)
+        {
+            result = default;
+            if (value is int i)
+            {
+                result = Integer.GetInstance(i);
+                return true;
+            }
+            if (value is long l)
+            {
+                result = Long.GetInstance(l);
+                return true;
+            }
+            if (value is double d)
+            {
+                result = Double.GetInstance(d);
+                return true;
+            }
+            if (value is J2N.Numerics.Number number)
+            {
+                result = number;
+                return true;
+            }
+            if (value is float f)
+            {
+                result = Float.GetInstance(f);
+                return true;
+            }
+            if (value is short s)
+            {
+                result = Short.GetInstance(s);
+                return true;
+            }
+            if (value is decimal de)
+            {
+                result = Double.GetInstance(Convert.ToDouble(de));
+                return true;
+            }
+            if (value is ushort us)
+            {
+                result = Short.GetInstance(Convert.ToInt16(us));
+                return true;
+            }
+            if (value is ulong ul)
+            {
+                result = Long.GetInstance(Convert.ToInt64(ul));
+                return true;
+            }
+            if (value is uint ui)
+            {
+                result = Integer.GetInstance(Convert.ToInt32(ui));
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -2747,63 +2810,63 @@ namespace ICU4N.Text
                 //            break;
                 //    }
                 //    break;
-                //case TYPE_SPELLOUT:
-                //    {
-                //        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(ulocale,
-                //                RuleBasedNumberFormat.SPELLOUT);
-                //        string ruleset = style.Trim();
-                //        if (ruleset.Length != 0)
-                //        {
-                //            try
-                //            {
-                //                rbnf.DefaultRuleSet = ruleset;
-                //            }
-                //            catch (Exception e)
-                //            {
-                //                // warn invalid ruleset
-                //            }
-                //        }
-                //        newFormat = rbnf;
-                //    }
-                //    break;
-                //case TYPE_ORDINAL:
-                //    {
-                //        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(ulocale,
-                //                RuleBasedNumberFormat.ORDINAL);
-                //        string ruleset = style.Trim();
-                //        if (ruleset.Length != 0)
-                //        {
-                //            try
-                //            {
-                //                rbnf.setDefaultRuleSet(ruleset);
-                //            }
-                //            catch (Exception e)
-                //            {
-                //                // warn invalid ruleset
-                //            }
-                //        }
-                //        newFormat = rbnf;
-                //    }
-                //    break;
-                //case TYPE_DURATION:
-                //    {
-                //        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(ulocale,
-                //                RuleBasedNumberFormat.DURATION);
-                //        String ruleset = style.Trim();
-                //        if (ruleset.Length != 0)
-                //        {
-                //            try
-                //            {
-                //                rbnf.setDefaultRuleSet(ruleset);
-                //            }
-                //            catch (Exception e)
-                //            {
-                //                // warn invalid ruleset
-                //            }
-                //        }
-                //        newFormat = rbnf;
-                //    }
-                //    break;
+                case TYPE_SPELLOUT:
+                    {
+                        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(uCulure,
+                            NumberPresentation.SpellOut);
+                        string ruleset = style.Trim();
+                        if (ruleset.Length != 0)
+                        {
+                            try
+                            {
+                                rbnf.SetDefaultRuleSet(ruleset);
+                            }
+                            catch (Exception)
+                            {
+                                // warn invalid ruleset
+                            }
+                        }
+                        newFormat = rbnf;
+                    }
+                    break;
+                case TYPE_ORDINAL:
+                    {
+                        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(uCulure,
+                                NumberPresentation.Ordinal);
+                        string ruleset = style.Trim();
+                        if (ruleset.Length != 0)
+                        {
+                            try
+                            {
+                                rbnf.SetDefaultRuleSet(ruleset);
+                            }
+                            catch (Exception)
+                            {
+                                // warn invalid ruleset
+                            }
+                        }
+                        newFormat = rbnf;
+                    }
+                    break;
+                case TYPE_DURATION:
+                    {
+                        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(uCulure,
+                                NumberPresentation.Duration);
+                        string ruleset = style.Trim();
+                        if (ruleset.Length != 0)
+                        {
+                            try
+                            {
+                                rbnf.SetDefaultRuleSet(ruleset);
+                            }
+                            catch (Exception)
+                            {
+                                // warn invalid ruleset
+                            }
+                        }
+                        newFormat = rbnf;
+                    }
+                    break;
                 default:
                     throw new ArgumentException("Unknown format type \"" + type + "\"");
             }
