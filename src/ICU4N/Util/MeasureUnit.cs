@@ -17,7 +17,7 @@ namespace ICU4N.Util
     /// </summary>
     internal class MeasureUnit // ICU4N TODO: API - this was public in ICU4J
     {
-        private static readonly object cacheLock = new object(); // ICU4N specific
+        protected static readonly object cacheLock = new object(); // ICU4N specific
 
         //private static final long serialVersionUID = -1839973855554750484L;
 

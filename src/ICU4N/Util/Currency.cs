@@ -1023,14 +1023,12 @@ namespace ICU4N.Util
         private static SoftReference<IList<string>> ALL_TENDER_CODES;
         private static SoftReference<ISet<string>> ALL_CODES_AS_SET;
 
-        private static readonly object syncLock = new object(); // ICU4N specific
-
         /// <summary>
         /// Returns an unmodifiable string list including all known tender currency codes.
         /// </summary>
         private static IList<string> GetAllTenderCurrencies()
         {
-            lock (syncLock)
+            lock (cacheLock) // ICU4N: cacheLock synchronizes with MeasureUnit
             {
                 if (ALL_TENDER_CODES == null || ALL_TENDER_CODES.TryGetValue(out IList<string> all) || all == null)
                 {
@@ -1051,7 +1049,7 @@ namespace ICU4N.Util
 
         private static ISet<string> GetAllCurrenciesAsSet()
         {
-            lock (syncLock)
+            lock (cacheLock)
             {
                 if (ALL_CODES_AS_SET == null || !ALL_CODES_AS_SET.TryGetValue(out ISet<string> all) || all == null)
                 {
