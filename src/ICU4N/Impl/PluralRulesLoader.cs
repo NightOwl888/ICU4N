@@ -87,7 +87,7 @@ namespace ICU4N.Impl
                 return UCultureInfo.InvariantCulture; // ultimate fallback
             }
 
-            if (!GetRulesIdToEquivalentULocaleMap().TryGetValue(rulesId, out UCultureInfo result) || result is null)
+            if (!RulesIdToEquivalentULocaleMap.TryGetValue(rulesId, out UCultureInfo result) || result is null)
             {
                 return UCultureInfo.InvariantCulture; // ultimate fallback
             }
@@ -107,10 +107,13 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns the lazily-constructed map.
         /// </summary>
-        private IDictionary<string, UCultureInfo> GetRulesIdToEquivalentULocaleMap()
+        private IDictionary<string, UCultureInfo> RulesIdToEquivalentULocaleMap
         {
-            CheckBuildRulesIdMaps();
-            return rulesIdToEquivalentULocale;
+            get
+            {
+                CheckBuildRulesIdMaps();
+                return rulesIdToEquivalentULocale;
+            }
         }
 
         /// <summary>
