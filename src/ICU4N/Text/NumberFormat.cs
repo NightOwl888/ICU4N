@@ -238,16 +238,16 @@ namespace ICU4N.Text
          * @stable ICU 2.0
          */
         public string Format(Numerics.BigDecimal number) // ICU BigDecimal
-    {
-        return Format(number, new StringBuffer(),
-                      new FieldPosition(0)).ToString();
-    }
+        {
+            return Format(number, new StringBuffer(),
+                          new FieldPosition(0)).ToString();
+        }
 
-    /**
-     * {@icu} Convenience method to format a CurrencyAmount.
-     * @stable ICU 3.0
-     */
-    public string Format(CurrencyAmount currAmt)
+        /**
+         * {@icu} Convenience method to format a CurrencyAmount.
+         * @stable ICU 3.0
+         */
+        public string Format(CurrencyAmount currAmt)
         {
             return Format(currAmt, new StringBuffer(),
                           new FieldPosition(0)).ToString();
@@ -1155,35 +1155,35 @@ namespace ICU4N.Text
             set => throw new NotSupportedException("RoundingMode setter must be implemented by the subclass implementation.");
         }
 
-    /////**
-    //// * Set the rounding mode used in this NumberFormat.  The default implementation of
-    //// * tis method in NumberFormat always throws <code>UnsupportedOperationException</code>.
-    //// * @param roundingMode A rounding mode, between
-    //// * <code>BigDecimal.ROUND_UP</code> and
-    //// * <code>BigDecimal.ROUND_UNNECESSARY</code>.
-    //// * @see #getRoundingMode()
-    //// * @stable ICU 4.0
-    //// */
-    ////public virtual void setRoundingMode(int roundingMode)
-    ////{
-    ////    throw new NotSupportedException(
-    ////        "setRoundingMode must be implemented by the subclass implementation.");
-    ////}
+        /////**
+        //// * Set the rounding mode used in this NumberFormat.  The default implementation of
+        //// * tis method in NumberFormat always throws <code>UnsupportedOperationException</code>.
+        //// * @param roundingMode A rounding mode, between
+        //// * <code>BigDecimal.ROUND_UP</code> and
+        //// * <code>BigDecimal.ROUND_UNNECESSARY</code>.
+        //// * @see #getRoundingMode()
+        //// * @stable ICU 4.0
+        //// */
+        ////public virtual void setRoundingMode(int roundingMode)
+        ////{
+        ////    throw new NotSupportedException(
+        ////        "setRoundingMode must be implemented by the subclass implementation.");
+        ////}
 
 
-    /**
-     * Returns a specific style number format for a specific locale.
-     * @param desiredLocale  the specific locale.
-     * @param choice         number format style
-     * @throws IllegalArgumentException  if choice is not one of
-     *                                   NUMBERSTYLE, CURRENCYSTYLE,
-     *                                   PERCENTSTYLE, SCIENTIFICSTYLE,
-     *                                   INTEGERSTYLE, ISOCURRENCYSTYLE,
-     *                                   PLURALCURRENCYSTYLE, ACCOUNTINGCURRENCYSTYLE.
-     *                                   CASHCURRENCYSTYLE, STANDARDCURRENCYSTYLE.
-     * @stable ICU 4.2
-     */
-    public static NumberFormat GetInstance(UCultureInfo desiredLocale, NumberFormatStyle choice)
+        /**
+         * Returns a specific style number format for a specific locale.
+         * @param desiredLocale  the specific locale.
+         * @param choice         number format style
+         * @throws IllegalArgumentException  if choice is not one of
+         *                                   NUMBERSTYLE, CURRENCYSTYLE,
+         *                                   PERCENTSTYLE, SCIENTIFICSTYLE,
+         *                                   INTEGERSTYLE, ISOCURRENCYSTYLE,
+         *                                   PLURALCURRENCYSTYLE, ACCOUNTINGCURRENCYSTYLE.
+         *                                   CASHCURRENCYSTYLE, STANDARDCURRENCYSTYLE.
+         * @stable ICU 4.2
+         */
+        public static NumberFormat GetInstance(UCultureInfo desiredLocale, NumberFormatStyle choice)
         {
             if (choice < NumberFormatStyle.NumberStyle || choice > NumberFormatStyle.StandardCurrencyStyle)
             {
