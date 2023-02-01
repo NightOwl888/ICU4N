@@ -4,6 +4,7 @@ using ICU4N.Util;
 using J2N.Collections.Generic.Extensions;
 using J2N.Text;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Resources;
 using System.Text;
@@ -19,7 +20,7 @@ namespace ICU4N.Impl
         : PluralRulesFactory
 #pragma warning restore 612, 618
     {
-        private readonly IDictionary<string, PluralRules> rulesIdToRules;
+        private readonly ConcurrentDictionary<string, PluralRules> rulesIdToRules = new ConcurrentDictionary<string, PluralRules>();
         // lazy init, use getLocaleIdToRulesIdMap to access
         private IDictionary<string, string> localeIdToCardinalRulesId;
         private IDictionary<string, string> localeIdToOrdinalRulesId;
@@ -30,7 +31,6 @@ namespace ICU4N.Impl
 
         private object syncLock = new object();
         private bool localeRulesInitialized;
-        private readonly object rulesIdToRulesLock = new object();
 
         /// <summary>
         /// Access through singleton.
@@ -38,7 +38,6 @@ namespace ICU4N.Impl
 #pragma warning disable 612, 618
         private PluralRulesLoader()
         {
-            rulesIdToRules = new Dictionary<string, PluralRules>();
         }
 #pragma warning restore 612, 618
 
@@ -208,25 +207,14 @@ namespace ICU4N.Impl
         /// </summary>
         public virtual PluralRules GetRulesForRulesId(string rulesId)
         {
-            // synchronize on the map.  release the lock temporarily while we build the rules.
-            PluralRules rules = null;
-            bool hasRules;  // Separate boolean because stored rules can be null.
-            lock (rulesIdToRulesLock)
-            {
-                hasRules = rulesIdToRules.ContainsKey(rulesId);
-                if (hasRules)
-                {
-                    rulesIdToRules.TryGetValue(rulesId, out rules);  // can be null
-                }
-            }
-            if (!hasRules)
-            {
+            return rulesIdToRules.GetOrAdd(rulesId, (key) => {
                 try
                 {
                     UResourceBundle pluralb = GetPluralBundle();
                     UResourceBundle rulesb = pluralb.Get("rules");
-                    UResourceBundle setb = rulesb.Get(rulesId);
+                    UResourceBundle setb = rulesb.Get(key);
 
+                    // ICU4N TODO: Process rules here rather than building a string and then parsing the string.
                     StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < setb.Length; ++i)
                     {
@@ -239,27 +227,18 @@ namespace ICU4N.Impl
                         sb.Append(": ");
                         sb.Append(b.GetString());
                     }
-                    rules = PluralRules.ParseDescription(sb.ToString());
+                    return PluralRules.ParseDescription(sb.ToString());
                 }
                 catch (FormatException)
                 {
+                    // Ignore
                 }
                 catch (MissingManifestResourceException)
                 {
+                    // Ignore
                 }
-                lock (rulesIdToRulesLock)
-                {
-                    if (rulesIdToRules.ContainsKey(rulesId))
-                    {
-                        rulesIdToRules.TryGetValue(rulesId, out rules);
-                    }
-                    else
-                    {
-                        rulesIdToRules[rulesId] = rules;  // can be null
-                    }
-                }
-            }
-            return rules;
+                return null; // can be null
+            });
         }
 
         /// <summary>
