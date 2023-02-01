@@ -530,21 +530,20 @@ namespace ICU4N.Dev.Test.Format
         {
             // spot check
             UCultureInfo unknown = UCultureInfo.CreateCanonical("zz_ZZ");
-            UCultureInfo un_equiv = PluralRules.GetFunctionalEquivalent(unknown, null);
+            UCultureInfo un_equiv = PluralRules.GetFunctionalEquivalent(unknown);
             assertEquals("unknown locales have root", UCultureInfo.InvariantCulture, un_equiv);
 
-            UCultureInfo jp_equiv = PluralRules.GetFunctionalEquivalent(new UCultureInfo("ja-JP"), null);
-            UCultureInfo cn_equiv = PluralRules.GetFunctionalEquivalent(new UCultureInfo("zh_Hans_CN"), null);
+            UCultureInfo jp_equiv = PluralRules.GetFunctionalEquivalent(new UCultureInfo("ja-JP"));
+            UCultureInfo cn_equiv = PluralRules.GetFunctionalEquivalent(new UCultureInfo("zh_Hans_CN"));
             assertEquals("japan and china equivalent locales", jp_equiv, cn_equiv);
 
-            bool[] available = new bool[1];
             UCultureInfo russia = UCultureInfo.CreateCanonical("ru_RU");
-            UCultureInfo ru_ru_equiv = PluralRules.GetFunctionalEquivalent(russia, available);
-            assertFalse("ru_RU not listed", available[0]);
+            UCultureInfo ru_ru_equiv = PluralRules.GetFunctionalEquivalent(russia, out bool available);
+            assertFalse("ru_RU not listed", available);
 
             UCultureInfo russian = UCultureInfo.CreateCanonical("ru");
-            UCultureInfo ru_equiv = PluralRules.GetFunctionalEquivalent(russian, available);
-            assertTrue("ru listed", available[0]);
+            UCultureInfo ru_equiv = PluralRules.GetFunctionalEquivalent(russian, out available);
+            assertTrue("ru listed", available);
             assertEquals("ru and ru_RU equivalent locales", ru_ru_equiv, ru_equiv);
         }
 
@@ -668,7 +667,7 @@ namespace ICU4N.Dev.Test.Format
             ISet<UCultureInfo> uniqueRuleSet = new HashSet<UCultureInfo>();
             foreach (UCultureInfo locale in factory.GetUCultures())
             {
-                uniqueRuleSet.Add(PluralRules.GetFunctionalEquivalent(locale, null));
+                uniqueRuleSet.Add(PluralRules.GetFunctionalEquivalent(locale));
             }
             foreach (UCultureInfo locale in uniqueRuleSet)
             {
@@ -882,7 +881,7 @@ namespace ICU4N.Dev.Test.Format
         {
             foreach (UCultureInfo locale in PluralRules.GetUCultures())
             {
-                UCultureInfo loc2 = PluralRules.GetFunctionalEquivalent(locale, null);
+                UCultureInfo loc2 = PluralRules.GetFunctionalEquivalent(locale);
                 if (!loc2.Equals(locale))
                 {
                     continue; // only need "unique" rules

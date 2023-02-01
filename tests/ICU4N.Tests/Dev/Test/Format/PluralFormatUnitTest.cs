@@ -214,9 +214,8 @@ namespace ICU4N.Dev.Test.Format
             IDictionary<UCultureInfo, ISet<UCultureInfo>> same = new LinkedDictionary<UCultureInfo, ISet<UCultureInfo>>();
             foreach (UCultureInfo locale in PluralRules.GetUCultures())
             {
-                UCultureInfo otherLocale = PluralRules.GetFunctionalEquivalent(locale, null);
-                ISet<UCultureInfo> others;
-                if (!same.TryGetValue(otherLocale, out others)) same[otherLocale] = others = new LinkedHashSet<UCultureInfo>();
+                UCultureInfo otherLocale = PluralRules.GetFunctionalEquivalent(locale);
+                if (!same.TryGetValue(otherLocale, out ISet<UCultureInfo> others)) same[otherLocale] = others = new LinkedHashSet<UCultureInfo>();
                 others.Add(locale);
                 continue;
             }

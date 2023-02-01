@@ -27,9 +27,14 @@ namespace ICU4N.Dev.Test.Format
                 return PluralRules.GetUCultures();
             }
 
-            public override UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, bool[] isAvailable)
+            public override UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, out bool isAvailable)
             {
-                return PluralRules.GetFunctionalEquivalent(locale, isAvailable);
+                return PluralRules.GetFunctionalEquivalent(locale, out isAvailable);
+            }
+
+            public override UCultureInfo GetFunctionalEquivalent(UCultureInfo locale)
+            {
+                return PluralRules.GetFunctionalEquivalent(locale);
             }
         }
     }

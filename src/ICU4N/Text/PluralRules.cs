@@ -82,7 +82,20 @@ namespace ICU4N.Text
         /// <returns>the functionally-equivalent locale</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public abstract UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, bool[] isAvailable);
+        public abstract UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, out bool isAvailable);
+
+        /// <summary>
+        /// Returns the 'functionally equivalent' locale with respect to plural rules. Calling PluralRules.forLocale with
+        /// the functionally equivalent locale, and with the provided locale, returns rules that behave the same. 
+        /// All locales with the same functionally equivalent locale have plural rules that behave the same. This is not
+        /// exaustive; there may be other locales whose plural rules behave the same that do not have the same equivalent
+        /// locale.
+        /// </summary>
+        /// <param name="locale">The locale to check.</param>
+        /// <returns>the functionally-equivalent locale</returns>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        public abstract UCultureInfo GetFunctionalEquivalent(UCultureInfo locale); // ICU4N specific - instead of passing null, we have a separate overload with no out value.
 
         /// <summary>
         /// Returns the default factory.
@@ -2374,10 +2387,32 @@ namespace ICU4N.Text
         /// <returns>The functionally-equivalent locale.</returns>
         /// <draft>ICU 4.2 (retain)</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, bool[] isAvailable) // ICU4N TODO: API - Change to out parameter
+        public static UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, out bool isAvailable)
         {
 #pragma warning disable 612, 618
-            return PluralRulesFactory.DefaultFactory.GetFunctionalEquivalent(locale, isAvailable);
+            return PluralRulesFactory.DefaultFactory.GetFunctionalEquivalent(locale, out isAvailable);
+#pragma warning restore 612, 618
+        }
+
+        /// <summary>
+        /// Returns the 'functionally equivalent' locale with respect to
+        /// plural rules.  Calling <see cref="PluralRules.ForLocale(CultureInfo)"/> with the functionally equivalent
+        /// locale, and with the provided locale, returns rules that behave the same.
+        /// </summary>
+        /// <remarks>
+        /// All locales with the same functionally equivalent locale have
+        /// plural rules that behave the same.  This is not exaustive;
+        /// there may be other locales whose plural rules behave the same
+        /// that do not have the same equivalent locale.
+        /// </remarks>
+        /// <param name="locale">The locale to check.</param>
+        /// <returns>The functionally-equivalent locale.</returns>
+        /// <draft>ICU 4.2 (retain)</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public static UCultureInfo GetFunctionalEquivalent(UCultureInfo locale)
+        {
+#pragma warning disable 612, 618
+            return PluralRulesFactory.DefaultFactory.GetFunctionalEquivalent(locale);
 #pragma warning restore 612, 618
         }
 

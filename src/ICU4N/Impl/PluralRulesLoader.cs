@@ -60,26 +60,32 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns the functionally equivalent locale.
         /// </summary>
-#pragma warning disable 672
-        public override UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, bool[] isAvailable)
-#pragma warning restore 672
+#pragma warning disable CS0672 // Type or member is obsolete
+        public override UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, out bool isAvailable)
+#pragma warning restore CS0672 // Type or member is obsolete
         {
-            if (isAvailable != null && isAvailable.Length > 0)
-            {
-                string localeId = UCultureInfo.Canonicalize(locale.Name);
-                IDictionary<string, string> idMap = GetLocaleIdToRulesIdMap(PluralType.Cardinal);
-                isAvailable[0] = idMap.ContainsKey(localeId);
-            }
+            string localeId = UCultureInfo.Canonicalize(locale.Name);
+            IDictionary<string, string> idMap = GetLocaleIdToRulesIdMap(PluralType.Cardinal);
+            isAvailable = idMap.ContainsKey(localeId);
+#pragma warning disable CS0618 // Type or member is obsolete
+            return GetFunctionalEquivalent(locale);
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
 
+        /// <summary>
+        /// Returns the functionally equivalent locale.
+        /// </summary>
+#pragma warning disable CS0672 // Type or member is obsolete
+        public override UCultureInfo GetFunctionalEquivalent(UCultureInfo locale) // ICU4N specific: Added overload so we don't need to pass a null parameter
+#pragma warning restore CS0672 // Type or member is obsolete
+        {
             string rulesId = GetRulesIdForLocale(locale, PluralType.Cardinal);
-            if (rulesId == null || rulesId.Trim().Length == 0)
+            if (rulesId is null || rulesId.Trim().Length == 0)
             {
                 return UCultureInfo.InvariantCulture; // ultimate fallback
             }
 
-            UCultureInfo result;
-            GetRulesIdToEquivalentULocaleMap().TryGetValue(rulesId, out result);
-            if (result == null)
+            if (!GetRulesIdToEquivalentULocaleMap().TryGetValue(rulesId, out UCultureInfo result) || result is null)
             {
                 return UCultureInfo.InvariantCulture; // ultimate fallback
             }
