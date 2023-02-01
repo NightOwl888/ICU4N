@@ -1,5 +1,4 @@
-﻿using Deveel.Math;
-using ICU4N.Globalization;
+﻿using ICU4N.Globalization;
 using ICU4N.Numerics;
 using ICU4N.Numerics.BigMath;
 using ICU4N.Text;
