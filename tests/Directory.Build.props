@@ -13,7 +13,9 @@
     <CLSCompliant>false</CLSCompliant>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Label="Warnings to be Disabled in Test Projects">
+    <!-- We purposely test on EoL frameworks for testing netstandard2.0, but we want to keep this warning in production code. -->
+    <CheckEolTargetFramework>false</CheckEolTargetFramework>
     <NoWarn>$(NoWarn);168;612;618;672;809</NoWarn>
   </PropertyGroup>
 
