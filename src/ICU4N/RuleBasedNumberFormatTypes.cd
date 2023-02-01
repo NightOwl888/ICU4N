@@ -1,0 +1,366 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ICU4N.Text.RuleBasedNumberFormat">
+    <Position X="0.75" Y="2.25" Width="2.75" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>CSMgAFGD4QIGAAAG4kgMAoAAIAwkALEAxAyGAICQABA=</HashCode>
+      <FileName>Text\RuleBasedNumberFormat.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="ruleSets" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="ICU4N.Text.NumberFormat">
+    <Position X="4.5" Y="1" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="ICU4N.Text.NumberFormat.NumberFormatShim" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\NumberFormat.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAYwBAISAEIVgARQkAhMQAIAHAgCgpAiIaaCEIAAEDA=</HashCode>
+      <FileName>Text\NumberFormat.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.NumberFormatField" Collapsed="true">
+    <Position X="6.5" Y="0.5" Width="3.75" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAAAACBAAAAABQAAACQAAAgEAEAEACAAAAAA=</HashCode>
+      <FileName>Text\NumberFormat.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.NumberFormatFactory" Collapsed="true">
+    <Position X="0.5" Y="18.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAADAAAAAAAAAAABAgAAAIAAMAAAAAAEAAAA=</HashCode>
+      <FileName>Text\NumberFormat.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.SimpleNumberFormatFactory" Collapsed="true">
+    <Position X="0.5" Y="19.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAACAAAAAAAAAAAAAAAAAAAAIAAAACAAAAAA=</HashCode>
+      <FileName>Text\NumberFormat.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.DecimalFormat">
+    <Position X="5" Y="3.75" Width="3.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Interface Name="ICU4N.Text.DecimalFormat.IPropertySetter" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\DecimalFormat.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Interface>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>DsIyKM0GIgIDhHBEuJiuVUDCGOiCpogNssMSwoawAhA=</HashCode>
+      <FileName>Text\DecimalFormat.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="symbols" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ICU4N.Text.DecimalFormatSymbols">
+    <Position X="10.5" Y="4.5" Width="3.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="ICU4N.Text.DecimalFormatSymbols.DecFmtDataSink" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\DecimalFormatSymbols.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.DecimalFormatSymbols.LocaleCache" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\DecimalFormatSymbols.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.DecimalFormatSymbols.CacheData" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\DecimalFormatSymbols.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>01iQyBhCiYIUjZUBh6gfQFl3HYut2MAtDQMADUQgALg=</HashCode>
+      <FileName>Text\DecimalFormatSymbols.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.NFRule">
+    <Position X="6.75" Y="6" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AIgQgIGAKAQAEgAE0IAAAAAGAQAYAJEBgAAQIDAAJQA=</HashCode>
+      <FileName>Text\NFRule.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="sub1" />
+      <Field Name="sub2" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ICU4N.Text.NFRuleSet">
+    <Position X="4.25" Y="7.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>CqAgAEKALAEAgAQMgCAAEAYAQDgEAMAAAIAAAAQgAAI=</HashCode>
+      <FileName>Text\NFRuleSet.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="owner" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="rules" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="ICU4N.Text.NFSubstitution">
+    <Position X="10.25" Y="7.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAQIACAAAAEgAAAAIAAAgCIAIAAQAAggAAIgAA=</HashCode>
+      <FileName>Text\NFSubstitution.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="ruleSet" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ICU4N.Text.SameValueSubstitution" Collapsed="true">
+    <Position X="8.5" Y="13.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAAAAAAAAAAAAAgAAAAAAQAAAAAAIAAA=</HashCode>
+      <FileName>Text\NFSubstitution.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.MultiplierSubstitution" Collapsed="true">
+    <Position X="16" Y="13.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAYAAAAAAAAgAAAAAAAAgAAAIAAQAAgAAAIAAA=</HashCode>
+      <FileName>Text\NFSubstitution.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.ModulusSubstitution" Collapsed="true">
+    <Position X="3.5" Y="13.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAYAAQAAAAAgAAAAAAAAgAIAIAAQAAggAAIAAA=</HashCode>
+      <FileName>Text\NFSubstitution.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.IntegralPartSubstitution" Collapsed="true">
+    <Position X="11" Y="13.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAAAAAAAAAAAAAgAAAAAAQAAAAAAIAAA=</HashCode>
+      <FileName>Text\NFSubstitution.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.FractionalPartSubstitution" Collapsed="true">
+    <Position X="18.5" Y="13.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAAAAAAAAAAQAAgAIAAAAQAAAgAAIAAA=</HashCode>
+      <FileName>Text\NFSubstitution.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.AbsoluteValueSubstitution" Collapsed="true">
+    <Position X="6" Y="13.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAAAAAAAAAAAAAAgAAAAAAQAAAAAAIAAA=</HashCode>
+      <FileName>Text\NFSubstitution.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.NumeratorSubstitution" Collapsed="true">
+    <Position X="13.5" Y="13.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAQAAAAAAAAgIAAAAAAAgAIAIAAYAAAgAAIAAA=</HashCode>
+      <FileName>Text\NFSubstitution.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.PluralFormat">
+    <Position X="1.25" Y="11.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Interface Name="ICU4N.Text.PluralFormat.IPluralSelector" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralFormat.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Interface>
+      <Class Name="ICU4N.Text.PluralFormat.PluralSelectorAdapter" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralFormat.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>EADiQAIAEEAAAAFUgAAAAgAAAAggEIAAEAACAAQAgAA=</HashCode>
+      <FileName>Text\PluralFormat.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="pluralRules" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="ICU4N.Text.PluralRulesFactory" Collapsed="true">
+    <Position X="3.75" Y="15.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAACg=</HashCode>
+      <FileName>Text\PluralRules.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ICU4N.Text.PluralRules">
+    <Position X="1" Y="15.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="ICU4N.Text.PluralRules.FixedDecimal" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+      <Interface Name="ICU4N.Text.PluralRules.IConstraint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Interface>
+      <Enum Name="ICU4N.Text.PluralRules.Operand" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="ICU4N.Text.PluralRules.FixedDecimalSamples" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.RuleList" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.RangeConstraint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.BinaryConstraint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.FixedDecimalRange" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Interface Name="ICU4N.Text.PluralRules.IFixedDecimal" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Interface>
+      <Class Name="ICU4N.Text.PluralRules.NoConstraintClass" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.AndConstraint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.Rule" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.SimpleTokenizer" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.OrConstraint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>ABKLgUIAwALoIAZEgNIAJAiAEQgAAIkuABAARCIEgCg=</HashCode>
+      <FileName>Text\PluralRules.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="ICU4N.Text.NumberPresentation">
+    <Position X="0.75" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQACAAAAABAAAAAAAAAABAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Text\RuleBasedNumberFormat.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ICU4N.Text.NumberFormatStyle">
+    <Position X="10.75" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAARAAAAAAIAAAQAAAAAAAAAAACAAAAhIAAAABA=</HashCode>
+      <FileName>Text\NumberFormat.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ICU4N.Text.PadPosition" Collapsed="true">
+    <Position X="11.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACAAAAAAAAAAAAAIAAAAAAAAAAAAAQAAQAA=</HashCode>
+      <FileName>Text\DecimalFormat.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ICU4N.Text.PluralType">
+    <Position X="5.75" Y="18" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Text\PluralRules.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ICU4N.Text.PluralRulesSampleType">
+    <Position X="5.75" Y="16.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>Text\PluralRules.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ICU4N.Text.PluralRulesKeywordStatus">
+    <Position X="8.75" Y="16.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAIAEAAEAAAAAAAAAAAAAAAgAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Text\PluralRules.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
