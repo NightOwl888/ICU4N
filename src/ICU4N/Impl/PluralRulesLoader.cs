@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Resources;
 using System.Text;
+using System.Threading;
 
 namespace ICU4N.Impl
 {
@@ -27,7 +28,8 @@ namespace ICU4N.Impl
         private static readonly IDictionary<string, PluralRanges> localeIdToPluralRanges = LoadLocaleIdToPluralRanges();
 #pragma warning restore 612, 618
 
-        private readonly object syncLock = new object();
+        private object syncLock = new object();
+        private bool localeRulesInitialized;
         private readonly object rulesIdToRulesLock = new object();
 
         /// <summary>
@@ -118,69 +120,61 @@ namespace ICU4N.Impl
         /// </summary>
         private void CheckBuildRulesIdMaps()
         {
-            bool haveMap;
-            lock (syncLock)
+            LazyInitializer.EnsureInitialized(ref rulesIdToEquivalentULocale, ref localeRulesInitialized, ref syncLock, LoadRulesIdMaps);
+        }
+
+        /// <summary>
+        /// constructs the localeIdToRulesId and rulesIdToEquivalentULocale
+        /// maps. These exactly reflect the contents of the locales
+        /// resource in plurals.res.
+        /// </summary>
+        /// <returns>The rulesIdToEquivalentULocale map.</returns>
+        private IDictionary<string, UCultureInfo> LoadRulesIdMaps()
+        {
+            // ICU4N: Simplified this using LazyInitializer and an external lock.
+            try
             {
-                haveMap = localeIdToCardinalRulesId != null;
-            }
-            if (!haveMap)
-            {
-                IDictionary<string, string> tempLocaleIdToCardinalRulesId;
-                IDictionary<string, string> tempLocaleIdToOrdinalRulesId;
-                IDictionary<string, UCultureInfo> tempRulesIdToEquivalentULocale;
-                try
+                UResourceBundle pluralb = GetPluralBundle();
+                // Read cardinal-number rules.
+                UResourceBundle localeb = pluralb.Get("locales");
+
+                // sort for convenience of getAvailableULocales
+                localeIdToCardinalRulesId = new SortedDictionary<string, string>(StringComparer.Ordinal);
+                // not visible
+                rulesIdToEquivalentULocale = new Dictionary<string, UCultureInfo>();
+
+                for (int i = 0; i < localeb.Length; ++i)
                 {
-                    UResourceBundle pluralb = GetPluralBundle();
-                    // Read cardinal-number rules.
-                    UResourceBundle localeb = pluralb.Get("locales");
+                    UResourceBundle b = localeb.Get(i);
+                    string id = b.Key;
+                    string value = b.GetString().Intern();
+                    localeIdToCardinalRulesId[id] = value;
 
-                    // sort for convenience of getAvailableULocales
-                    tempLocaleIdToCardinalRulesId = new SortedDictionary<string, string>(StringComparer.Ordinal);
-                    // not visible
-                    tempRulesIdToEquivalentULocale = new Dictionary<string, UCultureInfo>();
-
-                    for (int i = 0; i < localeb.Length; ++i)
+                    if (!rulesIdToEquivalentULocale.ContainsKey(value))
                     {
-                        UResourceBundle b = localeb.Get(i);
-                        string id = b.Key;
-                        string value = b.GetString().Intern();
-                        tempLocaleIdToCardinalRulesId[id] = value;
-
-                        if (!tempRulesIdToEquivalentULocale.ContainsKey(value))
-                        {
-                            tempRulesIdToEquivalentULocale[value] = new UCultureInfo(id);
-                        }
-                    }
-
-                    // Read ordinal-number rules.
-                    localeb = pluralb.Get("locales_ordinals");
-                    tempLocaleIdToOrdinalRulesId = new SortedDictionary<string, string>(StringComparer.Ordinal);
-                    for (int i = 0; i < localeb.Length; ++i)
-                    {
-                        UResourceBundle b = localeb.Get(i);
-                        string id = b.Key;
-                        string value = b.GetString().Intern();
-                        tempLocaleIdToOrdinalRulesId[id] = value;
+                        rulesIdToEquivalentULocale[value] = new UCultureInfo(id);
                     }
                 }
-                catch (MissingManifestResourceException)
-                {
-                    // dummy so we don't try again
-                    tempLocaleIdToCardinalRulesId = new Dictionary<string, string>();
-                    tempLocaleIdToOrdinalRulesId = new Dictionary<string, string>();
-                    tempRulesIdToEquivalentULocale = new Dictionary<string, UCultureInfo>();
-                }
 
-                lock (syncLock)
+                // Read ordinal-number rules.
+                localeb = pluralb.Get("locales_ordinals");
+                localeIdToOrdinalRulesId = new SortedDictionary<string, string>(StringComparer.Ordinal);
+                for (int i = 0; i < localeb.Length; ++i)
                 {
-                    if (localeIdToCardinalRulesId == null)
-                    {
-                        localeIdToCardinalRulesId = tempLocaleIdToCardinalRulesId;
-                        localeIdToOrdinalRulesId = tempLocaleIdToOrdinalRulesId;
-                        rulesIdToEquivalentULocale = tempRulesIdToEquivalentULocale;
-                    }
+                    UResourceBundle b = localeb.Get(i);
+                    string id = b.Key;
+                    string value = b.GetString().Intern();
+                    localeIdToOrdinalRulesId[id] = value;
                 }
             }
+            catch (MissingManifestResourceException)
+            {
+                // dummy so we don't try again
+                localeIdToCardinalRulesId = new Dictionary<string, string>();
+                localeIdToOrdinalRulesId = new Dictionary<string, string>();
+                rulesIdToEquivalentULocale = new Dictionary<string, UCultureInfo>();
+            }
+            return rulesIdToEquivalentULocale;
         }
 
         /// <summary>
