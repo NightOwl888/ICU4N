@@ -2506,7 +2506,7 @@ namespace ICU4N.Text
          * @category Currency
          * @stable ICU 54
          */
-        public virtual void SetCurrencyUsage(CurrencyUsage? usage)
+        private void SetCurrencyUsage(CurrencyUsage? usage)
         {
             lock (this)
             {
