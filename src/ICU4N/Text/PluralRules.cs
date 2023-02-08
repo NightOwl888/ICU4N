@@ -1328,12 +1328,12 @@ namespace ICU4N.Text
          * digit :           0|1|2|3|4|5|6|7|8|9
          * range :           value'..'value
          */
-        private static IConstraint ParseConstraint(string description)
+        private static bool TryParseConstraint(string description, out IConstraint result, out string token, out string condition)
         {
-
-            IConstraint result = null;
-            string[]
-            or_together = OR_SEPARATED.Split(description);
+            result = default;
+            token = null;
+            condition = null;
+            string[] or_together = OR_SEPARATED.Split(description);
             for (int i = 0; i < or_together.Length; ++i)
             {
                 IConstraint andConstraint = null;
@@ -1342,7 +1342,7 @@ namespace ICU4N.Text
                 {
                     IConstraint newConstraint = NO_CONSTRAINT;
 
-                    string condition = and_together[j].Trim();
+                    condition = and_together[j].Trim();
                     string[] tokens = SimpleTokenizer.Split(condition);
 
                     int mod = 0;
@@ -1357,54 +1357,71 @@ namespace ICU4N.Text
                     bool hackForCompatibility = false;
 #pragma warning disable 612, 618
                     if (!FixedDecimal.TryGetOperand(t, out Operand operand))
-                        throw Unexpected(t, condition);
+                    {
+                        token = t;
+                        return false;
+                    }
+                        //throw Unexpected(t, condition);
 #pragma warning restore 612, 618
                     if (x < tokens.Length)
                     {
                         t = tokens[x++];
-                        if ("mod".Equals(t) || "%".Equals(t))
+                        if ("mod".Equals(t, StringComparison.Ordinal) || "%".Equals(t, StringComparison.Ordinal))
                         {
                             //mod = Integer.parseInt(tokens[x++]);
-                            int.TryParse(tokens[x++], NumberStyles.Any, CultureInfo.InvariantCulture, out mod);
+                            if (!int.TryParse(tokens[x++], NumberStyles.Integer, CultureInfo.InvariantCulture, out mod))
+                            {
+                                // Invalid int
+                                token = t;
+                                return false;
+                            }
                             t = NextToken(tokens, x++, condition);
                         }
-                        if ("not".Equals(t))
+                        if ("not".Equals(t, StringComparison.Ordinal))
                         {
                             inRange = !inRange;
                             t = NextToken(tokens, x++, condition);
-                            if ("=".Equals(t))
+                            if ("=".Equals(t, StringComparison.Ordinal))
                             {
-                                throw Unexpected(t, condition);
+                                //throw Unexpected(t, condition);
+                                token = t;
+                                return false;
                             }
                         }
                         else if ("!".Equals(t))
                         {
                             inRange = !inRange;
                             t = NextToken(tokens, x++, condition);
-                            if (!"=".Equals(t))
+                            if (!"=".Equals(t, StringComparison.Ordinal))
                             {
-                                throw Unexpected(t, condition);
+                                //throw Unexpected(t, condition);
+                                token = t;
+                                return false;
                             }
                         }
-                        if ("is".Equals(t) || "in".Equals(t) || "=".Equals(t))
+                        if ("is".Equals(t, StringComparison.Ordinal) || "in".Equals(t, StringComparison.Ordinal) || "=".Equals(t, StringComparison.Ordinal))
                         {
                             hackForCompatibility = "is".Equals(t);
                             if (hackForCompatibility && !inRange)
                             {
-                                throw Unexpected(t, condition);
+                                //throw Unexpected(t, condition);
+                                token = t;
+                                return false;
                             }
                             t = NextToken(tokens, x++, condition);
                         }
-                        else if ("within".Equals(t))
+                        else if ("within".Equals(t, StringComparison.Ordinal))
                         {
                             integersOnly = false;
                             t = NextToken(tokens, x++, condition);
                         }
                         else
                         {
-                            throw Unexpected(t, condition);
+                            //throw Unexpected(t, condition);
+                            token = t;
+                            return false;
                         }
-                        if ("not".Equals(t))
+                        if ("not".Equals(t, StringComparison.Ordinal))
                         {
                             if (!hackForCompatibility && !inRange)
                             {
@@ -1420,45 +1437,63 @@ namespace ICU4N.Text
                         while (true)
                         {
                             long low = 0;//  = Long.parseLong(t);
-                            long.TryParse(t, NumberStyles.Any, CultureInfo.InvariantCulture, out low);
+                            if (!long.TryParse(t, NumberStyles.Integer, CultureInfo.InvariantCulture, out low))
+                            {
+                                // Invalid long
+                                token = t;
+                                return false;
+                            }
                             long high = low;
                             if (x < tokens.Length)
                             {
                                 t = NextToken(tokens, x++, condition);
-                                if (t.Equals("."))
+                                if (t.Equals(".", StringComparison.Ordinal))
                                 {
                                     t = NextToken(tokens, x++, condition);
-                                    if (!t.Equals("."))
+                                    if (!t.Equals(".", StringComparison.Ordinal))
                                     {
                                         throw Unexpected(t, condition);
                                     }
                                     t = NextToken(tokens, x++, condition);
                                     //high = Long.parseLong(t);
-                                    long.TryParse(t, NumberStyles.Any, CultureInfo.InvariantCulture, out high);
+                                    if (!long.TryParse(t, NumberStyles.Integer, CultureInfo.InvariantCulture, out high))
+                                    {
+                                        // Invalid long
+                                        token = t;
+                                        return false;
+                                    }
                                     if (x < tokens.Length)
                                     {
                                         t = NextToken(tokens, x++, condition);
-                                        if (!t.Equals(","))
+                                        if (!t.Equals(",", StringComparison.Ordinal))
                                         { // adjacent number: 1 2
                                           // no separator, fail
-                                            throw Unexpected(t, condition);
+                                          //throw Unexpected(t, condition);
+                                            token = t;
+                                            return false;
                                         }
                                     }
                                 }
-                                else if (!t.Equals(","))
+                                else if (!t.Equals(",", StringComparison.Ordinal))
                                 { // adjacent number: 1 2
                                   // no separator, fail
-                                    throw Unexpected(t, condition);
+                                  //throw Unexpected(t, condition);
+                                    token = t;
+                                    return false;
                                 }
                             }
                             // at this point, either we are out of tokens, or t is ','
                             if (low > high)
                             {
-                                throw Unexpected(low + "~" + high, condition);
+                                //throw Unexpected(low + "~" + high, condition);
+                                token = low + "~" + high;
+                                return false;
                             }
                             else if (mod != 0 && high >= mod)
                             {
-                                throw Unexpected(high + ">mod=" + mod, condition);
+                                //throw Unexpected(high + ">mod=" + mod, condition);
+                                token = high + ">mod=" + mod;
+                                return false;
                             }
                             valueList.Add(low);
                             valueList.Add(high);
@@ -1471,9 +1506,11 @@ namespace ICU4N.Text
                             t = NextToken(tokens, x++, condition);
                         }
 
-                        if (t.Equals(","))
+                        if (t.Equals(",", StringComparison.Ordinal))
                         {
-                            throw Unexpected(t, condition);
+                            //throw Unexpected(t, condition);
+                            token = t;
+                            return false;
                         }
 
                         if (valueList.Count == 2)
@@ -1492,11 +1529,12 @@ namespace ICU4N.Text
                         // Hack to exclude "is not 1,2"
                         if (lowBound != highBound && hackForCompatibility && !inRange)
                         {
-                            throw Unexpected("is not <range>", condition);
+                            //throw Unexpected("is not <range>", condition);
+                            token = t;
+                            return false;
                         }
 
-                        newConstraint =
-                                new RangeConstraint(mod, inRange, operand, integersOnly, lowBound, highBound, vals);
+                        newConstraint = new RangeConstraint(mod, inRange, operand, integersOnly, lowBound, highBound, vals);
                     }
 
                     if (andConstraint == null)
@@ -1505,8 +1543,7 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        andConstraint = new AndConstraint(andConstraint,
-                                newConstraint);
+                        andConstraint = new AndConstraint(andConstraint, newConstraint);
                     }
                 }
 
@@ -1519,7 +1556,7 @@ namespace ICU4N.Text
                     result = new OrConstraint(result, andConstraint);
                 }
             }
-            return result;
+            return true;
         }
 
         private static readonly Regex AT_SEPARATED = new Regex("\\s*@\\s*", RegexOptions.Compiled); // ICU4N: \E and \Q are not supported in .NET
@@ -1531,12 +1568,12 @@ namespace ICU4N.Text
         private static readonly Regex SEMI_SEPARATED = new Regex("\\s*;\\s*", RegexOptions.Compiled);
 
         /// <summary>
-        /// Returns a parse exception wrapping the token and context strings.
+        /// Returns a parse exception wrapping the token and condition strings.
         /// </summary>
-        private static FormatException Unexpected(string token, string context)
+        private static FormatException Unexpected(string token, string condition)
         {
             return new FormatException("unexpected token '" + token +
-                    "' in '" + context + "'"/*, -1*/);
+                    "' in '" + condition + "'"/*, -1*/);
         }
 
         /// <summary>
@@ -1580,8 +1617,7 @@ namespace ICU4N.Text
             }
 
             description = description.Substring(x + 1).Trim();
-            string[]
-            constraintOrSamples = AT_SEPARATED.Split(description);
+            string[] constraintOrSamples = AT_SEPARATED.Split(description);
             bool sampleFailure = false;
 #pragma warning disable 612, 618
             FixedDecimalSamples integerSamples = null, decimalSamples = null;
@@ -1627,7 +1663,9 @@ namespace ICU4N.Text
             }
             else
             {
-                constraint = ParseConstraint(constraintOrSamples[0]);
+                //constraint = ParseConstraint(constraintOrSamples[0]);
+                if (!TryParseConstraint(constraintOrSamples[0], out constraint, out string token, out string condition))
+                    throw Unexpected(token, condition);
             }
             return new Rule(keyword, constraint, integerSamples, decimalSamples);
         }
