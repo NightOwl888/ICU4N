@@ -1300,6 +1300,52 @@ namespace ICU4N.Dev.Test.Format
             PluralRules rulesJ1 = PluralRules.ForLocale(new CultureInfo("fr-FR"), PluralType.Ordinal);
             assertEquals("forLocale() with type", rulesU1, rulesJ1);
         }
+
+        /// <summary>
+        /// ICU4N specific - Confirms that the SimpleTokenizerEnumerator provides similar behavior as SimpleTokenizer
+        /// </summary>
+        [Test]
+        public void TestSimpleTokenizerEnumerator()
+        {
+            string text = " fooName= fooValue , barName= barValue!" + Environment.NewLine +
+                " bazName = " + Environment.NewLine +
+                " bazValue % rule2Name= rule2Value";
+
+            string[] expectedTokens = new string[] { "fooName", "fooValue", "barName", "barValue", "bazName", "bazValue", "rule2Name", "rule2Value" };
+            string[] expectedDelimiters = new string[] { "=", ",", "=", "!", "=", "%", "=", "" };
+            // For comparison, we use the SimpleTokenizer.
+            // It works a bit differently - it includes all of the delimiters inline, but
+            // our new approach puts the delimiters in a separate property.
+            string[] actual1 = PluralRules.SimpleTokenizer.Split(text);
+
+            for (int i = 0; i < expectedTokens.Length; i++)
+            {
+                int actualIndex = i * 2;
+                string actualToken = actual1[actualIndex];
+                string expectedToken = expectedTokens[i];
+                assertEquals("mismatched token", actualToken, expectedToken);
+
+                actualIndex++;
+                string actualDelimiter = actualIndex < actual1.Length ? actual1[actualIndex] : "";
+                string expectedDelimiter = expectedDelimiters[i];
+                assertEquals("mismatched delimiter", actualDelimiter, expectedDelimiter);
+            }
+
+#if FEATURE_SPAN
+            int index = 0;
+            foreach (var token in new PluralRules.SimpleTokenizerEnumerator(text))
+            {
+                string actualToken = new string(token.Text);
+                string expectedToken = expectedTokens[index];
+                assertEquals("mismatched token", actualToken, expectedToken);
+
+                string actualDelimiter = new string(token.Delimiter);
+                string expectedDelimiter = expectedDelimiters[index];
+                assertEquals("mismatched delimiter", actualDelimiter, expectedDelimiter);
+                index++;
+            }
+#endif
+        }
     }
 
     internal enum StandardPluralCategories

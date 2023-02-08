@@ -261,6 +261,11 @@
           <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
+      <Struct Name="ICU4N.Text.PluralRules.SimpleTokenizerEnumerator" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
       <Class Name="ICU4N.Text.PluralRules.RuleList" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>

@@ -1183,8 +1183,8 @@ namespace ICU4N.Text
 
         internal class SimpleTokenizer
         {
-            static readonly UnicodeSet BREAK_AND_IGNORE = new UnicodeSet(0x09, 0x0a, 0x0c, 0x0d, 0x20, 0x20).Freeze();
-            static readonly UnicodeSet BREAK_AND_KEEP = new UnicodeSet('!', '!', '%', '%', ',', ',', '.', '.', '=', '=').Freeze();
+            private static readonly UnicodeSet BREAK_AND_IGNORE = new UnicodeSet(0x09, 0x0a, 0x0c, 0x0d, 0x20, 0x20).Freeze();
+            private static readonly UnicodeSet BREAK_AND_KEEP = new UnicodeSet('!', '!', '%', '%', ',', ',', '.', '.', '=', '=').Freeze();
             internal static string[] Split(string source)
             {
                 int last = -1;
@@ -1221,6 +1221,87 @@ namespace ICU4N.Text
                 return result.ToArray();
             }
         }
+
+#if FEATURE_SPAN
+        internal ref struct SimpleTokenizerEnumerator
+        {
+            private static readonly UnicodeSet BreakAndIgnore = new UnicodeSet(0x09, 0x0a, 0x0c, 0x0d, 0x20, 0x20).Freeze();
+            private static readonly UnicodeSet BreakAndKeep = new UnicodeSet('!', '!', '%', '%', ',', ',', '.', '.', '=', '=').Freeze();
+
+            private ReadOnlySpan<char> source;
+
+            public SimpleTokenizerEnumerator(ReadOnlySpan<char> source)
+            {
+                this.source = source;
+                Current = default;
+            }
+
+            // Needed to be compatible with the foreach operator
+            public SimpleTokenizerEnumerator GetEnumerator() => this;
+
+            public bool MoveNext()
+            {
+                int last = -1;
+                var span = source;
+                if (span.Length == 0) // Reached the end of the string
+                    return false;
+
+                for (int i = 0; i < source.Length; ++i)
+                {
+                    char ch = span[i];
+                    if (BreakAndKeep.Contains(ch))
+                    {
+                        if (last >= 0)
+                        {
+                            Current = new SplitEntry(Trim(span.Slice(last, i - last)), span.Slice(i, 1));
+                            source = span.Slice(i + 1);
+                            return true;
+                        }
+                    }
+                    else if (last < 0)
+                    {
+                        last = i;
+                    }
+                }
+                if (last >= 0)
+                {
+                    source = ReadOnlySpan<char>.Empty; // The remaining string is an empty string
+                    Current = new SplitEntry(Trim(span.Slice(last)), ReadOnlySpan<char>.Empty);
+                }
+                return true;
+            }
+
+            private static ReadOnlySpan<char> Trim(ReadOnlySpan<char> text)
+            {
+                if (text.Length == 0)
+                    return text;
+
+                
+                int start = 0;
+                int end = text.Length;
+
+                // Trim start
+                while (BreakAndIgnore.Contains(text[start]))
+                {
+                    start++;
+                }
+
+                // Trim end
+                while (BreakAndIgnore.Contains(text[end - 1]))
+                {
+                    end--;
+                }
+
+                if (start == 0 && end == text.Length)
+                    return text;
+
+                return text.Slice(start, end - start);
+            }
+
+            public SplitEntry Current { get; private set; }
+        }
+
+#endif
 
         /*
          * syntax:
