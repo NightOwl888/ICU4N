@@ -904,13 +904,10 @@ namespace ICU4N.Text
         internal static long Power(long @base, short exponent)
         {
             if (exponent < 0)
-            {
-                throw new ArgumentException("Exponent can not be negative");
-            }
+                throw new ArgumentOutOfRangeException(nameof(exponent), "Exponent can not be negative");
             if (@base < 0)
-            {
-                throw new ArgumentException("Base can not be negative");
-            }
+                throw new ArgumentOutOfRangeException(nameof(@base), "Base can not be negative");
+
             long result = 1;
             while (exponent > 0)
             {
