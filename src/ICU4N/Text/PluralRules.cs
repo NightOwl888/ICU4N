@@ -442,6 +442,94 @@ namespace ICU4N.Text
             j
         }
 
+#nullable enable
+        internal static class OperandExtensions
+        {
+            /// <summary>
+            /// Converts the string representation of the name or numeric value of one or more enumerated constants
+            /// to an equivalent symbol. A parameter specifies whether the operation is case-sensitive. The return
+            /// value indicates whether the conversion succeeded.
+            /// </summary>
+            /// <param name="value">The string representation of the enumeration name or underlying value to convert.</param>
+            /// <param name="ignoreCase"><c>true</c> to ignore case; <c>false</c> to consider case.</param>
+            /// <param name="result">When this method returns, contains an object of type <see cref="Operand"/> whose
+            /// value is represented by value if the parse operation succeeds. If the parse operation fails, contains
+            /// the default value of the underlying type of <see cref="Operand"/>. This parameter is passed uninitialized.</param>
+            /// <returns><c>true</c> if the value parameter was converted successfully; otherwise, <c>false</c>.</returns>
+            [Obsolete("This API is ICU internal only.")]
+            public static bool TryParse(string? value, bool ignoreCase, out Operand result)
+            {
+                result = default;
+                if (value is null || value.Length != 1)
+                    return false;
+
+                char val = value[0];
+
+                if (ignoreCase)
+                    val = char.ToLowerInvariant(val);
+
+                Operand? temp = ConvertFromChar(val);
+                if (temp.HasValue)
+                {
+                    result = temp.Value;
+                    return true;
+                }
+                
+                return false;
+            }
+
+#if FEATURE_SPAN
+            /// <summary>
+            /// Converts the string representation of the name or numeric value of one or more enumerated constants
+            /// to an equivalent symbol. A parameter specifies whether the operation is case-sensitive. The return
+            /// value indicates whether the conversion succeeded.
+            /// </summary>
+            /// <param name="value">The span representation of the enumeration name or underlying value to convert.</param>
+            /// <param name="ignoreCase"><c>true</c> to ignore case; <c>false</c> to consider case.</param>
+            /// <param name="result">When this method returns, contains an object of type <see cref="Operand"/> whose
+            /// value is represented by value if the parse operation succeeds. If the parse operation fails, contains
+            /// the default value of the underlying type of <see cref="Operand"/>. This parameter is passed uninitialized.</param>
+            /// <returns><c>true</c> if the value parameter was converted successfully; otherwise, <c>false</c>.</returns>
+            [Obsolete("This API is ICU internal only.")]
+            public static bool TryParse(ReadOnlySpan<char> value, bool ignoreCase, out Operand result)
+            {
+                result = default;
+                if (value.Length != 1)
+                    return false;
+
+                char val = value[0];
+
+                if (ignoreCase)
+                    val = char.ToLowerInvariant(val);
+
+                Operand? temp = ConvertFromChar(val);
+                if (temp.HasValue)
+                {
+                    result = temp.Value;
+                    return true;
+                }
+
+                return false;
+            }
+#endif
+
+            // since all of the symbols are only 1 char, we use a char data type.
+            [Obsolete("This API is ICU internal only.")]
+            private static Operand? ConvertFromChar(char value) => value switch
+                {
+                    'n' => Operand.n,
+                    'i' => Operand.i,
+                    'f' => Operand.f,
+                    't' => Operand.t,
+                    'v' => Operand.v,
+                    'w' => Operand.w,
+                    'j' => Operand.j,
+                    _ => null,
+                };
+        }
+#nullable restore
+
+
         /// <summary>
         /// An interface to FixedDecimal, allowing for other implementations.
         /// </summary>
@@ -719,10 +807,26 @@ namespace ICU4N.Text
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public static Operand GetOperand(string t)
+            public static Operand GetOperand(string value)
             {
-                return (Operand)Enum.Parse(typeof(Operand), t, true); //Operand.valueOf(t);
+                return (Operand)Enum.Parse(typeof(Operand), value, true);
             }
+
+            /// <internal/>
+            [Obsolete("This API is ICU internal only.")]
+            public static bool TryGetOperand(string value, out Operand result) // ICU4N: Added to eliminate exceptions
+            {
+                return OperandExtensions.TryParse(value, ignoreCase: true, out result);
+            }
+
+#if FEATURE_SPAN
+            /// <internal/>
+            [Obsolete("This API is ICU internal only.")]
+            public static bool TryGetOperand(ReadOnlySpan<char> value, out Operand result) // ICU4N: Added to eliminate exceptions
+            {
+                return OperandExtensions.TryParse(value, ignoreCase: true, out result);
+            }
+#endif
 
             /// <summary>
             /// We're not going to care about NaN.
@@ -1171,16 +1275,9 @@ namespace ICU4N.Text
                     string t = tokens[x++];
                     bool hackForCompatibility = false;
 #pragma warning disable 612, 618
-                    Operand operand;
-                    try
-                    {
-                        operand = FixedDecimal.GetOperand(t);
-#pragma warning restore 612, 618
-                    }
-                    catch (Exception)
-                    {
+                    if (!FixedDecimal.TryGetOperand(t, out Operand operand))
                         throw Unexpected(t, condition);
-                    }
+#pragma warning restore 612, 618
                     if (x < tokens.Length)
                     {
                         t = tokens[x++];

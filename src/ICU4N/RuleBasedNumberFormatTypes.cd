@@ -228,7 +228,7 @@
   <Class Name="ICU4N.Text.PluralRulesFactory" Collapsed="true">
     <Position X="3.75" Y="15.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAACg=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Text\PluralRules.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -271,6 +271,11 @@
           <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
         </TypeIdentifier>
         <Lollipop Position="0.2" />
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.OperandExtensions" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
       </Class>
       <Class Name="ICU4N.Text.PluralRules.BinaryConstraint" Collapsed="true">
         <TypeIdentifier>
