@@ -1716,7 +1716,9 @@ namespace ICU4N.Text
                         {
                             if (!hackForCompatibility && !inRange)
                             {
-                                throw Unexpected(t, condition);
+                                //throw Unexpected(t, condition);
+                                token = t;
+                                return false;
                             }
                             inRange = !inRange;
                             t = NextToken(tokens, x++, condition);
@@ -1744,7 +1746,9 @@ namespace ICU4N.Text
                                     t = NextToken(tokens, x++, condition);
                                     if (!t.Equals(".", StringComparison.Ordinal))
                                     {
-                                        throw Unexpected(t, condition);
+                                        //throw Unexpected(t, condition);
+                                        token = t;
+                                        return false;
                                     }
                                     t = NextToken(tokens, x++, condition);
                                     //high = Long.parseLong(t);
