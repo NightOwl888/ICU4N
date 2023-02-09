@@ -1659,7 +1659,8 @@ namespace ICU4N.Text
                         if ("mod".Equals(t, StringComparison.Ordinal) || "%".Equals(t, StringComparison.Ordinal))
                         {
                             //mod = Integer.parseInt(tokens[x++]);
-                            if (!int.TryParse(tokens[x++], NumberStyles.Integer, CultureInfo.InvariantCulture, out mod))
+                            // ICU4N NOTE: This overload allows non-ASCII digits
+                            if (!Integer.TryParse(tokens[x++], radix: 10, out mod))
                             {
                                 // Invalid int
                                 token = t;
@@ -1727,7 +1728,8 @@ namespace ICU4N.Text
                         while (true)
                         {
                             long low = 0;//  = Long.parseLong(t);
-                            if (!long.TryParse(t, NumberStyles.Integer, CultureInfo.InvariantCulture, out low))
+                            // ICU4N NOTE: This overload allows non-ASCII digits
+                            if (!Long.TryParse(t, radix: 10, out low))
                             {
                                 // Invalid long
                                 token = t;
@@ -1746,7 +1748,8 @@ namespace ICU4N.Text
                                     }
                                     t = NextToken(tokens, x++, condition);
                                     //high = Long.parseLong(t);
-                                    if (!long.TryParse(t, NumberStyles.Integer, CultureInfo.InvariantCulture, out high))
+                                    // ICU4N NOTE: This overload allows non-ASCII digits
+                                    if (!Long.TryParse(t, radix: 10, out high))
                                     {
                                         // Invalid long
                                         token = t;
