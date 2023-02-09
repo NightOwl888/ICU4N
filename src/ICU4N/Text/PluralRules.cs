@@ -1640,7 +1640,7 @@ namespace ICU4N.Text
                     bool integersOnly = true;
                     double lowBound = long.MaxValue;
                     double highBound = long.MinValue;
-                    long[] vals = null;
+                    long[] vals;
 
                     int x = 0;
                     string t = tokens[x++];
@@ -1651,14 +1651,12 @@ namespace ICU4N.Text
                         token = t;
                         return false;
                     }
-                        //throw Unexpected(t, condition);
 #pragma warning restore 612, 618
                     if (x < tokens.Length)
                     {
                         t = tokens[x++];
                         if ("mod".Equals(t, StringComparison.Ordinal) || "%".Equals(t, StringComparison.Ordinal))
                         {
-                            //mod = Integer.parseInt(tokens[x++]);
                             // ICU4N NOTE: This overload allows non-ASCII digits
                             if (!Integer.TryParse(tokens[x++], radix: 10, out mod))
                             {
@@ -1666,15 +1664,24 @@ namespace ICU4N.Text
                                 token = t;
                                 return false;
                             }
-                            t = NextToken(tokens, x++, condition);
+                            if (!TryGetNextToken(tokens, ref x, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
                         }
                         if ("not".Equals(t, StringComparison.Ordinal))
                         {
                             inRange = !inRange;
-                            t = NextToken(tokens, x++, condition);
+                            if (!TryGetNextToken(tokens, ref x, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
                             if ("=".Equals(t, StringComparison.Ordinal))
                             {
-                                //throw Unexpected(t, condition);
                                 token = t;
                                 return false;
                             }
@@ -1682,10 +1689,14 @@ namespace ICU4N.Text
                         else if ("!".Equals(t))
                         {
                             inRange = !inRange;
-                            t = NextToken(tokens, x++, condition);
+                            if (!TryGetNextToken(tokens, ref x, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
                             if (!"=".Equals(t, StringComparison.Ordinal))
                             {
-                                //throw Unexpected(t, condition);
                                 token = t;
                                 return false;
                             }
@@ -1695,20 +1706,28 @@ namespace ICU4N.Text
                             hackForCompatibility = "is".Equals(t);
                             if (hackForCompatibility && !inRange)
                             {
-                                //throw Unexpected(t, condition);
                                 token = t;
                                 return false;
                             }
-                            t = NextToken(tokens, x++, condition);
+                            if (!TryGetNextToken(tokens, ref x, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
                         }
                         else if ("within".Equals(t, StringComparison.Ordinal))
                         {
                             integersOnly = false;
-                            t = NextToken(tokens, x++, condition);
+                            if (!TryGetNextToken(tokens, ref x, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
                         }
                         else
                         {
-                            //throw Unexpected(t, condition);
                             token = t;
                             return false;
                         }
@@ -1716,12 +1735,16 @@ namespace ICU4N.Text
                         {
                             if (!hackForCompatibility && !inRange)
                             {
-                                //throw Unexpected(t, condition);
                                 token = t;
                                 return false;
                             }
                             inRange = !inRange;
-                            t = NextToken(tokens, x++, condition);
+                            if (!TryGetNextToken(tokens, ref x, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
                         }
 
                         List<long> valueList = new List<long>();
@@ -1729,9 +1752,8 @@ namespace ICU4N.Text
                         // the token t is always one item ahead
                         while (true)
                         {
-                            long low = 0;//  = Long.parseLong(t);
                             // ICU4N NOTE: This overload allows non-ASCII digits
-                            if (!Long.TryParse(t, radix: 10, out low))
+                            if (!Long.TryParse(t, radix: 10, out long low))
                             {
                                 // Invalid long
                                 token = t;
@@ -1740,18 +1762,31 @@ namespace ICU4N.Text
                             long high = low;
                             if (x < tokens.Length)
                             {
-                                t = NextToken(tokens, x++, condition);
+                                if (!TryGetNextToken(tokens, ref x, out t))
+                                {
+                                    condition = MakeConditionString(condition);
+                                    token = t;
+                                    return false;
+                                }
                                 if (t.Equals(".", StringComparison.Ordinal))
                                 {
-                                    t = NextToken(tokens, x++, condition);
-                                    if (!t.Equals(".", StringComparison.Ordinal))
+                                    if (!TryGetNextToken(tokens, ref x, out t))
                                     {
-                                        //throw Unexpected(t, condition);
+                                        condition = MakeConditionString(condition);
                                         token = t;
                                         return false;
                                     }
-                                    t = NextToken(tokens, x++, condition);
-                                    //high = Long.parseLong(t);
+                                    if (!t.Equals(".", StringComparison.Ordinal))
+                                    {
+                                        token = t;
+                                        return false;
+                                    }
+                                    if (!TryGetNextToken(tokens, ref x, out t))
+                                    {
+                                        condition = MakeConditionString(condition);
+                                        token = t;
+                                        return false;
+                                    }
                                     // ICU4N NOTE: This overload allows non-ASCII digits
                                     if (!Long.TryParse(t, radix: 10, out high))
                                     {
@@ -1761,20 +1796,25 @@ namespace ICU4N.Text
                                     }
                                     if (x < tokens.Length)
                                     {
-                                        t = NextToken(tokens, x++, condition);
+                                        if (!TryGetNextToken(tokens, ref x, out t))
+                                        {
+                                            condition = MakeConditionString(condition);
+                                            token = t;
+                                            return false;
+                                        }
                                         if (!t.Equals(",", StringComparison.Ordinal))
-                                        { // adjacent number: 1 2
-                                          // no separator, fail
-                                          //throw Unexpected(t, condition);
+                                        {
+                                            // adjacent number: 1 2
+                                            // no separator, fail
                                             token = t;
                                             return false;
                                         }
                                     }
                                 }
                                 else if (!t.Equals(",", StringComparison.Ordinal))
-                                { // adjacent number: 1 2
-                                  // no separator, fail
-                                  //throw Unexpected(t, condition);
+                                {
+                                    // adjacent number: 1 2
+                                    // no separator, fail
                                     token = t;
                                     return false;
                                 }
@@ -1782,13 +1822,11 @@ namespace ICU4N.Text
                             // at this point, either we are out of tokens, or t is ','
                             if (low > high)
                             {
-                                //throw Unexpected(low + "~" + high, condition);
                                 token = low + "~" + high;
                                 return false;
                             }
                             else if (mod != 0 && high >= mod)
                             {
-                                //throw Unexpected(high + ">mod=" + mod, condition);
                                 token = high + ">mod=" + mod;
                                 return false;
                             }
@@ -1800,12 +1838,16 @@ namespace ICU4N.Text
                             {
                                 break;
                             }
-                            t = NextToken(tokens, x++, condition);
+                            if (!TryGetNextToken(tokens, ref x, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
                         }
 
                         if (t.Equals(",", StringComparison.Ordinal))
                         {
-                            //throw Unexpected(t, condition);
                             token = t;
                             return false;
                         }
@@ -1826,7 +1868,6 @@ namespace ICU4N.Text
                         // Hack to exclude "is not 1,2"
                         if (lowBound != highBound && hackForCompatibility && !inRange)
                         {
-                            //throw Unexpected("is not <range>", condition);
                             token = t;
                             return false;
                         }
@@ -1875,6 +1916,10 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
+        /// <summary>
+        /// Retrieves the next token in <paramref name="enumerator"/>. If there are no tokens remaining, returns <c>false</c>.
+        /// </summary>
+        // ICU4N specific - converted NextToken method to TryGetNextToken for .NET
         private static bool TryGetNextToken(ref SimpleTokenizerEnumerator enumerator, out ReadOnlySpan<char> result)
         {
             if (enumerator.MoveNext())
@@ -1886,22 +1931,37 @@ namespace ICU4N.Text
             return false;
         }
 
+        /// <summary>
+        /// Builds a string for use in exceptions.
+        /// </summary>
         private static ReadOnlySpan<char> MakeConditionString(ReadOnlySpan<char> condition)
         {
             return string.Concat("missing token at end of '", condition, "'");
         }
 #endif
-        // ICU4N TODO: Change this to eliminate the exception, as above
         /// <summary>
-        /// Returns the token at x if available, else throws a <see cref="FormatException"/>.
+        /// Retrieves the token at <paramref name="x"/> if it doesn't go past the end of the <paramref name="tokens"/> array.
+        /// If <paramref name="x"/> is outside of the bounds of , returns <c>false</c>. Incrments the value of <paramref name="x"/>
+        /// after the token is retrieved.
         /// </summary>
-        private static string NextToken(string[] tokens, int x, string context)
+        // ICU4N specific - converted NextToken method to TryGetNextToken for .NET
+        private static bool TryGetNextToken(string[] tokens, ref int x, out string result)
         {
-            if (x < tokens.Length)
+            if (x >= 0 && x < tokens.Length)
             {
-                return tokens[x];
+                result = tokens[x++];
+                return true;
             }
-            throw new FormatException("missing token at end of '" + context + "'"/*, -1*/);
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Builds a string for use in exceptions.
+        /// </summary>
+        private static string MakeConditionString(string condition)
+        {
+            return string.Concat("missing token at end of '", condition, "'");
         }
 
         /// <summary>
