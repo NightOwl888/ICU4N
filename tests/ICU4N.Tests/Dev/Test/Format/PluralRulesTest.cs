@@ -775,6 +775,7 @@ namespace ICU4N.Dev.Test.Format
                 "a: 2,4,6", // but not this...
                 "a: n mod 3 is 0 and n within 1..2", "a: null", "a: n mod 3 is 0 and n within 0..6", "a: 0,3,6",
                 "a: n mod 3 is 0 and n in 3..12", "a: 3,6,9,12", "a: n in 2,4..6 and n is not 5", "a: 2,4,6", };
+
             for (int i = 0; i < data.Length; i += 2)
             {
                 String ruleDescription = data[i];
@@ -1312,7 +1313,7 @@ namespace ICU4N.Dev.Test.Format
                 " bazValue % rule2Name= rule2Value";
 
             string[] expectedTokens = new string[] { "fooName", "fooValue", "barName", "barValue", "bazName", "bazValue", "rule2Name", "rule2Value" };
-            string[] expectedDelimiters = new string[] { "=", ",", "=", "!", "=", "%", "=", "" };
+            string[] expectedDelimiters = new string[] { "=", ",", "=", "!", "=", "%", "=" };
             // For comparison, we use the SimpleTokenizer.
             // It works a bit differently - it includes all of the delimiters inline, but
             // our new approach puts the delimiters in a separate property.
@@ -1326,26 +1327,54 @@ namespace ICU4N.Dev.Test.Format
                 assertEquals("mismatched token", actualToken, expectedToken);
 
                 actualIndex++;
-                string actualDelimiter = actualIndex < actual1.Length ? actual1[actualIndex] : "";
-                string expectedDelimiter = expectedDelimiters[i];
-                assertEquals("mismatched delimiter", actualDelimiter, expectedDelimiter);
+                if (actualIndex < actual1.Length)
+                {
+                    string actualDelimiter = actual1[actualIndex];
+                    string expectedDelimiter = expectedDelimiters[i];
+                    assertEquals("mismatched delimiter", actualDelimiter, expectedDelimiter);
+                }
             }
 
 #if FEATURE_SPAN
-            int index = 0;
-            foreach (var token in new PluralRules.SimpleTokenizerEnumerator(text))
+            var iter = new PluralRules.SimpleTokenizerEnumerator(text);
+            for (int i = 0; i < expectedTokens.Length; i++)
             {
-                string actualToken = new string(token.Text);
-                string expectedToken = expectedTokens[index];
+                assertTrue("missing token", iter.MoveNext());
+
+                string actualToken = new string(iter.Current);
+                string expectedToken = expectedTokens[i];
                 assertEquals("mismatched token", actualToken, expectedToken);
 
-                string actualDelimiter = new string(token.Delimiter);
-                string expectedDelimiter = expectedDelimiters[index];
-                assertEquals("mismatched delimiter", actualDelimiter, expectedDelimiter);
-                index++;
+                if (iter.MoveNext())
+                {
+                    string actualDelimiter = new string(iter.Current);
+                    string expectedDelimiter = expectedDelimiters[i];
+                    assertEquals("mismatched delimiter", actualDelimiter, expectedDelimiter);
+                }
             }
 #endif
         }
+
+#if FEATURE_SPAN
+        [Test]
+        public void TestSimpleTokenizerEnumerator2()
+        {
+            string text = "i % 10 = 2..4";
+            string[] expectedTokens = new string[] { "i", "%", "10", "=", "2", ".", ".", "4" };
+            var iter = new PluralRules.SimpleTokenizerEnumerator(text);
+
+            for (int i = 0; i < expectedTokens.Length; i++)
+            {
+                assertTrue("mising token on HasNext", iter.HasNext);
+                assertTrue("mising token on MoveNext()", iter.MoveNext());
+
+                string actualToken = new string(iter.Current);
+                string expectedToken = expectedTokens[i];
+
+                assertEquals("mismatched token", actualToken, expectedToken);
+            }
+        }
+#endif
     }
 
     internal enum StandardPluralCategories

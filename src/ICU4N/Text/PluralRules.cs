@@ -15,6 +15,7 @@ using JCG = J2N.Collections.Generic;
 using Number = J2N.Numerics.Number;
 using Double = J2N.Numerics.Double;
 using Integer = J2N.Numerics.Int32;
+using Long = J2N.Numerics.Int64;
 
 namespace ICU4N.Text
 {
@@ -1249,11 +1250,18 @@ namespace ICU4N.Text
                 for (int i = 0; i < source.Length; ++i)
                 {
                     char ch = span[i];
-                    if (BreakAndKeep.Contains(ch))
+                    bool ignore = BreakAndIgnore.Contains(ch);
+                    if (ignore || BreakAndKeep.Contains(ch))
                     {
                         if (last >= 0)
                         {
-                            Current = new SplitEntry(Trim(span.Slice(last, i - last)), span.Slice(i, 1));
+                            Current = Trim(span.Slice(last, i - last));
+                            source = span.Slice(i);
+                            return true;
+                        }
+                        if (!ignore)
+                        {
+                            Current = span.Slice(i, 1);
                             source = span.Slice(i + 1);
                             return true;
                         }
@@ -1266,7 +1274,7 @@ namespace ICU4N.Text
                 if (last >= 0)
                 {
                     source = ReadOnlySpan<char>.Empty; // The remaining string is an empty string
-                    Current = new SplitEntry(Trim(span.Slice(last)), ReadOnlySpan<char>.Empty);
+                    Current = Trim(span.Slice(last));
                 }
                 return true;
             }
@@ -1298,10 +1306,292 @@ namespace ICU4N.Text
                 return text.Slice(start, end - start);
             }
 
-            public SplitEntry Current { get; private set; }
+            public ReadOnlySpan<char> Current { get; private set; }
+
+            public bool HasNext => source.Length > 0;
         }
 
-#endif
+        /*
+         * syntax:
+         * condition :       or_condition
+         *                   and_condition
+         * or_condition :    and_condition 'or' condition
+         * and_condition :   relation
+         *                   relation 'and' relation
+         * relation :        in_relation
+         *                   within_relation
+         * in_relation :     not? expr not? in not? range
+         * within_relation : not? expr not? 'within' not? range
+         * not :             'not'
+         *                   '!'
+         * expr :            'n'
+         *                   'n' mod value
+         * mod :             'mod'
+         *                   '%'
+         * in :              'in'
+         *                   'is'
+         *                   '='
+         *                   '≠'
+         * value :           digit+
+         * digit :           0|1|2|3|4|5|6|7|8|9
+         * range :           value'..'value
+         */
+        private static bool TryParseConstraint(ReadOnlySpan<char> description, out IConstraint result, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition)
+        {
+            result = default;
+            token = null;
+            condition = null;
+            foreach (var or_together_token in description.AsTokens("or", SplitTokenizerEnumerator.PatternWhiteSpace))
+            {
+                IConstraint andConstraint = null;
+                foreach (var and_together_token in or_together_token.Text.AsTokens("and", SplitTokenizerEnumerator.PatternWhiteSpace))
+                {
+                    IConstraint newConstraint = NO_CONSTRAINT;
+
+                    condition = and_together_token; // ICU4N: Already trimmed
+                    var enumerator = new SimpleTokenizerEnumerator(condition);
+
+                    int mod = 0;
+                    bool inRange = true;
+                    bool integersOnly = true;
+                    double lowBound = long.MaxValue;
+                    double highBound = long.MinValue;
+                    long[] vals;
+                    bool hackForCompatibility = false;
+#pragma warning disable 612, 618
+                    // ICU4N: Added check for empty string
+                    if (!TryGetNextToken(ref enumerator, out ReadOnlySpan<char> t) || !FixedDecimal.TryGetOperand(t, out Operand operand))
+                    {
+                        token = t;
+                        return false;
+                    }
+#pragma warning restore 612, 618
+                    if (TryGetNextToken(ref enumerator, out t))
+                    {
+                        if ((t.Equals("mod", StringComparison.Ordinal) || t.Equals("%", StringComparison.Ordinal)) && TryGetNextToken(ref enumerator, out t))
+                        {
+                            // ICU4N NOTE: This overload allows non-ASCII digits
+                            if (!Integer.TryParse(t, startIndex: 0, length: t.Length, radix: 10, out mod))
+                            {
+                                // Invalid int
+                                token = t;
+                                return false;
+                            }
+                            if (!TryGetNextToken(ref enumerator, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
+                        }
+                        if (t.Equals("not", StringComparison.Ordinal))
+                        {
+                            inRange = !inRange;
+                            if (!TryGetNextToken(ref enumerator, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
+                            if (t.Equals("=", StringComparison.Ordinal))
+                            {
+                                token = t;
+                                return false;
+                            }
+                        }
+                        else if (t.Equals("!", StringComparison.Ordinal))
+                        {
+                            inRange = !inRange;
+                            if (!TryGetNextToken(ref enumerator, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
+                            if (!t.Equals("=", StringComparison.Ordinal)) // ICU4N NOTE: This is the inverse of "not" above
+                            {
+                                token = t;
+                                return false;
+                            }
+                        }
+                        if (t.Equals("is", StringComparison.Ordinal) || t.Equals("in", StringComparison.Ordinal) || t.Equals("=", StringComparison.Ordinal))
+                        {
+                            hackForCompatibility = t.Equals("is", StringComparison.Ordinal);
+                            if (hackForCompatibility && !inRange)
+                            {
+                                token = t;
+                                return false;
+                            }
+                            if (!TryGetNextToken(ref enumerator, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
+                        }
+                        else if (t.Equals("within", StringComparison.Ordinal))
+                        {
+                            integersOnly = false;
+                            if (!TryGetNextToken(ref enumerator, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            token = t;
+                            return false;
+                        }
+                        if (t.Equals("not", StringComparison.Ordinal))
+                        {
+                            if (!hackForCompatibility && !inRange)
+                            {
+                                token = t;
+                                return false;
+                            }
+                            inRange = !inRange;
+                            if (!TryGetNextToken(ref enumerator, out t))
+                            {
+                                condition = MakeConditionString(condition);
+                                token = t;
+                                return false;
+                            }
+                        }
+
+                        List<long> valueList = new List<long>();
+
+                        // the token t is always one item ahead
+                        while (true)
+                        {
+                            // ICU4N NOTE: This overload allows non-ASCII digits
+                            if (!Long.TryParse(t, startIndex: 0, length: t.Length, radix: 10, out long low))
+                            {
+                                // Invalid long
+                                token = t;
+                                return false;
+                            }
+                            long high = low;
+                            if (enumerator.HasNext) // ICU4N: Don't advance the enumerator if we are at the end so we can do after work
+                            {
+                                TryGetNextToken(ref enumerator, out t);
+                                if (t.Equals(".", StringComparison.Ordinal))
+                                {
+                                    if (!TryGetNextToken(ref enumerator, out t))
+                                    {
+                                        condition = MakeConditionString(condition);
+                                        token = t;
+                                        return false;
+                                    }
+                                    if (!t.Equals(".", StringComparison.Ordinal))
+                                    {
+                                        token = t;
+                                        return false;
+                                    }
+                                    if (!TryGetNextToken(ref enumerator, out t))
+                                    {
+                                        condition = MakeConditionString(condition);
+                                        token = t;
+                                        return false;
+                                    }
+                                    // ICU4N NOTE: This overload allows non-ASCII digits
+                                    if (!Long.TryParse(t, startIndex: 0, length: t.Length, radix: 10, out high))
+                                    {
+                                        // Invalid long
+                                        token = t;
+                                        return false;
+                                    }
+                                    if (enumerator.HasNext)
+                                    {
+                                        TryGetNextToken(ref enumerator, out t);
+                                        if (!t.Equals(",", StringComparison.Ordinal))
+                                        {
+                                            // adjacent number: 1 2
+                                            // no separator, fail
+                                            token = t;
+                                            return false;
+                                        }
+                                    }
+                                }
+                                else if (!t.Equals(",", StringComparison.Ordinal))
+                                {
+                                    // adjacent number: 1 2
+                                    // no separator, fail
+                                    token = t;
+                                    return false;
+                                }
+                            }
+                            // at this point, either we are out of tokens, or t is ','
+                            if (low > high)
+                            {
+                                token = low + "~" + high;
+                                return false;
+                            }
+                            else if (mod != 0 && high >= mod)
+                            {
+                                token = high + ">mod=" + mod;
+                                return false;
+                            }
+                            valueList.Add(low);
+                            valueList.Add(high);
+                            lowBound = Math.Min(lowBound, low);
+                            highBound = Math.Max(highBound, high);
+                            if (!enumerator.HasNext) // ICU4N: Don't advance the enumerator if we are at the end so we can do after work
+                            {
+                                break;
+                            }
+                            TryGetNextToken(ref enumerator, out t);
+                        }
+
+                        if (t.Equals(",", StringComparison.Ordinal))
+                        {
+                            token = t;
+                            return false;
+                        }
+
+                        if (valueList.Count == 2)
+                        {
+                            vals = null;
+                        }
+                        else
+                        {
+                            vals = valueList.ToArray();
+                        }
+
+                        // Hack to exclude "is not 1,2"
+                        if (lowBound != highBound && hackForCompatibility && !inRange)
+                        {
+                            token = t;
+                            return false;
+                        }
+
+                        newConstraint = new RangeConstraint(mod, inRange, operand, integersOnly, lowBound, highBound, vals);
+                    }
+
+                    if (andConstraint is null)
+                    {
+                        andConstraint = newConstraint;
+                    }
+                    else
+                    {
+                        andConstraint = new AndConstraint(andConstraint, newConstraint);
+                    }
+                }
+
+                if (result is null)
+                {
+                    result = andConstraint;
+                }
+                else
+                {
+                    result = new OrConstraint(result, andConstraint);
+                }
+            }
+            return true;
+        }
+
+#else
 
         /*
          * syntax:
@@ -1558,6 +1848,7 @@ namespace ICU4N.Text
             }
             return true;
         }
+#endif
 
         private static readonly Regex AT_SEPARATED = new Regex("\\s*@\\s*", RegexOptions.Compiled); // ICU4N: \E and \Q are not supported in .NET
         private static readonly Regex OR_SEPARATED = new Regex("\\s*or\\s*", RegexOptions.Compiled);
@@ -1576,6 +1867,24 @@ namespace ICU4N.Text
                     "' in '" + condition + "'"/*, -1*/);
         }
 
+#if FEATURE_SPAN
+        private static bool TryGetNextToken(ref SimpleTokenizerEnumerator enumerator, out ReadOnlySpan<char> result)
+        {
+            if (enumerator.MoveNext())
+            {
+                result = enumerator.Current;
+                return true;
+            }
+            result = ReadOnlySpan<char>.Empty;
+            return false;
+        }
+
+        private static ReadOnlySpan<char> MakeConditionString(ReadOnlySpan<char> condition)
+        {
+            return string.Concat("missing token at end of '", condition, "'");
+        }
+#endif
+        // ICU4N TODO: Change this to eliminate the exception, as above
         /// <summary>
         /// Returns the token at x if available, else throws a <see cref="FormatException"/>.
         /// </summary>
@@ -1664,8 +1973,14 @@ namespace ICU4N.Text
             else
             {
                 //constraint = ParseConstraint(constraintOrSamples[0]);
+
+#if FEATURE_SPAN
+                if (!TryParseConstraint(constraintOrSamples[0], out constraint, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition))
+                    throw Unexpected(new string(token), new string(condition));
+#else
                 if (!TryParseConstraint(constraintOrSamples[0], out constraint, out string token, out string condition))
                     throw Unexpected(token, condition);
+#endif
             }
             return new Rule(keyword, constraint, integerSamples, decimalSamples);
         }

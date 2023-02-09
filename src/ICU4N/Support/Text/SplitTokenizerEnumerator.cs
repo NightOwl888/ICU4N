@@ -256,6 +256,7 @@ namespace ICU4N.Text
         private ReadOnlySpan<char> multiCharDelimiter;
         private char delimiter;
         private bool isSingleCharDelimiter;
+        private int delimiterLength;
         private ReadOnlySpan<char> trimChars;
 #pragma warning restore IDE0044, S2933 // Add readonly modifier
 
@@ -273,6 +274,7 @@ namespace ICU4N.Text
             this.multiCharDelimiter = delimiter;
             this.delimiter = default;
             this.isSingleCharDelimiter = false;
+            this.delimiterLength = delimiter.Length;
             this.trimChars = trimChars;
             Current = default;
         }
@@ -291,6 +293,7 @@ namespace ICU4N.Text
             this.multiCharDelimiter = default;
             this.delimiter = delimiter;
             this.isSingleCharDelimiter = true;
+            this.delimiterLength = 1;
             this.trimChars = trimChars;
             Current = default;
         }
@@ -313,8 +316,8 @@ namespace ICU4N.Text
             }
 
             // We do the split and then trim off the unwanted characters before returning the entry.
-            Current = new SplitEntry(Trim(span.Slice(0, index)), span.Slice(index, 1));
-            text = span.Slice(index + 1); // Skip the matched char.
+            Current = new SplitEntry(Trim(span.Slice(0, index)), span.Slice(index, delimiterLength));
+            text = span.Slice(index + delimiterLength); // Skip the matched chars.
             return true;
         }
 
