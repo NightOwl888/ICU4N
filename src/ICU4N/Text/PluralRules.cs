@@ -350,6 +350,22 @@ namespace ICU4N.Text
         /// </summary>
         private static readonly Rule DEFAULT_RULE = new Rule("other", NO_CONSTRAINT, null, null);
 
+#if FEATURE_SPAN
+        /// <summary>
+        /// Parses a plural rules <paramref name="description"/> and returns a <see cref="PluralRules"/>.
+        /// </summary>
+        /// <param name="description">The rule description.</param>
+        /// <exception cref="FormatException">If the <paramref name="description"/> cannot be parsed.
+        /// The exception index is typically not set, it will be -1.</exception>
+        /// <stable>ICU 3.8</stable>
+        public static PluralRules ParseDescription(ReadOnlySpan<char> description)
+        {
+            ParseRuleStatus status = TryParseDescription(description, out PluralRules result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
+            if (status != ParseRuleStatus.OK)
+                ThrowParseException(status, new string(source), new string(context));
+            return result;
+        }
+#else
         /// <summary>
         /// Parses a plural rules <paramref name="description"/> and returns a <see cref="PluralRules"/>.
         /// </summary>
@@ -368,7 +384,28 @@ namespace ICU4N.Text
                 ThrowParseException(status, source, context);
             return result;
         }
+#endif
 
+#if FEATURE_SPAN
+        /// <summary>
+        /// Parses a plural rules <paramref name="description"/> to its <see cref="PluralRules"/> equivalent.
+        /// A return value indicates whether the conversion succeeded.
+        /// </summary>
+        /// <param name="description">The rule description.</param>
+        /// <param name="result">When this method returns, contains the <see cref="PluralRules"/> equivalent
+        /// of the value contained in <paramref name="description"/>, if the conversion succeeded,
+        /// or <c>null</c> if the conversion failed. The conversion fails if the <paramref name="description"/>
+        /// parameter is <see cref="string.Empty"/> or is not of the correct format. This
+        /// parameter is passed uninitialized; any value originally supplied in result will be overwritten.</param>
+        /// <exception cref="FormatException">If the <paramref name="description"/> cannot be parsed.
+        /// The exception index is typically not set, it will be -1.</exception>
+        /// <stable>ICU 3.8</stable>
+        public static bool TryParseDescription(ReadOnlySpan<char> description, out PluralRules result)
+        {
+            ParseRuleStatus status = TryParseDescription(description, out result, out ReadOnlySpan<char> _, out ReadOnlySpan<char> _);
+            return status == ParseRuleStatus.OK;
+        }
+#else
         /// <summary>
         /// Parses a plural rules <paramref name="description"/> to its <see cref="PluralRules"/> equivalent.
         /// A return value indicates whether the conversion succeeded.
@@ -391,12 +428,14 @@ namespace ICU4N.Text
             ParseRuleStatus status = TryParseDescription(description, out result, out string _, out string _);
             return status == ParseRuleStatus.OK;
         }
+#endif
 
-        internal static ParseRuleStatus TryParseDescription(string description, out PluralRules result, out string source, out string context)
+#if FEATURE_SPAN
+        internal static ParseRuleStatus TryParseDescription(ReadOnlySpan<char> description, out PluralRules result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context)
         {
             result = default;
             source = default;
-            context = default;
+            context = description;
             description = description.Trim();
             if (description.Length == 0)
             {
@@ -410,6 +449,40 @@ namespace ICU4N.Text
             result = new PluralRules(ruleList);
             return ParseRuleStatus.OK;
         }
+#else
+        internal static ParseRuleStatus TryParseDescription(string description, out PluralRules result, out string source, out string context)
+        {
+            result = default;
+            source = default;
+            context = description;
+            description = description.Trim();
+            if (description.Length == 0)
+            {
+                result = Default;
+                return ParseRuleStatus.OK;
+            }
+            ParseRuleStatus status = TryParseRuleChain(description, out RuleList ruleList, out source, out context);
+            if (status != ParseRuleStatus.OK)
+                return status;
+
+            result = new PluralRules(ruleList);
+            return ParseRuleStatus.OK;
+        }
+#endif
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Creates a <see cref="PluralRules"/> from a <paramref name="description"/> if it is parsable,
+        /// otherwise returns <c>null</c>.
+        /// </summary>
+        /// <param name="description">The rule description.</param>
+        /// <returns>The <see cref="PluralRules"/>.</returns>
+        /// <stable>ICU 3.8</stable>
+        public static PluralRules CreateRules(ReadOnlySpan<char> description)
+        {
+            return TryParseDescription(description, out PluralRules result) ? result : null;
+        }
+#else
 
         /// <summary>
         /// Creates a <see cref="PluralRules"/> from a <paramref name="description"/> if it is parsable,
@@ -425,6 +498,7 @@ namespace ICU4N.Text
 
             return TryParseDescription(description, out PluralRules result) ? result : null;
         }
+#endif
 
         /// <summary>
         /// The default rules that accept any number and return
@@ -1991,7 +2065,6 @@ namespace ICU4N.Text
             }
             return ParseRuleStatus.OK;
         }
-#endif
 
         private static readonly Regex AT_SEPARATED = new Regex("\\s*@\\s*", RegexOptions.Compiled); // ICU4N: \E and \Q are not supported in .NET
         private static readonly Regex OR_SEPARATED = new Regex("\\s*or\\s*", RegexOptions.Compiled);
@@ -2000,6 +2073,7 @@ namespace ICU4N.Text
         private static readonly Regex DOTDOT_SEPARATED = new Regex("\\s*\\.\\.\\s*", RegexOptions.Compiled); // ICU4N: \E and \Q are not supported in .NET
         private static readonly Regex TILDE_SEPARATED = new Regex("\\s*~\\s*", RegexOptions.Compiled);
         private static readonly Regex SEMI_SEPARATED = new Regex("\\s*;\\s*", RegexOptions.Compiled);
+#endif
 
         // ICU4N: Removed Unexpected method and replaced with ThrowParseException()
 
@@ -2242,6 +2316,41 @@ namespace ICU4N.Text
         }
 #endif
 
+#if FEATURE_SPAN
+        /// <summary>
+        /// Syntax:
+        /// rules : rule
+        ///         rule ';' rules
+        /// </summary>
+        private static ParseRuleStatus TryParseRuleChain(ReadOnlySpan<char> description, out RuleList result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context)
+        {
+            source = default;
+            context = description;
+            result = new RuleList();
+            // remove trailing ;
+            if (description.EndsWith(";", StringComparison.Ordinal))
+            {
+                description = description.Slice(0, description.Length - 1); // ICU4N: Checked 2nd arg
+            }
+            ParseRuleStatus status;
+
+            foreach (var ruleToken in description.AsTokens(';', SplitTokenizerEnumerator.PatternWhiteSpace))
+            {
+                // ICU4N: ruleToken is already trimmed
+                if ((status = TryParseRule(ruleToken.Text, out Rule rule, out ReadOnlySpan<char> src, out ReadOnlySpan<char> ctx)) != ParseRuleStatus.OK)
+                {
+                    source = new string(src);
+                    context = new string(ctx);
+                    return status;
+                }
+                result.HasExplicitBoundingInfo |= rule.IntegerSamples != null || rule.DecimalSamples != null;
+                result.AddRule(rule);
+            }
+            result = result.Finish();
+            return ParseRuleStatus.OK;
+        }
+#else
+
         /// <summary>
         /// Syntax:
         /// rules : rule
@@ -2250,7 +2359,7 @@ namespace ICU4N.Text
         private static ParseRuleStatus TryParseRuleChain(string description, out RuleList result, out string source, out string context)
         {
             source = default;
-            context = default;
+            context = description;
             result = new RuleList();
             // remove trailing ;
             if (description.EndsWith(";", StringComparison.Ordinal))
@@ -2261,23 +2370,15 @@ namespace ICU4N.Text
             string[] rules = SEMI_SEPARATED.Split(description);
             for (int i = 0; i < rules.Length; ++i)
             {
-#if FEATURE_SPAN
-                if ((status = TryParseRule(rules[i].Trim(), out Rule rule, out ReadOnlySpan<char> src, out ReadOnlySpan<char> ctx)) != ParseRuleStatus.OK)
-                {
-                    source = new string(src);
-                    context = new string(ctx);
-                    return status;
-                }
-#else
                 if ((status = TryParseRule(rules[i].Trim(), out Rule rule, out source, out context)) != ParseRuleStatus.OK)
                     return status;
-#endif
                 result.HasExplicitBoundingInfo |= rule.IntegerSamples != null || rule.DecimalSamples != null;
                 result.AddRule(rule);
             }
             result = result.Finish();
             return ParseRuleStatus.OK;
         }
+#endif
 
         /// <summary>
         /// A status that is used to determine whether a parse result succeeded or failed in a specific way.

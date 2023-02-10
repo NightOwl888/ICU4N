@@ -124,6 +124,14 @@ namespace ICU4N.Dev.Test.Format
                 Type actualException = null;
                 try
                 {
+#if FEATURE_SPAN
+                    if (rules == null)
+                    {
+                        // Special case: when using ReadOnlySpan<char> .NET implicitly converts null to empty, which is a valid
+                        // case. So, we don't get an exception on these platforms as a result.
+                        continue;
+                    }
+#endif
                     PluralRules.ParseDescription(rules);
                 }
                 catch (Exception e)
