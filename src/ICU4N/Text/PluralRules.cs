@@ -16,6 +16,10 @@ using Number = J2N.Numerics.Number;
 using Double = J2N.Numerics.Double;
 using Integer = J2N.Numerics.Int32;
 using Long = J2N.Numerics.Int64;
+using J2N.Globalization;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using ICU4N.Util;
 
 namespace ICU4N.Text
 {
@@ -349,31 +353,74 @@ namespace ICU4N.Text
         /// <param name="description">The rule description.</param>
         /// <exception cref="FormatException">If the <paramref name="description"/> cannot be parsed.
         /// The exception index is typically not set, it will be -1.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="description"/> is <c>null</c>.</exception>
         /// <stable>ICU 3.8</stable>
         public static PluralRules ParseDescription(string description)
         {
+            if (description is null)
+                throw new ArgumentNullException(nameof(description));
 
+            ParseRuleStatus status = TryParseDescription(description, out PluralRules result, out string source, out string context);
+            if (status != ParseRuleStatus.OK)
+                ThrowParseException(status, source, context);
+            return result;
+        }
+
+        /// <summary>
+        /// Parses a plural rules <paramref name="description"/> to its <see cref="PluralRules"/> equivalent.
+        /// A return value indicates whether the conversion succeeded.
+        /// </summary>
+        /// <param name="description">The rule description.</param>
+        /// <param name="result">When this method returns, contains the <see cref="PluralRules"/> equivalent
+        /// of the value contained in <paramref name="description"/>, if the conversion succeeded,
+        /// or <c>null</c> if the conversion failed. The conversion fails if the <paramref name="description"/>
+        /// parameter is <c>null</c> or <see cref="string.Empty"/> or is not of the correct format. This
+        /// parameter is passed uninitialized; any value originally supplied in result will be overwritten.</param>
+        /// <exception cref="FormatException">If the <paramref name="description"/> cannot be parsed.
+        /// The exception index is typically not set, it will be -1.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="description"/> is <c>null</c>.</exception>
+        /// <stable>ICU 3.8</stable>
+        public static bool TryParseDescription(string description, out PluralRules result)
+        {
+            if (description is null)
+                throw new ArgumentNullException(nameof(description));
+
+            ParseRuleStatus status = TryParseDescription(description, out result, out string _, out string _);
+            return status == ParseRuleStatus.OK;
+        }
+
+        internal static ParseRuleStatus TryParseDescription(string description, out PluralRules result, out string source, out string context)
+        {
+            result = default;
+            source = default;
+            context = default;
             description = description.Trim();
-            return description.Length == 0 ? Default : new PluralRules(ParseRuleChain(description));
+            if (description.Length == 0)
+            {
+                result = Default;
+                return ParseRuleStatus.OK;
+            }
+            ParseRuleStatus status = TryParseRuleChain(description, out RuleList ruleList, out source, out context);
+            if (status != ParseRuleStatus.OK)
+                return status;
+
+            result = new PluralRules(ruleList);
+            return ParseRuleStatus.OK;
         }
 
         /// <summary>
         /// Creates a <see cref="PluralRules"/> from a <paramref name="description"/> if it is parsable,
-        /// otherwise returns null.
+        /// otherwise returns <c>null</c>.
         /// </summary>
         /// <param name="description">The rule description.</param>
         /// <returns>The <see cref="PluralRules"/>.</returns>
         /// <stable>ICU 3.8</stable>
         public static PluralRules CreateRules(string description)
         {
-            try
-            {
-                return ParseDescription(description); // ICU4N TODO: TryParseDescription
-            }
-            catch (Exception)
-            {
+            if (description is null) // ICU4N TODO: Need to work out if this is sensible or if we should use a TryCreateRules method instead. TryParseDescription does exactly that but has a less desirable name.
                 return null;
-            }
+
+            return TryParseDescription(description, out PluralRules result) ? result : null;
         }
 
         /// <summary>
@@ -771,9 +818,17 @@ namespace ICU4N.Text
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public FixedDecimal(string n)
-                : this(Double.Parse(n, CultureInfo.InvariantCulture), GetVisibleFractionCount(n)) // Ugly, but for samples we don't care.
+            // ICU4N: Replaced constructor to make parsing safe in .NET
+            public static bool TryParse(string value, out FixedDecimal result) // Ugly, but for samples we don't care.
             {
+                if (!Double.TryParse(value, NumberStyle.Float, CultureInfo.InvariantCulture, out double n))
+                {
+                    result = default;
+                    return false;
+                }
+                int v = GetVisibleFractionCount(value);
+                result = new FixedDecimal(n, v);
+                return true;
             }
 
             private static int GetVisibleFractionCount(string value)
@@ -789,6 +844,37 @@ namespace ICU4N.Text
                     return value.Length - decimalPos;
                 }
             }
+
+#if FEATURE_SPAN
+            /// <internal/>
+            [Obsolete("This API is ICU internal only.")]
+            // ICU4N: Replaced constructor to make parsing safe
+            public static bool TryParse(ReadOnlySpan<char> value, out FixedDecimal result) // Ugly, but for samples we don't care.
+            {
+                if (!Double.TryParse(value, NumberStyle.Float, CultureInfo.InvariantCulture, out double n))
+                {
+                    result = default;
+                    return false;
+                }
+                int v = GetVisibleFractionCount(value);
+                result = new FixedDecimal(n, v);
+                return true;
+            }
+
+            private static int GetVisibleFractionCount(ReadOnlySpan<char> value)
+            {
+                value = value.Trim();
+                int decimalPos = value.IndexOf('.') + 1;
+                if (decimalPos == 0)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return value.Length - decimalPos;
+                }
+            }
+#endif
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
@@ -1029,10 +1115,11 @@ namespace ICU4N.Text
             }
 
             /// <summary>
-            /// Parse a list of the form described in CLDR. The source must be trimmed.
+            /// Parse a list of the form described in CLDR. The <paramref name="source"/> must be trimmed.
             /// </summary>
-            internal static FixedDecimalSamples Parse(String source)
+            internal static ParseRuleStatus TryParse(string source, out FixedDecimalSamples result)
             {
+                result = default;
                 PluralRulesSampleType sampleType2;
                 bool bounded2 = true;
                 bool haveBound = false;
@@ -1048,9 +1135,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    throw new ArgumentException("Samples must start with 'integer' or 'decimal'");
+                    return ParseRuleStatus.SamplesMustStartWithIntOrDec;
                 }
-                source = source.Substring(7).Trim(); // remove both
+                source = source.Substring(7); // remove both
 
                 foreach (string range in COMMA_SEPARATED.Split(source))
                 {
@@ -1061,7 +1148,7 @@ namespace ICU4N.Text
                         continue;
                     }
 
-                    if (range.Equals("…") || range.Equals("..."))
+                    if (range.Equals("…", StringComparison.Ordinal) || range.Equals("...", StringComparison.Ordinal))
                     {
                         bounded2 = false;
                         haveBound = true;
@@ -1069,35 +1156,44 @@ namespace ICU4N.Text
                     }
                     if (haveBound)
                     {
-                        throw new ArgumentException("Can only have … at the end of samples: " + range);
+                        return ParseRuleStatus.MisplacedEndRangeBound;
                     }
-                    String[] rangeParts = TILDE_SEPARATED.Split(range);
+                    string[] rangeParts = TILDE_SEPARATED.Split(range);
                     switch (rangeParts.Length)
                     {
                         case 1:
-                            FixedDecimal sample = new FixedDecimal(rangeParts[0]);
-                            CheckDecimal(sampleType2, sample);
+                            if (!FixedDecimal.TryParse(rangeParts[0], out FixedDecimal sample))
+                                return ParseRuleStatus.RangeBoundMustBeFloat;
+                            if (!TryCheckDecimal(sampleType2, sample))
+                                return ParseRuleStatus.IllformedNumberRange;
                             samples2.Add(new FixedDecimalRange(sample, sample));
                             break;
                         case 2:
-                            FixedDecimal start = new FixedDecimal(rangeParts[0]);
-                            FixedDecimal end = new FixedDecimal(rangeParts[1]);
-                            CheckDecimal(sampleType2, start);
-                            CheckDecimal(sampleType2, end);
+                            if (!FixedDecimal.TryParse(rangeParts[0], out FixedDecimal start))
+                                return ParseRuleStatus.RangeBoundMustBeFloat;
+                            if (!FixedDecimal.TryParse(rangeParts[1], out FixedDecimal end))
+                                return ParseRuleStatus.RangeBoundMustBeFloat;
+                            if (!TryCheckDecimal(sampleType2, start))
+                                return ParseRuleStatus.IllformedNumberRange;
+                            if (!TryCheckDecimal(sampleType2, end))
+                                return ParseRuleStatus.IllformedNumberRange;
                             samples2.Add(new FixedDecimalRange(start, end));
                             break;
-                        default: throw new ArgumentException("Ill-formed number range: " + range);
+                        default:
+                            return ParseRuleStatus.IllformedNumberRange;
                     }
                 }
-                return new FixedDecimalSamples(sampleType2, samples2.AsReadOnly(), bounded2);
+                result =  new FixedDecimalSamples(sampleType2, samples2.AsReadOnly(), bounded2);
+                return ParseRuleStatus.OK;
             }
 
-            private static void CheckDecimal(PluralRulesSampleType sampleType2, FixedDecimal sample)
+            private static bool TryCheckDecimal(PluralRulesSampleType sampleType2, FixedDecimal sample)
             {
                 if ((sampleType2 == PluralRulesSampleType.Integer) != (sample.VisibleDecimalDigitCount == 0))
                 {
-                    throw new ArgumentException("Ill-formed number range: " + sample);
+                    return false;
                 }
+                return true;
             }
 
             /// <internal/>
@@ -1336,7 +1432,7 @@ namespace ICU4N.Text
          * digit :           0|1|2|3|4|5|6|7|8|9
          * range :           value'..'value
          */
-        private static bool TryParseConstraint(ReadOnlySpan<char> description, out IConstraint result, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition)
+        private static ParseRuleStatus TryParseConstraint(ReadOnlySpan<char> description, out IConstraint result, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition)
         {
             result = default;
             token = null;
@@ -1360,178 +1456,147 @@ namespace ICU4N.Text
                     bool hackForCompatibility = false;
 #pragma warning disable 612, 618
                     // ICU4N: Added check for empty string
-                    if (!TryGetNextToken(ref enumerator, out ReadOnlySpan<char> t) || !FixedDecimal.TryGetOperand(t, out Operand operand))
+                    if (!TryGetNextToken(ref enumerator, out token) || !FixedDecimal.TryGetOperand(token, out Operand operand))
                     {
-                        token = t;
-                        return false;
+                        return ParseRuleStatus.ConstraintInvalidOperand;
                     }
 #pragma warning restore 612, 618
-                    if (TryGetNextToken(ref enumerator, out t))
+                    if (TryGetNextToken(ref enumerator, out token))
                     {
-                        if ((t.Equals("mod", StringComparison.Ordinal) || t.Equals("%", StringComparison.Ordinal)) && TryGetNextToken(ref enumerator, out t))
+                        if ((token.Equals("mod", StringComparison.Ordinal) || token.Equals("%", StringComparison.Ordinal)) && TryGetNextToken(ref enumerator, out token))
                         {
                             // ICU4N NOTE: This overload allows non-ASCII digits
-                            if (!Integer.TryParse(t, startIndex: 0, length: t.Length, radix: 10, out mod))
+                            if (!Integer.TryParse(token, startIndex: 0, length: token.Length, radix: 10, out mod))
                             {
-                                // Invalid int
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintModulusMustBeDigits;
                             }
-                            if (!TryGetNextToken(ref enumerator, out t))
+                            if (!TryGetNextToken(ref enumerator, out token))
                             {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintMissingToken;
                             }
                         }
-                        if (t.Equals("not", StringComparison.Ordinal))
+                        if (token.Equals("not", StringComparison.Ordinal))
                         {
                             inRange = !inRange;
-                            if (!TryGetNextToken(ref enumerator, out t))
+                            if (!TryGetNextToken(ref enumerator, out token))
                             {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintMissingToken;
                             }
-                            if (t.Equals("=", StringComparison.Ordinal))
+                            if (token.Equals("=", StringComparison.Ordinal))
                             {
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                         }
-                        else if (t.Equals("!", StringComparison.Ordinal))
+                        else if (token.Equals("!", StringComparison.Ordinal))
                         {
                             inRange = !inRange;
-                            if (!TryGetNextToken(ref enumerator, out t))
+                            if (!TryGetNextToken(ref enumerator, out token))
                             {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintMissingToken;
                             }
-                            if (!t.Equals("=", StringComparison.Ordinal)) // ICU4N NOTE: This is the inverse of "not" above
+                            if (!token.Equals("=", StringComparison.Ordinal)) // ICU4N NOTE: This is the inverse of "not" above
                             {
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                         }
-                        if (t.Equals("is", StringComparison.Ordinal) || t.Equals("in", StringComparison.Ordinal) || t.Equals("=", StringComparison.Ordinal))
+                        if (token.Equals("is", StringComparison.Ordinal) || token.Equals("in", StringComparison.Ordinal) || token.Equals("=", StringComparison.Ordinal))
                         {
-                            hackForCompatibility = t.Equals("is", StringComparison.Ordinal);
+                            hackForCompatibility = token.Equals("is", StringComparison.Ordinal);
                             if (hackForCompatibility && !inRange)
                             {
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
-                            if (!TryGetNextToken(ref enumerator, out t))
+                            if (!TryGetNextToken(ref enumerator, out token))
                             {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintMissingToken;
                             }
                         }
-                        else if (t.Equals("within", StringComparison.Ordinal))
+                        else if (token.Equals("within", StringComparison.Ordinal))
                         {
                             integersOnly = false;
-                            if (!TryGetNextToken(ref enumerator, out t))
+                            if (!TryGetNextToken(ref enumerator, out token))
                             {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintMissingToken;
                             }
                         }
                         else
                         {
-                            token = t;
-                            return false;
+                            return ParseRuleStatus.ConstraintUnexpectedToken;
                         }
-                        if (t.Equals("not", StringComparison.Ordinal))
+                        if (token.Equals("not", StringComparison.Ordinal))
                         {
                             if (!hackForCompatibility && !inRange)
                             {
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                             inRange = !inRange;
-                            if (!TryGetNextToken(ref enumerator, out t))
+                            if (!TryGetNextToken(ref enumerator, out token))
                             {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintMissingToken;
                             }
                         }
 
                         List<long> valueList = new List<long>();
 
-                        // the token t is always one item ahead
+                        // the token is always one item ahead
                         while (true)
                         {
                             // ICU4N NOTE: This overload allows non-ASCII digits
-                            if (!Long.TryParse(t, startIndex: 0, length: t.Length, radix: 10, out long low))
+                            if (!Long.TryParse(token, startIndex: 0, length: token.Length, radix: 10, out long low))
                             {
-                                // Invalid long
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintValueMustBeDigits;
                             }
                             long high = low;
                             if (enumerator.HasNext) // ICU4N: Don't advance the enumerator if we are at the end so we can do after work
                             {
-                                TryGetNextToken(ref enumerator, out t);
-                                if (t.Equals(".", StringComparison.Ordinal))
+                                TryGetNextToken(ref enumerator, out token);
+                                if (token.Equals(".", StringComparison.Ordinal))
                                 {
-                                    if (!TryGetNextToken(ref enumerator, out t))
+                                    if (!TryGetNextToken(ref enumerator, out token))
                                     {
-                                        condition = MakeConditionString(condition);
-                                        token = t;
-                                        return false;
+                                        return ParseRuleStatus.ConstraintMissingToken;
                                     }
-                                    if (!t.Equals(".", StringComparison.Ordinal))
+                                    if (!token.Equals(".", StringComparison.Ordinal))
                                     {
-                                        token = t;
-                                        return false;
+                                        return ParseRuleStatus.ConstraintUnexpectedToken;
                                     }
-                                    if (!TryGetNextToken(ref enumerator, out t))
+                                    if (!TryGetNextToken(ref enumerator, out token))
                                     {
-                                        condition = MakeConditionString(condition);
-                                        token = t;
-                                        return false;
+                                        return ParseRuleStatus.ConstraintMissingToken;
                                     }
                                     // ICU4N NOTE: This overload allows non-ASCII digits
-                                    if (!Long.TryParse(t, startIndex: 0, length: t.Length, radix: 10, out high))
+                                    if (!Long.TryParse(token, startIndex: 0, length: token.Length, radix: 10, out high))
                                     {
-                                        // Invalid long
-                                        token = t;
-                                        return false;
+                                        return ParseRuleStatus.ConstraintValueMustBeDigits;
                                     }
                                     if (enumerator.HasNext)
                                     {
-                                        TryGetNextToken(ref enumerator, out t);
-                                        if (!t.Equals(",", StringComparison.Ordinal))
+                                        TryGetNextToken(ref enumerator, out token);
+                                        if (!token.Equals(",", StringComparison.Ordinal))
                                         {
                                             // adjacent number: 1 2
                                             // no separator, fail
-                                            token = t;
-                                            return false;
+                                            return ParseRuleStatus.ConstraintUnexpectedToken;
                                         }
                                     }
                                 }
-                                else if (!t.Equals(",", StringComparison.Ordinal))
+                                else if (!token.Equals(",", StringComparison.Ordinal))
                                 {
                                     // adjacent number: 1 2
                                     // no separator, fail
-                                    token = t;
-                                    return false;
+                                    return ParseRuleStatus.ConstraintUnexpectedToken;
                                 }
                             }
                             // at this point, either we are out of tokens, or t is ','
                             if (low > high)
                             {
                                 token = low + "~" + high;
-                                return false;
+                                return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                             else if (mod != 0 && high >= mod)
                             {
                                 token = high + ">mod=" + mod;
-                                return false;
+                                return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                             valueList.Add(low);
                             valueList.Add(high);
@@ -1541,13 +1606,12 @@ namespace ICU4N.Text
                             {
                                 break;
                             }
-                            TryGetNextToken(ref enumerator, out t);
+                            TryGetNextToken(ref enumerator, out token);
                         }
 
-                        if (t.Equals(",", StringComparison.Ordinal))
+                        if (token.Equals(",", StringComparison.Ordinal))
                         {
-                            token = t;
-                            return false;
+                            return ParseRuleStatus.ConstraintUnexpectedToken;
                         }
 
                         if (valueList.Count == 2)
@@ -1562,8 +1626,7 @@ namespace ICU4N.Text
                         // Hack to exclude "is not 1,2"
                         if (lowBound != highBound && hackForCompatibility && !inRange)
                         {
-                            token = t;
-                            return false;
+                            return ParseRuleStatus.ConstraintUnexpectedToken;
                         }
 
                         newConstraint = new RangeConstraint(mod, inRange, operand, integersOnly, lowBound, highBound, vals);
@@ -1588,7 +1651,7 @@ namespace ICU4N.Text
                     result = new OrConstraint(result, andConstraint);
                 }
             }
-            return true;
+            return ParseRuleStatus.OK;
         }
 
 #else
@@ -1618,7 +1681,7 @@ namespace ICU4N.Text
          * digit :           0|1|2|3|4|5|6|7|8|9
          * range :           value'..'value
          */
-        private static bool TryParseConstraint(string description, out IConstraint result, out string token, out string condition)
+        private static ParseRuleStatus TryParseConstraint(string description, out IConstraint result, out string token, out string condition)
         {
             result = default;
             token = null;
@@ -1643,107 +1706,87 @@ namespace ICU4N.Text
                     long[] vals;
 
                     int x = 0;
-                    string t = tokens[x++];
+                    token = tokens[x++];
                     bool hackForCompatibility = false;
 #pragma warning disable 612, 618
-                    if (!FixedDecimal.TryGetOperand(t, out Operand operand))
+                    if (!FixedDecimal.TryGetOperand(token, out Operand operand))
                     {
-                        token = t;
-                        return false;
+                        return ParseRuleStatus.ConstraintInvalidOperand;
                     }
 #pragma warning restore 612, 618
                     if (x < tokens.Length)
                     {
-                        t = tokens[x++];
-                        if ("mod".Equals(t, StringComparison.Ordinal) || "%".Equals(t, StringComparison.Ordinal))
+                        token = tokens[x++];
+                        if ("mod".Equals(token, StringComparison.Ordinal) || "%".Equals(token, StringComparison.Ordinal))
                         {
                             // ICU4N NOTE: This overload allows non-ASCII digits
                             if (!Integer.TryParse(tokens[x++], radix: 10, out mod))
                             {
-                                // Invalid int
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintModulusMustBeDigits;
                             }
-                            if (!TryGetNextToken(tokens, ref x, out t))
+                            if (!TryGetNextToken(tokens, ref x, out token))
                             {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintMissingToken;
                             }
                         }
-                        if ("not".Equals(t, StringComparison.Ordinal))
+                        if ("not".Equals(token, StringComparison.Ordinal))
                         {
                             inRange = !inRange;
-                            if (!TryGetNextToken(tokens, ref x, out t))
+                            if (!TryGetNextToken(tokens, ref x, out token))
                             {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintMissingToken;
                             }
-                            if ("=".Equals(t, StringComparison.Ordinal))
+                            if ("=".Equals(token, StringComparison.Ordinal))
                             {
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                         }
-                        else if ("!".Equals(t))
+                        else if ("!".Equals(token))
                         {
                             inRange = !inRange;
-                            if (!TryGetNextToken(tokens, ref x, out t))
+                            if (!TryGetNextToken(tokens, ref x, out token))
                             {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintMissingToken;
                             }
-                            if (!"=".Equals(t, StringComparison.Ordinal))
+                            if (!"=".Equals(token, StringComparison.Ordinal)) // ICU4N NOTE: This is the inverse of "not" above
                             {
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                         }
-                        if ("is".Equals(t, StringComparison.Ordinal) || "in".Equals(t, StringComparison.Ordinal) || "=".Equals(t, StringComparison.Ordinal))
+                        if ("is".Equals(token, StringComparison.Ordinal) || "in".Equals(token, StringComparison.Ordinal) || "=".Equals(token, StringComparison.Ordinal))
                         {
-                            hackForCompatibility = "is".Equals(t);
+                            hackForCompatibility = "is".Equals(token);
                             if (hackForCompatibility && !inRange)
                             {
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
-                            if (!TryGetNextToken(tokens, ref x, out t))
+                            if (!TryGetNextToken(tokens, ref x, out token))
                             {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintMissingToken;
                             }
                         }
-                        else if ("within".Equals(t, StringComparison.Ordinal))
+                        else if ("within".Equals(token, StringComparison.Ordinal))
                         {
                             integersOnly = false;
-                            if (!TryGetNextToken(tokens, ref x, out t))
+                            if (!TryGetNextToken(tokens, ref x, out token))
                             {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintMissingToken;
                             }
                         }
                         else
                         {
-                            token = t;
-                            return false;
+                            return ParseRuleStatus.ConstraintUnexpectedToken;
                         }
-                        if ("not".Equals(t, StringComparison.Ordinal))
+                        if ("not".Equals(token, StringComparison.Ordinal))
                         {
                             if (!hackForCompatibility && !inRange)
                             {
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                             inRange = !inRange;
-                            if (!TryGetNextToken(tokens, ref x, out t))
+                            if (!TryGetNextToken(tokens, ref x, out token))
                             {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintMissingToken;
                             }
                         }
 
@@ -1753,82 +1796,67 @@ namespace ICU4N.Text
                         while (true)
                         {
                             // ICU4N NOTE: This overload allows non-ASCII digits
-                            if (!Long.TryParse(t, radix: 10, out long low))
+                            if (!Long.TryParse(token, radix: 10, out long low))
                             {
-                                // Invalid long
-                                token = t;
-                                return false;
+                                return ParseRuleStatus.ConstraintValueMustBeDigits;
                             }
                             long high = low;
                             if (x < tokens.Length)
                             {
-                                if (!TryGetNextToken(tokens, ref x, out t))
+                                if (!TryGetNextToken(tokens, ref x, out token))
                                 {
-                                    condition = MakeConditionString(condition);
-                                    token = t;
-                                    return false;
+                                    return ParseRuleStatus.ConstraintMissingToken;
                                 }
-                                if (t.Equals(".", StringComparison.Ordinal))
+                                if (token.Equals(".", StringComparison.Ordinal))
                                 {
-                                    if (!TryGetNextToken(tokens, ref x, out t))
+                                    if (!TryGetNextToken(tokens, ref x, out token))
                                     {
-                                        condition = MakeConditionString(condition);
-                                        token = t;
-                                        return false;
+                                        return ParseRuleStatus.ConstraintMissingToken;
                                     }
-                                    if (!t.Equals(".", StringComparison.Ordinal))
+                                    if (!token.Equals(".", StringComparison.Ordinal))
                                     {
-                                        token = t;
-                                        return false;
+                                        return ParseRuleStatus.ConstraintUnexpectedToken;
                                     }
-                                    if (!TryGetNextToken(tokens, ref x, out t))
+                                    if (!TryGetNextToken(tokens, ref x, out token))
                                     {
-                                        condition = MakeConditionString(condition);
-                                        token = t;
-                                        return false;
+                                        return ParseRuleStatus.ConstraintMissingToken;
                                     }
                                     // ICU4N NOTE: This overload allows non-ASCII digits
-                                    if (!Long.TryParse(t, radix: 10, out high))
+                                    if (!Long.TryParse(token, radix: 10, out high))
                                     {
-                                        // Invalid long
-                                        token = t;
-                                        return false;
+                                        return ParseRuleStatus.ConstraintValueMustBeDigits;
                                     }
                                     if (x < tokens.Length)
                                     {
-                                        if (!TryGetNextToken(tokens, ref x, out t))
+                                        if (!TryGetNextToken(tokens, ref x, out token))
                                         {
-                                            condition = MakeConditionString(condition);
-                                            token = t;
-                                            return false;
+                                            return ParseRuleStatus.ConstraintMissingToken;
                                         }
-                                        if (!t.Equals(",", StringComparison.Ordinal))
+                                        if (!token.Equals(",", StringComparison.Ordinal))
                                         {
                                             // adjacent number: 1 2
                                             // no separator, fail
-                                            token = t;
-                                            return false;
+                                            return ParseRuleStatus.ConstraintUnexpectedToken;
                                         }
                                     }
                                 }
-                                else if (!t.Equals(",", StringComparison.Ordinal))
+                                else if (!token.Equals(",", StringComparison.Ordinal))
                                 {
                                     // adjacent number: 1 2
                                     // no separator, fail
-                                    token = t;
-                                    return false;
+                                    return ParseRuleStatus.ConstraintUnexpectedToken;
                                 }
                             }
                             // at this point, either we are out of tokens, or t is ','
                             if (low > high)
                             {
                                 token = low + "~" + high;
-                                return false;
+                                return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                             else if (mod != 0 && high >= mod)
                             {
                                 token = high + ">mod=" + mod;
-                                return false;
+                                return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                             valueList.Add(low);
                             valueList.Add(high);
@@ -1838,18 +1866,12 @@ namespace ICU4N.Text
                             {
                                 break;
                             }
-                            if (!TryGetNextToken(tokens, ref x, out t))
-                            {
-                                condition = MakeConditionString(condition);
-                                token = t;
-                                return false;
-                            }
+                            TryGetNextToken(tokens, ref x, out token);
                         }
 
-                        if (t.Equals(",", StringComparison.Ordinal))
+                        if (token.Equals(",", StringComparison.Ordinal))
                         {
-                            token = t;
-                            return false;
+                            return ParseRuleStatus.ConstraintUnexpectedToken;
                         }
 
                         if (valueList.Count == 2)
@@ -1868,8 +1890,7 @@ namespace ICU4N.Text
                         // Hack to exclude "is not 1,2"
                         if (lowBound != highBound && hackForCompatibility && !inRange)
                         {
-                            token = t;
-                            return false;
+                            return ParseRuleStatus.ConstraintUnexpectedToken;
                         }
 
                         newConstraint = new RangeConstraint(mod, inRange, operand, integersOnly, lowBound, highBound, vals);
@@ -1894,7 +1915,7 @@ namespace ICU4N.Text
                     result = new OrConstraint(result, andConstraint);
                 }
             }
-            return true;
+            return ParseRuleStatus.OK;
         }
 #endif
 
@@ -1906,14 +1927,7 @@ namespace ICU4N.Text
         private static readonly Regex TILDE_SEPARATED = new Regex("\\s*~\\s*", RegexOptions.Compiled);
         private static readonly Regex SEMI_SEPARATED = new Regex("\\s*;\\s*", RegexOptions.Compiled);
 
-        /// <summary>
-        /// Returns a parse exception wrapping the token and condition strings.
-        /// </summary>
-        private static FormatException Unexpected(string token, string condition)
-        {
-            return new FormatException("unexpected token '" + token +
-                    "' in '" + condition + "'"/*, -1*/);
-        }
+        // ICU4N: Removed Unexpected method and replaced with ThrowParseException()
 
 #if FEATURE_SPAN
         /// <summary>
@@ -1929,14 +1943,6 @@ namespace ICU4N.Text
             }
             result = ReadOnlySpan<char>.Empty;
             return false;
-        }
-
-        /// <summary>
-        /// Builds a string for use in exceptions.
-        /// </summary>
-        private static ReadOnlySpan<char> MakeConditionString(ReadOnlySpan<char> condition)
-        {
-            return string.Concat("missing token at end of '", condition, "'");
         }
 #endif
         /// <summary>
@@ -1957,23 +1963,21 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Builds a string for use in exceptions.
-        /// </summary>
-        private static string MakeConditionString(string condition)
-        {
-            return string.Concat("missing token at end of '", condition, "'");
-        }
-
-        /// <summary>
         /// Syntax:
         /// rule : keyword ':' condition
         /// keyword: &lt;identifier&gt;
         /// </summary>
-        private static Rule ParseRule(string description)
+        // ICU4N: Refactored ParseRule into TryParseRule for compatibility with .NET
+        private static ParseRuleStatus TryParseRule(string description, out Rule result, out string source, out string context)
         {
+            result = null;
+            source = default;
+            context = default;
+
             if (description.Length == 0)
             {
-                return DEFAULT_RULE;
+                result = DEFAULT_RULE;
+                return ParseRuleStatus.OK;
             }
 
             description = description.ToLowerInvariant();
@@ -1981,15 +1985,13 @@ namespace ICU4N.Text
             int x = description.IndexOf(':');
             if (x == -1)
             {
-                throw new FormatException("missing ':' in rule description '" +
-                        description + "'"/*, 0*/);
+                return ParseRuleStatus.MissingColonInRule;
             }
 
             string keyword = description.Substring(0, x).Trim(); // ICU4N: Checked 2nd arg
             if (!IsValidKeyword(keyword))
             {
-                throw new FormatException("keyword '" + keyword +
-                        " is not valid"/*, 0*/);
+                return ParseRuleStatus.KeywordInvalid;
             }
 
             description = description.Substring(x + 1).Trim();
@@ -1997,11 +1999,13 @@ namespace ICU4N.Text
             bool sampleFailure = false;
 #pragma warning disable 612, 618
             FixedDecimalSamples integerSamples = null, decimalSamples = null;
+            ParseRuleStatus status;
             switch (constraintOrSamples.Length)
             {
                 case 1: break;
                 case 2:
-                    integerSamples = FixedDecimalSamples.Parse(constraintOrSamples[1]);
+                    if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[1], out integerSamples)) != ParseRuleStatus.OK)
+                        return status;
                     if (integerSamples.sampleType == PluralRulesSampleType.Decimal)
                     {
                         decimalSamples = integerSamples;
@@ -2009,27 +2013,30 @@ namespace ICU4N.Text
                     }
                     break;
                 case 3:
-                    integerSamples = FixedDecimalSamples.Parse(constraintOrSamples[1]);
-                    decimalSamples = FixedDecimalSamples.Parse(constraintOrSamples[2]);
+                    if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[1], out integerSamples)) != ParseRuleStatus.OK)
+                        return status;
+                    if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[2], out decimalSamples)) != ParseRuleStatus.OK)
+                        return status;
                     if (integerSamples.sampleType != PluralRulesSampleType.Integer || decimalSamples.sampleType != PluralRulesSampleType.Decimal)
 #pragma warning restore 612, 618
                     {
-                        throw new ArgumentException("Must have @integer then @decimal in " + description);
+                        return ParseRuleStatus.StringMustHaveIntOrDec;
                     }
                     break;
                 default:
-                    throw new ArgumentException("Too many samples in " + description);
+                    return ParseRuleStatus.TooManySamples;
             }
+            // ICU4N TODO: This is completely unused
             if (sampleFailure)
             {
-                throw new ArgumentException("Ill-formed samples—'@' characters.");
+                return ParseRuleStatus.IllformedSamplesAtChar;
             }
 
             // 'other' is special, and must have no rules; all other keywords must have rules.
             bool isOther = keyword.Equals("other");
             if (isOther != (constraintOrSamples[0].Length == 0))
             {
-                throw new ArgumentException("The keyword 'other' must have no constraints, just samples.");
+                return ParseRuleStatus.KeywordOtherMustNotHaveConstraints;
             }
 
             IConstraint constraint;
@@ -2039,40 +2046,122 @@ namespace ICU4N.Text
             }
             else
             {
-                //constraint = ParseConstraint(constraintOrSamples[0]);
-
 #if FEATURE_SPAN
-                if (!TryParseConstraint(constraintOrSamples[0], out constraint, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition))
-                    throw Unexpected(new string(token), new string(condition));
+                if ((status = TryParseConstraint(constraintOrSamples[0], out constraint, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition)) != ParseRuleStatus.OK)
+                    return status;
 #else
-                if (!TryParseConstraint(constraintOrSamples[0], out constraint, out string token, out string condition))
-                    throw Unexpected(token, condition);
+                if ((status = TryParseConstraint(constraintOrSamples[0], out constraint, out string token, out string condition)) != ParseRuleStatus.OK)
+                    return status;
 #endif
             }
-            return new Rule(keyword, constraint, integerSamples, decimalSamples);
+            result = new Rule(keyword, constraint, integerSamples, decimalSamples);
+            return ParseRuleStatus.OK;
         }
+
 
         /// <summary>
         /// Syntax:
         /// rules : rule
         ///         rule ';' rules
         /// </summary>
-        private static RuleList ParseRuleChain(string description)
+        private static ParseRuleStatus TryParseRuleChain(string description, out RuleList result, out string source, out string context)
         {
-            RuleList result = new RuleList();
+            source = default;
+            context = default;
+            result = new RuleList();
             // remove trailing ;
             if (description.EndsWith(";", StringComparison.Ordinal))
             {
                 description = description.Substring(0, description.Length - 1); // ICU4N: Checked 2nd arg
             }
+            ParseRuleStatus status;
             string[] rules = SEMI_SEPARATED.Split(description);
             for (int i = 0; i < rules.Length; ++i)
             {
-                Rule rule = ParseRule(rules[i].Trim());
+                if ((status = TryParseRule(rules[i].Trim(), out Rule rule, out source, out context)) != ParseRuleStatus.OK)
+                    return status;
                 result.HasExplicitBoundingInfo |= rule.IntegerSamples != null || rule.DecimalSamples != null;
                 result.AddRule(rule);
             }
-            return result.Finish();
+            result = result.Finish();
+            return ParseRuleStatus.OK;
+        }
+
+        /// <summary>
+        /// A status that is used to determine whether a parse result succeeded or failed in a specific way.
+        /// </summary>
+        internal enum ParseRuleStatus
+        {
+            OK,
+
+            MisplacedEndRangeBound, // "Can only have … at the end of samples: "
+            IllformedNumberRange, // "Ill-formed number range: "
+            SamplesMustStartWithIntOrDec, // "Samples must start with 'integer' or 'decimal'"
+            RangeBoundMustBeFloat,
+
+            MissingColonInRule, // "Missing ':' in rule description '{0}'."
+            KeywordInvalid, // "Keyword '{0}' is not valid."
+            StringMustHaveIntOrDec, // "Must have @integer then @decimal in '{0}'."
+            TooManySamples, // "Too many samples in '{0}'."
+            IllformedSamplesAtChar, // "Ill-formed samples—'@' characters."
+            KeywordOtherMustNotHaveConstraints, // "The keyword 'other' must have no constraints, just samples."
+
+            ConstraintInvalidOperand,
+            ConstraintUnexpectedToken, // "Unexpected token '{0}' in '{1}'."
+            ConstraintMissingToken,
+            ConstraintModulusMustBeDigits,
+            ConstraintValueMustBeDigits,
+        }
+
+#nullable enable
+        [DoesNotReturn]
+        //[SuppressMessage("Blocker Code Smell", "S3877:Exceptions should not be thrown from unexpected methods", Justification = "Intentional design decision")]
+        internal static void ThrowParseException(ParseRuleStatus status, string source, string? context = null)
+        {
+            throw CreateParseException(status, source, context);
+        }
+
+        internal static Exception CreateParseException(ParseRuleStatus status, string source, string? context = null) => status switch
+        {
+            // ICU4N TODO: Clean this up so we only have FormatException type...?
+            ParseRuleStatus.MisplacedEndRangeBound => new ArgumentException(string.Format(SR.MisplacedEndRangeBound, source)),
+            ParseRuleStatus.IllformedNumberRange => new ArgumentException(string.Format(SR.IllformedNumberRange, source)),
+            ParseRuleStatus.SamplesMustStartWithIntOrDec => new ArgumentException(SR.SamplesMustStartWithIntOrDec),
+            ParseRuleStatus.RangeBoundMustBeFloat => new FormatException(string.Format(SR.RangeBoundMustBeFloat, source)),
+
+            ParseRuleStatus.MissingColonInRule => new FormatException(string.Format(SR.MissingColonInRule, source)),
+            ParseRuleStatus.KeywordInvalid => new FormatException(string.Format(SR.KeywordInvalid, source)),
+            ParseRuleStatus.StringMustHaveIntOrDec => new FormatException(string.Format(SR.StringMustHaveIntOrDec, source)),
+            ParseRuleStatus.TooManySamples => new FormatException(string.Format(SR.TooManySamples, source)),
+            ParseRuleStatus.IllformedSamplesAtChar => new FormatException(string.Format(SR.IllformedSamplesAtChar, source)),
+            ParseRuleStatus.KeywordOtherMustNotHaveConstraints => new FormatException(SR.KeywordOtherMustNotHaveConstraints),
+
+            ParseRuleStatus.ConstraintInvalidOperand => new FormatException(string.Format(SR.ConstraintInvalidOperand, source)),
+            ParseRuleStatus.ConstraintUnexpectedToken => new FormatException(string.Format(SR.ConstraintUnexpectedToken, source, context)),
+            ParseRuleStatus.ConstraintMissingToken => new FormatException(string.Format(SR.ConstraintMissingToken, source)),
+            ParseRuleStatus.ConstraintModulusMustBeDigits => new FormatException(string.Format(SR.ConstraintModulusMustBeDigits, source, context)),
+            ParseRuleStatus.ConstraintValueMustBeDigits => new FormatException(string.Format(SR.ConstraintValueMustBeDigits, source, context)),
+        };
+#nullable restore
+        internal static class SR
+        {
+            public const string MisplacedEndRangeBound = "Can only have … at the end of samples: '{0}'";
+            public const string IllformedNumberRange = "Ill-formed number range: '{0}'";
+            public const string SamplesMustStartWithIntOrDec = "Samples must start with 'integer' or 'decimal'";
+            public const string RangeBoundMustBeFloat = "Range bound must be an integral or floating point number in ASCII digits: '{0}'";
+
+            public const string MissingColonInRule = "Missing ':' in rule description '{0}'.";
+            public const string KeywordInvalid = "Keyword '{0}' is not valid.";
+            public const string StringMustHaveIntOrDec = "Must have @integer then @decimal in '{0}'.";
+            public const string TooManySamples = "Too many samples in '{0}'.";
+            public const string IllformedSamplesAtChar = "Too many samples in '{0}'.";
+            public const string KeywordOtherMustNotHaveConstraints = "The keyword 'other' must have no constraints, just samples.";
+
+            public const string ConstraintInvalidOperand = "Invalid operand: '{0}'.";
+            public const string ConstraintUnexpectedToken = "Unexpected token '{0}' in '{1}'.";
+            public const string ConstraintMissingToken = "Missing token at the end of '{0}'.";
+            public const string ConstraintModulusMustBeDigits = "Modulus must contain digits: '{0}' in '{1}'.";
+            public const string ConstraintValueMustBeDigits = "Constraint value must contain digits: '{0}' in '{1}'.";
         }
 
         /// <summary>
@@ -2398,7 +2487,7 @@ namespace ICU4N.Text
 
             public RuleList AddRule(Rule nextRule)
             {
-                String keyword = nextRule.Keyword;
+                string keyword = nextRule.Keyword;
                 foreach (Rule rule in rules)
                 {
                     if (keyword.Equals(rule.Keyword))
@@ -2423,16 +2512,19 @@ namespace ICU4N.Text
                 Rule otherRule = null;
                 rules.RemoveAll((rule) =>
                 {
-                    if ("other".Equals(rule.Keyword))
+                    if ("other".Equals(rule.Keyword, StringComparison.Ordinal))
                     {
                         otherRule = rule;
                         return true;
                     }
                     return false;
                 });
-                if (otherRule == null)
+                if (otherRule is null)
                 {
-                    otherRule = ParseRule("other:"); // make sure we have always have an 'other' a rule
+                    // ICU4N: Hard-coded rule will always succeed unless TryParseRule has a bug. So, we don't need a try version of this method.
+                    ParseRuleStatus status = TryParseRule("other:", out otherRule, out string source, out string context); // make sure we have always have an 'other' a rule
+                    if (status != ParseRuleStatus.OK)
+                        ThrowParseException(status, source, context);
                 }
                 rules.Add(otherRule);
                 return this;
@@ -2704,7 +2796,7 @@ namespace ICU4N.Text
         /// <returns>true if the token is a valid keyword.</returns>
         private static bool IsValidKeyword(string token)
         {
-            return ALLOWED_ID.ContainsAll(token);
+            return ALLOWED_ID.IsSupersetOf(token);
         }
 
         /// <summary>

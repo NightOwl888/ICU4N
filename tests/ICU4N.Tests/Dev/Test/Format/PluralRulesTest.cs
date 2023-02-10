@@ -113,7 +113,7 @@ namespace ICU4N.Dev.Test.Format
                 new object[] { "a: n is not not 1", typeof(FormatException) },
 
                 // disallow screwy cases
-                new object[] { null, typeof(NullReferenceException) }, new object[] { "djkl;", typeof(FormatException) }, // ICU4N TODO: Factor out NullReferenceException, if possible
+                new object[] { null, typeof(ArgumentNullException) }, new object[] { "djkl;", typeof(FormatException) },
                 new object[] { "a: n = 1 .", typeof(FormatException) }, new object[] { "a: n = 1 ..", typeof(FormatException) },
                 new object[] { "a: n = 1 2", typeof(FormatException) }, new object[] { "a: n = 1 ,", typeof(FormatException) },
                 new object[] { "a:n in 3 .. 10 , 13 .. 19 ,", typeof(FormatException) }, };

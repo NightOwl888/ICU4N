@@ -228,7 +228,7 @@
   <Class Name="ICU4N.Text.PluralRulesFactory" Collapsed="true">
     <Position X="3.75" Y="15.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAACg=</HashCode>
       <FileName>Text\PluralRules.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -240,44 +240,84 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <NestedTypes>
-      <Class Name="ICU4N.Text.PluralRules.FixedDecimal" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
-        </TypeIdentifier>
-        <Lollipop Position="0.2" />
-      </Class>
-      <Interface Name="ICU4N.Text.PluralRules.IConstraint" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Interface>
-      <Enum Name="ICU4N.Text.PluralRules.Operand" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Enum>
-      <Class Name="ICU4N.Text.PluralRules.FixedDecimalSamples" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-      <Struct Name="ICU4N.Text.PluralRules.SimpleTokenizerEnumerator" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Struct>
-      <Class Name="ICU4N.Text.PluralRules.RuleList" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
       <Class Name="ICU4N.Text.PluralRules.RangeConstraint" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
         </TypeIdentifier>
         <Lollipop Position="0.2" />
       </Class>
+      <Interface Name="ICU4N.Text.PluralRules.IFixedDecimal" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Interface>
+      <Class Name="ICU4N.Text.PluralRules.FixedDecimalRange" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.SimpleTokenizer" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.FixedDecimalSamples" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.RuleList" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.OrConstraint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Interface Name="ICU4N.Text.PluralRules.IConstraint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Interface>
+      <Enum Name="ICU4N.Text.PluralRules.ParseRuleStatus" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
       <Class Name="ICU4N.Text.PluralRules.OperandExtensions" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.SR" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ICU4N.Text.PluralRules.FixedDecimal" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+      <Struct Name="ICU4N.Text.PluralRules.SimpleTokenizerEnumerator" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+      <Class Name="ICU4N.Text.PluralRules.AndConstraint" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Enum Name="ICU4N.Text.PluralRules.Operand" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Class Name="ICU4N.Text.PluralRules.Rule" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
         </TypeIdentifier>
@@ -288,45 +328,15 @@
         </TypeIdentifier>
         <Lollipop Position="0.2" />
       </Class>
-      <Class Name="ICU4N.Text.PluralRules.FixedDecimalRange" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-      <Interface Name="ICU4N.Text.PluralRules.IFixedDecimal" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Interface>
       <Class Name="ICU4N.Text.PluralRules.NoConstraintClass" Collapsed="true">
         <TypeIdentifier>
           <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
         </TypeIdentifier>
         <Lollipop Position="0.2" />
       </Class>
-      <Class Name="ICU4N.Text.PluralRules.AndConstraint" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-      <Class Name="ICU4N.Text.PluralRules.Rule" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-      <Class Name="ICU4N.Text.PluralRules.SimpleTokenizer" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
-      <Class Name="ICU4N.Text.PluralRules.OrConstraint" Collapsed="true">
-        <TypeIdentifier>
-          <NewMemberFileName>Text\PluralRules.cs</NewMemberFileName>
-        </TypeIdentifier>
-      </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>ABKLgUIAwALoIAZEgNIAJAiAEQgAAIkuABAARCIEgCg=</HashCode>
+      <HashCode>ABCLgWIAwALoIAZEoNIAJAiAERgAAIEuABAARCIEgCg=</HashCode>
       <FileName>Text\PluralRules.cs</FileName>
     </TypeIdentifier>
   </Class>
