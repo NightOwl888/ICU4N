@@ -4,8 +4,12 @@
 
   <!--Features in .NET 6 only -->
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('net6.')) ">
+    
+    <!-- For now, we only support ArrayPool on .NET 6. -->
+    <DefineConstants>$(DefineConstants);FEATURE_ARRAYPOOL</DefineConstants>
     <!-- For now, we only support Span on .NET 6. -->
     <DefineConstants>$(DefineConstants);FEATURE_SPAN</DefineConstants>
+    
   </PropertyGroup>
 
   <!--Features in .NET Standard 2.x or .NET Core-->

@@ -20,6 +20,9 @@ using J2N.Globalization;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using ICU4N.Util;
+#if FEATURE_ARRAYPOOL
+using System.Buffers;
+#endif
 
 namespace ICU4N.Text
 {
@@ -1118,7 +1121,7 @@ namespace ICU4N.Text
             /// <summary>
             /// Parse a list of the form described in CLDR. The <paramref name="source"/> must be trimmed.
             /// </summary>
-            internal static ParseRuleStatus TryParse(ReadOnlySpan<char> source, out FixedDecimalSamples result)
+            internal static ParseRuleStatus TryParse(ReadOnlySpan<char> source, out FixedDecimalSamples result) // ICU4N TODO: Add source and context out params for relevent error messages
             {
                 result = default;
                 PluralRulesSampleType sampleType2;
@@ -2034,6 +2037,119 @@ namespace ICU4N.Text
         }
 #endif
 
+#if FEATURE_SPAN
+        /// <summary>
+        /// Syntax:
+        /// rule : keyword ':' condition
+        /// keyword: &lt;identifier&gt;
+        /// </summary>
+        // ICU4N: Refactored ParseRule into TryParseRule for compatibility with .NET
+        private static ParseRuleStatus TryParseRule(ReadOnlySpan<char> description, out Rule result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context) // ICU4N TODO: Assign source and context out params for relevent error messages
+        {
+            result = default;
+            source = default;
+            context = description;
+
+            if (description.Length == 0)
+            {
+                result = DEFAULT_RULE;
+                return ParseRuleStatus.OK;
+            }
+
+            // ICU4N TODO: Eliminate this allocation by using StringComparison.OrdinalIgnoreCase downstream from here and lowercasing only the keyword
+            int minimumLength = (int)(description.Length * 1.15);
+            //if (minimumLength <= 512)
+            //{
+            //    Span<char> tempArray = stackalloc char[minimumLength];
+            //    int actualLength = description.ToLowerInvariant(tempArray);
+            //    description = tempArray.Slice(0, actualLength);
+            //}
+            //else
+            {
+                char[] tempArray = ArrayPool<char>.Shared.Rent(minimumLength);
+                int actualLength = description.ToLowerInvariant(tempArray);
+                description = new ReadOnlySpan<char>(tempArray, 0, actualLength);
+                ArrayPool<char>.Shared.Return(tempArray);
+            }
+
+            int x = description.IndexOf(':');
+            if (x == -1)
+            {
+                return ParseRuleStatus.MissingColonInRule;
+            }
+
+            string keyword = new string(description.Slice(0, x).Trim()); // ICU4N: Checked 2nd arg
+            if (!IsValidKeyword(keyword))
+            {
+                return ParseRuleStatus.KeywordInvalid;
+            }
+
+            description = description.Slice(x + 1).Trim();
+            SplitTokenizerEnumerator constraintOrSamplesEnumerator = description.AsTokens('@', SplitTokenizerEnumerator.PatternWhiteSpace);
+            // ICU4N: Check to ensure there are exactly 2, or 3 parts to the range.
+            // Note that constraintOrSamples0 is always 0 length due to a quirk with using Regex match, which always returns at least 1 element.
+            ReadOnlySpan<char> constraintOrSamples0 = constraintOrSamplesEnumerator.MoveNext() ? constraintOrSamplesEnumerator.Current : ReadOnlySpan<char>.Empty;
+            ReadOnlySpan<char> constraintOrSamples1 = constraintOrSamplesEnumerator.MoveNext() ? constraintOrSamplesEnumerator.Current : ReadOnlySpan<char>.Empty;
+            ReadOnlySpan<char> constraintOrSamples2 = constraintOrSamplesEnumerator.MoveNext() ? constraintOrSamplesEnumerator.Current : ReadOnlySpan<char>.Empty;
+            if (constraintOrSamplesEnumerator.MoveNext())
+                return ParseRuleStatus.TooManySamples;
+
+            bool sampleFailure = false;
+#pragma warning disable 612, 618
+            FixedDecimalSamples integerSamples = null, decimalSamples = null;
+            ParseRuleStatus status;
+            // ICU4N: 0 or 1 part will pass through
+            if (!constraintOrSamples1.IsEmpty && constraintOrSamples2.IsEmpty) // 2 parts
+            {
+                if ((status = FixedDecimalSamples.TryParse(constraintOrSamples1, out integerSamples)) != ParseRuleStatus.OK)
+                    return status;
+                if (integerSamples.sampleType == PluralRulesSampleType.Decimal)
+                {
+                    decimalSamples = integerSamples;
+                    integerSamples = null;
+                }
+            }
+            else if (!constraintOrSamples1.IsEmpty && !constraintOrSamples2.IsEmpty) // 3 parts
+            {
+                if ((status = FixedDecimalSamples.TryParse(constraintOrSamples1, out integerSamples)) != ParseRuleStatus.OK)
+                    return status;
+                if ((status = FixedDecimalSamples.TryParse(constraintOrSamples2, out decimalSamples)) != ParseRuleStatus.OK)
+                    return status;
+                if (integerSamples.sampleType != PluralRulesSampleType.Integer || decimalSamples.sampleType != PluralRulesSampleType.Decimal)
+                {
+                    return ParseRuleStatus.StringMustHaveIntOrDec;
+                }
+            }
+#pragma warning restore 612, 618
+
+            // ICU4N TODO: This is completely unused
+            if (sampleFailure)
+            {
+                return ParseRuleStatus.IllformedSamplesAtChar;
+            }
+
+            // 'other' is special, and must have no rules; all other keywords must have rules.
+            bool isOther = keyword.Equals("other");
+            if (isOther != constraintOrSamples0.IsEmpty)
+            {
+                return ParseRuleStatus.KeywordOtherMustNotHaveConstraints;
+            }
+
+            IConstraint constraint;
+            if (isOther)
+            {
+                constraint = NO_CONSTRAINT;
+            }
+            else
+            {
+                if ((status = TryParseConstraint(constraintOrSamples0, out constraint, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition)) != ParseRuleStatus.OK)
+                    return status;
+            }
+            result = new Rule(keyword, constraint, integerSamples, decimalSamples);
+            return ParseRuleStatus.OK;
+        }
+#else
+
         /// <summary>
         /// Syntax:
         /// rule : keyword ':' condition
@@ -2042,9 +2158,9 @@ namespace ICU4N.Text
         // ICU4N: Refactored ParseRule into TryParseRule for compatibility with .NET
         private static ParseRuleStatus TryParseRule(string description, out Rule result, out string source, out string context)
         {
-            result = null;
+            result = default;
             source = default;
-            context = default;
+            context = description;
 
             if (description.Length == 0)
             {
@@ -2118,18 +2234,13 @@ namespace ICU4N.Text
             }
             else
             {
-#if FEATURE_SPAN
-                if ((status = TryParseConstraint(constraintOrSamples[0], out constraint, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition)) != ParseRuleStatus.OK)
-                    return status;
-#else
                 if ((status = TryParseConstraint(constraintOrSamples[0], out constraint, out string token, out string condition)) != ParseRuleStatus.OK)
                     return status;
-#endif
             }
             result = new Rule(keyword, constraint, integerSamples, decimalSamples);
             return ParseRuleStatus.OK;
         }
-
+#endif
 
         /// <summary>
         /// Syntax:
@@ -2150,8 +2261,17 @@ namespace ICU4N.Text
             string[] rules = SEMI_SEPARATED.Split(description);
             for (int i = 0; i < rules.Length; ++i)
             {
+#if FEATURE_SPAN
+                if ((status = TryParseRule(rules[i].Trim(), out Rule rule, out ReadOnlySpan<char> src, out ReadOnlySpan<char> ctx)) != ParseRuleStatus.OK)
+                {
+                    source = new string(src);
+                    context = new string(ctx);
+                    return status;
+                }
+#else
                 if ((status = TryParseRule(rules[i].Trim(), out Rule rule, out source, out context)) != ParseRuleStatus.OK)
                     return status;
+#endif
                 result.HasExplicitBoundingInfo |= rule.IntegerSamples != null || rule.DecimalSamples != null;
                 result.AddRule(rule);
             }
@@ -2594,9 +2714,15 @@ namespace ICU4N.Text
                 if (otherRule is null)
                 {
                     // ICU4N: Hard-coded rule will always succeed unless TryParseRule has a bug. So, we don't need a try version of this method.
+#if FEATURE_SPAN
+                    ParseRuleStatus status = TryParseRule("other:", out otherRule, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context); // make sure we have always have an 'other' a rule
+                    if (status != ParseRuleStatus.OK)
+                        ThrowParseException(status, new string(source), new string(context));
+#else
                     ParseRuleStatus status = TryParseRule("other:", out otherRule, out string source, out string context); // make sure we have always have an 'other' a rule
                     if (status != ParseRuleStatus.OK)
                         ThrowParseException(status, source, context);
+#endif
                 }
                 rules.Add(otherRule);
                 return this;
@@ -2719,12 +2845,12 @@ namespace ICU4N.Text
             }
 
 #pragma warning disable 612, 618
-            public virtual FixedDecimalSamples GetDecimalSamples(String keyword, PluralRulesSampleType sampleType)
+            public virtual FixedDecimalSamples GetDecimalSamples(string keyword, PluralRulesSampleType sampleType)
 #pragma warning restore 612, 618
             {
                 foreach (Rule rule in rules)
                 {
-                    if (rule.Keyword.Equals(keyword))
+                    if (rule.Keyword.Equals(keyword, StringComparison.Ordinal))
                     {
                         return sampleType ==
 #pragma warning disable 612, 618
