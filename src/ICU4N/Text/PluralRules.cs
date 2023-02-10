@@ -1114,6 +1114,76 @@ namespace ICU4N.Text
                 this.bounded = bounded;
             }
 
+#if FEATURE_SPAN
+            /// <summary>
+            /// Parse a list of the form described in CLDR. The <paramref name="source"/> must be trimmed.
+            /// </summary>
+            internal static ParseRuleStatus TryParse(ReadOnlySpan<char> source, out FixedDecimalSamples result)
+            {
+                result = default;
+                PluralRulesSampleType sampleType2;
+                bool bounded2 = true;
+                bool haveBound = false;
+                ISet<FixedDecimalRange> samples2 = new JCG.LinkedHashSet<FixedDecimalRange>();
+
+                if (source.StartsWith("integer", StringComparison.Ordinal))
+                {
+                    sampleType2 = PluralRulesSampleType.Integer;
+                }
+                else if (source.StartsWith("decimal", StringComparison.Ordinal))
+                {
+                    sampleType2 = PluralRulesSampleType.Decimal;
+                }
+                else
+                {
+                    return ParseRuleStatus.SamplesMustStartWithIntOrDec;
+                }
+                source = source.Slice(7); // remove both
+
+                foreach (var range in source.AsTokens(',', SplitTokenizerEnumerator.PatternWhiteSpace))
+                {
+                    if (range.Text.Equals("…", StringComparison.Ordinal) || range.Text.Equals("...", StringComparison.Ordinal))
+                    {
+                        bounded2 = false;
+                        haveBound = true;
+                        continue;
+                    }
+                    if (haveBound)
+                    {
+                        return ParseRuleStatus.MisplacedEndRangeBound;
+                    }
+                    SplitTokenizerEnumerator rangePartEnumerator = range.Text.AsTokens('~', SplitTokenizerEnumerator.PatternWhiteSpace);
+                    // ICU4N: Check to ensure there are exactly 1 or 2 parts to the range
+                    ReadOnlySpan<char> rangePart0 = rangePartEnumerator.MoveNext() ? rangePartEnumerator.Current : ReadOnlySpan<char>.Empty;
+                    ReadOnlySpan<char> rangePart1 = rangePartEnumerator.MoveNext() ? rangePartEnumerator.Current : ReadOnlySpan<char>.Empty;
+                    if (rangePart0.IsEmpty || rangePartEnumerator.MoveNext())
+                        return ParseRuleStatus.IllformedNumberRange;
+
+                    if (rangePart1.IsEmpty) // 1 range part
+                    {
+                        if (!FixedDecimal.TryParse(rangePart0, out FixedDecimal sample))
+                            return ParseRuleStatus.RangeBoundMustBeFloat;
+                        if (!TryCheckDecimal(sampleType2, sample))
+                            return ParseRuleStatus.IllformedNumberRange;
+                        samples2.Add(new FixedDecimalRange(sample, sample));
+                    }
+                    else // 2 range parts
+                    {
+                        if (!FixedDecimal.TryParse(rangePart0, out FixedDecimal start))
+                            return ParseRuleStatus.RangeBoundMustBeFloat;
+                        if (!FixedDecimal.TryParse(rangePart1, out FixedDecimal end))
+                            return ParseRuleStatus.RangeBoundMustBeFloat;
+                        if (!TryCheckDecimal(sampleType2, start))
+                            return ParseRuleStatus.IllformedNumberRange;
+                        if (!TryCheckDecimal(sampleType2, end))
+                            return ParseRuleStatus.IllformedNumberRange;
+                        samples2.Add(new FixedDecimalRange(start, end));
+                    }
+                }
+                result = new FixedDecimalSamples(sampleType2, samples2.AsReadOnly(), bounded2);
+                return ParseRuleStatus.OK;
+            }
+#else
             /// <summary>
             /// Parse a list of the form described in CLDR. The <paramref name="source"/> must be trimmed.
             /// </summary>
@@ -1186,6 +1256,7 @@ namespace ICU4N.Text
                 result =  new FixedDecimalSamples(sampleType2, samples2.AsReadOnly(), bounded2);
                 return ParseRuleStatus.OK;
             }
+#endif
 
             private static bool TryCheckDecimal(PluralRulesSampleType sampleType2, FixedDecimal sample)
             {
@@ -1944,7 +2015,7 @@ namespace ICU4N.Text
             result = ReadOnlySpan<char>.Empty;
             return false;
         }
-#endif
+#else
         /// <summary>
         /// Retrieves the token at <paramref name="x"/> if it doesn't go past the end of the <paramref name="tokens"/> array.
         /// If <paramref name="x"/> is outside of the bounds of , returns <c>false</c>. Incrments the value of <paramref name="x"/>
@@ -1961,6 +2032,7 @@ namespace ICU4N.Text
             result = default;
             return false;
         }
+#endif
 
         /// <summary>
         /// Syntax:
