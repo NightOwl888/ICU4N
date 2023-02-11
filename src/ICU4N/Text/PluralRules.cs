@@ -353,6 +353,11 @@ namespace ICU4N.Text
 #if FEATURE_SPAN
         /// <summary>
         /// Parses a plural rules <paramref name="description"/> and returns a <see cref="PluralRules"/>.
+        /// <para/>
+        /// NOTE: Unlike the <see cref="ParseDescription(string)"/> overload, .NET will implicitly convert
+        /// a <c>null</c> to an empty <see cref="ReadOnlySpan{T}"/>. <see cref="ReadOnlySpan{T}.Empty"/> is a
+        /// valid choice, but <c>null</c> is not. As a result of passing <c>null</c>, this overload will return
+        /// <see cref="Default"/> rather than throwing an <see cref="ArgumentNullException"/>.
         /// </summary>
         /// <param name="description">The rule description.</param>
         /// <exception cref="FormatException">If the <paramref name="description"/> cannot be parsed.
@@ -365,7 +370,7 @@ namespace ICU4N.Text
                 ThrowParseException(status, new string(source), new string(context));
             return result;
         }
-#else
+#endif
         /// <summary>
         /// Parses a plural rules <paramref name="description"/> and returns a <see cref="PluralRules"/>.
         /// </summary>
@@ -379,17 +384,27 @@ namespace ICU4N.Text
             if (description is null)
                 throw new ArgumentNullException(nameof(description));
 
+#if FEATURE_SPAN
+            ParseRuleStatus status = TryParseDescription(description, out PluralRules result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
+            if (status != ParseRuleStatus.OK)
+                ThrowParseException(status, new string(source), new string(context));
+#else
             ParseRuleStatus status = TryParseDescription(description, out PluralRules result, out string source, out string context);
             if (status != ParseRuleStatus.OK)
                 ThrowParseException(status, source, context);
+#endif
             return result;
         }
-#endif
 
 #if FEATURE_SPAN
         /// <summary>
         /// Parses a plural rules <paramref name="description"/> to its <see cref="PluralRules"/> equivalent.
         /// A return value indicates whether the conversion succeeded.
+        /// <para/>
+        /// NOTE: Unlike the <see cref="TryParseDescription(string, out PluralRules)"/> overload, .NET will implicitly convert
+        /// a <c>null</c> to an empty <see cref="ReadOnlySpan{T}"/>. <see cref="ReadOnlySpan{T}.Empty"/> is a
+        /// valid choice, but <c>null</c> is not. As a result of passing <c>null</c>, this overload will return
+        /// <see cref="Default"/> rather than throwing an <see cref="ArgumentNullException"/>.
         /// </summary>
         /// <param name="description">The rule description.</param>
         /// <param name="result">When this method returns, contains the <see cref="PluralRules"/> equivalent
@@ -405,7 +420,7 @@ namespace ICU4N.Text
             ParseRuleStatus status = TryParseDescription(description, out result, out ReadOnlySpan<char> _, out ReadOnlySpan<char> _);
             return status == ParseRuleStatus.OK;
         }
-#else
+#endif
         /// <summary>
         /// Parses a plural rules <paramref name="description"/> to its <see cref="PluralRules"/> equivalent.
         /// A return value indicates whether the conversion succeeded.
@@ -425,10 +440,13 @@ namespace ICU4N.Text
             if (description is null)
                 throw new ArgumentNullException(nameof(description));
 
+#if FEATURE_SPAN
+            ParseRuleStatus status = TryParseDescription(description, out result, out ReadOnlySpan<char> _, out ReadOnlySpan<char> _);
+#else
             ParseRuleStatus status = TryParseDescription(description, out result, out string _, out string _);
+#endif
             return status == ParseRuleStatus.OK;
         }
-#endif
 
 #if FEATURE_SPAN
         internal static ParseRuleStatus TryParseDescription(ReadOnlySpan<char> description, out PluralRules result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context)
@@ -474,6 +492,11 @@ namespace ICU4N.Text
         /// <summary>
         /// Creates a <see cref="PluralRules"/> from a <paramref name="description"/> if it is parsable,
         /// otherwise returns <c>null</c>.
+        /// <para/>
+        /// NOTE: Unlike the <see cref="CreateRules(string)"/> overload, .NET will implicitly convert
+        /// a <c>null</c> to an empty <see cref="ReadOnlySpan{T}"/>. <see cref="ReadOnlySpan{T}.Empty"/> is a
+        /// valid choice, but <c>null</c> is not. As a result of passing <c>null</c>, this overload will return
+        /// <see cref="Default"/> rather than throwing an <see cref="ArgumentNullException"/>.
         /// </summary>
         /// <param name="description">The rule description.</param>
         /// <returns>The <see cref="PluralRules"/>.</returns>
@@ -1256,7 +1279,7 @@ namespace ICU4N.Text
                             source = rangePart0;
                             return ParseRuleStatus.RangeBoundMustBeFloat;
                         }
-                        if (!TryCheckDecimal(sampleType2, sample))
+                        if (!TryCheckDecimal(sampleType2, sample)) // ICU4N TODO: This can never fail - it should be an assert rather than an error.
                         {
                             source = sample.ToString();
                             return ParseRuleStatus.IllformedNumberRange;
@@ -1275,12 +1298,12 @@ namespace ICU4N.Text
                             source = rangePart1;
                             return ParseRuleStatus.RangeBoundMustBeFloat;
                         }
-                        if (!TryCheckDecimal(sampleType2, start))
+                        if (!TryCheckDecimal(sampleType2, start)) // ICU4N TODO: This can never fail - it should be an assert rather than an error.
                         {
                             source = start.ToString();
                             return ParseRuleStatus.IllformedNumberRange;
                         }
-                        if (!TryCheckDecimal(sampleType2, end))
+                        if (!TryCheckDecimal(sampleType2, end)) // ICU4N TODO: This can never fail - it should be an assert rather than an error.
                         {
                             source = end.ToString();
                             return ParseRuleStatus.IllformedNumberRange;
@@ -1317,7 +1340,7 @@ namespace ICU4N.Text
                 {
                     return ParseRuleStatus.SamplesMustStartWithIntOrDec;
                 }
-                text = text.Substring(7); // remove both
+                text = text.Substring(7).Trim(); // remove both
 
                 foreach (string range in COMMA_SEPARATED.Split(text))
                 {
@@ -1919,10 +1942,10 @@ namespace ICU4N.Text
                     if (x < tokens.Length)
                     {
                         token = tokens[x++];
-                        if ("mod".Equals(token, StringComparison.Ordinal) || "%".Equals(token, StringComparison.Ordinal))
+                        if (("mod".Equals(token, StringComparison.Ordinal) || "%".Equals(token, StringComparison.Ordinal)) && TryGetNextToken(tokens, ref x, out token))
                         {
                             // ICU4N NOTE: This overload allows non-ASCII digits
-                            if (!Integer.TryParse(tokens[x++], radix: 10, out mod))
+                            if (!Integer.TryParse(token, radix: 10, out mod))
                             {
                                 return ParseRuleStatus.ConstraintModulusMustBeDigits;
                             }
@@ -2245,7 +2268,7 @@ namespace ICU4N.Text
                     return status;
                 if ((status = FixedDecimalSamples.TryParse(constraintOrSamples2, out decimalSamples, out source, out context)) != ParseRuleStatus.OK)
                     return status;
-                if (integerSamples.sampleType != PluralRulesSampleType.Integer || decimalSamples.sampleType != PluralRulesSampleType.Decimal)
+                if (integerSamples.sampleType != PluralRulesSampleType.Integer || decimalSamples.sampleType != PluralRulesSampleType.Decimal) // ICU4N TODO: This can never fail - should assert
                 {
                     return ParseRuleStatus.StringMustHaveIntOrDec;
                 }
@@ -2262,6 +2285,7 @@ namespace ICU4N.Text
             bool isOther = keyword.Equals("other");
             if (isOther != constraintOrSamples0.IsEmpty)
             {
+                context = description;
                 return ParseRuleStatus.KeywordOtherMustNotHaveConstraints;
             }
 
@@ -2336,7 +2360,7 @@ namespace ICU4N.Text
                         return status;
                     if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[2], out decimalSamples, out source, out context)) != ParseRuleStatus.OK)
                         return status;
-                    if (integerSamples.sampleType != PluralRulesSampleType.Integer || decimalSamples.sampleType != PluralRulesSampleType.Decimal)
+                    if (integerSamples.sampleType != PluralRulesSampleType.Integer || decimalSamples.sampleType != PluralRulesSampleType.Decimal) // ICU4N TODO: This can never fail - should assert
 #pragma warning restore 612, 618
                     {
                         return ParseRuleStatus.StringMustHaveIntOrDec;
@@ -2355,6 +2379,7 @@ namespace ICU4N.Text
             bool isOther = keyword.Equals("other");
             if (isOther != (constraintOrSamples[0].Length == 0))
             {
+                context = description;
                 return ParseRuleStatus.KeywordOtherMustNotHaveConstraints;
             }
 
@@ -2463,32 +2488,37 @@ namespace ICU4N.Text
 
 #nullable enable
         [DoesNotReturn]
-        //[SuppressMessage("Blocker Code Smell", "S3877:Exceptions should not be thrown from unexpected methods", Justification = "Intentional design decision")]
-        internal static void ThrowParseException(ParseRuleStatus status, string source, string? context = null)
+        internal static void ThrowParseException(ParseRuleStatus status, string source, string context)
         {
             throw CreateParseException(status, source, context);
         }
 
-        internal static Exception CreateParseException(ParseRuleStatus status, string source, string context) => status switch
+        internal static Exception CreateParseException(ParseRuleStatus status, string source, string context)
         {
-            ParseRuleStatus.MisplacedEndRangeBound => new FormatException(string.Format(SR.MisplacedEndRangeBound, source)),
-            ParseRuleStatus.IllformedNumberRange => new FormatException(string.Format(SR.IllformedNumberRange, source)),
-            ParseRuleStatus.SamplesMustStartWithIntOrDec => new FormatException(string.Format(SR.SamplesMustStartWithIntOrDec, context)),
-            ParseRuleStatus.RangeBoundMustBeFloat => new FormatException(string.Format(SR.RangeBoundMustBeFloat, source)),
+            return new FormatException(GetExceptionMessage(status, source, context));
+        }
 
-            ParseRuleStatus.MissingColonInRule => new FormatException(string.Format(SR.MissingColonInRule, context)),
-            ParseRuleStatus.KeywordInvalid => new FormatException(string.Format(SR.KeywordInvalid, source)),
-            ParseRuleStatus.StringMustHaveIntOrDec => new FormatException(string.Format(SR.StringMustHaveIntOrDec, context)),
-            ParseRuleStatus.TooManySamples => new FormatException(string.Format(SR.TooManySamples, context)),
-            ParseRuleStatus.IllformedSamplesAtChar => new FormatException(SR.IllformedSamplesAtChar),
-            ParseRuleStatus.KeywordOtherMustNotHaveConstraints => new FormatException(SR.KeywordOtherMustNotHaveConstraints),
+        internal static string GetExceptionMessage(ParseRuleStatus status, string source, string context) => status switch
+        {
+            ParseRuleStatus.MisplacedEndRangeBound => string.Format(SR.MisplacedEndRangeBound, context),
+            ParseRuleStatus.IllformedNumberRange => string.Format(SR.IllformedNumberRange, source),
+            ParseRuleStatus.SamplesMustStartWithIntOrDec => string.Format(SR.SamplesMustStartWithIntOrDec, context),
+            ParseRuleStatus.RangeBoundMustBeFloat => string.Format(SR.RangeBoundMustBeFloat, source),
 
-            ParseRuleStatus.ConstraintInvalidOperand => new FormatException(string.Format(SR.ConstraintInvalidOperand, source)),
-            ParseRuleStatus.ConstraintUnexpectedToken => new FormatException(string.Format(SR.ConstraintUnexpectedToken, source, context)),
-            ParseRuleStatus.ConstraintMissingToken => new FormatException(string.Format(SR.ConstraintMissingToken, context)),
-            ParseRuleStatus.ConstraintModulusMustBeDigits => new FormatException(string.Format(SR.ConstraintModulusMustBeDigits, source, context)),
-            ParseRuleStatus.ConstraintValueMustBeDigits => new FormatException(string.Format(SR.ConstraintValueMustBeDigits, source, context)),
+            ParseRuleStatus.MissingColonInRule => string.Format(SR.MissingColonInRule, context),
+            ParseRuleStatus.KeywordInvalid => string.Format(SR.KeywordInvalid, source),
+            ParseRuleStatus.StringMustHaveIntOrDec => string.Format(SR.StringMustHaveIntOrDec, context),
+            ParseRuleStatus.TooManySamples => string.Format(SR.TooManySamples, context),
+            ParseRuleStatus.IllformedSamplesAtChar => SR.IllformedSamplesAtChar,
+            ParseRuleStatus.KeywordOtherMustNotHaveConstraints => SR.KeywordOtherMustNotHaveConstraints,
+
+            ParseRuleStatus.ConstraintInvalidOperand => string.Format(SR.ConstraintInvalidOperand, source),
+            ParseRuleStatus.ConstraintUnexpectedToken => string.Format(SR.ConstraintUnexpectedToken, source, context),
+            ParseRuleStatus.ConstraintMissingToken => string.Format(SR.ConstraintMissingToken, context),
+            ParseRuleStatus.ConstraintModulusMustBeDigits => string.Format(SR.ConstraintModulusMustBeDigits, source, context),
+            ParseRuleStatus.ConstraintValueMustBeDigits => string.Format(SR.ConstraintValueMustBeDigits, source, context),
         };
+
 #nullable restore
         internal static class SR
         {

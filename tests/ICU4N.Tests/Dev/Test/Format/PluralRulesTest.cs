@@ -124,14 +124,6 @@ namespace ICU4N.Dev.Test.Format
                 Type actualException = null;
                 try
                 {
-#if FEATURE_SPAN
-                    if (rules == null)
-                    {
-                        // Special case: when using ReadOnlySpan<char> .NET implicitly converts null to empty, which is a valid
-                        // case. So, we don't get an exception on these platforms as a result.
-                        continue;
-                    }
-#endif
                     PluralRules.ParseDescription(rules);
                 }
                 catch (Exception e)
@@ -144,31 +136,49 @@ namespace ICU4N.Dev.Test.Format
 
         [Test]
         // ICU4N: Added to ensure our source and context parameters are populated on TryParseDescription()
-        [TestCase("a: n not is 1", "is", "n not is 1")] // Unexpected token
-        [TestCase("a: n is not 1,3", "is not <range>", "n is not 1,3")]
-        [TestCase("a: n not is 1,3", "is", "n not is 1,3")] // Missing token
-        [TestCase("a: n not= 1", "=", "n not= 1")] // Unexpected token
-        [TestCase("a: n not= 1,3", "=", "n not= 1,3")] // Unexpected token
-        [TestCase("a: n ! is not 1", "is", "n ! is not 1")] // Unexpected token
-        [TestCase("a: n not not in 1", "not", "n not not in 1")] // Unexpected token
-        [TestCase("a: n is not not 1", "not", "n is not not 1")] // Unparsable number
-        [TestCase("djkl;", null, "djkl")] // Missing colon (error message adds it)
-        [TestCase("a: n = 1 .", null, "n = 1 .")] // Missing token
-        [TestCase("a: n = 1 ..", null, "n = 1 ..")] // Missing token
-        [TestCase("a: n = 1 2", "2", "n = 1 2")] // Unexpected token
-        [TestCase("a: n = 1 ,", ",", "n = 1 ,")] // Unexpected token
-        [TestCase("a:n in 3 .. 10 , 13 .. 19 ,", ",", "n in 3 .. 10 , 13 .. 19 ,")] // Unexpected token
-        public void TestExceptionMessages(string rules, string expectedSource, string expectedContext)
+        [TestCase("a: n not is 1", "is", "n not is 1", ParseRuleStatus.ConstraintUnexpectedToken)]
+        [TestCase("a: n is not 1,3", "is not <range>", "n is not 1,3", ParseRuleStatus.ConstraintUnexpectedToken)]
+        [TestCase("a: n not is 1,3", "is", "n not is 1,3", ParseRuleStatus.ConstraintUnexpectedToken)]
+        [TestCase("a: n not= 1", "=", "n not= 1", ParseRuleStatus.ConstraintUnexpectedToken)]
+        [TestCase("a: n not= 1,3", "=", "n not= 1,3", ParseRuleStatus.ConstraintUnexpectedToken)]
+        [TestCase("a: n ! is not 1", "is", "n ! is not 1", ParseRuleStatus.ConstraintUnexpectedToken)]
+        [TestCase("a: n not not in 1", "not", "n not not in 1", ParseRuleStatus.ConstraintUnexpectedToken)]
+        [TestCase("a: n is not not 1", "not", "n is not not 1", ParseRuleStatus.ConstraintValueMustBeDigits)]
+        [TestCase("djkl;", null, "djkl", ParseRuleStatus.MissingColonInRule)] // Missing colon (error message adds it)
+        [TestCase("a: n = 1 .", null, "n = 1 .", ParseRuleStatus.ConstraintMissingToken)]
+        [TestCase("a: n = 1 ..", null, "n = 1 ..", ParseRuleStatus.ConstraintMissingToken)]
+        [TestCase("a: n = 1 2", "2", "n = 1 2", ParseRuleStatus.ConstraintUnexpectedToken)]
+        [TestCase("a: n = 1 ,", ",", "n = 1 ,", ParseRuleStatus.ConstraintUnexpectedToken)]
+        [TestCase("a:n in 3 .. 10 , 13 .. 19 ,", ",", "n in 3 .. 10 , 13 .. 19 ,", ParseRuleStatus.ConstraintUnexpectedToken)]
+
+        [TestCase("ก็:n=1", "ก็", "ก็:n=1", ParseRuleStatus.KeywordInvalid)]
+        [TestCase("x: @integer 2~17 @decimal 1.1~2.6 @decimal 3.5~5.6", null, "x: @integer 2~17 @decimal 1.1~2.6 @decimal 3.5~5.6", ParseRuleStatus.TooManySamples)]
+        [TestCase("other: i = 0 or n = 1 @integer 2~17 @decimal 1.1~2.6", null, "i = 0 or n = 1 @integer 2~17 @decimal 1.1~2.6", ParseRuleStatus.KeywordOtherMustNotHaveConstraints)]
+        [TestCase("a: n mod xy in 2..3 or n mod 10 is 5", "xy", "n mod xy in 2..3", ParseRuleStatus.ConstraintModulusMustBeDigits)]
+        [TestCase("a: t is k", "k", "t is k", ParseRuleStatus.ConstraintValueMustBeDigits)]
+
+        // FixedDecimalSamples
+        [TestCase("one: i = 0 or n = 1 @int 0, 1", null, "int 0, 1", ParseRuleStatus.SamplesMustStartWithIntOrDec)]
+        [TestCase("other:  @integer …, 2~17", "2~17", "integer …, 2~17", ParseRuleStatus.MisplacedEndRangeBound)]
+        [TestCase("other:  @integer 2~17~34, 100, 1000, 10000, 100000, 1000000, …", "2~17~34", "integer 2~17~34, 100, 1000, 10000, 100000, 1000000, …", ParseRuleStatus.IllformedNumberRange)]
+        [TestCase("a: @decimal 1.x~2.6", "1.x", "decimal 1.x~2.6", ParseRuleStatus.RangeBoundMustBeFloat)]
+        [TestCase("a: @decimal 1.1~2.x", "2.x", "decimal 1.1~2.x", ParseRuleStatus.RangeBoundMustBeFloat)]
+        [TestCase("a: @decimal 1.x", "1.x", "decimal 1.x", ParseRuleStatus.RangeBoundMustBeFloat)]
+
+        public void TestExceptionMessages(string rules, string expectedSource, string expectedContext, object expectedStatusObj)
         {
+            ParseRuleStatus expectedStatus = (ParseRuleStatus)expectedStatusObj;
+            ParseRuleStatus status;
 #if FEATURE_SPAN
-            PluralRules.TryParseDescription(rules, out PluralRules _, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
+            status = PluralRules.TryParseDescription(rules, out PluralRules _, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
             assertEquals("source incorrect for " + rules, expectedSource ?? string.Empty, new string(source));
             assertEquals("context incorrect for " + rules, expectedContext ?? string.Empty, new string(context));
 #else
-            PluralRules.TryParseDescription(rules, out PluralRules _, out string source, out string context);
+            status = PluralRules.TryParseDescription(rules, out PluralRules _, out string source, out string context);
             assertEquals("source incorrect for " + rules, expectedSource, source);
             assertEquals("context incorrect for " + rules, expectedContext, context);
 #endif
+            assertEquals("expected status incorrect for " + rules, expectedStatus, status);
         }
 
         [Test]
