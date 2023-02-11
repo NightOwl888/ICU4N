@@ -143,6 +143,35 @@ namespace ICU4N.Dev.Test.Format
         }
 
         [Test]
+        // ICU4N: Added to ensure our source and context parameters are populated on TryParseDescription()
+        [TestCase("a: n not is 1", "is", "n not is 1")] // Unexpected token
+        [TestCase("a: n is not 1,3", "is not <range>", "n is not 1,3")]
+        [TestCase("a: n not is 1,3", "is", "n not is 1,3")] // Missing token
+        [TestCase("a: n not= 1", "=", "n not= 1")] // Unexpected token
+        [TestCase("a: n not= 1,3", "=", "n not= 1,3")] // Unexpected token
+        [TestCase("a: n ! is not 1", "is", "n ! is not 1")] // Unexpected token
+        [TestCase("a: n not not in 1", "not", "n not not in 1")] // Unexpected token
+        [TestCase("a: n is not not 1", "not", "n is not not 1")] // Unparsable number
+        [TestCase("djkl;", null, "djkl")] // Missing colon (error message adds it)
+        [TestCase("a: n = 1 .", null, "n = 1 .")] // Missing token
+        [TestCase("a: n = 1 ..", null, "n = 1 ..")] // Missing token
+        [TestCase("a: n = 1 2", "2", "n = 1 2")] // Unexpected token
+        [TestCase("a: n = 1 ,", ",", "n = 1 ,")] // Unexpected token
+        [TestCase("a:n in 3 .. 10 , 13 .. 19 ,", ",", "n in 3 .. 10 , 13 .. 19 ,")] // Unexpected token
+        public void TestExceptionMessages(string rules, string expectedSource, string expectedContext)
+        {
+#if FEATURE_SPAN
+            PluralRules.TryParseDescription(rules, out PluralRules _, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
+            assertEquals("source incorrect for " + rules, expectedSource ?? string.Empty, new string(source));
+            assertEquals("context incorrect for " + rules, expectedContext ?? string.Empty, new string(context));
+#else
+            PluralRules.TryParseDescription(rules, out PluralRules _, out string source, out string context);
+            assertEquals("source incorrect for " + rules, expectedSource, source);
+            assertEquals("context incorrect for " + rules, expectedContext, context);
+#endif
+        }
+
+        [Test]
         public void TestSamples()
         {
             String description = "one: n is 3 or f is 5 @integer  3,19, @decimal 3.50 ~ 3.53,   …; other:  @decimal 99.0~99.2, 999.0, …";

@@ -1774,6 +1774,7 @@ namespace ICU4N.Text
                         // Hack to exclude "is not 1,2"
                         if (lowBound != highBound && hackForCompatibility && !inRange)
                         {
+                            token = "is not <range>";
                             return ParseRuleStatus.ConstraintUnexpectedToken;
                         }
 
@@ -2038,6 +2039,7 @@ namespace ICU4N.Text
                         // Hack to exclude "is not 1,2"
                         if (lowBound != highBound && hackForCompatibility && !inRange)
                         {
+                            token = "is not <range>";
                             return ParseRuleStatus.ConstraintUnexpectedToken;
                         }
 
@@ -2155,6 +2157,7 @@ namespace ICU4N.Text
             string keyword = new string(description.Slice(0, x).Trim()); // ICU4N: Checked 2nd arg
             if (!IsValidKeyword(keyword))
             {
+                source = keyword;
                 return ParseRuleStatus.KeywordInvalid;
             }
 
@@ -2216,7 +2219,7 @@ namespace ICU4N.Text
             }
             else
             {
-                if ((status = TryParseConstraint(constraintOrSamples0, out constraint, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition)) != ParseRuleStatus.OK)
+                if ((status = TryParseConstraint(constraintOrSamples0, out constraint, out source, out context)) != ParseRuleStatus.OK)
                     return status;
             }
             result = new Rule(keyword, constraint, integerSamples, decimalSamples);
@@ -2253,6 +2256,7 @@ namespace ICU4N.Text
             string keyword = description.Substring(0, x).Trim(); // ICU4N: Checked 2nd arg
             if (!IsValidKeyword(keyword))
             {
+                source = keyword;
                 return ParseRuleStatus.KeywordInvalid;
             }
 
@@ -2308,7 +2312,7 @@ namespace ICU4N.Text
             }
             else
             {
-                if ((status = TryParseConstraint(constraintOrSamples[0], out constraint, out string token, out string condition)) != ParseRuleStatus.OK)
+                if ((status = TryParseConstraint(constraintOrSamples[0], out constraint, out source, out context)) != ParseRuleStatus.OK)
                     return status;
             }
             result = new Rule(keyword, constraint, integerSamples, decimalSamples);
@@ -2337,10 +2341,8 @@ namespace ICU4N.Text
             foreach (var ruleToken in description.AsTokens(';', SplitTokenizerEnumerator.PatternWhiteSpace))
             {
                 // ICU4N: ruleToken is already trimmed
-                if ((status = TryParseRule(ruleToken.Text, out Rule rule, out ReadOnlySpan<char> src, out ReadOnlySpan<char> ctx)) != ParseRuleStatus.OK)
+                if ((status = TryParseRule(ruleToken.Text, out Rule rule, out source, out context)) != ParseRuleStatus.OK)
                 {
-                    source = new string(src);
-                    context = new string(ctx);
                     return status;
                 }
                 result.HasExplicitBoundingInfo |= rule.IntegerSamples != null || rule.DecimalSamples != null;
@@ -2422,7 +2424,7 @@ namespace ICU4N.Text
             ParseRuleStatus.SamplesMustStartWithIntOrDec => new ArgumentException(SR.SamplesMustStartWithIntOrDec),
             ParseRuleStatus.RangeBoundMustBeFloat => new FormatException(string.Format(SR.RangeBoundMustBeFloat, source)),
 
-            ParseRuleStatus.MissingColonInRule => new FormatException(string.Format(SR.MissingColonInRule, source)),
+            ParseRuleStatus.MissingColonInRule => new FormatException(string.Format(SR.MissingColonInRule, context)),
             ParseRuleStatus.KeywordInvalid => new FormatException(string.Format(SR.KeywordInvalid, source)),
             ParseRuleStatus.StringMustHaveIntOrDec => new FormatException(string.Format(SR.StringMustHaveIntOrDec, source)),
             ParseRuleStatus.TooManySamples => new FormatException(string.Format(SR.TooManySamples, source)),
@@ -2431,7 +2433,7 @@ namespace ICU4N.Text
 
             ParseRuleStatus.ConstraintInvalidOperand => new FormatException(string.Format(SR.ConstraintInvalidOperand, source)),
             ParseRuleStatus.ConstraintUnexpectedToken => new FormatException(string.Format(SR.ConstraintUnexpectedToken, source, context)),
-            ParseRuleStatus.ConstraintMissingToken => new FormatException(string.Format(SR.ConstraintMissingToken, source)),
+            ParseRuleStatus.ConstraintMissingToken => new FormatException(string.Format(SR.ConstraintMissingToken, context)),
             ParseRuleStatus.ConstraintModulusMustBeDigits => new FormatException(string.Format(SR.ConstraintModulusMustBeDigits, source, context)),
             ParseRuleStatus.ConstraintValueMustBeDigits => new FormatException(string.Format(SR.ConstraintValueMustBeDigits, source, context)),
         };
