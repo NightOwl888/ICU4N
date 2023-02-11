@@ -1193,21 +1193,23 @@ namespace ICU4N.Text
 
 #if FEATURE_SPAN
             /// <summary>
-            /// Parse a list of the form described in CLDR. The <paramref name="source"/> must be trimmed.
+            /// Parse a list of the form described in CLDR. The <paramref name="text"/> must be trimmed.
             /// </summary>
-            internal static ParseRuleStatus TryParse(ReadOnlySpan<char> source, out FixedDecimalSamples result) // ICU4N TODO: Add source and context out params for relevent error messages
+            internal static ParseRuleStatus TryParse(ReadOnlySpan<char> text, out FixedDecimalSamples result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context)
             {
                 result = default;
+                source = default;
+                context = text;
                 PluralRulesSampleType sampleType2;
                 bool bounded2 = true;
                 bool haveBound = false;
                 ISet<FixedDecimalRange> samples2 = new JCG.LinkedHashSet<FixedDecimalRange>();
 
-                if (source.StartsWith("integer", StringComparison.Ordinal))
+                if (text.StartsWith("integer", StringComparison.Ordinal))
                 {
                     sampleType2 = PluralRulesSampleType.Integer;
                 }
-                else if (source.StartsWith("decimal", StringComparison.Ordinal))
+                else if (text.StartsWith("decimal", StringComparison.Ordinal))
                 {
                     sampleType2 = PluralRulesSampleType.Decimal;
                 }
@@ -1215,10 +1217,17 @@ namespace ICU4N.Text
                 {
                     return ParseRuleStatus.SamplesMustStartWithIntOrDec;
                 }
-                source = source.Slice(7); // remove both
+                text = text.Slice(7); // remove both
 
-                foreach (var range in source.AsTokens(',', SplitTokenizerEnumerator.PatternWhiteSpace))
+                foreach (var range in text.AsTokens(',', SplitTokenizerEnumerator.PatternWhiteSpace))
                 {
+                    // ICU4N specific - Ensure we remove any empty entries to match Java Pattern.
+                    // SplitTokenizerEnumerator trims whitespace automatically, so they will always be empty.
+                    if (range.Text.IsEmpty)
+                    {
+                        continue;
+                    }
+
                     if (range.Text.Equals("…", StringComparison.Ordinal) || range.Text.Equals("...", StringComparison.Ordinal))
                     {
                         bounded2 = false;
@@ -1227,6 +1236,7 @@ namespace ICU4N.Text
                     }
                     if (haveBound)
                     {
+                        source = range;
                         return ParseRuleStatus.MisplacedEndRangeBound;
                     }
                     SplitTokenizerEnumerator rangePartEnumerator = range.Text.AsTokens('~', SplitTokenizerEnumerator.PatternWhiteSpace);
@@ -1234,26 +1244,47 @@ namespace ICU4N.Text
                     ReadOnlySpan<char> rangePart0 = rangePartEnumerator.MoveNext() ? rangePartEnumerator.Current : ReadOnlySpan<char>.Empty;
                     ReadOnlySpan<char> rangePart1 = rangePartEnumerator.MoveNext() ? rangePartEnumerator.Current : ReadOnlySpan<char>.Empty;
                     if (rangePart0.IsEmpty || rangePartEnumerator.MoveNext())
+                    {
+                        source = range;
                         return ParseRuleStatus.IllformedNumberRange;
+                    }
 
                     if (rangePart1.IsEmpty) // 1 range part
                     {
                         if (!FixedDecimal.TryParse(rangePart0, out FixedDecimal sample))
+                        {
+                            source = rangePart0;
                             return ParseRuleStatus.RangeBoundMustBeFloat;
+                        }
                         if (!TryCheckDecimal(sampleType2, sample))
+                        {
+                            source = sample.ToString();
                             return ParseRuleStatus.IllformedNumberRange;
+                        }
                         samples2.Add(new FixedDecimalRange(sample, sample));
                     }
                     else // 2 range parts
                     {
                         if (!FixedDecimal.TryParse(rangePart0, out FixedDecimal start))
+                        {
+                            source = rangePart0;
                             return ParseRuleStatus.RangeBoundMustBeFloat;
+                        }
                         if (!FixedDecimal.TryParse(rangePart1, out FixedDecimal end))
+                        {
+                            source = rangePart1;
                             return ParseRuleStatus.RangeBoundMustBeFloat;
+                        }
                         if (!TryCheckDecimal(sampleType2, start))
+                        {
+                            source = start.ToString();
                             return ParseRuleStatus.IllformedNumberRange;
+                        }
                         if (!TryCheckDecimal(sampleType2, end))
+                        {
+                            source = end.ToString();
                             return ParseRuleStatus.IllformedNumberRange;
+                        }
                         samples2.Add(new FixedDecimalRange(start, end));
                     }
                 }
@@ -1264,19 +1295,21 @@ namespace ICU4N.Text
             /// <summary>
             /// Parse a list of the form described in CLDR. The <paramref name="source"/> must be trimmed.
             /// </summary>
-            internal static ParseRuleStatus TryParse(string source, out FixedDecimalSamples result)
+            internal static ParseRuleStatus TryParse(string text, out FixedDecimalSamples result, out string source, out string context)
             {
                 result = default;
+                source = default;
+                context = text;
                 PluralRulesSampleType sampleType2;
                 bool bounded2 = true;
                 bool haveBound = false;
                 ISet<FixedDecimalRange> samples2 = new JCG.LinkedHashSet<FixedDecimalRange>();
 
-                if (source.StartsWith("integer", StringComparison.Ordinal))
+                if (text.StartsWith("integer", StringComparison.Ordinal))
                 {
                     sampleType2 = PluralRulesSampleType.Integer;
                 }
-                else if (source.StartsWith("decimal", StringComparison.Ordinal))
+                else if (text.StartsWith("decimal", StringComparison.Ordinal))
                 {
                     sampleType2 = PluralRulesSampleType.Decimal;
                 }
@@ -1284,9 +1317,9 @@ namespace ICU4N.Text
                 {
                     return ParseRuleStatus.SamplesMustStartWithIntOrDec;
                 }
-                source = source.Substring(7); // remove both
+                text = text.Substring(7); // remove both
 
-                foreach (string range in COMMA_SEPARATED.Split(source))
+                foreach (string range in COMMA_SEPARATED.Split(text))
                 {
                     // ICU4N specific - .NET Split() doesn't remove empty entries
                     // from the end of the array. So, we skip them here.
@@ -1303,6 +1336,7 @@ namespace ICU4N.Text
                     }
                     if (haveBound)
                     {
+                        source = range;
                         return ParseRuleStatus.MisplacedEndRangeBound;
                     }
                     string[] rangeParts = TILDE_SEPARATED.Split(range);
@@ -1310,23 +1344,42 @@ namespace ICU4N.Text
                     {
                         case 1:
                             if (!FixedDecimal.TryParse(rangeParts[0], out FixedDecimal sample))
+                            {
+                                source = rangeParts[0];
                                 return ParseRuleStatus.RangeBoundMustBeFloat;
+                            }
                             if (!TryCheckDecimal(sampleType2, sample))
+                            {
+                                source = sample.ToString();
                                 return ParseRuleStatus.IllformedNumberRange;
+                            }
                             samples2.Add(new FixedDecimalRange(sample, sample));
                             break;
                         case 2:
                             if (!FixedDecimal.TryParse(rangeParts[0], out FixedDecimal start))
+                            {
+                                source = rangeParts[0];
                                 return ParseRuleStatus.RangeBoundMustBeFloat;
+                            }
                             if (!FixedDecimal.TryParse(rangeParts[1], out FixedDecimal end))
+                            {
+                                source = rangeParts[1];
                                 return ParseRuleStatus.RangeBoundMustBeFloat;
+                            }
                             if (!TryCheckDecimal(sampleType2, start))
+                            {
+                                source = start.ToString();
                                 return ParseRuleStatus.IllformedNumberRange;
+                            }
                             if (!TryCheckDecimal(sampleType2, end))
+                            {
+                                source = end.ToString();
                                 return ParseRuleStatus.IllformedNumberRange;
+                            }
                             samples2.Add(new FixedDecimalRange(start, end));
                             break;
                         default:
+                            source = range;
                             return ParseRuleStatus.IllformedNumberRange;
                     }
                 }
@@ -2120,7 +2173,7 @@ namespace ICU4N.Text
         /// keyword: &lt;identifier&gt;
         /// </summary>
         // ICU4N: Refactored ParseRule into TryParseRule for compatibility with .NET
-        private static ParseRuleStatus TryParseRule(ReadOnlySpan<char> description, out Rule result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context) // ICU4N TODO: Assign source and context out params for relevent error messages
+        private static ParseRuleStatus TryParseRule(ReadOnlySpan<char> description, out Rule result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context)
         {
             result = default;
             source = default;
@@ -2178,7 +2231,7 @@ namespace ICU4N.Text
             // ICU4N: 0 or 1 part will pass through
             if (!constraintOrSamples1.IsEmpty && constraintOrSamples2.IsEmpty) // 2 parts
             {
-                if ((status = FixedDecimalSamples.TryParse(constraintOrSamples1, out integerSamples)) != ParseRuleStatus.OK)
+                if ((status = FixedDecimalSamples.TryParse(constraintOrSamples1, out integerSamples, out source, out context)) != ParseRuleStatus.OK)
                     return status;
                 if (integerSamples.sampleType == PluralRulesSampleType.Decimal)
                 {
@@ -2188,9 +2241,9 @@ namespace ICU4N.Text
             }
             else if (!constraintOrSamples1.IsEmpty && !constraintOrSamples2.IsEmpty) // 3 parts
             {
-                if ((status = FixedDecimalSamples.TryParse(constraintOrSamples1, out integerSamples)) != ParseRuleStatus.OK)
+                if ((status = FixedDecimalSamples.TryParse(constraintOrSamples1, out integerSamples, out source, out context)) != ParseRuleStatus.OK)
                     return status;
-                if ((status = FixedDecimalSamples.TryParse(constraintOrSamples2, out decimalSamples)) != ParseRuleStatus.OK)
+                if ((status = FixedDecimalSamples.TryParse(constraintOrSamples2, out decimalSamples, out source, out context)) != ParseRuleStatus.OK)
                     return status;
                 if (integerSamples.sampleType != PluralRulesSampleType.Integer || decimalSamples.sampleType != PluralRulesSampleType.Decimal)
                 {
@@ -2270,7 +2323,7 @@ namespace ICU4N.Text
             {
                 case 1: break;
                 case 2:
-                    if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[1], out integerSamples)) != ParseRuleStatus.OK)
+                    if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[1], out integerSamples, out source, out context)) != ParseRuleStatus.OK)
                         return status;
                     if (integerSamples.sampleType == PluralRulesSampleType.Decimal)
                     {
@@ -2279,9 +2332,9 @@ namespace ICU4N.Text
                     }
                     break;
                 case 3:
-                    if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[1], out integerSamples)) != ParseRuleStatus.OK)
+                    if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[1], out integerSamples, out source, out context)) != ParseRuleStatus.OK)
                         return status;
-                    if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[2], out decimalSamples)) != ParseRuleStatus.OK)
+                    if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[2], out decimalSamples, out source, out context)) != ParseRuleStatus.OK)
                         return status;
                     if (integerSamples.sampleType != PluralRulesSampleType.Integer || decimalSamples.sampleType != PluralRulesSampleType.Decimal)
 #pragma warning restore 612, 618
@@ -2416,19 +2469,18 @@ namespace ICU4N.Text
             throw CreateParseException(status, source, context);
         }
 
-        internal static Exception CreateParseException(ParseRuleStatus status, string source, string? context = null) => status switch
+        internal static Exception CreateParseException(ParseRuleStatus status, string source, string context) => status switch
         {
-            // ICU4N TODO: Clean this up so we only have FormatException type...?
-            ParseRuleStatus.MisplacedEndRangeBound => new ArgumentException(string.Format(SR.MisplacedEndRangeBound, source)),
-            ParseRuleStatus.IllformedNumberRange => new ArgumentException(string.Format(SR.IllformedNumberRange, source)),
-            ParseRuleStatus.SamplesMustStartWithIntOrDec => new ArgumentException(SR.SamplesMustStartWithIntOrDec),
+            ParseRuleStatus.MisplacedEndRangeBound => new FormatException(string.Format(SR.MisplacedEndRangeBound, source)),
+            ParseRuleStatus.IllformedNumberRange => new FormatException(string.Format(SR.IllformedNumberRange, source)),
+            ParseRuleStatus.SamplesMustStartWithIntOrDec => new FormatException(string.Format(SR.SamplesMustStartWithIntOrDec, context)),
             ParseRuleStatus.RangeBoundMustBeFloat => new FormatException(string.Format(SR.RangeBoundMustBeFloat, source)),
 
             ParseRuleStatus.MissingColonInRule => new FormatException(string.Format(SR.MissingColonInRule, context)),
             ParseRuleStatus.KeywordInvalid => new FormatException(string.Format(SR.KeywordInvalid, source)),
-            ParseRuleStatus.StringMustHaveIntOrDec => new FormatException(string.Format(SR.StringMustHaveIntOrDec, source)),
-            ParseRuleStatus.TooManySamples => new FormatException(string.Format(SR.TooManySamples, source)),
-            ParseRuleStatus.IllformedSamplesAtChar => new FormatException(string.Format(SR.IllformedSamplesAtChar, source)),
+            ParseRuleStatus.StringMustHaveIntOrDec => new FormatException(string.Format(SR.StringMustHaveIntOrDec, context)),
+            ParseRuleStatus.TooManySamples => new FormatException(string.Format(SR.TooManySamples, context)),
+            ParseRuleStatus.IllformedSamplesAtChar => new FormatException(SR.IllformedSamplesAtChar),
             ParseRuleStatus.KeywordOtherMustNotHaveConstraints => new FormatException(SR.KeywordOtherMustNotHaveConstraints),
 
             ParseRuleStatus.ConstraintInvalidOperand => new FormatException(string.Format(SR.ConstraintInvalidOperand, source)),
@@ -2442,14 +2494,14 @@ namespace ICU4N.Text
         {
             public const string MisplacedEndRangeBound = "Can only have … at the end of samples: '{0}'";
             public const string IllformedNumberRange = "Ill-formed number range: '{0}'";
-            public const string SamplesMustStartWithIntOrDec = "Samples must start with 'integer' or 'decimal'";
+            public const string SamplesMustStartWithIntOrDec = "Samples must start with 'integer' or 'decimal': '{0}'";
             public const string RangeBoundMustBeFloat = "Range bound must be an integral or floating point number in ASCII digits: '{0}'";
 
             public const string MissingColonInRule = "Missing ':' in rule description '{0}'.";
             public const string KeywordInvalid = "Keyword '{0}' is not valid.";
             public const string StringMustHaveIntOrDec = "Must have @integer then @decimal in '{0}'.";
             public const string TooManySamples = "Too many samples in '{0}'.";
-            public const string IllformedSamplesAtChar = "Too many samples in '{0}'.";
+            public const string IllformedSamplesAtChar = "Ill-formed samples—'@' characters.";
             public const string KeywordOtherMustNotHaveConstraints = "The keyword 'other' must have no constraints, just samples.";
 
             public const string ConstraintInvalidOperand = "Invalid operand: '{0}'.";
