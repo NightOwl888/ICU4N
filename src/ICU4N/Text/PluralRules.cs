@@ -482,7 +482,7 @@ namespace ICU4N.Text
         {
             return TryParseDescription(description, out PluralRules result) ? result : null;
         }
-#else
+#endif
 
         /// <summary>
         /// Creates a <see cref="PluralRules"/> from a <paramref name="description"/> if it is parsable,
@@ -493,12 +493,12 @@ namespace ICU4N.Text
         /// <stable>ICU 3.8</stable>
         public static PluralRules CreateRules(string description)
         {
-            if (description is null) // ICU4N TODO: Need to work out if this is sensible or if we should use a TryCreateRules method instead. TryParseDescription does exactly that but has a less desirable name.
+            if (description is null)
                 return null;
 
             return TryParseDescription(description, out PluralRules result) ? result : null;
         }
-#endif
+
 
         /// <summary>
         /// The default rules that accept any number and return

@@ -453,15 +453,15 @@ namespace ICU4N.Dev.Test.Format
             new string[] { "c: n%11!=5", "c: n mod 11 is not 5" }, new string[] { "c: n is not 7", "c: n != 7" }, new string[] { "a:n in 2;", "a: n = 2" },
             new string[] { "b:n not in 5;", "b: n != 5" },
 
-    // { "a: n is 5",
-    // "a: n in 2..6 and n not in 2..4 and n is not 6" },
-    // { "a: n in 2..3",
-    // "a: n is 2 or n is 3",
-    // "a: n is 3 and n in 2..5 or n is 2" },
-    // { "a: n is 12; b:n mod 10 in 2..3",
-    // "b: n mod 10 in 2..3 and n is not 12; a: n in 12..12",
-    // "b: n is 13; a: n is 12; b: n mod 10 is 2 or n mod 10 is 3" },
-    };
+            // new string[] { "a: n is 5",
+            // "a: n in 2..6 and n not in 2..4 and n is not 6" },
+            // new string[] { "a: n in 2..3",
+            // "a: n is 2 or n is 3",
+            // "a: n is 3 and n in 2..5 or n is 2" },
+            // new string[] { "a: n is 12; b:n mod 10 in 2..3",
+            // "b: n mod 10 in 2..3 and n is not 12; a: n in 12..12",
+            // "b: n is 13; a: n is 12; b: n mod 10 is 2 or n mod 10 is 3" },
+        };
 
         private static string[][] inequalityTestData = new string[][] { new string[] { "a: n mod 8 is 3", "a: n mod 7 is 3" },
             new string[] { "a: n mod 3 is 2 and n is not 5", "a: n mod 6 is 2 or n is 8 or n is 11" },
@@ -579,7 +579,7 @@ namespace ICU4N.Dev.Test.Format
                             + "to return PluralRules.DEFAULT when String is of " + "length 0.");
                 }
             }
-            catch (ParseException e)
+            catch (Exception e)
             {
                 Errln("PluralRules.parseDescription(String) was not suppose " + "to return an exception.");
             }
