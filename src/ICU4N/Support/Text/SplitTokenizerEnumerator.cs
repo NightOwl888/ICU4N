@@ -266,7 +266,7 @@ namespace ICU4N.Text
         /// be used inside of a foreach statement.
         /// </summary>
         /// <param name="text">The input text.</param>
-        /// <param name="delimiter">The character(s) to split on.</param>
+        /// <param name="delimiter">The sequence of characters to split on.</param>
         /// <param name="trimChars">The characters to trim from the beginning and end of each token.</param>
         public SplitTokenizerEnumerator(ReadOnlySpan<char> text, ReadOnlySpan<char> delimiter, ReadOnlySpan<char> trimChars)
         {
