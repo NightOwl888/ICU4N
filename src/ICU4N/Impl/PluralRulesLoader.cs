@@ -208,36 +208,37 @@ namespace ICU4N.Impl
         public virtual PluralRules GetRulesForRulesId(string rulesId)
         {
             return rulesIdToRules.GetOrAdd(rulesId, (key) => {
+
+                UResourceBundle setb;
                 try
                 {
                     UResourceBundle pluralb = GetPluralBundle();
                     UResourceBundle rulesb = pluralb.Get("rules");
-                    UResourceBundle setb = rulesb.Get(key);
-
-                    // ICU4N TODO: Process rules here rather than building a string and then parsing the string.
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < setb.Length; ++i)
-                    {
-                        UResourceBundle b = setb.Get(i);
-                        if (i > 0)
-                        {
-                            sb.Append("; ");
-                        }
-                        sb.Append(b.Key);
-                        sb.Append(": ");
-                        sb.Append(b.GetString());
-                    }
-                    return PluralRules.ParseDescription(sb.ToString());
-                }
-                catch (FormatException)
-                {
-                    // Ignore
+                    setb = rulesb.Get(key);
                 }
                 catch (MissingManifestResourceException)
                 {
-                    // Ignore
+                    return null; // can be null
                 }
-                return null; // can be null
+
+                var ruleList = new PluralRules.RuleList();
+                bool parseFailure = false;
+                for (int i = 0; i < setb.Length; ++i)
+                {
+                    UResourceBundle b = setb.Get(i);
+                    if (PluralRules.TryParseRule(b.Key, b.GetString(), out PluralRules.Rule rule))
+                    {
+                        ruleList.AddRule(rule);
+                    }
+                    else
+                    {
+                        parseFailure = true;
+                    }
+                }
+                if (parseFailure || ruleList.Count == 0)
+                    return null; // can be null
+
+                return new PluralRules(ruleList.Finish());
             });
         }
 

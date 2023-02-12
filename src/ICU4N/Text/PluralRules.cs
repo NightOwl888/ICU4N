@@ -2222,9 +2222,9 @@ namespace ICU4N.Text
         }
 
         // ICU4N: Added overload for use by PluralRulesLoader so it doesn't have to use StringBuilder
-        internal static ParseRuleStatus TryParseRule(ReadOnlySpan<char> keyword, ReadOnlySpan<char> description, out Rule result)
+        internal static bool TryParseRule(ReadOnlySpan<char> keyword, ReadOnlySpan<char> description, out Rule result)
         {
-            return TryParseRule(keyword, description, out result, out ReadOnlySpan<char> _, out ReadOnlySpan<char> _);
+            return TryParseRule(keyword, description, out result, out ReadOnlySpan<char> _, out ReadOnlySpan<char> _) == ParseRuleStatus.OK;
         }
 
         /// <summary>
@@ -2386,9 +2386,9 @@ namespace ICU4N.Text
         }
 
         // ICU4N: Added overload for use by PluralRulesLoader so it doesn't have to use StringBuilder
-        internal static ParseRuleStatus TryParseRule(string keyword, string description, out Rule result)
+        internal static bool TryParseRule(string keyword, string description, out Rule result)
         {
-            return TryParseRule(keyword, description, out result, out string _, out string _);
+            return TryParseRule(keyword, description, out result, out string _, out string _) == ParseRuleStatus.OK;
         }
 
         /// <summary>
@@ -2502,10 +2502,8 @@ namespace ICU4N.Text
             {
                 // ICU4N: ruleToken is already trimmed
                 if ((status = TryParseRule(ruleToken.Text, out Rule rule, out source, out context)) != ParseRuleStatus.OK)
-                {
                     return status;
-                }
-                result.HasExplicitBoundingInfo |= rule.IntegerSamples != null || rule.DecimalSamples != null;
+
                 result.AddRule(rule);
             }
             result = result.Finish();
@@ -2513,12 +2511,12 @@ namespace ICU4N.Text
         }
 #else
 
-            /// <summary>
-            /// Syntax:
-            /// rules : rule
-            ///         rule ';' rules
-            /// </summary>
-            private static ParseRuleStatus TryParseRuleChain(string description, out RuleList result, out string source, out string context)
+        /// <summary>
+        /// Syntax:
+        /// rules : rule
+        ///         rule ';' rules
+        /// </summary>
+        private static ParseRuleStatus TryParseRuleChain(string description, out RuleList result, out string source, out string context)
         {
             source = default;
             context = description;
@@ -2534,7 +2532,7 @@ namespace ICU4N.Text
             {
                 if ((status = TryParseRule(rules[i].Trim(), out Rule rule, out source, out context)) != ParseRuleStatus.OK)
                     return status;
-                result.HasExplicitBoundingInfo |= rule.IntegerSamples != null || rule.DecimalSamples != null;
+
                 result.AddRule(rule);
             }
             result = result.Finish();
@@ -2944,6 +2942,7 @@ namespace ICU4N.Text
             //private static readonly long serialVersionUID = 1;
             private readonly List<Rule> rules = new List<Rule>();
 
+            public int Count => rules.Count;
             public RuleList AddRule(Rule nextRule)
             {
                 string keyword = nextRule.Keyword;
@@ -2954,6 +2953,8 @@ namespace ICU4N.Text
                         throw new ArgumentException("Duplicate keyword: " + keyword);
                     }
                 }
+                // ICU4N: Added this to encapsulate logic in RuleList. It was previously done in PluralRules.ParseRuleChain().
+                hasExplicitBoundingInfo |= nextRule.IntegerSamples != null || nextRule.DecimalSamples != null;
                 rules.Add(nextRule);
                 return this;
             }
@@ -3286,7 +3287,7 @@ namespace ICU4N.Text
         /// Creates a new <see cref="PluralRules"/> object. Immutable.
         /// </summary>
         /// <param name="rules"></param>
-        private PluralRules(RuleList rules)
+        internal PluralRules(RuleList rules)
         {
             this.rules = rules;
             this.keywords = rules.GetKeywords().AsReadOnly();
