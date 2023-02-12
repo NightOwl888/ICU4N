@@ -9,6 +9,8 @@
     <DefineConstants>$(DefineConstants);FEATURE_ARRAYPOOL</DefineConstants>
     <!-- For now, we only support Span on .NET 6. -->
     <DefineConstants>$(DefineConstants);FEATURE_SPAN</DefineConstants>
+    <!-- For now, we only support Rune on .NET 6. -->
+    <DefineConstants>$(DefineConstants);FEATURE_RUNE</DefineConstants>
     
   </PropertyGroup>
 

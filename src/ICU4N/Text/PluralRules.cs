@@ -20,6 +20,7 @@ using J2N.Globalization;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using ICU4N.Util;
+using System.Runtime.InteropServices;
 #if FEATURE_ARRAYPOOL
 using System.Buffers;
 #endif
@@ -2208,21 +2209,7 @@ namespace ICU4N.Text
                 return ParseRuleStatus.OK;
             }
 
-            // ICU4N TODO: Eliminate this allocation by using StringComparison.OrdinalIgnoreCase downstream from here and lowercasing only the keyword
-            int minimumLength = (int)(description.Length * 1.15);
-            //if (minimumLength <= 512)
-            //{
-            //    Span<char> tempArray = stackalloc char[minimumLength];
-            //    int actualLength = description.ToLowerInvariant(tempArray);
-            //    description = tempArray.Slice(0, actualLength);
-            //}
-            //else
-            {
-                char[] tempArray = ArrayPool<char>.Shared.Rent(minimumLength);
-                int actualLength = description.ToLowerInvariant(tempArray);
-                description = new ReadOnlySpan<char>(tempArray, 0, actualLength);
-                ArrayPool<char>.Shared.Return(tempArray);
-            }
+            description = ToLowerInvariant(description);
 
             int x = description.IndexOf(':');
             if (x == -1)
@@ -2301,6 +2288,40 @@ namespace ICU4N.Text
             }
             result = new Rule(keyword, constraint, integerSamples, decimalSamples);
             return ParseRuleStatus.OK;
+        }
+
+        private static ReadOnlySpan<char> ToLowerInvariant(ReadOnlySpan<char> value)
+        {
+#if FEATURE_RUNE
+            // ICU4N: This is definitely slower, but will prevent an allocation of the
+            // whole span if there are no uppercase chars.
+            bool hasUpper = false;
+            foreach (var rune in value.EnumerateRunes())
+            {
+                if (J2N.Character.IsUpper(rune.Value))
+                {
+                    hasUpper = true;
+                    break;
+                }
+            }
+
+            if (!hasUpper) return value;
+#endif
+
+            int bufferLength = value.Length;
+            char[] tempArray = ArrayPool<char>.Shared.Rent(bufferLength);
+            int actualLength = value.ToLowerInvariant(tempArray);
+            // If the string contains non-ASCII chars, we might end up with an overflow.
+            // Re-allocate the array with 2x the length (which is the maximum if all are surrogates).
+            if (actualLength == -1)
+            {
+                ArrayPool<char>.Shared.Return(tempArray);
+                tempArray = ArrayPool<char>.Shared.Rent(bufferLength * 2);
+                actualLength = value.ToLowerInvariant(tempArray);
+            }
+            var result = new ReadOnlySpan<char>(tempArray, 0, actualLength);
+            ArrayPool<char>.Shared.Return(tempArray);
+            return result;
         }
 #else
 
