@@ -246,7 +246,9 @@ namespace ICU4N.Text
 #endif
     public class PluralRules
     {
+#if !FEATURE_SPAN
         internal static readonly UnicodeSet ALLOWED_ID = new UnicodeSet("[a-z]").Freeze();
+#endif
 
         // TODO Remove RulesList by moving its API and fields into PluralRules.
         /// <internal/>
@@ -2209,22 +2211,49 @@ namespace ICU4N.Text
                 return ParseRuleStatus.OK;
             }
 
-            description = ToLowerInvariant(description);
-
             int x = description.IndexOf(':');
             if (x == -1)
             {
                 return ParseRuleStatus.MissingColonInRule;
             }
 
-            string keyword = new string(description.Slice(0, x).Trim()); // ICU4N: Checked 2nd arg
+            // ICU4N: Checked 2nd arg
+            return TryParseRule(description.Slice(0, x).Trim(), description.Slice(x + 1).Trim(), out result, out source, out context);
+        }
+
+        // ICU4N: Added overload for use by PluralRulesLoader so it doesn't have to use StringBuilder
+        internal static ParseRuleStatus TryParseRule(ReadOnlySpan<char> keyword, ReadOnlySpan<char> description, out Rule result)
+        {
+            return TryParseRule(keyword, description, out result, out ReadOnlySpan<char> _, out ReadOnlySpan<char> _);
+        }
+
+        /// <summary>
+        /// Syntax:
+        /// rule : keyword ':' condition
+        /// keyword: &lt;identifier&gt;
+        /// </summary>
+        // ICU4N: Added overload for use by PluralRulesLoader so it doesn't have to use StringBuilder
+        private static ParseRuleStatus TryParseRule(ReadOnlySpan<char> keyword, ReadOnlySpan<char> description, out Rule result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context)
+        {
+            result = default;
+            source = default;
+            context = description;
+
+            if (description.Length == 0)
+            {
+                result = DEFAULT_RULE;
+                return ParseRuleStatus.OK;
+            }
+
+            keyword = ToLowerInvariant(keyword);
             if (!IsValidKeyword(keyword))
             {
                 source = keyword;
                 return ParseRuleStatus.KeywordInvalid;
             }
 
-            description = description.Slice(x + 1).Trim();
+            description = ToLowerInvariant(description);
+
             SplitTokenizerEnumerator constraintOrSamplesEnumerator = description.AsTokens('@', SplitTokenizerEnumerator.PatternWhiteSpace);
             // ICU4N: Check to ensure there are exactly 2, or 3 parts to the range.
             // Note that constraintOrSamples0 is always 0 length due to a quirk with using Regex match, which always returns at least 1 element.
@@ -2232,7 +2261,10 @@ namespace ICU4N.Text
             ReadOnlySpan<char> constraintOrSamples1 = constraintOrSamplesEnumerator.MoveNext() ? constraintOrSamplesEnumerator.Current : ReadOnlySpan<char>.Empty;
             ReadOnlySpan<char> constraintOrSamples2 = constraintOrSamplesEnumerator.MoveNext() ? constraintOrSamplesEnumerator.Current : ReadOnlySpan<char>.Empty;
             if (constraintOrSamplesEnumerator.MoveNext())
+            {
+                source = keyword;
                 return ParseRuleStatus.TooManySamples;
+            }
 
             bool sampleFailure = false;
 #pragma warning disable 612, 618
@@ -2269,7 +2301,7 @@ namespace ICU4N.Text
             }
 
             // 'other' is special, and must have no rules; all other keywords must have rules.
-            bool isOther = keyword.Equals("other");
+            bool isOther = keyword.Equals("other", StringComparison.Ordinal);
             if (isOther != constraintOrSamples0.IsEmpty)
             {
                 context = description;
@@ -2286,7 +2318,7 @@ namespace ICU4N.Text
                 if ((status = TryParseConstraint(constraintOrSamples0, out constraint, out source, out context)) != ParseRuleStatus.OK)
                     return status;
             }
-            result = new Rule(keyword, constraint, integerSamples, decimalSamples);
+            result = new Rule(new string(keyword), constraint, integerSamples, decimalSamples);
             return ParseRuleStatus.OK;
         }
 
@@ -2343,22 +2375,49 @@ namespace ICU4N.Text
                 return ParseRuleStatus.OK;
             }
 
-            description = description.ToLowerInvariant();
-
             int x = description.IndexOf(':');
             if (x == -1)
             {
                 return ParseRuleStatus.MissingColonInRule;
             }
 
-            string keyword = description.Substring(0, x).Trim(); // ICU4N: Checked 2nd arg
+            // ICU4N: Checked 2nd arg
+            return TryParseRule(description.Substring(0, x).Trim(), description.Substring(x + 1).Trim(), out result, out source, out context);
+        }
+
+        // ICU4N: Added overload for use by PluralRulesLoader so it doesn't have to use StringBuilder
+        internal static ParseRuleStatus TryParseRule(string keyword, string description, out Rule result)
+        {
+            return TryParseRule(keyword, description, out result, out string _, out string _);
+        }
+
+        /// <summary>
+        /// Syntax:
+        /// rule : keyword ':' condition
+        /// keyword: &lt;identifier&gt;
+        /// </summary>
+        // ICU4N: Added overload for use by PluralRulesLoader so it doesn't have to use StringBuilder
+        private static ParseRuleStatus TryParseRule(string keyword, string description, out Rule result, out string source, out string context)
+        {
+            result = default;
+            source = default;
+            context = description;
+
+            if (description.Length == 0)
+            {
+                result = DEFAULT_RULE;
+                return ParseRuleStatus.OK;
+            }
+
+            keyword = keyword.ToLowerInvariant();
             if (!IsValidKeyword(keyword))
             {
                 source = keyword;
                 return ParseRuleStatus.KeywordInvalid;
             }
 
-            description = description.Substring(x + 1).Trim();
+            description = description.ToLowerInvariant();
+
             string[] constraintOrSamples = AT_SEPARATED.Split(description);
             bool sampleFailure = false;
 #pragma warning disable 612, 618
@@ -2388,6 +2447,7 @@ namespace ICU4N.Text
                     }
                     break;
                 default:
+                    source = keyword;
                     return ParseRuleStatus.TooManySamples;
             }
             // ICU4N TODO: This is completely unused
@@ -2397,7 +2457,7 @@ namespace ICU4N.Text
             }
 
             // 'other' is special, and must have no rules; all other keywords must have rules.
-            bool isOther = keyword.Equals("other");
+            bool isOther = keyword.Equals("other", StringComparison.Ordinal);
             if (isOther != (constraintOrSamples[0].Length == 0))
             {
                 context = description;
@@ -2431,10 +2491,11 @@ namespace ICU4N.Text
             context = description;
             result = new RuleList();
             // remove trailing ;
-            if (description.EndsWith(";", StringComparison.Ordinal))
+            if (description[description.Length - 1] == ';')
             {
-                description = description.Slice(0, description.Length - 1); // ICU4N: Checked 2nd arg
+                description = description.TrimEnd(';');
             }
+
             ParseRuleStatus status;
 
             foreach (var ruleToken in description.AsTokens(';', SplitTokenizerEnumerator.PatternWhiteSpace))
@@ -2452,12 +2513,12 @@ namespace ICU4N.Text
         }
 #else
 
-        /// <summary>
-        /// Syntax:
-        /// rules : rule
-        ///         rule ';' rules
-        /// </summary>
-        private static ParseRuleStatus TryParseRuleChain(string description, out RuleList result, out string source, out string context)
+            /// <summary>
+            /// Syntax:
+            /// rules : rule
+            ///         rule ';' rules
+            /// </summary>
+            private static ParseRuleStatus TryParseRuleChain(string description, out RuleList result, out string source, out string context)
         {
             source = default;
             context = description;
@@ -2529,7 +2590,7 @@ namespace ICU4N.Text
             ParseRuleStatus.MissingColonInRule => string.Format(SR.MissingColonInRule, context),
             ParseRuleStatus.KeywordInvalid => string.Format(SR.KeywordInvalid, source),
             ParseRuleStatus.StringMustHaveIntOrDec => string.Format(SR.StringMustHaveIntOrDec, context),
-            ParseRuleStatus.TooManySamples => string.Format(SR.TooManySamples, context),
+            ParseRuleStatus.TooManySamples => string.Format(SR.TooManySamples, source, context),
             ParseRuleStatus.IllformedSamplesAtChar => SR.IllformedSamplesAtChar,
             ParseRuleStatus.KeywordOtherMustNotHaveConstraints => SR.KeywordOtherMustNotHaveConstraints,
 
@@ -2551,7 +2612,7 @@ namespace ICU4N.Text
             public const string MissingColonInRule = "Missing ':' in rule description '{0}'.";
             public const string KeywordInvalid = "Keyword '{0}' is not valid.";
             public const string StringMustHaveIntOrDec = "Must have @integer then @decimal in '{0}'.";
-            public const string TooManySamples = "Too many samples in '{0}'.";
+            public const string TooManySamples = "Too many samples in '{0}: {1}'.";
             public const string IllformedSamplesAtChar = "Ill-formed samples—'@' characters.";
             public const string KeywordOtherMustNotHaveConstraints = "The keyword 'other' must have no constraints, just samples.";
 
@@ -2802,7 +2863,7 @@ namespace ICU4N.Text
 #if FEATURE_SERIALIZABLE
         [Serializable]
 #endif
-        private class Rule
+        internal class Rule
         {
             // TODO - Findbugs: Class com.ibm.icu.text.PluralRules$Rule defines non-transient
             // non-serializable instance field integerSamples. See ticket#10494.
@@ -2877,7 +2938,7 @@ namespace ICU4N.Text
 #if FEATURE_SERIALIZABLE
         [Serializable]
 #endif
-        private class RuleList
+        internal class RuleList
         {
             private bool hasExplicitBoundingInfo = false;
             //private static readonly long serialVersionUID = 1;
@@ -3193,6 +3254,23 @@ namespace ICU4N.Text
             return ForLocale(locale.ToUCultureInfo(), type);
         }
 
+#if FEATURE_SPAN
+        /// <summary>
+        /// Checks whether a <paramref name="token"/> is a valid keyword.
+        /// </summary>
+        /// <param name="token">The token to be checked.</param>
+        /// <returns>true if the token is a valid keyword.</returns>
+        private static bool IsValidKeyword(ReadOnlySpan<char> token)
+        {
+            foreach (char ch in token)
+            {
+                if (ch < 'a' || ch > 'z')
+                    return false;
+            }
+            return true;
+        }
+#else
+
         /// <summary>
         /// Checks whether a <paramref name="token"/> is a valid keyword.
         /// </summary>
@@ -3202,6 +3280,7 @@ namespace ICU4N.Text
         {
             return ALLOWED_ID.IsSupersetOf(token);
         }
+#endif
 
         /// <summary>
         /// Creates a new <see cref="PluralRules"/> object. Immutable.

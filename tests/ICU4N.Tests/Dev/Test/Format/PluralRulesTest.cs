@@ -151,8 +151,8 @@ namespace ICU4N.Dev.Test.Format
         [TestCase("a: n = 1 ,", ",", "n = 1 ,", ParseRuleStatus.ConstraintUnexpectedToken)]
         [TestCase("a:n in 3 .. 10 , 13 .. 19 ,", ",", "n in 3 .. 10 , 13 .. 19 ,", ParseRuleStatus.ConstraintUnexpectedToken)]
 
-        [TestCase("ก็:n=1", "ก็", "ก็:n=1", ParseRuleStatus.KeywordInvalid)]
-        [TestCase("x: @integer 2~17 @decimal 1.1~2.6 @decimal 3.5~5.6", null, "x: @integer 2~17 @decimal 1.1~2.6 @decimal 3.5~5.6", ParseRuleStatus.TooManySamples)]
+        [TestCase("ก็:n=1", "ก็", "n=1", ParseRuleStatus.KeywordInvalid)]
+        [TestCase("x: @integer 2~17 @decimal 1.1~2.6 @decimal 3.5~5.6", "x", "@integer 2~17 @decimal 1.1~2.6 @decimal 3.5~5.6", ParseRuleStatus.TooManySamples)]
         [TestCase("other: i = 0 or n = 1 @integer 2~17 @decimal 1.1~2.6", null, "i = 0 or n = 1 @integer 2~17 @decimal 1.1~2.6", ParseRuleStatus.KeywordOtherMustNotHaveConstraints)]
         [TestCase("a: n mod xy in 2..3 or n mod 10 is 5", "xy", "n mod xy in 2..3", ParseRuleStatus.ConstraintModulusMustBeDigits)]
         [TestCase("a: t is k", "k", "t is k", ParseRuleStatus.ConstraintValueMustBeDigits)]
