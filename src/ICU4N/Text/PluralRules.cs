@@ -531,7 +531,7 @@ namespace ICU4N.Text
         /// <see cref="KeywordOther"/>.
         /// </summary>
         /// <stable>ICU 3.8</stable>
-        public static readonly PluralRules Default = new PluralRules(new RuleList().AddRule(DEFAULT_RULE));
+        public static readonly PluralRules Default = new PluralRules(new RuleList().AddRule(DEFAULT_RULE).Finish());
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
@@ -2940,22 +2940,27 @@ namespace ICU4N.Text
         {
             private bool hasExplicitBoundingInfo = false;
             //private static readonly long serialVersionUID = 1;
-            private readonly List<Rule> rules = new List<Rule>();
-
+            // ICU4N NOTE: To maintain isertion order, it is important that we don't delete from this collection.
+            private readonly Dictionary<string, Rule> rules = new Dictionary<string, Rule>();
+            private Rule otherRule = null;
+            private const string OtherKeyword = "other";
             public int Count => rules.Count;
             public RuleList AddRule(Rule nextRule)
             {
-                string keyword = nextRule.Keyword;
-                foreach (Rule rule in rules)
-                {
-                    if (keyword.Equals(rule.Keyword))
-                    {
-                        throw new ArgumentException("Duplicate keyword: " + keyword);
-                    }
-                }
                 // ICU4N: Added this to encapsulate logic in RuleList. It was previously done in PluralRules.ParseRuleChain().
                 hasExplicitBoundingInfo |= nextRule.IntegerSamples != null || nextRule.DecimalSamples != null;
-                rules.Add(nextRule);
+                if (OtherKeyword.Equals(nextRule.Keyword, StringComparison.Ordinal))
+                {
+                    // ICU4N: Save this rule - we will add it last in Finish();
+                    if (otherRule is null)
+                        otherRule = nextRule;
+                    else
+                        throw new ArgumentException("Duplicate keyword:" + nextRule.Keyword);
+                }
+                else
+                {
+                    rules.Add(nextRule.Keyword, nextRule); // Don't allow dupicate keywords
+                }
                 return this;
             }
 
@@ -2966,19 +2971,13 @@ namespace ICU4N.Text
                 set => hasExplicitBoundingInfo = value;
             }
 
+            /// <summary>
+            /// This rule must be called after all of the <see cref="AddRule(Rule)"/> calls to ensure the "other" rule is added.
+            /// </summary>
+            /// <returns>The completed <see cref="RuleList"/>.</returns>
             public virtual RuleList Finish()
             {
-                // make sure that 'other' is present, and at the end.
-                Rule otherRule = null;
-                rules.RemoveAll((rule) =>
-                {
-                    if ("other".Equals(rule.Keyword, StringComparison.Ordinal))
-                    {
-                        otherRule = rule;
-                        return true;
-                    }
-                    return false;
-                });
+                // make sure that 'other' is present, and at the end.)
                 if (otherRule is null)
                 {
                     // ICU4N: Hard-coded rule will always succeed unless TryParseRule has a bug. So, we don't need a try version of this method.
@@ -2992,29 +2991,22 @@ namespace ICU4N.Text
                         ThrowParseException(status, source, context);
 #endif
                 }
-                rules.Add(otherRule);
+                rules.Add("other", otherRule);
                 return this;
             }
 
-#pragma warning disable 612, 618
+#pragma warning disable CS0618 // Type or member is obsolete
             private Rule SelectRule(IFixedDecimal n)
-#pragma warning restore 612, 618
+#pragma warning restore CS0618 // Type or member is obsolete
             {
-                foreach (Rule rule in rules)
-                {
-                    if (rule.AppliesTo(n))
-                    {
-                        return rule;
-                    }
-                }
-                return null;
+                return rules.Values.FirstOrDefault(rule => rule.AppliesTo(n));
             }
 
-#pragma warning disable 612, 618
+#pragma warning disable CS0618 // Type or member is obsolete
             public virtual string Select(IFixedDecimal n)
             {
                 if (n.IsInfinity || n.IsNaN)
-#pragma warning restore 612, 618
+#pragma warning restore CS0618 // Type or member is obsolete
                 {
                     return KeywordOther;
                 }
@@ -3024,62 +3016,39 @@ namespace ICU4N.Text
 
             public virtual ICollection<string> GetKeywords()
             {
-                ICollection<string> result = new List<string>(); //new LinkedHashSet<string>();
-                foreach (Rule rule in rules)
-                {
-                    // LinkedHashSet simply keeps track of insertion order.
-                    // the List<T> in C# will do the same as long as we are careful
-                    // not to add the same item twice.
-                    if (!result.Contains(rule.Keyword))
-                        result.Add(rule.Keyword);
-                }
-                // since we have explict 'other', we don't need this.
-                //result.add(KEYWORD_OTHER);
-                return result;
+                return rules.Keys.ToList();
             }
 
-#pragma warning disable 612, 618
+#pragma warning disable CS0618 // Type or member is obsolete
             public virtual bool IsLimited(string keyword, PluralRulesSampleType sampleType)
             {
                 if (hasExplicitBoundingInfo)
                 {
                     FixedDecimalSamples mySamples = GetDecimalSamples(keyword, sampleType);
-                    return mySamples == null ? true : mySamples.bounded;
+                    return mySamples == null || mySamples.bounded;
                 }
 
                 return ComputeLimited(keyword, sampleType);
             }
 
             public virtual bool ComputeLimited(string keyword, PluralRulesSampleType sampleType)
-#pragma warning restore 612, 618
+#pragma warning restore CS0618 // Type or member is obsolete
             {
                 // if all rules with this keyword are limited, it's limited,
                 // and if there's no rule with this keyword, it's unlimited
-                bool result = false;
-                foreach (Rule rule in rules)
-                {
-                    if (keyword.Equals(rule.Keyword))
-                    {
-                        if (!rule.IsLimited(sampleType))
-                        {
-                            return false;
-                        }
-                        result = true;
-                    }
-                }
-                return result;
+                return rules.TryGetValue(keyword, out Rule value) && value.IsLimited(sampleType);
             }
 
             public override string ToString()
             {
                 StringBuilder builder = new StringBuilder();
-                foreach (Rule rule in rules)
+                foreach (Rule rule in rules.Values)
                 {
                     if (builder.Length != 0)
                     {
-#pragma warning disable 612, 618
+#pragma warning disable CS0618 // Type or member is obsolete
                         builder.Append(CategorySeparator);
-#pragma warning restore 612, 618
+#pragma warning restore CS0618 // Type or member is obsolete
                     }
                     builder.Append(rule);
                 }
@@ -3088,46 +3057,27 @@ namespace ICU4N.Text
 
             public virtual string GetRules(string keyword)
             {
-                foreach (Rule rule in rules)
-                {
-                    if (rule.Keyword.Equals(keyword))
-                    {
-                        return rule.GetConstraint();
-                    }
-                }
-                return null;
+                return rules.TryGetValue(keyword, out Rule rule) ? rule.GetConstraint() : null;
             }
 
-#pragma warning disable 612, 618
+#pragma warning disable CS0618 // Type or member is obsolete
             public virtual bool Select(IFixedDecimal sample, string keyword)
-#pragma warning restore 612, 618
+#pragma warning restore CS0618 // Type or member is obsolete
             {
-                foreach (Rule rule in rules)
-                {
-                    if (rule.Keyword.Equals(keyword) && rule.AppliesTo(sample))
-                    {
-                        return true;
-                    }
-                }
-                return false;
+                return rules.TryGetValue(keyword, out Rule rule) && rule.AppliesTo(sample);
             }
 
-#pragma warning disable 612, 618
+#pragma warning disable CS0618 // Type or member is obsolete
             public virtual FixedDecimalSamples GetDecimalSamples(string keyword, PluralRulesSampleType sampleType)
-#pragma warning restore 612, 618
+#pragma warning restore CS0618 // Type or member is obsolete
             {
-                foreach (Rule rule in rules)
-                {
-                    if (rule.Keyword.Equals(keyword, StringComparison.Ordinal))
-                    {
-                        return sampleType ==
-#pragma warning disable 612, 618
-                            PluralRulesSampleType.Integer
-#pragma warning restore 612, 618
-                            ? rule.IntegerSamples : rule.DecimalSamples;
-                    }
-                }
-                return null;
+                return rules.TryGetValue(keyword, out Rule rule) ? GetSample(sampleType) : null;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+                FixedDecimalSamples GetSample(PluralRulesSampleType type) => type == PluralRulesSampleType.Integer
+#pragma warning restore CS0618 // Type or member is obsolete
+                     ? rule.IntegerSamples
+                     : rule.DecimalSamples;
             }
         }
 
