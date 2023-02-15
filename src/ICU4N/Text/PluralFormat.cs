@@ -474,7 +474,7 @@ namespace ICU4N.Text
             MessagePattern pattern, int partIndex,
             IPluralSelector selector, object context, double number)
         {
-            int count = pattern.CountParts();
+            int count = pattern.PartCount;
             double offset;
             MessagePatternPart part = pattern.GetPart(partIndex);
             if (part.Type.HasNumericValue())
@@ -662,7 +662,7 @@ namespace ICU4N.Text
         private string Format(J2N.Numerics.Number numberObject, double number)
         {
             // If no pattern was applied, return the formatted number.
-            if (msgPattern == null || msgPattern.CountParts() == 0)
+            if (msgPattern == null || msgPattern.PartCount == 0)
             {
                 return numberFormat.Format(numberObject);
             }
@@ -788,7 +788,7 @@ namespace ICU4N.Text
         internal string ParseType(string source, IRbnfLenientScanner scanner, FieldPosition pos)
         {
             // If no pattern was applied, return null.
-            if (msgPattern == null || msgPattern.CountParts() == 0)
+            if (msgPattern == null || msgPattern.PartCount == 0)
             {
                 pos.BeginIndex = -1;
                 pos.EndIndex = -1;
@@ -796,7 +796,7 @@ namespace ICU4N.Text
             }
             int partIndex = 0;
             int currMatchIndex;
-            int count = msgPattern.CountParts();
+            int count = msgPattern.PartCount;
             int startingAt = pos.BeginIndex;
             if (startingAt < 0)
             {

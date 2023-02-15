@@ -49,7 +49,7 @@ namespace ICU4N.Text
             if (pattern == null)
                 throw new ArgumentNullException(nameof(pattern));
 
-            int limit = pattern.CountParts() - 1;
+            int limit = pattern.PartCount - 1;
             if (limit < 0)
             {
                 throw new ArgumentException("The MessagePattern is empty");

@@ -240,7 +240,7 @@ namespace ICU4N.Text
         /// <returns>The sub-message start part index.</returns>
         internal static int FindSubMessage(MessagePattern pattern, int partIndex, string keyword)
         {
-            int count = pattern.CountParts();
+            int count = pattern.PartCount;
             int msgStart = 0;
             // Iterate over (ARG_SELECTOR, message) pairs until ARG_LIMIT or end of select-only pattern.
             do
@@ -282,7 +282,7 @@ namespace ICU4N.Text
                 throw new ArgumentException("Invalid formatting argument.");
             }
             // If no pattern was applied, throw an exception
-            if (msgPattern == null || msgPattern.CountParts() == 0)
+            if (msgPattern == null || msgPattern.PartCount == 0)
             {
                 throw new InvalidOperationException("Invalid format error.");
             }

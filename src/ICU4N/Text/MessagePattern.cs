@@ -443,7 +443,7 @@ namespace ICU4N.Text
     /// The parser handles named and numbered message arguments and allows both in one message.
     /// <para/>
     /// Once a pattern has been parsed successfully, iterate through the parsed data
-    /// with <see cref="CountParts()"/>, <see cref="GetPart(int)"/> and related methods.
+    /// with <see cref="PartCount"/>, <see cref="GetPart(int)"/> and related methods.
     /// <para/>
     /// The data logically represents a parse tree, but is stored and accessed
     /// as a list of "parts" for fast and simple parsing and to minimize object allocations.
@@ -621,7 +621,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Clears this <see cref="MessagePattern"/>.
-        /// <see cref="CountParts()"/> will return 0.
+        /// <see cref="PartCount"/> will return 0.
         /// </summary>
         /// <stable>ICU 4.8</stable>
         public void Clear()
@@ -644,7 +644,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Clears this <see cref="MessagePattern"/> and sets the <see cref="Text.ApostropheMode"/>.
-        /// <see cref="CountParts()"/> will return 0.
+        /// <see cref="PartCount"/> will return 0.
         /// </summary>
         /// <param name="mode">The new <see cref="Text.ApostropheMode"/></param>
         /// <stable>ICU 4.8</stable>
@@ -774,7 +774,7 @@ namespace ICU4N.Text
             }
             StringBuilder modified = null;
             // Iterate backward so that the insertion indexes do not change.
-            int count = CountParts();
+            int count = PartCount;
             for (int i = count; i > 0;)
             {
                 MessagePatternPart part;
@@ -803,17 +803,14 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>the number of pattern parts.</returns>
         /// <stable>ICU 4.8</stable>
-        public int CountParts()
-        {
-            return parts.Count;
-        }
+        public int PartCount => parts.Count;
 
         /// <summary>
         /// Gets the i-th pattern "part".
         /// </summary>
-        /// <param name="i">The index of the <see cref="MessagePatternPart"/> data. (0..<see cref="CountParts()"/>-1)</param>
+        /// <param name="i">The index of the <see cref="MessagePatternPart"/> data. (0..<see cref="PartCount"/>-1)</param>
         /// <returns>the i-th pattern "part".</returns>
-        /// <exception cref="IndexOutOfRangeException">if partIndex is outside the (0..<see cref="CountParts()"/>-1) range</exception>
+        /// <exception cref="IndexOutOfRangeException">if partIndex is outside the (0..<see cref="PartCount"/>-1) range</exception>
         /// <stable>ICU 4.8</stable>
         public MessagePatternPart GetPart(int i)
         {
@@ -824,9 +821,9 @@ namespace ICU4N.Text
         /// Returns the <see cref="MessagePatternPartType"/> of the i-th pattern "part".
         /// Convenience method for <c>GetPart(i).Type</c>.
         /// </summary>
-        /// <param name="i">The index of the Part data. (0..<see cref="CountParts()"/>-1)</param>
+        /// <param name="i">The index of the Part data. (0..<see cref="PartCount()"/>-1)</param>
         /// <returns>The <see cref="MessagePatternPartType"/> of the i-th <see cref="MessagePatternPart"/>.</returns>
-        /// <exception cref="IndexOutOfRangeException">if partIndex is outside the (0..<see cref="CountParts()"/>-1) range</exception>
+        /// <exception cref="IndexOutOfRangeException">if partIndex is outside the (0..<see cref="PartCount()"/>-1) range</exception>
         /// <stable>ICU 4.8</stable>
         public MessagePatternPartType GetPartType(int i)
         {
@@ -837,9 +834,9 @@ namespace ICU4N.Text
         /// Returns the pattern index of the specified pattern "part".
         /// Convenience method for <c>GetPart(partIndex).Index</c>.
         /// </summary>
-        /// <param name="partIndex">The index of the Part data. (0..<see cref="CountParts()"/>-1)</param>
+        /// <param name="partIndex">The index of the Part data. (0..<see cref="PartCount"/>-1)</param>
         /// <returns>The pattern index of this <see cref="MessagePatternPart"/>.</returns>
-        /// <exception cref="IndexOutOfRangeException">if partIndex is outside the (0..<see cref="CountParts()"/>-1) range</exception>
+        /// <exception cref="IndexOutOfRangeException">if partIndex is outside the (0..<see cref="PartCount"/>-1) range</exception>
         /// <stable>ICU 4.8</stable>
         public int GetPatternIndex(int partIndex)
         {
@@ -906,9 +903,9 @@ namespace ICU4N.Text
         /// <summary>
         /// Returns the "offset:" value of a <see cref="PluralFormat"/> argument, or 0 if none is specified.
         /// </summary>
-        /// <param name="pluralStart">the index of the first <see cref="PluralFormat"/> argument style part. (0..<see cref="CountParts()"/>-1)</param>
+        /// <param name="pluralStart">the index of the first <see cref="PluralFormat"/> argument style part. (0..<see cref="PartCount"/>-1)</param>
         /// <returns>the "offset:" value.</returns>
-        /// <exception cref="IndexOutOfRangeException">if start is outside the (0..<see cref="CountParts()"/>-1) range.</exception>
+        /// <exception cref="IndexOutOfRangeException">if start is outside the (0..<see cref="PartCount"/>-1) range.</exception>
         /// <stable>ICU 4.8</stable>
         public double GetPluralOffset(int pluralStart)
         {
@@ -933,7 +930,7 @@ namespace ICU4N.Text
         /// <see cref="MessagePatternPartType.ArgStart"/> or <see cref="MessagePatternPartType.MsgStart"/>.</param>
         /// <returns>The first i&gt;start where GetPart(i).Type==<see cref="MessagePatternPartType.ArgLimit"/>|<see cref="MessagePatternPartType.MsgLimit"/> at the same nesting level,
         /// or start itself if getPartType(msgStart)!=ARG|MSG_START.</returns>
-        /// <exception cref="IndexOutOfRangeException">if start is outside the (0..<see cref="CountParts()"/>-1) range.</exception>
+        /// <exception cref="IndexOutOfRangeException">if start is outside the (0..<see cref="PartCount()"/>-1) range.</exception>
         /// <stable>ICU 4.8</stable>
         public int GetLimitPartIndex(int start)
         {

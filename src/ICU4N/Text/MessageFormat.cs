@@ -2360,7 +2360,7 @@ namespace ICU4N.Text
         /// <returns>the sub-message start part index.</returns>
         private static int FindChoiceSubMessage(MessagePattern pattern, int partIndex, double number)
         {
-            int count = pattern.CountParts();
+            int count = pattern.PartCount;
             int msgStart;
             // Iterate over (ARG_INT|DOUBLE, ARG_SELECTOR, message) tuples
             // until ARG_LIMIT or end of choice-only pattern.
@@ -2493,7 +2493,7 @@ namespace ICU4N.Text
         /// <returns>the "other" sub-message start part index.</returns>
         private int FindOtherSubMessage(int partIndex)
         {
-            int count = msgPattern.CountParts();
+            int count = msgPattern.PartCount;
             MessagePatternPart part = msgPattern.GetPart(partIndex);
             if (part.Type.HasNumericValue())
             {
@@ -2976,7 +2976,7 @@ namespace ICU4N.Text
             customFormatArgStarts = null;
             // The last two "parts" can at most be ARG_LIMIT and MSG_LIMIT
             // which we need not examine.
-            int limit = msgPattern.CountParts() - 2;
+            int limit = msgPattern.PartCount - 2;
             // This loop starts at part index 1 because we do need to examine
             // ARG_START parts. (But we can ignore the MSG_START.)
             for (int i = 1; i < limit; ++i)
