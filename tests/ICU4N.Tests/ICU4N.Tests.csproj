@@ -2,6 +2,9 @@
   
   <PropertyGroup>
     <RootNamespace>ICU4N</RootNamespace>
+
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    
     <!-- Disable IKVM unless on Windows so we can debug on Linux -->
     <DisableIkvm Condition="!$([MSBuild]::IsOSPlatform('Windows'))">false</DisableIkvm>
   </PropertyGroup>

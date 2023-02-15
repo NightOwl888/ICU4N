@@ -11,7 +11,9 @@
     <DefineConstants>$(DefineConstants);FEATURE_SPAN</DefineConstants>
     <!-- For now, we only support Rune on .NET 6. -->
     <DefineConstants>$(DefineConstants);FEATURE_RUNE</DefineConstants>
-    
+    <!-- For now, we only support Span on .NET 6. -->
+    <DefineConstants>$(DefineConstants);FEATURE_SPANFORMATTABLE</DefineConstants>
+
   </PropertyGroup>
 
   <!--Features in .NET Standard 2.x or .NET Core-->
