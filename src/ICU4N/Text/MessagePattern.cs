@@ -90,14 +90,14 @@ namespace ICU4N.Text
         /// The argument has no specified type.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        None,
+        None = 0,
 
         /// <summary>
         /// The argument has a "simple" type which is provided by the <see cref="MessagePatternPartType.ArgType"/> part.
         /// An <see cref="MessagePatternPartType.ArgStyle"/> part might follow that.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        Simple,
+        Simple = 1,
 
         /// <summary>
         /// The argument is a <see cref="ChoiceFormat"/> with one or more
@@ -105,7 +105,7 @@ namespace ICU4N.Text
         /// <see cref="MessagePatternPartType.ArgSelector"/>, message) tuples.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        Choice,
+        Choice = 2,
 
         /// <summary>
         /// The argument is a cardinal-number <see cref="PluralFormat"/> with an optional <see cref="MessagePatternPartType.ArgInt"/> 
@@ -116,20 +116,20 @@ namespace ICU4N.Text
         /// Otherwise the message immediately follows the <see cref="MessagePatternPartType.ArgSelector"/>.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        Plural,
+        Plural = 3,
 
         /// <summary>
         /// The argument is a <see cref="SelectFormat"/> with one or more (<see cref="MessagePatternPartType.ArgSelector"/>, message) pairs.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        Select,
+        Select = 4,
 
         /// <summary>
         /// The argument is an ordinal-number <see cref="PluralFormat"/>
         /// with the same style parts sequence and semantics as <see cref="MessagePatternArgType.Plural"/>
         /// </summary>
         /// <stable>ICU 50</stable>
-        SelectOrdinal
+        SelectOrdinal = 5
     }
 
     /// <summary>
@@ -358,7 +358,7 @@ namespace ICU4N.Text
                 MessagePatternPartType type = Type;
                 if (type == MessagePatternPartType.ArgStart || type == MessagePatternPartType.ArgLimit)
                 {
-                    return argTypes[value];
+                    return (MessagePatternArgType)value;
                 }
                 else
                 {
@@ -425,8 +425,6 @@ namespace ICU4N.Text
         private readonly char length;
         private short value;
         internal int limitPartIndex;
-
-        private static readonly MessagePatternArgType[] argTypes = (MessagePatternArgType[])Enum.GetValues(typeof(MessagePatternArgType));
     }
 
     /// <summary>
