@@ -856,6 +856,22 @@ namespace ICU4N.Text
             return msg.Substring(index, part.Length); // ICU4N: (index + part.Length) - index = part.Length
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns the substring of the pattern string indicated by the <paramref name="part"/>.
+        /// Convenience method for <c>PatternString.Substring(part.Index, part.Limit - part.Index)</c>.
+        /// </summary>
+        /// <param name="part">A part of this <see cref="MessagePattern"/>.</param>
+        /// <returns>The substring associated with <paramref name="part"/>.</returns>
+        /// <stable>ICU 4.8</stable>
+        public ReadOnlySpan<char> AsSpan(MessagePatternPart part)
+        {
+            int index = part.Index;
+            return msg.AsSpan(index, part.Length); // ICU4N: (index + part.Length) - index = part.Length
+        }
+#endif
+
         /// <summary>
         /// Compares the <paramref name="part"/>'s substring with the input string <paramref name="s"/>.
         /// </summary>
@@ -1691,6 +1707,41 @@ namespace ICU4N.Text
                 }
             }
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Appends the s[start, limit[ substring to sb, but with only half of the apostrophes
+        /// according to JDK pattern behavior.
+        /// </summary>
+        /// <internal/>
+        internal static void AppendReducedApostrophes(string s, int start, int limit,
+                                             ref ValueStringBuilder sb)
+        {
+            int doubleApos = -1;
+            for (; ; )
+            {
+                int i = s.IndexOf('\'', start);
+                if (i < 0 || i >= limit)
+                {
+                    sb.Append(s.AsSpan(start, limit - start)); // ICU4N: Corrected 2nd arg
+                    break;
+                }
+                if (i == doubleApos)
+                {
+                    // Double apostrophe at start-1 and start==i, append one.
+                    sb.Append('\'');
+                    ++start;
+                    doubleApos = -1;
+                }
+                else
+                {
+                    // Append text between apostrophes and skip this one.
+                    sb.Append(s.AsSpan(start, i - start)); // ICU4N: Corrected 2nd arg
+                    doubleApos = start = i + 1;
+                }
+            }
+        }
+#endif
 
         private int SkipWhiteSpace(int index)
         {
