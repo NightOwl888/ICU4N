@@ -3,6 +3,7 @@ using ICU4N.Impl;
 using ICU4N.Text;
 using ICU4N.Util;
 using System;
+using System.Collections.Generic;
 using static ICU4N.Numerics.NumberFormatter;
 using Long = J2N.Numerics.Int64;
 
@@ -94,22 +95,20 @@ namespace ICU4N.Numerics
             if (this == obj) return true;
             if (!(obj is MacroProps other)) return false;
 
-            // ICU4N TODO: Complete implementation
-            return true;
-            //return Utility.Equals(notation, other.notation)
-            //    && Utility.Equals(unit, other.unit)
-            //    && Utility.Equals(rounder, other.rounder)
-            //    && Utility.Equals(grouper, other.grouper)
-            //    && Utility.Equals(padder, other.padder)
-            //    && Utility.Equals(integerWidth, other.integerWidth)
-            //    && Utility.Equals(symbols, other.symbols)
-            //    && Utility.Equals(unitWidth, other.unitWidth)
-            //    && Utility.Equals(sign, other.sign)
-            //    && Utility.Equals(@decimal, other.@decimal)
-            //    && Utility.Equals(affixProvider, other.affixProvider)
-            //    && Utility.Equals(multiplier, other.multiplier)
-            //    && Utility.Equals(rules, other.rules)
-            //    && Utility.Equals(loc, other.loc);
+            return EqualityComparer<Notation>.Default.Equals(notation, other.notation)
+               && EqualityComparer<MeasureUnit>.Default.Equals(unit, other.unit)
+               && EqualityComparer<Rounder>.Default.Equals(rounder, other.rounder)
+               && EqualityComparer<Grouper>.Default.Equals(grouper, other.grouper)
+               && EqualityComparer<Padder>.Default.Equals(padder, other.padder)
+               && EqualityComparer<IntegerWidth>.Default.Equals(integerWidth, other.integerWidth)
+               && EqualityComparer<object>.Default.Equals(symbols, other.symbols)
+               && EqualityComparer<UnitWidth?>.Default.Equals(unitWidth, other.unitWidth)
+               && EqualityComparer<SignDisplay?>.Default.Equals(sign, other.sign)
+               && EqualityComparer<DecimalSeparatorDisplay?>.Default.Equals(@decimal, other.@decimal)
+               && EqualityComparer<IAffixPatternProvider>.Default.Equals(affixProvider, other.affixProvider)
+               && EqualityComparer<Multiplier>.Default.Equals(multiplier, other.multiplier)
+               && EqualityComparer<PluralRules>.Default.Equals(rules, other.rules)
+               && EqualityComparer<UCultureInfo>.Default.Equals(loc, other.loc);
         }
 
         public virtual object Clone()
