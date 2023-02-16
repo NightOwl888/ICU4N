@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using ICU4N.Util;
 using System.Runtime.InteropServices;
+using static ICU4N.Text.PluralFormat;
 #if FEATURE_ARRAYPOOL
 using System.Buffers;
 #endif
@@ -244,7 +245,7 @@ namespace ICU4N.Text
 #if FEATURE_SERIALIZABLE
     [Serializable]
 #endif
-    public class PluralRules
+    public class PluralRules : IPluralSelector
     {
 #if !FEATURE_SPAN
         internal static readonly UnicodeSet ALLOWED_ID = new UnicodeSet("[a-z]").Freeze();
@@ -3710,6 +3711,15 @@ namespace ICU4N.Text
         internal virtual bool ComputeLimited(string keyword, PluralRulesSampleType sampleType) // ICU4N: Marked internal since it is obsolete anyway
         {
             return rules.ComputeLimited(keyword, sampleType);
+        }
+
+        // From PluralSelectorAdapter in ICU4J. We implement IPluralSelector directly on PluralRules as per the comments.
+        string IPluralSelector.Select(object context, double number)
+        {
+#pragma warning disable 612, 618
+            IFixedDecimal dec = (IFixedDecimal)context;
+            return rules.Select(dec);
+#pragma warning restore 612, 618
         }
     }
 

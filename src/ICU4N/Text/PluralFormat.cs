@@ -409,7 +409,7 @@ namespace ICU4N.Text
             ulocale = locale;
             pluralRules = (rules == null) ? PluralRules.ForLocale(ulocale, type) // ICU4N TODO: Make extension method for UCultureInfo.GetPluralRules(PluralType)..?
                                           : rules;
-            pluralRulesWrapper = new PluralSelectorAdapter(pluralRules); // ICU4N: Have to pass a reference to pluralRules in the constructor
+            // ICU4N: Factored out pluralRulesWrapper by implementing IPluralSelector directly on PluralRules
             ResetPattern();
             this.numberFormat = (numberFormat == null) ? NumberFormat.GetInstance(ulocale) : numberFormat;
         }
@@ -595,29 +595,8 @@ namespace ICU4N.Text
             string Select(object context, double number);
         }
 
-        // See PluralSelector:
-        // We could avoid this adapter class if we made PluralSelector public
-        // (or at least publicly visible) and had PluralRules implement PluralSelector.
-        private sealed class PluralSelectorAdapter : IPluralSelector
-        {
-            private PluralRules pluralRules;
-            public PluralSelectorAdapter(PluralRules pluralRules)
-            {
-                this.pluralRules = pluralRules;
-            }
-            public string Select(object context, double number)
-            {
-#pragma warning disable 612, 618
-                IFixedDecimal dec = (IFixedDecimal)context;
-                return pluralRules.Select(dec);
-#pragma warning restore 612, 618
-            }
-        }
-
-#if FEATURE_SERIALIZABLE
-        [NonSerialized]
-#endif
-        private PluralSelectorAdapter pluralRulesWrapper;
+        // ICU4N: Factored out PluralSelectorAdapter class and pluralRulesWrapper field by implementing
+        // IPluralSelector directly on PluralRules.
 
         /// <summary>
         /// Formats a plural message for a given number.
@@ -692,7 +671,7 @@ namespace ICU4N.Text
                 dec = new FixedDecimal(numberMinusOffset);
 #pragma warning restore 612, 618
             }
-            int partIndex = FindSubMessage(msgPattern, 0, pluralRulesWrapper, dec, number);
+            int partIndex = FindSubMessage(msgPattern, 0, pluralRules, dec, number);
             // Replace syntactic # signs in the top level of this sub-message
             // (not in nested arguments) with the formatted number-offset.
             StringBuilder result = null;
@@ -779,9 +758,8 @@ namespace ICU4N.Text
 #pragma warning disable 612, 618
             IFixedDecimal dec = numberFormatter.Format(numberMinusOffset).FixedDecimal;
 #pragma warning restore 612, 618
-            IPluralSelector pluralRulesWrapper = new PluralSelectorAdapter(pluralRules); // ICU4N TODO: Find a way to eliminate this allocation
             string pattern = msgPattern.PatternString;
-            int partIndex = FindSubMessage(msgPattern, 0, pluralRulesWrapper, dec, value);
+            int partIndex = FindSubMessage(msgPattern, 0, pluralRules, dec, value);
             // Replace syntactic # signs in the top level of this sub-message
             // (not in nested arguments) with the formatted number-offset.
             char* stackPtr = stackalloc char[CharStackBufferSize];
@@ -1036,7 +1014,8 @@ namespace ICU4N.Text
         {
             // ICU4N TODO: Object serialization
             //@in.defaultReadObject();
-            pluralRulesWrapper = new PluralSelectorAdapter(pluralRules);
+            // ICU4N: Factored out PluralSelectorAdapter by implementing IPluralSelector directly on PluralRules
+            //pluralRulesWrapper = new PluralSelectorAdapter(pluralRules);
             // Ignore the parsedValues from an earlier class version (before ICU 4.8)
             // and rebuild the msgPattern.
             parsedValues = null;
