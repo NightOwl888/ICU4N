@@ -859,7 +859,7 @@ namespace ICU4N.Text
 #if FEATURE_SPAN
 
         /// <summary>
-        /// Returns the substring of the pattern string indicated by the <paramref name="part"/>.
+        /// Returns the slice of the pattern string indicated by the <paramref name="part"/>.
         /// Convenience method for <c>PatternString.Substring(part.Index, part.Limit - part.Index)</c>.
         /// </summary>
         /// <param name="part">A part of this <see cref="MessagePattern"/>.</param>
