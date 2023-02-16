@@ -1,8 +1,10 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using ICU4N.Numerics;
 using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
@@ -662,7 +664,7 @@ namespace ICU4N.Text
         private string Format(J2N.Numerics.Number numberObject, double number)
         {
             // If no pattern was applied, return the formatted number.
-            if (msgPattern == null || msgPattern.PartCount == 0)
+            if (msgPattern is null || msgPattern.PartCount == 0)
             {
                 return numberFormat.Format(numberObject);
             }
@@ -741,6 +743,86 @@ namespace ICU4N.Text
                 }
             }
         }
+
+#if FEATURE_SPAN
+
+        private const int CharStackBufferSize = 128;
+
+#nullable enable
+        internal static unsafe bool TryFormat(double value, Span<char> destination, out int charsWritten, MessagePattern msgPattern, LocalizedNumberFormatter numberFormatter, PluralRules pluralRules)
+        {
+            string numberString;
+            // If no pattern was applied, return the formatted number.
+            if (msgPattern is null || msgPattern.PartCount == 0)
+            {
+                numberString = numberFormatter.Format(value).ToString();// ICU4N TODO: Pass in temp destination on stack
+                bool success = numberString.TryCopyTo(destination);
+                charsWritten = success ? numberString.Length : 0;
+                return success;
+            }
+
+            double offset = msgPattern.GetPluralOffset(0);
+            // Get the appropriate sub-message.
+            // Select it based on the formatted number-offset.
+            double numberMinusOffset = value - offset;
+
+            if (offset == 0)
+            {
+                // ICU4N TODO: Pass in temp destination on stack
+                numberString = numberFormatter.Format(value).ToString();  // could be BigDecimal etc.
+            }
+            else
+            {
+                // ICU4N TODO: Pass in temp destination on stack
+                numberString = numberFormatter.Format(numberMinusOffset).ToString();
+            }
+#pragma warning disable 612, 618
+            IFixedDecimal dec = numberFormatter.Format(numberMinusOffset).FixedDecimal;
+#pragma warning restore 612, 618
+            IPluralSelector pluralRulesWrapper = new PluralSelectorAdapter(pluralRules); // ICU4N TODO: Find a way to eliminate this allocation
+            string pattern = msgPattern.PatternString;
+            int partIndex = FindSubMessage(msgPattern, 0, pluralRulesWrapper, dec, value);
+            // Replace syntactic # signs in the top level of this sub-message
+            // (not in nested arguments) with the formatted number-offset.
+            char* stackPtr = stackalloc char[CharStackBufferSize];
+            ValueStringBuilder result = new ValueStringBuilder(new Span<char>(stackPtr, CharStackBufferSize));
+            int prevIndex = msgPattern.GetPart(partIndex).Limit;
+            while (true)
+            {
+                MessagePatternPart part = msgPattern.GetPart(++partIndex);
+                MessagePatternPartType type = part.Type;
+                int index = part.Index;
+                if (type == MessagePatternPartType.MsgLimit)
+                {
+                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                    break;
+                }
+                else if (type == MessagePatternPartType.ReplaceNumber ||
+                          // JDK compatibility mode: Remove SKIP_SYNTAX.
+                          (type == MessagePatternPartType.SkipSyntax && msgPattern.JdkAposMode))
+                {
+                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                    if (type == MessagePatternPartType.ReplaceNumber)
+                    {
+                        result.Append(numberString);
+                    }
+                    prevIndex = part.Limit;
+                }
+                else if (type == MessagePatternPartType.ArgStart)
+                {
+                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                    prevIndex = index;
+                    partIndex = msgPattern.GetLimitPartIndex(partIndex);
+                    index = msgPattern.GetPart(partIndex).Limit;
+                    MessagePattern.AppendReducedApostrophes(pattern, prevIndex, index, ref result);
+                    prevIndex = index;
+                }
+            }
+            return result.TryCopyTo(destination, out charsWritten);
+        }
+
+#nullable restore
+#endif
 
         /// <summary>
         /// This method is not yet supported by <see cref="PluralFormat"/>.
