@@ -205,12 +205,11 @@ namespace ICU4N.Text
         }
 
 
-        /**
-         * Returns the character used for zero. Different for Arabic, etc.
-         * @return the character
-         * @stable ICU 2.0
-         * @discouraged ICU 58 use {@link #getDigitStrings()} instead.
-         */
+        /// <summary>
+        /// Gets or sets the character used for zero. Different for Arabic, etc.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        /// <discouraged>ICU 58 use <see cref="DigitStrings"/> setter instead.</discouraged>
         public virtual char ZeroDigit
         {
             get => zeroDigit;
@@ -226,16 +225,15 @@ namespace ICU4N.Text
          */
         public virtual char[] Digits => (char[])digits.Clone();
 
-        /**
-         * Sets the character used for zero.
-         * <p>
-         * <b>Note:</b> This method propagates digit 1 to
-         * digit 9 by incrementing code point one by one.
-         *
-         * @param zeroDigit the zero character.
-         * @stable ICU 2.0
-         * @discouraged ICU 58 use {@link #setDigitStrings(String[])} instead.
-         */
+        /// <summary>
+        /// Sets the character used for zero.
+        /// <para/>
+        /// <b>Note:</b> This method propagates digit 1 to
+        /// digit 9 by incrementing code point one by one.
+        /// </summary>
+        /// <param name="zeroDigit">The zero character.</param>
+        /// <stable>ICU 2.0</stable>
+        /// <discouraged>ICU 58 use <see cref="DigitStrings"/> setter instead.</discouraged>
         private void SetZeroDigit(char zeroDigit)
         {
             this.zeroDigit = zeroDigit;
@@ -246,14 +244,14 @@ namespace ICU4N.Text
             digits = (char[])digits.Clone();
 
             // Make digitStrings field and digits field in sync
-            digitStrings[0] = zeroDigit.ToString(CultureInfo.InvariantCulture);
+            digitStrings[0] = char.ToString(zeroDigit);
             digits[0] = zeroDigit;
 
             // Always propagate to digits 1-9 for JDK and ICU4C consistency.
             for (int i = 1; i < 10; i++)
             {
                 char d = (char)(zeroDigit + i);
-                digitStrings[i] = d.ToString(CultureInfo.InvariantCulture);
+                digitStrings[i] = char.ToString(d);
                 digits[i] = d;
             }
 
@@ -439,15 +437,13 @@ namespace ICU4N.Text
         private void SetGroupingSeparator(char groupingSeparator)
         {
             this.groupingSeparator = groupingSeparator;
-            this.groupingSeparatorString = groupingSeparator.ToString(CultureInfo.InvariantCulture);
+            this.groupingSeparatorString = char.ToString(groupingSeparator);
         }
 
-        /**
-         * {@icu} Returns the string used for grouping separator. Different for French, etc.
-         * @return the grouping separator string
-         * @see #setGroupingSeparatorString(String)
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Gets or sets the string used for grouping separator. Different for French, etc.
+        /// </summary>
+        /// <stable>ICU 58</stable>
         public string GroupingSeparatorString // Equivalent to NumberFormatInfo.NumberGroupSeparator
         {
             get => groupingSeparatorString;
@@ -504,7 +500,7 @@ namespace ICU4N.Text
         private void SetDecimalSeparator(char decimalSeparator)
         {
             this.decimalSeparator = decimalSeparator;
-            this.decimalSeparatorString = decimalSeparator.ToString(CultureInfo.InvariantCulture);
+            this.decimalSeparatorString = char.ToString(decimalSeparator);
         }
 
         /**
@@ -569,7 +565,7 @@ namespace ICU4N.Text
         private void SetPerMill(char perMill)
         {
             this.perMill = perMill;
-            this.perMillString = perMill.ToString(CultureInfo.InvariantCulture);
+            this.perMillString = char.ToString(perMill);
         }
 
         /**
@@ -634,7 +630,7 @@ namespace ICU4N.Text
         private void SetPercent(char percent)
         {
             this.percent = percent;
-            this.percentString = percent.ToString(CultureInfo.InvariantCulture);
+            this.percentString = char.ToString(percent);
         }
 
         /**
@@ -679,33 +675,31 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the character used for a digit in a pattern.
-         * @return the digit pattern character
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Gets or sets the character used for a digit in a pattern.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public virtual char Digit
         {
             get => digit;
             set => digit = value;
         }
 
-        ///**
-        // * Sets the character used for a digit in a pattern.
-        // * @param digit the digit pattern character
-        // * @stable ICU 2.0
-        // */
-        //public void setDigit(char digit)
-        //{
-        //    this.digit = digit;
-        //}
+        /////**
+        //// * Sets the character used for a digit in a pattern.
+        //// * @param digit the digit pattern character
+        //// * @stable ICU 2.0
+        //// */
+        ////public void setDigit(char digit)
+        ////{
+        ////    this.digit = digit;
+        ////}
 
-        /**
-         * Returns the character used to separate positive and negative subpatterns
-         * in a pattern.
-         * @return the pattern separator character
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Gets or sets the character used to separate positive and negative subpatterns
+        /// in a pattern.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public virtual char PatternSeparator
         {
             get => patternSeparator;
@@ -796,7 +790,7 @@ namespace ICU4N.Text
         private void SetMinusSign(char minusSign)
         {
             this.minusSign = minusSign;
-            this.minusString = minusSign.ToString(CultureInfo.InvariantCulture);
+            this.minusString = char.ToString(minusSign);
         }
 
         /**
@@ -869,7 +863,7 @@ namespace ICU4N.Text
         private void SetPlusSign(char plus)
         {
             this.plusSign = plus;
-            this.plusString = plus.ToString(CultureInfo.InvariantCulture);
+            this.plusString = char.ToString(plus);
         }
 
         /**
@@ -1016,7 +1010,7 @@ namespace ICU4N.Text
         private void SetMonetaryDecimalSeparator(char sep)
         {
             this.monetarySeparator = sep;
-            this.monetarySeparatorString = sep.ToString(CultureInfo.InvariantCulture);
+            this.monetarySeparatorString = char.ToString(sep);
         }
 
         /**
@@ -1081,7 +1075,7 @@ namespace ICU4N.Text
         private void SetMonetaryGroupingSeparator(char sep)
         {
             this.monetaryGroupingSeparator = sep;
-            this.monetaryGroupingSeparatorString = sep.ToString(CultureInfo.InvariantCulture);
+            this.monetaryGroupingSeparatorString = char.ToString(sep);
         }
 
         /**
@@ -1133,170 +1127,167 @@ namespace ICU4N.Text
          */
         internal virtual string CurrencyPattern => currencyPattern;
 
-        /**
-        * Returns the multiplication sign
-        * @stable ICU 54
-        */
+        /// <summary>
+        /// Gets or sets the multiplication sign.
+        /// </summary>
+        /// <stable>ICU 54</stable>
         public virtual string ExponentMultiplicationSign
         {
             get => exponentMultiplicationSign;
             set => exponentMultiplicationSign = value;
         }
 
-        ///**
-        //* Sets the multiplication sign
-        //* @stable ICU 54
-        //*/
-        //public void setExponentMultiplicationSign(String exponentMultiplicationSign)
-        //{
-        //    this.exponentMultiplicationSign = exponentMultiplicationSign;
-        //}
+        /////**
+        ////* Sets the multiplication sign
+        ////* @stable ICU 54
+        ////*/
+        ////public void setExponentMultiplicationSign(String exponentMultiplicationSign)
+        ////{
+        ////    this.exponentMultiplicationSign = exponentMultiplicationSign;
+        ////}
 
-        /**
-         * {@icu} Returns the string used to separate the mantissa from the exponent.
-         * Examples: "x10^" for 1.23x10^4, "E" for 1.23E4.
-         * @return the localized exponent symbol, used in localized patterns
-         * and formatted strings
-         * @see #setExponentSeparator
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// <icu/> Gets or sets the string used to separate the mantissa from the exponent.
+        /// Examples: "x10^" for 1.23x10^4, "E" for 1.23E4. The localized exponent symbol is
+        /// used in localized patterns and formatted strings.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public virtual string ExponentSeparator
         {
             get => exponentSeparator;
             set => exponentSeparator = value;
         }
 
-        ///**
-        // * {@icu} Sets the string used to separate the mantissa from the exponent.
-        // * Examples: "x10^" for 1.23x10^4, "E" for 1.23E4.
-        // * @param exp the localized exponent symbol, used in localized patterns
-        // * and formatted strings
-        // * @see #getExponentSeparator
-        // * @stable ICU 2.0
-        // */
-        //public void setExponentSeparator(string exp)
-        //{
-        //    exponentSeparator = exp;
-        //}
+        /////**
+        //// * {@icu} Sets the string used to separate the mantissa from the exponent.
+        //// * Examples: "x10^" for 1.23x10^4, "E" for 1.23E4.
+        //// * @param exp the localized exponent symbol, used in localized patterns
+        //// * and formatted strings
+        //// * @see #getExponentSeparator
+        //// * @stable ICU 2.0
+        //// */
+        ////public void setExponentSeparator(string exp)
+        ////{
+        ////    exponentSeparator = exp;
+        ////}
 
-        /**
-         * {@icu} Returns the character used to pad numbers out to a specified width.  This is
-         * not the pad character itself; rather, it is the special pattern character
-         * <em>preceding</em> the pad character.  In the pattern "*_#,##0", '*' is the pad
-         * escape, and '_' is the pad character.
-         * @return the character
-         * @see #setPadEscape
-         * @see DecimalFormat#getFormatWidth
-         * @see DecimalFormat#getPadPosition
-         * @see DecimalFormat#getPadCharacter
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// <icu/> Gets or sets the character used to pad numbers out to a specified width. This is
+        /// not the pad character itself; rather, it is the special pattern character
+        /// <em>preceding</em> the pad character.  In the pattern "*_#,##0", '*' is the pad
+        /// escape, and '_' is the pad character.
+        /// </summary>
+        /// <seealso cref="DecimalFormat.FormatWidth"/>
+        /// <seealso cref="DecimalFormat.PadPosition"/>
+        /// <seealso cref="DecimalFormat.PadCharacter"/>
+        /// <stable>ICU 2.0</stable>
         public virtual char PadEscape
         {
             get => padEscape;
             set => padEscape = value;
         }
 
+        /////**
+        //// * {@icu} Sets the character used to pad numbers out to a specified width.  This is not
+        //// * the pad character itself; rather, it is the special pattern character
+        //// * <em>preceding</em> the pad character.  In the pattern "*_#,##0", '*' is the pad
+        //// * escape, and '_' is the pad character.
+        //// * @see #getPadEscape
+        //// * @see DecimalFormat#setFormatWidth
+        //// * @see DecimalFormat#setPadPosition
+        //// * @see DecimalFormat#setPadCharacter
+        //// * @stable ICU 2.0
+        //// */
+        ////public void setPadEscape(char c)
+        ////{
+        ////    padEscape = c;
+        ////}
+
+        // ICU4N: De-nested CURRENCY_SPC_CURRENCY_MATCH, CURRENCY_SPC_SURROUNDING_MATCH, and CURRENCY_SPC_INSERT
+        // and converted them into a new enum CurrencyPatternSpacing
+
         ///**
-        // * {@icu} Sets the character used to pad numbers out to a specified width.  This is not
-        // * the pad character itself; rather, it is the special pattern character
-        // * <em>preceding</em> the pad character.  In the pattern "*_#,##0", '*' is the pad
-        // * escape, and '_' is the pad character.
-        // * @see #getPadEscape
-        // * @see DecimalFormat#setFormatWidth
-        // * @see DecimalFormat#setPadPosition
-        // * @see DecimalFormat#setPadCharacter
-        // * @stable ICU 2.0
+        // * {@icu} Indicates the currency match pattern used in {@link #getPatternForCurrencySpacing}.
+        // * @stable ICU 4.2
         // */
-        //public void setPadEscape(char c)
-        //{
-        //    padEscape = c;
-        //}
+        //public const int CURRENCY_SPC_CURRENCY_MATCH = 0;
 
-        /**
-         * {@icu} Indicates the currency match pattern used in {@link #getPatternForCurrencySpacing}.
-         * @stable ICU 4.2
-         */
-        public const int CURRENCY_SPC_CURRENCY_MATCH = 0;
+        ///**
+        // * {@icu} Indicates the surrounding match pattern used in {@link
+        // * #getPatternForCurrencySpacing}.
+        // * @stable ICU 4.2
+        // */
+        //public const int CURRENCY_SPC_SURROUNDING_MATCH = 1;
 
-        /**
-         * {@icu} Indicates the surrounding match pattern used in {@link
-         * #getPatternForCurrencySpacing}.
-         * @stable ICU 4.2
-         */
-        public const int CURRENCY_SPC_SURROUNDING_MATCH = 1;
-
-        /**
-         * {@icu} Indicates the insertion value used in {@link #getPatternForCurrencySpacing}.
-         * @stable ICU 4.4
-         */
-        public const int CURRENCY_SPC_INSERT = 2;
+        ///**
+        // * {@icu} Indicates the insertion value used in {@link #getPatternForCurrencySpacing}.
+        // * @stable ICU 4.4
+        // */
+        //public const int CURRENCY_SPC_INSERT = 2;
 
         private string[] currencySpcBeforeSym;
         private string[] currencySpcAfterSym;
 
-        /**
-         * {@icu} Returns the desired currency spacing value. Original values come from ICU's
-         * CLDR data based on the locale provided during construction, and can be null.  These
-         * values govern what and when text is inserted between a currency code/name/symbol
-         * and the currency amount when formatting money.
-         *
-         * <p>For more information, see <a href="http://www.unicode.org/reports/tr35/#Currencies"
-         * >UTS#35 section 5.10.2</a>.
-         *
-         * @param itemType one of CURRENCY_SPC_CURRENCY_MATCH, CURRENCY_SPC_SURROUNDING_MATCH
-         * or CURRENCY_SPC_INSERT
-         * @param beforeCurrency true to get the <code>beforeCurrency</code> values, false
-         * to get the <code>afterCurrency</code> values.
-         * @return the value, or null.
-         * @see #setPatternForCurrencySpacing(int, boolean, String)
-         * @stable ICU 4.2
-         */
-        public virtual string GetPatternForCurrencySpacing(int itemType, bool beforeCurrency)
+        /// <summary>
+        /// <icu/> Returns the desired currency spacing value. Original values come from ICU's
+        /// CLDR data based on the locale provided during construction, and can be null. These
+        /// values govern what and when text is inserted between a currency code/name/symbol
+        /// and the currency amount when formatting money.
+        /// <para/>
+        /// For more information, see <a href="http://www.unicode.org/reports/tr35/#Currencies">
+        /// UTS#35 section 5.10.2</a>.
+        /// </summary>
+        /// <param name="itemType">The spacing property to retrieve.</param>
+        /// <param name="beforeCurrency"><c>true</c> to get the <c>beforeCurrency</c> values,
+        /// <c>false</c> to get the <c>afterCurrency</c> values.</param>
+        /// <returns>The value or <c>null</c>.</returns>
+        /// <exception cref="ArgumentException"><paramref name="itemType"/> is out of range for <see cref="CurrencySpacingPattern"/>.</exception>
+        /// <seealso cref="SetPatternForCurrencySpacing(CurrencySpacingPattern, bool, string)"/>
+        /// <stable>ICU 4.2</stable>
+        public virtual string GetPatternForCurrencySpacing(CurrencySpacingPattern itemType, bool beforeCurrency) // ICU4N TODO: Refactor this into 6 separate properties, this is ugly.
         {
-            if (itemType < CURRENCY_SPC_CURRENCY_MATCH ||
-                itemType > CURRENCY_SPC_INSERT)
+            if (itemType < CurrencySpacingPattern.CurrencyMatch ||
+                itemType > CurrencySpacingPattern.InsertBetween)
             {
                 throw new ArgumentException("unknown currency spacing: " + itemType);
             }
             if (beforeCurrency)
             {
-                return currencySpcBeforeSym[itemType];
+                return currencySpcBeforeSym[(int)itemType];
             }
-            return currencySpcAfterSym[itemType];
+            return currencySpcAfterSym[(int)itemType];
         }
 
-        /**
-         * {@icu} Sets the indicated currency spacing pattern or value. See {@link
-         * #getPatternForCurrencySpacing} for more information.
-         *
-         * <p>Values for currency match and surrounding match must be {@link
-         * com.ibm.icu.text.UnicodeSet} patterns. Values for insert can be any string.
-         *
-         * <p><strong>Note:</strong> ICU4J does not currently use this information.
-         *
-         * @param itemType one of CURRENCY_SPC_CURRENCY_MATCH, CURRENCY_SPC_SURROUNDING_MATCH
-         * or CURRENCY_SPC_INSERT
-         * @param beforeCurrency true if the pattern is for before the currency symbol.
-         * false if the pattern is for after it.
-         * @param  pattern string to override current setting; can be null.
-         * @see #getPatternForCurrencySpacing(int, boolean)
-         * @stable ICU 4.2
-         */
-        public virtual void SetPatternForCurrencySpacing(int itemType, bool beforeCurrency, string pattern)
+        /// <summary>
+        /// <icu/> Sets the indicated currency spacing pattern or value. See
+        /// <see cref="GetPatternForCurrencySpacing(CurrencySpacingPattern, bool)"/> for more information.
+        /// 
+        /// <para/>Values for currency match and surrounding match must be <see cref="UnicodeSet"/>
+        /// patterns. Values for insert can be any string.
+        /// 
+        /// <para/><strong>Note:</strong> This is not currently in use by ICU4N.
+        /// </summary>
+        /// <param name="itemType">The spacing property to set.</param>
+        /// <param name="beforeCurrency"><c>true</c> if the pattern is for before the currency symbol.
+        /// <c>false</c> if the pattern is for after it.</param>
+        /// <param name="pattern">Pattern string to override current setting; can be <c>null</c>.</param>
+        /// <exception cref="ArgumentException"><paramref name="itemType"/> is out of range for <see cref="CurrencySpacingPattern"/>.</exception>
+        /// <seealso cref="GetPatternForCurrencySpacing(CurrencySpacingPattern, bool)"/>
+        /// <stable>ICU 4.2</stable>
+        public virtual void SetPatternForCurrencySpacing(CurrencySpacingPattern itemType, bool beforeCurrency, string pattern) // ICU4N TODO: Refactor this into 6 separate properties, this is ugly.
         {
-            if (itemType < CURRENCY_SPC_CURRENCY_MATCH ||
-                itemType > CURRENCY_SPC_INSERT)
+            if (itemType < CurrencySpacingPattern.CurrencyMatch ||
+                itemType > CurrencySpacingPattern.InsertBetween)
             {
                 throw new ArgumentException("unknown currency spacing: " + itemType);
             }
             if (beforeCurrency)
             {
-                currencySpcBeforeSym[itemType] = pattern;
+                currencySpcBeforeSym[(int)itemType] = pattern;
             }
             else
             {
-                currencySpcAfterSym[itemType] = pattern;
+                currencySpcAfterSym[(int)itemType] = pattern;
             }
         }
 
@@ -1347,7 +1338,7 @@ namespace ICU4N.Text
             {
                 return true;
             }
-            for (int i = 0; i <= CURRENCY_SPC_INSERT; i++)
+            for (int i = 0; i <= (int)CurrencySpacingPattern.InsertBetween; i++)
             {
                 if (!currencySpcBeforeSym[i].Equals(other.currencySpcBeforeSym[i], StringComparison.Ordinal))
                 {
@@ -1408,11 +1399,11 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * List of field names to be loaded from the data files.
-         * The indices of each name into the array correspond to the position of that item in the
-         * numberElements array.
-         */
+        /// <summary>
+        /// List of field names to be loaded from the data files.
+        /// The indices of each name into the array correspond to the position of that item in the
+        /// numberElements array.
+        /// </summary>
         private static readonly string[] SYMBOL_KEYS = new string[] {
             "decimal",
             "group",
@@ -1429,18 +1420,18 @@ namespace ICU4N.Text
             "superscriptingExponent"
         };
 
-        /*
-         * Default digits
-         */
+        /// <summary>
+        /// Default digits
+        /// </summary>
         private static readonly string[] DEF_DIGIT_STRINGS_ARRAY =
             new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
         private static readonly char[] DEF_DIGIT_CHARS_ARRAY =
             new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
 
-        /*
-         *  Default symbol characters, used for fallbacks.
-         */
+        /// <summary>
+        /// Default symbol characters, used for fallbacks.
+        /// </summary>
         private const char DEF_DECIMAL_SEPARATOR = '.';
         private const char DEF_GROUPING_SEPARATOR = ',';
         private const char DEF_PERCENT = '%';
@@ -1448,19 +1439,19 @@ namespace ICU4N.Text
         private const char DEF_PLUS_SIGN = '+';
         private const char DEF_PERMILL = '\u2030';
 
-        /**
-         * List of default values for the symbols.
-         */
+        /// <summary>
+        /// List of default values for the symbols.
+        /// </summary>
         private static readonly string[] SYMBOL_DEFAULTS = new string[]
         {
-            DEF_DECIMAL_SEPARATOR.ToString(CultureInfo.InvariantCulture),  // decimal
-            DEF_GROUPING_SEPARATOR.ToString(CultureInfo.InvariantCulture), // group
+            char.ToString(DEF_DECIMAL_SEPARATOR),  // decimal
+            char.ToString(DEF_GROUPING_SEPARATOR), // group
             ";", // list
-            DEF_PERCENT.ToString(CultureInfo.InvariantCulture),    // percentSign
-            DEF_MINUS_SIGN.ToString(CultureInfo.InvariantCulture), // minusSign
-            DEF_PLUS_SIGN.ToString(CultureInfo.InvariantCulture),  // plusSign
+            char.ToString(DEF_PERCENT),    // percentSign
+            char.ToString(DEF_MINUS_SIGN), // minusSign
+            char.ToString(DEF_PLUS_SIGN),  // plusSign
             "E", // exponential
-            DEF_PERMILL.ToString(CultureInfo.InvariantCulture),    // perMille
+            char.ToString(DEF_PERMILL),    // perMille
             "\u221e", // infinity
             "NaN", // NaN
             null, // currency decimal
@@ -1468,20 +1459,20 @@ namespace ICU4N.Text
             "\u00D7" // superscripting exponent
         };
 
-        /**
-         * Constants for path names in the data bundles.
-         */
+        /// <summary>
+        /// Constants for path names in the data bundles.
+        /// </summary>
         private const string LATIN_NUMBERING_SYSTEM = "latn";
         private const string NUMBER_ELEMENTS = "NumberElements";
         private const string SYMBOLS = "symbols";
 
-        /**
-         * Sink for enumerating all of the decimal format symbols (more specifically, anything
-         * under the "NumberElements.symbols" tree).
-         *
-         * More specific bundles (en_GB) are enumerated before their parents (en_001, en, root):
-         * Only store a value if it is still missing, that is, it has not been overridden.
-         */
+        /// <summary>
+        /// Sink for enumerating all of the decimal format symbols (more specifically, anything
+        /// under the "NumberElements.symbols" tree).
+        /// <para/>
+        /// More specific bundles (en_GB) are enumerated before their parents (en_001, en, root):
+        /// Only store a value if it is still missing, that is, it has not been overridden.
+        /// </summary>
         private sealed class DecFmtDataSink : ResourceSink
         {
 
@@ -1643,7 +1634,7 @@ namespace ICU4N.Text
             }
             if (hasNull && !nsName.Equals(LATIN_NUMBERING_SYSTEM, StringComparison.Ordinal))
             {
-                rb.GetAllItemsWithFallback(NUMBER_ELEMENTS + "/" + LATIN_NUMBERING_SYSTEM + "/" + SYMBOLS, sink);
+                rb.GetAllItemsWithFallback(string.Concat(NUMBER_ELEMENTS, "/", LATIN_NUMBERING_SYSTEM, "/", SYMBOLS), sink);
             }
 
             // Fill in any remaining missing values
@@ -2270,5 +2261,30 @@ namespace ICU4N.Text
             }
         }
 
+    }
+
+    /// <summary>
+    /// Indicates currency matching info used in <see cref="DecimalFormatSymbols.GetPatternForCurrencySpacing(CurrencySpacingPattern, bool)"/>.
+    /// </summary>
+    internal enum CurrencySpacingPattern // ICU4N TODO: Merge this with CurrencySpacingInfo.SpacingPattern ?
+    {
+        /// <summary>
+        /// <icu/> Indicates the currency match pattern used in
+        /// <see cref="DecimalFormatSymbols.GetPatternForCurrencySpacing(CurrencySpacingPattern, bool)"/>.
+        /// </summary>
+        /// <stable>ICU 4.2</stable>
+        CurrencyMatch = 0,
+
+        /// <summary>
+        /// <icu/> Indicates the surrounding match pattern used in
+        /// <see cref="DecimalFormatSymbols.GetPatternForCurrencySpacing(CurrencySpacingPattern, bool)"/>.
+        /// </summary>
+        SurroundingMatch = 1,
+
+        /// <summary>
+        /// <icu/> Indicates the insertion value used in
+        /// <see cref="DecimalFormatSymbols.GetPatternForCurrencySpacing(CurrencySpacingPattern, bool)"/>.
+        /// </summary>
+        InsertBetween = 2,
     }
 }

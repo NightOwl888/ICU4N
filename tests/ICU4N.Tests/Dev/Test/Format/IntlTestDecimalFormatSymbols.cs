@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Text;
+using ICU4N.Util;
 using J2N;
 using J2N.Collections;
 using NUnit.Framework;
@@ -63,13 +64,12 @@ namespace ICU4N.Dev.Test.Format
                 Errln("ERROR: get/set SignificantDigit failed");
             }
 
-            // ICU4N TODO: Currency
-            //Currency currency = Currency.getInstance("USD");
-            //fr.setCurrency(currency);
-            //if (!fr.getCurrency().equals(currency))
-            //{
-            //    Errln("ERROR: get/set Currency failed");
-            //}
+            Currency currency = Currency.GetInstance("USD");
+            fr.Currency = currency;
+            if (!fr.Currency.Equals(currency))
+            {
+                Errln("ERROR: get/set Currency failed");
+            }
 
             char group = en.GroupingSeparator;
             fr.GroupingSeparator = (group);
@@ -237,14 +237,14 @@ namespace ICU4N.Dev.Test.Format
             // Test CurrencySpacing.
             // In CLDR 1.7, only root.txt has CurrencySpacing data. This data might
             // be different between en and fr in the future.
-            for (int i = DecimalFormatSymbols.CURRENCY_SPC_CURRENCY_MATCH; i <= DecimalFormatSymbols.CURRENCY_SPC_INSERT; i++)
+            for (int i = (int)CurrencySpacingPattern.CurrencyMatch; i <= (int)CurrencySpacingPattern.InsertBetween; i++)
             {
-                if (en.GetPatternForCurrencySpacing(i, true) !=
-                    fr.GetPatternForCurrencySpacing(i, true))
+                if (en.GetPatternForCurrencySpacing((CurrencySpacingPattern)i, true) !=
+                    fr.GetPatternForCurrencySpacing((CurrencySpacingPattern)i, true))
                 {
                     Errln("ERROR: get currency spacing item:" + i + " before the currency");
-                    if (en.GetPatternForCurrencySpacing(i, false) !=
-                        fr.GetPatternForCurrencySpacing(i, false))
+                    if (en.GetPatternForCurrencySpacing((CurrencySpacingPattern)i, false) !=
+                        fr.GetPatternForCurrencySpacing((CurrencySpacingPattern)i, false))
                     {
                         Errln("ERROR: get currency spacing item:" + i + " after currency");
                     }
@@ -252,8 +252,8 @@ namespace ICU4N.Dev.Test.Format
             }
 
             String dash = "-";
-            en.SetPatternForCurrencySpacing(DecimalFormatSymbols.CURRENCY_SPC_INSERT, true, dash);
-            if (dash != en.GetPatternForCurrencySpacing(DecimalFormatSymbols.CURRENCY_SPC_INSERT, true))
+            en.SetPatternForCurrencySpacing(CurrencySpacingPattern.InsertBetween, true, dash);
+            if (dash != en.GetPatternForCurrencySpacing(CurrencySpacingPattern.InsertBetween, true))
             {
                 Errln("ERROR: set currency spacing pattern for before currency.");
             }

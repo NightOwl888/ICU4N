@@ -156,8 +156,8 @@ namespace ICU4N.Numerics
         private static UnicodeSet GetUnicodeSet(DecimalFormatSymbols symbols, short position, byte affix)
         {
             string pattern = symbols
-                    .GetPatternForCurrencySpacing(position == IN_CURRENCY ? DecimalFormatSymbols.CURRENCY_SPC_CURRENCY_MATCH
-                            : DecimalFormatSymbols.CURRENCY_SPC_SURROUNDING_MATCH, affix == SUFFIX);
+                    .GetPatternForCurrencySpacing(position == IN_CURRENCY ? CurrencySpacingPattern.CurrencyMatch
+                            : CurrencySpacingPattern.SurroundingMatch, affix == SUFFIX);
             if (pattern.Equals("[:digit:]", StringComparison.Ordinal))
             {
                 return UNISET_DIGIT;
@@ -174,7 +174,7 @@ namespace ICU4N.Numerics
 
         private static string GetInsertString(DecimalFormatSymbols symbols, byte affix)
         {
-            return symbols.GetPatternForCurrencySpacing(DecimalFormatSymbols.CURRENCY_SPC_INSERT, affix == SUFFIX);
+            return symbols.GetPatternForCurrencySpacing(CurrencySpacingPattern.InsertBetween, affix == SUFFIX);
         }
     }
 }

@@ -5557,7 +5557,7 @@ namespace ICU4N.Dev.Test.Format
             UCultureInfo arLocale = new UCultureInfo("ar");
 
             DecimalFormatSymbols symbols = new DecimalFormatSymbols(arLocale);
-            String currSpacingPatn = symbols.GetPatternForCurrencySpacing(DecimalFormatSymbols.CURRENCY_SPC_CURRENCY_MATCH, true);
+            String currSpacingPatn = symbols.GetPatternForCurrencySpacing(CurrencySpacingPattern.CurrencyMatch, true);
             if (currSpacingPatn == null || currSpacingPatn.Length == 0)
             {
                 Errln("locale ar, getPatternForCurrencySpacing returns null or 0-length string");
