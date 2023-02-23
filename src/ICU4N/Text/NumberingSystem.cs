@@ -5,7 +5,6 @@ using J2N;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Resources;
 
 namespace ICU4N.Text
@@ -108,19 +107,43 @@ namespace ICU4N.Text
             return GetInstance(inLocale.ToUCultureInfo());
         }
 
+#nullable enable
         /// <summary>
         /// Returns the default numbering system for the specified <see cref="UCultureInfo"/>.
         /// </summary>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.2</stable>
         public static NumberingSystem GetInstance(UCultureInfo locale)
         {
+            if (locale is null)
+                throw new ArgumentNullException(nameof(locale)); // ICU4N: Added null guard clause.
+
+            // Check for @numbers
+            locale.Keywords.TryGetValue("numbers", out string? numbersKeyword);
+            return GetInstance(locale.Name, numbersKeyword);
+        }
+
+
+        /// <summary>
+        /// Returns the default numbering system for the specified locale name and numbers keyword.
+        /// </summary>
+        /// <param name="localeName">The <see cref="UCultureInfo.Name"/> of the locale to locate.</param>
+        /// <param name="numbersKeyword">The value of <c>numbers</c> from the <see cref="UCultureInfo.Keywords"/> property, or <c>null</c> if not present.</param>
+        /// <returns>The default <see cref="NumberingSystem"/> instance.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="localeName"/> is <c>null</c>.</exception>
+        /// <draft>ICU 60.1</draft>
+        public static NumberingSystem GetInstance(string localeName, string? numbersKeyword)
+        {
+            if (localeName is null)
+                throw new ArgumentNullException(nameof(localeName)); // ICU4N: Added null guard clause.
+
             // Check for @numbers
             bool nsResolved = true;
-            if (locale.Keywords.TryGetValue("numbers", out string numbersKeyword) && numbersKeyword != null)
+            if (numbersKeyword != null)
             {
                 foreach (string keyword in OTHER_NS_KEYWORDS)
                 {
-                    if (numbersKeyword.Equals(keyword))
+                    if (numbersKeyword.Equals(keyword, StringComparison.Ordinal))
                     {
                         nsResolved = false;
                         break;
@@ -135,7 +158,7 @@ namespace ICU4N.Text
 
             if (nsResolved)
             {
-                NumberingSystem ns = GetInstanceByName(numbersKeyword);
+                NumberingSystem? ns = GetInstanceByName(numbersKeyword);
                 if (ns != null)
                 {
                     return ns;
@@ -146,35 +169,22 @@ namespace ICU4N.Text
             }
 
             // Attempt to get the numbering system from the cache
-            string baseName = locale.Name;
+            string baseName = localeName;
             // TODO: Caching by locale+numbersKeyword could yield a large cache.
             // Try to load for each locale the mappings from OTHER_NS_KEYWORDS and default
             // to real numbering system names; can we get those from supplemental data?
             // Then look up those mappings for the locale and resolve the keyword.
             string key = baseName + "@numbers=" + numbersKeyword;
-            LocaleLookupData localeLookupData = new LocaleLookupData(locale, numbersKeyword);
-            return cachedLocaleData.GetOrCreate(key, (k) => LookupInstanceByLocale(localeLookupData));
+            return cachedLocaleData.GetOrCreate(key, (k) => LookupInstanceByLocale(localeName, numbersKeyword));
         }
 
-        internal class LocaleLookupData
+        // ICU4N specific - Converted to decouple from UCultureInfo.
+        internal static NumberingSystem LookupInstanceByLocale(string localeName, string numbersKeyword)
         {
-            public readonly UCultureInfo locale;
-            public readonly string numbersKeyword;
-
-            internal LocaleLookupData(UCultureInfo locale, string numbersKeyword)
-            {
-                this.locale = locale;
-                this.numbersKeyword = numbersKeyword;
-            }
-        }
-
-        internal static NumberingSystem LookupInstanceByLocale(LocaleLookupData localeLookupData)
-        {
-            UCultureInfo locale = localeLookupData.locale;
             ICUResourceBundle rb;
             try
             {
-                rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, locale);
+                rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, localeName);
                 rb = rb.GetWithFallback("NumberElements");
             }
             catch (MissingManifestResourceException)
@@ -182,9 +192,8 @@ namespace ICU4N.Text
                 return new NumberingSystem();
             }
 
-            string numbersKeyword = localeLookupData.numbersKeyword;
-            string resolvedNumberingSystem = null;
-            for (; ; )
+            string? resolvedNumberingSystem = null;
+            while (true)
             {
                 try
                 {
@@ -193,11 +202,11 @@ namespace ICU4N.Text
                 }
                 catch (MissingManifestResourceException)
                 { // Fall back behavior as defined in TR35
-                    if (numbersKeyword.Equals("native") || numbersKeyword.Equals("finance"))
+                    if ("native".Equals(numbersKeyword, StringComparison.Ordinal) || "finance".Equals(numbersKeyword, StringComparison.Ordinal))
                     {
                         numbersKeyword = "default";
                     }
-                    else if (numbersKeyword.Equals("traditional"))
+                    else if ("traditional".Equals(numbersKeyword, StringComparison.Ordinal))
                     {
                         numbersKeyword = "native";
                     }
@@ -208,18 +217,15 @@ namespace ICU4N.Text
                 }
             }
 
-            NumberingSystem ns = null;
+            NumberingSystem? ns = null;
             if (resolvedNumberingSystem != null)
             {
                 ns = GetInstanceByName(resolvedNumberingSystem);
             }
 
-            if (ns == null)
-            {
-                ns = new NumberingSystem();
-            }
-            return ns;
+            return ns ?? new NumberingSystem();
         }
+
 
         /// <summary>
         /// Returns the default numbering system for the default <see cref="UCultureInfo.CurrentCulture"/>
@@ -241,13 +247,13 @@ namespace ICU4N.Text
         /// names often correspond with the name of the script they are associated
         /// with.  For example, "thai" for Thai digits, "hebr" for Hebrew numerals.</param>
         /// <stable>ICU 4.2</stable>
-        public static NumberingSystem GetInstanceByName(string name)
+        public static NumberingSystem? GetInstanceByName(string name)
         {
             // Get the numbering system from the cache.
             return cachedStringData.GetOrCreate(name, (key) => LookupInstanceByName(key));
         }
 
-        private static NumberingSystem LookupInstanceByName(string name)
+        private static NumberingSystem? LookupInstanceByName(string name)
         {
             int radix;
             bool isAlgorithmic;
@@ -274,6 +280,7 @@ namespace ICU4N.Text
 
             return GetInstance(name, radix, isAlgorithmic, description);
         }
+#nullable restore
 
         /// <summary>
         /// Returns a string array containing a list of the names of numbering systems
