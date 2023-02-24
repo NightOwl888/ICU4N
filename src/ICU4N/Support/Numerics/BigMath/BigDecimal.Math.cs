@@ -8,7 +8,12 @@ using System.Text;
 
 namespace ICU4N.Numerics.BigMath
 {
-    internal sealed partial class BigDecimal
+#if FEATURE_BIGMATH
+    public
+#else
+    internal
+#endif
+        sealed partial class BigDecimal
     {
         /// <summary>
         /// Adds a value to the current instance of <see cref="BigDecimal"/>,

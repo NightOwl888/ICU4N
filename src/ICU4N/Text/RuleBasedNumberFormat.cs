@@ -19,7 +19,12 @@ using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
-    internal enum NumberPresentation
+#if FEATURE_LEGACY_NUMBER_FORMAT
+    public
+#else
+    internal
+#endif
+        enum NumberPresentation
     {
         SpellOut = 1,
         Ordinal = 2,
@@ -27,7 +32,12 @@ namespace ICU4N.Text
         NumberingSystem = 4,
     }
 
-    internal class RuleBasedNumberFormat : NumberFormat
+#if FEATURE_LEGACY_NUMBER_FORMAT
+    public
+#else
+    internal
+#endif
+        class RuleBasedNumberFormat : NumberFormat
     {
         //-----------------------------------------------------------------------
         // constants
@@ -734,7 +744,12 @@ namespace ICU4N.Text
          * @return toAppendTo
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(double number,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(double number,
                                    StringBuffer toAppendTo,
                                    FieldPosition ignore)
         {
@@ -767,7 +782,12 @@ namespace ICU4N.Text
          * @return toAppendTo
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(long number,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(long number,
                                    StringBuffer toAppendTo,
                                    FieldPosition ignore)
         {
@@ -806,7 +826,12 @@ namespace ICU4N.Text
          * Format a BigInteger.
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(Numerics.BigMath.BigInteger number,
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(Numerics.BigMath.BigInteger number,
                                    StringBuffer toAppendTo,
                                    FieldPosition pos)
         {
@@ -819,7 +844,12 @@ namespace ICU4N.Text
          * Format a BigDecimal.
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(Numerics.BigMath.BigDecimal number,
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(Numerics.BigMath.BigDecimal number,
                                         StringBuffer toAppendTo,
                                         FieldPosition pos)
         {
@@ -835,7 +865,12 @@ namespace ICU4N.Text
          * Format a BigDecimal.
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(Numerics.BigDecimal number,
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(Numerics.BigDecimal number,
                                    StringBuffer toAppendTo,
                                    FieldPosition pos)
         {
@@ -985,7 +1020,7 @@ namespace ICU4N.Text
          * @see #setLenientScannerProvider
          * @stable ICU 4.4
          */
-        public virtual IRbnfLenientScannerProvider LenientScannerProvider
+        internal virtual IRbnfLenientScannerProvider LenientScannerProvider // ICU4N specific - marked internal instead of public
         {
             get
             {
@@ -1157,8 +1192,12 @@ namespace ICU4N.Text
          * @see java.math.BigDecimal
          * @stable ICU 56
          */
-
-        public override Numerics.BigMath.RoundingMode RoundingMode
+#if FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            override Numerics.BigMath.RoundingMode RoundingMode
         {
             get => roundingMode;
             set

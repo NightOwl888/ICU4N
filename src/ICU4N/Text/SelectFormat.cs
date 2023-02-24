@@ -350,7 +350,12 @@ namespace ICU4N.Text
         /// <returns>the string buffer passed in as <paramref name="toAppendTo"/>, with formatted text appended.</returns>
         /// <exception cref="ArgumentException">when the given keyword is not a <see cref="string"/> or not a "pattern identifier".</exception>
         /// <stable>ICU 4.4</stable>
-        public override StringBuffer Format(object keyword, StringBuffer toAppendTo,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(object keyword, StringBuffer toAppendTo,
                 FieldPosition pos)
         {
             if (keyword is string str)

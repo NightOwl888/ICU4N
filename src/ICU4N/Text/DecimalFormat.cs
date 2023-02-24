@@ -198,7 +198,7 @@ namespace ICU4N.Text
     /// "horizontal" whitespace, like spaces and tabs, but not "vertical" whitespace, like line breaks.
     /// 
     /// <para/>If <see cref="Parse(string, ParsePosition)"/> fails to parse a string, it returns <c>null</c>
-    /// and leaves the parse position unchanged. The convenience method <see cref="Parse(string)"/> indicates
+    /// and leaves the parse position unchanged. The convenience method <see cref="NumberFormat.Parse(string)"/> indicates
     /// parse failure by throwing a <see cref="FormatException"/>.
     /// 
     /// <para/>Under the hood, a state table parsing engine is used. To debug a parsing failure during
@@ -222,7 +222,12 @@ namespace ICU4N.Text
     /// <seealso cref="UFormat"/>
     /// <seealso cref="NumberFormat"/>
     /// <stable>ICU 2.0</stable>
-    internal class DecimalFormat : NumberFormat
+#if FEATURE_LEGACY_NUMBER_FORMAT
+    public
+#else
+    internal
+#endif
+        class DecimalFormat : NumberFormat
     {
 
 
@@ -796,7 +801,12 @@ namespace ICU4N.Text
          *
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(double number, StringBuffer result, FieldPosition fieldPosition) // ICU4N TODO: API - Replace FieldPosition with ReadOnlySpan<char> ?
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(double number, StringBuffer result, FieldPosition fieldPosition) // ICU4N TODO: API - Replace FieldPosition with ReadOnlySpan<char> ?
         {
             FormattedNumber output = formatter.Format(number);
             output.PopulateFieldPosition(fieldPosition, result.Length);
@@ -809,7 +819,12 @@ namespace ICU4N.Text
          *
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(long number, StringBuffer result, FieldPosition fieldPosition)
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(long number, StringBuffer result, FieldPosition fieldPosition)
         {
             FormattedNumber output = formatter.Format(number);
             output.PopulateFieldPosition(fieldPosition, result.Length);
@@ -822,7 +837,12 @@ namespace ICU4N.Text
          *
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(Numerics.BigMath.BigInteger number, StringBuffer result, FieldPosition fieldPosition)
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(Numerics.BigMath.BigInteger number, StringBuffer result, FieldPosition fieldPosition)
         {
             FormattedNumber output = formatter.Format(number);
             output.PopulateFieldPosition(fieldPosition, result.Length);
@@ -835,7 +855,12 @@ namespace ICU4N.Text
          *
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(
             Numerics.BigMath.BigDecimal number, StringBuffer result, FieldPosition fieldPosition)
         {
             FormattedNumber output = formatter.Format(number);
@@ -849,7 +874,12 @@ namespace ICU4N.Text
          *
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(BigDecimal number, StringBuffer result, FieldPosition fieldPosition)
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(BigDecimal number, StringBuffer result, FieldPosition fieldPosition)
         {
             FormattedNumber output = formatter.Format(number);
             output.PopulateFieldPosition(fieldPosition, result.Length);
@@ -874,7 +904,12 @@ namespace ICU4N.Text
          *
          * @stable ICU 3.0
          */
-        public override StringBuffer Format(CurrencyAmount currAmt, StringBuffer toAppendTo, FieldPosition pos)
+#if FEATURE_FIELDPOSITION && FEATURE_CURRENCYFORMATTING
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(CurrencyAmount currAmt, StringBuffer toAppendTo, FieldPosition pos)
         {
             FormattedNumber output = formatter.Format(currAmt);
             output.PopulateFieldPosition(pos, toAppendTo.Length);
@@ -909,7 +944,12 @@ namespace ICU4N.Text
          *
          * @stable ICU 49
          */
-        public override CurrencyAmount ParseCurrency(string text, ParsePosition parsePosition) // ICU4N: Changed ICharSequence to string
+#if FEATURE_LEGACY_NUMBER_FORMAT
+        internal
+#else
+        public
+#endif
+            override CurrencyAmount ParseCurrency(string text, ParsePosition parsePosition) // ICU4N: Changed ICharSequence to string
         {
             try
             {
@@ -1293,7 +1333,12 @@ namespace ICU4N.Text
          * @category Rounding
          * @stable ICU 2.0
          */
-        public virtual Numerics.BigMath.BigDecimal RoundingIncrement
+#if FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            virtual Numerics.BigMath.BigDecimal RoundingIncrement
         {
             get
             {
@@ -1323,7 +1368,12 @@ namespace ICU4N.Text
          * @category Rounding
          * @stable ICU 2.0
          */
-        public virtual void SetRoundingIncrement(Numerics.BigMath.BigDecimal increment)
+#if FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            virtual void SetRoundingIncrement(Numerics.BigMath.BigDecimal increment)
         {
             lock (this)
             {
@@ -1349,7 +1399,12 @@ namespace ICU4N.Text
          * @category Rounding
          * @stable ICU 3.6
          */
-        public virtual void SetRoundingIncrement(BigDecimal increment) // ICU4N TODO: Fix ICU4N.Numerics.BigDecimal to have an explicit cast to Numerics.BigMath.BigDecimal and change this to a single property setter above
+#if FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            virtual void SetRoundingIncrement(BigDecimal increment) // ICU4N TODO: Fix ICU4N.Numerics.BigDecimal to have an explicit cast to Numerics.BigMath.BigDecimal and change this to a single property setter above
         {
             lock (this)
             {
@@ -1367,7 +1422,12 @@ namespace ICU4N.Text
          * @category Rounding
          * @stable ICU 2.0
          */
-        public virtual void SetRoundingIncrement(double increment) // ICU4N TODO: change this to a single property setter above ?
+#if FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            virtual void SetRoundingIncrement(double increment) // ICU4N TODO: change this to a single property setter above ?
         {
             lock (this)
             {
@@ -1392,7 +1452,12 @@ namespace ICU4N.Text
          * @category Rounding
          * @stable ICU 2.0
          */
-        public override Numerics.BigMath.RoundingMode RoundingMode // ICU4N TODO: API Combine rounding modes?
+#if FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            override Numerics.BigMath.RoundingMode RoundingMode // ICU4N TODO: API Combine rounding modes?
         {
             get
             {
@@ -1444,7 +1509,12 @@ namespace ICU4N.Text
          * @category Rounding
          * @stable ICU 4.2
          */
-        public virtual Numerics.BigMath.MathContext MathContext
+#if FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            virtual Numerics.BigMath.MathContext MathContext
         {
             get
             {
@@ -1496,7 +1566,12 @@ namespace ICU4N.Text
          * @category Rounding
          * @stable ICU 4.2
          */
-        public virtual MathContext MathContextICU
+#if FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            virtual MathContext MathContextICU
         {
             get
             {
@@ -2416,7 +2491,12 @@ namespace ICU4N.Text
          * @category Currency
          * @stable ICU 2.6
          */
-        public override Currency Currency
+#if FEATURE_CURRENCYFORMATTING
+        public
+#else
+        internal
+#endif
+            override Currency Currency
         {
             get
             {
@@ -2978,7 +3058,12 @@ namespace ICU4N.Text
          * @provisional This API might change or be removed in a future release.
          * @draft ICU 60
          */
-        public virtual LocalizedNumberFormatter ToNumberFormatter()
+#if FEATURE_NUMBERFORMATTER
+        public
+#else
+        internal
+#endif
+            virtual LocalizedNumberFormatter ToNumberFormatter()
         {
             return formatter;
         }
@@ -2988,7 +3073,7 @@ namespace ICU4N.Text
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
-        public virtual IFixedDecimal GetFixedDecimal(double number)
+        internal virtual IFixedDecimal GetFixedDecimal(double number) // ICU4N specific - made internal instead of public
         {
             return formatter.Format(number).FixedDecimal;
         }
@@ -3102,7 +3187,7 @@ namespace ICU4N.Text
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
-        public virtual void SetProperties(IPropertySetter func)
+        internal virtual void SetProperties(IPropertySetter func) // ICU4N specific - marked internal instead of public
         {
             lock (this)
             {
@@ -3116,7 +3201,7 @@ namespace ICU4N.Text
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
-        public interface IPropertySetter
+        internal interface IPropertySetter // ICU4N specific - marked internal instead of public
         {
             /**
              * @internal

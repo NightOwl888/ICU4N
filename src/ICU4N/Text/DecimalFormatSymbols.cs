@@ -26,7 +26,12 @@ namespace ICU4N.Text
     /// <author>Mark Davis</author>
     /// <author>Alan Liu</author>
     /// <stable>ICU 2.0</stable>
-    internal class DecimalFormatSymbols // ICU4N TODO: serialization, Refactor into UNumberFormatInfo..?
+#if FEATURE_LEGACY_NUMBER_FORMAT
+    public
+#else
+    internal
+#endif
+        class DecimalFormatSymbols // ICU4N TODO: serialization, Refactor into UNumberFormatInfo..?
 #if FEATURE_CLONEABLE
         : ICloneable
 #endif
@@ -956,7 +961,12 @@ namespace ICU4N.Text
          * @return the currency used, or null
          * @stable ICU 3.4
          */
-        public virtual Currency Currency
+#if FEATURE_CURRENCYFORMATTING
+        public
+#else
+        internal
+#endif
+            virtual Currency Currency
         {
             get => currency;
             set => SetCurrency(value);
@@ -2266,7 +2276,7 @@ namespace ICU4N.Text
     /// <summary>
     /// Indicates currency matching info used in <see cref="DecimalFormatSymbols.GetPatternForCurrencySpacing(CurrencySpacingPattern, bool)"/>.
     /// </summary>
-    internal enum CurrencySpacingPattern // ICU4N TODO: Merge this with CurrencySpacingInfo.SpacingPattern ?
+    public enum CurrencySpacingPattern // ICU4N TODO: Merge this with CurrencySpacingInfo.SpacingPattern ?
     {
         /// <summary>
         /// <icu/> Indicates the currency match pattern used in

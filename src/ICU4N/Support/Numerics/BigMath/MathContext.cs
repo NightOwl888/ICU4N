@@ -31,7 +31,12 @@ namespace ICU4N.Numerics.BigMath
 #if !PORTABLE
     [Serializable]
 #endif
-    internal sealed class MathContext : IEquatable<MathContext> // ICU4N TODO: Clean up and make public
+#if FEATURE_BIGMATH
+    public
+#else
+    internal
+#endif
+        sealed class MathContext : IEquatable<MathContext> // ICU4N TODO: Clean up and make public
     {
 
         /// <summary>

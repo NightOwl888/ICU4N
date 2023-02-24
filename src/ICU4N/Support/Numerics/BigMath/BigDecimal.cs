@@ -38,7 +38,13 @@ namespace ICU4N.Numerics.BigMath
     [Serializable]
 #endif
     [System.Diagnostics.DebuggerDisplay("{ToString()}")]
-    internal sealed partial class BigDecimal : J2N.Numerics.Number, IComparable<BigDecimal>, IEquatable<BigDecimal> // ICU4N TODO: Clean up and make public
+
+#if FEATURE_BIGMATH
+    public
+#else
+    internal
+#endif
+        sealed partial class BigDecimal : J2N.Numerics.Number, IComparable<BigDecimal>, IEquatable<BigDecimal> // ICU4N TODO: Clean up and make public
 #if !PORTABLE
         , ISerializable
 #endif

@@ -3853,7 +3853,7 @@ namespace ICU4N.Dev.Test.Format
 
             public override ICollection<string> GetSupportedLocaleNames()
             {
-                throw null;
+                return null;
             }
 
             public override NumberFormat CreateFormat(UCultureInfo loc, int formatType)
@@ -3872,7 +3872,7 @@ namespace ICU4N.Dev.Test.Format
 
             public override ICollection<string> GetSupportedLocaleNames()
             {
-                throw null;
+                return null;
             }
 
             public override NumberFormat CreateFormat(CultureInfo loc, int formatType)
@@ -3943,29 +3943,54 @@ namespace ICU4N.Dev.Test.Format
         //@SuppressWarnings("serial")
         private class TestGetAvailableLocalesClass : NumberFormat
         {
-            public override StringBuffer Format(double number, StringBuffer toAppendTo, FieldPosition pos)
+#if FEATURE_FIELDPOSITION
+            public
+#else
+            internal
+#endif
+                override StringBuffer Format(double number, StringBuffer toAppendTo, FieldPosition pos)
             {
                 return null;
             }
 
-            public override StringBuffer Format(long number, StringBuffer toAppendTo, FieldPosition pos)
+#if FEATURE_FIELDPOSITION
+            public
+#else
+            internal
+#endif
+                override StringBuffer Format(long number, StringBuffer toAppendTo, FieldPosition pos)
             {
                 return null;
             }
 
-            public override StringBuffer Format(BigInteger number, StringBuffer toAppendTo, FieldPosition pos)
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+            public
+#else
+            internal
+#endif
+                override StringBuffer Format(BigInteger number, StringBuffer toAppendTo, FieldPosition pos)
             {
                 return null;
             }
 
-            public override StringBuffer Format(Numerics.BigMath.BigDecimal number, StringBuffer toAppendTo, FieldPosition pos)
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+            public
+#else
+            internal
+#endif
+                override StringBuffer Format(Numerics.BigMath.BigDecimal number, StringBuffer toAppendTo, FieldPosition pos)
             {
-                throw null;
+                return null;
             }
 
-            public override StringBuffer Format(BigDecimal number, StringBuffer toAppendTo, FieldPosition pos)
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+            public
+#else
+            internal
+#endif
+                override StringBuffer Format(BigDecimal number, StringBuffer toAppendTo, FieldPosition pos)
             {
-                throw null;
+                return null;
             }
 
             public override Number Parse(string text, ParsePosition parsePosition)
@@ -4035,35 +4060,60 @@ namespace ICU4N.Dev.Test.Format
         private class TestRoundingModeClass : NumberFormat
         {
 
-            public override StringBuffer Format(double number, StringBuffer toAppendTo, FieldPosition pos)
+#if FEATURE_FIELDPOSITION
+            public
+#else
+            internal
+#endif
+                override StringBuffer Format(double number, StringBuffer toAppendTo, FieldPosition pos)
             {
                 return null;
             }
 
 
-            public override StringBuffer Format(long number, StringBuffer toAppendTo, FieldPosition pos)
+#if FEATURE_FIELDPOSITION
+            public
+#else
+            internal
+#endif
+                override StringBuffer Format(long number, StringBuffer toAppendTo, FieldPosition pos)
             {
                 return null;
             }
 
 
-            public override StringBuffer Format(BigInteger number, StringBuffer toAppendTo, FieldPosition pos)
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+            public
+#else
+            internal
+#endif
+                override StringBuffer Format(BigInteger number, StringBuffer toAppendTo, FieldPosition pos)
             {
                 return null;
             }
 
 
-            public override StringBuffer Format(Numerics.BigMath.BigDecimal number, StringBuffer toAppendTo, FieldPosition pos)
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+            public
+#else
+            internal
+#endif
+                override StringBuffer Format(Numerics.BigMath.BigDecimal number, StringBuffer toAppendTo, FieldPosition pos)
             {
                 return null;
             }
 
-            public override StringBuffer Format(BigDecimal number, StringBuffer toAppendTo, FieldPosition pos)
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+            public
+#else
+            internal
+#endif
+                override StringBuffer Format(BigDecimal number, StringBuffer toAppendTo, FieldPosition pos)
             {
                 return null;
             }
 
-            public override Number Parse(String text, ParsePosition parsePosition)
+            public override Number Parse(string text, ParsePosition parsePosition)
             {
                 return null;
             }

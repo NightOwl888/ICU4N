@@ -12,7 +12,6 @@ using StringBuffer = System.Text.StringBuilder;
 namespace ICU4N.Support.Text
 {
     // from Apache Harmony
-
     internal class ChoiceFormat : Formatter
     {
         //private static readonly long serialVersionUID = 1795184449645032964L;
@@ -175,7 +174,12 @@ namespace ICU4N.Support.Text
         /// <param name="buffer">The target string buffer to append the formatted value to.</param>
         /// <param name="field">A <see cref="FieldPosition"/> which is ignored.</param>
         /// <returns>The <see cref="StringBuffer"/>.</returns>
-        public StringBuffer Format(double value, StringBuffer buffer, FieldPosition field)
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            StringBuffer Format(double value, StringBuffer buffer, FieldPosition field)
         {
             for (int i = choiceLimits.Length - 1; i >= 0; i--)
             {
@@ -197,7 +201,12 @@ namespace ICU4N.Support.Text
         /// <param name="field">A <see cref="FieldPosition"/> which is ignored.</param>
         /// <returns>The <see cref="StringBuffer"/>.</returns>
         //@Override
-        public StringBuffer Format(long value, StringBuffer buffer, FieldPosition field)
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            StringBuffer Format(long value, StringBuffer buffer, FieldPosition field)
         {
             return Format((double)value, buffer, field);
         }
@@ -473,7 +482,12 @@ namespace ICU4N.Support.Text
 
         // From NumberFormat.java
 
-        public override StringBuffer Format(object obj, StringBuffer buffer, FieldPosition field)
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(object obj, StringBuffer buffer, FieldPosition field)
         {
             if (obj.IsNumber())
             {

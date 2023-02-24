@@ -21,7 +21,12 @@ namespace ICU4N.Text
     /// <summary>
     /// Constants to be used to specify <see cref="NumberFormat"/> style.
     /// </summary>
-    internal enum NumberFormatStyle // ICU4N: Marked internal until implementation is completed
+#if FEATURE_LEGACY_NUMBER_FORMAT
+    public
+#else
+    internal
+#endif
+        enum NumberFormatStyle // ICU4N: Marked internal until implementation is completed
     {
         /// <summary>
         /// <icu/> Constant to specify normal number style of format.
@@ -97,8 +102,12 @@ namespace ICU4N.Text
         StandardCurrencyStyle = 9,
     }
 
-
-    internal abstract class NumberFormat : UFormat // ICU4N: Marked internal until implementation is completed
+#if FEATURE_LEGACY_NUMBER_FORMAT
+    public
+#else
+    internal
+#endif
+        abstract class NumberFormat : UFormat // ICU4N: Marked internal until implementation is completed
     {
         // ICU4N specific - moved constants to an enum named NumberFormatStyle
 
@@ -125,7 +134,12 @@ namespace ICU4N.Text
          * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
          * @stable ICU 2.0
          */
-        public override StringBuffer Format(object number,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(object number,
                                    StringBuffer toAppendTo,
                                    FieldPosition pos)
         {
@@ -217,7 +231,12 @@ namespace ICU4N.Text
          * {@icu} Convenience method to format a BigInteger.
          * @stable ICU 2.0
          */
-        public string Format(Numerics.BigMath.BigInteger number)
+#if FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            string Format(Numerics.BigMath.BigInteger number)
         {
             return Format(number, new StringBuffer(),
                           new FieldPosition(0)).ToString();
@@ -227,7 +246,12 @@ namespace ICU4N.Text
          * Convenience method to format a BigDecimal.
          * @stable ICU 2.0
          */
-        public string Format(Numerics.BigMath.BigDecimal number)
+#if FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            string Format(Numerics.BigMath.BigDecimal number)
         {
             return Format(number, new StringBuffer(),
                           new FieldPosition(0)).ToString();
@@ -237,7 +261,12 @@ namespace ICU4N.Text
          * {@icu} Convenience method to format an ICU BigDecimal.
          * @stable ICU 2.0
          */
-        public string Format(Numerics.BigDecimal number) // ICU BigDecimal
+#if FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            string Format(Numerics.BigDecimal number) // ICU BigDecimal
         {
             return Format(number, new StringBuffer(),
                           new FieldPosition(0)).ToString();
@@ -247,7 +276,12 @@ namespace ICU4N.Text
          * {@icu} Convenience method to format a CurrencyAmount.
          * @stable ICU 3.0
          */
-        public string Format(CurrencyAmount currAmt)
+#if FEATURE_CURRENCYFORMATTING
+        public
+#else
+        internal
+#endif
+            string Format(CurrencyAmount currAmt)
         {
             return Format(currAmt, new StringBuffer(),
                           new FieldPosition(0)).ToString();
@@ -258,7 +292,12 @@ namespace ICU4N.Text
          * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
          * @stable ICU 2.0
          */
-        public abstract StringBuffer Format(double number,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            abstract StringBuffer Format(double number,
                                             StringBuffer toAppendTo,
                                             FieldPosition pos);
 
@@ -267,7 +306,12 @@ namespace ICU4N.Text
          * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
          * @stable ICU 2.0
          */
-        public abstract StringBuffer Format(long number,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            abstract StringBuffer Format(long number,
                                             StringBuffer toAppendTo,
                                             FieldPosition pos);
 
@@ -277,7 +321,12 @@ namespace ICU4N.Text
          * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
          * @stable ICU 2.0
          */
-        public abstract StringBuffer Format(Numerics.BigMath.BigInteger number,
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            abstract StringBuffer Format(Numerics.BigMath.BigInteger number,
                                             StringBuffer toAppendTo,
                                             FieldPosition pos);
 
@@ -287,7 +336,12 @@ namespace ICU4N.Text
          * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
          * @stable ICU 2.0
          */
-        public abstract StringBuffer Format(Numerics.BigMath.BigDecimal number,
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            abstract StringBuffer Format(Numerics.BigMath.BigDecimal number,
                                             StringBuffer toAppendTo,
                                             FieldPosition pos);
         /**
@@ -295,7 +349,12 @@ namespace ICU4N.Text
          * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
          * @stable ICU 2.0
          */
-        public abstract StringBuffer Format(Numerics.BigDecimal number,
+#if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            abstract StringBuffer Format(Numerics.BigDecimal number,
                                             StringBuffer toAppendTo,
                                             FieldPosition pos); // ICU BigDecimal
 
@@ -304,7 +363,12 @@ namespace ICU4N.Text
          * @see java.text.Format#format(Object, StringBuffer, FieldPosition)
          * @stable ICU 3.0
          */
-        public virtual StringBuffer Format(CurrencyAmount currAmt,
+#if FEATURE_FIELDPOSITION && FEATURE_CURRENCYFORMATTING
+        public
+#else
+        internal
+#endif
+            virtual StringBuffer Format(CurrencyAmount currAmt,
                                    StringBuffer toAppendTo,
                                    FieldPosition pos)
         {
@@ -383,7 +447,13 @@ namespace ICU4N.Text
          * @return a CurrencyAmount, or null upon failure
          * @stable ICU 49
          */
-        public virtual CurrencyAmount ParseCurrency(string text, ParsePosition pos) // ICU4N - converted ICharSequence to string
+
+#if FEATURE_FIELDPOSITION && FEATURE_PARSECURRENCY
+        public
+#else
+        internal
+#endif
+            virtual CurrencyAmount ParseCurrency(string text, ParsePosition pos) // ICU4N - converted ICharSequence to string
         {
             ////CLOVER:OFF
             // Default implementation only -- subclasses should override
@@ -647,7 +717,12 @@ namespace ICU4N.Text
          * @see Category#FORMAT
          * @stable ICU 2.0
          */
-        public static NumberFormat GetCurrencyInstance()
+#if FEATURE_CURRENCYFORMATTING
+        public
+#else
+        internal
+#endif
+            static NumberFormat GetCurrencyInstance()
         {
             return GetInstance(UCultureInfo.CurrentCulture, NumberFormatStyle.CurrencyStyle);
         }
@@ -657,7 +732,12 @@ namespace ICU4N.Text
          * @return a number format for currency
          * @stable ICU 2.0
          */
-        public static NumberFormat GetCurrencyInstance(CultureInfo inLocale)
+#if FEATURE_CURRENCYFORMATTING
+        public
+#else
+        internal
+#endif
+            static NumberFormat GetCurrencyInstance(CultureInfo inLocale)
         {
             return GetInstance(inLocale.ToUCultureInfo(), NumberFormatStyle.CurrencyStyle);
         }
@@ -667,7 +747,12 @@ namespace ICU4N.Text
          * @return a number format for currency
          * @stable ICU 3.2
          */
-        public static NumberFormat GetCurrencyInstance(UCultureInfo inLocale)
+#if FEATURE_CURRENCYFORMATTING
+        public
+#else
+        internal
+#endif
+            static NumberFormat GetCurrencyInstance(UCultureInfo inLocale)
         {
             return GetInstance(inLocale, NumberFormatStyle.CurrencyStyle);
         }
@@ -1107,7 +1192,12 @@ namespace ICU4N.Text
          * amounts.  This may be null.
          * @stable ICU 2.6
          */
-        public virtual Currency Currency
+#if FEATURE_CURRENCYFORMATTING
+        public
+#else
+        internal
+#endif
+            virtual Currency Currency
         {
             get => currency;
             set => currency = value;
@@ -1122,7 +1212,12 @@ namespace ICU4N.Text
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("his API is ICU internal only.")]
-        protected virtual Currency EffectiveCurrency
+#if FEATURE_CURRENCYFORMATTING
+        public
+#else
+        internal
+#endif
+            virtual Currency EffectiveCurrency
         {
             get
             {
@@ -1149,7 +1244,12 @@ namespace ICU4N.Text
          * @see #setRoundingMode(int)
          * @stable ICU 4.0
          */
-        public virtual Numerics.BigMath.RoundingMode RoundingMode
+#if FEATURE_BIGMATH
+        public
+#else
+        internal
+#endif
+            virtual Numerics.BigMath.RoundingMode RoundingMode
         {
             get => throw new NotSupportedException("RoundingMode getter must be implemented by the subclass implementation.");
             set => throw new NotSupportedException("RoundingMode setter must be implemented by the subclass implementation.");
@@ -1795,7 +1895,12 @@ namespace ICU4N.Text
     /// loop will occur.
     /// </summary>
     /// <stable>ICU 2.6</stable>
-    internal abstract class NumberFormatFactory // ICU4N: Marked internal until implementation is completed
+#if FEATURE_LEGACY_NUMBER_FORMAT
+    public
+#else
+    internal
+#endif
+        abstract class NumberFormatFactory // ICU4N: Marked internal until implementation is completed
     {
         /// <summary>
         /// Value passed to format requesting a default number format.

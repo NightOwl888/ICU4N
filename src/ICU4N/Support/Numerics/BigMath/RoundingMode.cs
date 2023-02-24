@@ -21,7 +21,12 @@ namespace ICU4N.Numerics.BigMath
     /// <summary>
     /// Enumerates the possible strategies used to round results.
     /// </summary>
-    internal enum RoundingMode // ICU4N TODO: Clean up and make public
+#if FEATURE_BIGMATH
+    public
+#else
+    internal
+#endif
+        enum RoundingMode // ICU4N TODO: Clean up and make public
     {
         /// <summary>
         /// Positive values are rounded towards positive infinity and negative 
@@ -72,7 +77,12 @@ namespace ICU4N.Numerics.BigMath
     /// <summary>
     /// Extensions to <see cref="RoundingMode"/>.
     /// </summary>
-    internal static class RoundingModeExtensions
+#if FEATURE_BIGMATH
+    public
+#else
+    internal
+#endif
+        static class RoundingModeExtensions
     {
         /// <summary>
         /// Returns a boolean telling whether a given integral value, or its name as a string, exists in

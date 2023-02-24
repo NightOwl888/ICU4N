@@ -20,7 +20,12 @@ namespace ICU4N.Numerics
 #if FEATURE_SERIALIZABLE
     [Serializable]
 #endif
-    internal partial class BigDecimal : Number, IComparable<BigDecimal> // ICU4N TODO: API - this was public in ICU4J
+#if FEATURE_BIGMATH
+    public
+#else
+    internal
+#endif
+        partial class BigDecimal : Number, IComparable<BigDecimal> // ICU4N TODO: API - this was public in ICU4J
     {
         // private static final java.lang.String $0="BigDecimal.nrx";
 

@@ -629,7 +629,12 @@ namespace ICU4N.Text
         /// appended.</returns>
         /// <exception cref="ArgumentException">if number cannot be converted to a <see cref="double"/>.</exception>
         /// <stable>ICU 3.8</stable>
-        public override StringBuffer Format(object number, StringBuffer toAppendTo,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(object number, StringBuffer toAppendTo,
                 FieldPosition pos)
         {
             if (!(number is J2N.Numerics.Number num))

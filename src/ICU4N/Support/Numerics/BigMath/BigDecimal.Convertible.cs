@@ -22,7 +22,12 @@ using System.Text;
 
 namespace ICU4N.Numerics.BigMath
 {
-    internal sealed partial class BigDecimal // ICU4N TODO: Clean up and make public
+#if FEATURE_BIGMATH
+    public
+#else
+    internal
+#endif
+        sealed partial class BigDecimal // ICU4N TODO: Clean up and make public
 #if !PORTABLE
     //: IConvertible
 #endif

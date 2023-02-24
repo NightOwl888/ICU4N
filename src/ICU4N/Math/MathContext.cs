@@ -44,7 +44,12 @@ namespace ICU4N.Numerics
     /// Rounding mode to be used during a <see cref="BigDecimal"/> operation.
     /// </summary>
     /// <stable>ICU 2.0</stable>
-    internal enum RoundingMode // ICU4N TODO: API Align names with .NET
+#if FEATURE_BIGMATH
+    public
+#else
+    internal
+#endif
+        enum RoundingMode // ICU4N TODO: API Align names with .NET
     {
         /// <summary>
         /// Rounding mode to round to a more positive number.
@@ -163,7 +168,12 @@ namespace ICU4N.Numerics
         Up = 0, // ICU4N TODO: Rearrange this to make HalfUp the default (with a value of 0) so we don't need to use -1.
     }
 
-    internal static class RoundingModeExtensions
+#if FEATURE_MATHCONTEXT
+    public
+#else
+    internal
+#endif
+        static class RoundingModeExtensions
     {
         public static RoundingMode ToICURoundingMode(this BigMath.RoundingMode roundingMode)
         {
@@ -306,7 +316,12 @@ namespace ICU4N.Numerics
 #if FEATURE_SERIALIZABLE
     [Serializable]
 #endif
-    internal sealed class MathContext // ICU4N TODO: API - this was public in ICU4J
+#if FEATURE_MATHCONTEXT
+    public
+#else
+    internal
+#endif
+        sealed class MathContext // ICU4N TODO: API - this was public in ICU4J
     {
         //private static final java.lang.String $0="MathContext.nrx";
 

@@ -7,7 +7,12 @@ using System.Text;
 
 namespace ICU4N.Numerics
 {
-    internal partial class BigDecimal
+#if FEATURE_BIGMATH
+    public
+#else
+    internal
+#endif
+        partial class BigDecimal
     {
 
         // ICU4N TODO: ReadOnlySpan<char> overloads

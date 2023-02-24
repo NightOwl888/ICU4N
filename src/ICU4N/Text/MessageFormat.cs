@@ -1224,7 +1224,12 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">If this format uses named arguments.</exception>
         /// <exception cref="ArgumentNullException">If <paramref name="pos"/> argument is null.</exception>
         /// <stable>ICU 3.0</stable>
-        public StringBuffer Format(object[] arguments, StringBuffer result,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            StringBuffer Format(object[] arguments, StringBuffer result,
                                          FieldPosition pos)
         {
             if (pos == null)
@@ -1262,7 +1267,12 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentNullException">If <paramref name="pos"/> argument is null.</exception>
         /// <returns>The passed-in <see cref="StringBuffer"/>.</returns>
         /// <stable>ICU 3.8</stable>
-        public StringBuffer Format(IDictionary<string, object> arguments, StringBuffer result,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            StringBuffer Format(IDictionary<string, object> arguments, StringBuffer result,
                                          FieldPosition pos)
         {
             if (pos == null)
@@ -1338,7 +1348,12 @@ namespace ICU4N.Text
         /// an array of <see cref="object"/> and this format uses named arguments.</exception>
         /// <exception cref="ArgumentNullException">If <paramref name="pos"/> argument is null.</exception>
         /// <stable>ICU 3.0</stable>
-        public override sealed StringBuffer Format(object arguments, StringBuffer result,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            override sealed StringBuffer Format(object arguments, StringBuffer result,
                                          FieldPosition pos)
         {
             if (pos == null)

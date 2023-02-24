@@ -42,7 +42,12 @@ namespace ICU4N.Numerics.BigMath
 #if !PORTABLE
     [Serializable]
 #endif
-    internal sealed partial class BigInteger : J2N.Numerics.Number, IComparable<BigInteger>, IEquatable<BigInteger> // ICU4N TODO: Clean up and make public
+#if FEATURE_BIGMATH
+    public
+#else
+    internal
+#endif
+        sealed partial class BigInteger : J2N.Numerics.Number, IComparable<BigInteger>, IEquatable<BigInteger> // ICU4N TODO: Clean up and make public
 #if !PORTABLE
         , ISerializable //, IConvertible
 #endif

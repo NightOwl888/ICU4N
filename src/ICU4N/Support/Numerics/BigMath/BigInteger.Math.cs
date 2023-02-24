@@ -6,7 +6,12 @@ using System.Text;
 
 namespace ICU4N.Numerics.BigMath
 {
-    internal sealed partial class BigInteger
+#if FEATURE_BIGMATH
+    public
+#else
+    internal
+#endif
+        sealed partial class BigInteger
     {
         /// <summary>
         /// Computes the absolute value of the given <see cref="BigInteger"/>
