@@ -227,6 +227,16 @@ namespace ICU4N.Text
             return buf.ToString();
         }
 
+        /// <summary>
+        /// <icu/> Convenience method to format a <see cref="System.Numerics.BigInteger"/>.
+        /// </summary>
+        /// <draft>ICU 60.1</draft>
+        public string Format(System.Numerics.BigInteger number)
+        {
+            return Format(number, new StringBuffer(),
+                          new FieldPosition(0)).ToString();
+        }
+
         /**
          * {@icu} Convenience method to format a BigInteger.
          * @stable ICU 2.0
@@ -315,7 +325,23 @@ namespace ICU4N.Text
                                             StringBuffer toAppendTo,
                                             FieldPosition pos);
 
-        // ICU4N TODO: System.Numerics.BigInteger overload
+        /// <summary>
+        /// <icu/> Formats a <see cref="System.Numerics.BigInteger"/>.  Specialization of format.
+        /// </summary>
+        /// <seealso cref="Formatter.Format(object, StringBuffer, FieldPosition)"/>.
+        /// <draft>ICU 60.1</draft>
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            virtual StringBuffer Format(System.Numerics.BigInteger number,
+                                            StringBuffer toAppendTo,
+                                            FieldPosition pos)
+        {
+            return Format(new Numerics.BigDecimal(number), toAppendTo, pos);
+        }
+
         /**
          * {@icu} Formats a BigInteger. Specialization of format.
          * @see java.text.Format#format(Object, StringBuffer, FieldPosition)

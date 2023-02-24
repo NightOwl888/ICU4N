@@ -898,6 +898,16 @@ namespace ICU4N.Dev.Test.Format
         }
 
         [Test]
+        public void TestBigNumbers2()
+        {
+            System.Numerics.BigInteger bigI = System.Numerics.BigInteger.Parse("1234567890", CultureInfo.InvariantCulture);
+            StringBuffer buf = new StringBuffer();
+            RuleBasedNumberFormat fmt = new RuleBasedNumberFormat(NumberPresentation.SpellOut);
+            fmt.Format(bigI, buf, null);
+            Logln("big int: " + buf.ToString());
+        }
+
+        [Test]
         public void TestTrailingSemicolon()
         {
             String thaiRules =
