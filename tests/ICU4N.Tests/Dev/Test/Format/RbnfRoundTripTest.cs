@@ -171,7 +171,7 @@ namespace ICU4N.Dev.Test.Format
         }
 
         /**
-         * Perform an exhaustive round-trip test on the Greek spellout rules
+         * Perform an exhaustive round-trip test on the Hebrew numbering system rules
          */
         [Test]
         public void TestHebrewNumberingRT()
@@ -181,6 +181,20 @@ namespace ICU4N.Dev.Test.Format
                             NumberPresentation.NumberingSystem);
 
             formatter.SetDefaultRuleSet("%hebrew");
+            doTest(formatter, 0, 12345678);
+        }
+
+        /**
+         * Perform an exhaustive round-trip test on the English roman numeral numbering system rules
+         */
+        [Test]
+        public void TestEnglishNumberingRT()
+        {
+            RuleBasedNumberFormat formatter
+                            = new RuleBasedNumberFormat(new CultureInfo("en"),
+                            NumberPresentation.NumberingSystem);
+
+            formatter.SetDefaultRuleSet("%roman-upper");
             doTest(formatter, 0, 12345678);
         }
 

@@ -967,11 +967,8 @@ namespace ICU4N.Text
 
         // ===== End of factory stuff =====
 
-        /**
-         * {@inheritDoc}
-         *
-         * @stable ICU 2.0
-         */
+        /// <inheritdoc/>
+        /// <stable>ICU 2.0</stable>
         public override int GetHashCode()
         {
             return maximumIntegerDigits * 37 + maxFractionDigits;

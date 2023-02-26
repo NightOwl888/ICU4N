@@ -14,11 +14,16 @@ using System.Globalization;
 using System.Numerics;
 using System.Resources;
 using System.Text;
+using System.Threading;
 using Double = J2N.Numerics.Double;
+using Long = J2N.Numerics.Int64;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
+    /// <summary>
+    /// The presentation of <see cref="RuleBasedNumberFormat"/>.
+    /// </summary>
 #if FEATURE_LEGACY_NUMBER_FORMAT
     public
 #else
@@ -26,12 +31,508 @@ namespace ICU4N.Text
 #endif
         enum NumberPresentation
     {
+        /// <summary>
+        /// Indicates to create a spellout formatter that spells out a value
+        /// in words in the desired language.
+        /// </summary>
+        /// <draft>ICU 60.1</draft>
         SpellOut = 1,
+
+        /// <summary>
+        /// Indicates to create an ordinal formatter that attaches an ordinal
+        /// suffix from the desired language to the end of the number (e.g. "123rd").
+        /// </summary>
+        /// <draft>ICU 60.1</draft>
         Ordinal = 2,
+
+        /// <summary>
+        /// Indicates to create a duration formatter that formats a duration in
+        /// seconds as hours, minutes, and seconds.
+        /// </summary>
+        /// <draft>ICU 60.1</draft>
         Duration = 3,
+
+        /// <summary>
+        /// Indicates to create a numbering system formatter to format a number in
+        /// a rules-based numbering system such as <c>%hebrew</c> for Hebrew numbers or <c>%roman-upper</c>
+        /// for upper-case Roman numerals.
+        /// </summary>
         NumberingSystem = 4,
     }
 
+
+    /// <summary>
+    /// A class that formats numbers according to a set of rules. This number formatter is
+    /// typically used for spelling out numeric values in words (e.g., 25,3476 as
+    /// "twenty-five thousand three hundred seventy-six" or "vingt-cinq mille trois
+    /// cents soixante-seize" or
+    /// "funfundzwanzigtausenddreihundertsechsundsiebzig"), but can also be used for
+    /// other complicated formatting tasks, such as formatting a number of seconds as hours,
+    /// minutes and seconds (e.g., 3,730 as "1:02:10").
+    /// <para/>
+    /// The resources contain three predefined formatters for each locale: spellout, which
+    /// spells out a value in words (123 is "one hundred twenty-three"); ordinal, which
+    /// appends an ordinal suffix to the end of a numeral (123 is "123rd"); and
+    /// duration, which shows a duration in seconds as hours, minutes, and seconds (123 is
+    /// "2:03"). The client can also define more specialized <see cref="RuleBasedNumberFormat"/>s
+    /// by supplying programmer-defined rule sets.
+    /// <para/>
+    /// The behavior of a <see cref="RuleBasedNumberFormat"/> is specified by a textual description
+    /// that is either passed to the constructor as a <see cref="string"/> or loaded from a resource
+    /// bundle. In its simplest form, the description consists of a semicolon-delimited list of <em>rules.</em>
+    /// Each rule has a string of output text and a value or range of values it is applicable to.
+    /// In a typical spellout rule set, the first twenty rules are the words for the numbers from
+    /// 0 to 19:
+    /// <code>
+    /// zero; one; two; three; four; five; six; seven; eight; nine;
+    /// ten; eleven; twelve; thirteen; fourteen; fifteen; sixteen; seventeen; eighteen; nineteen;
+    /// </code>
+    /// <para/>
+    /// For larger numbers, we can use the preceding set of rules to format the ones place, and
+    /// we only have to supply the words for the multiples of 10:
+    /// <code>
+    /// 20: twenty[-&gt;&gt;];
+    /// 30: thirty{-&gt;&gt;];
+    /// 40: forty[-&gt;&gt;];
+    /// 50: fifty[-&gt;&gt;];
+    /// 60: sixty[-&gt;&gt;];
+    /// 70: seventy[-&gt;&gt;];
+    /// 80: eighty[-&gt;&gt;];
+    /// 90: ninety[-&gt;&gt;];
+    /// </code>
+    /// <para/>
+    /// In these rules, the <em>base value</em> is spelled out explicitly and set off from the
+    /// rule's output text with a colon. The rules are in a sorted list, and a rule is applicable
+    /// to all numbers from its own base value to one less than the next rule's base value. The
+    /// "&gt;&gt;" token is called a <em>substitution</em> and tells the formatter to
+    /// isolate the number's ones digit, format it using this same set of rules, and place the
+    /// result at the position of the "&gt;&gt;" token. Text in brackets is omitted if
+    /// the number being formatted is an even multiple of 10 (the hyphen is a literal hyphen; 24
+    /// is "twenty-four," not "twenty four").
+    /// <para/>
+    /// For even larger numbers, we can actually look up several parts of the number in the
+    /// list:
+    /// <code>100: &lt;&lt; hundred[ &gt;&gt;];</code>
+    /// <para/>
+    /// The "&lt;&lt;" represents a new kind of substitution. The &lt;&lt; isolates
+    /// the hundreds digit (and any digits to its left), formats it using this same rule set, and
+    /// places the result where the "&lt;&lt;" was. Notice also that the meaning of
+    /// &gt;&gt; has changed: it now refers to both the tens and the ones digits. The meaning of
+    /// both substitutions depends on the rule's base value. The base value determines the rule's <em>divisor,</em>
+    /// which is the highest power of 10 that is less than or equal to the base value (the user
+    /// can change this). To fill in the substitutions, the formatter divides the number being
+    /// formatted by the divisor. The integral quotient is used to fill in the &lt;&lt;
+    /// substitution, and the remainder is used to fill in the &gt;&gt; substitution. The meaning
+    /// of the brackets changes similarly: text in brackets is omitted if the value being
+    /// formatted is an even multiple of the rule's divisor. The rules are applied recursively, so
+    /// if a substitution is filled in with text that includes another substitution, that
+    /// substitution is also filled in.
+    /// <para/>
+    /// This rule covers values up to 999, at which point we add another rule:
+    /// <code>1000: &lt;&lt; thousand[ &gt;&gt;];</code>
+    /// <para/>
+    /// Again, the meanings of the brackets and substitution tokens shift because the rule's
+    /// base value is a higher power of 10, changing the rule's divisor. This rule can actually be
+    /// used all the way up to 999,999. This allows us to finish out the rules as follows:
+    /// <code>
+    /// 1,000,000: &lt;&lt; million[ &gt;&gt;];
+    /// 1,000,000,000: &lt;&lt; billion[ &gt;&gt;];
+    /// 1,000,000,000,000: &lt;&lt; trillion[ &gt;&gt;];
+    /// 1,000,000,000,000,000: OUT OF RANGE!;
+    /// </code>
+    /// <para/>
+    /// Commas, periods, and spaces can be used in the base values to improve legibility and
+    /// are ignored by the rule parser. The last rule in the list is customarily treated as an
+    /// "overflow rule," applying to everything from its base value on up, and often (as
+    /// in this example) being used to print out an error message or default representation.
+    /// Notice also that the size of the major groupings in large numbers is controlled by the
+    /// spacing of the rules: because in English we group numbers by thousand, the higher rules
+    /// are separated from each other by a factor of 1,000.
+    /// <para/>
+    /// To see how these rules actually work in practice, consider the following example:
+    /// Formatting 25,430 with this rule set would work like this:
+    /// <list type="table">
+    ///     <item>
+    ///         <term><strong>&lt;&lt; thousand &gt;&gt;</strong></term>
+    ///         <description>[the rule whose base value is 1,000 is applicable to 25,340]</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><strong>twenty-&gt;&gt;</strong> thousand &gt;&gt;</term>
+    ///         <description>[25,340 over 1,000 is 25. The rule for 20 applies.]</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>twenty-<strong>five</strong> thousand &gt;&gt;</term>
+    ///         <description>[25 mod 10 is 5. The rule for 5 is "five."</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>twenty-five thousand <strong>&lt;&lt; hundred &gt;&gt;</strong></term>
+    ///         <description>[25,340 mod 1,000 is 340. The rule for 100 applies.]</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>twenty-five thousand <strong>three</strong> hundred &gt;&gt;</term>
+    ///         <description>[340 over 100 is 3. The rule for 3 is &quot;three.&quot;]</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>twenty-five thousand three hundred <strong>forty</strong></term>
+    ///         <description>[340 mod 100 is 40. The rule for 40 applies. Since 40 divides
+    ///         evenly by 10, the hyphen and substitution in the brackets are omitted.]</description>
+    ///     </item>
+    /// </list>
+    /// <para/>
+    /// The above syntax suffices only to format positive integers. To format negative numbers,
+    /// we add a special rule:
+    /// <code>-x: minus &gt;&gt;;</code>
+    /// <para/>
+    /// This is called a <em>negative-number rule,</em> and is identified by "-x"
+    /// where the base value would be. This rule is used to format all negative numbers. the
+    /// &gt;&gt; token here means "find the number's absolute value, format it with these
+    /// rules, and put the result here."
+    /// <para/>
+    /// We also add a special rule called a <em>fraction rule </em>for numbers with fractional
+    /// parts:
+    /// <code>x.x: &lt;&lt; point &gt;&gt;;</code>
+    /// <para/>
+    /// This rule is used for all positive non-integers (negative non-integers pass through the
+    /// negative-number rule first and then through this rule). Here, the &lt;&lt; token refers to
+    /// the number's integral part, and the &gt;&gt; to the number's fractional part. The
+    /// fractional part is formatted as a series of single-digit numbers (e.g., 123.456 would be
+    /// formatted as "one hundred twenty-three point four five six").
+    /// <para/>
+    /// To see how this rule syntax is applied to various languages, examine the resource data.
+    /// </summary>
+    /// <remarks>
+    /// There is actually much more flexibility built into the rule language than the
+    /// description above shows. A formatter may own multiple rule sets, which can be selected by
+    /// the caller, and which can use each other to fill in their substitutions. Substitutions can
+    /// also be filled in with digits, using a <see cref="ICU4N.Text.DecimalFormat"/> object. There is syntax that can be
+    /// used to alter a rule's divisor in various ways. And there is provision for much more
+    /// flexible fraction handling. A complete description of the rule syntax follows:
+    /// <para/>
+    /// The description of a <see cref="RuleBasedNumberFormat"/>'s behavior consists of one or more <em>rule
+    /// sets.</em> Each rule set consists of a name, a colon, and a list of <em>rules.</em> A rule
+    /// set name must begin with a % sign. Rule sets with names that begin with a single % sign
+    /// are <em>public:</em> the caller can specify that they be used to format and parse numbers.
+    /// Rule sets with names that begin with %% are <em>private:</em> they exist only for the use
+    /// of other rule sets. If a formatter only has one rule set, the name may be omitted.
+    /// <para/>
+    /// The user can also specify a special "rule set" named <tt>%%lenient-parse</tt>.
+    /// The body of <tt>%%lenient-parse</tt> isn't a set of number-formatting rules, but a <tt>RuleBasedCollator</tt>
+    /// description which is used to define equivalences for lenient parsing. For more information
+    /// on the syntax, see <see cref="RuleBasedCollator"/>. For more information on lenient parsing,
+    /// see <see cref="LenientParseEnabled"/>. <em>Note:</em> symbols that have syntactic meaning
+    /// in collation rules, such as '&amp;', have no particular meaning when appearing outside
+    /// of the <tt>lenient-parse</tt> rule set.
+    /// <para/>
+    /// The body of a rule set consists of an ordered, semicolon-delimited list of <em>rules.</em>
+    /// Internally, every rule has a base value, a divisor, rule text, and zero, one, or two <em>substitutions.</em>
+    /// These parameters are controlled by the description syntax, which consists of a <em>rule
+    /// descriptor,</em> a colon, and a <em>rule body.</em>
+    /// <para/>
+    /// A rule descriptor can take one of the following forms (text in <em>italics</em> is the
+    /// name of a token):
+    /// <list type="table">
+    ///     <item>
+    ///         <term><em>bv</em>:</term>
+    ///         <description><em>bv</em> specifies the rule's base value. <em>bv</em> is a decimal
+    ///         number expressed using ASCII digits. <em>bv</em> may contain spaces, period, and commas,
+    ///         which are ignored. The rule's divisor is the highest power of 10 less than or equal to
+    ///         the base value.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><em>bv</em>/<em>rad</em>:</term>
+    ///         <description><em>bv</em> specifies the rule's base value. The rule's divisor is the
+    ///         highest power of <em>rad</em> less than or equal to the base value.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><em>bv</em>&gt;:</term>
+    ///         <description><em>bv</em> specifies the rule's base value. To calculate the divisor,
+    ///         let the radix be 10, and the exponent be the highest exponent of the radix that yields a
+    ///         result less than or equal to the base value. Every &gt; character after the base value
+    ///         decreases the exponent by 1. If the exponent is positive or 0, the divisor is the radix
+    ///         raised to the power of the exponent; otherwise, the divisor is 1.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><em>bv</em>/<em>rad</em>&gt;:</term>
+    ///         <description><em>bv</em> specifies the rule's base value. To calculate the divisor,
+    ///         let the radix be <em>rad</em>, and the exponent be the highest exponent of the radix that
+    ///         yields a result less than or equal to the base value. Every &gt; character after the radix
+    ///         decreases the exponent by 1. If the exponent is positive or 0, the divisor is the radix
+    ///         raised to the power of the exponent; otherwise, the divisor is 1.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>-x:</term>
+    ///         <description>The rule is a negative-number rule.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>x.x:</term>
+    ///         <description>The rule is an <em>improper fraction rule</em>. If the full stop in
+    ///         the middle of the rule name is replaced with the decimal point
+    ///         that is used in the language or DecimalFormatSymbols, then that rule will
+    ///         have precedence when formatting and parsing this rule. For example, some
+    ///         languages use the comma, and can thus be written as x,x instead. For example,
+    ///         you can use "x.x: &lt;&lt; point &gt;&gt;;x,x: &lt;&lt; comma &gt;&gt;;" to
+    ///         handle the decimal point that matches the language's natural spelling of
+    ///         the punctuation of either the full stop or comma.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>0.x:</term>
+    ///         <description>The rule is a <em>proper fraction rule</em>. If the full stop in
+    ///         the middle of the rule name is replaced with the decimal point
+    ///         that is used in the language or DecimalFormatSymbols, then that rule will
+    ///         have precedence when formatting and parsing this rule. For example, some
+    ///         languages use the comma, and can thus be written as 0,x instead. For example,
+    ///         you can use "0.x: point &gt;&gt;;0,x: comma &gt;&gt;;" to
+    ///         handle the decimal point that matches the language's natural spelling of
+    ///         the punctuation of either the full stop or comma</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>x.0:</term>
+    ///         <description>The rule is a <em>master rule</em>. If the full stop in
+    ///         the middle of the rule name is replaced with the decimal point
+    ///         that is used in the language or DecimalFormatSymbols, then that rule will
+    ///         have precedence when formatting and parsing this rule. For example, some
+    ///         languages use the comma, and can thus be written as x,0 instead. For example,
+    ///         you can use "x.0: &lt;&lt; point;x,0: &lt;&lt; comma;" to
+    ///         handle the decimal point that matches the language's natural spelling of
+    ///         the punctuation of either the full stop or comma</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Inf:</term>
+    ///         <description>The rule for infinity.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>NaN:</term>
+    ///         <description>The rule for an IEEE 754 NaN (not a number).</description>
+    ///     </item>
+    ///     <item>
+    ///         <term><em>nothing</em></term>
+    ///         <description>If the rule's rule descriptor is left out, the base value is one plus the
+    ///         preceding rule's base value (or zero if this is the first rule in the list) in a normal
+    ///         rule set. In a fraction rule set, the base value is the same as the preceding rule's
+    ///         base value.</description>
+    ///     </item>
+    /// </list>
+    /// <para/>
+    /// A rule set may be either a regular rule set or a <em>fraction rule set,</em> depending
+    /// on whether it is used to format a number's integral part (or the whole number) or a
+    /// number's fractional part. Using a rule set to format a rule's fractional part makes it a
+    /// fraction rule set.
+    /// <para/>
+    /// Which rule is used to format a number is defined according to one of the following
+    /// algorithms: If the rule set is a regular rule set, do the following:
+    /// <list type="bullet">
+    ///     <item><description>If the rule set includes a master rule (and the number was passed in as a <tt>double</tt>),
+    ///     use the master rule. (If the number being formatted was passed in as a <tt>long</tt>,
+    ///     the master rule is ignored.)</description></item>
+    ///     <item><description>If the number is negative, use the negative-number rule.</description></item>
+    ///     <item><description>If the number has a fractional part and is greater than 1, use the improper fraction
+    ///     rule.</description></item>
+    ///     <item><description>If the number has a fractional part and is between 0 and 1, use the proper fraction
+    ///     rule.</description></item>
+    ///     <item><description>Binary-search the rule list for the rule with the highest base value less than or equal
+    ///     to the number. If that rule has two substitutions, its base value is not an even multiple
+    ///     of its divisor, and the number <em>is</em> an even multiple of the rule's divisor, use the
+    ///     rule that precedes it in the rule list. Otherwise, use the rule itself.</description></item>
+    /// </list>
+    /// <para/>
+    /// If the rule set is a fraction rule set, do the following:
+    /// <list type="bullet">
+    ///     <item><description>Ignore negative-number and fraction rules.</description></item>
+    ///     <item><description>For each rule in the list, multiply the number being formatted (which will always be
+    ///     between 0 and 1) by the rule's base value. Keep track of the distance between the result
+    ///     the nearest integer.</description></item>
+    ///     <item><description>Use the rule that produced the result closest to zero in the above calculation. In the
+    ///     event of a tie or a direct hit, use the first matching rule encountered. (The idea here is
+    ///     to try each rule's base value as a possible denominator of a fraction. Whichever
+    ///     denominator produces the fraction closest in value to the number being formatted wins.) If
+    ///     the rule following the matching rule has the same base value, use it if the numerator of
+    ///     the fraction is anything other than 1; if the numerator is 1, use the original matching
+    ///     rule. (This is to allow singular and plural forms of the rule text without a lot of extra
+    ///     hassle.)</description></item>
+    /// </list>
+    /// <para/>
+    /// A rule's body consists of a string of characters terminated by a semicolon. The rule
+    /// may include zero, one, or two <em>substitution tokens,</em> and a range of text in
+    /// brackets. The brackets denote optional text (and may also include one or both
+    /// substitutions). The exact meanings of the substitution tokens, and under what conditions
+    /// optional text is omitted, depend on the syntax of the substitution token and the context.
+    /// The rest of the text in a rule body is literal text that is output when the rule matches
+    /// the number being formatted.
+    /// <para/>
+    /// A substitution token begins and ends with a <em>token character.</em> The token
+    /// character and the context together specify a mathematical operation to be performed on the
+    /// number being formatted. An optional <em>substitution descriptor </em>specifies how the
+    /// value resulting from that operation is used to fill in the substitution. The position of
+    /// the substitution token in the rule body specifies the location of the resultant text in
+    /// the original rule text.
+    /// <para/>
+    /// The meanings of the substitution token characters are as follows:
+    /// <list type="table">
+    ///     <item>
+    ///         <term>&gt;&gt;</term>
+    ///         <description>
+    ///             <list type="bullet">
+    ///                 <item>
+    ///                     <term>in normal rule</term>
+    ///                     <description>Divide the number by the rule's divisor and format the remainder</description>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term>in negative-number rule</term>
+    ///                     <description>Find the absolute value of the number and format the result</description>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term>in fraction or master rule</term>
+    ///                     <description>Isolate the number's fractional part and format it.</description>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term>in rule in fraction rule set</term>
+    ///                     <description>Not allowed.</description>
+    ///                 </item>
+    ///             </list>
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>&gt;&gt;&gt;</term>
+    ///         <description>
+    ///             <list type="bullet">
+    ///                 <item>
+    ///                     <term>in normal rule</term>
+    ///                     <description>Divide the number by the rule's divisor and format the remainder,
+    ///                     but bypass the normal rule-selection process and just use the
+    ///                     rule that precedes this one in this rule list.</description>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term>in all other rules</term>
+    ///                     <description>Not allowed.</description>
+    ///                 </item>
+    ///             </list>
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>&lt;&lt;</term>
+    ///         <description>
+    ///             <list type="bullet">
+    ///                 <item>
+    ///                     <term>in normal rule</term>
+    ///                     <description>Divide the number by the rule's divisor and format the quotient</description>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term>in negative-number rule</term>
+    ///                     <description>Not allowed.</description>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term>in fraction or master rule</term>
+    ///                     <description>Isolate the number's integral part and format it.</description>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term>in rule in fraction rule set</term>
+    ///                     <description>Multiply the number by the rule's base value and format the result.</description>
+    ///                 </item>
+    ///             </list>
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>==</term>
+    ///         <description>
+    ///             <list type="bullet">
+    ///                 <item>
+    ///                     <term>in all rule sets</term>
+    ///                     <description>Format the number unchanged</description>
+    ///                 </item>
+    ///             </list>
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>[]</term>
+    ///         <description>
+    ///             <list type="bullet">
+    ///                 <item>
+    ///                     <term>in normal rule</term>
+    ///                     <description>Omit the optional text if the number is an even multiple of the rule's divisor</description>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term>in negative-number rule</term>
+    ///                     <description>Not allowed.</description>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term>in improper-fraction rule</term>
+    ///                     <description>Omit the optional text if the number is between 0 and 1 (same as specifying both an
+    ///                     x.x rule and a 0.x rule)</description>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term>in master rule</term>
+    ///                     <description>Omit the optional text if the number is an integer (same as specifying both an x.x
+    ///                     rule and an x.0 rule)</description>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term>in proper-fraction rule</term>
+    ///                     <description>Not allowed.</description>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term>in rule in fraction rule set</term>
+    ///                     <description>Omit the optional text if multiplying the number by the rule's base value yields 1.</description>
+    ///                 </item>
+    ///             </list>
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>$(cardinal,<i>plural syntax</i>)$</term>
+    ///         <description>
+    ///             <list type="bullet">
+    ///                 <item>
+    ///                     <term>in all rule sets</term>
+    ///                     <description>This provides the ability to choose a word based on the number divided by the radix to the power of the
+    ///                     exponent of the base value for the specified locale, which is normally equivalent to the &lt;&lt; value.
+    ///                     This uses the cardinal plural rules from <see cref="PluralFormat"/>. All strings used in the plural format are treated
+    ///                     as the same base value for parsing.</description>
+    ///                 </item>
+    ///             </list>
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term>$(ordinal,<i>plural syntax</i>)$</term>
+    ///         <description>
+    ///             <list type="bullet">
+    ///                 <item>
+    ///                     <term>in all rule sets</term>
+    ///                     <description>This provides the ability to choose a word based on the number divided by the radix to the power of the
+    ///                     exponent of the base value for the specified locale, which is normally equivalent to the &lt;&lt; value.
+    ///                     This uses the ordinal plural rules from <see cref="PluralFormat"/>. All strings used in the plural format are treated
+    ///                     as the same base value for parsing.</description>
+    ///                 </item>
+    ///             </list>
+    ///         </description>
+    ///     </item>
+    /// </list>
+    /// <para/>
+    /// The substitution descriptor (i.e., the text between the token characters) may take one
+    /// of three forms:
+    /// <list type="table">
+    ///     <item>
+    ///         <term>A rule set name</term>
+    ///         <description>Perform the mathematical operation on the number, and format the result using the
+    ///         named rule set.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>A <see cref="ICU4N.Text.DecimalFormat"/> pattern</term>
+    ///         <description>Perform the mathematical operation on the number, and format the result using a
+    ///         <see cref="ICU4N.Text.DecimalFormat"/> with the specified pattern. The pattern must begin with 0 or #.</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Nothing</term>
+    ///         <description>Perform the mathematical operation on the number, and format the result using the rule
+    ///         set containing the current rule, except:
+    ///             <list type="bullet">
+    ///                 <item><description>You can't have an empty substitution descriptor with a == substitution.</description></item>
+    ///                 <item><description>If you omit the substitution descriptor in a &gt;&gt; substitution in a fraction rule,
+    ///                 format the result one digit at a time using the rule set containing the current rule.</description></item>
+    ///                 <item><description>If you omit the substitution descriptor in a &lt;&lt; substitution in a rule in a
+    ///                 fraction rule set, format the result using the default rule set for this formatter.</description></item>
+    ///             </list>
+    ///         </description>
+    ///     </item>
+    /// </list>
+    /// </remarks>
 #if FEATURE_LEGACY_NUMBER_FORMAT
     public
 #else
@@ -43,152 +544,133 @@ namespace ICU4N.Text
         // constants
         //-----------------------------------------------------------------------
 
-        // Generated by serialver from JDK 1.4.1_01
-        //static final long serialVersionUID = -7664252765575395068L;
+        //// Generated by serialver from JDK 1.4.1_01
+        ////static final long serialVersionUID = -7664252765575395068L;
 
-        ///**
-        // * Selector code that tells the constructor to create a spellout formatter
-        // * @stable ICU 2.0
-        // */
-        //public const int SPELLOUT = 1;
-
-        ///**
-        // * Selector code that tells the constructor to create an ordinal formatter
-        // * @stable ICU 2.0
-        // */
-        //public const int ORDINAL = 2;
-
-        ///**
-        // * Selector code that tells the constructor to create a duration formatter
-        // * @stable ICU 2.0
-        // */
-        //public const int DURATION = 3;
-
-        ///**
-        // * Selector code that tells the constructor to create a numbering system formatter
-        // * @stable ICU 4.2
-        // */
-        //public const int NUMBERING_SYSTEM = 4;
+        // ICU4N: Moved constants to NumberPresentation enum
 
         //-----------------------------------------------------------------------
         // data members
         //-----------------------------------------------------------------------
 
-        /**
-         * The formatter's rule sets.
-         */
+        /// <summary>
+        /// The formatter's rule sets.
+        /// </summary>
         [NonSerialized]
         private NFRuleSet[] ruleSets = null;
 
-        /**
-         * The formatter's rule names mapped to rule sets.
-         */
+        /// <summary>
+        /// The formatter's rule names mapped to rule sets.
+        /// </summary>
         [NonSerialized]
         private IDictionary<string, NFRuleSet> ruleSetsMap = null;
 
-        /**
-         * A pointer to the formatter's default rule set.  This is always included
-         * in ruleSets.
-         */
+        /// <summary>
+        /// A pointer to the formatter's default rule set. This is always included
+        /// in <see cref="ruleSets"/>.
+        /// </summary>
         [NonSerialized]
         private NFRuleSet defaultRuleSet = null;
 
-        /**
-         * The formatter's locale.  This is used to create DecimalFormatSymbols and
-         * Collator objects.
-         * @serial
-         */
-        private UCultureInfo locale = null;
+        /// <summary>
+        /// The formatter's locale.  This is used to create <see cref="ICU4N.Text.DecimalFormatSymbols"/> and
+        /// <see cref="Collator"/> objects.
+        /// </summary>
+        /// <serial/>
+        private UCultureInfo locale = null; // ICU4N TODO: UCultureInfo is not serializable.
 
-        /**
-         * The formatter's rounding mode.
-         * @serial
-         */
+        /// <summary>
+        /// The formatter's rounding mode.
+        /// </summary>
+        /// <serial/>
         private Numerics.BigMath.RoundingMode roundingMode = Numerics.BigMath.RoundingMode.Unnecessary;
 
-        /**
-         * Collator to be used in lenient parsing.  This variable is lazy-evaluated:
-         * the collator is actually created the first time the client does a parse
-         * with lenient-parse mode turned on.
-         */
+        /// <summary>
+        /// <see cref="Collator"/> to be used in lenient parsing. This variable is lazy-evaluated:
+        /// the collator is actually created the first time the client does a parse
+        /// with lenient-parse mode turned on.
+        /// </summary>
         [NonSerialized]
         private IRbnfLenientScannerProvider scannerProvider = null;
 
-        // flag to mark whether we've previously looked for a scanner and failed
+        /// <summary>
+        /// flag to mark whether we've previously looked for a scanner and failed
+        /// </summary>
         [NonSerialized]
         private bool lookedForScanner;
 
-        /**
-         * The DecimalFormatSymbols object that any DecimalFormat objects this
-         * formatter uses should use.  This variable is lazy-evaluated: it isn't
-         * filled in if the rule set never uses a DecimalFormat pattern.
-         */
+        /// <summary>
+        /// The <see cref="ICU4N.Text.DecimalFormatSymbols"/> object that any
+        /// <see cref="ICU4N.Text.DecimalFormat"/> objects this
+        /// formatter uses should use. This variable is lazy-evaluated: it isn't
+        /// filled in if the rule set never uses a DecimalFormat pattern.
+        /// </summary>
         [NonSerialized]
         private DecimalFormatSymbols decimalFormatSymbols = null;
 
-        /**
-         * The NumberFormat used when lenient parsing numbers.  This needs to reflect
-         * the locale.  This is lazy-evaluated, like decimalFormatSymbols.  It is
-         * here so it can be shared by different NFSubstitutions.
-         */
+        /// <summary>
+        /// The <see cref="NumberFormat"/> used when lenient parsing numbers. This needs to reflect
+        /// the locale. This is lazy-evaluated, like <see cref="decimalFormatSymbols"/>. It is
+        /// here so it can be shared by different <see cref="NFSubstitution"/>s.
+        /// </summary>
         [NonSerialized]
         private DecimalFormat decimalFormat = null;
 
-        /**
-         * The rule used when dealing with infinity. This is lazy-evaluated, and derived from decimalFormat.
-         * It is here so it can be shared by different NFRuleSets.
-         */
+        /// <summary>
+        /// The rule used when dealing with infinity. This is lazy-evaluated, and derived from <see cref="decimalFormat"/>.
+        /// It is here so it can be shared by different <see cref="NFRuleSet"/>s.
+        /// </summary>
         [NonSerialized]
         private NFRule defaultInfinityRule = null;
 
-        /**
-         * The rule used when dealing with IEEE 754 NaN. This is lazy-evaluated, and derived from decimalFormat.
-         * It is here so it can be shared by different NFRuleSets.
-         */
+        /// <summary>
+        /// The rule used when dealing with IEEE 754 NaN. This is lazy-evaluated, and derived from <see cref="decimalFormat"/>.
+        /// It is here so it can be shared by different <see cref="NFRuleSet"/>s.
+        /// </summary>
         [NonSerialized]
         private NFRule defaultNaNRule = null;
 
-        /**
-         * Flag specifying whether lenient parse mode is on or off.  Off by default.
-         * @serial
-         */
+        /// <summary>
+        /// Flag specifying whether lenient parse mode is on or off.  Off by default.
+        /// </summary>
+        /// <serial/>
         private bool lenientParse = false;
 
-        /**
-         * If the description specifies lenient-parse rules, they're stored here until
-         * the collator is created.
-         */
+        /// <summary>
+        /// If the description specifies lenient-parse rules, they're stored here until
+        /// the collator is created.
+        /// </summary>
         [NonSerialized]
         private string lenientParseRules;
 
-        /**
-         * If the description specifies post-process rules, they're stored here until
-         * post-processing is required.
-         */
+        /// <summary>
+        /// If the description specifies post-process rules, they're stored here until
+        /// post-processing is required.
+        /// </summary>
         [NonSerialized]
         private string postProcessRules;
 
-        /**
-         * Post processor lazily constructed from the postProcessRules.
-         */
+        /// <summary>
+        /// Post processor lazily constructed from the <see cref="postProcessRules"/>.
+        /// </summary>
         [NonSerialized]
         private IRbnfPostProcessor postProcessor;
 
-        /**
-         * Localizations for rule set names.
-         * @serial
-         */
+        /// <summary>
+        /// Localizations for rule set names.
+        /// </summary>
+        /// <serial/>
         private IDictionary<string, string[]> ruleSetDisplayNames;
 
-        /**
-         * The public rule set names;
-         * @serial
-         */
+        /// <summary>
+        /// The public rule set names;
+        /// </summary>
+        /// <serial/>
         private string[] publicRuleSetNames;
 
-        /**
-         * Data for handling context-based capitalization
-         */
+        /// <summary>
+        /// Data for handling context-based capitalization
+        /// </summary>
         private bool capitalizationInfoIsSet = false;
         private bool capitalizationForListOrMenu = false;
         private bool capitalizationForStandAlone = false;
@@ -202,148 +684,141 @@ namespace ICU4N.Text
         // constructors
         //-----------------------------------------------------------------------
 
-        /**
-         * Creates a RuleBasedNumberFormat that behaves according to the description
-         * passed in.  The formatter uses the default <code>FORMAT</code> locale.
-         * @param description A description of the formatter's desired behavior.
-         * See the class documentation for a complete explanation of the description
-         * syntax.
-         * @see Category#FORMAT
-         * @stable ICU 2.0
-         */
-        public RuleBasedNumberFormat(string description)
+        /// <summary>
+        /// Creates a <see cref="RuleBasedNumberFormat"/> that behaves according to the description
+        /// passed in. The formatter uses the <see cref="UCultureInfo.CurrentCulture"/>.
+        /// </summary>
+        /// <param name="description">A description of the formatter's desired behavior.
+        /// See the class documentation for a complete explanation of the description
+        /// syntax.
+        /// </param>
+        /// <seealso cref="UCultureInfo.CurrentCulture"/>
+        /// <stable>ICU 2.0</stable>
+        public RuleBasedNumberFormat(string description) // ICU4N TODO: API Fix "current culture"
         {
             locale = UCultureInfo.CurrentCulture; // ICU4N TODO: In .NET, the default is to use invariant culture
             Init(description, null);
         }
 
-        /**
-         * Creates a RuleBasedNumberFormat that behaves according to the description
-         * passed in.  The formatter uses the default <code>FORMAT</code> locale.
-         * <p>
-         * The localizations data provides information about the public
-         * rule sets and their localized display names for different
-         * locales. The first element in the list is an array of the names
-         * of the public rule sets.  The first element in this array is
-         * the initial default ruleset.  The remaining elements in the
-         * list are arrays of localizations of the names of the public
-         * rule sets.  Each of these is one longer than the initial array,
-         * with the first String being the ULocale ID, and the remaining
-         * Strings being the localizations of the rule set names, in the
-         * same order as the initial array.
-         * @param description A description of the formatter's desired behavior.
-         * See the class documentation for a complete explanation of the description
-         * syntax.
-         * @param localizations a list of localizations for the rule set
-         * names in the description.
-         * @see Category#FORMAT
-         * @stable ICU 3.2
-         */
-        public RuleBasedNumberFormat(string description, string[][] localizations)
+        /// <summary>
+        /// Creates a <see cref="RuleBasedNumberFormat"/> that behaves according to the description
+        /// passed in. The formatter uses the <see cref="UCultureInfo.CurrentCulture"/>.
+        /// <para/>
+        /// The localizations data provides information about the public
+        /// rule sets and their localized display names for different
+        /// locales. The first element in the list is an array of the names
+        /// of the public rule sets. The first element in this array is
+        /// the initial default ruleset. The remaining elements in the
+        /// list are arrays of localizations of the names of the public
+        /// rule sets. Each of these is one longer than the initial array,
+        /// with the first <see cref="string"/> being the <see cref="UCultureInfo"/> ID, and the remaining
+        /// <see cref="string"/>s being the localizations of the rule set names, in the
+        /// same order as the initial array.
+        /// </summary>
+        /// <param name="description">A description of the formatter's desired behavior.
+        /// See the class documentation for a complete explanation of the description
+        /// syntax.</param>
+        /// <param name="localizations">A list of localizations for the rule set
+        /// names in the description.</param>
+        /// <seealso cref="UCultureInfo.CurrentCulture"/>
+        /// <stable>ICU 3.2</stable>
+        internal RuleBasedNumberFormat(string description, string[][] localizations) // ICU4N TODO: API Fix "current culture" and localizations input and make public
         {
             locale = UCultureInfo.CurrentCulture; // ICU4N TODO: In .NET, the default is to use invariant culture
             Init(description, localizations);
         }
 
-        /**
-         * Creates a RuleBasedNumberFormat that behaves according to the description
-         * passed in.  The formatter uses the specified locale to determine the
-         * characters to use when formatting in numerals, and to define equivalences
-         * for lenient parsing.
-         * @param description A description of the formatter's desired behavior.
-         * See the class documentation for a complete explanation of the description
-         * syntax.
-         * @param locale A locale, which governs which characters are used for
-         * formatting values in numerals, and which characters are equivalent in
-         * lenient parsing.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Creates a <see cref="RuleBasedNumberFormat"/> that behaves according to the description
+        /// passed in. The formatter uses the specified <see cref="locale"/> to determine the
+        /// characters to use when formatting in numerals, and to define equivalences
+        /// for lenient parsing.
+        /// </summary>
+        /// <param name="description">A description of the formatter's desired behavior.
+        /// See the class documentation for a complete explanation of the description
+        /// syntax.</param>
+        /// <param name="locale">A locale, which governs which characters are used for
+        /// formatting values in numerals, and which characters are equivalent in
+        /// lenient parsing.</param>
+        /// <stable>ICU 2.0</stable>
         public RuleBasedNumberFormat(string description, CultureInfo locale)
             : this(description, locale.ToUCultureInfo())
         {
         }
 
-        /**
-         * Creates a RuleBasedNumberFormat that behaves according to the description
-         * passed in.  The formatter uses the specified locale to determine the
-         * characters to use when formatting in numerals, and to define equivalences
-         * for lenient parsing.
-         * @param description A description of the formatter's desired behavior.
-         * See the class documentation for a complete explanation of the description
-         * syntax.
-         * @param locale A locale, which governs which characters are used for
-         * formatting values in numerals, and which characters are equivalent in
-         * lenient parsing.
-         * @stable ICU 3.2
-         */
+        /// <summary>
+        /// Creates a <see cref="RuleBasedNumberFormat"/> that behaves according to the description
+        /// passed in. The formatter uses the specified locale to determine the
+        /// characters to use when formatting in numerals, and to define equivalences
+        /// for lenient parsing.
+        /// </summary>
+        /// <param name="description">A description of the formatter's desired behavior.
+        /// See the class documentation for a complete explanation of the description
+        /// syntax.</param>
+        /// <param name="locale">A locale, which governs which characters are used for
+        /// formatting values in numerals, and which characters are equivalent in
+        /// lenient parsing.</param>
+        /// <stable>ICU 3.2</stable>
         public RuleBasedNumberFormat(string description, UCultureInfo locale)
         {
             this.locale = locale;
             Init(description, null);
         }
 
-        /**
-         * Creates a RuleBasedNumberFormat that behaves according to the description
-         * passed in.  The formatter uses the specified locale to determine the
-         * characters to use when formatting in numerals, and to define equivalences
-         * for lenient parsing.
-         * <p>
-         * The localizations data provides information about the public
-         * rule sets and their localized display names for different
-         * locales. The first element in the list is an array of the names
-         * of the public rule sets.  The first element in this array is
-         * the initial default ruleset.  The remaining elements in the
-         * list are arrays of localizations of the names of the public
-         * rule sets.  Each of these is one longer than the initial array,
-         * with the first String being the ULocale ID, and the remaining
-         * Strings being the localizations of the rule set names, in the
-         * same order as the initial array.
-         * @param description A description of the formatter's desired behavior.
-         * See the class documentation for a complete explanation of the description
-         * syntax.
-         * @param localizations a list of localizations for the rule set names in the description.
-         * @param locale A ULocale that governs which characters are used for
-         * formatting values in numerals, and determines which characters are equivalent in
-         * lenient parsing.
-         * @stable ICU 3.2
-         */
-        public RuleBasedNumberFormat(string description, string[][] localizations, UCultureInfo locale)
+        /// <summary>
+        /// Creates a <see cref="RuleBasedNumberFormat"/> that behaves according to the description
+        /// passed in. The formatter uses the specified locale to determine the
+        /// characters to use when formatting in numerals, and to define equivalences
+        /// for lenient parsing.
+        /// <para/>
+        /// The localizations data provides information about the public
+        /// rule sets and their localized display names for different
+        /// locales. The first element in the list is an array of the names
+        /// of the public rule sets. The first element in this array is
+        /// the initial default ruleset. The remaining elements in the
+        /// list are arrays of localizations of the names of the public
+        /// rule sets. Each of these is one longer than the initial array,
+        /// with the first <see cref="string"/> being the <see cref="UCultureInfo"/> ID, and the remaining
+        /// <see cref="string"/>s being the localizations of the rule set names, in the
+        /// same order as the initial array.
+        /// </summary>
+        /// <param name="description">A description of the formatter's desired behavior.
+        /// See the class documentation for a complete explanation of the description
+        /// syntax.</param>
+        /// <param name="localizations">A list of localizations for the rule set names in the description.</param>
+        /// <param name="locale">A locale, which governs which characters are used for
+        /// formatting values in numerals, and which characters are equivalent in
+        /// lenient parsing.</param>
+        /// <stable>ICU 3.2</stable>
+        internal RuleBasedNumberFormat(string description, string[][] localizations, UCultureInfo locale) // ICU4N TODO: API Clean up localizations input and make public
         {
             this.locale = locale;
             Init(description, localizations);
         }
 
-        /**
-         * Creates a RuleBasedNumberFormat from a predefined description.  The selector
-         * code chooses among three possible predefined formats: spellout, ordinal,
-         * and duration.
-         * @param locale The locale for the formatter.
-         * @param format A selector code specifying which kind of formatter to create for that
-         * locale.  There are three legal values: SPELLOUT, which creates a formatter that
-         * spells out a value in words in the desired language, ORDINAL, which attaches
-         * an ordinal suffix from the desired language to the end of a number (e.g. "123rd"),
-         * and DURATION, which formats a duration in seconds as hours, minutes, and seconds.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Creates a <see cref="RuleBasedNumberFormat"/> from a predefined description. The <paramref name="format"/>
+        /// chooses among four possible predefined formats: <see cref="NumberPresentation.SpellOut"/>, <see cref="NumberPresentation.Ordinal"/>,
+        /// <see cref="NumberPresentation.Duration"/>, and <see cref="NumberPresentation.NumberingSystem"/>.
+        /// </summary>
+        /// <param name="locale">The locale for the formatter.</param>
+        /// <param name="format">A <see cref="NumberPresentation"/> specifying which kind of formatter to create for that
+        /// locale.</param>
+        /// <stable>ICU 2.0</stable>
         public RuleBasedNumberFormat(CultureInfo locale, NumberPresentation format)
             : this(locale.ToUCultureInfo(), format)
         {
         }
 
-        /**
-         * Creates a RuleBasedNumberFormat from a predefined description.  The selector
-         * code chooses among three possible predefined formats: spellout, ordinal,
-         * and duration.
-         * @param locale The locale for the formatter.
-         * @param format A selector code specifying which kind of formatter to create for that
-         * locale.  There are four legal values: SPELLOUT, which creates a formatter that
-         * spells out a value in words in the desired language, ORDINAL, which attaches
-         * an ordinal suffix from the desired language to the end of a number (e.g. "123rd"),
-         * DURATION, which formats a duration in seconds as hours, minutes, and seconds, and
-         * NUMBERING_SYSTEM, which is used to invoke rules for alternate numbering
-         * systems such as the Hebrew numbering system, or for Roman numerals, etc..
-         * @stable ICU 3.2
-         */
+        /// <summary>
+        /// Creates a <see cref="RuleBasedNumberFormat"/> from a predefined description. The <paramref name="format"/>
+        /// chooses among four possible predefined formats: <see cref="NumberPresentation.SpellOut"/>, <see cref="NumberPresentation.Ordinal"/>,
+        /// <see cref="NumberPresentation.Duration"/>, and <see cref="NumberPresentation.NumberingSystem"/>.
+        /// </summary>
+        /// <param name="locale">The locale for the formatter.</param>
+        /// <param name="format">A <see cref="NumberPresentation"/> specifying which kind of formatter to create for that
+        /// locale.</param>
+        /// <stable>ICU 3.2</stable>
         public RuleBasedNumberFormat(UCultureInfo locale, NumberPresentation format)
         {
             this.locale = locale;
@@ -358,7 +833,7 @@ namespace ICU4N.Text
             SetCulture(uloc, uloc);
 
             StringBuilder description = new StringBuilder();
-            String[][] localizations = null;
+            string[][] localizations = null;
 
             try
             {
@@ -369,7 +844,7 @@ namespace ICU4N.Text
                     description.Append(it.Current.GetString());
                 }
             }
-            catch (MissingManifestResourceException e1)
+            catch (MissingManifestResourceException)
             {
             }
 
@@ -396,19 +871,14 @@ namespace ICU4N.Text
             "SpelloutLocalizations", "OrdinalLocalizations", "DurationLocalizations", "NumberingSystemLocalizations",
         };
 
-        /**
-         * Creates a RuleBasedNumberFormat from a predefined description.  Uses the
-         * default <code>FORMAT</code> locale.
-         * @param format A selector code specifying which kind of formatter to create.
-         * There are three legal values: SPELLOUT, which creates a formatter that spells
-         * out a value in words in the default locale's language, ORDINAL, which attaches
-         * an ordinal suffix from the default locale's language to a numeral, and
-         * DURATION, which formats a duration in seconds as hours, minutes, and seconds always rounding down.
-         * or NUMBERING_SYSTEM, which is used for alternate numbering systems such as Hebrew.
-         * @see Category#FORMAT
-         * @stable ICU 2.0
-         */
-        public RuleBasedNumberFormat(NumberPresentation format)
+        /// <summary>
+        /// Creates a <see cref="RuleBasedNumberFormat"/> from a predefined description. Uses the
+        /// <see cref="UCultureInfo.CurrentCulture"/>.
+        /// </summary>
+        /// <param name="format">A <see cref="NumberPresentation"/> specifying which kind of formatter to create.</param>
+        /// <seealso cref="UCultureInfo.CurrentCulture"/>
+        /// <stable>ICU 2.0</stable>
+        public RuleBasedNumberFormat(NumberPresentation format) // ICU4N TODO: API Fix this so it sticks to the current culture (use null as a placeholder?)
             : this(UCultureInfo.CurrentCulture, format)
         {
         }
@@ -417,22 +887,22 @@ namespace ICU4N.Text
         // boilerplate
         //-----------------------------------------------------------------------
 
-        /**
-         * Duplicates this formatter.
-         * @return A RuleBasedNumberFormat that is equal to this one.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Duplicates this formatter.
+        /// </summary>
+        /// <returns>A <see cref="RuleBasedNumberFormat"/> that is equal to this one.</returns>
+        /// <stable>ICU 2.0</stable>
         public override object Clone()
         {
             return base.Clone();
         }
 
-        /**
-         * Tests two RuleBasedNumberFormats for equality.
-         * @param that The formatter to compare against this one.
-         * @return true if the two formatters have identical behavior.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Tests two <see cref="RuleBasedNumberFormat"/>s for equality.
+        /// </summary>
+        /// <param name="that">The formatter to compare against this one.</param>
+        /// <returns><c>true</c> if the two formatters have identical behavior; otherwise, <c>false</c>.</returns>
+        /// <stable>ICU 2.0</stable>
         public override bool Equals(object that)
         {
             // if the other object isn't a RuleBasedNumberFormat, that's
@@ -472,26 +942,20 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Mock implementation of GetHashCode(). This implementation always returns a constant
-         * value. When Java assertion is enabled, this method triggers an assertion failure.
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        //@Deprecated
-        public override int GetHashCode()
+        /// <inheritdoc/>
+        public override int GetHashCode() // ICU4N specific - we cannot make GetHashCode [Obsolete] in .NET and must have an implementation.
         {
             return base.GetHashCode();
         }
 
-        /**
-         * Generates a textual description of this formatter.
-         * @return a String containing a rule set that will produce a RuleBasedNumberFormat
-         * with identical behavior to this one.  This won't necessarily be identical
-         * to the rule set description that was originally passed in, but will produce
-         * the same result.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Generates a textual description of this formatter.
+        /// </summary>
+        /// <returns>A <see cref="string"/> containing a rule set that will produce a <see cref="RuleBasedNumberFormat"/>
+        /// with identical behavior to this one. This won't necessarily be identical
+        /// to the rule set description that was originally passed in, but will produce
+        /// the same result.</returns>
+        /// <stable>ICU 2.0</stable>
         public override string ToString()
         {
 
@@ -506,81 +970,81 @@ namespace ICU4N.Text
         }
 
         // ICU4N TODO: Serialization
+        ///////**
+        ////// * Writes this object to a stream.
+        ////// * @param out The stream to write to.
+        ////// */
+        ////private void writeObject(java.io.ObjectOutputStream out)
+        ////{
+        ////// we just write the textual description to the stream, so we
+        ////// have an implementation-independent streaming format
+        ////out.writeUTF(this.toString());
+        ////out.writeObject(this.locale);
+        ////out.writeInt(this.roundingMode);
+        ////}
+
         /////**
-        //// * Writes this object to a stream.
-        //// * @param out The stream to write to.
+        //// * Reads this object in from a stream.
+        //// * @param in The stream to read from.
         //// */
-        //private void writeObject(java.io.ObjectOutputStream out)
-        //{
-        //// we just write the textual description to the stream, so we
-        //// have an implementation-independent streaming format
-        //out.writeUTF(this.toString());
-        //out.writeObject(this.locale);
-        //out.writeInt(this.roundingMode);
-        //}
+        ////private void readObject(java.io.ObjectInputStream in)
+        ////{
 
-        ///**
-        // * Reads this object in from a stream.
-        // * @param in The stream to read from.
-        // */
-        //private void readObject(java.io.ObjectInputStream in)
-        //{
+        ////    // read the description in from the stream
+        ////    String description = in.readUTF();
+        ////    ULocale loc;
 
-        //    // read the description in from the stream
-        //    String description = in.readUTF();
-        //    ULocale loc;
+        ////    try {
+        ////        loc = (ULocale) in.readObject();
+        ////    } catch (Exception e) {
+        ////        loc = ULocale.getDefault(Category.FORMAT);
+        ////    }
+        ////    try
+        ////    {
+        ////        roundingMode = in.readInt();
+        ////    }
+        ////    catch (Exception ignored)
+        ////    {
+        ////    }
 
-        //    try {
-        //        loc = (ULocale) in.readObject();
-        //    } catch (Exception e) {
-        //        loc = ULocale.getDefault(Category.FORMAT);
-        //    }
-        //    try
-        //    {
-        //        roundingMode = in.readInt();
-        //    }
-        //    catch (Exception ignored)
-        //    {
-        //    }
-
-        //    // build a brand-new RuleBasedNumberFormat from the description,
-        //    // then steal its substructure.  This object's substructure and
-        //    // the temporary RuleBasedNumberFormat drop on the floor and
-        //    // get swept up by the garbage collector
-        //    RuleBasedNumberFormat temp = new RuleBasedNumberFormat(description, loc);
-        //    ruleSets = temp.ruleSets;
-        //    ruleSetsMap = temp.ruleSetsMap;
-        //    defaultRuleSet = temp.defaultRuleSet;
-        //    publicRuleSetNames = temp.publicRuleSetNames;
-        //    decimalFormatSymbols = temp.decimalFormatSymbols;
-        //    decimalFormat = temp.decimalFormat;
-        //    locale = temp.locale;
-        //    defaultInfinityRule = temp.defaultInfinityRule;
-        //    defaultNaNRule = temp.defaultNaNRule;
-        //}
+        ////    // build a brand-new RuleBasedNumberFormat from the description,
+        ////    // then steal its substructure.  This object's substructure and
+        ////    // the temporary RuleBasedNumberFormat drop on the floor and
+        ////    // get swept up by the garbage collector
+        ////    RuleBasedNumberFormat temp = new RuleBasedNumberFormat(description, loc);
+        ////    ruleSets = temp.ruleSets;
+        ////    ruleSetsMap = temp.ruleSetsMap;
+        ////    defaultRuleSet = temp.defaultRuleSet;
+        ////    publicRuleSetNames = temp.publicRuleSetNames;
+        ////    decimalFormatSymbols = temp.decimalFormatSymbols;
+        ////    decimalFormat = temp.decimalFormat;
+        ////    locale = temp.locale;
+        ////    defaultInfinityRule = temp.defaultInfinityRule;
+        ////    defaultNaNRule = temp.defaultNaNRule;
+        ////}
 
 
         //-----------------------------------------------------------------------
         // public API functions
         //-----------------------------------------------------------------------
 
-        /**
-         * Returns a list of the names of all of this formatter's public rule sets.
-         * @return A list of the names of all of this formatter's public rule sets.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns a list of the names of all of this formatter's public rule sets.
+        /// </summary>
+        /// <returns>A list of the names of all of this formatter's public rule sets.</returns>
+        /// <stable>ICU 2.0</stable>
         public virtual string[] GetRuleSetNames()
         {
             return (string[])publicRuleSetNames.Clone();
         }
 
-        /**
-         * Return a list of locales for which there are locale-specific display names
-         * for the rule sets in this formatter.  If there are no localized display names, return null.
-         * @return an array of the ULocales for which there is rule set display name information
-         * @stable ICU 3.2
-         */
-        public virtual UCultureInfo[] GetRuleSetDisplayNameLocales()
+        /// <summary>
+        /// Return a list of locales for which there are locale-specific display names
+        /// for the rule sets in this formatter. If there are no localized display names, return <c>null</c>.
+        /// </summary>
+        /// <returns>An array of the <see cref="UCultureInfo"/>s for which there is rule set display name information.</returns>
+        /// <stable>ICU 3.2</stable>
+        public virtual UCultureInfo[] GetRuleSetDisplayNameLocales() // ICU4N TODO: API - Ideally, this would never return null and would be suffixed Cultures
         {
             if (ruleSetDisplayNames != null)
             {
@@ -621,19 +1085,20 @@ namespace ICU4N.Text
             return null;
         }
 
-        /**
-         * Return the rule set display names for the provided locale.  These are in the same order
-         * as those returned by getRuleSetNames.  The locale is matched against the locales for
-         * which there is display name data, using normal fallback rules.  If no locale matches,
-         * the default display names are returned.  (These are the internal rule set names minus
-         * the leading '%'.)
-         * @return an array of the locales that have display name information
-         * @see #getRuleSetNames
-         * @stable ICU 3.2
-         */
-        public virtual string[] GetRuleSetDisplayNames(UCultureInfo loc)
+        /// <summary>
+        /// Return the rule set display names for the provided <paramref name="locale"/>. These are in the same order
+        /// as those returned by <see cref="GetRuleSetNames()"/>. The <paramref name="locale"/> is matched against the locales for
+        /// which there is display name data, using normal fallback rules. If no locale matches,
+        /// the default display names are returned. (These are the internal rule set names minus
+        /// the leading '%'.)
+        /// </summary>
+        /// <param name="locale">The <see cref="UCultureInfo"/> to retrieve the rule set display names for.</param>
+        /// <returns>An array of the locales that have display name information.</returns>
+        /// <seealso cref="GetRuleSetNames()"/>
+        /// <stable>ICU 3.2</stable>
+        public virtual string[] GetRuleSetDisplayNames(UCultureInfo locale)
         {
-            string[] names = GetNameListForLocale(loc);
+            string[] names = GetNameListForLocale(locale);
             if (names != null)
             {
                 return (string[])names.Clone();
@@ -646,35 +1111,37 @@ namespace ICU4N.Text
             return names;
         }
 
-        /**
-         * Return the rule set display names for the current default <code>DISPLAY</code> locale.
-         * @return an array of the display names
-         * @see #getRuleSetDisplayNames(ULocale)
-         * @see Category#DISPLAY
-         * @stable ICU 3.2
-         */
+        /// <summary>
+        /// Return the rule set display names for the <see cref="UCultureInfo.CurrentUICulture"/>.
+        /// </summary>
+        /// <returns>An array of the display names.</returns>
+        /// <seealso cref="GetRuleSetDisplayNames(UCultureInfo)"/>
+        /// <see cref="UCultureInfo.CurrentUICulture"/>
+        /// <stable>ICU 3.2</stable>
         public virtual string[] GetRuleSetDisplayNames()
         {
             return GetRuleSetDisplayNames(UCultureInfo.CurrentUICulture);
         }
 
-        /**
-         * Return the rule set display name for the provided rule set and locale.
-         * The locale is matched against the locales for which there is display name data, using
-         * normal fallback rules.  If no locale matches, the default display name is returned.
-         * @return the display name for the rule set
-         * @see #getRuleSetDisplayNames
-         * @throws IllegalArgumentException if ruleSetName is not a valid rule set name for this format
-         * @stable ICU 3.2
-         */
-        public virtual string GetRuleSetDisplayName(string ruleSetName, UCultureInfo loc)
+        /// <summary>
+        /// Return the rule set display name for the provided <paramref name="ruleSetName"/> and <paramref name="locale"/>.
+        /// The <paramref name="locale"/> is matched against the locales for which there is display name data, using
+        /// normal fallback rules. If no locale matches, the default display name is returned.
+        /// </summary>
+        /// <param name="ruleSetName">The name of the rule set.</param>
+        /// <param name="locale">The <see cref="UCultureInfo"/> to retrieve the rule set display name for.</param>
+        /// <returns>The display name for the rule set.</returns>
+        /// <exception cref="ArgumentException">The provided <paramref name="ruleSetName"/> is not a valid rule set name for this format.</exception>
+        /// <seealso cref="GetRuleSetDisplayName(string)"/>
+        /// <stable>ICU 3.2</stable>
+        public virtual string GetRuleSetDisplayName(string ruleSetName, UCultureInfo locale)
         {
             string[] rsnames = publicRuleSetNames;
             for (int ix = 0; ix < rsnames.Length; ++ix)
             {
                 if (rsnames[ix].Equals(ruleSetName, StringComparison.Ordinal))
                 {
-                    string[] names = GetNameListForLocale(loc);
+                    string[] names = GetNameListForLocale(locale);
                     if (names != null)
                     {
                         return names[ix];
@@ -685,26 +1152,34 @@ namespace ICU4N.Text
             throw new ArgumentException("unrecognized rule set name: " + ruleSetName);
         }
 
-        /**
-         * Return the rule set display name for the provided rule set in the current default <code>DISPLAY</code> locale.
-         * @return the display name for the rule set
-         * @see #getRuleSetDisplayName(String,ULocale)
-         * @see Category#DISPLAY
-         * @stable ICU 3.2
-         */
+        /// <summary>
+        /// Return the rule set display name for the provided rule set in the <see cref="UCultureInfo.CurrentUICulture"/>.
+        /// </summary>
+        /// <param name="ruleSetName">The name of the rule set.</param>
+        /// <returns>The display name for the rule set.</returns>
+        /// <seealso cref="GetRuleSetDisplayName(string, UCultureInfo)"/>
+        /// <seealso cref="UCultureInfo.CurrentUICulture"/>
+        /// <stable>ICU 3.2</stable>
         public virtual string GetRuleSetDisplayName(string ruleSetName)
         {
             return GetRuleSetDisplayName(ruleSetName, UCultureInfo.CurrentUICulture);
         }
 
-        /**
-         * Formats the specified number according to the specified rule set.
-         * @param number The number to format.
-         * @param ruleSet The name of the rule set to format the number with.
-         * This must be the name of a valid public rule set for this formatter.
-         * @return A textual representation of the number.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Formats the specified <paramref name="number"/> according to the specified <paramref name="ruleSet"/>.
+        /// </summary>
+        /// <param name="number">The number to format.</param>
+        /// <param name="ruleSet">The name of the rule set to format the number with.
+        /// This must be the name of a valid public rule set for this formatter.</param>
+        /// <returns>A textual representation of the number.</returns>
+        /// <exception cref="ArgumentException">
+        /// The <paramref name="ruleSet"/> is not public.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// The <paramref name="ruleSet"/> is not valid for this formatter.
+        /// </exception>
+        /// <stable>ICU 2.0</stable>
         public virtual string Format(double number, string ruleSet)
         {
             if (ruleSet.StartsWith("%%", StringComparison.Ordinal))
@@ -714,18 +1189,25 @@ namespace ICU4N.Text
             return AdjustForContext(Format(number, FindRuleSet(ruleSet)));
         }
 
-        /**
-         * Formats the specified number according to the specified rule set.
-         * (If the specified rule set specifies a master ["x.0"] rule, this function
-         * ignores it.  Convert the number to a double first if you ned it.)  This
-         * function preserves all the precision in the long-- it doesn't convert it
-         * to a double.
-         * @param number The number to format.
-         * @param ruleSet The name of the rule set to format the number with.
-         * This must be the name of a valid public rule set for this formatter.
-         * @return A textual representation of the number.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Formats the specified <paramref name="number"/> according to the specified <paramref name="ruleSet"/>.
+        /// This method preserves all the precision in the <see cref="long"/> -- it doesn't convert it to a <see cref="double"/>.
+        /// <para/>
+        /// <strong>Note:</strong>If the specified rule set specifies a master ["x.0"] rule, this method
+        /// ignores it. Use the <see cref="Format(double, string)"/> overload if you need it.
+        /// </summary>
+        /// <param name="number">The number to format.</param>
+        /// <param name="ruleSet">The name of the rule set to format the number with.
+        /// This must be the name of a valid public rule set for this formatter.</param>
+        /// <returns>A textual representation of the number.</returns>
+        /// <exception cref="ArgumentException">
+        /// The <paramref name="ruleSet"/> is not public.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// The <paramref name="ruleSet"/> is not valid for this formatter.
+        /// </exception>
+        /// <stable>ICU 2.0</stable>
         public virtual string Format(long number, string ruleSet)
         {
             if (ruleSet.StartsWith("%%", StringComparison.Ordinal))
@@ -735,15 +1217,16 @@ namespace ICU4N.Text
             return AdjustForContext(Format(number, FindRuleSet(ruleSet)));
         }
 
-        /**
-         * Formats the specified number using the formatter's default rule set.
-         * (The default rule set is the last public rule set defined in the description.)
-         * @param number The number to format.
-         * @param toAppendTo A StringBuffer that the result should be appended to.
-         * @param ignore This function doesn't examine or update the field position.
-         * @return toAppendTo
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Formats the specified number using the formatter's default rule set.
+        /// <para/>
+        /// <strong>Note:</strong> The default rule set is the last public rule set defined in the description.
+        /// </summary>
+        /// <param name="number">The number to format.</param>
+        /// <param name="toAppendTo">A <see cref="StringBuffer"/> that the result should be appended to.</param>
+        /// <param name="ignore">This function doesn't examine or update the field position.</param>
+        /// <returns><paramref name="toAppendTo"/></returns>
+        /// <stable>ICU 2.0</stable>
 #if FEATURE_FIELDPOSITION
         public
 #else
@@ -769,19 +1252,20 @@ namespace ICU4N.Text
             return toAppendTo;
         }
 
-        /**
-         * Formats the specified number using the formatter's default rule set.
-         * (The default rule set is the last public rule set defined in the description.)
-         * (If the specified rule set specifies a master ["x.0"] rule, this function
-         * ignores it.  Convert the number to a double first if you ned it.)  This
-         * function preserves all the precision in the long-- it doesn't convert it
-         * to a double.
-         * @param number The number to format.
-         * @param toAppendTo A StringBuffer that the result should be appended to.
-         * @param ignore This function doesn't examine or update the field position.
-         * @return toAppendTo
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Formats the specified number using the formatter's default rule set.
+        /// This method preserves all the precision in the <see cref="long"/> -- it doesn't convert it to a <see cref="double"/>.
+        /// <para/>
+        /// <strong>Note:</strong> The default rule set is the last public rule set defined in the description.
+        /// <para/>
+        /// <strong>Note:</strong> If the specified rule set specifies a master ["x.0"] rule, this method
+        /// ignores it. Use the <see cref="Format(double, StringBuffer, FieldPosition)"/> overload if you need it.
+        /// </summary>
+        /// <param name="number">The number to format.</param>
+        /// <param name="toAppendTo">A <see cref="StringBuffer"/> that the result should be appended to.</param>
+        /// <param name="ignore">This function doesn't examine or update the field position.</param>
+        /// <returns><paramref name="toAppendTo"/></returns>
+        /// <stable>ICU 2.0</stable>
 #if FEATURE_FIELDPOSITION
         public
 #else
@@ -806,26 +1290,17 @@ namespace ICU4N.Text
             return toAppendTo;
         }
 
-        // ICU4N TODO: System.Numerics.BigInteger overload
-        ///**
-        // * <strong style="font-family: helvetica; color: red;">NEW</strong>
-        // * Implement com.ibm.icu.text.NumberFormat:
-        // * Format a BigInteger.
-        // * @stable ICU 2.0
-        // */
-        //public override StringBuffer Format(BigInteger number,
-        //                           StringBuffer toAppendTo,
-        //                           FieldPosition pos)
-        //{
-        //    return Format(new BigDecimal(number), toAppendTo, pos);
-        //}
-
-        /**
-         * <strong style="font-family: helvetica; color: red;">NEW</strong>
-         * Implement com.ibm.icu.text.NumberFormat:
-         * Format a BigInteger.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Formats the specified number using the formatter's default rule set.
+        /// <para/>
+        /// <strong>Note:</strong> The default rule set is the last public rule set defined in the description.
+        /// </summary>
+        /// <param name="number">The number to format.</param>
+        /// <param name="toAppendTo">A <see cref="StringBuffer"/> that the result should be appended to.</param>
+        /// <param name="pos">on input: an optional alignment field; on output: the offsets
+        /// of the alignment field in the formatted text.</param>
+        /// <returns><paramref name="toAppendTo"/></returns>
+        /// <stable>ICU 2.0</stable>
 #if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
         public
 #else
@@ -838,12 +1313,17 @@ namespace ICU4N.Text
             return Format(new Numerics.BigDecimal(number), toAppendTo, pos);
         }
 
-        /**
-         * <strong style="font-family: helvetica; color: red;">NEW</strong>
-         * Implement com.ibm.icu.text.NumberFormat:
-         * Format a BigDecimal.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Formats the specified number using the formatter's default rule set.
+        /// <para/>
+        /// <strong>Note:</strong> The default rule set is the last public rule set defined in the description.
+        /// </summary>
+        /// <param name="number">The number to format.</param>
+        /// <param name="toAppendTo">A <see cref="StringBuffer"/> that the result should be appended to.</param>
+        /// <param name="pos">on input: an optional alignment field; on output: the offsets
+        /// of the alignment field in the formatted text.</param>
+        /// <returns><paramref name="toAppendTo"/></returns>
+        /// <stable>ICU 2.0</stable>
 #if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
         public
 #else
@@ -859,12 +1339,17 @@ namespace ICU4N.Text
         private static readonly Numerics.BigDecimal MAX_VALUE = Numerics.BigDecimal.GetInstance(long.MaxValue);
         private static readonly Numerics.BigDecimal MIN_VALUE = Numerics.BigDecimal.GetInstance(long.MinValue);
 
-        /**
-         * <strong style="font-family: helvetica; color: red;">NEW</strong>
-         * Implement com.ibm.icu.text.NumberFormat:
-         * Format a BigDecimal.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Formats the specified number using the formatter's default rule set.
+        /// <para/>
+        /// <strong>Note:</strong> The default rule set is the last public rule set defined in the description.
+        /// </summary>
+        /// <param name="number">The number to format.</param>
+        /// <param name="toAppendTo">A <see cref="StringBuffer"/> that the result should be appended to.</param>
+        /// <param name="pos">on input: an optional alignment field; on output: the offsets
+        /// of the alignment field in the formatted text.</param>
+        /// <returns><paramref name="toAppendTo"/></returns>
+        /// <stable>ICU 2.0</stable>
 #if FEATURE_FIELDPOSITION && FEATURE_BIGMATH
         public
 #else
@@ -887,25 +1372,24 @@ namespace ICU4N.Text
             return Format(number.ToDouble(), toAppendTo, pos);
         }
 
-        /**
-         * Parses the specified string, beginning at the specified position, according
-         * to this formatter's rules.  This will match the string against all of the
-         * formatter's public rule sets and return the value corresponding to the longest
-         * parseable substring.  This function's behavior is affected by the lenient
-         * parse mode.
-         * @param text The string to parse
-         * @param parsePosition On entry, contains the position of the first character
-         * in "text" to examine.  On exit, has been updated to contain the position
-         * of the first character in "text" that wasn't consumed by the parse.
-         * @return The number that corresponds to the parsed text.  This will be an
-         * instance of either Long or Double, depending on whether the result has a
-         * fractional part.
-         * @see #setLenientParseMode
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Parses the specified string, beginning at the specified position, according
+        /// to this formatter's rules. This will match the string against all of the
+        /// formatter's public rule sets and return the value corresponding to the longest
+        /// parseable substring. This function's behavior is affected by the lenient
+        /// parse mode.
+        /// </summary>
+        /// <param name="text">The string to parse.</param>
+        /// <param name="parsePosition">On entry, contains the position of the first character
+        /// in "text" to examine. On exit, has been updated to contain the position
+        /// of the first character in "text" that wasn't consumed by the parse.</param>
+        /// <returns>The number that corresponds to the parsed text. This will be an
+        /// instance of either <see cref="Long"/> or <see cref="Double"/>, depending on whether the result has a
+        /// fractional part.</returns>
+        /// <seealso cref="LenientParseEnabled"/>
+        /// <stable>ICU 2.0</stable>
         public override Number Parse(string text, ParsePosition parsePosition)
         {
-
             // parsePosition tells us where to start parsing.  We copy the
             // text in the string from here to the end inro a new string,
             // and create a new ParsePosition and result variable to use
@@ -966,61 +1450,34 @@ namespace ICU4N.Text
             return result;
         }
 
-        ///**
-        // * Turns lenient parse mode on and off.
-        // *
-        // * When in lenient parse mode, the formatter uses an RbnfLenientScanner
-        // * for parsing the text.  Lenient parsing is only in effect if a scanner
-        // * is set.  If a provider is not set, and this is used for parsing,
-        // * a default scanner <code>RbnfLenientScannerProviderImpl</code> will be set if
-        // * it is available on the classpath.  Otherwise this will have no effect.
-        // *
-        // * @param enabled If true, turns lenient-parse mode on; if false, turns it off.
-        // * @see RbnfLenientScanner
-        // * @see RbnfLenientScannerProvider
-        // * @stable ICU 2.0
-        // */
-        //public void SetLenientParseMode(bool enabled)
-        //{
-        //    lenientParse = enabled;
-        //}
-
-        /**
-         * Returns true if lenient-parse mode is turned on.  Lenient parsing is off
-         * by default.
-         * @return true if lenient-parse mode is turned on.
-         * @see #setLenientParseMode
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Gets or sets whether lenient parse mode should be enabled or disabled.
+        /// <para/>
+        /// When in lenient parse mode, the formatter uses an <see cref="IRbnfLenientScanner"/>
+        /// for parsing the text. Lenient parsing is only in effect if a scanner
+        /// is set. If a provider is not set, and this is used for parsing,
+        /// a default scanner <see cref="ICU4N.Impl.Text.RbnfScannerProvider"/> will be set if it
+        /// is loaded in the app domain. Otherwise this will have no effect.
+        /// </summary>
+        /// <seealso cref="IRbnfLenientScanner"/>
+        /// <seealso cref="LenientScannerProvider"/>
+        /// <stable>ICU 2.0</stable>
         public virtual bool LenientParseEnabled
         {
             get => lenientParse;
             set => lenientParse = value;
         }
 
-        ///**
-        // * Sets the provider for the lenient scanner.  If this has not been set,
-        // * {@link #setLenientParseMode}
-        // * has no effect.  This is necessary to decouple collation from format code.
-        // * @param scannerProvider the provider
-        // * @see #setLenientParseMode
-        // * @see #getLenientScannerProvider
-        // * @stable ICU 4.4
-        // */
-        //public void setLenientScannerProvider(RbnfLenientScannerProvider scannerProvider)
-        //{
-        //    this.scannerProvider = scannerProvider;
-        //}
-
-        /**
-         * Returns the lenient scanner provider.  If none was set, and lenient parse is
-         * enabled, this will attempt to instantiate a default scanner, setting it if
-         * it was successful.  Otherwise this returns false.
-         *
-         * @see #setLenientScannerProvider
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Gets or sets the provider for the lenient scanner. If this has not been set and/or the <c>ICU4N.Impl.Text.RbnfScannerProvider</c>
+        /// has not been loaded in the current app domain, <see cref="LenientParseEnabled"/> has no effect.
+        /// </summary>
+        /// <seealso cref="LenientParseEnabled"/>
+        /// <stable>ICU 4.4</stable>
+        // This is necessary to decouple collation from format code. (or at least that is how it was done in ICU4J - we can probably just get rid of the reflection code).
+#pragma warning disable CS0618 // Type or member is obsolete
         internal virtual IRbnfLenientScannerProvider LenientScannerProvider // ICU4N specific - marked internal instead of public
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             get
             {
@@ -1032,13 +1489,14 @@ namespace ICU4N.Text
                     try
                     {
                         lookedForScanner = true;
-                        // ICU4N TODO: Why use Reflection here?
-                        //Class <?> cls = Class.forName("com.ibm.icu.impl.text.RbnfScannerProviderImpl");
-                        //RbnfLenientScannerProvider provider = (RbnfLenientScannerProvider)cls.newInstance();
-                        //setLenientScannerProvider(provider);
-
+                        Type cls = Type.GetType("ICU4N.Impl.Text.RbnfScannerProvider"); // This class is in the collation package
+                        if (cls is null)
+                            return null;
+#pragma warning disable CS0618 // Type or member is obsolete
+                        scannerProvider = (IRbnfLenientScannerProvider)Activator.CreateInstance(cls);
+#pragma warning restore CS0618 // Type or member is obsolete
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         // any failure, we just ignore and return null
                     }
@@ -1056,7 +1514,7 @@ namespace ICU4N.Text
          * @throws IllegalArgumentException if ruleSetName is not the name of a public ruleset.
          * @stable ICU 2.0
          */
-        public virtual void SetDefaultRuleSet(string ruleSetName)
+        internal virtual void SetDefaultRuleSet(string ruleSetName) // ICU4N TODO: API - Convert this to GetDefaultRuleSet() and make private so we can use a defaultRuleSetName field to set the value
         {
             if (ruleSetName == null)
             {
@@ -1102,11 +1560,17 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Return the name of the current default rule set.
-         * @return the name of the current default rule set, if it is public, else the empty string.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Gets or sets the name of the current default rule set. If the default rule set is not public or not set, returns <see cref="string.Empty"/>.
+        /// </summary>
+        /// <exception cref="ArgumentException">
+        /// The setter <paramref name="value"/> is not public.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// The setter <paramref name="value"/> is not valid for this formatter.
+        /// </exception>
+        /// <stable>ICU 3.0</stable>
         public virtual string DefaultRuleSetName
         {
             get
@@ -1115,19 +1579,17 @@ namespace ICU4N.Text
                 {
                     return defaultRuleSet.Name;
                 }
-                return "";
+                return string.Empty;
             }
-            //set => SetDefaultRuleSet(value);
+            set => SetDefaultRuleSet(value);
         }
 
-        /**
-         * Sets the decimal format symbols used by this formatter. The formatter uses a copy of the
-         * provided symbols.
-         *
-         * @param newSymbols desired DecimalFormatSymbols
-         * @see DecimalFormatSymbols
-         * @stable ICU 49
-         */
+        /// <summary>
+        /// Sets the decimal format symbols used by this formatter. The formatter uses a copy of the
+        /// provided symbols.
+        /// </summary>
+        /// <param name="newSymbols">The desired <see cref="ICU4N.Text.DecimalFormatSymbols"/>.</param>
+        /// <stable>ICU 49</stable>
         public virtual void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
         {
             if (newSymbols != null)
@@ -1156,17 +1618,15 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * {@icu} Set a particular DisplayContext value in the formatter,
-         * such as CAPITALIZATION_FOR_STANDALONE. Note: For getContext, see
-         * NumberFormat.
-         *
-         * @param context The DisplayContext value to set.
-         * @stable ICU 53
-         */
+        /// <summary>
+        /// <icu/> Set a particular <see cref="DisplayContext"/> value in the formatter,
+        /// such as <see cref="DisplayContext.CapitalizationForStandalone"/>.
+        /// </summary>
+        /// <param name="context">The <see cref="DisplayContext"/> value to set.</param>
+        /// <stable>ICU 53</stable>
         // Here we override the NumberFormat implementation in order to
         // lazily initialize relevant items
-        public override void SetContext(DisplayContext context)
+        public override void SetContext(DisplayContext context) // ICU4N TODO: API - Refactor DisplayContext into a class with 4 properties (corresponding to 4 different enums)
         {
             base.SetContext(context);
             if (!capitalizationInfoIsSet &&
@@ -1183,15 +1643,13 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the rounding mode.
-         *
-         * @return A rounding mode, between <code>BigDecimal.ROUND_UP</code> and
-         * <code>BigDecimal.ROUND_UNNECESSARY</code>.
-         * @see #setRoundingMode
-         * @see java.math.BigDecimal
-         * @stable ICU 56
-         */
+        /// <summary>
+        /// Gets or sets the rounding mode.
+        /// </summary>
+        /// <exception cref="ArgumentException">The setter <paramref name="value"/> is not
+        /// recognized.</exception>
+        /// <seealso cref="Numerics.BigMath.BigDecimal"/>
+        /// <stable>ICU 56</stable>
 #if FEATURE_BIGMATH
         public
 #else
@@ -1214,97 +1672,58 @@ namespace ICU4N.Text
             }
         }
 
-        ///**
-        // * Sets the rounding mode. This has no effect unless the rounding increment is greater
-        // * than zero.
-        // *
-        // * @param roundingMode A rounding mode, between <code>BigDecimal.ROUND_UP</code> and
-        // * <code>BigDecimal.ROUND_UNNECESSARY</code>.
-        // * @exception IllegalArgumentException if <code>roundingMode</code> is unrecognized.
-        // * @see #getRoundingMode
-        // * @see java.math.BigDecimal
-        // * @stable ICU 56
-        // */
-        //@Override
-        //    public void setRoundingMode(int roundingMode)
-        //{
-        //    if (roundingMode < BigDecimal.ROUND_UP || roundingMode > BigDecimal.ROUND_UNNECESSARY)
-        //    {
-        //        throw new IllegalArgumentException("Invalid rounding mode: " + roundingMode);
-        //    }
-
-        //    this.roundingMode = roundingMode;
-        //}
-
-
         //-----------------------------------------------------------------------
         // package-internal API
         //-----------------------------------------------------------------------
 
-        /**
-         * Returns a reference to the formatter's default rule set.  The default
-         * rule set is the last public rule set in the description, or the one
-         * most recently set by setDefaultRuleSet.
-         * @return The formatter's default rule set.
-         */
+        /// <summary>
+        /// Gets a reference to the formatter's default rule set. The default
+        /// rule set is the last public rule set in the description, or the one
+        /// most recently set by <see cref="DefaultRuleSetName"/>.
+        /// </summary>
         internal NFRuleSet DefaultRuleSet => defaultRuleSet;
 
-        /**
-         * Returns the scanner to use for lenient parsing.  The scanner is
-         * provided by the provider.
-         * @return The collator to use for lenient parsing, or null if lenient parsing
-         * is turned off.
-         */
+        /// <summary>
+        /// Gets the scanner to use for lenient parsing.  The scanner is
+        /// provided by the <see cref="LenientScannerProvider"/>. Returns <c>null</c>
+        /// if <see cref="LenientParseEnabled"/> is <c>false</c> or there is no registered provider.
+        /// </summary>
+#pragma warning disable CS0618 // Type or member is obsolete
         internal IRbnfLenientScanner LenientScanner
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             get
             {
                 if (lenientParse)
                 {
-                    IRbnfLenientScannerProvider provider = LenientScannerProvider;
-                    if (provider != null)
-                    {
-                        return provider.Get(locale, lenientParseRules);
-                    }
+#pragma warning disable CS0618 // Type or member is obsolete
+                    return LenientScannerProvider?.Get(locale, lenientParseRules);
+#pragma warning restore CS0618 // Type or member is obsolete
                 }
                 return null;
             }
         }
 
-        /**
-         * Returns the DecimalFormatSymbols object that should be used by all DecimalFormat
-         * instances owned by this formatter.  This object is lazily created: this function
-         * creates it the first time it's called.
-         * @return The DecimalFormatSymbols object that should be used by all DecimalFormat
-         * instances owned by this formatter.
-         */
+        /// <summary>
+        /// Gets the <see cref="ICU4N.Text.DecimalFormatSymbols"/> object that should be used by all <see cref="ICU4N.Text.DecimalFormat"/>
+        /// instances owned by this formatter. This object is lazily created: this function
+        /// creates it the first time it's called.
+        /// </summary>
         internal DecimalFormatSymbols DecimalFormatSymbols
-        {
-            get
-            {
-                // lazy-evaluate the DecimalFormatSymbols object.  This object
-                // is shared by all DecimalFormat instances belonging to this
-                // formatter
-                if (decimalFormatSymbols == null)
-                {
-                    decimalFormatSymbols = new DecimalFormatSymbols(locale);
-                }
-                return decimalFormatSymbols;
-            }
-        }
+            // lazy-evaluate the DecimalFormatSymbols object.  This object
+            // is shared by all DecimalFormat instances belonging to this
+            // formatter.
+            => LazyInitializer.EnsureInitialized(ref decimalFormatSymbols, () => new DecimalFormatSymbols(locale));
+
 
         internal DecimalFormat DecimalFormat
         {
-            get
+            get => LazyInitializer.EnsureInitialized(ref decimalFormat, () =>
             {
-                if (decimalFormat == null)
-                {
-                    // Don't use NumberFormat.getInstance, which can cause a recursive call
-                    string pattern = GetPattern(locale, NumberFormatStyle.NumberStyle);
-                    decimalFormat = new DecimalFormat(pattern, DecimalFormatSymbols);
-                }
-                return decimalFormat;
-            }
+                // Don't use NumberFormat.GetInstance, which can cause a recursive call
+                string pattern = GetPattern(locale, NumberFormatStyle.NumberStyle);
+                return new DecimalFormat(pattern, DecimalFormatSymbols);
+            });
         }
 
         internal PluralFormat CreatePluralFormat(PluralType pluralType, string pattern)
@@ -1312,37 +1731,20 @@ namespace ICU4N.Text
             return new PluralFormat(locale, pluralType, pattern, DecimalFormat);
         }
 
-        /**
-         * Returns the default rule for infinity. This object is lazily created: this function
-         * creates it the first time it's called.
-         */
+        /// <summary>
+        /// Returns the default rule for infinity. This object is lazily created: this function
+        /// creates it the first time it's called.
+        /// </summary>
         internal NFRule DefaultInfinityRule
-        {
-            get
-            {
-                if (defaultInfinityRule == null)
-                {
-                    defaultInfinityRule = new NFRule(this, "Inf: " + DecimalFormatSymbols.Infinity);
-                }
-                return defaultInfinityRule;
-            }
-        }
+            => LazyInitializer.EnsureInitialized(ref defaultInfinityRule, () => new NFRule(this, "Inf: " + DecimalFormatSymbols.Infinity));
 
-        /**
-         * Returns the default rule for NaN. This object is lazily created: this function
-         * creates it the first time it's called.
-         */
+
+            /// <summary>
+            /// Returns the default rule for NaN. This object is lazily created: this function
+            /// creates it the first time it's called.
+            /// </summary>
         internal NFRule DefaultNaNRule
-        {
-            get
-            {
-                if (defaultNaNRule == null)
-                {
-                    defaultNaNRule = new NFRule(this, "NaN: " + DecimalFormatSymbols.NaN);
-                }
-                return defaultNaNRule;
-            }
-        }
+            => LazyInitializer.EnsureInitialized(ref defaultNaNRule, () => new NFRule(this, "NaN: " + DecimalFormatSymbols.NaN));
 
         //-----------------------------------------------------------------------
         // construction implementation
@@ -1610,7 +2012,7 @@ namespace ICU4N.Text
                     capitalizationForStandAlone = (intVector[1] != 0);
                 }
             }
-            catch (MissingManifestResourceException e)
+            catch (MissingManifestResourceException)
             {
                 // use default
             }
