@@ -27,26 +27,19 @@ namespace ICU4N.Text
         {
         }
 
-        // ICU4N TODO: Missing dependency java.text.Format.Field
-        ///**
-        // * @internal
-        // * @deprecated This API is ICU internal only.
-        // */
-        //[Obsolete("This API is ICU internal only.")]
-        //public UFieldPosition(Field attribute, int fieldID)
-        //{
-        //    super(attribute, fieldID);
-        //}
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        public UFieldPosition(FormatField attribute, int fieldID)
+            : base(attribute, fieldID)
+        {
+        }
 
-        ///**
-        // * @internal
-        // * @deprecated This API is ICU internal only.
-        // */
-        //[Obsolete("This API is ICU internal only.")]
-        //public UFieldPosition(Field attribute)
-        //{
-        //    super(attribute);
-        //}
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        public UFieldPosition(FormatField attribute)
+            : base(attribute)
+        {
+        }
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
