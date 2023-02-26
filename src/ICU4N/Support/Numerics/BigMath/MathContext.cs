@@ -41,24 +41,24 @@ namespace ICU4N.Numerics.BigMath
 
         /// <summary>
         /// A <see cref="MathContext"/> which corresponds to the IEEE 754r quadruple decimal precision 
-        /// format: 34 digit precision and <see cref="Deveel.Math.RoundingMode.HalfEven"/> rounding.
+        /// format: 34 digit precision and <see cref="RoundingMode.HalfEven"/> rounding.
         /// </summary>
         public static readonly MathContext Decimal128 = new MathContext(34, RoundingMode.HalfEven);
 
         /// <summary>
         /// A <see cref="MathContext"/> which corresponds to the IEEE 754r single decimal precision 
-        /// format: 7 digit precision and <see cref="Deveel.Math.RoundingMode.HalfEven"/> rounding.
+        /// format: 7 digit precision and <see cref="RoundingMode.HalfEven"/> rounding.
         /// </summary>
         public static readonly MathContext Decimal32 = new MathContext(7, RoundingMode.HalfEven);
 
         /// <summary>
         /// A <see cref="MathContext"/> which corresponds to the IEEE 754r double decimal precision 
-        /// format: 16 digit precision and <see cref="Deveel.Math.RoundingMode.HalfEven"/> rounding.
+        /// format: 16 digit precision and <see cref="RoundingMode.HalfEven"/> rounding.
         /// </summary>
         public static readonly MathContext Decimal64 = new MathContext(16, RoundingMode.HalfEven);
 
         /// <summary>
-        /// A <see cref="MathContext"/> for unlimited precision with <see cref="Deveel.Math.RoundingMode.HalfUp"/> rounding.
+        /// A <see cref="MathContext"/> for unlimited precision with <see cref="RoundingMode.HalfUp"/> rounding.
         /// </summary>
         public static readonly MathContext Unlimited = new MathContext(0, RoundingMode.HalfUp);
 
@@ -90,7 +90,7 @@ namespace ICU4N.Numerics.BigMath
 
         /// <summary>
         /// Constructs a new <see cref="MathContext"/> with the specified precision and with the 
-        /// rounding mode <see cref="Deveel.Math.RoundingMode.HalfUp"/>.
+        /// rounding mode <see cref="RoundingMode.HalfUp"/>.
         /// </summary>
         /// <param name="precision">The precision for the new context.</param>
         /// <remarks>
@@ -228,7 +228,7 @@ namespace ICU4N.Numerics.BigMath
         /// <summary>
         /// Gets the rounding mode of the context, that is the strategy used to round results.
         /// </summary>
-        /// <seealso cref="Deveel.Math.RoundingMode"/>
+        /// <seealso cref="RoundingMode"/>
         public RoundingMode RoundingMode
         {
             get { return roundingMode; }

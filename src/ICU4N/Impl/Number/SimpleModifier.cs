@@ -80,12 +80,12 @@ namespace ICU4N.Numerics
          * TODO: This belongs in SimpleFormatterImpl. The only reason I haven't moved it there yet is because
          * DoubleSidedStringBuilder is an internal class and SimpleFormatterImpl feels like it should not depend on it.
          *
-         * <p>
+         * <para/>
          * Formats a value that is already stored inside the StringBuilder <code>result</code> between the indices
          * <code>startIndex</code> and <code>endIndex</code> by inserting characters before the start index and after the
          * end index.
          *
-         * <p>
+         * <para/>
          * This is well-defined only for patterns with exactly one argument.
          *
          * @param result

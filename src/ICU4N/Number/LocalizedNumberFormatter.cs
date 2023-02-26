@@ -44,7 +44,9 @@ namespace ICU4N.Numerics
          */
         public FormattedNumber Format(long input)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             return Format(new DecimalQuantity_DualStorageBCD(input));
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /**
@@ -60,7 +62,9 @@ namespace ICU4N.Numerics
          */
         public FormattedNumber Format(double input)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             return Format(new DecimalQuantity_DualStorageBCD(input));
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /**
@@ -76,14 +80,16 @@ namespace ICU4N.Numerics
          */
         public FormattedNumber Format(Number input)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             return Format(new DecimalQuantity_DualStorageBCD(input));
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /**
          * Format the given {@link Measure} or {@link CurrencyAmount} to a string using the settings specified in the
          * NumberFormatter fluent setting chain.
          *
-         * <p>
+         * <para/>
          * The unit specified here overrides any unit that may have been specified in the setter chain. This method is
          * intended for cases when each input to the number formatter has a different unit.
          *
@@ -120,7 +126,7 @@ namespace ICU4N.Numerics
          * This is the core entrypoint to the number formatting pipeline. It performs self-regulation: a static code path
          * for the first few calls, and compiling a more efficient data structure if called repeatedly.
          *
-         * <p>
+         * <para/>
          * This function is very hot, being called in every call to the number formatting pipeline.
          *
          * @param fq

@@ -33,7 +33,7 @@ namespace ICU4N.Numerics
          * number in the form "#E0", where the number is displayed with one digit before the decimal separator, zero or more
          * digits after the decimal separator, and the corresponding power of 10 displayed after the "E".
          *
-         * <p>
+         * <para/>
          * Example outputs in <em>en-US</em> when printing 8.765E4 through 8.765E-3:
          *
          * <pre>
@@ -59,7 +59,7 @@ namespace ICU4N.Numerics
          * Print the number using engineering notation, a variant of scientific notation in which the exponent must be
          * divisible by 3.
          *
-         * <p>
+         * <para/>
          * Example outputs in <em>en-US</em> when printing 8.765E4 through 8.765E-3:
          *
          * <pre>
@@ -84,16 +84,16 @@ namespace ICU4N.Numerics
         /**
          * Print the number using short-form compact notation.
          *
-         * <p>
+         * <para/>
          * <em>Compact notation</em>, defined in Unicode Technical Standard #35 Part 3 Section 2.4.1, prints numbers with
          * localized prefixes or suffixes corresponding to different powers of ten. Compact notation is similar to
          * engineering notation in how it scales numbers.
          *
-         * <p>
+         * <para/>
          * Compact notation is ideal for displaying large numbers (over ~1000) to humans while at the same time minimizing
          * screen real estate.
          *
-         * <p>
+         * <para/>
          * In short form, the powers of ten are abbreviated. In <em>en-US</em>, the abbreviations are "K" for thousands, "M"
          * for millions, "B" for billions, and "T" for trillions. Example outputs in <em>en-US</em> when printing 8.765E7
          * through 8.765E0:
@@ -109,7 +109,7 @@ namespace ICU4N.Numerics
          * 8.8
          * </pre>
          *
-         * <p>
+         * <para/>
          * When compact notation is specified without an explicit rounding strategy, numbers are rounded off to the closest
          * integer after scaling the number by the corresponding power of 10, but with a digit shown after the decimal
          * separator if there is only one digit before the decimal separator. The default compact notation rounding strategy
@@ -130,7 +130,7 @@ namespace ICU4N.Numerics
          * Print the number using long-form compact notation. For more information on compact notation, see
          * {@link #compactShort}.
          *
-         * <p>
+         * <para/>
          * In long form, the powers of ten are spelled out fully. Example outputs in <em>en-US</em> when printing 8.765E7
          * through 8.765E0:
          *
@@ -155,11 +155,11 @@ namespace ICU4N.Numerics
         /**
          * Print the number using simple notation without any scaling by powers of ten. This is the default behavior.
          *
-         * <p>
+         * <para/>
          * Since this is the default behavior, this method needs to be called only when it is necessary to override a
          * previous setting.
          *
-         * <p>
+         * <para/>
          * Example outputs in <em>en-US</em> when printing 8.765E7 through 8.765E0:
          *
          * <pre>

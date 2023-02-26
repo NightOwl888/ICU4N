@@ -69,7 +69,7 @@ namespace ICU4N.Numerics
          * <li>HIDDEN: "123.00" and "123"
          * </ul>
          *
-         * <p>
+         * <para/>
          * This enum is similar to {@link com.ibm.icu.text.MeasureFormat.FormatWidth}.
          *
          * @draft ICU 60
@@ -83,7 +83,7 @@ namespace ICU4N.Numerics
              * abbreviation or symbol. This option can be used when the context hints at the identity of the unit. For more
              * information on the difference between NARROW and SHORT, see SHORT.
              *
-             * <p>
+             * <para/>
              * In CLDR, this option corresponds to the "Narrow" format for measure units and the "¤¤¤¤¤" placeholder for
              * currencies.
              *
@@ -97,11 +97,11 @@ namespace ICU4N.Numerics
              * Print an abbreviated version of the unit name. Similar to NARROW, but use a slightly wider abbreviation or
              * symbol when there may be ambiguity. This is the default behavior.
              *
-             * <p>
+             * <para/>
              * For example, in <em>es-US</em>, the SHORT form for Fahrenheit is "{0} °F", but the NARROW form is "{0}°",
              * since Fahrenheit is the customary unit for temperature in that locale.
              *
-             * <p>
+             * <para/>
              * In CLDR, this option corresponds to the "Short" format for measure units and the "¤" placeholder for
              * currencies.
              *
@@ -114,7 +114,7 @@ namespace ICU4N.Numerics
             /**
              * Print the full name of the unit, without any abbreviations.
              *
-             * <p>
+             * <para/>
              * In CLDR, this option corresponds to the default format for measure units and the "¤¤¤" placeholder for
              * currencies.
              *
@@ -128,7 +128,7 @@ namespace ICU4N.Numerics
              * Use the three-digit ISO XXX code in place of the symbol for displaying currencies. The behavior of this
              * option is currently undefined for use with measure units.
              *
-             * <p>
+             * <para/>
              * In CLDR, this option corresponds to the "¤¤" placeholder for currencies.
              *
              * @draft ICU 60
@@ -161,7 +161,7 @@ namespace ICU4N.Numerics
          * <li>ACCOUNTING_ALWAYS: "+$123" and "($123)"
          * </ul>
          *
-         * <p>
+         * <para/>
          * The exact format, including the position and the code point of the sign, differ by locale.
          *
          * @draft ICU 60
@@ -201,11 +201,11 @@ namespace ICU4N.Numerics
             /**
              * Use the locale-dependent accounting format on negative numbers, and do not show the sign on positive numbers.
              *
-             * <p>
+             * <para/>
              * The accounting format is defined in CLDR and varies by locale; in many Western locales, the format is a pair
              * of parentheses around the number.
              *
-             * <p>
+             * <para/>
              * Note: Since CLDR defines the accounting format in the monetary context only, this option falls back to the
              * AUTO sign display strategy when formatting without a currency unit. This limitation may be lifted in the
              * future.

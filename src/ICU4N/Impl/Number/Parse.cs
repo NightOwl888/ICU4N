@@ -403,12 +403,16 @@ namespace ICU4N.Numerics
                     }
                     else if (type == DigitType.Fraction)
                     {
+#pragma warning disable CS0618 // Type or member is obsolete
                         fq.AppendDigit(digit, trailingZeros, false);
+#pragma warning restore CS0618 // Type or member is obsolete
                         trailingZeros = 0;
                     }
                     else
                     {
+#pragma warning disable CS0618 // Type or member is obsolete
                         fq.AppendDigit(digit, 0, true);
+#pragma warning restore CS0618 // Type or member is obsolete
                     }
                 }
             }
@@ -908,7 +912,9 @@ namespace ICU4N.Numerics
             private CurrencyAffixPatterns(UCultureInfo uloc)
             {
                 // Get the basic currency pattern.
+#pragma warning disable CS0618 // Type or member is obsolete
                 string pattern = NumberFormat.GetPatternForStyle(uloc, NumberFormatStyle.CurrencyStyle);
+#pragma warning restore CS0618 // Type or member is obsolete
                 AddPattern(pattern);
 
                 // Get the currency plural patterns.
@@ -950,7 +956,7 @@ namespace ICU4N.Numerics
         }
 
         /// <summary>
-        /// Makes a {@link TextTrieMap} for parsing digit strings. A trie is required only if the digit
+        /// Makes a <see cref="TextTrieMap{TValue}"/> for parsing digit strings. A trie is required only if the digit
         /// strings are longer than one code point. In order for this to be the case, the user would have
         /// needed to specify custom multi-character digits, like "(0)".
         /// </summary>
@@ -1037,23 +1043,22 @@ namespace ICU4N.Numerics
         // TODO: DELETE ME once debugging is finished
         public static volatile bool DEBUGGING = false;
 
-        /**
-         * Implements an iterative parser that maintains a lists of possible states at each code point in
-         * the string. At each code point in the string, the list of possible states is updated based on
-         * the states coming from the previous code point. The parser stops when it reaches the end of the
-         * string or when there are no possible parse paths remaining in the string.
-         *
-         * <p>TODO: This API is not fully flushed out. Right now this is internal-only.
-         *
-         * @param input The string to parse.
-         * @param ppos A {@link ParsePosition} to hold the index at which parsing stopped.
-         * @param properties A property bag, used only for determining the prefix/suffix strings and the
-         *     padding character.
-         * @param symbols A {@link DecimalFormatSymbols} object, used for determining locale-specific
-         *     symbols for grouping/decimal separators, digit strings, and prefix/suffix substitutions.
-         * @return A Number matching the parser's best interpretation of the string.
-         */
         // ICU4N TODO: API Revisit making this a ReadOnlySpan<char> and accepting both string and ReadOnlySpan<char> on the API.
+        /// <summary>
+        /// Implements an iterative parser that maintains a lists of possible states at each code point in
+        /// the string. At each code point in the string, the list of possible states is updated based on
+        /// the states coming from the previous code point. The parser stops when it reaches the end of the
+        /// string or when there are no possible parse paths remaining in the string.
+        /// <para/>
+        /// TODO: This API is not fully flushed out. Right now this is internal-only.
+        /// </summary>
+        /// <param name="input">The string to parse.</param>
+        /// <param name="ppos">A <see cref="ParsePosition"/> to hold the index at which parsing stopped.</param>
+        /// <param name="properties">A property bag, used only for determining the prefix/suffix strings and the
+        /// padding character.</param>
+        /// <param name="symbols">A <see cref="DecimalFormatSymbols"/> object, used for determining locale-specific
+        /// symbols for grouping/decimal separators, digit strings, and prefix/suffix substitutions.</param>
+        /// <returns>A Number matching the parser's best interpretation of the string.</returns>
         public static Number Parse(
             string input,
             ParsePosition ppos,
@@ -1129,7 +1134,9 @@ namespace ICU4N.Numerics
 
             if (mode == ParseMode.Lenient || mode == ParseMode.Strict)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 state.digitTrie = MakeDigitTrie(symbols.DigitStringsLocal);
+#pragma warning restore CS0618 // Type or member is obsolete
                 AffixHolder.AddToState(state, properties);
                 if (parseCurrency)
                 {
@@ -1662,19 +1669,7 @@ namespace ICU4N.Numerics
         {
             AcceptDigitHelper(cp, nextName, state, item, DigitType.Exponent);
         }
-        /**
-         * If <code>cp</code> is a digit character (as determined by either {@link UCharacter#digit} or
-         * {@link ParserState#digitCps}), copies <code>item</code> to the new list in <code>state</code>
-         * and sets its state name to one determined by <code>type</code>. Also copies the digit into a
-         * field in the new item determined by <code>type</code>.
-         *
-         * @param cp The code point to check.
-         * @param nextName The state to set if a digit is accepted.
-         * @param state The state object to update.
-         * @param item The old state leading into the code point.
-         * @param type The digit type, which determines the next state and the field into which to insert
-         *     the digit.
-         */
+
         /// <summary>
         /// If <paramref name="cp"/> is a digit character (as determined by either <see cref="UChar.Digit(int, int)"/> or
         /// <see cref="DecimalFormatSymbols.DigitStringsLocal"/>, copies <paramref name="item"/> to the new list in <paramref name="state"/>
@@ -1709,7 +1704,9 @@ namespace ICU4N.Numerics
                     // Check custom digits, all of which are at most one code point
                     for (sbyte d = 0; d < 10; d++)
                     {
+#pragma warning disable CS0618 // Type or member is obsolete
                         int referenceCp = Character.CodePointAt(state.symbols.DigitStringsLocal[d], 0);
+#pragma warning restore CS0618 // Type or member is obsolete
                         if (cp == referenceCp)
                         {
                             digit = d;
@@ -1772,7 +1769,9 @@ namespace ICU4N.Numerics
             StateItem item,
             bool exponent)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             if (UNISET_MINUS.Contains(cp))
+#pragma warning restore CS0618 // Type or member is obsolete
             {
                 StateItem next = state.GetNext().CopyFrom(item, returnTo1, -1);
                 next.returnTo1 = returnTo2;
@@ -1800,7 +1799,9 @@ namespace ICU4N.Numerics
             StateItem item,
             bool exponent)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             if (UNISET_PLUS.Contains(cp))
+#pragma warning restore CS0618 // Type or member is obsolete
             {
                 StateItem next = state.GetNext().CopyFrom(item, returnTo1, -1);
                 next.returnTo1 = returnTo2;
@@ -2108,15 +2109,15 @@ namespace ICU4N.Numerics
         /// Internal method that is used to step to the next code point of a string or exit the string if
         /// at the end.
         /// </summary>
-        /// <param name="cp">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>.</param>
-        /// <param name="returnTo1">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>.</param>
-        /// <param name="returnTo2">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>.</param>
-        /// <param name="state">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>.</param>
-        /// <param name="item">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>.</param>
-        /// <param name="str">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>.</param>
+        /// <param name="cp">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>.</param>
+        /// <param name="returnTo1">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>.</param>
+        /// <param name="returnTo2">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>.</param>
+        /// <param name="state">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>.</param>
+        /// <param name="item">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>.</param>
+        /// <param name="str">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>.</param>
         /// <param name="newOffset">The offset at which the next step should start. If past the end of the string,
         /// exit the string and return to the outer loop.</param>
-        /// <param name="trailing">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>.</param>
+        /// <param name="trailing">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>.</param>
         /// <returns>Bitmask containing one entry, the one that was added.</returns>
         private static long AcceptStringHelper(
             int cp,
@@ -2263,10 +2264,14 @@ namespace ICU4N.Numerics
                     // Also attempt to accept custom minus sign string
                     string mss = state.symbols.MinusSignString;
                     int mssCp = Character.CodePointAt(mss, 0);
-                    if (mss.Length != Character.CharCount(mssCp) || !UNISET_MINUS.Contains(mssCp))
+                    if (mss.Length != Character.CharCount(mssCp)
+#pragma warning disable CS0618 // Type or member is obsolete
+                        || !UNISET_MINUS.Contains(mssCp))
+#pragma warning restore CS0618 // Type or member is obsolete
                     {
                         resolvedStr = mss;
                     }
+
                 }
             }
             if (resolvedPlusSign)
@@ -2284,7 +2289,10 @@ namespace ICU4N.Numerics
                     // Also attempt to accept custom plus sign string
                     string pss = state.symbols.PlusSignString;
                     int pssCp = Character.CodePointAt(pss, 0);
-                    if (pss.Length != Character.CharCount(pssCp) || !UNISET_MINUS.Contains(pssCp))
+                    if (pss.Length != Character.CharCount(pssCp)
+#pragma warning disable CS0618 // Type or member is obsolete
+                        || !UNISET_MINUS.Contains(pssCp))
+#pragma warning restore CS0618 // Type or member is obsolete
                     {
                         resolvedStr = pss;
                     }
@@ -2391,21 +2399,21 @@ namespace ICU4N.Numerics
         /// Note that there may be multiple parse paths added by these lines. This is important in order
         /// to properly handle runs of ignorables.
         /// </summary>
-        /// <param name="cp">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>
-        /// and <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>.</param>
-        /// <param name="ret1">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>
-        /// and <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>.</param>
-        /// <param name="ret2">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>
+        /// <param name="cp">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>
+        /// and <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, string, long)"/>.</param>
+        /// <param name="ret1">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>
+        /// and <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, string, long)"/>.</param>
+        /// <param name="ret2">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>
         /// (affix pattern can pass null).</param>
-        /// <param name="state">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>
-        /// and <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>.</param>
-        /// <param name="item">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>
-        /// and <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>.</param>
-        /// <param name="str">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>
-        /// and <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>.</param>
+        /// <param name="state">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>
+        /// and <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, string, long)"/>.</param>
+        /// <param name="item">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>
+        /// and <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, string, long)"/>.</param>
+        /// <param name="str">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>
+        /// and <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, string, long)"/>.</param>
         /// <param name="offsetOrTag">The current int offset for strings, or the current tag for affix patterns.</param>
-        /// <param name="trailing">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>
-        /// and <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>.</param>
+        /// <param name="trailing">See <see cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>
+        /// and <see cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, string, long)"/>.</param>
         /// <param name="isString"><c>true</c> if the parameters correspond to a string; <c>false</c> if they correspond to an
         /// affix pattern.</param>
         /// <returns>A bitmask containing the entries that were added.</returns>
@@ -2659,7 +2667,9 @@ namespace ICU4N.Numerics
                 next.returnTo2 = null;
                 next.sawCurrency = true;
                 currentMatches.MoveNext();
+#pragma warning disable CS0618 // Type or member is obsolete
                 next.isoCode = currentMatches.Current.ISOCode;
+#pragma warning restore CS0618 // Type or member is obsolete
                 added |= 1L << state.LastInsertedIndex;
             }
             if (!trieState.AtEnd)
@@ -2727,8 +2737,8 @@ namespace ICU4N.Numerics
         /// Checks whether the two given code points are equal after applying case mapping as requested in
         /// the <see cref="ParserState"/>.
         /// </summary>
-        /// <seealso cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, ICharSequence, int, bool)"/>
-        /// <seealso cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, ICharSequence, long)"/>
+        /// <seealso cref="AcceptString(int, StateName?, StateName?, ParserState, StateItem, string, int, bool)"/>
+        /// <seealso cref="AcceptAffixPattern(int, StateName?, ParserState, StateItem, string, long)"/>
         private static bool CodePointEquals(int cp1, int cp2, ParserState state)
         {
             if (!state.caseSensitive)

@@ -24,11 +24,11 @@ namespace ICU4N.Numerics
          * Ensure that no less than this number of significant digits are retained when rounding according to fraction
          * rules.
          *
-         * <p>
+         * <para/>
          * For example, with integer rounding, the number 3.141 becomes "3". However, with minimum figures set to 2, 3.141
          * becomes "3.1" instead.
          *
-         * <p>
+         * <para/>
          * This setting does not affect the number of trailing zeros. For example, 3.01 would print as "3", not "3.0".
          *
          * @param minSignificantDigits
@@ -55,11 +55,11 @@ namespace ICU4N.Numerics
          * Ensure that no more than this number of significant digits are retained when rounding according to fraction
          * rules.
          *
-         * <p>
+         * <para/>
          * For example, with integer rounding, the number 123.4 becomes "123". However, with maximum figures set to 2, 123.4
          * becomes "120" instead.
          *
-         * <p>
+         * <para/>
          * This setting does not affect the number of trailing zeros. For example, with fixed fraction of 2, 123.4 would
          * become "120.00".
          *

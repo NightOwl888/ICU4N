@@ -47,7 +47,7 @@ namespace ICU4N.Numerics
          * Append the formatted number to an Appendable, such as a StringBuilder. This may be slightly more efficient than
          * creating a String.
          *
-         * <p>
+         * <para/>
          * If an IOException occurs when appending to the Appendable, an unchecked {@link ICUUncheckedIOException} is thrown
          * instead.
          *
@@ -78,7 +78,7 @@ namespace ICU4N.Numerics
          * Append the formatted number to an Appendable, such as a StringBuilder. This may be slightly more efficient than
          * creating a String.
          *
-         * <p>
+         * <para/>
          * If an IOException occurs when appending to the Appendable, an unchecked {@link ICUUncheckedIOException} is thrown
          * instead.
          *
@@ -109,11 +109,11 @@ namespace ICU4N.Numerics
          * Determine the start and end indices of the first occurrence of the given <em>field</em> in the output string.
          * This allows you to determine the locations of the integer part, fraction part, and sign.
          *
-         * <p>
+         * <para/>
          * If multiple different field attributes are needed, this method can be called repeatedly, or if <em>all</em> field
          * attributes are needed, consider using getFieldIterator().
          *
-         * <p>
+         * <para/>
          * If a field occurs multiple times in an output string, such as a grouping separator, this method will only ever
          * return the first occurrence. Use getFieldIterator() to access all occurrences of an attribute.
          *
@@ -126,7 +126,9 @@ namespace ICU4N.Numerics
          */
         public virtual void PopulateFieldPosition(FieldPosition fieldPosition)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             PopulateFieldPosition(fieldPosition, 0);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /**
@@ -144,7 +146,7 @@ namespace ICU4N.Numerics
          * Export the formatted number as an AttributedCharacterIterator. This allows you to determine which characters in
          * the output string correspond to which <em>fields</em>, such as the integer part, fraction part, and sign.
          *
-         * <p>
+         * <para/>
          * If information on only one field is needed, consider using populateFieldPosition() instead.
          *
          * @return An AttributedCharacterIterator, containing information on the field attributes of the number string.

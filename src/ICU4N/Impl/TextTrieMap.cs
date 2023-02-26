@@ -456,13 +456,13 @@ namespace ICU4N.Impl
 
                 // walk through children
                 int index = 0;
-                bool isPrevious = false;
+                //bool isPrevious = false; // ICU4N: Not used
                 for (; index < children.Count; index++)
                 {
                     Node next = children[index];
                     if (text[offset] < next.text[0])
                     {
-                        isPrevious = true;
+                        //isPrevious = true;
                         break;
                     }
                     if (text[offset] == next.text[0])

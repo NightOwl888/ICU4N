@@ -117,7 +117,9 @@ namespace ICU4N.Numerics
             if (quantity.IsZero)
             {
                 magnitude = 0;
+#pragma warning disable CS0618 // Type or member is obsolete
                 micros.rounding.Apply(quantity);
+#pragma warning restore CS0618 // Type or member is obsolete
             }
             else
             {

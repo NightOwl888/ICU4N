@@ -192,14 +192,14 @@ namespace ICU4N.Numerics.BigMath
         /**
         * Returns a string representation of this {@code BigDecimal}. No scientific
         * notation is used. This methods adds zeros where necessary.
-        * <p>
+        * <para/>
         * If this string representation is used to create a new instance, this
         * instance is generally not identical to {@code this} as the precision
         * changes.
-        * <p>
+        * <para/>
         * {@code x.equals(new BigDecimal(x.toPlainString())} usually returns
         * {@code false}.
-        * <p>
+        * <para/>
         * {@code x.compareTo(new BigDecimal(x.toPlainString())} returns {@code 0}.
         *
         * @return a string representation of {@code this} without exponent part.
@@ -370,15 +370,15 @@ namespace ICU4N.Numerics.BigMath
         * Returns this {@code BigDecimal} as a float value. If {@code this} is too
         * big to be represented as an float, then {@code Float.POSITIVE_INFINITY}
         * or {@code Float.NEGATIVE_INFINITY} is returned.
-        * <p>
+        * <para/>
         * Note, that if the unscaled value has more than 24 significant digits,
         * then this decimal cannot be represented exactly in a float variable. In
         * this case the result is rounded.
-        * <p>
+        * <para/>
         * For example, if the instance {@code x1 = new BigDecimal("0.1")} cannot be
         * represented exactly as a float, and thus {@code x1.equals(new
         * BigDecimal(x1.folatValue())} returns {@code false} for this case.
-        * <p>
+        * <para/>
         * Similarly, if the instance {@code new BigDecimal(16777217)} is converted
         * to a float, the result is {@code 1.6777216E}7.
         *
@@ -411,18 +411,18 @@ namespace ICU4N.Numerics.BigMath
         * Returns this {@code BigDecimal} as a double value. If {@code this} is too
         * big to be represented as an float, then {@code Double.POSITIVE_INFINITY}
         * or {@code Double.NEGATIVE_INFINITY} is returned.
-        * <p>
+        * <para/>
         * Note, that if the unscaled value has more than 53 significant digits,
         * then this decimal cannot be represented exactly in a double variable. In
         * this case the result is rounded.
-        * <p>
+        * <para/>
         * For example, if the instance {@code x1 = new BigDecimal("0.1")} cannot be
         * represented exactly as a double, and thus {@code x1.equals(new
         * BigDecimal(x1.ToDouble())} returns {@code false} for this case.
-        * <p>
+        * <para/>
         * Similarly, if the instance {@code new BigDecimal(9007199254740993L)} is
         * converted to a double, the result is {@code 9.007199254740992E15}.
-        * <p>
+        * <para/>
         *
         * @return this {@code BigDecimal} as a double value.
         */

@@ -232,9 +232,9 @@ namespace ICU4N.Text
 
 
 
-        // ICU4N TODO: Serialization
-        /** New serialization in ICU 59: declare different version from ICU 58. */
-        //private static final long serialVersionUID = 864413376551465018L;
+        //// ICU4N TODO: Serialization
+        ////** New serialization in ICU 59: declare different version from ICU 58. */
+        ////private static final long serialVersionUID = 864413376551465018L;
 
         /**
          * One non-transient field such that deserialization can determine the version of the class. This
@@ -290,7 +290,7 @@ namespace ICU4N.Text
          * a convenient way to obtain a DecimalFormat instance when internationalization is not the main
          * concern.
          *
-         * <p>Most users should call the factory methods on NumberFormat, such as {@link
+         * <para/>Most users should call the factory methods on NumberFormat, such as {@link
          * NumberFormat#getNumberInstance}, which return localized formatter objects, instead of the
          * DecimalFormat constructors.
          *
@@ -319,7 +319,7 @@ namespace ICU4N.Text
          * is a convenient way to obtain a DecimalFormat instance when internationalization is not the
          * main concern.
          *
-         * <p>Most users should call the factory methods on NumberFormat, such as {@link
+         * <para/>Most users should call the factory methods on NumberFormat, such as {@link
          * NumberFormat#getNumberInstance}, which return localized formatter objects, instead of the
          * DecimalFormat constructors.
          *
@@ -348,7 +348,7 @@ namespace ICU4N.Text
          * Creates a DecimalFormat based on the given pattern and symbols. Use this constructor if you
          * want complete control over the behavior of the formatter.
          *
-         * <p>Most users should call the factory methods on NumberFormat, such as {@link
+         * <para/>Most users should call the factory methods on NumberFormat, such as {@link
          * NumberFormat#getNumberInstance}, which return localized formatter objects, instead of the
          * DecimalFormat constructors.
          *
@@ -380,7 +380,7 @@ namespace ICU4N.Text
          * override the pattern, and the {@link CurrencyPluralInfo} object is used for customizing the
          * plural forms used for currency long names.
          *
-         * <p>Most users should call the factory methods on NumberFormat, such as {@link
+         * <para/>Most users should call the factory methods on NumberFormat, such as {@link
          * NumberFormat#getNumberInstance}, which return localized formatter objects, instead of the
          * DecimalFormat constructors.
          *
@@ -456,7 +456,7 @@ namespace ICU4N.Text
          *
          * All other settings remain untouched.
          *
-         * <p>For more information on pattern strings, see <a
+         * <para/>For more information on pattern strings, see <a
          * href="http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns">UTS #35</a>.
          *
          * @stable ICU 2.0
@@ -481,7 +481,7 @@ namespace ICU4N.Text
          * Converts the given string to standard notation and then parses it using {@link #applyPattern}.
          * This method is provided for backwards compatibility and should not be used in new projects.
          *
-         * <p>Localized notation means that instead of using generic placeholders in the pattern, you use
+         * <para/>Localized notation means that instead of using generic placeholders in the pattern, you use
          * the corresponding locale-specific characters instead. For example, in locale <em>fr-FR</em>,
          * the period in the pattern "0.000" means "decimal" in standard notation (as it does in every
          * other locale), but it means "grouping" in localized notation.
@@ -809,7 +809,9 @@ namespace ICU4N.Text
             override StringBuffer Format(double number, StringBuffer result, FieldPosition fieldPosition) // ICU4N TODO: API - Replace FieldPosition with ReadOnlySpan<char> ?
         {
             FormattedNumber output = formatter.Format(number);
+#pragma warning disable CS0618 // Type or member is obsolete
             output.PopulateFieldPosition(fieldPosition, result.Length);
+#pragma warning restore CS0618 // Type or member is obsolete
             output.AppendTo(result);
             return result;
         }
@@ -827,7 +829,9 @@ namespace ICU4N.Text
             override StringBuffer Format(long number, StringBuffer result, FieldPosition fieldPosition)
         {
             FormattedNumber output = formatter.Format(number);
+#pragma warning disable CS0618 // Type or member is obsolete
             output.PopulateFieldPosition(fieldPosition, result.Length);
+#pragma warning restore CS0618 // Type or member is obsolete
             output.AppendTo(result);
             return result;
         }
@@ -845,7 +849,9 @@ namespace ICU4N.Text
             override StringBuffer Format(Numerics.BigMath.BigInteger number, StringBuffer result, FieldPosition fieldPosition)
         {
             FormattedNumber output = formatter.Format(number);
+#pragma warning disable CS0618 // Type or member is obsolete
             output.PopulateFieldPosition(fieldPosition, result.Length);
+#pragma warning restore CS0618 // Type or member is obsolete
             output.AppendTo(result);
             return result;
         }
@@ -864,7 +870,9 @@ namespace ICU4N.Text
             Numerics.BigMath.BigDecimal number, StringBuffer result, FieldPosition fieldPosition)
         {
             FormattedNumber output = formatter.Format(number);
+#pragma warning disable CS0618 // Type or member is obsolete
             output.PopulateFieldPosition(fieldPosition, result.Length);
+#pragma warning restore CS0618 // Type or member is obsolete
             output.AppendTo(result);
             return result;
         }
@@ -882,7 +890,9 @@ namespace ICU4N.Text
             override StringBuffer Format(BigDecimal number, StringBuffer result, FieldPosition fieldPosition)
         {
             FormattedNumber output = formatter.Format(number);
+#pragma warning disable CS0618 // Type or member is obsolete
             output.PopulateFieldPosition(fieldPosition, result.Length);
+#pragma warning restore CS0618 // Type or member is obsolete
             output.AppendTo(result);
             return result;
         }
@@ -912,7 +922,9 @@ namespace ICU4N.Text
             override StringBuffer Format(CurrencyAmount currAmt, StringBuffer toAppendTo, FieldPosition pos)
         {
             FormattedNumber output = formatter.Format(currAmt);
+#pragma warning disable CS0618 // Type or member is obsolete
             output.PopulateFieldPosition(pos, toAppendTo.Length);
+#pragma warning restore CS0618 // Type or member is obsolete
             output.AppendTo(toAppendTo);
             return toAppendTo;
         }
@@ -1015,7 +1027,7 @@ namespace ICU4N.Text
          * <strong>Affixes:</strong> Gets the positive prefix string currently being used to format
          * numbers.
          *
-         * <p>If the affix was specified via the pattern, the string returned by this method will have
+         * <para/>If the affix was specified via the pattern, the string returned by this method will have
          * locale symbols substituted in place of special characters according to the LDML specification.
          * If the affix was specified via {@link #setPositivePrefix}, the string will be returned
          * literally.
@@ -1029,7 +1041,9 @@ namespace ICU4N.Text
             get
             {
                 lock (this)
+#pragma warning disable CS0618 // Type or member is obsolete
                     return formatter.Format(1).GetPrefix();
+#pragma warning restore CS0618 // Type or member is obsolete
             }
             set => SetPositivePrefix(value);
         }
@@ -1039,7 +1053,7 @@ namespace ICU4N.Text
          * set the value "#", then the number 123 will be formatted as "#123" in the locale
          * <em>en-US</em>.
          *
-         * <p>Using this method overrides the affix specified via the pattern, and unlike the pattern, the
+         * <para/>Using this method overrides the affix specified via the pattern, and unlike the pattern, the
          * string given to this method will be interpreted literally WITHOUT locale symbol substitutions.
          *
          * @param prefix The literal string to prepend to positive numbers.
@@ -1062,7 +1076,7 @@ namespace ICU4N.Text
          * <strong>Affixes:</strong> Gets the negative prefix string currently being used to format
          * numbers.
          *
-         * <p>If the affix was specified via the pattern, the string returned by this method will have
+         * <para/>If the affix was specified via the pattern, the string returned by this method will have
          * locale symbols substituted in place of special characters according to the LDML specification.
          * If the affix was specified via {@link #setNegativePrefix}, the string will be returned
          * literally.
@@ -1076,7 +1090,9 @@ namespace ICU4N.Text
             get
             {
                 lock (this)
+#pragma warning disable CS0618 // Type or member is obsolete
                     return formatter.Format(-1).GetPrefix();
+#pragma warning restore CS0618 // Type or member is obsolete
             }
             set => SetNegativePrefix(value);
         }
@@ -1086,7 +1102,7 @@ namespace ICU4N.Text
          * set the value "#", then the number -123 will be formatted as "#123" in the locale
          * <em>en-US</em> (overriding the implicit default '-' in the pattern).
          *
-         * <p>Using this method overrides the affix specified via the pattern, and unlike the pattern, the
+         * <para/>Using this method overrides the affix specified via the pattern, and unlike the pattern, the
          * string given to this method will be interpreted literally WITHOUT locale symbol substitutions.
          *
          * @param prefix The literal string to prepend to negative numbers.
@@ -1109,7 +1125,7 @@ namespace ICU4N.Text
          * <strong>Affixes:</strong> Gets the positive suffix string currently being used to format
          * numbers.
          *
-         * <p>If the affix was specified via the pattern, the string returned by this method will have
+         * <para/>If the affix was specified via the pattern, the string returned by this method will have
          * locale symbols substituted in place of special characters according to the LDML specification.
          * If the affix was specified via {@link #setPositiveSuffix}, the string will be returned
          * literally.
@@ -1123,7 +1139,9 @@ namespace ICU4N.Text
             get
             {
                 lock (this)
+#pragma warning disable CS0618 // Type or member is obsolete
                     return formatter.Format(1).GetSuffix();
+#pragma warning restore CS0618 // Type or member is obsolete
             }
             set => SetPositiveSuffix(value);
         }
@@ -1133,7 +1151,7 @@ namespace ICU4N.Text
          * set the value "#", then the number 123 will be formatted as "123#" in the locale
          * <em>en-US</em>.
          *
-         * <p>Using this method overrides the affix specified via the pattern, and unlike the pattern, the
+         * <para/>Using this method overrides the affix specified via the pattern, and unlike the pattern, the
          * string given to this method will be interpreted literally WITHOUT locale symbol substitutions.
          *
          * @param suffix The literal string to append to positive numbers.
@@ -1156,7 +1174,7 @@ namespace ICU4N.Text
          * <strong>Affixes:</strong> Gets the negative suffix string currently being used to format
          * numbers.
          *
-         * <p>If the affix was specified via the pattern, the string returned by this method will have
+         * <para/>If the affix was specified via the pattern, the string returned by this method will have
          * locale symbols substituted in place of special characters according to the LDML specification.
          * If the affix was specified via {@link #setNegativeSuffix}, the string will be returned
          * literally.
@@ -1170,7 +1188,9 @@ namespace ICU4N.Text
             get
             {
                 lock (this)
+#pragma warning disable CS0618 // Type or member is obsolete
                     return formatter.Format(-1).GetSuffix();
+#pragma warning restore CS0618 // Type or member is obsolete
             }
             set => SetNegativeSuffix(value);
         }
@@ -1180,7 +1200,7 @@ namespace ICU4N.Text
          * set the value "#", then the number 123 will be formatted as "123#" in the locale
          * <em>en-US</em>.
          *
-         * <p>Using this method overrides the affix specified via the pattern, and unlike the pattern, the
+         * <para/>Using this method overrides the affix specified via the pattern, and unlike the pattern, the
          * string given to this method will be interpreted literally WITHOUT locale symbol substitutions.
          *
          * @param suffix The literal string to append to negative numbers.
@@ -1222,7 +1242,7 @@ namespace ICU4N.Text
          * Sets whether to always shown the plus sign ('+' in <em>en</em>) on positive numbers. The rules
          * in UTS #35 section 3.2.1 will be followed to ensure a locale-aware placement of the sign.
          *
-         * <p>More specifically, the following strategy will be used to place the plus sign:
+         * <para/>More specifically, the following strategy will be used to place the plus sign:
          *
          * <ol>
          *   <li><em>Patterns without a negative subpattern:</em> The locale's plus sign will be prepended
@@ -1283,10 +1303,10 @@ namespace ICU4N.Text
          * Sets a number that will be used to multiply all numbers prior to formatting. For example, when
          * formatting percents, a multiplier of 100 can be used.
          *
-         * <p>If a percent or permille sign is specified in the pattern, the multiplier is automatically
+         * <para/>If a percent or permille sign is specified in the pattern, the multiplier is automatically
          * set to 100 or 1000, respectively.
          *
-         * <p>If the number specified here is a power of 10, a more efficient code path will be used.
+         * <para/>If the number specified here is a power of 10, a more efficient code path will be used.
          *
          * @param multiplier The number by which all numbers passed to {@link #format} will be multiplied.
          * @throws IllegalArgumentException If the given multiplier is zero.
@@ -1352,13 +1372,13 @@ namespace ICU4N.Text
          * numbers are rounded. For example, a rounding increment of 0.05 will cause the number 1.23 to be
          * rounded to 1.25 in the default rounding mode.
          *
-         * <p>The rounding increment can be specified via the pattern string: for example, the pattern
+         * <para/>The rounding increment can be specified via the pattern string: for example, the pattern
          * "#,##0.05" encodes a rounding increment of 0.05.
          *
-         * <p>The rounding increment is applied <em>after</em> any multipliers might take effect; for
+         * <para/>The rounding increment is applied <em>after</em> any multipliers might take effect; for
          * example, in scientific notation or when {@link #setMultiplier} is used.
          *
-         * <p>See {@link #setMaximumFractionDigits} and {@link #setMaximumSignificantDigits} for two other
+         * <para/>See {@link #setMaximumFractionDigits} and {@link #setMaximumSignificantDigits} for two other
          * ways of specifying rounding strategies.
          *
          * @param increment The increment to which numbers are to be rounded.
@@ -1475,11 +1495,11 @@ namespace ICU4N.Text
          * numbers. The default rounding mode is HALF_EVEN, which rounds decimals to their closest whole
          * number, and rounds to the closest even number if at the midpoint.
          *
-         * <p>For more detail on rounding modes, see <a
+         * <para/>For more detail on rounding modes, see <a
          * href="http://userguide.icu-project.org/formatparse/numbers/rounding-modes">the ICU User
          * Guide</a>.
          *
-         * <p>For backwards compatibility, the rounding mode is specified as an int argument, which can be
+         * <para/>For backwards compatibility, the rounding mode is specified as an int argument, which can be
          * from either the constants in {@link BigDecimal} or the ordinal value of {@link RoundingMode}.
          * The following two calls are functionally equivalent.
          *
@@ -1534,7 +1554,7 @@ namespace ICU4N.Text
          * digits. Most users should call {@link #setRoundingMode} and/or {@link
          * #setMaximumSignificantDigits} instead of this method.
          *
-         * <p>When formatting, since no division is ever performed, the default MathContext is unlimited
+         * <para/>When formatting, since no division is ever performed, the default MathContext is unlimited
          * significant digits. However, when division occurs during parsing to correct for percentages and
          * multipliers, a MathContext of 34 digits, the IEEE 754R Decimal128 standard, is used by default.
          * If you require more than 34 digits when parsing, you can set a custom MathContext using this
@@ -1642,14 +1662,14 @@ namespace ICU4N.Text
          * the decimal separator. If the number has fewer than this many digits, the number is padded with
          * zeros.
          *
-         * <p>For example, if minimum integer digits is 3, the number 12.3 will be printed as "001.23".
+         * <para/>For example, if minimum integer digits is 3, the number 12.3 will be printed as "001.23".
          *
-         * <p>Minimum integer and minimum and maximum fraction digits can be specified via the pattern
+         * <para/>Minimum integer and minimum and maximum fraction digits can be specified via the pattern
          * string. For example, "#,#00.00#" has 2 minimum integer digits, 2 minimum fraction digits, and 3
          * maximum fraction digits. Note that it is not possible to specify maximium integer digits in the
          * pattern except in scientific notation.
          *
-         * <p>If minimum and maximum integer, fraction, or significant digits conflict with each other,
+         * <para/>If minimum and maximum integer, fraction, or significant digits conflict with each other,
          * the most recently specified value is used. For example, if there is a formatter with minInt=5,
          * and then you set maxInt=3, then minInt will be changed to 3.
          *
@@ -1693,14 +1713,14 @@ namespace ICU4N.Text
          * <strong>Rounding and Digit Limits:</strong> Sets the maximum number of digits to display before
          * the decimal separator. If the number has more than this many digits, the number is truncated.
          *
-         * <p>For example, if maximum integer digits is 3, the number 12345 will be printed as "345".
+         * <para/>For example, if maximum integer digits is 3, the number 12345 will be printed as "345".
          *
-         * <p>Minimum integer and minimum and maximum fraction digits can be specified via the pattern
+         * <para/>Minimum integer and minimum and maximum fraction digits can be specified via the pattern
          * string. For example, "#,#00.00#" has 2 minimum integer digits, 2 minimum fraction digits, and 3
          * maximum fraction digits. Note that it is not possible to specify maximium integer digits in the
          * pattern except in scientific notation.
          *
-         * <p>If minimum and maximum integer, fraction, or significant digits conflict with each other,
+         * <para/>If minimum and maximum integer, fraction, or significant digits conflict with each other,
          * the most recently specified value is used. For example, if there is a formatter with minInt=5,
          * and then you set maxInt=3, then minInt will be changed to 3.
          *
@@ -1744,18 +1764,18 @@ namespace ICU4N.Text
          * the decimal separator. If the number has fewer than this many digits, the number is padded with
          * zeros.
          *
-         * <p>For example, if minimum fraction digits is 2, the number 123.4 will be printed as "123.40".
+         * <para/>For example, if minimum fraction digits is 2, the number 123.4 will be printed as "123.40".
          *
-         * <p>Minimum integer and minimum and maximum fraction digits can be specified via the pattern
+         * <para/>Minimum integer and minimum and maximum fraction digits can be specified via the pattern
          * string. For example, "#,#00.00#" has 2 minimum integer digits, 2 minimum fraction digits, and 3
          * maximum fraction digits. Note that it is not possible to specify maximium integer digits in the
          * pattern except in scientific notation.
          *
-         * <p>If minimum and maximum integer, fraction, or significant digits conflict with each other,
+         * <para/>If minimum and maximum integer, fraction, or significant digits conflict with each other,
          * the most recently specified value is used. For example, if there is a formatter with minInt=5,
          * and then you set maxInt=3, then minInt will be changed to 3.
          *
-         * <p>See {@link #setRoundingIncrement} and {@link #setMaximumSignificantDigits} for two other
+         * <para/>See {@link #setRoundingIncrement} and {@link #setMaximumSignificantDigits} for two other
          * ways of specifying rounding strategies.
          *
          * @param value The minimum number of integer digits after the decimal separator.
@@ -1801,15 +1821,15 @@ namespace ICU4N.Text
          * the decimal separator. If the number has more than this many digits, the number is rounded
          * according to the rounding mode.
          *
-         * <p>For example, if maximum fraction digits is 2, the number 123.456 will be printed as
+         * <para/>For example, if maximum fraction digits is 2, the number 123.456 will be printed as
          * "123.46".
          *
-         * <p>Minimum integer and minimum and maximum fraction digits can be specified via the pattern
+         * <para/>Minimum integer and minimum and maximum fraction digits can be specified via the pattern
          * string. For example, "#,#00.00#" has 2 minimum integer digits, 2 minimum fraction digits, and 3
          * maximum fraction digits. Note that it is not possible to specify maximium integer digits in the
          * pattern except in scientific notation.
          *
-         * <p>If minimum and maximum integer, fraction, or significant digits conflict with each other,
+         * <para/>If minimum and maximum integer, fraction, or significant digits conflict with each other,
          * the most recently specified value is used. For example, if there is a formatter with minInt=5,
          * and then you set maxInt=3, then minInt will be changed to 3.
          *
@@ -1856,7 +1876,7 @@ namespace ICU4N.Text
          * {@icu} <strong>Rounding and Digit Limits:</strong> Sets whether significant digits are to be
          * used in rounding.
          *
-         * <p>Calling <code>df.setSignificantDigitsUsed(true)</code> is functionally equivalent to:
+         * <para/>Calling <code>df.setSignificantDigitsUsed(true)</code> is functionally equivalent to:
          *
          * <pre>
          * df.setMinimumSignificantDigits(1);
@@ -1910,10 +1930,10 @@ namespace ICU4N.Text
          * digits to be displayed. If the number of significant digits is less than this value, the number
          * will be padded with zeros as necessary.
          *
-         * <p>For example, if minimum significant digits is 3 and the number is 1.2, the number will be
+         * <para/>For example, if minimum significant digits is 3 and the number is 1.2, the number will be
          * printed as "1.20".
          *
-         * <p>If minimum and maximum integer, fraction, or significant digits conflict with each other,
+         * <para/>If minimum and maximum integer, fraction, or significant digits conflict with each other,
          * the most recently specified value is used. For example, if there is a formatter with minInt=5,
          * and then you set maxInt=3, then minInt will be changed to 3.
          *
@@ -1957,14 +1977,14 @@ namespace ICU4N.Text
          * digits to be displayed. If the number of significant digits in the number exceeds this value,
          * the number will be rounded according to the current rounding mode.
          *
-         * <p>For example, if maximum significant digits is 3 and the number is 12345, the number will be
+         * <para/>For example, if maximum significant digits is 3 and the number is 12345, the number will be
          * printed as "12300".
          *
-         * <p>If minimum and maximum integer, fraction, or significant digits conflict with each other,
+         * <para/>If minimum and maximum integer, fraction, or significant digits conflict with each other,
          * the most recently specified value is used. For example, if there is a formatter with minInt=5,
          * and then you set maxInt=3, then minInt will be changed to 3.
          *
-         * <p>See {@link #setRoundingIncrement} and {@link #setMaximumFractionDigits} for two other ways
+         * <para/>See {@link #setRoundingIncrement} and {@link #setMaximumFractionDigits} for two other ways
          * of specifying rounding strategies.
          *
          * @param value The maximum number of significant digits to display.
@@ -2010,13 +2030,13 @@ namespace ICU4N.Text
          * pipeline. For example, if padding is enabled and paddingWidth is set to 6, formatting the
          * number "3.14159" with the pattern "0.00" will result in "··3.14" if '·' is your padding string.
          *
-         * <p>If the number is longer than your padding width, the number will display as if no padding
+         * <para/>If the number is longer than your padding width, the number will display as if no padding
          * width had been specified, which may result in strings longer than the padding width.
          *
-         * <p>Padding can be specified in the pattern string using the '*' symbol. For example, the format
+         * <para/>Padding can be specified in the pattern string using the '*' symbol. For example, the format
          * "*x######0" has a format width of 7 and a pad character of 'x'.
          *
-         * <p>Padding is currently counted in UTF-16 code units; see <a
+         * <para/>Padding is currently counted in UTF-16 code units; see <a
          * href="http://bugs.icu-project.org/trac/ticket/13034">ticket #13034</a> for more information.
          *
          * @param width The minimum number of characters in the output.
@@ -2065,7 +2085,7 @@ namespace ICU4N.Text
          * {@icu} <strong>Padding:</strong> Sets the character used to pad numbers that are narrower than
          * the width specified in {@link #setFormatWidth}.
          *
-         * <p>In the pattern string, the padding character is the token that follows '*' before or after
+         * <para/>In the pattern string, the padding character is the token that follows '*' before or after
          * the prefix or suffix.
          *
          * @param padChar The character used for padding.
@@ -2151,7 +2171,7 @@ namespace ICU4N.Text
          * 123000 will be printed as "1.23E5" in locale <em>en-US</em>. A locale-specific symbol is used
          * as the exponent separator.
          *
-         * <p>Calling <code>df.setScientificNotation(true)</code> is functionally equivalent to calling
+         * <para/>Calling <code>df.setScientificNotation(true)</code> is functionally equivalent to calling
          * <code>df.setMinimumExponentDigits(1)</code>.
          *
          * @param useScientific true to enable scientific notation; false to disable it.
@@ -2197,7 +2217,7 @@ namespace ICU4N.Text
          * the exponent. For example, if minimum exponent digits is 3, the number 123000 will be printed
          * as "1.23E005".
          *
-         * <p>This setting corresponds to the number of zeros after the 'E' in a pattern string such as
+         * <para/>This setting corresponds to the number of zeros after the 'E' in a pattern string such as
          * "0.00E000".
          *
          * @param minExpDig The minimum number of digits in the exponent.
@@ -2236,7 +2256,7 @@ namespace ICU4N.Text
          * number 123000 will be printed as "1.23E+5" in locale <em>en-US</em>. The number 0.0000123 will
          * always be printed as "1.23E-5" in locale <em>en-US</em> whether or not this setting is enabled.
          *
-         * <p>This setting corresponds to the '+' in a pattern such as "0.00E+0".
+         * <para/>This setting corresponds to the '+' in a pattern such as "0.00E+0".
          *
          * @param expSignAlways true to always shown the sign in the exponent; false to show it for
          *     negatives but not positives.
@@ -2274,10 +2294,10 @@ namespace ICU4N.Text
          * Grouping means whether the thousands, millions, billions, and larger powers of ten should be
          * separated by a grouping separator (a comma in <em>en-US</em>).
          *
-         * <p>For example, if grouping is enabled, 12345 will be printed as "12,345" in <em>en-US</em>. If
+         * <para/>For example, if grouping is enabled, 12345 will be printed as "12,345" in <em>en-US</em>. If
          * grouping were disabled, it would instead be printed as simply "12345".
          *
-         * <p>Calling <code>df.setGroupingUsed(true)</code> is functionally equivalent to setting grouping
+         * <para/>Calling <code>df.setGroupingUsed(true)</code> is functionally equivalent to setting grouping
          * size to 3, as in <code>df.setGroupingSize(3)</code>.
          *
          * @param enabled true to enable grouping separators; false to disable them.
@@ -2327,9 +2347,9 @@ namespace ICU4N.Text
          * number of digits between the ones and thousands place, between thousands and millions, and so
          * forth.
          *
-         * <p>For example, with a grouping size of 3, the number 1234567 will be formatted as "1,234,567".
+         * <para/>For example, with a grouping size of 3, the number 1234567 will be formatted as "1,234,567".
          *
-         * <p>Grouping size can also be specified in the pattern: for example, "#,##0" corresponds to a
+         * <para/>Grouping size can also be specified in the pattern: for example, "#,##0" corresponds to a
          * grouping size of 3.
          *
          * @param width The grouping size to use.
@@ -2376,10 +2396,10 @@ namespace ICU4N.Text
          * separators after the first separator) used when formatting large numbers. In many south Asian
          * locales, this is set to 2.
          *
-         * <p>For example, with primary grouping size 3 and secondary grouping size 2, the number 1234567
+         * <para/>For example, with primary grouping size 3 and secondary grouping size 2, the number 1234567
          * will be formatted as "12,34,567".
          *
-         * <p>Grouping size can also be specified in the pattern: for example, "#,##,##0" corresponds to a
+         * <para/>Grouping size can also be specified in the pattern: for example, "#,##,##0" corresponds to a
          * primary grouping size of 3 and a secondary grouping size of 2.
          *
          * @param width The secondary grouping size to use.
@@ -2467,7 +2487,7 @@ namespace ICU4N.Text
          * shown on integers. For example, if this setting is turned on, formatting 123 will result in
          * "123." with the decimal separator.
          *
-         * <p>This setting can be specified in the pattern for integer formats: "#,##0." is an example.
+         * <para/>This setting can be specified in the pattern for integer formats: "#,##0." is an example.
          *
          * @param value true to always show the decimal separator; false to show it only when there is a
          *     fraction part of the number.
@@ -2617,7 +2637,7 @@ namespace ICU4N.Text
          * {@icu} Sets a custom instance of CurrencyPluralInfo. CurrencyPluralInfo generates pattern
          * strings for printing currency long names.
          *
-         * <p><strong>Most users should not call this method directly.</strong> You should instead create
+         * <para/><strong>Most users should not call this method directly.</strong> You should instead create
          * your formatter via <code>NumberFormat.getInstance(NumberFormat.PLURALCURRENCYSTYLE)</code>.
          *
          * @param newInfo The CurrencyPluralInfo to use when printing currency long names.
@@ -2682,14 +2702,14 @@ namespace ICU4N.Text
             set { /* Intentionally blank */ }
         }
 
-        /**
-         * @param maxDigits Prior to ICU 59, the maximum number of digits in the output number after
-         *     exponential notation is applied.
-         * @category Parsing
-         * @deprecated Setting max parse digits has no effect since ICU4J 59.
-         */
-        //[Obsolete("Setting max parse digits has no effect since ICU4J 59.")]
-        //public void setParseMaxDigits(int maxDigits) { }
+        /////**
+        //// * @param maxDigits Prior to ICU 59, the maximum number of digits in the output number after
+        //// *     exponential notation is applied.
+        //// * @category Parsing
+        //// * @deprecated Setting max parse digits has no effect since ICU4J 59.
+        //// */
+        //////[Obsolete("Setting max parse digits has no effect since ICU4J 59.")]
+        //////public void setParseMaxDigits(int maxDigits) { }
 
         /**
          * {@inheritDoc}
@@ -2743,7 +2763,7 @@ namespace ICU4N.Text
         /**
          * <strong>Parsing:</strong> {@inheritDoc}
          *
-         * <p>This is functionally equivalent to calling {@link #setDecimalPatternMatchRequired} and a
+         * <para/>This is functionally equivalent to calling {@link #setDecimalPatternMatchRequired} and a
          * pattern without a decimal point.
          *
          * @param parseIntegerOnly true to ignore fractional parts of numbers when parsing; false to
@@ -2783,7 +2803,7 @@ namespace ICU4N.Text
          * default). This feature was designed to be an extra layer of strictness on top of strict
          * parsing, although it can be used in either lenient mode or strict mode.
          *
-         * <p>To <em>require</em> a decimal point, call this method in combination with either a pattern
+         * <para/>To <em>require</em> a decimal point, call this method in combination with either a pattern
          * containing a decimal point or with {@link #setDecimalSeparatorAlwaysShown}.
          *
          * <pre>
@@ -2917,7 +2937,7 @@ namespace ICU4N.Text
         //   * {@icu} Sets the strategy used during parsing when a code point needs to be interpreted as
         //   * either a decimal separator or a grouping separator.
         //   *
-        //   * <p>The comma, period, space, and apostrophe have different meanings in different locales. For
+        //   * <para/>The comma, period, space, and apostrophe have different meanings in different locales. For
         //   * example, in <em>en-US</em> and most American locales, the period is used as a decimal
         //   * separator, but in <em>es-PY</em> and most European locales, it is used as a grouping separator.
         //   *
@@ -2944,7 +2964,7 @@ namespace ICU4N.Text
         /**
          * Tests for equality between this formatter and another formatter.
          *
-         * <p>If two DecimalFormat instances are equal, then they will always produce the same output.
+         * <para/>If two DecimalFormat instances are equal, then they will always produce the same output.
          * However, the reverse is not necessarily true: if two DecimalFormat instances always produce the
          * same output, they are not necessarily equal.
          *
@@ -3003,10 +3023,10 @@ namespace ICU4N.Text
          * is guaranteed to be <em>functionally</em> equivalent to the pattern string used to create this
          * instance after incorporating values from the setter methods.
          *
-         * <p>For more information on decimal format pattern strings, see <a
+         * <para/>For more information on decimal format pattern strings, see <a
          * href="http://unicode.org/reports/tr35/tr35-numbers.html#Number_Format_Patterns">UTS #35</a>.
          *
-         * <p><strong>Important:</strong> Not all properties are capable of being encoded in a pattern
+         * <para/><strong>Important:</strong> Not all properties are capable of being encoded in a pattern
          * string. See a list of properties in {@link #applyPattern}.
          *
          * @return A decimal format pattern string.
@@ -3109,7 +3129,9 @@ namespace ICU4N.Text
                 locale = symbols.UCulture;
             }
             Debug.Assert(locale != null);
+#pragma warning disable CS0618 // Type or member is obsolete
             formatter = NumberFormatter.FromDecimalFormat(properties, symbols, exportedProperties).Culture(locale);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /**

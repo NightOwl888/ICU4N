@@ -2659,10 +2659,12 @@ namespace ICU4N.Text
                 }
                 Debug.Assert(context.number.ToDouble() == number);  // argument number minus the offset
                 context.numberString = context.formatter.Format(context.number);
-                if (context.formatter is DecimalFormat)
+                if (context.formatter is DecimalFormat decimalFormat)
                 {
-                    IFixedDecimal dec = ((DecimalFormat)context.formatter).GetFixedDecimal(number);
+#pragma warning disable CS0618 // Type or member is obsolete
+                    IFixedDecimal dec = decimalFormat.GetFixedDecimal(number);
                     return rules.Select(dec);
+#pragma warning restore CS0618 // Type or member is obsolete
                 }
                 else
                 {

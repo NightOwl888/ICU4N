@@ -19,87 +19,94 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
     /// TODO: Should I change this to an abstract class so that logic for min/max digits doesn't need
     /// to be copied to every implementation?
     /// </summary>
+#pragma warning disable CS0618 // Type or member is obsolete
     internal interface IDecimalQuantity : PluralRules.IFixedDecimal // ICU4N TODO: API - this was public in ICU4J
+#pragma warning restore CS0618 // Type or member is obsolete
     {
-        /**
-           * Sets the minimum and maximum integer digits that this {@link DecimalQuantity} should generate.
-           * This method does not perform rounding.
-           *
-           * @param minInt The minimum number of integer digits.
-           * @param maxInt The maximum number of integer digits.
-           */
+        /// <summary>
+        /// Sets the minimum and maximum integer digits that this <see cref="IDecimalQuantity"/> should generate.
+        /// This method does not perform rounding.
+        /// </summary>
+        /// <param name="minInt">The minimum number of integer digits.</param>
+        /// <param name="maxInt">The maximum number of integer digits.</param>
         void SetIntegerLength(int minInt, int maxInt);
 
-        /**
-         * Sets the minimum and maximum fraction digits that this {@link DecimalQuantity} should generate.
-         * This method does not perform rounding.
-         *
-         * @param minFrac The minimum number of fraction digits.
-         * @param maxFrac The maximum number of fraction digits.
-         */
+        /// <summary>
+        /// Sets the minimum and maximum fraction digits that this <see cref="IDecimalQuantity"/> should generate.
+        /// </summary>
+        /// <param name="minFrac">The minimum number of fraction digits.</param>
+        /// <param name="maxFrac">The maximum number of fraction digits.</param>
         void SetFractionLength(int minFrac, int maxFrac);
 
-        /**
-         * Rounds the number to a specified interval, such as 0.05.
-         *
-         * <p>If rounding to a power of ten, use the more efficient {@link #roundToMagnitude} instead.
-         *
-         * @param roundingInterval The increment to which to round.
-         * @param mathContext The {@link MathContext} to use if rounding is necessary. Undefined behavior
-         *     if null.
-         */
+        /// <summary>
+        /// Rounds the number to a specified interval, such as 0.05.
+        /// <para/>
+        /// If rounding to a power of ten, use the more efficient <see cref="RoundToMagnitude(int, BigMath.MathContext)"/> instead.
+        /// </summary>
+        /// <param name="roundingInterval">The increment to which to round.</param>
+        /// <param name="mathContext">The <see cref="BigMath.MathContext"/> to use if rounding is necessary. Undefined behavior
+        /// if <c>null</c>.</param>
         void RoundToIncrement(BigMath.BigDecimal roundingInterval, BigMath.MathContext mathContext);
 
-        /**
-         * Rounds the number to a specified magnitude (power of ten).
-         *
-         * @param roundingMagnitude The power of ten to which to round. For example, a value of -2 will
-         *     round to 2 decimal places.
-         * @param mathContext The {@link MathContext} to use if rounding is necessary. Undefined behavior
-         *     if null.
-         */
+        /// <summary>
+        /// Rounds the number to a specified magnitude (power of ten).
+        /// </summary>
+        /// <param name="roundingMagnitude">The power of ten to which to round. For example, a value of -2 will
+        /// round to 2 decimal places.</param>
+        /// <param name="mathContext">The <see cref="BigMath.MathContext"/> to use if rounding is necessary. Undefined behavior
+        /// if <c>null</c>.</param>
         void RoundToMagnitude(int roundingMagnitude, BigMath.MathContext mathContext);
 
-        /**
-         * Rounds the number to an infinite number of decimal points. This has no effect except for
-         * forcing the double in {@link DecimalQuantity_AbstractBCD} to adopt its exact representation.
-         */
+        /// <summary>
+        /// Rounds the number to an infinite number of decimal points. This has no effect except for
+        /// forcing the double in <see cref="DecimalQuantity_AbstractBCD"/> to adopt its exact representation.
+        /// </summary>
         void RoundToInfinity();
 
-        /**
-         * Multiply the internal value.
-         *
-         * @param multiplicand The value by which to multiply.
-         */
+        /// <summary>
+        /// Multiply the internal value.
+        /// </summary>
+        /// <param name="multiplicand">The value by which to multiply.</param>
         void MultiplyBy(BigMath.BigDecimal multiplicand);
 
-        /**
-         * Scales the number by a power of ten. For example, if the value is currently "1234.56", calling
-         * this method with delta=-3 will change the value to "1.23456".
-         *
-         * @param delta The number of magnitudes of ten to change by.
-         */
+        /// <summary>
+        /// Scales the number by a power of ten. For example, if the value is currently "1234.56", calling
+        /// this method with delta=-3 will change the value to "1.23456".
+        /// </summary>
+        /// <param name="delta">The number of magnitudes of ten to change by.</param>
         void AdjustMagnitude(int delta);
 
-        /**
-         * @return The power of ten corresponding to the most significant nonzero digit.
-         * @throws ArithmeticException If the value represented is zero.
-         */
-        int GetMagnitude(); //throws ArithmeticException;
+        /// <summary>
+        /// Returns the power of ten corresponding to the most significant nonzero digit.
+        /// </summary>
+        /// <returns>The power of ten corresponding to the most significant nonzero digit.</returns>
+        /// <exception cref="ArithmeticException">If the value represented is zero.</exception>
+        int GetMagnitude();
 
-        /** @return Whether the value represented by this {@link DecimalQuantity} is zero. */
+        /// <summary>
+        /// Returns <c>true</c> if the value represented by this <see cref="IDecimalQuantity"/> is zero.
+        /// </summary>
         bool IsZero { get; }
 
-        /** @return Whether the value represented by this {@link DecimalQuantity} is less than zero. */
+        /// <summary>
+        /// Returns <c>true</c> if the value represented by this <see cref="IDecimalQuantity"/> is less than zero.
+        /// </summary>
         bool IsNegative { get; }
 
-        /** @return Whether the value represented by this {@link DecimalQuantity} is infinite. */
+        /// <summary>
+        /// Returns <c>true</c> if the value represented by this <see cref="IDecimalQuantity"/> is infinite.
+        /// </summary>
         new bool IsInfinity { get; }
 
-        /** @return Whether the value represented by this {@link DecimalQuantity} is not a number. */
+        /// <summary>
+        /// Returns <c>true</c> if the value represented by this <see cref="IDecimalQuantity"/> is not a number.
+        /// </summary>
         new bool IsNaN { get; }
 
-        /** @return The value contained in this {@link DecimalQuantity} approximated as a double. */
+        /// <summary>
+        /// Returns the value contained in this <see cref="IDecimalQuantity"/> approximated as a double.
+        /// </summary>
+        /// <returns>The value contained in this <see cref="IDecimalQuantity"/> approximated as a double.</returns>
         double ToDouble();
 
         BigMath.BigDecimal ToBigDecimal();
@@ -109,69 +116,63 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
         int MaxRepresentableDigits { get; }
 
         // TODO: Should this method be removed, since DecimalQuantity implements IFixedDecimal now?
-        /**
-         * Computes the plural form for this number based on the specified set of rules.
-         *
-         * @param rules A {@link PluralRules} object representing the set of rules.
-         * @return The {@link StandardPlural} according to the PluralRules. If the plural form is not in
-         *     the set of standard plurals, {@link StandardPlural#OTHER} is returned instead.
-         */
+        /// <summary>
+        /// Computes the plural form for this number based on the specified set of rules.
+        /// </summary>
+        /// <param name="rules">A <see cref="PluralRules"/> object representing the set of rules.</param>
+        /// <returns>The <see cref="StandardPlural"/> according to the <paramref name="rules"/>. If the plural form is not in
+        /// the set of standard plurals, <see cref="StandardPlural.Other"/> is returned instead.</returns>
         StandardPlural GetStandardPlural(PluralRules rules);
 
-        /**
-         * Gets the digit at the specified magnitude. For example, if the represented number is 12.3,
-         * getDigit(-1) returns 3, since 3 is the digit corresponding to 10^-1.
-         *
-         * @param magnitude The magnitude of the digit.
-         * @return The digit at the specified magnitude.
-         */
+        /// <summary>
+        /// Gets the digit at the specified magnitude. For example, if the represented number is 12.3,
+        /// <c>GetDigit(-1)</c> returns 3, since 3 is the digit corresponding to 10^-1.
+        /// </summary>
+        /// <param name="magnitude">The magnitude of the digit.</param>
+        /// <returns>The digit at the specified magnitude.</returns>
         byte GetDigit(int magnitude);
 
-        /**
-         * Gets the largest power of ten that needs to be displayed. The value returned by this function
-         * will be bounded between minInt and maxInt.
-         *
-         * @return The highest-magnitude digit to be displayed.
-         */
+        /// <summary>
+        /// Gets the largest power of ten that needs to be displayed. The value returned by this function
+        /// will be bounded between minInt and maxInt.
+        /// </summary>
         int UpperDisplayMagnitude { get; }
 
-        /**
-         * Gets the smallest power of ten that needs to be displayed. The value returned by this function
-         * will be bounded between -minFrac and -maxFrac.
-         *
-         * @return The lowest-magnitude digit to be displayed.
-         */
+        /// <summary>
+        /// Gets the smallest power of ten that needs to be displayed. The value returned by this function
+        /// will be bounded between -minFrac and -maxFrac.
+        /// </summary>
         int LowerDisplayMagnitude { get; }
 
-        /**
-         * Returns the string in "plain" format (no exponential notation) using ASCII digits.
-         */
+        /// <summary>
+        /// Returns the string in "plain" format (no exponential notation) using ASCII digits.
+        /// </summary>
+        /// <returns>The string in "plain" format (no exponential notation) using ASCII digits.</returns>
         string ToPlainString();
 
-        /**
-         * Like clone, but without the restrictions of the Cloneable interface clone.
-         *
-         * @return A copy of this instance which can be mutated without affecting this instance.
-         */
+        /// <summary>
+        /// Like clone, but without the restrictions of the <see cref="ICloneable"/> interface clone.
+        /// </summary>
+        /// <returns>A copy of this instance which can be mutated without affecting this instance.</returns>
         IDecimalQuantity CreateCopy();
 
-        /**
-         * Sets this instance to be equal to another instance.
-         *
-         * @param other The instance to copy from.
-         */
+        /// <summary>
+        /// Sets this instance to be equal to another instance.
+        /// </summary>
+        /// <param name="other">The instance to copy from.</param>
         void CopyFrom(IDecimalQuantity other);
 
-        /** This method is for internal testing only. */
+        /// <summary>
+        /// This property is for internal testing only.
+        /// </summary>
         long PositionFingerprint { get; }
 
-        /**
-         * If the given {@link FieldPosition} is a {@link UFieldPosition}, populates it with the fraction
-         * length and fraction long value. If the argument is not a {@link UFieldPosition}, nothing
-         * happens.
-         *
-         * @param fp The {@link UFieldPosition} to populate.
-         */
+        /// <summary>
+        /// If the given <see cref="FieldPosition"/> is a <see cref="UFieldPosition"/>, populates it with the fraction
+        /// length and fraction long value. If the argument is not a <see cref="UFieldPosition"/>, nothing
+        /// happens.
+        /// </summary>
+        /// <param name="fp">The <see cref="UFieldPosition"/> to populate.</param>
         void PopulateUFieldPosition(FieldPosition fp);
     }
 }

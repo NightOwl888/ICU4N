@@ -622,7 +622,7 @@ namespace ICU4N.Impl.Coll
         /// <summary>
         /// Data for scripts and reordering groups.
         /// Uses include building a reordering permutation table and
-        /// providing script boundaries to <see cref="Text.AlphabeticIndex{T}"/>.
+        /// providing script boundaries to <see cref="ICU4N.Text.AlphabeticIndex{T}"/>.
         /// </summary>
         internal int numScripts;
 

@@ -89,7 +89,9 @@ namespace ICU4N.Impl
             {
                 needed |= Date;
             }
+#pragma warning disable CS0618 // Type or member is obsolete
             if (filter.TenderOnly)
+#pragma warning restore CS0618 // Type or member is obsolete
             {
                 needed |= Tender;
             }
@@ -173,7 +175,9 @@ namespace ICU4N.Impl
                 {
                     ICUResourceBundle tenderBundle = r.At("tender");
                     tender = tenderBundle == null || "true".Equals(tenderBundle.GetString());
+#pragma warning disable CS0618 // Type or member is obsolete
                     if (filter.TenderOnly && !tender)
+#pragma warning restore CS0618 // Type or member is obsolete
                     {
                         continue;
                     }
@@ -230,7 +234,9 @@ namespace ICU4N.Impl
 
             public void Collect(string region, string currency, long from, long to, int priority, bool tender)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 result.Add(new CurrencyInfo(region, currency, from, to, priority, tender));
+#pragma warning restore CS0618 // Type or member is obsolete
             }
 
             public IList<CurrencyInfo> ToList()

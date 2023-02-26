@@ -163,7 +163,9 @@ namespace ICU4N.Numerics
             MicroProps micros = parent.ProcessQuantity(quantity);
             // TODO: Avoid the copy here?
             IDecimalQuantity copy = quantity.CreateCopy();
+#pragma warning disable CS0618 // Type or member is obsolete
             micros.rounding.Apply(copy);
+#pragma warning restore CS0618 // Type or member is obsolete
             micros.modOuter = modifiers.TryGetValue(copy.GetStandardPlural(rules), out SimpleModifier value) ? value : null;
             return micros;
         }

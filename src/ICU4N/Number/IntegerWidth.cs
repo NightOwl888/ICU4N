@@ -27,7 +27,7 @@ namespace ICU4N.Numerics
         /**
          * Pad numbers at the beginning with zeros to guarantee a certain number of numerals before the decimal separator.
          *
-         * <p>
+         * <para/>
          * For example, with minInt=3, the number 55 will get printed as "055".
          *
          * @param minInt

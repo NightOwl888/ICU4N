@@ -484,7 +484,9 @@ namespace ICU4N.Text
             ////CLOVER:OFF
             // Default implementation only -- subclasses should override
             J2N.Numerics.Number n = Parse(text.ToString(), pos);
+#pragma warning disable CS0618 // Type or member is obsolete
             return n == null ? null : new CurrencyAmount(n, EffectiveCurrency);
+#pragma warning restore CS0618 // Type or member is obsolete
             ////CLOVER:ON
         }
 
@@ -510,7 +512,7 @@ namespace ICU4N.Text
         //// * (defaults to false). If a string contains a decimal point, parsing will stop before the decimal
         //// * point. Note that determining whether a character is a decimal point depends on the locale.
         //// *
-        //// * <p>For example, in <em>en-US</em>, parsing the string "123.45" will return the number 123 and
+        //// * <para/>For example, in <em>en-US</em>, parsing the string "123.45" will return the number 123 and
         //// * parse position 3.
         //// *
         //// * @param value true if this should parse integers only
@@ -1629,7 +1631,7 @@ namespace ICU4N.Text
         //// * The maximum number of digits allowed in the integer portion of a
         //// * number.  <code>maxIntegerDigits</code> must be greater than or equal to
         //// * <code>minIntegerDigits</code>.
-        //// * <p>
+        //// * <para/>
         //// * <strong>Note:</strong> This field exists only for serialization
         //// * compatibility with JDK 1.1.  In JDK 1.2 and higher, the new
         //// * <code>int</code> field <code>maximumIntegerDigits</code> is used instead.
@@ -1649,7 +1651,7 @@ namespace ICU4N.Text
         //// * The minimum number of digits allowed in the integer portion of a
         //// * number.  <code>minimumIntegerDigits</code> must be less than or equal to
         //// * <code>maximumIntegerDigits</code>.
-        //// * <p>
+        //// * <para/>
         //// * <strong>Note:</strong> This field exists only for serialization
         //// * compatibility with JDK 1.1.  In JDK 1.2 and higher, the new
         //// * <code>int</code> field <code>minimumIntegerDigits</code> is used instead.
@@ -1669,7 +1671,7 @@ namespace ICU4N.Text
         //// * The maximum number of digits allowed in the fractional portion of a
         //// * number.  <code>maximumFractionDigits</code> must be greater than or equal to
         //// * <code>minimumFractionDigits</code>.
-        //// * <p>
+        //// * <para/>
         //// * <strong>Note:</strong> This field exists only for serialization
         //// * compatibility with JDK 1.1.  In JDK 1.2 and higher, the new
         //// * <code>int</code> field <code>maximumFractionDigits</code> is used instead.
@@ -1687,7 +1689,7 @@ namespace ICU4N.Text
         //// * The minimum number of digits allowed in the fractional portion of a
         //// * number.  <code>minimumFractionDigits</code> must be less than or equal to
         //// * <code>maximumFractionDigits</code>.
-        //// * <p>
+        //// * <para/>
         //// * <strong>Note:</strong> This field exists only for serialization
         //// * compatibility with JDK 1.1.  In JDK 1.2 and higher, the new
         //// * <code>int</code> field <code>minimumFractionDigits</code> is used instead.

@@ -19,7 +19,7 @@
 //     * amounts ("$123.00", "USD123.00", "123.00 US dollars").  All of these flavors can be
 //     * easily localized.
 //     *
-//     * <p>To obtain a {@link NumberFormat} for a specific locale (including the default
+//     * <para/>To obtain a {@link NumberFormat} for a specific locale (including the default
 //     * locale) call one of <code>NumberFormat</code>'s factory methods such as {@link
 //     * NumberFormat#getInstance}. Do not call the <code>DecimalFormat</code> constructors
 //     * directly, unless you know what you are doing, since the {@link NumberFormat} factory
@@ -32,7 +32,7 @@
 //     *     ((DecimalFormat) f).setDecimalSeparatorAlwaysShown(true);
 //     * }</pre></blockquote>
 //     *
-//     * <p><strong>Example Usage</strong>
+//     * <para/><strong>Example Usage</strong>
 //     *
 //     * Print out a number using the localized number, currency, and percent
 //     * format for each locale.
@@ -68,7 +68,7 @@
 //     *     }
 //     * }</pre></blockquote>
 //     *
-//     * <p>Another example use getInstance(style).<br>
+//     * <para/>Another example use getInstance(style).<br>
 //     * Print out a number using the localized number, currency, percent,
 //     * scientific, integer, iso currency, and plural currency format for each locale.
 //     *
@@ -89,7 +89,7 @@
 //     *
 //     * <h3>Patterns</h3>
 //     *
-//     * <p>A <code>DecimalFormat</code> consists of a <em>pattern</em> and a set of
+//     * <para/>A <code>DecimalFormat</code> consists of a <em>pattern</em> and a set of
 //     * <em>symbols</em>.  The pattern may be set directly using {@link #applyPattern}, or
 //     * indirectly using other API methods which manipulate aspects of the pattern, such as the
 //     * minimum number of integer digits.  The symbols are stored in a {@link
@@ -98,7 +98,7 @@
 //     *
 //     * <h4>Special Pattern Characters</h4>
 //     *
-//     * <p>Many characters in a pattern are taken literally; they are matched during parsing
+//     * <para/>Many characters in a pattern are taken literally; they are matched during parsing
 //     * and output unchanged during formatting.  Special characters, on the other hand, stand
 //     * for other characters, strings, or classes of characters.  For example, the '#'
 //     * character is replaced by a localized digit.  Often the replacement character is the
@@ -108,11 +108,11 @@
 //     * of the formatter by their presence; for example, if the percent character is seen, then
 //     * the value is multiplied by 100 before being displayed.
 //     *
-//     * <p>To insert a special character in a pattern as a literal, that is, without any
+//     * <para/>To insert a special character in a pattern as a literal, that is, without any
 //     * special meaning, the character must be quoted.  There are some exceptions to this which
 //     * are noted below.
 //     *
-//     * <p>The characters listed here are used in non-localized patterns.  Localized patterns
+//     * <para/>The characters listed here are used in non-localized patterns.  Localized patterns
 //     * use the corresponding characters taken from this formatter's {@link
 //     * DecimalFormatSymbols} object instead, and these characters lose their special status.
 //     * Two exceptions are the currency sign and quote, which are not localized.
@@ -213,7 +213,7 @@
 //     * </table>
 //     * </blockquote>
 //     *
-//     * <p>A <code>DecimalFormat</code> pattern contains a postive and negative subpattern, for
+//     * <para/>A <code>DecimalFormat</code> pattern contains a postive and negative subpattern, for
 //     * example, "#,##0.00;(#,##0.00)".  Each subpattern has a prefix, a numeric part, and a
 //     * suffix.  If there is no explicit negative subpattern, the negative subpattern is the
 //     * localized minus sign prefixed to the positive subpattern. That is, "0.00" alone is
@@ -222,7 +222,7 @@
 //     * and other characteristics are ignored in the negative subpattern. That means that
 //     * "#,##0.0#;(#)" has precisely the same result as "#,##0.0#;(#,##0.0#)".
 //     *
-//     * <p>The prefixes, suffixes, and various symbols used for infinity, digits, thousands
+//     * <para/>The prefixes, suffixes, and various symbols used for infinity, digits, thousands
 //     * separators, decimal separators, etc. may be set to arbitrary values, and they will
 //     * appear properly during formatting.  However, care must be taken that the symbols and
 //     * strings do not conflict, or parsing will be unreliable.  For example, either the
@@ -231,7 +231,7 @@
 //     * decimal separator and thousands separator should be distinct characters, or parsing
 //     * will be impossible.
 //     *
-//     * <p>The <em>grouping separator</em> is a character that separates clusters of integer
+//     * <para/>The <em>grouping separator</em> is a character that separates clusters of integer
 //     * digits to make large numbers more legible.  It commonly used for thousands, but in some
 //     * locales it separates ten-thousands.  The <em>grouping size</em> is the number of digits
 //     * between the grouping separators, such as 3 for "100,000,000" or 4 for "1 0000
@@ -246,7 +246,7 @@
 //     * grouping size. All others are ignored, so "#,##,###,####" == "###,###,####" ==
 //     * "##,#,###,####".
 //     *
-//     * <p>Illegal patterns, such as "#.#.#" or "#.###,###", will cause
+//     * <para/>Illegal patterns, such as "#.#.#" or "#.###,###", will cause
 //     * <code>DecimalFormat</code> to throw an {@link IllegalArgumentException} with a message
 //     * that describes the problem.
 //     *
@@ -275,7 +275,7 @@
 //     * The first subpattern is for positive numbers. The second (optional)
 //     * subpattern is for negative numbers.
 //     *
-//     * <p>Not indicated in the BNF syntax above:
+//     * <para/>Not indicated in the BNF syntax above:
 //     *
 //     * <ul>
 //     *
@@ -299,25 +299,25 @@
 //     *
 //     * <h4>Parsing</h4>
 //     *
-//     * <p><code>DecimalFormat</code> parses all Unicode characters that represent decimal
+//     * <para/><code>DecimalFormat</code> parses all Unicode characters that represent decimal
 //     * digits, as defined by {@link UCharacter#digit}.  In addition,
 //     * <code>DecimalFormat</code> also recognizes as digits the ten consecutive characters
 //     * starting with the localized zero digit defined in the {@link DecimalFormatSymbols}
 //     * object.  During formatting, the {@link DecimalFormatSymbols}-based digits are output.
 //     *
-//     * <p>During parsing, grouping separators are ignored.
+//     * <para/>During parsing, grouping separators are ignored.
 //     *
-//     * <p>For currency parsing, the formatter is able to parse every currency style formats no
+//     * <para/>For currency parsing, the formatter is able to parse every currency style formats no
 //     * matter which style the formatter is constructed with.  For example, a formatter
 //     * instance gotten from NumberFormat.getInstance(ULocale, NumberFormat.CURRENCYSTYLE) can
 //     * parse formats such as "USD1.00" and "3.00 US dollars".
 //     *
-//     * <p>If {@link #parse(String, ParsePosition)} fails to parse a string, it returns
+//     * <para/>If {@link #parse(String, ParsePosition)} fails to parse a string, it returns
 //     * <code>null</code> and leaves the parse position unchanged.  The convenience method
 //     * {@link #parse(String)} indicates parse failure by throwing a {@link
 //     * java.text.ParseException}.
 //     *
-//     * <p>Parsing an extremely large or small absolute value (such as 1.0E10000 or 1.0E-10000)
+//     * <para/>Parsing an extremely large or small absolute value (such as 1.0E10000 or 1.0E-10000)
 //     * requires huge memory allocation for representing the parsed number. Such input may expose
 //     * a risk of DoS attacks. To prevent huge memory allocation triggered by such inputs,
 //     * <code>DecimalFormat</code> internally limits of maximum decimal digits to be 1000. Thus,
@@ -326,7 +326,7 @@
 //     *
 //     * <h4>Formatting</h4>
 //     *
-//     * <p>Formatting is guided by several parameters, all of which can be specified either
+//     * <para/>Formatting is guided by several parameters, all of which can be specified either
 //     * using a pattern or using the API.  The following description applies to formats that do
 //     * not use <a href="#sci">scientific notation</a> or <a href="#sigdig">significant
 //     * digits</a>.
@@ -353,20 +353,20 @@
 //     * example, 0.10004 is formatted as "0.1" if the maximum fraction digits is four or less.
 //     * </ul>
 //     *
-//     * <p><strong>Special Values</strong>
+//     * <para/><strong>Special Values</strong>
 //     *
-//     * <p><code>NaN</code> is represented as a single character, typically
+//     * <para/><code>NaN</code> is represented as a single character, typically
 //     * <code>&#92;uFFFD</code>.  This character is determined by the {@link
 //     * DecimalFormatSymbols} object.  This is the only value for which the prefixes and
 //     * suffixes are not used.
 //     *
-//     * <p>Infinity is represented as a single character, typically <code>&#92;u221E</code>,
+//     * <para/>Infinity is represented as a single character, typically <code>&#92;u221E</code>,
 //     * with the positive or negative prefixes and suffixes applied.  The infinity character is
 //     * determined by the {@link DecimalFormatSymbols} object.
 //     *
 //     * <h4><a name="sci">Scientific Notation</a></h4>
 //     *
-//     * <p>Numbers in scientific notation are expressed as the product of a mantissa and a
+//     * <para/>Numbers in scientific notation are expressed as the product of a mantissa and a
 //     * power of ten, for example, 1234 can be expressed as 1.234 x 10<sup>3</sup>. The
 //     * mantissa is typically in the half-open interval [1.0, 10.0) or sometimes [0.0, 1.0),
 //     * but it need not be.  <code>DecimalFormat</code> supports arbitrary mantissas.
@@ -507,7 +507,7 @@
 //     *
 //     * <h4>Padding</h4>
 //     *
-//     * <p><code>DecimalFormat</code> supports padding the result of {@link #format} to a
+//     * <para/><code>DecimalFormat</code> supports padding the result of {@link #format} to a
 //     * specific width.  Padding may be specified either through the API or through the pattern
 //     * syntax.  In a pattern the pad escape character, followed by a single pad character,
 //     * causes padding to be parsed and formatted.  The pad escape character is '*' in
@@ -541,10 +541,10 @@
 //     *
 //     * </ul>
 //     *
-//     * <p>
+//     * <para/>
 //     * <strong>Rounding</strong>
 //     *
-//     * <p><code>DecimalFormat</code> supports rounding to a specific increment.  For example,
+//     * <para/><code>DecimalFormat</code> supports rounding to a specific increment.  For example,
 //     * 1230 rounded to the nearest 50 is 1250.  1.234 rounded to the nearest 0.65 is 1.3.  The
 //     * rounding increment may be specified through the API or in a pattern.  To specify a
 //     * rounding increment in a pattern, include the increment in the pattern itself.  "#,#50"
@@ -571,7 +571,7 @@
 //     *
 //     * <h4>Synchronization</h4>
 //     *
-//     * <p><code>DecimalFormat</code> objects are not synchronized.  Multiple threads should
+//     * <para/><code>DecimalFormat</code> objects are not synchronized.  Multiple threads should
 //     * not access one formatter concurrently.
 //     *
 //     * @see          java.text.Format
@@ -589,7 +589,7 @@
 //     * <code>FORMAT</code> locale. This is a convenient way to obtain a DecimalFormat when
 //     * internationalization is not the main concern.
 //     *
-//     * <p>To obtain standard formats for a given locale, use the factory methods on
+//     * <para/>To obtain standard formats for a given locale, use the factory methods on
 //     * NumberFormat such as getNumberInstance.  These factories will return the most
 //     * appropriate sub-class of NumberFormat for a given locale.
 //     *
@@ -625,7 +625,7 @@
 //         * <code>FORMAT</code> locale. This is a convenient way to obtain a DecimalFormat when
 //         * internationalization is not the main concern.
 //         *
-//         * <p>To obtain standard formats for a given locale, use the factory methods on
+//         * <para/>To obtain standard formats for a given locale, use the factory methods on
 //         * NumberFormat such as getNumberInstance.  These factories will return the most
 //         * appropriate sub-class of NumberFormat for a given locale.
 //         *
@@ -659,7 +659,7 @@
 //         * Creates a DecimalFormat from the given pattern and symbols. Use this constructor
 //         * when you need to completely customize the behavior of the format.
 //         *
-//         * <p>To obtain standard formats for a given locale, use the factory methods on
+//         * <para/>To obtain standard formats for a given locale, use the factory methods on
 //         * NumberFormat such as getInstance or getCurrencyInstance. If you need only minor
 //         * adjustments to a standard format, you can modify the format returned by a
 //         * NumberFormat factory method.
@@ -705,13 +705,13 @@
 //         * currency plural format, and format style. Use this constructor when you need to
 //         * completely customize the behavior of the format.
 //         *
-//         * <p>To obtain standard formats for a given locale, use the factory methods on
+//         * <para/>To obtain standard formats for a given locale, use the factory methods on
 //         * NumberFormat such as getInstance or getCurrencyInstance.
 //         *
-//         * <p>If you need only minor adjustments to a standard format, you can modify the
+//         * <para/>If you need only minor adjustments to a standard format, you can modify the
 //         * format returned by a NumberFormat factory method using the setters.
 //         *
-//         * <p>If you want to completely customize a decimal format, using your own
+//         * <para/>If you want to completely customize a decimal format, using your own
 //         * DecimalFormatSymbols (such as group separators) and your own information for
 //         * currency plural formatting (such as plural rule and currency plural patterns), you
 //         * can use this constructor.
@@ -3748,7 +3748,7 @@
 //        /**
 //         * Returns the positive prefix.
 //         *
-//         * <p>Examples: +123, $123, sFr123
+//         * <para/>Examples: +123, $123, sFr123
 //         * @return the prefix
 //         * @stable ICU 2.0
 //         */
@@ -3760,7 +3760,7 @@
 //        /**
 //         * Sets the positive prefix.
 //         *
-//         * <p>Examples: +123, $123, sFr123
+//         * <para/>Examples: +123, $123, sFr123
 //         * @param newValue the prefix
 //         * @stable ICU 2.0
 //         */
@@ -3773,7 +3773,7 @@
 //        /**
 //         * Returns the negative prefix.
 //         *
-//         * <p>Examples: -123, ($123) (with negative suffix), sFr-123
+//         * <para/>Examples: -123, ($123) (with negative suffix), sFr-123
 //         *
 //         * @return the prefix
 //         * @stable ICU 2.0
@@ -3786,7 +3786,7 @@
 //        /**
 //         * Sets the negative prefix.
 //         *
-//         * <p>Examples: -123, ($123) (with negative suffix), sFr-123
+//         * <para/>Examples: -123, ($123) (with negative suffix), sFr-123
 //         * @param newValue the prefix
 //         * @stable ICU 2.0
 //         */
@@ -3799,7 +3799,7 @@
 //        /**
 //         * Returns the positive suffix.
 //         *
-//         * <p>Example: 123%
+//         * <para/>Example: 123%
 //         *
 //         * @return the suffix
 //         * @stable ICU 2.0
@@ -3812,7 +3812,7 @@
 //        /**
 //         * Sets the positive suffix.
 //         *
-//         * <p>Example: 123%
+//         * <para/>Example: 123%
 //         * @param newValue the suffix
 //         * @stable ICU 2.0
 //         */
@@ -3825,7 +3825,7 @@
 //        /**
 //         * Returns the negative suffix.
 //         *
-//         * <p>Examples: -123%, ($123) (with positive suffixes)
+//         * <para/>Examples: -123%, ($123) (with positive suffixes)
 //         *
 //         * @return the suffix
 //         * @stable ICU 2.0
@@ -3838,7 +3838,7 @@
 //        /**
 //         * Sets the positive suffix.
 //         *
-//         * <p>Examples: 123%
+//         * <para/>Examples: 123%
 //         * @param newValue the suffix
 //         * @stable ICU 2.0
 //         */
@@ -3854,7 +3854,7 @@
 //         * symbol). For a permill, set the suffixes to have "\u2031" and the multiplier to be
 //         * 1000.
 //         *
-//         * <p>Examples: with 100, 1.23 -&gt; "123", and "123" -&gt; 1.23
+//         * <para/>Examples: with 100, 1.23 -&gt; "123", and "123" -&gt; 1.23
 //         *
 //         * @return the multiplier
 //         * @stable ICU 2.0
@@ -3870,7 +3870,7 @@
 //         * symbol). For a permill, set the suffixes to have "\u2031" and the multiplier to be
 //         * 1000.
 //         *
-//         * <p>Examples: with 100, 1.23 -&gt; "123", and "123" -&gt; 1.23
+//         * <para/>Examples: with 100, 1.23 -&gt; "123", and "123" -&gt; 1.23
 //         *
 //         * @param newValue the multiplier
 //         * @stable ICU 2.0
@@ -4431,12 +4431,12 @@
 //         * Sets the behavior of the decimal separator with integers. (The decimal separator
 //         * will always appear with decimals.)
 //         *
-//         * <p>This only affects formatting, and only where there might be no digits after the
+//         * <para/>This only affects formatting, and only where there might be no digits after the
 //         * decimal point, e.g., if true, 3456.00 -&gt; "3,456." if false, 3456.00 -&gt; "3456" This
 //         * is independent of parsing. If you want parsing to stop at the decimal point, use
 //         * setParseIntegerOnly.
 //         *
-//         * <p>
+//         * <para/>
 //         * Example: Decimal ON: 12345 -&gt; 12345.; OFF: 12345 -&gt; 12345
 //         *
 //         * @stable ICU 2.0
@@ -5050,7 +5050,7 @@
 
 //        /**
 //         * Appends an affix pattern to the given StringBuffer. Localize unquoted specials.
-//         * <p>
+//         * <para/>
 //         * <b>Note:</b> This implementation does not support new String localized symbols.
 //         */
 //        private void appendAffixPattern(StringBuffer buffer, boolean isNegative, boolean isPrefix,
@@ -5141,7 +5141,7 @@
 
 //        /**
 //         * Does the real work of generating a pattern.
-//         * <p>
+//         * <para/>
 //         * <b>Note:</b> This implementation does not support new String localized symbols.
 //         */
 //        private String toPattern(boolean localized)
@@ -5339,18 +5339,18 @@
 //         * specification for the various formatting properties. These properties can also be
 //         * changed individually through the various setter methods.
 //         *
-//         * <p>There is no limit to integer digits are set by this routine, since that is the
+//         * <para/>There is no limit to integer digits are set by this routine, since that is the
 //         * typical end-user desire; use setMaximumInteger if you want to set a real value. For
 //         * negative numbers, use a second pattern, separated by a semicolon
 //         *
-//         * <p>Example "#,#00.0#" -&gt; 1,234.56
+//         * <para/>Example "#,#00.0#" -&gt; 1,234.56
 //         *
-//         * <p>This means a minimum of 2 integer digits, 1 fraction digit, and a maximum of 2
+//         * <para/>This means a minimum of 2 integer digits, 1 fraction digit, and a maximum of 2
 //         * fraction digits.
 //         *
-//         * <p>Example: "#,#00.0#;(#,#00.0#)" for negatives in parentheses.
+//         * <para/>Example: "#,#00.0#;(#,#00.0#)" for negatives in parentheses.
 //         *
-//         * <p>In negative patterns, the minimum and maximum counts are ignored; these are
+//         * <para/>In negative patterns, the minimum and maximum counts are ignored; these are
 //         * presumed to be set in the positive pattern.
 //         *
 //         * @stable ICU 2.0
@@ -5366,18 +5366,18 @@
 //         * formatting properties. These properties can also be changed individually through
 //         * the various setter methods.
 //         *
-//         * <p>There is no limit to integer digits are set by this routine, since that is the
+//         * <para/>There is no limit to integer digits are set by this routine, since that is the
 //         * typical end-user desire; use setMaximumInteger if you want to set a real value. For
 //         * negative numbers, use a second pattern, separated by a semicolon
 //         *
-//         * <p>Example "#,#00.0#" -&gt; 1,234.56
+//         * <para/>Example "#,#00.0#" -&gt; 1,234.56
 //         *
-//         * <p>This means a minimum of 2 integer digits, 1 fraction digit, and a maximum of 2
+//         * <para/>This means a minimum of 2 integer digits, 1 fraction digit, and a maximum of 2
 //         * fraction digits.
 //         *
-//         * <p>Example: "#,#00.0#;(#,#00.0#)" for negatives in parantheses.
+//         * <para/>Example: "#,#00.0#;(#,#00.0#)" for negatives in parantheses.
 //         *
-//         * <p>In negative patterns, the minimum and maximum counts are ignored; these are
+//         * <para/>In negative patterns, the minimum and maximum counts are ignored; these are
 //         * presumed to be set in the positive pattern.
 //         *
 //         * @stable ICU 2.0
@@ -6463,7 +6463,7 @@
 // * The prefix pattern for non-negative numbers. This variable corresponds to
 // * <code>positivePrefix</code>.
 // *
-// * <p>This pattern is expanded by the method <code>expandAffix()</code> to
+// * <para/>This pattern is expanded by the method <code>expandAffix()</code> to
 // * <code>positivePrefix</code> to update the latter to reflect changes in
 // * <code>symbols</code>. If this variable is <code>null</code> then
 // * <code>positivePrefix</code> is taken as a literal value that does not change when
@@ -6605,7 +6605,7 @@
 // * formatted in exponential notation.  This field is ignored if
 // * <code>useExponentialNotation</code> is not true.
 // *
-// * <p>Note that the JDK 1.2 public API provides no way to set this field, even though
+// * <para/>Note that the JDK 1.2 public API provides no way to set this field, even though
 // * it is supported by the implementation and the stream format. The intent is that
 // * this will be added to the API in the future.
 // *

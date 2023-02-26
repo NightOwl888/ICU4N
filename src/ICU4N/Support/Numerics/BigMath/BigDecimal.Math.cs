@@ -19,6 +19,7 @@ namespace ICU4N.Numerics.BigMath
         /// Adds a value to the current instance of <see cref="BigDecimal"/>,
         /// rounding the result according to the provided context.
         /// </summary>
+        /// <param name="value">The value to add to.</param>
         /// <param name="augend">The value to be added to this instance.</param>
         /// <param name="mc">The rounding mode and precision for the result of 
         /// this operation.</param>
@@ -91,6 +92,7 @@ namespace ICU4N.Numerics.BigMath
         /// Adds a value to the current instance of <see cref="BigDecimal"/>.
         /// The scale of the result is the maximum of the scales of the two arguments.
         /// </summary>
+        /// <param name="value">The value to add to.</param>
         /// <param name="augend">The value to be added to this instance.</param>
         /// <returns>
         /// Returns a new {@code BigDecimal} whose value is <c>this + <paramref name="augend"/></c>.
@@ -142,6 +144,7 @@ namespace ICU4N.Numerics.BigMath
         /// </summary>
         /// <remarks>
         /// </remarks>
+        /// <param name="value">The value to subtract from.</param>
         /// <param name="subtrahend">The value to be subtracted from this <see cref="BigDecimal"/>.</param>
         /// <returns>
         /// Returns an instance of <see cref="BigDecimal"/> that is the result of the
@@ -222,6 +225,7 @@ namespace ICU4N.Numerics.BigMath
         /// provided as argument.
         /// </para>
         /// </remarks>
+        /// <param name="value">The value to subtract from.</param>
         /// <param name="subtrahend">The value to be subtracted from this <see cref="BigDecimal"/>.</param>
         /// <param name="mc">The context used to round the result of this operation.</param>
         /// <returns>
@@ -928,7 +932,7 @@ namespace ICU4N.Numerics.BigMath
 
         /**
         * Returns a new {@code BigDecimal} whose value is {@code this % divisor}.
-        * <p>
+        * <para/>
         * The remainder is defined as {@code this -
         * this.divideToIntegralValue(divisor) * divisor}.
         *
@@ -953,10 +957,10 @@ namespace ICU4N.Numerics.BigMath
 
         /**
          * Returns a new {@code BigDecimal} whose value is {@code this % divisor}.
-         * <p>
+         * <para/>
          * The remainder is defined as {@code this -
          * this.divideToIntegralValue(divisor) * divisor}.
-         * <p>
+         * <para/>
          * The specified rounding mode {@code mc} is used for the division only.
          *
          * @param divisor
@@ -1053,9 +1057,9 @@ namespace ICU4N.Numerics.BigMath
         /**
         * Returns a new {@code BigDecimal} whose value is {@code this ^ n}. The
         * scale of the result is {@code n} times the scales of {@code this}.
-        * <p>
+        * <para/>
         * {@code x.pow(0)} returns {@code 1}, even if {@code x == 0}.
-        * <p>
+        * <para/>
         * Implementation Note: The implementation is based on the ANSI standard
         * X3.274-1996 algorithm.
         *
@@ -1089,7 +1093,7 @@ namespace ICU4N.Numerics.BigMath
         /**
          * Returns a new {@code BigDecimal} whose value is {@code this ^ n}. The
          * result is rounded according to the passed context {@code mc}.
-         * <p>
+         * <para/>
          * Implementation Note: The implementation is based on the ANSI standard
          * X3.274-1996 algorithm.
          *
@@ -1239,6 +1243,7 @@ namespace ICU4N.Numerics.BigMath
         /// <remarks>
         /// Returns a new <see cref="BigDecimal"/> whose value is <c>+this</c>.
         /// </remarks>
+        /// <param name="number"></param>
         /// <param name="mc">Rounding mode and precision for the result of this operation.</param>
         /// <remarks>
         /// The result is rounded according to the passed context <paramref name="mc"/>.
@@ -1254,9 +1259,9 @@ namespace ICU4N.Numerics.BigMath
         /**
          * Returns a new {@code BigDecimal} whose value is {@code this}, rounded
          * according to the passed context {@code mc}.
-         * <p>
+         * <para/>
          * If {@code mc.precision = 0}, then no rounding is performed.
-         * <p>
+         * <para/>
          * If {@code mc.precision > 0} and {@code mc.roundingMode == UNNECESSARY},
          * then an {@code ArithmeticException} is thrown if the result cannot be
          * represented exactly within the given precision.
@@ -1292,10 +1297,10 @@ namespace ICU4N.Numerics.BigMath
 
         /**
          * Returns a new {@code BigDecimal} instance with the specified scale.
-         * <p>
+         * <para/>
          * If the new scale is greater than the old scale, then additional zeros are
          * added to the unscaled value. In this case no rounding is necessary.
-         * <p>
+         * <para/>
          * If the new scale is smaller than the old scale, then trailing digits are
          * removed. If these trailing digits are not zero, then the remaining
          * unscaled value has to be rounded. For this rounding operation the
@@ -1352,7 +1357,7 @@ namespace ICU4N.Numerics.BigMath
          * added to the unscaled value. If the new scale is smaller than the old
          * scale, then trailing zeros are removed. If the trailing digits are not
          * zeros then an ArithmeticException is thrown.
-         * <p>
+         * <para/>
          * If no exception is thrown, then the following equation holds: {@code
          * x.setScale(s).compareTo(x) == 0}.
          *
@@ -1371,11 +1376,11 @@ namespace ICU4N.Numerics.BigMath
         * Returns a new {@code BigDecimal} instance where the decimal point has
         * been moved {@code n} places to the left. If {@code n < 0} then the
         * decimal point is moved {@code -n} places to the right.
-        * <p>
+        * <para/>
         * The result is obtained by changing its scale. If the scale of the result
         * becomes negative, then its precision is increased such that the scale is
         * zero.
-        * <p>
+        * <para/>
         * Note, that {@code movePointLeft(0)} returns a result which is
         * mathematically equivalent, but which has {@code scale >= 0}.
         *
@@ -1416,11 +1421,11 @@ namespace ICU4N.Numerics.BigMath
          * Returns a new {@code BigDecimal} instance where the decimal point has
          * been moved {@code n} places to the right. If {@code n < 0} then the
          * decimal point is moved {@code -n} places to the left.
-         * <p>
+         * <para/>
          * The result is obtained by changing its scale. If the scale of the result
          * becomes negative, then its precision is increased such that the scale is
          * zero.
-         * <p>
+         * <para/>
          * Note, that {@code movePointRight(0)} returns a result which is
          * mathematically equivalent, but which has scale >= 0.
          *
@@ -1437,7 +1442,7 @@ namespace ICU4N.Numerics.BigMath
          * Returns a new {@code BigDecimal} whose value is {@code this} 10^{@code n}.
          * The scale of the result is {@code this.scale()} - {@code n}.
          * The precision of the result is the precision of {@code this}.
-         * <p>
+         * <para/>
          * This method has the same effect as {@link #movePointRight}, except that
          * the precision is not changed.
          *
@@ -1534,13 +1539,13 @@ namespace ICU4N.Numerics.BigMath
          * Returns the unit in the last place (ULP) of this {@code BigDecimal}
          * instance. An ULP is the distance to the nearest big decimal with the same
          * precision.
-         * <p>
+         * <para/>
          * The amount of a rounding error in the evaluation of a floating-point
          * operation is often expressed in ULPs. An error of 1 ULP is often seen as
          * a tolerable error.
-         * <p>
+         * <para/>
          * For class {@code BigDecimal}, the ULP of a number is simply 10^(-scale).
-         * <p>
+         * <para/>
          * For example, {@code new BigDecimal(0.1).ulp()} returns {@code 1E-55}.
          *
          * @return unit in the last place (ULP) of this {@code BigDecimal} instance.

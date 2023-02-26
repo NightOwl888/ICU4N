@@ -17,21 +17,30 @@ namespace ICU4N.Util
         /// </summary>
         /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static readonly NoUnit BASE = (NoUnit)MeasureUnit.InternalGetInstance("none", "base");
+        public static readonly NoUnit BASE
+#pragma warning disable CS0618 // Type or member is obsolete
+            = (NoUnit)MeasureUnit.InternalGetInstance("none", "base");
+#pragma warning restore CS0618 // Type or member is obsolete
 
         /// <summary>
         /// Constant for the percent unit, or 1/100 of a base unit.
         /// </summary>
         /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static readonly NoUnit PERCENT = (NoUnit)MeasureUnit.InternalGetInstance("none", "percent");
+        public static readonly NoUnit PERCENT
+#pragma warning disable CS0618 // Type or member is obsolete
+            = (NoUnit)MeasureUnit.InternalGetInstance("none", "percent");
+#pragma warning restore CS0618 // Type or member is obsolete
 
         /// <summary>
         /// Constant for the permille unit, or 1/100 of a base unit.
         /// </summary>
         /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static readonly NoUnit PERMILLE = (NoUnit)MeasureUnit.InternalGetInstance("none", "permille");
+        public static readonly NoUnit PERMILLE
+#pragma warning disable CS0618 // Type or member is obsolete
+            = (NoUnit)MeasureUnit.InternalGetInstance("none", "permille");
+#pragma warning restore CS0618 // Type or member is obsolete
 
         /// <summary>
         /// Package local constructor. This class is not designed for subclassing

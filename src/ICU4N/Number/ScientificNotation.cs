@@ -35,7 +35,7 @@ namespace ICU4N.Numerics
          * Sets the minimum number of digits to show in the exponent of scientific notation, padding with zeros if
          * necessary. Useful for fixed-width display.
          *
-         * <p>
+         * <para/>
          * For example, with minExponentDigits=2, the number 123 will be printed as "1.23E02" in <em>en-US</em> instead of
          * the default "1.23E2".
          *
@@ -50,7 +50,9 @@ namespace ICU4N.Numerics
         {
             if (minExponentDigits >= 0 && minExponentDigits < RoundingUtils.MAX_INT_FRAC_SIG)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 ScientificNotation other = (ScientificNotation)this.Clone();
+#pragma warning restore CS0618 // Type or member is obsolete
                 other.minExponentDigits = minExponentDigits;
                 return other;
             }
@@ -65,7 +67,7 @@ namespace ICU4N.Numerics
          * Sets whether to show the sign on positive and negative exponents in scientific notation. The default is AUTO,
          * showing the minus sign but not the plus sign.
          *
-         * <p>
+         * <para/>
          * For example, with exponentSignDisplay=ALWAYS, the number 123 will be printed as "1.23E+2" in <em>en-US</em>
          * instead of the default "1.23E2".
          *
@@ -78,7 +80,9 @@ namespace ICU4N.Numerics
          */
         public virtual ScientificNotation WithExponentSignDisplay(SignDisplay exponentSignDisplay)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             ScientificNotation other = (ScientificNotation)this.Clone();
+#pragma warning restore CS0618 // Type or member is obsolete
             other.exponentSignDisplay = exponentSignDisplay;
             return other;
         }
@@ -88,7 +92,7 @@ namespace ICU4N.Numerics
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
-    public virtual object Clone()
+        public virtual object Clone()
         {
             return MemberwiseClone();
         }
@@ -111,105 +115,111 @@ namespace ICU4N.Numerics
         // In C++, MicroProps provides a pre-allocated ScientificModifier, and ScientificHandler simply populates
         // the state (the exponent) into that ScientificModifier. There is no difference between safe and unsafe.
 
-        private class ScientificHandler : IMicroPropsGenerator, IMultiplierProducer, IModifier {
+        private class ScientificHandler : IMicroPropsGenerator, IMultiplierProducer, IModifier
+        {
 
-        internal readonly ScientificNotation notation;
+            internal readonly ScientificNotation notation;
             internal readonly DecimalFormatSymbols symbols;
             internal readonly ScientificModifier[] precomputedMods;
             internal readonly IMicroPropsGenerator parent;
-        /* unsafe */ int exponent;
+            /* unsafe */
+            int exponent;
 
-        internal ScientificHandler(ScientificNotation notation, DecimalFormatSymbols symbols, bool safe,
-                IMicroPropsGenerator parent)
-        {
-            this.notation = notation;
-            this.symbols = symbols;
-            this.parent = parent;
-
-            if (safe)
+            internal ScientificHandler(ScientificNotation notation, DecimalFormatSymbols symbols, bool safe,
+                    IMicroPropsGenerator parent)
             {
-                // Pre-build the modifiers for exponents -12 through 12
-                precomputedMods = new ScientificModifier[25];
-                for (int i = -12; i <= 12; i++)
+                this.notation = notation;
+                this.symbols = symbols;
+                this.parent = parent;
+
+                if (safe)
                 {
-                    precomputedMods[i + 12] = new ScientificModifier(i, this);
+                    // Pre-build the modifiers for exponents -12 through 12
+                    precomputedMods = new ScientificModifier[25];
+                    for (int i = -12; i <= 12; i++)
+                    {
+                        precomputedMods[i + 12] = new ScientificModifier(i, this);
+                    }
+                }
+                else
+                {
+                    precomputedMods = null;
                 }
             }
-            else
-            {
-                precomputedMods = null;
-            }
-        }
 
-        public virtual MicroProps ProcessQuantity(IDecimalQuantity quantity)
-        {
-            MicroProps micros = parent.ProcessQuantity(quantity);
-            Debug.Assert( micros.rounding != null);
-
-            // Treat zero as if it had magnitude 0
-            int exponent;
-            if (quantity.IsZero)
+            public virtual MicroProps ProcessQuantity(IDecimalQuantity quantity)
             {
-                if (notation.requireMinInt && micros.rounding is SignificantRounderImpl significantRounder) {
+                MicroProps micros = parent.ProcessQuantity(quantity);
+                Debug.Assert(micros.rounding != null);
+
+                // Treat zero as if it had magnitude 0
+                int exponent;
+                if (quantity.IsZero)
+                {
+                    if (notation.requireMinInt && micros.rounding is SignificantRounderImpl significantRounder)
+                    {
                         // Show "00.000E0" on pattern "00.000E0"
                         significantRounder.Apply(quantity, notation.engineeringInterval);
-                    exponent = 0;
-                } else
-                {
-                    micros.rounding.Apply(quantity);
-                    exponent = 0;
+                        exponent = 0;
+                    }
+                    else
+                    {
+#pragma warning disable CS0618 // Type or member is obsolete
+                        micros.rounding.Apply(quantity);
+#pragma warning restore CS0618 // Type or member is obsolete
+                        exponent = 0;
+                    }
                 }
-            }
-            else
-            {
-                exponent = -micros.rounding.ChooseMultiplierAndApply(quantity, this);
+                else
+                {
+                    exponent = -micros.rounding.ChooseMultiplierAndApply(quantity, this);
+                }
+
+                // Add the Modifier for the scientific format.
+                if (precomputedMods != null && exponent >= -12 && exponent <= 12)
+                {
+                    // Safe code path A
+                    micros.modInner = precomputedMods[exponent + 12];
+                }
+                else if (precomputedMods != null)
+                {
+                    // Safe code path B
+                    micros.modInner = new ScientificModifier(exponent, this);
+                }
+                else
+                {
+                    // Unsafe code path: mutates the object and re-uses it as a Modifier!
+                    this.exponent = exponent;
+                    micros.modInner = this;
+                }
+
+                // We already performed rounding. Do not perform it again.
+                micros.rounding = Rounder.ConstructPassThrough();
+
+                return micros;
             }
 
-            // Add the Modifier for the scientific format.
-            if (precomputedMods != null && exponent >= -12 && exponent <= 12)
+            public virtual int GetMultiplier(int magnitude)
             {
-                // Safe code path A
-                micros.modInner = precomputedMods[exponent + 12];
+                int interval = notation.engineeringInterval;
+                int digitsShown;
+                if (notation.requireMinInt)
+                {
+                    // For patterns like "000.00E0" and ".00E0"
+                    digitsShown = interval;
+                }
+                else if (interval <= 1)
+                {
+                    // For patterns like "0.00E0" and "@@@E0"
+                    digitsShown = 1;
+                }
+                else
+                {
+                    // For patterns like "##0.00"
+                    digitsShown = ((magnitude % interval + interval) % interval) + 1;
+                }
+                return digitsShown - magnitude - 1;
             }
-            else if (precomputedMods != null)
-            {
-                // Safe code path B
-                micros.modInner = new ScientificModifier(exponent, this);
-            }
-            else
-            {
-                // Unsafe code path: mutates the object and re-uses it as a Modifier!
-                this.exponent = exponent;
-                micros.modInner = this;
-            }
-
-            // We already performed rounding. Do not perform it again.
-            micros.rounding = Rounder.ConstructPassThrough();
-
-            return micros;
-        }
-
-        public virtual int GetMultiplier(int magnitude)
-        {
-            int interval = notation.engineeringInterval;
-            int digitsShown;
-            if (notation.requireMinInt)
-            {
-                // For patterns like "000.00E0" and ".00E0"
-                digitsShown = interval;
-            }
-            else if (interval <= 1)
-            {
-                // For patterns like "0.00E0" and "@@@E0"
-                digitsShown = 1;
-            }
-            else
-            {
-                // For patterns like "##0.00"
-                digitsShown = ((magnitude % interval + interval) % interval) + 1;
-            }
-            return digitsShown - magnitude - 1;
-        }
 
 
             public virtual int PrefixLength
@@ -220,68 +230,71 @@ namespace ICU4N.Numerics
                 // This method is not used for strong modifiers.
                 => throw new NotSupportedException(); // throw new AssertionError();
 
-        public virtual bool IsStrong
-                // Scientific is always strong
-                => true;
+            public virtual bool IsStrong
+                    // Scientific is always strong
+                    => true;
 
-        public virtual int Apply(NumberStringBuilder output, int leftIndex, int rightIndex)
-        {
-            return DoApply(exponent, output, rightIndex);
+            public virtual int Apply(NumberStringBuilder output, int leftIndex, int rightIndex)
+            {
+                return DoApply(exponent, output, rightIndex);
+            }
+
+            internal int DoApply(int exponent, NumberStringBuilder output, int rightIndex)
+            {
+                // FIXME: Localized exponent separator location.
+                int i = rightIndex;
+                // Append the exponent separator and sign
+                i += output.Insert(i, symbols.ExponentSeparator, NumberFormatField.ExponentSymbol);
+                if (exponent < 0 && notation.exponentSignDisplay != SignDisplay.Never)
+                {
+                    i += output.Insert(i, symbols.MinusSignString, NumberFormatField.ExponentSign);
+                }
+                else if (exponent >= 0 && notation.exponentSignDisplay == SignDisplay.Always)
+                {
+                    i += output.Insert(i, symbols.PlusSignString, NumberFormatField.ExponentSign);
+                }
+                // Append the exponent digits (using a simple inline algorithm)
+                int disp = Math.Abs(exponent);
+                for (int j = 0; j < notation.minExponentDigits || disp > 0; j++, disp /= 10)
+                {
+                    int d = disp % 10;
+#pragma warning disable CS0618 // Type or member is obsolete
+                    string digitString = symbols.DigitStringsLocal[d];
+#pragma warning restore CS0618 // Type or member is obsolete
+                    i += output.Insert(i - j, digitString, NumberFormatField.Exponent);
+                }
+                return i - rightIndex;
+            }
         }
 
-        internal int DoApply(int exponent, NumberStringBuilder output, int rightIndex)
+        private class ScientificModifier : IModifier
         {
-            // FIXME: Localized exponent separator location.
-            int i = rightIndex;
-            // Append the exponent separator and sign
-            i += output.Insert(i, symbols.ExponentSeparator, NumberFormatField.ExponentSymbol);
-            if (exponent < 0 && notation.exponentSignDisplay != SignDisplay.Never)
-            {
-                i += output.Insert(i, symbols.MinusSignString, NumberFormatField.ExponentSign);
-            }
-            else if (exponent >= 0 && notation.exponentSignDisplay == SignDisplay.Always)
-            {
-                i += output.Insert(i, symbols.PlusSignString, NumberFormatField.ExponentSign);
-            }
-            // Append the exponent digits (using a simple inline algorithm)
-            int disp = Math.Abs(exponent);
-            for (int j = 0; j < notation.minExponentDigits || disp > 0; j++, disp /= 10)
-            {
-                int d = disp % 10;
-                string digitString = symbols.DigitStringsLocal[d];
-                i += output.Insert(i - j, digitString, NumberFormatField.Exponent);
-            }
-            return i - rightIndex;
-        }
-    }
-
-    private class ScientificModifier : IModifier
-    {
-        internal readonly int exponent;
+            internal readonly int exponent;
             internal readonly ScientificHandler handler;
 
-            internal ScientificModifier(int exponent, ScientificHandler handler) {
-            this.exponent = exponent;
-            this.handler = handler;
-        }
+            internal ScientificModifier(int exponent, ScientificHandler handler)
+            {
+                this.exponent = exponent;
+                this.handler = handler;
+            }
 
-        public virtual int Apply(NumberStringBuilder output, int leftIndex, int rightIndex)
-    {
-        return handler.DoApply(exponent, output, rightIndex);
-    }
+            public virtual int Apply(NumberStringBuilder output, int leftIndex, int rightIndex)
+            {
+                return handler.DoApply(exponent, output, rightIndex);
+            }
 
-        public virtual int PrefixLength
+            public virtual int PrefixLength
                 // TODO: Localized exponent separator location.
                 => 0;
 
 
-        public virtual int CodePointCount
+            public virtual int CodePointCount
                 // This method is not used for strong modifiers.
                 => throw new NotSupportedException(); //throw new AssertionError();
 
-        public bool IsStrong
-            // Scientific is always strong
-            => true;
-}
+            public bool IsStrong
+                // Scientific is always strong
+                => true;
+        }
     }
 }

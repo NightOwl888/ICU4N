@@ -141,7 +141,9 @@ namespace ICU4N.Text
         /// <stable>ICU 54</stable>
         public virtual CurrencyDigits CurrencyDigits(string isoCode, CurrencyUsage currencyUsage)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             return defaultDigits;
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <internal/>
@@ -165,7 +167,9 @@ namespace ICU4N.Text
                 // Intentionally blank
                 // ICU4N: .NET won't always throw, so we set the instance below.
             }
+#pragma warning disable CS0618 // Type or member is obsolete
             temp ??= new CurrencyMetaInfo();
+#pragma warning restore CS0618 // Type or member is obsolete
             impl = temp;
             hasData = tempHasData;
         }

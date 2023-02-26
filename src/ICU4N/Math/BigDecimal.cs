@@ -230,7 +230,7 @@ namespace ICU4N.Numerics
          * <li>MathContext.PLAIN -- no exponent needed <li>MathContext.SCIENTIFIC -- scientific notation required <li>
          * MathContext.ENGINEERING -- engineering notation required
          * </ul>
-         * <p>
+         * <para/>
          * This property is an optimization; it allows us to defer number layout until it is actually needed as a string,
          * hence avoiding unnecessary formatting.
          *
@@ -242,11 +242,11 @@ namespace ICU4N.Numerics
 
         /**
          * The value of the mantissa.
-         * <p>
+         * <para/>
          * Once constructed, this may become shared between several BigDecimal objects, so must not be altered.
-         * <p>
+         * <para/>
          * For efficiency (speed), this is a byte array, with each byte taking a value of 0 -&gt; 9.
-         * <p>
+         * <para/>
          * If the first byte is 0 then the value of the number is zero (and mant.length=1, except when constructed from a
          * plain number, for example, 0.000).
          *
@@ -256,7 +256,7 @@ namespace ICU4N.Numerics
 
         /**
          * The exponent.
-         * <p>
+         * <para/>
          * For fixed point arithmetic, scale is <c>-exp</c>, and can apply to zero.
          *
          * Note that this property can have a value less than MinExp when the mantissa has more than one digit.
@@ -342,11 +342,11 @@ namespace ICU4N.Numerics
 
         /**
          * Constructs a <code>BigDecimal</code> object from a <code>java.math.BigDecimal</code>.
-         * <p>
+         * <para/>
          * Constructs a <code>BigDecimal</code> as though the parameter had been represented as a <code>String</code> (using
          * its <code>toString</code> method) and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
          * The parameter must not be <code>null</code>.
-         * <p>
+         * <para/>
          * <i>(Note: this constructor is provided only in the <code>com.ibm.icu.math</code> version of the BigDecimal class.
          * It would not be present in a <code>java.math</code> version.)</i>
          *
@@ -380,12 +380,12 @@ namespace ICU4N.Numerics
 
         /**
          * Constructs a <code>BigDecimal</code> object from a <code>BigInteger</code> and a scale.
-         * <p>
+         * <para/>
          * Constructs a <code>BigDecimal</code> which is the exact decimal representation of the <code>BigInteger</code>,
          * scaled by the second parameter, which may not be negative. The value of the <code>BigDecimal</code> is the <code>
          * BigInteger</code> divided by ten to the power of the scale. The <code>BigInteger</code> parameter must not be
          * <code>null</code>.
-         * <p>
+         * <para/>
          * The <code>BigDecimal</code> will contain only decimal digits, (with an embedded decimal point followed by <code>
          * scale</code> decimal digits if the scale is positive), prefixed with a leading minus sign (hyphen) if the <code>
          * BigInteger</code> is negative. A leading zero will be present only if the <code>BigInteger</code> is zero.
@@ -407,11 +407,11 @@ namespace ICU4N.Numerics
 
         /////**
         //// * Constructs a <code>BigDecimal</code> object from an array of characters.
-        //// * <p>
+        //// * <para/>
         //// * Constructs a <code>BigDecimal</code> as though a <code>String</code> had been constructed from the character
         //// * array and the {@link #BigDecimal(java.lang.String)} constructor had then been used. The parameter must not be
         //// * <code>null</code>.
-        //// * <p>
+        //// * <para/>
         //// * Using this constructor is faster than using the <code>BigDecimal(String)</code> constructor if the string is
         //// * already available in character array form.
         //// *
@@ -429,11 +429,11 @@ namespace ICU4N.Numerics
 
         /////**
         //// * Constructs a <code>BigDecimal</code> object from an array of characters.
-        //// * <p>
+        //// * <para/>
         //// * Constructs a <code>BigDecimal</code> as though a <code>String</code> had been constructed from the character
         //// * array (or a subarray of that array) and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
         //// * The first parameter must not be <code>null</code>, and the subarray must be wholly contained within it.
-        //// * <p>
+        //// * <para/>
         //// * Using this constructor is faster than using the <code>BigDecimal(String)</code> constructor if the string is
         //// * already available within a character array.
         //// *
@@ -698,10 +698,10 @@ namespace ICU4N.Numerics
 
         /**
          * Constructs a <code>BigDecimal</code> object directly from a <code>double</code>.
-         * <p>
+         * <para/>
          * Constructs a <code>BigDecimal</code> which is the exact decimal representation of the 64-bit signed binary
          * floating point parameter.
-         * <p>
+         * <para/>
          * Note that this constructor it an exact conversion; it does not give the same result as converting <code>num
          * </code> to a <code>String</code> using the <code>Double.toString()</code> method and then using the
          * {@link #BigDecimal(java.lang.String)} constructor. To get that result, use the static {@link #valueOf(double)}
@@ -729,7 +729,7 @@ namespace ICU4N.Numerics
 
         /**
          * Constructs a <code>BigDecimal</code> object directly from a <code>int</code>.
-         * <p>
+         * <para/>
          * Constructs a <code>BigDecimal</code> which is the exact decimal representation of the 32-bit signed binary
          * integer parameter. The <code>BigDecimal</code> will contain only decimal digits, prefixed with a leading minus
          * sign (hyphen) if the parameter is negative. A leading zero will be present only if the parameter is zero.
@@ -820,7 +820,7 @@ namespace ICU4N.Numerics
 
         /**
          * Constructs a <code>BigDecimal</code> object directly from a <code>long</code>.
-         * <p>
+         * <para/>
          * Constructs a <code>BigDecimal</code> which is the exact decimal representation of the 64-bit signed binary
          * integer parameter. The <code>BigDecimal</code> will contain only decimal digits, prefixed with a leading minus
          * sign (hyphen) if the parameter is negative. A leading zero will be present only if the parameter is zero.
@@ -876,13 +876,13 @@ namespace ICU4N.Numerics
 
         /////**
         //// * Constructs a <code>BigDecimal</code> object from a <code>String</code>.
-        //// * <p>
+        //// * <para/>
         //// * Constructs a <code>BigDecimal</code> from the parameter, which must not be <code>null</code> and must represent a
         //// * valid <i>number</i>, as described formally in the documentation referred to {@link BigDecimal above}.
-        //// * <p>
+        //// * <para/>
         //// * In summary, numbers in <code>String</code> form must have at least one digit, may have a leading sign, may have a
         //// * decimal point, and exponential notation may be used. They follow conventional syntax, and may not contain blanks.
-        //// * <p>
+        //// * <para/>
         //// * Some valid strings from which a <code>BigDecimal</code> might be constructed are:
         //// *
         //// * <pre>
@@ -892,12 +892,12 @@ namespace ICU4N.Numerics
         //// * Exponential notation
         //// *
         //// * </pre>
-        //// * <p>
+        //// * <para/>
         //// * (Exponential notation means that the number includes an optional sign and a power of ten following an
         //// * '<code>E</code>' that indicates how the decimal point will be shifted. Thus the <code>"4E+9"</code> above is
         //// * just a short way of writing <code>4000000000</code>, and the <code>"0.73e-7"</code> is short for <code>
         //// * 0.000000073</code>.)
-        //// * <p>
+        //// * <para/>
         //// * The <code>BigDecimal</code> constructed from the String is in a standard form, with no blanks, as though the
         //// * {@link #add(BigDecimal)} method had been used to add zero to the number with unlimited precision. If the string
         //// * uses exponential notation (that is, includes an <code>e</code> or an <code>E</code>), then the <code>BigDecimal
@@ -905,7 +905,7 @@ namespace ICU4N.Numerics
         //// * non-zero digit to the left of the decimal point); in this case if the number is zero then it will be expressed as
         //// * the single digit 0, and if non-zero it will have an exponent unless that exponent would be 0. The exponent must
         //// * fit in nine digits both before and after it is expressed in scientific notation.
-        //// * <p>
+        //// * <para/>
         //// * Any digits in the parameter must be decimal; that is, <code>Character.digit(c, 10)</code> (where <code>c</code>
         //// * is the character in question) would not return -1.
         //// *
@@ -931,9 +931,9 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a plain <code>BigDecimal</code> whose value is the absolute value of this <code>BigDecimal</code>.
-         * <p>
+         * <para/>
          * The same as {@link #abs(MathContext)}, where the context is <code>new MathContext(0, MathContext.PLAIN)</code>.
-         * <p>
+         * <para/>
          * The length of the decimal part (the scale) of the result will be <code>this.scale()</code>
          *
          * @return A <code>BigDecimal</code> whose value is the absolute value of this <code>BigDecimal</code>.
@@ -947,7 +947,7 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a <code>BigDecimal</code> whose value is the absolute value of this <code>BigDecimal</code>.
-         * <p>
+         * <para/>
          * If the current object is zero or positive, then the same result as invoking the {@link #plus(MathContext)} method
          * with the same parameter is returned. Otherwise, the same result as invoking the {@link #negate(MathContext)}
          * method with the same parameter is returned.
@@ -966,10 +966,10 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a plain <code>BigDecimal</code> whose value is <code>this+rhs</code>, using fixed point arithmetic.
-         * <p>
+         * <para/>
          * The same as {@link #add(BigDecimal, MathContext)}, where the <code>BigDecimal</code> is <code>rhs</code>, and the
          * context is <code>new MathContext(0, MathContext.PLAIN)</code>.
-         * <p>
+         * <para/>
          * The length of the decimal part (the scale) of the result will be the maximum of the scales of the two operands.
          *
          * @param rhs The <code>BigDecimal</code> for the right hand side of the addition.
@@ -984,7 +984,7 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a <code>BigDecimal</code> whose value is <code>this+rhs</code>.
-         * <p>
+         * <para/>
          * Implements the addition (<b><code>+</code></b>) operator (as defined in the decimal documentation, see
          * {@link BigDecimal class header}), and returns the result as a <code>BigDecimal</code> object.
          *
@@ -1240,7 +1240,7 @@ namespace ICU4N.Numerics
 
         /**
          * Compares this <code>BigDecimal</code> to another, using unlimited precision.
-         * <p>
+         * <para/>
          * The same as {@link #compareTo(BigDecimal, MathContext)}, where the <code>BigDecimal</code> is <code>rhs</code>,
          * and the context is <code>new MathContext(0, MathContext.PLAIN)</code>.
          *
@@ -1257,10 +1257,10 @@ namespace ICU4N.Numerics
 
         /**
          * Compares this <code>BigDecimal</code> to another.
-         * <p>
+         * <para/>
          * Implements numeric comparison, (as defined in the decimal documentation, see {@link BigDecimal class header}),
          * and returns a result of type <code>int</code>.
-         * <p>
+         * <para/>
          * The result will be:
          * <table cellpadding=2>
          * <tr>
@@ -1273,7 +1273,7 @@ namespace ICU4N.Numerics
          * <td align=right><b>1</b></td> <td>if the current object is greater than the first parameter.</td>
          * </tr>
          * </table>
-         * <p>
+         * <para/>
          * A {@link #compareTo(BigDecimal)} method is also provided.
          *
          * @param rhs The <code>BigDecimal</code> for the right hand side of the comparison.
@@ -1343,7 +1343,7 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a plain <code>BigDecimal</code> whose value is <code>this/rhs</code>, using fixed point arithmetic.
-         * <p>
+         * <para/>
          * The same as {@link #divide(BigDecimal, int)}, where the <code>BigDecimal</code> is <code>rhs</code>, and the
          * rounding mode is {@link MathContext#ROUND_HALF_UP}.
          *
@@ -1364,13 +1364,13 @@ namespace ICU4N.Numerics
         /**
          * Returns a plain <code>BigDecimal</code> whose value is <code>this/rhs</code>, using fixed point arithmetic and a
          * rounding mode.
-         * <p>
+         * <para/>
          * The same as {@link #divide(BigDecimal, int, int)}, where the <code>BigDecimal</code> is <code>rhs</code>, and the
          * second parameter is <code>this.scale()</code>, and the third is <code>round</code>.
-         * <p>
+         * <para/>
          * The length of the decimal part (the scale) of the result will therefore be the same as the scale of the current
          * object, if the latter were formatted without exponential notation.
-         * <p>
+         * <para/>
          *
          * @param rhs The <code>BigDecimal</code> for the right hand side of the division.
          * @param round The <code>int</code> rounding mode to be used for the division (see the {@link MathContext} class).
@@ -1392,14 +1392,14 @@ namespace ICU4N.Numerics
         /**
          * Returns a plain <code>BigDecimal</code> whose value is <code>this/rhs</code>, using fixed point arithmetic and a
          * given scale and rounding mode.
-         * <p>
+         * <para/>
          * The same as {@link #divide(BigDecimal, MathContext)}, where the <code>BigDecimal</code> is <code>rhs</code>,
          * <code>new MathContext(0, MathContext.PLAIN, false, round)</code>, except that the length of the decimal part (the
          * scale) to be used for the result is explicit rather than being taken from <code>this</code>.
-         * <p>
+         * <para/>
          * The length of the decimal part (the scale) of the result will be the same as the scale of the current object, if
          * the latter were formatted without exponential notation.
-         * <p>
+         * <para/>
          *
          * @param rhs The <code>BigDecimal</code> for the right hand side of the division.
          * @param scale The <code>int</code> scale to be used for the result.
@@ -1425,7 +1425,7 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a <code>BigDecimal</code> whose value is <code>this/rhs</code>.
-         * <p>
+         * <para/>
          * Implements the division (<b><code>/</code></b>) operator (as defined in the decimal documentation, see
          * {@link BigDecimal class header}), and returns the result as a <code>BigDecimal</code> object.
          *
@@ -1443,7 +1443,7 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a plain <code>BigDecimal</code> whose value is the integer part of <code>this/rhs</code>.
-         * <p>
+         * <para/>
          * The same as {@link #divideInteger(BigDecimal, MathContext)}, where the <code>BigDecimal</code> is <code>rhs
          * </code>, and the context is <code>new MathContext(0, MathContext.PLAIN)</code>.
          *
@@ -1461,7 +1461,7 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a <code>BigDecimal</code> whose value is the integer part of <code>this/rhs</code>.
-         * <p>
+         * <para/>
          * Implements the integer division operator (as defined in the decimal documentation, see {@link BigDecimal class
          * header}), and returns the result as a <code>BigDecimal</code> object.
          *
@@ -1481,7 +1481,7 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a plain <code>BigDecimal</code> whose value is the maximum of <code>this</code> and <code>rhs</code>.
-         * <p>
+         * <para/>
          * The same as {@link #max(BigDecimal, MathContext)}, where the <code>BigDecimal</code> is <code>rhs</code>, and the
          * context is <code>new MathContext(0, MathContext.PLAIN)</code>.
          *
@@ -1497,9 +1497,9 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a <code>BigDecimal</code> whose value is the maximum of <code>this</code> and <code>rhs</code>.
-         * <p>
+         * <para/>
          * Returns the larger of the current object and the first parameter.
-         * <p>
+         * <para/>
          * If calling the {@link #compareTo(BigDecimal, MathContext)} method with the same parameters would return <code>1
          * </code> or <code>0</code>, then the result of calling the {@link #plus(MathContext)} method on the current object
          * (using the same <code>MathContext</code> parameter) is returned. Otherwise, the result of calling the
@@ -1525,7 +1525,7 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a plain <code>BigDecimal</code> whose value is the minimum of <code>this</code> and <code>rhs</code>.
-         * <p>
+         * <para/>
          * The same as {@link #min(BigDecimal, MathContext)}, where the <code>BigDecimal</code> is <code>rhs</code>, and the
          * context is <code>new MathContext(0, MathContext.PLAIN)</code>.
          *
@@ -1541,9 +1541,9 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a <code>BigDecimal</code> whose value is the minimum of <code>this</code> and <code>rhs</code>.
-         * <p>
+         * <para/>
          * Returns the smaller of the current object and the first parameter.
-         * <p>
+         * <para/>
          * If calling the {@link #compareTo(BigDecimal, MathContext)} method with the same parameters would return <code>-1
          * </code> or <code>0</code>, then the result of calling the {@link #plus(MathContext)} method on the current object
          * (using the same <code>MathContext</code> parameter) is returned. Otherwise, the result of calling the
@@ -1569,10 +1569,10 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a plain <code>BigDecimal</code> whose value is <code>this*rhs</code>, using fixed point arithmetic.
-         * <p>
+         * <para/>
          * The same as {@link #add(BigDecimal, MathContext)}, where the <code>BigDecimal</code> is <code>rhs</code>, and the
          * context is <code>new MathContext(0, MathContext.PLAIN)</code>.
-         * <p>
+         * <para/>
          * The length of the decimal part (the scale) of the result will be the sum of the scales of the operands, if they
          * were formatted without exponential notation.
          *
@@ -1588,7 +1588,7 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a <code>BigDecimal</code> whose value is <code>this*rhs</code>.
-         * <p>
+         * <para/>
          * Implements the multiplication (<b><code>&#42;</code></b>) operator (as defined in the decimal documentation, see
          * {@link BigDecimal class header}), and returns the result as a <code>BigDecimal</code> object.
          *
@@ -1702,10 +1702,10 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a plain <code>BigDecimal</code> whose value is <code>-this</code>.
-         * <p>
+         * <para/>
          * The same as {@link #negate(MathContext)}, where the context is <code>new MathContext(0, MathContext.PLAIN)</code>
          * .
-         * <p>
+         * <para/>
          * The length of the decimal part (the scale) of the result will be be <code>this.scale()</code>
          *
          *
@@ -1720,7 +1720,7 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a <code>BigDecimal</code> whose value is <code>-this</code>.
-         * <p>
+         * <para/>
          * Implements the negation (Prefix <b><code>-</code></b>) operator (as defined in the decimal documentation, see
          * {@link BigDecimal class header}), and returns the result as a <code>BigDecimal</code> object.
          *
@@ -1748,9 +1748,9 @@ namespace ICU4N.Numerics
         /**
          * Returns a plain <code>BigDecimal</code> whose value is <code>+this</code>. Note that <code>this</code> is not
          * necessarily a plain <code>BigDecimal</code>, but the result will always be.
-         * <p>
+         * <para/>
          * The same as {@link #plus(MathContext)}, where the context is <code>new MathContext(0, MathContext.PLAIN)</code>.
-         * <p>
+         * <para/>
          * The length of the decimal part (the scale) of the result will be be <code>this.scale()</code>
          *
          * @return A <code>BigDecimal</code> whose value is <code>+this</code>.
@@ -1764,10 +1764,10 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a <code>BigDecimal</code> whose value is <code>+this</code>.
-         * <p>
+         * <para/>
          * Implements the plus (Prefix <b><code>+</code></b>) operator (as defined in the decimal documentation, see
          * {@link BigDecimal class header}), and returns the result as a <code>BigDecimal</code> object.
-         * <p>
+         * <para/>
          * This method is useful for rounding or otherwise applying a context to a decimal value.
          *
          * @param set The <code>MathContext</code> arithmetic settings.
@@ -1799,14 +1799,14 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a plain <code>BigDecimal</code> whose value is <code>this**rhs</code>, using fixed point arithmetic.
-         * <p>
+         * <para/>
          * The same as {@link #pow(BigDecimal, MathContext)}, where the <code>BigDecimal</code> is <code>rhs</code>, and the
          * context is <code>new MathContext(0, MathContext.PLAIN)</code>.
-         * <p>
+         * <para/>
          * The parameter is the power to which the <code>this</code> will be raised; it must be in the range 0 through
          * 999999999, and must have a decimal part of zero. Note that these restrictions may be removed in the future, so
          * they should not be used as a test for a whole number.
-         * <p>
+         * <para/>
          * In addition, the power must not be negative, as no <code>MathContext</code> is used and so the result would then
          * always be 0.
          *
@@ -1826,14 +1826,14 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a <code>BigDecimal</code> whose value is <code>this**rhs</code>.
-         * <p>
+         * <para/>
          * Implements the power (<b><code>^</code></b>) operator (as defined in the decimal documentation, see
          * {@link BigDecimal class header}), and returns the result as a <code>BigDecimal</code> object.
-         * <p>
+         * <para/>
          * The first parameter is the power to which the <code>this</code> will be raised; it must be in the range
          * -999999999 through 999999999, and must have a decimal part of zero. Note that these restrictions may be removed
          * in the future, so they should not be used as a test for a whole number.
-         * <p>
+         * <para/>
          * If the <code>digits</code> setting of the <code>MathContext</code> parameter is 0, the power must be zero or
          * positive.
          *
@@ -1924,10 +1924,10 @@ namespace ICU4N.Numerics
         /**
          * Returns a plain <code>BigDecimal</code> whose value is the remainder of <code>this/rhs</code>, using fixed point
          * arithmetic.
-         * <p>
+         * <para/>
          * The same as {@link #remainder(BigDecimal, MathContext)}, where the <code>BigDecimal</code> is <code>rhs</code>,
          * and the context is <code>new MathContext(0, MathContext.PLAIN)</code>.
-         * <p>
+         * <para/>
          * This is not the modulo operator -- the result may be negative.
          *
          * @param rhs The <code>BigDecimal</code> for the right hand side of the remainder operation.
@@ -1944,10 +1944,10 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a <code>BigDecimal</code> whose value is the remainder of <code>this/rhs</code>.
-         * <p>
+         * <para/>
          * Implements the remainder operator (as defined in the decimal documentation, see {@link BigDecimal class header}),
          * and returns the result as a <code>BigDecimal</code> object.
-         * <p>
+         * <para/>
          * This is not the modulo operator -- the result may be negative.
          *
          * @param rhs The <code>BigDecimal</code> for the right hand side of the remainder operation.
@@ -1965,10 +1965,10 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a plain <code>BigDecimal</code> whose value is <code>this-rhs</code>, using fixed point arithmetic.
-         * <p>
+         * <para/>
          * The same as {@link #subtract(BigDecimal, MathContext)}, where the <code>BigDecimal</code> is <code>rhs</code>,
          * and the context is <code>new MathContext(0, MathContext.PLAIN)</code>.
-         * <p>
+         * <para/>
          * The length of the decimal part (the scale) of the result will be the maximum of the scales of the two operands.
          *
          * @param rhs The <code>BigDecimal</code> for the right hand side of the subtraction.
@@ -1983,7 +1983,7 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a <code>BigDecimal</code> whose value is <code>this-rhs</code>.
-         * <p>
+         * <para/>
          * Implements the subtraction (<b><code>-</code></b>) operator (as defined in the decimal documentation, see
          * {@link BigDecimal class header}), and returns the result as a <code>BigDecimal</code> object.
          *
@@ -2049,7 +2049,7 @@ namespace ICU4N.Numerics
          * Converts this <code>BigDecimal</code> to a <code>double</code>. If the <code>BigDecimal</code> is out of the
          * possible range for a <code>double</code> (64-bit signed floating point) result then an <code>ArithmeticException
          * </code> is thrown.
-         * <p>
+         * <para/>
          * The double produced is identical to result of expressing the <code>BigDecimal</code> as a <code>String</code> and
          * then converting it using the <code>Double(String)</code> constructor; this can result in values of <code>
          * Double.NEGATIVE_INFINITY</code> or <code>Double.POSITIVE_INFINITY</code>.
@@ -2067,13 +2067,13 @@ namespace ICU4N.Numerics
 
         /**
          * Compares this <code>BigDecimal</code> with <code>rhs</code> for equality.
-         * <p>
+         * <para/>
          * If the parameter is <code>null</code>, or is not an instance of the BigDecimal type, or is not exactly equal to
          * the current <code>BigDecimal</code> object, then <i>false</i> is returned. Otherwise, <i>true</i> is returned.
-         * <p>
+         * <para/>
          * "Exactly equal", here, means that the <code>String</code> representations of the <code>BigDecimal</code> numbers
          * are identical (they have the same characters in the same sequence).
-         * <p>
+         * <para/>
          * The {@link #compareTo(BigDecimal, MathContext)} method should be used for more general comparisons.
          *
          * @param obj The <code>Object</code> for the right hand side of the comparison.
@@ -2135,7 +2135,7 @@ namespace ICU4N.Numerics
          * Converts this <code>BigDecimal</code> to a <code>float</code>. If the <code>BigDecimal</code> is out of the
          * possible range for a <code>float</code> (32-bit signed floating point) result then an <code>ArithmeticException
          * </code> is thrown.
-         * <p>
+         * <para/>
          * The float produced is identical to result of expressing the <code>BigDecimal</code> as a <code>String</code> and
          * then converting it using the <code>Float(String)</code> constructor; this can result in values of <code>
          * Float.NEGATIVE_INFINITY</code> or <code>Float.POSITIVE_INFINITY</code>.
@@ -2151,30 +2151,30 @@ namespace ICU4N.Numerics
 
         /**
          * Returns the <code>String</code> representation of this <code>BigDecimal</code>, modified by layout parameters.
-         * <p>
+         * <para/>
          * <i>This method is provided as a primitive for use by more sophisticated classes, such as <code>DecimalFormat
          * </code>, that can apply locale-sensitive editing of the result. The level of formatting that it provides is a
          * necessary part of the BigDecimal class as it is sensitive to and must follow the calculation and rounding rules
          * for BigDecimal arithmetic. However, if the function is provided elsewhere, it may be removed from this class.
          * </i>
-         * <p>
+         * <para/>
          * The parameters, for both forms of the <code>format</code> method are all of type <code>int</code>. A value of -1
          * for any parameter indicates that the default action or value for that parameter should be used.
-         * <p>
+         * <para/>
          * The parameters, <code>before</code> and <code>after</code>, specify the number of characters to be used for the
          * integer part and decimal part of the result respectively. Exponential notation is not used. If either parameter
          * is -1 (which indicates the default action), the number of characters used will be exactly as many as are needed
          * for that part.
-         * <p>
+         * <para/>
          * <code>before</code> must be a positive number; if it is larger than is needed to contain the integer part, that
          * part is padded on the left with blanks to the requested length. If <code>before</code> is not large enough to
          * contain the integer part of the number (including the sign, for negative numbers) an exception is thrown.
-         * <p>
+         * <para/>
          * <code>after</code> must be a non-negative number; if it is not the same size as the decimal part of the number,
          * the number will be rounded (or extended with zeros) to fit. Specifying 0 for <code>after</code> will cause the
          * number to be rounded to an integer (that is, it will have no decimal part or decimal point). The rounding method
          * will be the default, <code>MathContext.ROUND_HALF_UP</code>.
-         * <p>
+         * <para/>
          * Other rounding methods, and the use of exponential notation, can be selected by using
          * {@link #format(int,int,int,int,int,int)}. Using the two-parameter form of the method has exactly the same effect
          * as using the six-parameter form with the final four parameters all being -1.
@@ -2197,47 +2197,47 @@ namespace ICU4N.Numerics
         /**
          * Returns the <code>String</code> representation of this <code>BigDecimal</code>, modified by layout parameters and
          * allowing exponential notation.
-         * <p>
+         * <para/>
          * <i>This method is provided as a primitive for use by more sophisticated classes, such as <code>DecimalFormat
          * </code>, that can apply locale-sensitive editing of the result. The level of formatting that it provides is a
          * necessary part of the BigDecimal class as it is sensitive to and must follow the calculation and rounding rules
          * for BigDecimal arithmetic. However, if the function is provided elsewhere, it may be removed from this class.
          * </i>
-         * <p>
+         * <para/>
          * The parameters are all of type <code>int</code>. A value of -1 for any parameter indicates that the default
          * action or value for that parameter should be used.
-         * <p>
+         * <para/>
          * The first two parameters (<code>before</code> and <code>after</code>) specify the number of characters to be used
          * for the integer part and decimal part of the result respectively, as defined for {@link #format(int,int)}. If
          * either of these is -1 (which indicates the default action), the number of characters used will be exactly as many
          * as are needed for that part.
-         * <p>
+         * <para/>
          * The remaining parameters control the use of exponential notation and rounding. Three (<code>explaces</code>,
          * <code>exdigits</code>, and <code>exform</code>) control the exponent part of the result. As before, the default
          * action for any of these parameters may be selected by using the value -1.
-         * <p>
+         * <para/>
          * <code>explaces</code> must be a positive number; it sets the number of places (digits after the sign of the
          * exponent) to be used for any exponent part, the default (when <code>explaces</code> is -1) being to use as many
          * as are needed. If <code>explaces</code> is not -1, space is always reserved for an exponent; if one is not needed
          * (for example, if the exponent will be 0) then <code>explaces</code>+2 blanks are appended to the result.
          * (This preserves vertical alignment of similarly formatted numbers in a monospace font.) If <code>explaces
          * </code> is not -1 and is not large enough to contain the exponent, an exception is thrown.
-         * <p>
+         * <para/>
          * <code>exdigits</code> sets the trigger point for use of exponential notation. If, before any rounding, the number
          * of places needed before the decimal point exceeds <code>exdigits</code>, or if the absolute value of the result
          * is less than <code>0.000001</code>, then exponential form will be used, provided that <code>exdigits</code> was
          * specified. When <code>exdigits</code> is -1, exponential notation will never be used. If 0 is specified for
          * <code>exdigits</code>, exponential notation is always used unless the exponent would be 0.
-         * <p>
+         * <para/>
          * <code>exform</code> sets the form for exponential notation (if needed). It may be either
          * {@link MathContext#SCIENTIFIC} or {@link MathContext#ENGINEERING}. If the latter, engineering, form is requested,
          * up to three digits (plus sign, if negative) may be needed for the integer part of the result (<code>before</code>
          * ). Otherwise, only one digit (plus sign, if negative) is needed.
-         * <p>
+         * <para/>
          * Finally, the sixth argument, <code>exround</code>, selects the rounding algorithm to be used, and must be one of
          * the values indicated by a public constant in the {@link MathContext} class whose name starts with <code>ROUND_
          * </code>. The default (<code>ROUND_HALF_UP</code>) may also be selected by using the value -1, as before.
-         * <p>
+         * <para/>
          * The special value <code>MathContext.ROUND_UNNECESSARY</code> may be used to detect whether non-zero digits are
          * discarded -- if <code>exround</code> has this value than if non-zero digits would be discarded (rounded) during
          * formatting then an <code>ArithmeticException</code> is thrown.
@@ -2524,7 +2524,7 @@ namespace ICU4N.Numerics
         /**
          * Returns the hashcode for this <code>BigDecimal</code>. This hashcode is suitable for use by the <code>
          * java.util.Hashtable</code> class.
-         * <p>
+         * <para/>
          * Note that two <code>BigDecimal</code> objects are only guaranteed to produce the same hashcode if they are
          * exactly equal (that is, the <code>String</code> representations of the <code>BigDecimal</code> numbers are
          * identical -- they have the same characters in the same sequence).
@@ -2806,9 +2806,9 @@ namespace ICU4N.Numerics
          * Returns a plain <code>BigDecimal</code> whose decimal point has been moved to the left by a specified number of
          * positions. The parameter, <code>n</code>, specifies the number of positions to move the decimal point. That is,
          * if <code>n</code> is 0 or positive, the number returned is given by:
-         * <p>
+         * <para/>
          * <code> this.multiply(TEN.pow(new BigDecimal(-n))) </code>
-         * <p>
+         * <para/>
          * <code>n</code> may be negative, in which case the method returns the same result as <code>movePointRight(-n)
          * </code>.
          *
@@ -2831,9 +2831,9 @@ namespace ICU4N.Numerics
          * Returns a plain <code>BigDecimal</code> whose decimal point has been moved to the right by a specified number of
          * positions. The parameter, <code>n</code>, specifies the number of positions to move the decimal point. That is,
          * if <code>n</code> is 0 or positive, the number returned is given by:
-         * <p>
+         * <para/>
          * <code> this.multiply(TEN.pow(new BigDecimal(n))) </code>
-         * <p>
+         * <para/>
          * <code>n</code> may be negative, in which case the method returns the same result as <code>movePointLeft(-n)
          * </code>.
          *
@@ -2872,14 +2872,14 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a plain <code>BigDecimal</code> with a given scale.
-         * <p>
+         * <para/>
          * If the given scale (which must be zero or positive) is the same as or greater than the length of the decimal part
          * (the scale) of this <code>BigDecimal</code> then trailing zeros will be added to the decimal part as necessary.
-         * <p>
+         * <para/>
          * If the given scale is less than the length of the decimal part (the scale) of this <code>BigDecimal</code> then
          * trailing digits will be removed, and in this case an <code>ArithmeticException</code> is thrown if any discarded
          * digits are non-zero.
-         * <p>
+         * <para/>
          * The same as {@link #setScale(int, int)}, where the first parameter is the scale, and the second is <code>
          * MathContext.ROUND_UNNECESSARY</code>.
          *
@@ -2897,15 +2897,15 @@ namespace ICU4N.Numerics
 
         /**
          * Returns a plain <code>BigDecimal</code> with a given scale.
-         * <p>
+         * <para/>
          * If the given scale (which must be zero or positive) is the same as or greater than the length of the decimal part
          * (the scale) of this <code>BigDecimal</code> then trailing zeros will be added to the decimal part as necessary.
-         * <p>
+         * <para/>
          * If the given scale is less than the length of the decimal part (the scale) of this <code>BigDecimal</code> then
          * trailing digits will be removed, and the rounding mode given by the second parameter is used to determine if the
          * remaining digits are affected by a carry. In this case, an <code>IllegalArgumentException</code> is thrown if
          * <code>round</code> is not a valid rounding mode.
-         * <p>
+         * <para/>
          * If <code>round</code> is <code>MathContext.ROUND_UNNECESSARY</code>, an <code>ArithmeticException</code> is
          * thrown if any discarded digits are non-zero.
          *
@@ -2997,11 +2997,11 @@ namespace ICU4N.Numerics
 
         /**
          * Converts this <code>BigDecimal</code> to a <code>java.math.BigDecimal</code>.
-         * <p>
+         * <para/>
          * This is an exact conversion; the result is the same as if the <code>BigDecimal</code> were formatted as a plain
          * number without any rounding or exponent and then the <code>java.math.BigDecimal(java.lang.String)</code>
          * constructor were used to construct the result.
-         * <p>
+         * <para/>
          * <i>(Note: this method is provided only in the <code>com.ibm.icu.math</code> version of the BigDecimal class. It
          * would not be present in a <code>java.math</code> version.)</i>
          *
@@ -3020,7 +3020,7 @@ namespace ICU4N.Numerics
 
         /**
          * Converts this <code>BigDecimal</code> to a <code>java.math.BigInteger</code>.
-         * <p>
+         * <para/>
          * Any decimal part is truncated (discarded). If an exception is desired should the decimal part be non-zero, use
          * {@link #toBigIntegerExact()}.
          *
@@ -3067,7 +3067,7 @@ namespace ICU4N.Numerics
 
         /**
          * Converts this <code>BigDecimal</code> to a <code>java.math.BigInteger</code>.
-         * <p>
+         * <para/>
          * An exception is thrown if the decimal part (if any) is non-zero.
          *
          * @return The <code>java.math.BigInteger</code> equal in value to the integer part of this <code>BigDecimal</code>.
@@ -3105,7 +3105,7 @@ namespace ICU4N.Numerics
          * Returns the <code>BigDecimal</code> as a <code>String</code>. This returns a <code>String</code> that exactly
          * represents this <code>BigDecimal</code>, as defined in the decimal documentation (see {@link BigDecimal class
          * header}).
-         * <p>
+         * <para/>
          * By definition, using the {@link #BigDecimal(String)} constructor on the result <code>String</code> will create a
          * <code>BigDecimal</code> that is exactly equal to the original <code>BigDecimal</code>.
          *
@@ -3153,11 +3153,11 @@ namespace ICU4N.Numerics
 
         /**
          * Translates a <code>double</code> to a <code>BigDecimal</code>.
-         * <p>
+         * <para/>
          * Returns a <code>BigDecimal</code> which is the decimal representation of the 64-bit signed binary floating point
          * parameter. If the parameter is infinite, or is not a number (NaN), a <code>NumberFormatException</code> is
          * thrown.
-         * <p>
+         * <para/>
          * The number is constructed as though <code>num</code> had been converted to a <code>String</code> using the <code>
          * Double.toString()</code> method and the {@link #BigDecimal(java.lang.String)} constructor had then been used.
          * This is typically not an exact conversion.
@@ -3199,11 +3199,11 @@ namespace ICU4N.Numerics
          * Translates a <code>long</code> to a <code>BigDecimal</code> with a given scale. That is, returns a plain <code>
          * BigDecimal</code> whose unscaled value is equal to the given <code>long</code>, adjusted by the second parameter,
          * <code>scale</code>.
-         * <p>
+         * <para/>
          * The result is given by:
-         * <p>
+         * <para/>
          * <code> (new BigDecimal(lint)).divide(TEN.pow(new BigDecimal(scale))) </code>
-         * <p>
+         * <para/>
          * A <code>NumberFormatException</code> is thrown if <code>scale</code> is negative.
          *
          * @param lint The <code>long</code> to be translated.
@@ -3243,7 +3243,7 @@ namespace ICU4N.Numerics
 
         /*
          * <sgml> Return char array value of a BigDecimal (conversion from BigDecimal to laid-out canonical char array).
-         * <p>The mantissa will either already have been rounded (following an operation) or will be of length appropriate
+         * <para/>The mantissa will either already have been rounded (following an operation) or will be of length appropriate
          * (in the case of construction from an int, for example). <p>We must not alter the mantissa, here. <p>'form'
          * describes whether we are to use exponential notation (and if so, which), or if we are to lay out as a plain/pure
          * numeric. </sgml>

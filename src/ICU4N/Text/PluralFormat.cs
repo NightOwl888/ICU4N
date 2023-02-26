@@ -850,7 +850,9 @@ namespace ICU4N.Text
         /// <returns>Returns the <see cref="PluralRules"/> type. For example,
         /// it could be "zero", "one", "two", "few", "many" or "other".</returns>
         /*package*/
+#pragma warning disable CS0618 // Type or member is obsolete
         internal string ParseType(string source, IRbnfLenientScanner scanner, FieldPosition pos)
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             // If no pattern was applied, return null.
             if (msgPattern == null || msgPattern.PartCount == 0)
@@ -904,7 +906,9 @@ namespace ICU4N.Text
                 if (scanner != null)
                 {
                     // If lenient parsing is turned ON, we've got some time consuming parsing ahead of us.
+#pragma warning disable CS0618 // Type or member is obsolete
                     int[] scannerMatchResult = scanner.FindText(source, currArg, startingAt);
+#pragma warning restore CS0618 // Type or member is obsolete
                     currMatchIndex = scannerMatchResult[0];
                 }
                 else

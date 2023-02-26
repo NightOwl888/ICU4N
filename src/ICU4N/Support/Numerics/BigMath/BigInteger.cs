@@ -247,6 +247,8 @@ namespace ICU4N.Numerics.BigMath
         /// <param name="signum">The sign as an integer (-1 for negative, 0 for zero, 1 for positive).</param>
         /// <param name="magnitude">The byte array that describes the magnitude, where the most significant
         /// byte is the first.</param>
+        /// <param name="isBigEndian"><c>true</c> to indicate <paramref name="magnitude"/> is in big-endian
+        /// byte order (the default value); otherwise, <c>false</c>.</param>
         /// <exception cref="ArgumentNullException">
         /// If the provided <paramref name="magnitude"/> provided is <c>null</c>.
         /// </exception>
@@ -293,48 +295,50 @@ namespace ICU4N.Numerics.BigMath
         /// Constructs a new <see cref="BigInteger"/> from the given two's 
         /// complement representation.
         /// </summary>
-        /// <param name="val">The two's complement representation of the new big integer.</param>
+        /// <param name="value">The two's complement representation of the new big integer.</param>
+        /// <param name="isBigEndian"><c>true</c> to indicate <paramref name="value"/> is in big-endian
+        /// byte order (the default value); otherwise, <c>false</c>.</param>
         /// <remarks>
         /// The most significant byte is the entry at index 0. The most significant 
         /// bit of this entry determines the sign of the new <see cref="BigInteger"/> instance.
         /// The given array must not be empty.
         /// </remarks>
-        /// <exception cref="ArgumentNullException">If the provided <paramref name="val"/> 
+        /// <exception cref="ArgumentNullException">If the provided <paramref name="value"/> 
         /// is <c>null</c></exception>
-        /// <exception cref="FormatException">If the length of <paramref name="val"/> is zero</exception>
-        public BigInteger(byte[] val, bool isBigEndian = true) // ICU4N TODO: Add bool value for isUnsigned like System.Numerics.BigInteger?
+        /// <exception cref="FormatException">If the length of <paramref name="value"/> is zero</exception>
+        public BigInteger(byte[] value, bool isBigEndian = true) // ICU4N TODO: Add bool value for isUnsigned like System.Numerics.BigInteger?
         {
-            if (val is null)
-                throw new ArgumentNullException(nameof(val));
-            if (val.Length == 0)
+            if (value is null)
+                throw new ArgumentNullException(nameof(value));
+            if (value.Length == 0)
             {
                 // math.12=Zero length BigInteger
                 throw new FormatException(Messages.math12); //$NON-NLS-1$
             }
             if (isBigEndian)
             {
-                if (val[0] > sbyte.MaxValue) // ICU4N TODO: Check this - I think it should be byte.MaxValue
+                if (value[0] > sbyte.MaxValue) // ICU4N TODO: Check this - I think it should be byte.MaxValue
                 {
                     sign = -1;
-                    PutBytesNegativeToIntegers(val, isBigEndian);
+                    PutBytesNegativeToIntegers(value, isBigEndian);
                 }
                 else
                 {
                     sign = 1;
-                    PutBytesPositiveToIntegers(val, isBigEndian);
+                    PutBytesPositiveToIntegers(value, isBigEndian);
                 }
             }
             else
             {
-                if (val[val.Length - 1] > sbyte.MaxValue)
+                if (value[value.Length - 1] > sbyte.MaxValue)
                 {
                     sign = -1;
-                    PutBytesNegativeToIntegers(val, isBigEndian);
+                    PutBytesNegativeToIntegers(value, isBigEndian);
                 }
                 else
                 {
                     sign = 1;
-                    PutBytesPositiveToIntegers(val, isBigEndian);
+                    PutBytesPositiveToIntegers(value, isBigEndian);
                 }
             }
             CutOffLeadingZeroes();
@@ -567,7 +571,7 @@ namespace ICU4N.Numerics.BigMath
          * Returns the position of the lowest set bit in the two's complement
          * representation of this {@code BigInteger}. If all bits are zero (this=0)
          * then -1 is returned as result.
-         * <p>
+         * <para/>
          * <b>Implementation Note:</b> Usage of this method is not recommended as
          * the current implementation is not efficient.
          *

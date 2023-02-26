@@ -19,9 +19,9 @@ namespace ICU4N.Impl.Coll
     /// code points.  The byte stream does not contain the values 0, 1, or
     /// 2.
     /// <para/>
-    /// One example of a use of BOCU is in <see cref="Text.Collator.GetCollationKey(string)"/>
-    /// for a <see cref="Text.RuleBasedCollator"/> object with collation strength
-    /// <see cref="Text.CollationStrength.Identical"/>. The result <see cref="Text.CollationKey"/> 
+    /// One example of a use of BOCU is in <see cref="ICU4N.Text.Collator.GetCollationKey(string)"/>
+    /// for a <see cref="ICU4N.Text.RuleBasedCollator"/> object with collation strength
+    /// <see cref="ICU4N.Text.CollationStrength.Identical"/>. The result <see cref="ICU4N.Text.CollationKey"/> 
     /// will consist of the collation order of the source string followed by the BOCU result of the 
     /// source string.
     /// <para/>

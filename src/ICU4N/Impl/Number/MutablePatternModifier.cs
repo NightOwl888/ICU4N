@@ -143,7 +143,7 @@ namespace ICU4N.Numerics
          * and can be saved for future use. The number properties in the current instance are mutated; all other properties
          * are left untouched.
          *
-         * <p>
+         * <para/>
          * The resulting modifier cannot be used in a QuantityChain.
          *
          * @return An immutable that supports both positive and negative numbers.
@@ -268,7 +268,9 @@ namespace ICU4N.Numerics
             {
                 // TODO: Fix this. Avoid the copy.
                 IDecimalQuantity copy = fq.CreateCopy();
+#pragma warning disable CS0618 // Type or member is obsolete
                 micros.rounding.Apply(copy);
+#pragma warning restore CS0618 // Type or member is obsolete
                 SetNumberProperties(fq.IsNegative, copy.GetStandardPlural(rules));
             }
             else
@@ -360,7 +362,9 @@ namespace ICU4N.Numerics
                     }
                     else if (unitWidth == UnitWidth.Narrow)
                     {
+#pragma warning disable CS0618 // Type or member is obsolete
                         return currency.GetName(symbols.UCulture, Currency.NarrowSymbolName, out bool _);
+#pragma warning restore CS0618 // Type or member is obsolete
                     }
                     else
                     {
@@ -377,7 +381,9 @@ namespace ICU4N.Numerics
                 case AffixUtils.Type.CurrencyQuad:
                     return "\uFFFD";
                 case AffixUtils.Type.CurrencyQuint:
+#pragma warning disable CS0618 // Type or member is obsolete
                     return currency.GetName(symbols.UCulture, Currency.NarrowSymbolName, out bool _);
+#pragma warning restore CS0618 // Type or member is obsolete
                 default:
                     throw new InvalidOperationException(); //throw new AssertionError();
             }

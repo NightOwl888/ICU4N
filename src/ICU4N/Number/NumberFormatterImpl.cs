@@ -138,16 +138,18 @@ namespace ICU4N.Numerics
             {
                 patternStyle = NumberFormatStyle.CurrencyStyle;
             }
+#pragma warning disable CS0618 // Type or member is obsolete
             string pattern = NumberFormat.GetPatternForStyleAndNumberingSystem(macros.loc, nsName, patternStyle);
+#pragma warning restore CS0618 // Type or member is obsolete
             ParsedPatternInfo patternInfo = PatternStringParser.ParseToPatternInfo(pattern);
 
-            /////////////////////////////////////////////////////////////////////////////////////
-            /// START POPULATING THE DEFAULT MICROPROPS AND BUILDING THE MICROPROPS GENERATOR ///
-            /////////////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////////
+            // START POPULATING THE DEFAULT MICROPROPS AND BUILDING THE MICROPROPS GENERATOR //
+            ///////////////////////////////////////////////////////////////////////////////////
 
             // Symbols
-            if (macros.symbols is DecimalFormatSymbols) {
-                micros.symbols = (DecimalFormatSymbols)macros.symbols;
+            if (macros.symbols is DecimalFormatSymbols decimalFormatSymbols) {
+                micros.symbols = decimalFormatSymbols;
             } else
             {
                 micros.symbols = DecimalFormatSymbols.ForNumberingSystem(macros.loc, ns);
@@ -183,10 +185,13 @@ namespace ICU4N.Numerics
             }
             else if (macros.notation is CompactNotation) {
                 // Compact notation uses minGrouping by default since ICU 59
+#pragma warning disable CS0618 // Type or member is obsolete
                 micros.grouping = Grouper.MinTwoDigits;
-            } else
+            }
+            else
             {
-                micros.grouping = Grouper.Defaults; // defaults();
+                micros.grouping = Grouper.Defaults;
+#pragma warning restore CS0618 // Type or member is obsolete
             }
             micros.grouping = micros.grouping.WithLocaleData(patternInfo);
 
@@ -325,7 +330,9 @@ namespace ICU4N.Numerics
          */
         private static void MicrosToString(MicroProps micros, IDecimalQuantity quantity, NumberStringBuilder str)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             micros.rounding.Apply(quantity);
+#pragma warning restore CS0618 // Type or member is obsolete
             if (micros.integerWidth.maxInt == -1)
             {
                 quantity.SetIntegerLength(micros.integerWidth.minInt, int.MaxValue);
@@ -396,6 +403,7 @@ namespace ICU4N.Numerics
 
                 // Get and append the next digit value
                 byte nextDigit = quantity.GetDigit(i);
+#pragma warning disable CS0618 // Type or member is obsolete
                 if (micros.symbols.CodePointZero != -1)
                 {
                     length += str.InsertCodePoint(0, micros.symbols.CodePointZero + nextDigit,
@@ -406,6 +414,7 @@ namespace ICU4N.Numerics
                     length += str.Insert(0, micros.symbols.DigitStringsLocal[nextDigit],
                             NumberFormatField.Integer);
                 }
+#pragma warning restore CS0618 // Type or member is obsolete
             }
             return length;
         }
@@ -418,6 +427,7 @@ namespace ICU4N.Numerics
             {
                 // Get and append the next digit value
                 byte nextDigit = quantity.GetDigit(-i - 1);
+#pragma warning disable CS0618 // Type or member is obsolete
                 if (micros.symbols.CodePointZero != -1)
                 {
                     length += str.AppendCodePoint(micros.symbols.CodePointZero + nextDigit,
@@ -427,6 +437,7 @@ namespace ICU4N.Numerics
                 {
                     length += str.Append(micros.symbols.DigitStringsLocal[nextDigit], NumberFormatField.Fraction);
                 }
+#pragma warning restore CS0618 // Type or member is obsolete
             }
             return length;
         }

@@ -58,7 +58,10 @@ namespace ICU4N.Numerics
         public override string GetName(
             UCultureInfo locale, CurrencyNameStyle nameStyle, string pluralCount, out bool isChoiceFormat)
         {
-            if (nameStyle == CurrencyNameStyle.PluralLongName && subType.Equals("XXX", StringComparison.Ordinal))
+            if (nameStyle == CurrencyNameStyle.PluralLongName &&
+#pragma warning disable CS0618 // Type or member is obsolete
+                subType.Equals("XXX", StringComparison.Ordinal))
+#pragma warning restore CS0618 // Type or member is obsolete
             {
                 // Plural in absence of a currency should return the symbol
                 isChoiceFormat = false;

@@ -82,12 +82,12 @@ namespace ICU4N.Text
                     if (rule.BaseValue == NFRule.NEGATIVE_NUMBER_RULE)
                     {
                         // throw an exception if the rule is a negative number rule
-                        ///CLOVER:OFF
+                        ////CLOVER:OFF
                         // If you look at the call hierarchy of this method, the rule would
                         // never be directly modified by the user and therefore makes the
                         // following pointless unless the user changes the ruleset.
                         throw new ArgumentException("<< not allowed in negative-number rule");
-                        ///CLOVER:ON
+                        ////CLOVER:ON
                     }
                     else if (rule.BaseValue == NFRule.IMPROPER_FRACTION_RULE
                              || rule.BaseValue == NFRule.PROPER_FRACTION_RULE
@@ -129,12 +129,12 @@ namespace ICU4N.Text
                     {
                         // if the rule set owning the rule is a fraction rule set,
                         // throw an exception
-                        ///CLOVER:OFF
+                        ////CLOVER:OFF
                         // If you look at the call hierarchy of this method, the rule would
                         // never be directly modified by the user and therefore makes the
                         // following pointless unless the user changes the ruleset.
                         throw new ArgumentException(">> not allowed in fraction rule set");
-                        ///CLOVER:ON
+                        ////CLOVER:ON
                     }
                     else
                     {
@@ -146,12 +146,12 @@ namespace ICU4N.Text
                     return new SameValueSubstitution(pos, ruleSet, description);
                 default:
                     // and if it's anything else, throw an exception
-                    ///CLOVER:OFF
+                    ////CLOVER:OFF
                     // If you look at the call hierarchy of this method, the rule would
                     // never be directly modified by the user and therefore makes the
                     // following pointless unless the user changes the ruleset.
                     throw new ArgumentException("Illegal substitution character");
-                    ///CLOVER:ON
+                    ////CLOVER:ON
             }
         }
 
@@ -1429,7 +1429,9 @@ namespace ICU4N.Text
                         }
                         else
                         {
+#pragma warning disable CS0618 // Type or member is obsolete
                             fq.AppendDigit((byte)digit, leadingZeros, false);
+#pragma warning restore CS0618 // Type or member is obsolete
                             leadingZeros = 0;
                         }
 

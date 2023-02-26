@@ -591,7 +591,9 @@ namespace ICU4N.Text
         /// with lenient-parse mode turned on.
         /// </summary>
         [NonSerialized]
+#pragma warning disable CS0618 // Type or member is obsolete
         private IRbnfLenientScannerProvider scannerProvider = null;
+#pragma warning restore CS0618 // Type or member is obsolete
 
         /// <summary>
         /// flag to mark whether we've previously looked for a scanner and failed

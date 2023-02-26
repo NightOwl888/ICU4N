@@ -192,7 +192,9 @@ namespace ICU4N.Util
         /// <stable>ICU 4.0</stable>
         public static string[] GetAvailableCurrencyCodes(UCultureInfo loc, DateTime d)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             string region = UCultureInfo.GetRegionForSupplementalData(loc, false);
+#pragma warning restore CS0618 // Type or member is obsolete
             CurrencyFilter filter = CurrencyFilter.OnDate(d).WithRegion(region);
             IList<string> list = GetTenderCurrencies(filter);
             // Note: Prior to 4.4 the spec didn't say that we return null if there are no results, but
@@ -266,7 +268,9 @@ namespace ICU4N.Util
 
             // Cache the currency by region, and whether variant=PREEURO.
             // Minimizes the size of the cache compared with caching by ULocale.
+#pragma warning disable CS0618 // Type or member is obsolete
             string key = UCultureInfo.GetRegionForSupplementalData(loc, false);
+#pragma warning restore CS0618 // Type or member is obsolete
             if ("PREEURO".Equals(variant, StringComparison.Ordinal))
             {
                 key = key + '-';
@@ -508,7 +512,9 @@ namespace ICU4N.Util
             {
                 return EMPTY_STRING_ARRAY;
             }
+#pragma warning disable CS0618 // Type or member is obsolete
             string prefRegion = UCultureInfo.GetRegionForSupplementalData(locale, true);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             CurrencyFilter filter = CurrencyFilter.Now().WithRegion(prefRegion);
 
@@ -532,7 +538,10 @@ namespace ICU4N.Util
         /// Returns the ISO 4217 3-letter code for this currency object.
         /// </summary>
         /// <stable>ICU 2.2</stable>
-        public virtual string CurrencyCode => subType;
+        public virtual string CurrencyCode
+#pragma warning disable CS0618 // Type or member is obsolete
+            => subType;
+#pragma warning restore CS0618 // Type or member is obsolete
 
         /// <summary>
         /// Returns the ISO 4217 numeric code for this currency object.
@@ -552,7 +561,9 @@ namespace ICU4N.Util
                         "currencyNumericCodes",
                         ICUResourceBundle.IcuDataAssembly);
                 UResourceBundle codeMap = bundle.Get("codeMap");
+#pragma warning disable CS0618 // Type or member is obsolete
                 UResourceBundle numCode = codeMap.Get(subType);
+#pragma warning restore CS0618 // Type or member is obsolete
                 result = numCode.GetInt32();
             }
             catch (MissingManifestResourceException)
@@ -647,6 +658,7 @@ namespace ICU4N.Util
             isChoiceFormat = false;
 
             CurrencyDisplayNames names = CurrencyDisplayNames.GetInstance(locale);
+#pragma warning disable CS0618 // Type or member is obsolete
             switch (nameStyle)
             {
                 case CurrencyNameStyle.SymbolName:
@@ -665,6 +677,7 @@ namespace ICU4N.Util
                 default:
                     throw new ArgumentException("bad name style: " + nameStyle);
             }
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
@@ -717,7 +730,9 @@ namespace ICU4N.Util
             isChoiceFormat = false;
 
             CurrencyDisplayNames names = CurrencyDisplayNames.GetInstance(locale);
+#pragma warning disable CS0618 // Type or member is obsolete
             return names.GetPluralName(subType, pluralCount);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
@@ -907,7 +922,9 @@ namespace ICU4N.Util
                 {
                     // Since the best match criteria is only based on length of key in trie and since all the
                     // values are mapped to the same key, we only need to examine the first value.
+#pragma warning disable CS0618 // Type or member is obsolete
                     bestCurrencyISOCode = values.Current.ISOCode;
+#pragma warning restore CS0618 // Type or member is obsolete
                     bestMatchLength = matchLength;
                 }
                 return true;
@@ -940,7 +957,9 @@ namespace ICU4N.Util
         public virtual int GetDefaultFractionDigits(CurrencyUsage usage)
         {
             CurrencyMetaInfo info = CurrencyMetaInfo.GetInstance();
+#pragma warning disable CS0618 // Type or member is obsolete
             CurrencyDigits digits = info.CurrencyDigits(subType, usage);
+#pragma warning restore CS0618 // Type or member is obsolete
             return digits.FractionDigits;
         }
 
@@ -966,7 +985,9 @@ namespace ICU4N.Util
         public virtual double GetRoundingIncrement(CurrencyUsage usage)
         {
             CurrencyMetaInfo info = CurrencyMetaInfo.GetInstance();
+#pragma warning disable CS0618 // Type or member is obsolete
             CurrencyDigits digits = info.CurrencyDigits(subType, usage);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             int data1 = digits.RoundingIncrement;
 
@@ -996,7 +1017,9 @@ namespace ICU4N.Util
         /// <stable>ICU 2.2</stable>
         public override string ToString()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             return subType;
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
@@ -1006,7 +1029,9 @@ namespace ICU4N.Util
         /// <param name="theISOCode">The iso code used to construct the currency.</param>
         /// <stable>ICU 3.4</stable>
         protected internal Currency(string theISOCode)
+#pragma warning disable CS0618 // Type or member is obsolete
             : base("currency", theISOCode)
+#pragma warning restore CS0618 // Type or member is obsolete
         {
 
             // isoCode is kept for readResolve() and Currency class no longer

@@ -22,7 +22,7 @@ namespace ICU4N.Numerics
           * The power of ten corresponding to the least significant digit in the BCD. For example, if this
           * object represents the number "3.14", the BCD will be "0x314" and the scale will be -2.
           *
-          * <p>Note that in {@link java.math.BigDecimal}, the scale is defined differently: the number of
+          * <para/>Note that in {@link java.math.BigDecimal}, the scale is defined differently: the number of
           * digits after the decimal place, which is the negative of our definition of scale.
           */
         protected int scale;
@@ -31,7 +31,7 @@ namespace ICU4N.Numerics
          * The number of digits in the BCD. For example, "1007" has BCD "0x1007" and precision 4. The
          * maximum precision is 16 since a long can hold only 16 digits.
          *
-         * <p>This value must be re-calculated whenever the value in bcd changes by using {@link
+         * <para/>This value must be re-calculated whenever the value in bcd changes by using {@link
          * #computePrecisionAndCompact()}.
          */
         protected int precision;
@@ -926,7 +926,7 @@ namespace ICU4N.Numerics
          * Appends a digit, optionally with one or more leading zeros, to the end of the value represented
          * by this DecimalQuantity.
          *
-         * <p>The primary use of this method is to construct numbers during a parsing loop. It allows
+         * <para/>The primary use of this method is to construct numbers during a parsing loop. It allows
          * parsing to take advantage of the digit list infrastructure primarily designed for formatting.
          *
          * @param value The digit to append.
@@ -1067,7 +1067,7 @@ namespace ICU4N.Numerics
          * precision. The precision is the number of digits in the number up through the greatest nonzero
          * digit.
          *
-         * <p>This method must always be called when bcd changes in order for assumptions to be correct in
+         * <para/>This method must always be called when bcd changes in order for assumptions to be correct in
          * methods like {@link #fractionCount()}.
          */
         protected abstract void Compact();

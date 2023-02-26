@@ -31,7 +31,7 @@ namespace ICU4N.Numerics
          * Converts a rounding mode and metadata about the quantity being rounded to a boolean determining
          * whether the value should be rounded toward infinity or toward zero.
          *
-         * <p>The parameters are of type int because benchmarks on an x86-64 processor against OpenJDK
+         * <para/>The parameters are of type int because benchmarks on an x86-64 processor against OpenJDK
          * showed that ints were demonstrably faster than enums in switch statements.
          *
          * @param isEven Whether the digit immediately before the rounding magnitude is even.

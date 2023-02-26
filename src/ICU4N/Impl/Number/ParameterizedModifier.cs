@@ -20,7 +20,7 @@ namespace ICU4N.Numerics
         /**
          * This constructor populates the ParameterizedModifier with a single positive and negative form.
          *
-         * <p>
+         * <para/>
          * If this constructor is used, a plural form CANNOT be passed to {@link #getModifier}.
          */
         public ParameterizedModifier(IModifier positive, IModifier negative)
@@ -35,7 +35,7 @@ namespace ICU4N.Numerics
          * This constructor prepares the ParameterizedModifier to be populated with a positive and negative Modifier for
          * multiple plural forms.
          *
-         * <p>
+         * <para/>
          * If this constructor is used, a plural form MUST be passed to {@link #getModifier}.
          */
         public ParameterizedModifier()

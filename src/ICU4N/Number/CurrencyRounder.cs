@@ -24,12 +24,12 @@ namespace ICU4N.Numerics
         /**
          * Associates a currency with this rounding strategy.
          *
-         * <p>
+         * <para/>
          * <strong>Calling this method is <em>not required</em></strong>, because the currency specified in unit() or via a
          * CurrencyAmount passed into format(Measure) is automatically applied to currency rounding strategies. However,
          * this method enables you to override that automatic association.
          *
-         * <p>
+         * <para/>
          * This method also enables numbers to be formatted using currency rounding rules without explicitly using a
          * currency format.
          *

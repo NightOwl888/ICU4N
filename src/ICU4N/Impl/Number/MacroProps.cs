@@ -17,7 +17,9 @@ namespace ICU4N.Numerics
         public Notation notation;
         public MeasureUnit unit;
         public Rounder rounder;
+#pragma warning disable CS0618 // Type or member is obsolete
         public Grouper grouper;
+#pragma warning restore CS0618 // Type or member is obsolete
         public Padder padder;
         public IntegerWidth integerWidth;
         public object symbols;
@@ -95,10 +97,13 @@ namespace ICU4N.Numerics
             if (this == obj) return true;
             if (!(obj is MacroProps other)) return false;
 
+
             return EqualityComparer<Notation>.Default.Equals(notation, other.notation)
                && EqualityComparer<MeasureUnit>.Default.Equals(unit, other.unit)
                && EqualityComparer<Rounder>.Default.Equals(rounder, other.rounder)
+#pragma warning disable CS0618 // Type or member is obsolete
                && EqualityComparer<Grouper>.Default.Equals(grouper, other.grouper)
+#pragma warning restore CS0618 // Type or member is obsolete
                && EqualityComparer<Padder>.Default.Equals(padder, other.padder)
                && EqualityComparer<IntegerWidth>.Default.Equals(integerWidth, other.integerWidth)
                && EqualityComparer<object>.Default.Equals(symbols, other.symbols)
@@ -109,6 +114,7 @@ namespace ICU4N.Numerics
                && EqualityComparer<Multiplier>.Default.Equals(multiplier, other.multiplier)
                && EqualityComparer<PluralRules>.Default.Equals(rules, other.rules)
                && EqualityComparer<UCultureInfo>.Default.Equals(loc, other.loc);
+
         }
 
         public virtual object Clone()

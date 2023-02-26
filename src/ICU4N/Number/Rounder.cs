@@ -31,14 +31,14 @@ namespace ICU4N.Numerics
         /**
          * Show all available digits to full precision.
          *
-         * <p>
+         * <para/>
          * <strong>NOTE:</strong> When formatting a <em>double</em>, this method, along with {@link #minFraction} and
          * {@link #minDigits}, will trigger complex algorithm similar to <em>Dragon4</em> to determine the low-order digits
          * and the number of digits to display based on the value of the double. If the number of fraction places or
          * significant digits can be bounded, consider using {@link #maxFraction} or {@link #maxDigits} instead to maximize
          * performance. For more information, read the following blog post.
          *
-         * <p>
+         * <para/>
          * http://www.serpentine.com/blog/2011/06/29/here-be-dragons-advances-in-problems-you-didnt-even-know-you-had/
          *
          * @return A Rounder for chaining or passing to the NumberFormatter rounding() setter.
@@ -62,10 +62,10 @@ namespace ICU4N.Numerics
          * Show numbers rounded if necessary to a certain number of fraction places (numerals after the decimal separator).
          * Additionally, pad with zeros to ensure that this number of places are always shown.
          *
-         * <p>
+         * <para/>
          * Example output with minMaxFractionPlaces = 3:
          *
-         * <p>
+         * <para/>
          * 87,650.000<br>
          * 8,765.000<br>
          * 876.500<br>
@@ -76,7 +76,7 @@ namespace ICU4N.Numerics
          * 0.009<br>
          * 0.000 (zero)
          *
-         * <p>
+         * <para/>
          * This method is equivalent to {@link #minMaxFraction} with both arguments equal.
          *
          * @param minMaxFractionPlaces
@@ -104,7 +104,7 @@ namespace ICU4N.Numerics
          * Always show at least a certain number of fraction places after the decimal separator, padding with zeros if
          * necessary. Do not perform rounding (display numbers to their full precision).
          *
-         * <p>
+         * <para/>
          * <strong>NOTE:</strong> If you are formatting <em>doubles</em>, see the performance note in {@link #unlimited}.
          *
          * @param minFractionPlaces
@@ -186,7 +186,7 @@ namespace ICU4N.Numerics
          * Show numbers rounded if necessary to a certain number of significant digits or significant figures. Additionally,
          * pad with zeros to ensure that this number of significant digits/figures are always shown.
          *
-         * <p>
+         * <para/>
          * This method is equivalent to {@link #minMaxDigits} with both arguments equal.
          *
          * @param minMaxSignificantDigits
@@ -214,7 +214,7 @@ namespace ICU4N.Numerics
          * Always show at least a certain number of significant digits/figures, padding with zeros if necessary. Do not
          * perform rounding (display numbers to their full precision).
          *
-         * <p>
+         * <para/>
          * <strong>NOTE:</strong> If you are formatting <em>doubles</em>, see the performance note in {@link #unlimited}.
          *
          * @param minSignificantDigits
@@ -291,16 +291,16 @@ namespace ICU4N.Numerics
          * Show numbers rounded if necessary to the closest multiple of a certain rounding increment. For example, if the
          * rounding increment is 0.5, then round 1.2 to 1 and round 1.3 to 1.5.
          *
-         * <p>
+         * <para/>
          * In order to ensure that numbers are padded to the appropriate number of fraction places, set the scale on the
          * rounding increment BigDecimal. For example, to round to the nearest 0.5 and always display 2 numerals after the
          * decimal separator (to display 1.2 as "1.00" and 1.3 as "1.50"), you can run:
          *
-         * <pre>
+         * <code>
          * Rounder.increment(new BigDecimal("0.50"))
-         * </pre>
+         * </code>
          *
-         * <p>
+         * <para/>
          * For more information on the scale of Java BigDecimal, see {@link java.math.BigDecimal#scale()}.
          *
          * @param roundingIncrement
@@ -324,10 +324,10 @@ namespace ICU4N.Numerics
 
         /**
          * Show numbers rounded and padded according to the rules for the currency unit. The most common rounding settings
-         * for currencies include <code>Rounder.fixedFraction(2)</code>, <code>Rounder.integer()</code>, and
-         * <code>Rounder.increment(0.05)</code> for cash transactions ("nickel rounding").
+         * for currencies include <c>Rounder.fixedFraction(2)</c>, <c>Rounder.integer()</c>, and
+         * <c>Rounder.increment(0.05)</c> for cash transactions ("nickel rounding").
          *
-         * <p>
+         * <para/>
          * The exact rounding details will be resolved at runtime based on the currency unit specified in the
          * NumberFormatter chain. To round according to the rules for one currency while displaying the symbol for another
          * currency, the withCurrency() method can be called on the return value of this method.
@@ -365,7 +365,9 @@ namespace ICU4N.Numerics
          */
         public Rounder WithMode(BigMath.RoundingMode roundingMode)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             return WithMode(RoundingUtils.MathContextUnlimited(roundingMode));
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /**
@@ -572,7 +574,9 @@ namespace ICU4N.Numerics
             int magnitude = input.GetMagnitude();
             int multiplier = producer.GetMultiplier(magnitude);
             input.AdjustMagnitude(multiplier);
+#pragma warning disable CS0618 // Type or member is obsolete
             Apply(input);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             // If the number turned to zero when rounding, do not re-attempt the rounding.
             if (!input.IsZero && input.GetMagnitude() == magnitude + multiplier + 1)
@@ -582,7 +586,9 @@ namespace ICU4N.Numerics
                 multiplier = producer.GetMultiplier(magnitude);
                 input.AdjustMagnitude(multiplier);
                 Debug.Assert(input.GetMagnitude() == magnitude + multiplier - 1);
+#pragma warning disable CS0618 // Type or member is obsolete
                 Apply(input);
+#pragma warning restore CS0618 // Type or member is obsolete
                 Debug.Assert(input.GetMagnitude() == magnitude + multiplier);
             }
 

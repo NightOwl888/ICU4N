@@ -24,7 +24,9 @@ namespace ICU4N.Numerics
         public IModifier modMiddle;
         public IModifier modInner;
         public Rounder rounding;
+#pragma warning disable CS0618 // Type or member is obsolete
         public Grouper grouping;
+#pragma warning restore CS0618 // Type or member is obsolete
         public bool useCurrency;
 
         // Internal fields:

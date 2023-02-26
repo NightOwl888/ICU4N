@@ -16,7 +16,7 @@ namespace ICU4N.Numerics
         /**
      * Creates a pattern string from a property bag.
      *
-     * <p>
+     * <para/>
      * Since pattern strings support only a subset of the functionality available in a property bag, a new property bag
      * created from the string returned by this function may not be the same as the original property bag.
      *
@@ -287,14 +287,14 @@ namespace ICU4N.Numerics
          * example, in locale <em>fr-FR</em>, the period in the pattern "0.000" means "decimal" in standard notation (as it
          * does in every other locale), but it means "grouping" in localized notation.
          *
-         * <p>
+         * <para/>
          * A greedy string-substitution strategy is used to substitute locale symbols. If two symbols are ambiguous or have
          * the same prefix, the result is not well-defined.
          *
-         * <p>
+         * <para/>
          * Locale symbols are not allowed to contain the ASCII quote character.
          *
-         * <p>
+         * <para/>
          * This method is provided for backwards compatibility and should not be used in any new code.
          *
          * @param input
@@ -312,7 +312,7 @@ namespace ICU4N.Numerics
                 return null;
 
             // Construct a table of strings to be converted between localized and standard.
-            string[][] table = Arrays.NewRectangularArray<string>(21, 2); //new string[21][2];
+            string[][] table = Arrays.NewRectangularArray<string>(21, 2);
             int standIdx = toLocalized ? 0 : 1;
             int localIdx = toLocalized ? 1 : 0;
             table[0][standIdx] = "%";
@@ -328,19 +328,21 @@ namespace ICU4N.Numerics
             table[5][standIdx] = "+";
             table[5][localIdx] = symbols.PlusSignString;
             table[6][standIdx] = ";";
-            table[6][localIdx] = char.ToString(symbols.PatternSeparator); //Character.ToString(symbols.PatternSeparator);
+            table[6][localIdx] = char.ToString(symbols.PatternSeparator);
             table[7][standIdx] = "@";
-            table[7][localIdx] = char.ToString(symbols.SignificantDigit); //Character.toString(symbols.getSignificantDigit());
+            table[7][localIdx] = char.ToString(symbols.SignificantDigit);
             table[8][standIdx] = "E";
             table[8][localIdx] = symbols.ExponentSeparator;
             table[9][standIdx] = "*";
-            table[9][localIdx] = char.ToString(symbols.PadEscape); //Character.toString(symbols.getPadEscape());
+            table[9][localIdx] = char.ToString(symbols.PadEscape);
             table[10][standIdx] = "#";
-            table[10][localIdx] = char.ToString(symbols.Digit); //Character.toString(symbols.getDigit());
+            table[10][localIdx] = char.ToString(symbols.Digit);
             for (int i = 0; i < 10; i++)
             {
-                table[11 + i][standIdx] = char.ToString((char)('0' + i)); //Character.toString((char)('0' + i));
+                table[11 + i][standIdx] = char.ToString((char)('0' + i));
+#pragma warning disable CS0618 // Type or member is obsolete
                 table[11 + i][localIdx] = symbols.DigitStringsLocal[i];
+#pragma warning restore CS0618 // Type or member is obsolete
             }
 
             // Special case: quotes are NOT allowed to be in any localIdx strings.

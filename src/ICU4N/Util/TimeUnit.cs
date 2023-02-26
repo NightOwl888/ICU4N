@@ -19,7 +19,9 @@ namespace ICU4N.Util
         private readonly int index;
 
         internal TimeUnit(string type, string code)
+#pragma warning disable CS0618 // Type or member is obsolete
             : base(type, code)
+#pragma warning restore CS0618 // Type or member is obsolete
         {
             index = 0;
         }

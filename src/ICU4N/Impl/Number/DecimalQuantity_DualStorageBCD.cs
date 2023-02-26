@@ -21,7 +21,7 @@ namespace ICU4N.Numerics
        * The BCD of the 16 digits of the number represented by this object. Every 4 bits of the long map
        * to one digit. For example, the number "12345" in BCD is "0x12345".
        *
-       * <p>Whenever bcd changes internally, {@link #compact()} must be called, except in special cases
+       * <para/>Whenever bcd changes internally, {@link #compact()} must be called, except in special cases
        * like setting the digit to zero.
        */
         private byte[] bcdBytes;

@@ -84,7 +84,9 @@ namespace ICU4N.Numerics
                     case KEY_GROUPER:
                         if (macros.grouper == null)
                         {
+#pragma warning disable CS0618 // Type or member is obsolete
                             macros.grouper = (Grouper)current.value;
+#pragma warning restore CS0618 // Type or member is obsolete
                         }
                         break;
                     case KEY_PADDER:
@@ -159,11 +161,11 @@ namespace ICU4N.Numerics
          * <li>Compact notation: "12K"
          * </ul>
          *
-         * <p>
+         * <para/>
          * All notation styles will be properly localized with locale data, and all notation styles are compatible with
          * units, rounding strategies, and other number formatter settings.
          *
-         * <p>
+         * <para/>
          * Pass this method the return value of a {@link Notation} factory method. For example:
          *
          * <pre>
@@ -193,17 +195,17 @@ namespace ICU4N.Numerics
          * <li>Percent: "12.3%"
          * </ul>
          *
-         * <p>
+         * <para/>
          * <strong>Note:</strong> The unit can also be specified by passing a {@link Measure} to
          * {@link LocalizedNumberFormatter#format(Measure)}. Units specified via the format method take precedence over
          * units specified here. This setter is designed for situations when the unit is constant for the duration of the
          * number formatting process.
          *
-         * <p>
+         * <para/>
          * All units will be properly localized with locale data, and all units are compatible with notation styles,
          * rounding strategies, and other number formatter settings.
          *
-         * <p>
+         * <para/>
          * Pass this method any instance of {@link MeasureUnit}. For units of measure:
          *
          * <pre>
@@ -248,14 +250,14 @@ namespace ICU4N.Numerics
          * <li>Do not perform rounding: "3.1415926..."
          * </ul>
          *
-         * <p>
+         * <para/>
          * Pass this method the return value of one of the factory methods on {@link Rounder}. For example:
          *
          * <pre>
          * NumberFormatter.with().rounding(Rounder.fixedFraction(2))
          * </pre>
          *
-         * <p>
+         * <para/>
          * In most cases, the default rounding strategy is to round to 6 fraction places; i.e.,
          * <code>Rounder.maxFraction(6)</code>. The exceptions are if compact notation is being used, then the compact
          * notation rounding strategy is used (see {@link Notation#compactShort} for details), or if the unit is a currency,
@@ -283,10 +285,10 @@ namespace ICU4N.Numerics
          * <li>No grouping: "12300" and "1230"
          * </ul>
          *
-         * <p>
+         * <para/>
          * The exact grouping widths will be chosen based on the locale.
          *
-         * <p>
+         * <para/>
          * Pass this method the return value of one of the factory methods on {@link Grouper}. For example:
          *
          * <pre>
@@ -318,7 +320,7 @@ namespace ICU4N.Numerics
          * <li>Two minimum integer digits: "00.08"
          * </ul>
          *
-         * <p>
+         * <para/>
          * Pass this method the return value of {@link IntegerWidth#zeroFillTo(int)}. For example:
          *
          * <pre>
@@ -350,27 +352,27 @@ namespace ICU4N.Numerics
          * <li><em>my_MY</em> symbols: "၁၂,၃၄၅.၆၇"
          * </ul>
          *
-         * <p>
+         * <para/>
          * Pass this method an instance of {@link DecimalFormatSymbols}. For example:
          *
          * <pre>
          * NumberFormatter.with().symbols(DecimalFormatSymbols.getInstance(new ULocale("de_CH")))
          * </pre>
          *
-         * <p>
+         * <para/>
          * <strong>Note:</strong> DecimalFormatSymbols automatically chooses the best numbering system based on the locale.
          * In the examples above, the first three are using the Latin numbering system, and the fourth is using the Myanmar
          * numbering system.
          *
-         * <p>
+         * <para/>
          * <strong>Note:</strong> The instance of DecimalFormatSymbols will be copied: changes made to the symbols object
          * after passing it into the fluent chain will not be seen.
          *
-         * <p>
+         * <para/>
          * <strong>Note:</strong> Calling this method will override the NumberingSystem previously specified in
          * {@link #symbols(NumberingSystem)}.
          *
-         * <p>
+         * <para/>
          * The default is to choose the symbols based on the locale specified in the fluent chain.
          *
          * @param symbols
@@ -395,7 +397,7 @@ namespace ICU4N.Numerics
          * <li>Math Sans Bold numbering system: "𝟭𝟮,𝟯𝟰𝟱"
          * </ul>
          *
-         * <p>
+         * <para/>
          * Pass this method an instance of {@link NumberingSystem}. For example, to force the locale to always use the Latin
          * alphabet numbering system (ASCII digits):
          *
@@ -403,11 +405,11 @@ namespace ICU4N.Numerics
          * NumberFormatter.with().symbols(NumberingSystem.LATIN)
          * </pre>
          *
-         * <p>
+         * <para/>
          * <strong>Note:</strong> Calling this method will override the DecimalFormatSymbols previously specified in
          * {@link #symbols(DecimalFormatSymbols)}.
          *
-         * <p>
+         * <para/>
          * The default is to choose the best numbering system for the locale.
          *
          * @param ns
@@ -431,14 +433,14 @@ namespace ICU4N.Numerics
          * <li>Full name: "12.00 US dollars", "12 meters"
          * </ul>
          *
-         * <p>
+         * <para/>
          * Pass an element from the {@link UnitWidth} enum to this setter. For example:
          *
          * <pre>
          * NumberFormatter.with().unitWidth(UnitWidth.FULL_NAME)
          * </pre>
          *
-         * <p>
+         * <para/>
          * The default is the SHORT width.
          *
          * @param style
@@ -462,14 +464,14 @@ namespace ICU4N.Numerics
          * <li>Accounting: "$123", "($123)"
          * </ul>
          *
-         * <p>
+         * <para/>
          * Pass an element from the {@link SignDisplay} enum to this setter. For example:
          *
          * <pre>
          * NumberFormatter.with().sign(SignDisplay.ALWAYS)
          * </pre>
          *
-         * <p>
+         * <para/>
          * The default is AUTO sign display.
          *
          * @param style
@@ -493,14 +495,14 @@ namespace ICU4N.Numerics
          * <li>Always: "1."
          * </ul>
          *
-         * <p>
+         * <para/>
          * Pass an element from the {@link DecimalSeparatorDisplay} enum to this setter. For example:
          *
          * <pre>
          * NumberFormatter.with().decimal(DecimalSeparatorDisplay.ALWAYS)
          * </pre>
          *
-         * <p>
+         * <para/>
          * The default is AUTO decimal separator display.
          *
          * @param style

@@ -20,7 +20,9 @@ namespace ICU4N.Numerics
         public static UnlocalizedNumberFormatter Create(DecimalFormatProperties properties, DecimalFormatSymbols symbols)
         {
             MacroProps macros = OldToNew(properties, symbols, null);
+#pragma warning disable CS0618 // Type or member is obsolete
             return NumberFormatter.With().Macros(macros);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /**
@@ -165,7 +167,9 @@ namespace ICU4N.Numerics
             }
             if (rounding != null)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 rounding = rounding.WithMode(mathContext);
+#pragma warning restore CS0618 // Type or member is obsolete
                 macros.rounder = rounding;
             }
 
@@ -183,10 +187,12 @@ namespace ICU4N.Numerics
             int grouping2 = properties.SecondaryGroupingSize;
             int minGrouping = properties.MinimumGroupingDigits;
             Debug.Assert(grouping1 >= -2); // value of -2 means to forward no grouping information
-            grouping1 = grouping1 > 0 ? grouping1 : grouping2 > 0 ? grouping2 : grouping1;
+            grouping1 = grouping1 > 0 ? grouping1 : (grouping2 > 0 ? grouping2 : grouping1);
             grouping2 = grouping2 > 0 ? grouping2 : grouping1;
             // TODO: Is it important to handle minGrouping > 2?
+#pragma warning disable CS0618 // Type or member is obsolete
             macros.grouper = Grouper.GetInstance((sbyte)grouping1, (sbyte)grouping2, minGrouping == 2);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             /////////////
             // PADDING //
@@ -252,6 +258,7 @@ namespace ICU4N.Numerics
                     int minInt_ = properties.MinimumIntegerDigits;
                     int minFrac_ = properties.MinimumFractionDigits;
                     int maxFrac_ = properties.MaximumFractionDigits;
+#pragma warning disable CS0618 // Type or member is obsolete
                     if (minInt_ == 0 && maxFrac_ == 0)
                     {
                         // Patterns like "#E0" and "##E0", which mean no rounding!
@@ -268,6 +275,7 @@ namespace ICU4N.Numerics
                         macros.rounder = Rounder.ConstructSignificant(minInt_ + minFrac_, minInt_ + maxFrac_)
                                 .WithMode(mathContext);
                     }
+#pragma warning restore CS0618 // Type or member is obsolete
                 }
             }
 

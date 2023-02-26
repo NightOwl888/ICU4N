@@ -24,7 +24,7 @@ namespace ICU4N.Numerics
          * Runs the recursive descent parser on the given pattern string, returning a data structure with raw information
          * about the pattern string.
          *
-         * <p>
+         * <para/>
          * To obtain a more useful form of the data, consider using {@link #parseToProperties} instead.
          *
          * @param patternString
@@ -231,9 +231,9 @@ namespace ICU4N.Numerics
             public long paddingEndpoints = 0;
         }
 
-        /////////////////////////////////////////////////////
-        /// BEGIN RECURSIVE DESCENT PARSER IMPLEMENTATION ///
-        /////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////
+        // BEGIN RECURSIVE DESCENT PARSER IMPLEMENTATION //
+        ///////////////////////////////////////////////////
 
         /** An internal class used for tracking the cursor during parsing of a pattern string. */
         private class ParserState
@@ -497,7 +497,9 @@ namespace ICU4N.Numerics
                         }
                         if (result.rounding != null)
                         {
+#pragma warning disable CS0618 // Type or member is obsolete
                             result.rounding.AppendDigit((byte)(state.Peek() - '0'), 0, true);
+#pragma warning restore CS0618 // Type or member is obsolete
                         }
                         break;
 
@@ -564,7 +566,9 @@ namespace ICU4N.Numerics
                             {
                                 result.rounding = new DecimalQuantity_DualStorageBCD();
                             }
+#pragma warning disable CS0618 // Type or member is obsolete
                             result.rounding.AppendDigit((byte)(state.Peek() - '0'), zeroCounter, false);
+#pragma warning restore CS0618 // Type or member is obsolete
                             zeroCounter = 0;
                         }
                         break;
@@ -606,7 +610,7 @@ namespace ICU4N.Numerics
         /// END RECURSIVE DESCENT PARSER IMPLEMENTATION ///
         ///////////////////////////////////////////////////
 
-        private static void ParseToExistingPropertiesImpl(String pattern, DecimalFormatProperties properties, int ignoreRounding)
+        private static void ParseToExistingPropertiesImpl(string pattern, DecimalFormatProperties properties, int ignoreRounding)
         {
             if (pattern == null || pattern.Length == 0)
             {

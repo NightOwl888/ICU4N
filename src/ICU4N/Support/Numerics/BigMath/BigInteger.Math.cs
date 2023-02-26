@@ -141,7 +141,7 @@ namespace ICU4N.Numerics.BigMath
         /**
          * Tests whether the bit at position n in {@code this} is set. The result is
          * equivalent to {@code this & (2^n) != 0}.
-         * <p>
+         * <para/>
          * <b>Implementation Note:</b> Usage of this method is not recommended as
          * the current implementation is not efficient.
          *
@@ -195,7 +195,7 @@ namespace ICU4N.Numerics.BigMath
         * Returns a new {@code BigInteger} which has the same binary representation
         * as {@code this} but with the bit at position n set. The result is
         * equivalent to {@code this | 2^n}.
-        * <p>
+        * <para/>
         * <b>Implementation Note:</b> Usage of this method is not recommended as
         * the current implementation is not efficient.
         *
@@ -218,7 +218,7 @@ namespace ICU4N.Numerics.BigMath
         * Returns a new {@code BigInteger} which has the same binary representation
         * as {@code this} but with the bit at position n cleared. The result is
         * equivalent to {@code this & ~(2^n)}.
-        * <p>
+        * <para/>
         * <b>Implementation Note:</b> Usage of this method is not recommended as
         * the current implementation is not efficient.
         *
@@ -241,7 +241,7 @@ namespace ICU4N.Numerics.BigMath
         * Returns a new {@code BigInteger} which has the same binary representation
         * as {@code this} but with the bit at position n flipped. The result is
         * equivalent to {@code this ^ 2^n}.
-        * <p>
+        * <para/>
         * <b>Implementation Note:</b> Usage of this method is not recommended as
         * the current implementation is not efficient.
         *
@@ -265,7 +265,7 @@ namespace ICU4N.Numerics.BigMath
         /**
         * Returns a new {@code BigInteger} whose value is {@code ~this}. The result
         * of this operation is {@code -this-1}.
-        * <p>
+        * <para/>
         * <b>Implementation Note:</b> Usage of this method is not recommended as
         * the current implementation is not efficient.
         *
@@ -299,7 +299,7 @@ namespace ICU4N.Numerics.BigMath
 
         /**
          * Returns a new {@code BigInteger} whose value is {@code this | val}.
-         * <p>
+         * <para/>
          * <b>Implementation Note:</b> Usage of this method is not recommended as
          * the current implementation is not efficient.
          *
@@ -317,7 +317,7 @@ namespace ICU4N.Numerics.BigMath
 
         /**
          * Returns a new {@code BigInteger} whose value is {@code this ^ val}.
-         * <p>
+         * <para/>
          * <b>Implementation Note:</b> Usage of this method is not recommended as
          * the current implementation is not efficient.
          *
@@ -336,7 +336,7 @@ namespace ICU4N.Numerics.BigMath
         * Returns a new {@code BigInteger} whose value is {@code this & ~val}.
         * Evaluating {@code x.andNot(val)} returns the same result as {@code
         * x.and(val.not())}.
-        * <p>
+        * <para/>
         * <b>Implementation Note:</b> Usage of this method is not recommended as
         * the current implementation is not efficient.
         *
@@ -833,7 +833,7 @@ namespace ICU4N.Numerics.BigMath
         * Returns a random positive {@code BigInteger} instance in the range [0,
         * 2^(bitLength)-1] which is probably prime. The probability that the
         * returned {@code BigInteger} is prime is beyond (1-1/2^80).
-        * <p>
+        * <para/>
         * <b>Implementation Note:</b> Currently {@code rnd} is ignored.
         *
         * @param bitLength
