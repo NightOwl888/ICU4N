@@ -1,7 +1,8 @@
 ﻿<Project>
 
   <Import Project="$(MSBuildThisFileDirectory)/.build/dependencies.props" Condition="Exists('$(MSBuildThisFileDirectory)/.build/dependencies.props')" />
-
+  <Import Project="$(MSBuildThisFileDirectory)/.build/nowarn.props" Condition="Exists('$(MSBuildThisFileDirectory)/.build/nowarn.props')" />
+  
   <!--Features in .NET 6 only -->
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('net6.')) ">
     
