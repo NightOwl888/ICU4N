@@ -1,14 +1,13 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
-using ICU4N.Support.Collections;
 using ICU4N.Util;
 using J2N;
 using J2N.Collections;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Resources;
-using System.Text;
+#nullable enable
 
 namespace ICU4N.Text
 {
@@ -36,174 +35,140 @@ namespace ICU4N.Text
         : ICloneable
 #endif
     {
-        /**
-         * Creates a DecimalFormatSymbols object for the default <code>FORMAT</code> locale.
-         * @see Category#FORMAT
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Creates a <see cref="DecimalFormatSymbols"/> object for the <see cref="UCultureInfo.CurrentCulture"/>.
+        /// </summary>
+        /// <seealso cref="UCultureInfo.CurrentCulture"/>
+        /// <stable>ICU 2.0</stable>
         public DecimalFormatSymbols()
             : this(CultureInfo.CurrentCulture) // ICU4N TODO: in .NET, the default is invariant culture
         {
         }
 
-        /**
-         * Creates a DecimalFormatSymbols object for the given locale.
-         * @param locale the locale
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Creates a <see cref="DecimalFormatSymbols"/> object for the given <paramref name="locale"/>.
+        /// </summary>
+        /// <param name="locale">The locale.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
+        /// <stable>ICU 2.0</stable>
         public DecimalFormatSymbols(CultureInfo locale)
             : this(locale.ToUCultureInfo())
         {
         }
 
-        /**
-         * {@icu} Creates a DecimalFormatSymbols object for the given locale.
-         * @param locale the locale
-         * @stable ICU 3.2
-         */
+        /// <summary>
+        /// Creates a <see cref="DecimalFormatSymbols"/> object for the given <paramref name="locale"/>.
+        /// </summary>
+        /// <param name="locale">The locale.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
+        /// <stable>ICU 3.2</stable>
         public DecimalFormatSymbols(UCultureInfo locale)
+            : this(locale, null) // ICU4N: Reuse private constuctor
         {
-            Initialize(locale, null);
         }
 
-        private DecimalFormatSymbols(CultureInfo locale, NumberingSystem ns)
+        private DecimalFormatSymbols(CultureInfo locale, NumberingSystem? ns)
             : this(locale.ToUCultureInfo(), ns)
         {
         }
 
-        private DecimalFormatSymbols(UCultureInfo locale, NumberingSystem ns)
+        private DecimalFormatSymbols(UCultureInfo locale, NumberingSystem? ns)
         {
+            if (locale is null)
+                throw new ArgumentNullException(nameof(locale)); // ICU4N: Added guard clause
             Initialize(locale, ns);
         }
 
-        /**
-         * Returns a DecimalFormatSymbols instance for the default locale.
-         *
-         * <p><strong>Note:</strong> Unlike
-         * <code>java.text.DecimalFormatSymbols#getInstance</code>, this method simply returns
-         * <code>new com.ibm.icu.text.DecimalFormatSymbols()</code>.  ICU currently does not
-         * support <code>DecimalFormatSymbolsProvider</code>, which was introduced in Java 6.
-         *
-         * @return A DecimalFormatSymbols instance.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Returns a <see cref="DecimalFormatSymbols"/> instance for the <see cref="UCultureInfo.CurrentCulture"/>.
+        /// </summary>
+        /// <returns>A <see cref="DecimalFormatSymbols"/> instance.</returns>
+        /// <stable>ICU 3.8</stable>
         public static DecimalFormatSymbols GetInstance()
         {
             return new DecimalFormatSymbols();
         }
 
-        /**
-         * Returns a DecimalFormatSymbols instance for the given locale.
-         *
-         * <p><strong>Note:</strong> Unlike
-         * <code>java.text.DecimalFormatSymbols#getInstance</code>, this method simply returns
-         * <code>new com.ibm.icu.text.DecimalFormatSymbols(locale)</code>.  ICU currently does
-         * not support <code>DecimalFormatSymbolsProvider</code>, which was introduced in Java
-         * 6.
-         *
-         * @param locale the locale.
-         * @return A DecimalFormatSymbols instance.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Returns a <see cref="DecimalFormatSymbols"/> instance for the given <paramref name="locale"/>.
+        /// </summary>
+        /// <param name="locale">The locale.</param>
+        /// <returns>A <see cref="DecimalFormatSymbols"/> instance.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
+        /// <stable>ICU 3.8</stable>
         public static DecimalFormatSymbols GetInstance(CultureInfo locale)
         {
             return new DecimalFormatSymbols(locale);
         }
 
-        /**
-         * Returns a DecimalFormatSymbols instance for the given locale.
-         *
-         * <p><strong>Note:</strong> Unlike
-         * <code>java.text.DecimalFormatSymbols#getInstance</code>, this method simply returns
-         * <code>new com.ibm.icu.text.DecimalFormatSymbols(locale)</code>.  ICU currently does
-         * not support <code>DecimalFormatSymbolsProvider</code>, which was introduced in Java
-         * 6.
-         *
-         * @param locale the locale.
-         * @return A DecimalFormatSymbols instance.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Returns a <see cref="DecimalFormatSymbols"/> instance for the given <paramref name="locale"/>.
+        /// </summary>
+        /// <param name="locale">The locale.</param>
+        /// <returns>A <see cref="DecimalFormatSymbols"/> instance.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
+        /// <stable>ICU 3.8</stable>
         public static DecimalFormatSymbols GetInstance(UCultureInfo locale)
         {
             return new DecimalFormatSymbols(locale);
         }
 
-        /**
-         * {@icu} Returns a DecimalFormatSymbols instance for the given locale with digits and symbols
-         * corresponding to the given {@link NumberingSystem}.
-         *
-         * <p>This method behaves equivalently to {@link #getInstance} called with a locale having a
-         * "numbers=xxxx" keyword specifying the numbering system by name.
-         *
-         * <p>In this method, the NumberingSystem argument will be used even if the locale has its own
-         * "numbers=xxxx" keyword.
-         *
-         * @param locale the locale.
-         * @param ns the numbering system.
-         * @return A DecimalFormatSymbols instance.
-         * @provisional This API might change or be removed in a future release.
-         * @draft ICU 60
-         */
+        /// <summary>
+        /// <icu/> Returns a <see cref="DecimalFormatSymbols"/> instance for the given locale with digits and symbols
+        /// corresponding to the given <see cref="NumberingSystem"/>.
+        /// <para/>
+        /// This method behaves equivalently to <see cref="GetInstance(UCultureInfo)"/> called with a locale having a
+        /// "numbers=xxxx" keyword.
+        /// </summary>
+        /// <param name="locale">The locale.</param>
+        /// <param name="ns">The numbering system.</param>
+        /// <returns>A <see cref="DecimalFormatSymbols"/> instance.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        /// <draft>ICU 60</draft>
         public static DecimalFormatSymbols ForNumberingSystem(CultureInfo locale, NumberingSystem ns) // ICU4N TODO: API - rename according to .NET naming conventions
         {
             return new DecimalFormatSymbols(locale, ns);
         }
 
-        /**
-         * {@icu} Returns a DecimalFormatSymbols instance for the given locale with digits and symbols
-         * corresponding to the given {@link NumberingSystem}.
-         *
-         * <p>This method behaves equivalently to {@link #getInstance} called with a locale having a
-         * "numbers=xxxx" keyword specifying the numbering system by name.
-         *
-         * <p>In this method, the NumberingSystem argument will be used even if the locale has its own
-         * "numbers=xxxx" keyword.
-         *
-         * @param locale the locale.
-         * @param ns the numbering system.
-         * @return A DecimalFormatSymbols instance.
-         * @provisional This API might change or be removed in a future release.
-         * @draft ICU 60
-         */
+        /// <summary>
+        /// <icu/> Returns a <see cref="DecimalFormatSymbols"/> instance for the given locale with digits and symbols
+        /// corresponding to the given <see cref="NumberingSystem"/>.
+        /// <para/>
+        /// This method behaves equivalently to <see cref="GetInstance(UCultureInfo)"/> called with a locale having a
+        /// "numbers=xxxx" keyword.
+        /// </summary>
+        /// <param name="locale">The locale.</param>
+        /// <param name="ns">The numbering system.</param>
+        /// <returns>A <see cref="DecimalFormatSymbols"/> instance.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        /// <draft>ICU 60</draft>
         public static DecimalFormatSymbols ForNumberingSystem(UCultureInfo locale, NumberingSystem ns) // ICU4N TODO: API - rename according to .NET naming conventions
         {
             return new DecimalFormatSymbols(locale, ns);
         }
 
-        /**
-         * Returns an array of all locales for which the <code>getInstance</code> methods of
-         * this class can return localized instances.
-         *
-         * <p><strong>Note:</strong> Unlike
-         * <code>java.text.DecimalFormatSymbols#getAvailableLocales</code>, this method simply
-         * returns the array of <code>Locale</code>s available for this class.  ICU currently
-         * does not support <code>DecimalFormatSymbolsProvider</code>, which was introduced in
-         * Java 6.
-         *
-         * @return An array of <code>Locale</code>s for which localized
-         * <code>DecimalFormatSymbols</code> instances are available.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Returns an array of all locales for which the <see cref="GetInstance(CultureInfo)"/> methods of
+        /// this class can return localized instances.
+        /// </summary>
+        /// <param name="types">A bitwise combination of the enumeration values that filter the cultures to retrieve.</param>
+        /// <returns>An array of <see cref="CultureInfo"/>s for which localized <see cref="DecimalFormatSymbols"/> instances are available.</returns>
+        /// <stable>ICU 3.8</stable>
         public static CultureInfo[] GetCultures(UCultureTypes types) // ICU4N: Renamed from getAvailableLocales()
         {
             return ICUResourceBundle.GetCultures(types);
         }
 
-        /**
-         * {@icu} Returns an array of all locales for which the <code>getInstance</code>
-         * methods of this class can return localized instances.
-         *
-         * <p><strong>Note:</strong> Unlike
-         * <code>java.text.DecimalFormatSymbols#getAvailableLocales</code>, this method simply
-         * returns the array of <code>ULocale</code>s available in this class.  ICU currently
-         * does not support <code>DecimalFormatSymbolsProvider</code>, which was introduced in
-         * Java 6.
-         *
-         * @return An array of <code>ULocale</code>s for which localized
-         * <code>DecimalFormatSymbols</code> instances are available.
-         * @stable ICU 3.8 (retain)
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// <icu/> Returns an array of all locales for which the <see cref="GetInstance(UCultureInfo)"/> methods of
+        /// this class can return localized instances.
+        /// </summary>
+        /// <param name="types">A bitwise combination of the enumeration values that filter the cultures to retrieve.</param>
+        /// <returns>An array of <see cref="UCultureInfo"/>s for which localized <see cref="DecimalFormatSymbols"/> instances are available.</returns>
+        /// <stable>ICU 3.8 (retain)</stable>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public static UCultureInfo[] GetUCultures(UCultureTypes types) // ICU4N: Renamed from getAvailableULocales()
         {
             return ICUResourceBundle.GetUCultures(types);
@@ -221,13 +186,12 @@ namespace ICU4N.Text
             set => SetZeroDigit(value);
         }
 
-        /**
-         * Returns the array of characters used as digits, in order from 0 through 9
-         * @return The array
-         * @stable ICU 4.6
-         * @see #getDigitStrings()
-         * @discouraged ICU 58 use {@link #getDigitStrings()} instead.
-         */
+        /// <summary>
+        /// Gets the array of characters used as digits, in order from 0 through 9.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        /// <seealso cref="DigitStrings"/>
+        /// <discouraged>ICU 58 use <see cref="DigitStrings"/> instead.</discouraged>
         public virtual char[] Digits => (char[])digits.Clone();
 
         /// <summary>
@@ -264,60 +228,56 @@ namespace ICU4N.Text
             codePointZero = zeroDigit;
         }
 
-        /**
-        * {@icu} Returns the array of strings used as digits, in order from 0 through 9
-        * @return The array of ten digit strings
-        * @see #setDigitStrings(String[])
-        * @stable ICU 58
-        */
+        /// <summary>
+        /// <icu/> Gets or sets the array of strings used as digits, in order from 0 through 9.
+        /// <para/>
+        /// <strong>Note:</strong> When the input array of digit strings contains any strings
+        /// represented by multiple <see cref="char"/>s, then <see cref="Digits"/> will return
+        /// the default digits ('0' - '9') and <see cref="ZeroDigit"/> will return the
+        /// default zero digit ('0').
+        /// </summary>
+        /// <exception cref="ArgumentNullException">The setter <paramref name="value"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">The setter <paramref name="value"/> array length is not 10.</exception>
+        /// <stable>ICU 58</stable>
         public virtual string[] DigitStrings // Equivalent to NumberFormatInfo.NativeDigits
         {
             get => (string[])digitStrings.Clone();
             set => SetDigitStrings(value);
         }
 
-        /**
-         * Returns the array of strings used as digits, in order from 0 through 9
-         * Package private method - doesn't create a defensively copy.
-         *
-         * <p><strong>WARNING:</strong> Mutating the returned array will cause undefined behavior.
-         * If you need to change the value of the array, use {@link #getDigitStrings} and {@link
-         * #setDigitStrings} instead.
-         *
-         * @return the array of digit strings
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Gets the array of strings used as digits, in order from 0 through 9.
+        /// Package private method - doesn't create a defensively copy.
+        /// <para/>
+        /// <strong>WARNING:</strong> Mutating the returned array will cause undefined behavior.
+        /// If you need to change the value of the array, use <see cref="DigitStrings"/> instead.
+        /// </summary>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual string[] DigitStringsLocal => digitStrings;
+        internal virtual string[] DigitStringsLocal => digitStrings; // ICU4N specific - marked internal instead of public
 
-        /**
-         * If the digit strings array corresponds to a sequence of increasing code points, this method
-         * returns the code point corresponding to the first entry in the digit strings array. If the
-         * digit strings array is <em>not</em> a sequence of increasing code points, returns -1.
-         *
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// If the digit strings array corresponds to a sequence of increasing code points, this method
+        /// returns the code point corresponding to the first entry in the digit strings array. If the
+        /// digit strings array is <em>not</em> a sequence of increasing code points, returns -1.
+        /// </summary>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual int CodePointZero => codePointZero;
+        internal virtual int CodePointZero => codePointZero; // ICU4N specific - marked internal instead of public
 
-        /**
-        * {@icu} Sets the array of strings used as digits, in order from 0 through 9
-        * <p>
-        * <b>Note:</b>
-        * <p>
-        * When the input array of digit strings contains any strings
-        * represented by multiple Java chars, then {@link #getDigits()} will return
-        * the default digits ('0' - '9') and {@link #getZeroDigit()} will return the
-        * default zero digit ('0').
-        *
-        * @param digitStrings The array of digit strings. The length of the array must be exactly 10.
-        * @throws NullPointerException if the <code>digitStrings</code> is null.
-        * @throws IllegalArgumentException if the length of the array is not 10.
-        * @see #getDigitStrings()
-        * @stable ICU 58
-        */
+        /// <summary>
+        /// <icu/> Sets the array of strings used as digits, in order from 0 through 9.
+        /// <para/>
+        /// <strong>Note:</strong> When the input array of digit strings contains any strings
+        /// represented by multiple <see cref="char"/>s, then <see cref="Digits"/> will return
+        /// the default digits ('0' - '9') and <see cref="ZeroDigit"/> will return the
+        /// default zero digit ('0').
+        /// </summary>
+        /// <param name="digitStrings">The array of digit strings. The length of the array must be exactly 10.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="digitStrings"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">The array length is not 10.</exception>
+        /// <seealso cref="DigitStrings"/>
+        /// <stable>ICU 58</stable>
         private void SetDigitStrings(string[] digitStrings)
         {
             if (digitStrings == null)
@@ -332,7 +292,7 @@ namespace ICU4N.Text
             // Scan input array and create char[] representation if possible
             // Also update codePointZero if possible
             string[] tmpDigitStrings = new string[10];
-            char[] tmpDigits = new char[10];
+            char[]? tmpDigits = new char[10];
             int tmpCodePointZero = -1;
             for (int i = 0; i < 10; i++)
             {
@@ -387,7 +347,7 @@ namespace ICU4N.Text
             this.digitStrings = tmpDigitStrings;
             this.codePointZero = tmpCodePointZero;
 
-            if (tmpDigits == null)
+            if (tmpDigits is null)
             {
                 // fallback to the default digit chars
                 this.zeroDigit = DEF_DIGIT_CHARS_ARRAY[0];
@@ -400,45 +360,34 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the character used to represent a significant digit in a pattern.
-         * @return the significant digit pattern character
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Gets or sets the character used to represent a significant digit in a pattern.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         public virtual char SignificantDigit
         {
             get => sigDigit;
             set => sigDigit = value;
         }
 
-        ///**
-        // * Sets the character used to represent a significant digit in a pattern.
-        // * @param sigDigit the significant digit pattern character
-        // * @stable ICU 3.0
-        // */
-        //public void setSignificantDigit(char sigDigit)
-        //{
-        //    this.sigDigit = sigDigit;
-        //}
-
-        /**
-         * Returns the character used for grouping separator. Different for French, etc.
-         * @return the thousands character
-         * @stable ICU 2.0
-         * @discouraged ICU 58 use {@link #getGroupingSeparatorString()} instead.
-         */
+        /// <summary>
+        /// Gets or sets the character used for grouping separator. Different for French, etc.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        /// <discouraged>ICU 58 use <see cref="GroupingSeparatorString"/> instead.</discouraged>
         public virtual char GroupingSeparator
         {
             get => groupingSeparator;
             set => SetGroupingSeparator(value);
         }
 
-        /**
-         * Sets the character used for grouping separator. Different for French, etc.
-         * @param groupingSeparator the thousands character
-         * @stable ICU 2.0
-         * @see #setGroupingSeparatorString(String)
-         */
+        /// <summary>
+        /// Sets the character used for grouping separator. Different for French, etc.
+        /// </summary>
+        /// <param name="groupingSeparator">The thousands character.</param>
+        /// <seealso cref="GroupingSeparatorString"/>
+        /// <stable>ICU 2.0</stable>
+        /// <discouraged>ICU 58 use <see cref="GroupingSeparatorString"/> instead.</discouraged>
         private void SetGroupingSeparator(char groupingSeparator)
         {
             this.groupingSeparator = groupingSeparator;
@@ -455,18 +404,17 @@ namespace ICU4N.Text
             set => SetGroupingSeparatorString(value);
         }
 
-        /**
-         * {@icu} Sets the string used for grouping separator.
-         * <p>
-         * <b>Note:</b> When the input grouping separator String is represented
-         * by multiple Java chars, then {@link #getGroupingSeparator()} will
-         * return the default grouping separator character (',').
-         *
-         * @param groupingSeparatorString the grouping separator string
-         * @throws NullPointerException if <code>groupingSeparatorString</code> is null.
-         * @see #getGroupingSeparatorString()
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Sets the string used for grouping separator.
+        /// <para/>
+        /// <b>Note:</b> When the input grouping separator String is represented
+        /// by multiple <see cref="char"/>s, then <see cref="GroupingSeparator"/> will
+        /// return the default grouping separator character (',').
+        /// </summary>
+        /// <param name="groupingSeparatorString">The grouping separator string.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="groupingSeparatorString"/> is <c>null</c>.</exception>
+        /// <seealso cref="GroupingSeparatorString"/>
+        /// <stable>ICU 58</stable>
         private void SetGroupingSeparatorString(string groupingSeparatorString)
         {
             if (groupingSeparatorString == null)
@@ -485,53 +433,53 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the character used for decimal sign. Different for French, etc.
-         * @return the decimal character
-         * @stable ICU 2.0
-         * @discouraged ICU 58 use {@link #getDecimalSeparatorString()} instead.
-         */
+        /// <summary>
+        /// Gets or sets the character used for decimal sign. Different for French, etc.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        /// <discouraged>ICU 58 use <see cref="DecimalSeparatorString"/> instead.</discouraged>
         public virtual char DecimalSeparator
         {
             get => decimalSeparator;
             set => SetDecimalSeparator(value);
         }
 
-        /**
-         * Sets the character used for decimal sign. Different for French, etc.
-         * @param decimalSeparator the decimal character
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Sets the character used for decimal sign. Different for French, etc.
+        /// </summary>
+        /// <param name="decimalSeparator">The decimal character.</param>
+        /// <stable>ICU 2.0</stable>
         private void SetDecimalSeparator(char decimalSeparator)
         {
             this.decimalSeparator = decimalSeparator;
             this.decimalSeparatorString = char.ToString(decimalSeparator);
         }
 
-        /**
-         * {@icu} Returns the string used for decimal sign.
-         * @return the decimal sign string
-         * @see #setDecimalSeparatorString(String)
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Gets or sets the string used for decimal sign.
+        /// <para/>
+        /// <b>Note:</b> When the input decimal separator string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="DecimalSeparator"/> will
+        /// return the default decimal separator character ('.').
+        /// </summary>
+        /// <stable>ICU 58</stable>
         public virtual string DecimalSeparatorString // Equivalent to NumberFormatInfo.NumberDecimalSeparator
         {
             get => decimalSeparatorString;
             set => SetDecimalSeparatorString(value);
         }
 
-        /**
-         * {@icu} Sets the string used for decimal sign.
-         * <p>
-         * <b>Note:</b> When the input decimal separator String is represented
-         * by multiple Java chars, then {@link #getDecimalSeparator()} will
-         * return the default decimal separator character ('.').
-         *
-         * @param decimalSeparatorString the decimal sign string
-         * @throws NullPointerException if <code>decimalSeparatorString</code> is null.
-         * @see #getDecimalSeparatorString()
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Sets the string used for decimal sign.
+        /// <para/>
+        /// <b>Note:</b> When the input decimal separator string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="DecimalSeparator"/> will
+        /// return the default decimal separator character ('.').
+        /// </summary>
+        /// <param name="decimalSeparatorString">The decimal sign string.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="decimalSeparatorString"/> is <c>null</c>.</exception>
+        /// <seealso cref="DecimalSeparatorString"/>
+        /// <stable>ICU 58</stable>
         private void SetDecimalSeparatorString(string decimalSeparatorString)
         {
             if (decimalSeparatorString == null)
@@ -550,53 +498,54 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the character used for mille percent sign. Different for Arabic, etc.
-         * @return the mille percent character
-         * @stable ICU 2.0
-         * @discouraged ICU 58 use {@link #getPerMillString()} instead.
-         */
+        /// <summary>
+        /// Gets or sets the character used for mille percent sign. Different for Arabic, etc.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        /// <discouraged>ICU 58 use <see cref="PerMillString"/> instead.</discouraged>
         public virtual char PerMill
         {
             get => perMill;
             set => SetPerMill(value);
         }
 
-        /**
-         * Sets the character used for mille percent sign. Different for Arabic, etc.
-         * @param perMill the mille percent character
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Sets the character used for mille percent sign. Different for Arabic, etc.
+        /// </summary>
+        /// <param name="perMill">The mille percent character.</param>
+        /// <stable>ICU 2.0</stable>
         private void SetPerMill(char perMill)
         {
             this.perMill = perMill;
             this.perMillString = char.ToString(perMill);
         }
 
-        /**
-         * {@icu} Returns the string used for permille sign.
-         * @return the permille string
-         * @see #setPerMillString(String)
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Gets or sets the string used for permille sign.
+        /// <para/>
+        /// <b>Note:</b> When the input permille string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="PerMill"/> will
+        /// return the default permille character ('&#x2030;').
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Setter <paramref name="value"/> is <c>null</c>.</exception>
+        /// <stable>ICU 58</stable>
         public virtual string PerMillString // Equivalent to NumberFormatInfo.PerMilleSymbol
         {
             get => perMillString;
             set => SetPerMillString(value);
         }
 
-        /**
-        * {@icu} Sets the string used for permille sign.
-         * <p>
-         * <b>Note:</b> When the input permille String is represented
-         * by multiple Java chars, then {@link #getPerMill()} will
-         * return the default permille character ('&#x2030;').
-         *
-         * @param perMillString the permille string
-         * @throws NullPointerException if <code>perMillString</code> is null.
-         * @see #getPerMillString()
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Sets the string used for permille sign.
+        /// <para/>
+        /// <b>Note:</b> When the input permille string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="PerMill"/> will
+        /// return the default permille character ('&#x2030;').
+        /// </summary>
+        /// <param name="perMillString">The permille string.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="perMillString"/> is <c>null</c>.</exception>
+        /// <seealso cref="PerMillString"/>
+        /// <stable>ICU 58</stable>
         private void SetPerMillString(string perMillString)
         {
             if (perMillString == null)
@@ -615,53 +564,54 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the character used for percent sign. Different for Arabic, etc.
-         * @return the percent character
-         * @stable ICU 2.0
-         * @discouraged ICU 58 use {@link #getPercentString()} instead.
-         */
+        /// <summary>
+        /// Gets or sets the character used for percent sign. Different for Arabic, etc.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        /// <discouraged>ICU 58 use <see cref="PercentString"/> instead.</discouraged>
         public virtual char Percent
         {
             get => percent;
             set => SetPercent(value);
         }
 
-        /**
-         * Sets the character used for percent sign. Different for Arabic, etc.
-         * @param percent the percent character
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Sets the character used for percent sign. Different for Arabic, etc.
+        /// </summary>
+        /// <param name="percent">The percent character.</param>
+        /// <stable>ICU 2.0</stable>
         private void SetPercent(char percent)
         {
             this.percent = percent;
             this.percentString = char.ToString(percent);
         }
 
-        /**
-         * {@icu} Returns the string used for percent sign.
-         * @return the percent string
-         * @see #setPercentString(String)
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/>Gets or sets the string used for percent sign.
+        /// <para/>
+        /// <b>Note:</b> When the input grouping separator string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="Percent"/> will
+        /// return the default percent sign character ('%').
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Setter <paramref name="value"/> is <c>null</c>.</exception>
+        /// <stable>ICU 58</stable>
         public virtual string PercentString // Equivalent to NumberFormatInfo.PercentSymbol
         {
             get => percentString;
             set => SetPercentString(value);
         }
 
-        /**
-         * {@icu} Sets the string used for percent sign.
-         * <p>
-         * <b>Note:</b> When the input grouping separator String is represented
-         * by multiple Java chars, then {@link #getPercent()} will
-         * return the default percent sign character ('%').
-         *
-         * @param percentString the percent string
-         * @throws NullPointerException if <code>percentString</code> is null.
-         * @see #getPercentString()
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Sets the string used for percent sign.
+        /// <para/>
+        /// <b>Note:</b> When the input grouping separator string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="Percent"/> will
+        /// return the default percent sign character ('%').
+        /// </summary>
+        /// <param name="percentString">The percent string.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="percentString"/> is <c>null</c>.</exception>
+        /// <seealso cref="PercentString"/>
+        /// <stable>ICU 58</stable>
         private void SetPercentString(string percentString)
         {
             if (percentString == null)
@@ -690,16 +640,6 @@ namespace ICU4N.Text
             set => digit = value;
         }
 
-        /////**
-        //// * Sets the character used for a digit in a pattern.
-        //// * @param digit the digit pattern character
-        //// * @stable ICU 2.0
-        //// */
-        ////public void setDigit(char digit)
-        ////{
-        ////    this.digit = digit;
-        ////}
-
         /// <summary>
         /// Gets or sets the character used to separate positive and negative subpatterns
         /// in a pattern.
@@ -711,117 +651,82 @@ namespace ICU4N.Text
             set => patternSeparator = value;
         }
 
-        ///**
-        // * Sets the character used to separate positive and negative subpatterns
-        // * in a pattern.
-        // * @param patternSeparator the pattern separator character
-        // * @stable ICU 2.0
-        // */
-        //public void setPatternSeparator(char patternSeparator)
-        //{
-        //    this.patternSeparator = patternSeparator;
-        //}
-
-        /**
-         * Returns the String used to represent infinity. Almost always left
-         * unchanged.
-         * @return the Infinity string
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Gets or sets the string used to represent infinity. Almost always left
+        /// unchanged.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         //Bug 4194173 [Richard/GCL]
 
-        public virtual string Infinity // Equivalent to NumberFormatInfo.PositiveInfinitySymbol. Need to investigate how to do NegativeInfinitySymbol.
+        public virtual string? Infinity // Equivalent to NumberFormatInfo.PositiveInfinitySymbol. Need to investigate how to do NegativeInfinitySymbol.
         {
             get => infinity;
             set => infinity = value;
         }
 
-        ///**
-        // * Sets the String used to represent infinity. Almost always left
-        // * unchanged.
-        // * @param infinity the Infinity String
-        // * @stable ICU 2.0
-        // */
-        //public void setInfinity(String infinity)
-        //{
-        //    this.infinity = infinity;
-        //}
-
-        /**
-         * Returns the String used to represent NaN. Almost always left
-         * unchanged.
-         * @return the NaN String
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Gets or sets the string used to represent NaN. Almost always left
+        /// unchanged.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         //Bug 4194173 [Richard/GCL]
-        public virtual string NaN // Equivalent to NumberFormatInfo.NaNSymbol
+        public virtual string? NaN // Equivalent to NumberFormatInfo.NaNSymbol
         {
             get => naN;
             set => naN = value;
         }
 
-        ///**
-        // * Sets the String used to represent NaN. Almost always left
-        // * unchanged.
-        // * @param NaN the NaN String
-        // * @stable ICU 2.0
-        // */
-        //public void setNaN(String NaN)
-        //{
-        //    this.NaN = NaN;
-        //}
-
-        /**
-         * Returns the character used to represent minus sign. If no explicit
-         * negative format is specified, one is formed by prefixing
-         * minusSign to the positive format.
-         * @return the minus sign character
-         * @stable ICU 2.0
-         * @discouraged ICU 58 use {@link #getMinusSignString()} instead.
-         */
+        /// <summary>
+        /// Gets or sets the character used to represent minus sign. If no explicit
+        /// negative format is specified, one is formed by prefixing
+        /// <see cref="MinusSign"/> to the positive format.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        /// <discouraged>ICU 58 use <see cref="MinusSignString"/> instead.</discouraged>
         public virtual char MinusSign
         {
             get => minusSign;
             set => SetMinusSign(value);
         }
 
-        /**
-         * Sets the character used to represent minus sign. If no explicit
-         * negative format is specified, one is formed by prefixing
-         * minusSign to the positive format.
-         * @param minusSign the minus sign character
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Sets the character used to represent minus sign. If no explicit
+        /// negative format is specified, one is formed by prefixing
+        /// <see cref="MinusSign"/> to the positive format.
+        /// </summary>
+        /// <param name="minusSign">The minus sign character.</param>
+        /// <stable>ICU 2.0</stable>
         private void SetMinusSign(char minusSign)
         {
             this.minusSign = minusSign;
             this.minusString = char.ToString(minusSign);
         }
 
-        /**
-         * {@icu} Returns the string used to represent minus sign.
-         * @return the minus sign string
-         * @see #setMinusSignString(String)
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/>Gets or sets the string used to represent minus sign.
+        /// <para/>
+        /// <b>Note:</b> When the input minus sign string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="MinusSign"/> will
+        /// return the default minus sign character ('-').
+        /// </summary>
+        /// <exception cref="ArgumentNullException">The setter <paramref name="value"/> is <c>null</c>.</exception>
+        /// <stable>ICU 58</stable>
         public virtual string MinusSignString // Equivalent to NumberFormatInfo.NegativeSign
         {
             get => minusString;
             set => SetMinusSignString(value);
         }
 
-        /**
-         * {@icu} Sets the string used to represent minus sign.
-         * <p>
-         * <b>Note:</b> When the input minus sign String is represented
-         * by multiple Java chars, then {@link #getMinusSign()} will
-         * return the default minus sign character ('-').
-         *
-         * @param minusSignString the minus sign string
-         * @throws NullPointerException if <code>minusSignString</code> is null.
-         * @see #getGroupingSeparatorString()
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Sets the string used to represent minus sign.
+        /// <para/>
+        /// <b>Note:</b> When the input minus sign string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="MinusSign"/> will
+        /// return the default minus sign character ('-').
+        /// </summary>
+        /// <param name="minusSignString">The minus sign string.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="minusSignString"/> is <c>null</c>.</exception>
+        /// <seealso cref="MinusSignString"/>
         private void SetMinusSignString(string minusSignString)
         {
             if (minusSignString == null)
@@ -840,61 +745,58 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * {@icu} Returns the localized plus sign.
-         * @return the plus sign, used in localized patterns and formatted
-         * strings
-         * @see #setPlusSign
-         * @see #setMinusSign
-         * @see #getMinusSign
-         * @stable ICU 2.0
-         * @discouraged ICU 58 use {@link #getPlusSignString()} instead.
-         */
+        /// <summary>
+        /// <icu/> Returns the localized plus sign used in localized patterns and formatted
+        /// strings.
+        /// </summary>
+        /// <seealso cref="MinusSign"/>
+        /// <stable>ICU 2.0</stable>
+        /// <discouraged>ICU 58 use <see cref="PlusSignString"/> instead.</discouraged>
         public virtual char PlusSign
         {
             get => plusSign;
             set => SetPlusSign(value);
         }
 
-        /**
-         * {@icu} Sets the localized plus sign.
-         * @param plus the plus sign, used in localized patterns and formatted
-         * strings
-         * @see #getPlusSign
-         * @see #setMinusSign
-         * @see #getMinusSign
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// <icu/> Sets the localized plus sign.
+        /// </summary>
+        /// <param name="plus">The plus sign used in localized patterns and formatted strings.</param>
+        /// <seealso cref="PlusSign"/>
+        /// <seealso cref="MinusSign"/>
+        /// <stable>ICU 2.0</stable>
         private void SetPlusSign(char plus)
         {
             this.plusSign = plus;
             this.plusString = char.ToString(plus);
         }
 
-        /**
-         * {@icu} Returns the string used to represent plus sign.
-         * @return the plus sign string
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Gets or sets the string used to represent plus sign.
+        /// <para/>
+        /// <strong>Note:</strong> When the input plus sign string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="PlusSign"/> will
+        /// return the default plus sign character ('+').
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Setter <paramref name="value"/> is <c>null</c>.</exception>
+        /// <stable>ICU 58</stable>
         public virtual string PlusSignString // Equivalent to NumberFormatInfo.PositiveSign
         {
             get => plusString;
             set => SetPlusSignString(value);
         }
 
-        /**
-         * {@icu} Sets the localized plus sign string.
-         * <p>
-         * <b>Note:</b> When the input plus sign String is represented
-         * by multiple Java chars, then {@link #getPlusSign()} will
-         * return the default plus sign character ('+').
-         *
-         * @param plusSignString the plus sign string, used in localized patterns and formatted
-         * strings
-         * @throws NullPointerException if <code>plusSignString</code> is null.
-         * @see #getPlusSignString()
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Sets the localized plus sign string.
+        /// <para/>
+        /// <strong>Note:</strong> When the input plus sign string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="PlusSign"/> will
+        /// return the default plus sign character ('+').
+        /// </summary>
+        /// <param name="plusSignString">The plus sign string used in localized patterns and formatted strings.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="plusSignString"/> is <c>null</c>.</exception>
+        /// <seealso cref="PlusSignString"/>
+        /// <stable>ICU 58</stable>
         private void SetPlusSignString(string plusSignString)
         {
             if (plusSignString == null)
@@ -913,140 +815,120 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the string denoting the local currency.
-         * @return the local currency String.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Gets or sets the string denoting the local currency.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public virtual string CurrencySymbol // Equivalent to NumberFormatInfo.CurrencySymbol
         {
             get => currencySymbol;
             set => currencySymbol = value;
         }
 
-        ///**
-        // * Sets the string denoting the local currency.
-        // * @param currency the local currency String.
-        // * @stable ICU 2.0
-        // */
-        //public void setCurrencySymbol(String currency)
-        //{
-        //    currencySymbol = currency;
-        //}
-
-        /**
-         * Returns the international string denoting the local currency.
-         * @return the international string denoting the local currency
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Gets or sets the international string denoting the local currency.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public virtual string InternationalCurrencySymbol
         {
             get => intlCurrencySymbol;
             set => intlCurrencySymbol = value;
         }
 
-        ///**
-        // * Sets the international string denoting the local currency.
-        // * @param currency the international string denoting the local currency.
-        // * @stable ICU 2.0
-        // */
-        //public void setInternationalCurrencySymbol(String currency)
-        //{
-        //    intlCurrencySymbol = currency;
-        //}
-
-        /**
-         * Returns the currency symbol, for {@link DecimalFormatSymbols#getCurrency()} API
-         * compatibility only. ICU clients should use the Currency API directly.
-         * @return the currency used, or null
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Gets or sets the currency symbol. ICU clients should use the <see cref="ICU4N.Util.Currency"/> API directly.
+        /// <para/>
+        /// <strong>Note:</strong> ICU does not use the <see cref="DecimalFormatSymbols"/> for the currency
+        /// any more. This API is present for API compatibility only.
+        /// <para/>
+        /// This also sets the currency symbol attribute to the currency's symbol
+        /// in the <see cref="DecimalFormatSymbols"/>' locale, and the international currency
+        /// symbol attribute to the currency's ISO 4217 currency code.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Setter <paramref name="value"/> is <c>null</c>.</exception>
+        /// <stable>ICU 3.4</stable>
 #if FEATURE_CURRENCYFORMATTING
         public
 #else
         internal
 #endif
-            virtual Currency Currency
+            virtual Currency? Currency
         {
             get => currency;
-            set => SetCurrency(value);
+            set => SetCurrency(value!);
         }
 
-        /**
-         * Sets the currency.
-         *
-         * <p><strong>Note:</strong> ICU does not use the DecimalFormatSymbols for the currency
-         * any more.  This API is present for API compatibility only.
-         *
-         * <p>This also sets the currency symbol attribute to the currency's symbol
-         * in the DecimalFormatSymbols' locale, and the international currency
-         * symbol attribute to the currency's ISO 4217 currency code.
-         *
-         * @param currency the new currency to be used
-         * @throws NullPointerException if <code>currency</code> is null
-         * @see #setCurrencySymbol
-         * @see #setInternationalCurrencySymbol
-         *
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Sets the currency.
+        /// <para/>
+        /// <strong>Note:</strong> ICU does not use the <see cref="DecimalFormatSymbols"/> for the currency
+        /// any more. This API is present for API compatibility only.
+        /// <para/>
+        /// This also sets the currency symbol attribute to the currency's symbol
+        /// in the <see cref="DecimalFormatSymbols"/>' locale, and the international currency
+        /// symbol attribute to the currency's ISO 4217 currency code.
+        /// </summary>
+        /// <param name="currency">The new currency to be used.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="currency"/> is <c>null</c>.</exception>
+        /// <stable>ICU 3.4</stable>
         private void SetCurrency(Currency currency)
         {
-            if (currency == null)
-            {
+            if (currency is null)
                 throw new ArgumentNullException(nameof(currency));
-            }
+
             this.currency = currency;
             intlCurrencySymbol = currency.CurrencyCode;
             currencySymbol = currency.GetSymbol(requestedLocale);
         }
 
-        /**
-         * Returns the monetary decimal separator.
-         * @return the monetary decimal separator character
-         * @stable ICU 2.0
-         * @discouraged ICU 58 use {@link #getMonetaryDecimalSeparatorString()} instead.
-         */
+        /// <summary>
+        /// Gets or sets the monetary decimal separator.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        /// <discouraged>ICU 58 use <see cref="MonetaryDecimalSeparatorString"/> instead.</discouraged>
         public virtual char MonetaryDecimalSeparator
         {
             get => monetarySeparator;
             set => SetMonetaryDecimalSeparator(value);
         }
 
-        /**
-         * Sets the monetary decimal separator.
-         * @param sep the monetary decimal separator character
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Sets the monetary decimal separator.
+        /// </summary>
+        /// <param name="sep">The monetary decimal separator character.</param>
+        /// <stable>ICU 2.0</stable>
         private void SetMonetaryDecimalSeparator(char sep)
         {
             this.monetarySeparator = sep;
             this.monetarySeparatorString = char.ToString(sep);
         }
 
-        /**
-         * {@icu} Returns the monetary decimal separator string.
-         * @return the monetary decimal separator string
-         * @see #setMonetaryDecimalSeparatorString(String)
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Gets or sets the monetary decimal separator string.
+        /// <para/>
+        /// <strong>Note:</strong> When the input monetary decimal separator string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="MonetaryDecimalSeparatorString"/> will
+        /// return the default monetary decimal separator character ('.').
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Setter <paramref name="value"/> is <c>null</c>.</exception>
+        /// <stable>ICU 58</stable>
         public virtual string MonetaryDecimalSeparatorString // Equivalent to NumberFormatInfo.CurrencyDecimalSeparator
         {
             get => monetarySeparatorString;
             set => SetMonetaryDecimalSeparatorString(value);
         }
 
-        /**
-         * {@icu} Sets the monetary decimal separator string.
-         * <p>
-         * <b>Note:</b> When the input monetary decimal separator String is represented
-         * by multiple Java chars, then {@link #getMonetaryDecimalSeparatorString()} will
-         * return the default monetary decimal separator character ('.').
-         *
-         * @param sep the monetary decimal separator string
-         * @throws NullPointerException if <code>sep</code> is null.
-         * @see #getMonetaryDecimalSeparatorString()
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Sets the monetary decimal separator string.
+        /// <para/>
+        /// <strong>Note:</strong> When the input monetary decimal separator string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="MonetaryDecimalSeparatorString"/> will
+        /// return the default monetary decimal separator character ('.').
+        /// </summary>
+        /// <param name="sep">The monetary decimal separator string.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="sep"/> is <c>null</c>.</exception>
+        /// <seealso cref="MonetaryDecimalSeparatorString"/>
+        /// <stable>ICU 58</stable>
         private void SetMonetaryDecimalSeparatorString(string sep)
         {
             if (sep == null)
@@ -1065,53 +947,54 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * {@icu} Returns the monetary grouping separator.
-         * @return the monetary grouping separator character
-         * @stable ICU 3.6
-         * @discouraged ICU 58 use {@link #getMonetaryGroupingSeparatorString()} instead.
-         */
+        /// <summary>
+        /// <icu/> Gets or sets the monetary grouping separator.
+        /// </summary>
+        /// <stable>ICU 3.6</stable>
+        /// <discouraged>ICU 58 use <see cref="MonetaryDecimalSeparatorString"/> instead.</discouraged>
         public virtual char MonetaryGroupingSeparator
         {
             get => monetaryGroupingSeparator;
             set => SetMonetaryGroupingSeparator(value);
         }
 
-        /**
-         * {@icu} Sets the monetary grouping separator.
-         * @param sep the monetary grouping separator character
-         * @stable ICU 3.6
-         */
+        /// <summary>
+        /// <icu/> Sets the monetary grouping separator.
+        /// </summary>
+        /// <param name="sep">The monetary grouping separator character.</param>
+        /// <stable>ICU 3.6</stable>
         private void SetMonetaryGroupingSeparator(char sep)
         {
             this.monetaryGroupingSeparator = sep;
             this.monetaryGroupingSeparatorString = char.ToString(sep);
         }
 
-        /**
-         * {@icu} Returns the monetary grouping separator.
-         * @return the monetary grouping separator string
-         * @see #setMonetaryGroupingSeparatorString(String)
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Gets or sets the monetary grouping separator.
+        /// <para/>
+        /// <strong>Note:</strong> When the input grouping separator string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="MonetaryDecimalSeparator"/> will
+        /// return the default monetary grouping separator character (',').
+        /// </summary>
+        /// <exception cref="ArgumentNullException">Setter <paramref name="value"/> is <c>null</c>.</exception>
+        /// <stable>ICU 58</stable>
         public virtual string MonetaryGroupingSeparatorString // Equivalent to NumberFormatInfo.CurrencyGroupSeparator
         {
             get => monetaryGroupingSeparatorString;
             set => SetMonetaryGroupingSeparatorString(value);
         }
 
-        /**
-         * {@icu} Sets the monetary grouping separator string.
-         * <p>
-         * <b>Note:</b> When the input grouping separator String is represented
-         * by multiple Java chars, then {@link #getMonetaryGroupingSeparator()} will
-         * return the default monetary grouping separator character (',').
-         *
-         * @param sep the monetary grouping separator string
-         * @throws NullPointerException if <code>sep</code> is null.
-         * @see #getMonetaryGroupingSeparatorString()
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// <icu/> Sets the monetary grouping separator string.
+        /// <para/>
+        /// <strong>Note:</strong> When the input grouping separator string is represented
+        /// by multiple <see cref="char"/>s, then <see cref="MonetaryDecimalSeparator"/> will
+        /// return the default monetary grouping separator character (',').
+        /// </summary>
+        /// <param name="sep">The monetary grouping separator string.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="sep"/> is <c>null</c>.</exception>
+        /// <seealso cref="MonetaryDecimalSeparatorString"/>
+        /// <stable>ICU 58</stable>
         private void SetMonetaryGroupingSeparatorString(string sep)
         {
             if (sep == null)
@@ -1130,31 +1013,20 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-        }
-         * Internal API for NumberFormat
-         * @return String currency pattern string
-         */
-        internal virtual string CurrencyPattern => currencyPattern;
+        /// <summary>
+        /// Gets the currency pattern string. Internal API for <see cref="NumberFormat"/>
+        /// </summary>
+        internal virtual string? CurrencyPattern => currencyPattern;
 
         /// <summary>
         /// Gets or sets the multiplication sign.
         /// </summary>
         /// <stable>ICU 54</stable>
-        public virtual string ExponentMultiplicationSign
+        public virtual string? ExponentMultiplicationSign
         {
             get => exponentMultiplicationSign;
             set => exponentMultiplicationSign = value;
         }
-
-        /////**
-        ////* Sets the multiplication sign
-        ////* @stable ICU 54
-        ////*/
-        ////public void setExponentMultiplicationSign(String exponentMultiplicationSign)
-        ////{
-        ////    this.exponentMultiplicationSign = exponentMultiplicationSign;
-        ////}
 
         /// <summary>
         /// <icu/> Gets or sets the string used to separate the mantissa from the exponent.
@@ -1162,24 +1034,11 @@ namespace ICU4N.Text
         /// used in localized patterns and formatted strings.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public virtual string ExponentSeparator
+        public virtual string? ExponentSeparator
         {
             get => exponentSeparator;
             set => exponentSeparator = value;
         }
-
-        /////**
-        //// * {@icu} Sets the string used to separate the mantissa from the exponent.
-        //// * Examples: "x10^" for 1.23x10^4, "E" for 1.23E4.
-        //// * @param exp the localized exponent symbol, used in localized patterns
-        //// * and formatted strings
-        //// * @see #getExponentSeparator
-        //// * @stable ICU 2.0
-        //// */
-        ////public void setExponentSeparator(string exp)
-        ////{
-        ////    exponentSeparator = exp;
-        ////}
 
         /// <summary>
         /// <icu/> Gets or sets the character used to pad numbers out to a specified width. This is
@@ -1197,43 +1056,8 @@ namespace ICU4N.Text
             set => padEscape = value;
         }
 
-        /////**
-        //// * {@icu} Sets the character used to pad numbers out to a specified width.  This is not
-        //// * the pad character itself; rather, it is the special pattern character
-        //// * <em>preceding</em> the pad character.  In the pattern "*_#,##0", '*' is the pad
-        //// * escape, and '_' is the pad character.
-        //// * @see #getPadEscape
-        //// * @see DecimalFormat#setFormatWidth
-        //// * @see DecimalFormat#setPadPosition
-        //// * @see DecimalFormat#setPadCharacter
-        //// * @stable ICU 2.0
-        //// */
-        ////public void setPadEscape(char c)
-        ////{
-        ////    padEscape = c;
-        ////}
-
         // ICU4N: De-nested CURRENCY_SPC_CURRENCY_MATCH, CURRENCY_SPC_SURROUNDING_MATCH, and CURRENCY_SPC_INSERT
         // and converted them into a new enum CurrencyPatternSpacing
-
-        ///**
-        // * {@icu} Indicates the currency match pattern used in {@link #getPatternForCurrencySpacing}.
-        // * @stable ICU 4.2
-        // */
-        //public const int CURRENCY_SPC_CURRENCY_MATCH = 0;
-
-        ///**
-        // * {@icu} Indicates the surrounding match pattern used in {@link
-        // * #getPatternForCurrencySpacing}.
-        // * @stable ICU 4.2
-        // */
-        //public const int CURRENCY_SPC_SURROUNDING_MATCH = 1;
-
-        ///**
-        // * {@icu} Indicates the insertion value used in {@link #getPatternForCurrencySpacing}.
-        // * @stable ICU 4.4
-        // */
-        //public const int CURRENCY_SPC_INSERT = 2;
 
         private string[] currencySpcBeforeSym;
         private string[] currencySpcAfterSym;
@@ -1301,44 +1125,31 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the locale for which this object was constructed.
-         * @return the locale for which this object was constructed
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Gets the locale for which this object was constructed.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public virtual CultureInfo Culture => requestedLocale;
 
-        /**
-         * Returns the locale for which this object was constructed.
-         * @return the locale for which this object was constructed
-         * @stable ICU 3.2
-         */
+        /// <summary>
+        /// Gets the locale for which this object was constructed.
+        /// </summary>
+        /// <stable>ICU 3.2</stable>
         public virtual UCultureInfo UCulture => ulocale;
 
-        /**
-         * {@inheritDoc}
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Creates a shallow copy of the current <see cref="object"/>.
+        /// </summary>
+        /// <returns>A shallow copy of the current <see cref="object"/>.</returns>
+        /// <stable>ICU 2.0</stable>
         public object Clone()
         {
-            //try
-            //{
             return base.MemberwiseClone();
-            // other fields are bit-copied
-            //}
-            //catch (CloneNotSupportedException e)
-            //{
-            //    ///CLOVER:OFF
-            //    throw new ICUCloneNotSupportedException(e);
-            //    ///CLOVER:ON
-            //}
         }
 
-        /**
-         * {@inheritDoc}
-         * @stable ICU 2.0
-         */
-        public override bool Equals(object obj)
+        /// <inheritdoc/>
+        /// <stable>ICU 2.0</stable>
+        public override bool Equals(object? obj)
         {
             if (!(obj is DecimalFormatSymbols other))
             {
@@ -1384,23 +1195,21 @@ namespace ICU4N.Text
                 minusSign == other.minusSign &&
                 minusString.Equals(other.minusString, StringComparison.Ordinal) &&
                 patternSeparator == other.patternSeparator &&
-                infinity.Equals(other.infinity, StringComparison.Ordinal) &&
-                NaN.Equals(other.NaN, StringComparison.Ordinal) &&
+                StringComparer.Ordinal.Equals(infinity, other.infinity) &&
+                StringComparer.Ordinal.Equals(NaN, other.naN) &&
                 currencySymbol.Equals(other.currencySymbol, StringComparison.Ordinal) &&
                 intlCurrencySymbol.Equals(other.intlCurrencySymbol, StringComparison.Ordinal) &&
                 padEscape == other.padEscape &&
                 plusSign == other.plusSign &&
                 plusString.Equals(other.plusString, StringComparison.Ordinal) &&
-                exponentSeparator.Equals(other.exponentSeparator, StringComparison.Ordinal) &&
+                StringComparer.Ordinal.Equals(exponentSeparator, other.exponentSeparator) &&
                 monetarySeparator == other.monetarySeparator &&
                 monetaryGroupingSeparator == other.monetaryGroupingSeparator &&
-                exponentMultiplicationSign.Equals(other.exponentMultiplicationSign, StringComparison.Ordinal);
+                StringComparer.Ordinal.Equals(exponentMultiplicationSign, other.exponentMultiplicationSign);
         }
 
-        /**
-         * {@inheritDoc}
-         * @stable ICU 2.0
-         */
+        /// <inheritdoc/>
+        /// <stable>ICU 2.0</stable>
         public override int GetHashCode()
         {
             int result = digits[0];
@@ -1452,7 +1261,7 @@ namespace ICU4N.Text
         /// <summary>
         /// List of default values for the symbols.
         /// </summary>
-        private static readonly string[] SYMBOL_DEFAULTS = new string[]
+        private static readonly string?[] SYMBOL_DEFAULTS = new string?[]
         {
             char.ToString(DEF_DECIMAL_SEPARATOR),  // decimal
             char.ToString(DEF_GROUPING_SEPARATOR), // group
@@ -1486,9 +1295,9 @@ namespace ICU4N.Text
         private sealed class DecFmtDataSink : ResourceSink
         {
 
-            private readonly string[] numberElements; // Array where to store the characters (set in constructor)
+            private readonly string?[] numberElements; // Array where to store the characters (set in constructor)
 
-            public DecFmtDataSink(string[] numberElements)
+            public DecFmtDataSink(string?[] numberElements)
             {
                 this.numberElements = numberElements ?? throw new ArgumentNullException(nameof(numberElements));
             }
@@ -1513,10 +1322,42 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Initializes the symbols from the locale data.
-         */
-        private void Initialize(UCultureInfo locale, NumberingSystem ns)
+        /// <summary>
+        /// Initializes the symbols from the locale data.
+        /// </summary>
+        [MemberNotNull(nameof(requestedLocale))]
+        [MemberNotNull(nameof(ulocale))]
+        [MemberNotNull(nameof(validLocale))]
+        [MemberNotNull(nameof(actualLocale))]
+        [MemberNotNull(nameof(digits))]
+        [MemberNotNull(nameof(digitStrings))]
+        [MemberNotNull(nameof(codePointZero))]
+        [MemberNotNull(nameof(zeroDigit))]
+        [MemberNotNull(nameof(decimalSeparator))]
+        [MemberNotNull(nameof(decimalSeparatorString))]
+        [MemberNotNull(nameof(groupingSeparator))]
+        [MemberNotNull(nameof(groupingSeparatorString))]
+        [MemberNotNull(nameof(patternSeparator))]
+        [MemberNotNull(nameof(percent))]
+        [MemberNotNull(nameof(percentString))]
+        [MemberNotNull(nameof(minusSign))]
+        [MemberNotNull(nameof(minusString))]
+        [MemberNotNull(nameof(plusSign))]
+        [MemberNotNull(nameof(plusString))]
+        [MemberNotNull(nameof(exponentSeparator))]
+        [MemberNotNull(nameof(perMill))]
+        [MemberNotNull(nameof(perMillString))]
+        [MemberNotNull(nameof(monetarySeparator))]
+        [MemberNotNull(nameof(monetarySeparatorString))]
+        [MemberNotNull(nameof(monetaryGroupingSeparator))]
+        [MemberNotNull(nameof(monetaryGroupingSeparatorString))]
+        [MemberNotNull(nameof(padEscape))]
+        [MemberNotNull(nameof(sigDigit))]
+        [MemberNotNull(nameof(intlCurrencySymbol))]
+        [MemberNotNull(nameof(currencySymbol))]
+        [MemberNotNull(nameof(currencySpcBeforeSym))]
+        [MemberNotNull(nameof(currencySpcAfterSym))]
+        private void Initialize(UCultureInfo locale, NumberingSystem? ns)
         {
             this.requestedLocale = locale.ToCultureInfo();
             this.ulocale = locale;
@@ -1529,25 +1370,25 @@ namespace ICU4N.Text
 
             SetCulture(data.validLocale, data.validLocale);
             SetDigitStrings(data.digits);
-            string[] numberElements = data.numberElements;
+            string?[] numberElements = data.numberElements;
 
             // Copy data from the numberElements map into instance fields
-            SetDecimalSeparatorString(numberElements[0]);
-            SetGroupingSeparatorString(numberElements[1]);
+            SetDecimalSeparatorString(numberElements[0]!);
+            SetGroupingSeparatorString(numberElements[1]!);
 
             // See CLDR #9781
             // assert numberElements[2].length() == 1;
-            patternSeparator = numberElements[2][0];
+            patternSeparator = numberElements[2]![0];
 
-            SetPercentString(numberElements[3]);
-            SetMinusSignString(numberElements[4]);
-            SetPlusSignString(numberElements[5]);
+            SetPercentString(numberElements[3]!);
+            SetMinusSignString(numberElements[4]!);
+            SetPlusSignString(numberElements[5]!);
             ExponentSeparator = numberElements[6];
-            SetPerMillString(numberElements[7]);
+            SetPerMillString(numberElements[7]!);
             Infinity = numberElements[8];
             NaN = numberElements[9];
-            SetMonetaryDecimalSeparatorString(numberElements[10]);
-            SetMonetaryGroupingSeparatorString(numberElements[11]);
+            SetMonetaryDecimalSeparatorString(numberElements[10]!);
+            SetMonetaryGroupingSeparatorString(numberElements[11]!);
             ExponentMultiplicationSign = numberElements[12];
 
             digit = '#';  // Localized pattern character no longer in CLDR
@@ -1618,7 +1459,7 @@ namespace ICU4N.Text
             // TODO: Determine actual and valid locale correctly.
             UCultureInfo validLocale = rb.UCulture;
 
-            string[] numberElements = new string[SYMBOL_KEYS.Length];
+            string?[] numberElements = new string[SYMBOL_KEYS.Length];
 
             // Load using a data sink
             DecFmtDataSink sink = new DecFmtDataSink(numberElements);
@@ -1634,7 +1475,7 @@ namespace ICU4N.Text
 
             // Load the Latin fallback if necessary
             bool hasNull = false;
-            foreach (string entry in numberElements)
+            foreach (string? entry in numberElements)
             {
                 if (entry == null)
                 {
@@ -1677,449 +1518,445 @@ namespace ICU4N.Text
         }
 
         // ICU4N TODO: Serialization
-        ///**
-        // * Reads the default serializable fields, then if <code>serialVersionOnStream</code>
-        // * is less than 1, initialize <code>monetarySeparator</code> to be
-        // * the same as <code>decimalSeparator</code> and <code>exponential</code>
-        // * to be 'E'.
-        // * Finally, sets serialVersionOnStream back to the maximum allowed value so that
-        // * default serialization will work properly if this object is streamed out again.
-        // */
-        //private void readObject(ObjectInputStream stream)
-        //        throws IOException, ClassNotFoundException {
+        /////**
+        //// * Reads the default serializable fields, then if <code>serialVersionOnStream</code>
+        //// * is less than 1, initialize <code>monetarySeparator</code> to be
+        //// * the same as <code>decimalSeparator</code> and <code>exponential</code>
+        //// * to be 'E'.
+        //// * Finally, sets serialVersionOnStream back to the maximum allowed value so that
+        //// * default serialization will work properly if this object is streamed out again.
+        //// */
+        ////private void readObject(ObjectInputStream stream)
+        ////        throws IOException, ClassNotFoundException {
 
-        //        // TODO: it looks to me {dlf} that the serialization code was never updated
-        //        // to handle the actual/valid ulocale fields.
+        ////        // TODO: it looks to me {dlf} that the serialization code was never updated
+        ////        // to handle the actual/valid ulocale fields.
 
-        //        stream.defaultReadObject();
-        /////CLOVER:OFF
-        //// we don't have data for these old serialized forms any more
-        //if (serialVersionOnStream < 1)
-        //{
-        //    // Didn't have monetarySeparator or exponential field;
-        //    // use defaults.
-        //    monetarySeparator = decimalSeparator;
-        //    exponential = 'E';
-        //}
-        //if (serialVersionOnStream < 2)
-        //{
-        //    padEscape = '*';
-        //    plusSign = '+';
-        //    exponentSeparator = String.valueOf(exponential);
-        //    // Although we read the exponential field on stream to create the
-        //    // exponentSeparator, we don't do the reverse, since scientific
-        //    // notation isn't supported by the old classes, even though the
-        //    // symbol is there.
-        //}
-        /////CLOVER:ON
-        //if (serialVersionOnStream < 3)
-        //{
-        //    // Resurrected objects from old streams will have no
-        //    // locale.  There is no 100% fix for this.  A
-        //    // 90% fix is to construct a mapping of data back to
-        //    // locale, perhaps a hash of all our members.  This is
-        //    // expensive and doesn't seem worth it.
-        //    requestedLocale = Locale.getDefault();
-        //}
-        //if (serialVersionOnStream < 4)
-        //{
-        //    // use same default behavior as for versions with no Locale
-        //    ulocale = ULocale.forLocale(requestedLocale);
-        //}
-        //if (serialVersionOnStream < 5)
-        //{
-        //    // use the same one for groupingSeparator
-        //    monetaryGroupingSeparator = groupingSeparator;
-        //}
-        //if (serialVersionOnStream < 6)
-        //{
-        //    // Set null to CurrencySpacing related fields.
-        //    if (currencySpcBeforeSym == null)
-        //    {
-        //        currencySpcBeforeSym = new String[CURRENCY_SPC_INSERT + 1];
-        //    }
-        //    if (currencySpcAfterSym == null)
-        //    {
-        //        currencySpcAfterSym = new String[CURRENCY_SPC_INSERT + 1];
-        //    }
-        //    initSpacingInfo(CurrencyData.CurrencySpacingInfo.DEFAULT);
-        //}
-        //if (serialVersionOnStream < 7)
-        //{
-        //    // Set minusString,plusString from minusSign,plusSign
-        //    if (minusString == null)
-        //    {
-        //        minusString = String.valueOf(minusSign);
-        //    }
-        //    if (plusString == null)
-        //    {
-        //        plusString = String.valueOf(plusSign);
-        //    }
-        //}
-        //if (serialVersionOnStream < 8)
-        //{
-        //    if (exponentMultiplicationSign == null)
-        //    {
-        //        exponentMultiplicationSign = "\u00D7";
-        //    }
-        //}
-        //if (serialVersionOnStream < 9)
-        //{
-        //    // String version of digits
-        //    if (digitStrings == null)
-        //    {
-        //        digitStrings = new String[10];
-        //        if (digits != null && digits.length == 10)
-        //        {
-        //            zeroDigit = digits[0];
-        //            for (int i = 0; i < 10; i++)
-        //            {
-        //                digitStrings[i] = String.valueOf(digits[i]);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            char digit = zeroDigit;
-        //            if (digits == null)
-        //            {
-        //                digits = new char[10];
-        //            }
-        //            for (int i = 0; i < 10; i++)
-        //            {
-        //                digits[i] = digit;
-        //                digitStrings[i] = String.valueOf(digit);
-        //                digit++;
-        //            }
-        //        }
-        //    }
+        ////        stream.defaultReadObject();
+        ///////CLOVER:OFF
+        ////// we don't have data for these old serialized forms any more
+        ////if (serialVersionOnStream < 1)
+        ////{
+        ////    // Didn't have monetarySeparator or exponential field;
+        ////    // use defaults.
+        ////    monetarySeparator = decimalSeparator;
+        ////    exponential = 'E';
+        ////}
+        ////if (serialVersionOnStream < 2)
+        ////{
+        ////    padEscape = '*';
+        ////    plusSign = '+';
+        ////    exponentSeparator = String.valueOf(exponential);
+        ////    // Although we read the exponential field on stream to create the
+        ////    // exponentSeparator, we don't do the reverse, since scientific
+        ////    // notation isn't supported by the old classes, even though the
+        ////    // symbol is there.
+        ////}
+        ///////CLOVER:ON
+        ////if (serialVersionOnStream < 3)
+        ////{
+        ////    // Resurrected objects from old streams will have no
+        ////    // locale.  There is no 100% fix for this.  A
+        ////    // 90% fix is to construct a mapping of data back to
+        ////    // locale, perhaps a hash of all our members.  This is
+        ////    // expensive and doesn't seem worth it.
+        ////    requestedLocale = Locale.getDefault();
+        ////}
+        ////if (serialVersionOnStream < 4)
+        ////{
+        ////    // use same default behavior as for versions with no Locale
+        ////    ulocale = ULocale.forLocale(requestedLocale);
+        ////}
+        ////if (serialVersionOnStream < 5)
+        ////{
+        ////    // use the same one for groupingSeparator
+        ////    monetaryGroupingSeparator = groupingSeparator;
+        ////}
+        ////if (serialVersionOnStream < 6)
+        ////{
+        ////    // Set null to CurrencySpacing related fields.
+        ////    if (currencySpcBeforeSym == null)
+        ////    {
+        ////        currencySpcBeforeSym = new String[CURRENCY_SPC_INSERT + 1];
+        ////    }
+        ////    if (currencySpcAfterSym == null)
+        ////    {
+        ////        currencySpcAfterSym = new String[CURRENCY_SPC_INSERT + 1];
+        ////    }
+        ////    initSpacingInfo(CurrencyData.CurrencySpacingInfo.DEFAULT);
+        ////}
+        ////if (serialVersionOnStream < 7)
+        ////{
+        ////    // Set minusString,plusString from minusSign,plusSign
+        ////    if (minusString == null)
+        ////    {
+        ////        minusString = String.valueOf(minusSign);
+        ////    }
+        ////    if (plusString == null)
+        ////    {
+        ////        plusString = String.valueOf(plusSign);
+        ////    }
+        ////}
+        ////if (serialVersionOnStream < 8)
+        ////{
+        ////    if (exponentMultiplicationSign == null)
+        ////    {
+        ////        exponentMultiplicationSign = "\u00D7";
+        ////    }
+        ////}
+        ////if (serialVersionOnStream < 9)
+        ////{
+        ////    // String version of digits
+        ////    if (digitStrings == null)
+        ////    {
+        ////        digitStrings = new String[10];
+        ////        if (digits != null && digits.length == 10)
+        ////        {
+        ////            zeroDigit = digits[0];
+        ////            for (int i = 0; i < 10; i++)
+        ////            {
+        ////                digitStrings[i] = String.valueOf(digits[i]);
+        ////            }
+        ////        }
+        ////        else
+        ////        {
+        ////            char digit = zeroDigit;
+        ////            if (digits == null)
+        ////            {
+        ////                digits = new char[10];
+        ////            }
+        ////            for (int i = 0; i < 10; i++)
+        ////            {
+        ////                digits[i] = digit;
+        ////                digitStrings[i] = String.valueOf(digit);
+        ////                digit++;
+        ////            }
+        ////        }
+        ////    }
 
-        //    // String version of symbols
-        //    if (decimalSeparatorString == null)
-        //    {
-        //        decimalSeparatorString = String.valueOf(decimalSeparator);
-        //    }
-        //    if (groupingSeparatorString == null)
-        //    {
-        //        groupingSeparatorString = String.valueOf(groupingSeparator);
-        //    }
-        //    if (percentString == null)
-        //    {
-        //        percentString = String.valueOf(percent);
-        //    }
-        //    if (perMillString == null)
-        //    {
-        //        perMillString = String.valueOf(perMill);
-        //    }
-        //    if (monetarySeparatorString == null)
-        //    {
-        //        monetarySeparatorString = String.valueOf(monetarySeparator);
-        //    }
-        //    if (monetaryGroupingSeparatorString == null)
-        //    {
-        //        monetaryGroupingSeparatorString = String.valueOf(monetaryGroupingSeparator);
-        //    }
-        //}
+        ////    // String version of symbols
+        ////    if (decimalSeparatorString == null)
+        ////    {
+        ////        decimalSeparatorString = String.valueOf(decimalSeparator);
+        ////    }
+        ////    if (groupingSeparatorString == null)
+        ////    {
+        ////        groupingSeparatorString = String.valueOf(groupingSeparator);
+        ////    }
+        ////    if (percentString == null)
+        ////    {
+        ////        percentString = String.valueOf(percent);
+        ////    }
+        ////    if (perMillString == null)
+        ////    {
+        ////        perMillString = String.valueOf(perMill);
+        ////    }
+        ////    if (monetarySeparatorString == null)
+        ////    {
+        ////        monetarySeparatorString = String.valueOf(monetarySeparator);
+        ////    }
+        ////    if (monetaryGroupingSeparatorString == null)
+        ////    {
+        ////        monetaryGroupingSeparatorString = String.valueOf(monetaryGroupingSeparator);
+        ////    }
+        ////}
 
-        //serialVersionOnStream = currentSerialVersion;
+        ////serialVersionOnStream = currentSerialVersion;
 
-        //// recreate
-        //currency = Currency.getInstance(intlCurrencySymbol);
+        ////// recreate
+        ////currency = Currency.getInstance(intlCurrencySymbol);
 
-        //// Refresh digitStrings in order to populate codePointZero
-        //setDigitStrings(digitStrings);
-        //    }
+        ////// Refresh digitStrings in order to populate codePointZero
+        ////setDigitStrings(digitStrings);
+        ////    }
 
-        /**
-         * Character used for zero.  This remains only for backward compatibility
-         * purposes.  The digits array below is now used to actively store the digits.
-         *
-         * @serial
-         * @see #getZeroDigit
-         */
+        /// <summary>
+        /// Character used for zero.  This remains only for backward compatibility
+        /// purposes.  The digits array below is now used to actively store the digits.
+        /// </summary>
+        /// <seealso cref="ZeroDigit"/>
         private char zeroDigit;
 
-        /**
-         * Array of characters used for the digits 0-9 in order.
-         */
+        /// <summary>
+        /// Array of characters used for the digits 0-9 in order.
+        /// </summary>
         private char[] digits;
 
-        /**
-         * Array of Strings used for the digits 0-9 in order.
-         * @serial
-         */
+        /// <summary>
+        /// Array of Strings used for the digits 0-9 in order.
+        /// </summary>
+        /// <serial/>
         private string[] digitStrings;
 
-        /**
-         * Dealing with code points is faster than dealing with strings when formatting. Because of
-         * this, we maintain a value containing the zero code point that is used whenever digitStrings
-         * represents a sequence of ten code points in order.
-         *
-         * <p>If the value stored here is positive, it means that the code point stored in this value
-         * corresponds to the digitStrings array, and zeroCodePoint can be used instead of the
-         * digitStrings array for the purposes of efficient formatting; if -1, then digitStrings does
-         * *not* contain a sequence of code points, and it must be used directly.
-         *
-         * <p>It is assumed that zeroCodePoint always shadows the value in digitStrings. zeroCodePoint
-         * should never be set directly; rather, it should be updated only when digitStrings mutates.
-         * That is, the flow of information is digitStrings -> zeroCodePoint, not the other way.
-         */
+        /// <summary>
+        /// Dealing with code points is faster than dealing with strings when formatting. Because of
+        /// this, we maintain a value containing the zero code point that is used whenever
+        /// <see cref="digitStrings"/> represents a sequence of ten code points in order.
+        /// <para/>
+        /// If the value stored here is positive, it means that the code point stored in this value
+        /// corresponds to the <see cref="digitStrings"/> array, and <see cref="codePointZero"/> can be
+        /// used instead of the <see cref="digitStrings"/> array for the purposes of efficient formatting;
+        /// if -1, then <see cref="digitStrings"/> does *not* contain a sequence of code points, and it
+        /// must be used directly.
+        /// <para/>
+        /// It is assumed that <see cref="codePointZero"/> always shadows the value in <see cref="digitStrings"/>.
+        /// <see cref="codePointZero"/> should never be set directly; rather, it should be updated only when
+        /// <see cref="digitStrings"/> mutates. That is, the flow of information is
+        /// <see cref="digitStrings"/> -> <see cref="codePointZero"/>, not the other way.
+        /// </summary>
         [NonSerialized]
         private int codePointZero;
 
-        /**
-         * Character used for thousands separator.
-         *
-         * @serial
-         * @see #getGroupingSeparator
-         */
+        /// <summary>
+        /// Character used for thousands separator.
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="GroupingSeparator"/>
         private char groupingSeparator;
 
-        /**
-         * String used for thousands separator.
-         * @serial
-         */
+        /// <summary>
+        /// String used for thousands separator.
+        /// </summary>
+        /// <serial/>
         private string groupingSeparatorString;
 
-        /**
-         * Character used for decimal sign.
-         *
-         * @serial
-         * @see #getDecimalSeparator
-         */
+        /// <summary>
+        /// Character used for decimal sign.
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="DecimalSeparator"/>
         private char decimalSeparator;
 
-        /**
-         * String used for decimal sign.
-         * @serial
-         */
+        /// <summary>
+        /// String used for decimal sign.
+        /// </summary>
+        /// <serial/>
         private string decimalSeparatorString;
 
-        /**
-         * Character used for mille percent sign.
-         *
-         * @serial
-         * @see #getPerMill
-         */
+        /// <summary>
+        /// Character used for mille percent sign.
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="PerMill"/>
         private char perMill;
 
-        /**
-         * String used for mille percent sign.
-         * @serial
-         */
+        /// <summary>
+        /// String used for mille percent sign.
+        /// </summary>
+        /// <serial/>
         private string perMillString;
 
-        /**
-         * Character used for percent sign.
-         * @serial
-         * @see #getPercent
-         */
+        /// <summary>
+        /// Character used for percent sign.
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="Percent"/>
         private char percent;
 
-        /**
-         * String used for percent sign.
-         * @serial
-         */
+        /// <summary>
+        /// String used for percent sign.
+        /// </summary>
+        /// <serial/>
         private string percentString;
 
-        /**
-         * Character used for a digit in a pattern.
-         *
-         * @serial
-         * @see #getDigit
-         */
+        /// <summary>
+        /// Character used for a digit in a pattern.
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="Digit"/>
         private char digit;
 
-        /**
-         * Character used for a significant digit in a pattern.
-         *
-         * @serial
-         * @see #getSignificantDigit
-         */
+        /// <summary>
+        /// Character used for a significant digit in a pattern.
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="SignificantDigit"/>
         private char sigDigit;
 
-        /**
-         * Character used to separate positive and negative subpatterns
-         * in a pattern.
-         *
-         * @serial
-         * @see #getPatternSeparator
-         */
+        /// <summary>
+        /// Character used to separate positive and negative subpatterns
+        /// in a pattern.
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="PatternSeparator"/>
         private char patternSeparator;
 
-        /**
-         * Character used to represent infinity.
-         * @serial
-         * @see #getInfinity
-         */
-        private string infinity;
+        /// <summary>
+        /// Character used to represent infinity.
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="Infinity"/>
+        private string? infinity;
 
-        /**
-         * Character used to represent NaN.
-         * @serial
-         * @see #getNaN
-         */
-        private string naN;
+        /// <summary>
+        /// Character used to represent NaN.
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="NaN"/>
+        private string? naN;
 
-        /**
-         * Character used to represent minus sign.
-         * @serial
-         * @see #getMinusSign
-         */
+        /// <summary>
+        /// Character used to represent minus sign.
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="MinusSign"/>
         private char minusSign;
 
-        /**
-         * String versions of minus sign.
-         * @serial
-         * @since ICU 52
-         */
+        /// <summary>
+        /// String versions of minus sign.
+        /// </summary>
+        /// <serial/>
+        /// <since>ICU 52</since>
         private string minusString;
 
-        /**
-         * The character used to indicate a plus sign.
-         * @serial
-         * @since AlphaWorks
-         */
+        /// <summary>
+        /// The character used to indicate a plus sign.
+        /// </summary>
+        /// <serial/>
+        /// <since>AlphaWorks</since>
         private char plusSign;
 
-        /**
-         * String versions of plus sign.
-         * @serial
-         * @since ICU 52
-         */
+        /// <summary>
+        /// String versions of plus sign.
+        /// </summary>
+        /// <serial/>
+        /// <since>ICU 52</since>
         private string plusString;
 
-        /**
-         * String denoting the local currency, e.g. "$".
-         * @serial
-         * @see #getCurrencySymbol
-         */
+        /// <summary>
+        /// String denoting the local currency, e.g. "$".
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="CurrencySymbol"/>
         private string currencySymbol;
 
-        /**
-         * International string denoting the local currency, e.g. "USD".
-         * @serial
-         * @see #getInternationalCurrencySymbol
-         */
+        /// <summary>
+        /// International string denoting the local currency, e.g. "USD".
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="InternationalCurrencySymbol"/>
         private string intlCurrencySymbol;
 
-        /**
-         * The decimal separator character used when formatting currency values.
-         * @serial
-         * @see #getMonetaryDecimalSeparator
-         */
+        /// <summary>
+        /// The decimal separator character used when formatting currency values.
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="MonetaryDecimalSeparator"/>
         private char monetarySeparator; // Field new in JDK 1.1.6
 
-        /**
-         * The decimal separator string used when formatting currency values.
-         * @serial
-         */
+        /// <summary>
+        /// The decimal separator string used when formatting currency values.
+        /// </summary>
+        /// <serial/>
         private string monetarySeparatorString;
 
-        /**
-         * The grouping separator character used when formatting currency values.
-         * @serial
-         * @see #getMonetaryGroupingSeparator
-         */
+        /// <summary>
+        /// The grouping separator character used when formatting currency values.
+        /// </summary>
+        /// <serial/>
+        /// <seealso cref="MonetaryGroupingSeparator"/>
         private char monetaryGroupingSeparator; // Field new in JDK 1.1.6
 
-        /**
-         * The grouping separator string used when formatting currency values.
-         * @serial
-         */
+        /// <summary>
+        /// The grouping separator string used when formatting currency values.
+        /// </summary>
+        /// <serial/>
         private string monetaryGroupingSeparatorString;
 
-        /**
-         * The character used to distinguish the exponent in a number formatted
-         * in exponential notation, e.g. 'E' for a number such as "1.23E45".
-         * <p>
-         * Note that this field has been superseded by <code>exponentSeparator</code>.
-         * It is retained for backward compatibility.
-         *
-         * @serial
-         */
+        /// <summary>
+        /// The character used to distinguish the exponent in a number formatted
+        /// in exponential notation, e.g. 'E' for a number such as "1.23E45".
+        /// <para/>
+        /// Note that this field has been superseded by <see cref="exponentSeparator"/>.
+        /// It is retained for backward compatibility.
+        /// </summary>
+        /// <serial/>
+#pragma warning disable CS0169, S1144 // Unused private types or members should be removed
         private char exponential;       // Field new in JDK 1.1.6
+#pragma warning restore CS0169, S1144 // Unused private types or members should be removed
 
-        /**
-         * The string used to separate the mantissa from the exponent.
-         * Examples: "x10^" for 1.23x10^4, "E" for 1.23E4.
-         * <p>
-         * Note that this supersedes the <code>exponential</code> field.
-         *
-         * @serial
-         * @since AlphaWorks
-         */
-        private string exponentSeparator;
+        /// <summary>
+        /// The string used to separate the mantissa from the exponent.
+        /// Examples: "x10^" for 1.23x10^4, "E" for 1.23E4.
+        /// <para/>
+        /// Note that this supersedes the <see cref="exponential"/> field.
+        /// </summary>
+        /// <serial/>
+        /// <since>AlphaWorks</since>
+        private string? exponentSeparator;
 
-        /**
-         * The character used to indicate a padding character in a format,
-         * e.g., '*' in a pattern such as "$*_#,##0.00".
-         * @serial
-         * @since AlphaWorks
-         */
+        /// <summary>
+        /// The character used to indicate a padding character in a format,
+        /// e.g., '*' in a pattern such as "$*_#,##0.00".
+        /// </summary>
+        /// <serial/>
+        /// <since>AlphaWorks</since>
         private char padEscape;
 
-        /**
-         * The locale for which this object was constructed.  Set to the
-         * default locale for objects resurrected from old streams.
-         * @since ICU 2.2
-         */
+        /// <summary>
+        /// The locale for which this object was constructed.  Set to the
+        /// default locale for objects resurrected from old streams.
+        /// </summary>
+        /// <since>ICU 2.2</since>
         private CultureInfo requestedLocale;
 
-        /**
-         * The requested ULocale.  We keep the old locale for serialization compatibility.
-         * @since ICU 3.2
-         */
+        /// <summary>
+        /// The requested <see cref="UCultureInfo"/>. We keep the old locale for serialization compatibility.
+        /// </summary>
+        /// <since>ICU 3.2</since>
         private UCultureInfo ulocale;
 
-        /**
-         * Exponent multiplication sign. e.g "x"
-         * @serial
-         * @since ICU 54
-         */
-        private string exponentMultiplicationSign = null;
+        /// <summary>
+        /// Exponent multiplication sign. e.g "x"
+        /// </summary>
+        /// <serial/>
+        /// <since>ICU 54</since>
+        private string? exponentMultiplicationSign = null;
 
-        // Proclaim JDK 1.1 FCS compatibility
-        private const long serialVersionUID = 5772796243397350300L;
 
-        // The internal serial version which says which version was written
-        // - 0 (default) for version up to JDK 1.1.5
-        // - 1 for version from JDK 1.1.6, which includes two new fields:
-        //     monetarySeparator and exponential.
-        // - 2 for version from AlphaWorks, which includes 3 new fields:
-        //     padEscape, exponentSeparator, and plusSign.
-        // - 3 for ICU 2.2, which includes the locale field
-        // - 4 for ICU 3.2, which includes the ULocale field
-        // - 5 for ICU 3.6, which includes the monetaryGroupingSeparator field
-        // - 6 for ICU 4.2, which includes the currencySpc* fields
-        // - 7 for ICU 52, which includes the minusString and plusString fields
-        // - 8 for ICU 54, which includes exponentMultiplicationSign field.
-        // - 9 for ICU 58, which includes a series of String symbol fields.
-        private static readonly int currentSerialVersion = 8; // ICU4N NOTE: This should not be a const so we can update it via this assembly
+        // ICU4N TODO: Serialization
+        ////// Proclaim JDK 1.1 FCS compatibility
+        ////private const long serialVersionUID = 5772796243397350300L;
 
-        /**
-         * Describes the version of <code>DecimalFormatSymbols</code> present on the stream.
-         * Possible values are:
-         * <ul>
-         * <li><b>0</b> (or uninitialized): versions prior to JDK 1.1.6.
-         *
-         * <li><b>1</b>: Versions written by JDK 1.1.6 or later, which includes
-         *      two new fields: <code>monetarySeparator</code> and <code>exponential</code>.
-         * <li><b>2</b>: Version for AlphaWorks.  Adds padEscape, exponentSeparator,
-         *      and plusSign.
-         * <li><b>3</b>: Version for ICU 2.2, which adds locale.
-         * <li><b>4</b>: Version for ICU 3.2, which adds ulocale.
-         * <li><b>5</b>: Version for ICU 3.6, which adds monetaryGroupingSeparator.
-         * <li><b>6</b>: Version for ICU 4.2, which adds currencySpcBeforeSym and
-         *      currencySpcAfterSym.
-         * <li><b>7</b>: Version for ICU 52, which adds minusString and plusString.
-         * </ul>
-         * When streaming out a <code>DecimalFormatSymbols</code>, the most recent format
-         * (corresponding to the highest allowable <code>serialVersionOnStream</code>)
-         * is always written.
-         *
-         * @serial
-         */
-        private int serialVersionOnStream = currentSerialVersion;
+        ////// The internal serial version which says which version was written
+        ////// - 0 (default) for version up to JDK 1.1.5
+        ////// - 1 for version from JDK 1.1.6, which includes two new fields:
+        //////     monetarySeparator and exponential.
+        ////// - 2 for version from AlphaWorks, which includes 3 new fields:
+        //////     padEscape, exponentSeparator, and plusSign.
+        ////// - 3 for ICU 2.2, which includes the locale field
+        ////// - 4 for ICU 3.2, which includes the ULocale field
+        ////// - 5 for ICU 3.6, which includes the monetaryGroupingSeparator field
+        ////// - 6 for ICU 4.2, which includes the currencySpc* fields
+        ////// - 7 for ICU 52, which includes the minusString and plusString fields
+        ////// - 8 for ICU 54, which includes exponentMultiplicationSign field.
+        ////// - 9 for ICU 58, which includes a series of String symbol fields.
+        ////private static readonly int currentSerialVersion = 8; // ICU4N NOTE: This should not be a const so we can update it via this assembly
+
+        /////**
+        //// * Describes the version of <code>DecimalFormatSymbols</code> present on the stream.
+        //// * Possible values are:
+        //// * <ul>
+        //// * <li><b>0</b> (or uninitialized): versions prior to JDK 1.1.6.
+        //// *
+        //// * <li><b>1</b>: Versions written by JDK 1.1.6 or later, which includes
+        //// *      two new fields: <code>monetarySeparator</code> and <code>exponential</code>.
+        //// * <li><b>2</b>: Version for AlphaWorks.  Adds padEscape, exponentSeparator,
+        //// *      and plusSign.
+        //// * <li><b>3</b>: Version for ICU 2.2, which adds locale.
+        //// * <li><b>4</b>: Version for ICU 3.2, which adds ulocale.
+        //// * <li><b>5</b>: Version for ICU 3.6, which adds monetaryGroupingSeparator.
+        //// * <li><b>6</b>: Version for ICU 4.2, which adds currencySpcBeforeSym and
+        //// *      currencySpcAfterSym.
+        //// * <li><b>7</b>: Version for ICU 52, which adds minusString and plusString.
+        //// * </ul>
+        //// * When streaming out a <code>DecimalFormatSymbols</code>, the most recent format
+        //// * (corresponding to the highest allowable <code>serialVersionOnStream</code>)
+        //// * is always written.
+        //// *
+        //// * @serial
+        //// */
+        ////private int serialVersionOnStream = currentSerialVersion;
 
         private sealed class LocaleCache : SoftCache<UCultureInfo, CacheData>
         {
@@ -2129,24 +1966,15 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * cache to hold the NumberElements of a Locale.
-         */
+        /// <summary>
+        /// cache to hold the NumberElements of a Locale.
+        /// </summary>
         private static readonly CacheBase<UCultureInfo, CacheData> cachedLocaleData = new LocaleCache();
 
-        //private static readonly CacheBase<UCultureInfo, CacheData> cachedLocaleData =
-        //    new SoftCache<UCultureInfo, CacheData>() {
-        //            @Override
-        //            protected CacheData createInstance(ULocale locale, Void unused)
-        //{
-        //    return DecimalFormatSymbols.loadData(locale);
-        //}
-        //        };
-
-        /**
-         *
-         */
-        private string currencyPattern = null;
+        /// <summary>
+        /// 
+        /// </summary>
+        private string? currencyPattern = null;
 
         // -------- BEGIN ULocale boilerplate --------
 
@@ -2177,7 +2005,7 @@ namespace ICU4N.Text
         /// <seealso cref="UCultureInfo"/>
         /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual UCultureInfo ActualCulture
+        public virtual UCultureInfo? ActualCulture
             => actualLocale;
 
         /// <summary>
@@ -2208,7 +2036,7 @@ namespace ICU4N.Text
         /// <seealso cref="UCultureInfo"/>
         /// <draft>ICU 2.8 (retain)</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual UCultureInfo ValidCulture
+        public virtual UCultureInfo? ValidCulture
             => validLocale;
 
         /// <summary>
@@ -2223,14 +2051,14 @@ namespace ICU4N.Text
         /// <param name="valid">The most specific locale containing any resource data, or <c>null</c>.</param>
         /// <param name="actual">The locale containing data used to construct this object, or <c>null</c>.</param>
         /// <seealso cref="UCultureInfo"/>
-        internal void SetCulture(UCultureInfo valid, UCultureInfo actual) // ICU4N: Renamed from setLocale()
+        internal void SetCulture(UCultureInfo? valid, UCultureInfo? actual) // ICU4N: Renamed from setLocale()
         {
             // Change the following to an assertion later
             if ((valid == null) != (actual == null))
             {
-                ///CLOVER:OFF
+                ////CLOVER:OFF
                 throw new ArgumentException();
-                ///CLOVER:ON
+                ////CLOVER:ON
             }
             // Another check we could do is that the actual locale is at
             // the same level or less specific than the valid locale.
@@ -2238,22 +2066,22 @@ namespace ICU4N.Text
             this.actualLocale = actual;
         }
 
-        /**
-         * The most specific locale containing any resource data, or null.
-         * @see com.ibm.icu.util.ULocale
-         */
-        private UCultureInfo validLocale;
+        /// <summary>
+        /// The most specific locale containing any resource data, or <c>null</c>.
+        /// </summary>
+        /// <seealso cref="UCultureInfo"/>
+        private UCultureInfo? validLocale;
 
-        /**
-         * The locale containing data used to construct this object, or
-         * null.
-         * @see com.ibm.icu.util.ULocale
-         */
-        private UCultureInfo actualLocale;
+        /// <summary>
+        /// The locale containing data used to construct this object, or
+        /// <c>null</c>.
+        /// </summary>
+        /// <seealso cref="UCultureInfo"/>
+        private UCultureInfo? actualLocale;
 
         // not serialized, reconstructed from intlCurrencyCode
         [NonSerialized]
-        private Currency currency;
+        private Currency? currency;
 
         // -------- END ULocale boilerplate --------
 
@@ -2261,9 +2089,9 @@ namespace ICU4N.Text
         {
             internal readonly UCultureInfo validLocale;
             internal readonly string[] digits;
-            internal readonly string[] numberElements;
+            internal readonly string?[] numberElements;
 
-            public CacheData(UCultureInfo loc, string[] digits, string[] numberElements)
+            public CacheData(UCultureInfo loc, string[] digits, string?[] numberElements)
             {
                 validLocale = loc ?? throw new ArgumentNullException(nameof(loc));
                 this.digits = digits ?? throw new ArgumentNullException(nameof(digits));
@@ -2289,12 +2117,14 @@ namespace ICU4N.Text
         /// <icu/> Indicates the surrounding match pattern used in
         /// <see cref="DecimalFormatSymbols.GetPatternForCurrencySpacing(CurrencySpacingPattern, bool)"/>.
         /// </summary>
+        /// <stable>ICU 4.2</stable>
         SurroundingMatch = 1,
 
         /// <summary>
         /// <icu/> Indicates the insertion value used in
         /// <see cref="DecimalFormatSymbols.GetPatternForCurrencySpacing(CurrencySpacingPattern, bool)"/>.
         /// </summary>
+        /// <stable>ICU 4.4</stable>
         InsertBetween = 2,
     }
 }
