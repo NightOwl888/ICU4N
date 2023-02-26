@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Text
 {
@@ -189,7 +190,7 @@ namespace ICU4N.Text
             //other.pluralRules = pluralRules;
             // clone content
             //other.pluralCountToCurrencyUnitPattern = pluralCountToCurrencyUnitPattern;
-            other.pluralCountToCurrencyUnitPattern = new Dictionary<string, string>();
+            other.pluralCountToCurrencyUnitPattern = new JCG.Dictionary<string, string>(); // ICU4N: This dictionary requires structural equality
             foreach (string pluralCount in pluralCountToCurrencyUnitPattern.Keys)
             {
                 if (pluralCountToCurrencyUnitPattern.TryGetValue(pluralCount, out string currencyPattern))
@@ -266,7 +267,7 @@ namespace ICU4N.Text
 
         private void SetupCurrencyPluralPattern(UCultureInfo uloc)
         {
-            pluralCountToCurrencyUnitPattern = new Dictionary<string, string>();
+            pluralCountToCurrencyUnitPattern = new JCG.Dictionary<string, string>(); // ICU4N: This dictionary requires structural equality
 
             string numberStylePattern = NumberFormat.GetPattern(uloc, NumberFormatStyle.NumberStyle);
             // Split the number style pattern into pos and neg if applicable
@@ -319,7 +320,7 @@ namespace ICU4N.Text
         // map from plural count to currency plural pattern, for example
         // one (plural count) --> {0} {1} (currency plural pattern,
         // in which {0} is the amount number, and {1} is the currency plural name).
-        private IDictionary<string, string> pluralCountToCurrencyUnitPattern = null;
+        private IDictionary<string, string> pluralCountToCurrencyUnitPattern = null; // ICU4N: This dictionary requires structural equality
 
         /*
          * The plural rule is used to format currency plural name,
