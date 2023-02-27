@@ -1,4 +1,5 @@
 ﻿using ICU4N.Util;
+#nullable enable
 
 namespace ICU4N.Text
 {

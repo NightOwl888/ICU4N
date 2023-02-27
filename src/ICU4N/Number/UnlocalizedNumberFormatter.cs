@@ -12,7 +12,9 @@ namespace ICU4N.Numerics
     /// <seealso cref="NumberFormatter"/>
     internal class UnlocalizedNumberFormatter : NumberFormatterSettings<UnlocalizedNumberFormatter> // ICU4N TODO: API - this was public in ICU4J
     {
-        /** Base constructor; called during startup only. Sets the threshold to the default value of 3. */
+        /// <summary>
+        /// Base constructor; called during startup only. Sets the threshold to the default value of 3.
+        /// </summary>
         internal UnlocalizedNumberFormatter()
             : base(null, KEY_THRESHOLD, Long.GetInstance(3))
         {
@@ -23,38 +25,34 @@ namespace ICU4N.Numerics
         {
         }
 
-        /**
-         * Associate the given locale with the number formatter. The locale is used for picking the appropriate symbols,
-         * formats, and other data for number display.
-         *
-         * <p>
-         * To use the Java default locale, call Locale.getDefault():
-         *
-         * <pre>
-         * NumberFormatter.with(). ... .locale(Locale.getDefault())
-         * </pre>
-         *
-         * @param locale
-         *            The locale to use when loading data for number formatting.
-         * @return The fluent chain
-         * @draft ICU 60
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// Associate the given locale with the number formatter. The locale is used for picking the appropriate symbols,
+        /// formats, and other data for number display.
+        /// 
+        /// <para/>
+        /// To use <see cref="CultureInfo.CurrentCulture"/>, use <see cref="CultureInfo.CurrentCulture"/>.
+        /// 
+        /// <code>
+        /// NumberFormatter.With(). ... .Culture(CultureInfo.CurrentCulture)
+        /// </code>
+        /// </summary>
+        /// <param name="locale">The locale to use when loading data for number formatting.</param>
+        /// <returns>The fluent chain.</returns>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public LocalizedNumberFormatter Culture(CultureInfo locale)
         {
             return new LocalizedNumberFormatter(this, KEY_LOCALE, locale.ToUCultureInfo());
         }
 
-        /**
-         * ULocale version of the {@link #locale(Locale)} setter above.
-         *
-         * @param locale
-         *            The locale to use when loading data for number formatting.
-         * @return The fluent chain
-         * @see #locale(Locale)
-         * @draft ICU 60
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// <see cref="UCultureInfo"/> version of the <see cref="Culture(CultureInfo)"/> setter above.
+        /// </summary>
+        /// <param name="locale">The locale to use when loading data for number formatting.</param>
+        /// <returns>The fluent chain.</returns>
+        /// <seealso cref="Culture(CultureInfo)"/>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public LocalizedNumberFormatter Culture(UCultureInfo locale)
         {
             return new LocalizedNumberFormatter(this, KEY_LOCALE, locale);

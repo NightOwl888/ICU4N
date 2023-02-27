@@ -1,6 +1,7 @@
 ﻿using J2N.Globalization;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 #nullable enable
@@ -17,7 +18,7 @@ namespace ICU4N.Numerics
 
         // ICU4N TODO: ReadOnlySpan<char> overloads
 
-        public static bool TryParse(char[] value, int startIndex, int length, NumberStyle styles, IFormatProvider? provider, out BigDecimal result)
+        public static bool TryParse(char[] value, int startIndex, int length, NumberStyle styles, IFormatProvider? provider, [MaybeNullWhen(false)] out BigDecimal result)
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -31,7 +32,7 @@ namespace ICU4N.Numerics
             return BigNumber.TryParseBigDecimalFloatStyle(value, startIndex, length, styles, NumberFormatInfo.GetInstance(provider), out result);
         }
 
-        public static bool TryParse(string value, int startIndex, int length, NumberStyle styles, IFormatProvider? provider, out BigDecimal result)
+        public static bool TryParse(string value, int startIndex, int length, NumberStyle styles, IFormatProvider? provider, [MaybeNullWhen(false)] out BigDecimal result)
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -46,7 +47,7 @@ namespace ICU4N.Numerics
             return BigNumber.TryParseBigDecimalFloatStyle(value.ToCharArray(), startIndex, length, styles, NumberFormatInfo.GetInstance(provider), out result);
         }
 
-        public static bool TryParse(char[] value, NumberStyle styles, IFormatProvider? provider, out BigDecimal result)
+        public static bool TryParse(char[] value, NumberStyle styles, IFormatProvider? provider, [MaybeNullWhen(false)] out BigDecimal result)
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -55,7 +56,7 @@ namespace ICU4N.Numerics
             return BigNumber.TryParseBigDecimalFloatStyle(value, startIndex: 0, length: value.Length, styles, NumberFormatInfo.GetInstance(provider), out result);
         }
 
-        public static bool TryParse(string value, NumberStyle styles, IFormatProvider? provider, out BigDecimal result)
+        public static bool TryParse(string value, NumberStyle styles, IFormatProvider? provider, [MaybeNullWhen(false)] out BigDecimal result)
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -64,7 +65,7 @@ namespace ICU4N.Numerics
             return BigNumber.TryParseBigDecimalFloatStyle(value.ToCharArray(), startIndex: 0, length: value.Length, styles, NumberFormatInfo.GetInstance(provider), out result);
         }
 
-        public static bool TryParse(char[] value, IFormatProvider? provider, out BigDecimal result)
+        public static bool TryParse(char[] value, IFormatProvider? provider, [MaybeNullWhen(false)] out BigDecimal result)
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -72,7 +73,7 @@ namespace ICU4N.Numerics
             return BigNumber.TryParseBigDecimalFloatStyle(value, startIndex: 0, length: value.Length, styles: NumberStyle.Float | NumberStyle.AllowThousands, NumberFormatInfo.GetInstance(provider), out result);
         }
 
-        public static bool TryParse(string value, IFormatProvider? provider, out BigDecimal result)
+        public static bool TryParse(string value, IFormatProvider? provider, [MaybeNullWhen(false)] out BigDecimal result)
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -93,7 +94,7 @@ namespace ICU4N.Numerics
                 throw new ArgumentOutOfRangeException(nameof(length), SR.ArgumentOutOfRange_IndexLength);
 
             // ICU4N TODO: Revisit ToCharArray()
-            if (!BigNumber.TryParseBigDecimalFloatStyle(value.ToCharArray(), startIndex, length, styles, NumberFormatInfo.GetInstance(provider), out BigDecimal result))
+            if (!BigNumber.TryParseBigDecimalFloatStyle(value.ToCharArray(), startIndex, length, styles, NumberFormatInfo.GetInstance(provider), out BigDecimal? result))
                 throw new FormatException(string.Format(SR.Format_InvalidString, value));
 
             return result;
@@ -110,7 +111,7 @@ namespace ICU4N.Numerics
             if (startIndex > value.Length - length) // Checks for int overflow
                 throw new ArgumentOutOfRangeException(nameof(length), SR.ArgumentOutOfRange_IndexLength);
 
-            if (!BigNumber.TryParseBigDecimalFloatStyle(value, startIndex, length, styles, NumberFormatInfo.GetInstance(provider), out BigDecimal result))
+            if (!BigNumber.TryParseBigDecimalFloatStyle(value, startIndex, length, styles, NumberFormatInfo.GetInstance(provider), out BigDecimal? result))
                 throw new FormatException(string.Format(SR.Format_InvalidString, value));
 
             return result;
@@ -122,7 +123,7 @@ namespace ICU4N.Numerics
                 throw new ArgumentNullException(nameof(value));
 
             // ICU4N TODO: Revisit ToCharArray()
-            if (!BigNumber.TryParseBigDecimalFloatStyle(value.ToCharArray(), startIndex: 0, length: value.Length, styles: NumberStyle.Float | NumberStyle.AllowThousands, NumberFormatInfo.GetInstance(provider), out BigDecimal result))
+            if (!BigNumber.TryParseBigDecimalFloatStyle(value.ToCharArray(), startIndex: 0, length: value.Length, styles: NumberStyle.Float | NumberStyle.AllowThousands, NumberFormatInfo.GetInstance(provider), out BigDecimal? result))
                 throw new FormatException(string.Format(SR.Format_InvalidString, value));
 
             return result;
@@ -133,7 +134,7 @@ namespace ICU4N.Numerics
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
 
-            if (!BigNumber.TryParseBigDecimalFloatStyle(value, startIndex: 0, length: value.Length, styles: NumberStyle.Float | NumberStyle.AllowThousands, NumberFormatInfo.GetInstance(provider), out BigDecimal result))
+            if (!BigNumber.TryParseBigDecimalFloatStyle(value, startIndex: 0, length: value.Length, styles: NumberStyle.Float | NumberStyle.AllowThousands, NumberFormatInfo.GetInstance(provider), out BigDecimal? result))
                 throw new FormatException(string.Format(SR.Format_InvalidString, value));
 
             return result;
@@ -145,7 +146,7 @@ namespace ICU4N.Numerics
                 throw new ArgumentNullException(nameof(value));
 
             // ICU4N TODO: Revisit ToCharArray()
-            if (!BigNumber.TryParseBigDecimalFloatStyle(value.ToCharArray(), startIndex: 0, length: value.Length, styles, NumberFormatInfo.GetInstance(provider), out BigDecimal result))
+            if (!BigNumber.TryParseBigDecimalFloatStyle(value.ToCharArray(), startIndex: 0, length: value.Length, styles, NumberFormatInfo.GetInstance(provider), out BigDecimal? result))
                 throw new FormatException(string.Format(SR.Format_InvalidString, value));
 
             return result;
@@ -156,7 +157,7 @@ namespace ICU4N.Numerics
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
 
-            if (!BigNumber.TryParseBigDecimalFloatStyle(value, startIndex: 0, length: value.Length, styles, NumberFormatInfo.GetInstance(provider), out BigDecimal result))
+            if (!BigNumber.TryParseBigDecimalFloatStyle(value, startIndex: 0, length: value.Length, styles, NumberFormatInfo.GetInstance(provider), out BigDecimal? result))
                 throw new FormatException(string.Format(SR.Format_InvalidString, value));
 
             return result;
@@ -164,7 +165,7 @@ namespace ICU4N.Numerics
 
         private static partial class BigNumber
         {
-            public static bool TryParseBigDecimalFloatStyle(char[] value, int startIndex, int length, NumberStyle styles, NumberFormatInfo info, out BigDecimal result)
+            public static bool TryParseBigDecimalFloatStyle(char[] value, int startIndex, int length, NumberStyle styles, NumberFormatInfo info, [MaybeNullWhen(false)] out BigDecimal result)
             {
                 
                 result = default;

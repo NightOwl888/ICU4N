@@ -58,35 +58,35 @@ namespace ICU4N.Numerics
          */
         public static FractionRounder Integer => ConstructFraction(0, 0);
 
-        /**
-         * Show numbers rounded if necessary to a certain number of fraction places (numerals after the decimal separator).
-         * Additionally, pad with zeros to ensure that this number of places are always shown.
-         *
-         * <para/>
-         * Example output with minMaxFractionPlaces = 3:
-         *
-         * <para/>
-         * 87,650.000<br>
-         * 8,765.000<br>
-         * 876.500<br>
-         * 87.650<br>
-         * 8.765<br>
-         * 0.876<br>
-         * 0.088<br>
-         * 0.009<br>
-         * 0.000 (zero)
-         *
-         * <para/>
-         * This method is equivalent to {@link #minMaxFraction} with both arguments equal.
-         *
-         * @param minMaxFractionPlaces
-         *            The minimum and maximum number of numerals to display after the decimal separator (rounding if too
-         *            long or padding with zeros if too short).
-         * @return A FractionRounder for chaining or passing to the NumberFormatter rounding() setter.
-         * @draft ICU 60
-         * @provisional This API might change or be removed in a future release.
-         * @see NumberFormatter
-         */
+        /////**
+        //// * Show numbers rounded if necessary to a certain number of fraction places (numerals after the decimal separator).
+        //// * Additionally, pad with zeros to ensure that this number of places are always shown.
+        //// *
+        //// * <para/>
+        //// * Example output with minMaxFractionPlaces = 3:
+        //// *
+        //// * <para/>
+        //// * 87,650.000<br>
+        //// * 8,765.000<br>
+        //// * 876.500<br>
+        //// * 87.650<br>
+        //// * 8.765<br>
+        //// * 0.876<br>
+        //// * 0.088<br>
+        //// * 0.009<br>
+        //// * 0.000 (zero)
+        //// *
+        //// * <para/>
+        //// * This method is equivalent to {@link #minMaxFraction} with both arguments equal.
+        //// *
+        //// * @param minMaxFractionPlaces
+        //// *            The minimum and maximum number of numerals to display after the decimal separator (rounding if too
+        //// *            long or padding with zeros if too short).
+        //// * @return A FractionRounder for chaining or passing to the NumberFormatter rounding() setter.
+        //// * @draft ICU 60
+        //// * @provisional This API might change or be removed in a future release.
+        //// * @see NumberFormatter
+        //// */
         public static FractionRounder FixedFraction(int minMaxFractionPlaces)
         {
             if (minMaxFractionPlaces >= 0 && minMaxFractionPlaces <= RoundingUtils.MAX_INT_FRAC_SIG)
@@ -342,14 +342,14 @@ namespace ICU4N.Numerics
          */
         public static CurrencyRounder Currency(CurrencyUsage currencyUsage)
         {
-            if (currencyUsage != null)
-            {
+            //if (currencyUsage != null)
+            //{
                 return ConstructCurrency(currencyUsage);
-            }
-            else
-            {
-                throw new ArgumentNullException(nameof(currencyUsage), "CurrencyUsage must be non-null"); // ICU4N TODO: Guard clause exception types
-            }
+            //}
+            //else
+            //{
+            //    throw new ArgumentNullException(nameof(currencyUsage), "CurrencyUsage must be non-null"); // ICU4N TODO: Guard clause exception types
+            //}
         }
 
         /**
@@ -455,7 +455,7 @@ namespace ICU4N.Numerics
             }
         }
 
-        /** Assumes that minSig <= maxSig. */
+        /** Assumes that minSig &lt;= maxSig. */
         internal static Rounder ConstructSignificant(int minSig, int maxSig)
         {
             if (minSig == 2 && maxSig == 2)
@@ -606,7 +606,9 @@ namespace ICU4N.Numerics
             {
             }
 
+#pragma warning disable CS0672 // Member overrides obsolete member
             public override void Apply(IDecimalQuantity value)
+#pragma warning restore CS0672 // Member overrides obsolete member
             {
                 value.RoundToInfinity();
                 value.SetFractionLength(0, int.MaxValue);
@@ -624,7 +626,9 @@ namespace ICU4N.Numerics
                 this.maxFrac = maxFrac;
             }
 
+#pragma warning disable CS0672 // Member overrides obsolete member
             public override void Apply(IDecimalQuantity value)
+#pragma warning restore CS0672 // Member overrides obsolete member
             {
                 value.RoundToMagnitude(GetRoundingMagnitudeFraction(maxFrac), mathContext);
                 value.SetFractionLength(Math.Max(0, -GetDisplayMagnitudeFraction(minFrac)), int.MaxValue);
@@ -673,7 +677,9 @@ namespace ICU4N.Numerics
                 this.maxSig = maxSig;
             }
 
+#pragma warning disable CS0672 // Member overrides obsolete member
             public override void Apply(IDecimalQuantity value)
+#pragma warning restore CS0672 // Member overrides obsolete member
             {
                 int displayMag = GetDisplayMagnitudeFraction(minFrac);
                 int roundingMag = GetRoundingMagnitudeFraction(maxFrac);
@@ -703,7 +709,9 @@ namespace ICU4N.Numerics
                 this.increment = increment;
             }
 
+#pragma warning disable CS0672 // Member overrides obsolete member
             public override void Apply(IDecimalQuantity value)
+#pragma warning restore CS0672 // Member overrides obsolete member
             {
                 value.RoundToIncrement(increment, mathContext);
                 value.SetFractionLength(increment.Scale, increment.Scale);
@@ -719,7 +727,9 @@ namespace ICU4N.Numerics
                 this.usage = usage;
             }
 
+#pragma warning disable CS0672 // Member overrides obsolete member
             public override void Apply(IDecimalQuantity value)
+#pragma warning restore CS0672 // Member overrides obsolete member
             {
                 // Call .withCurrency() before .apply()!
                 throw new InvalidOperationException(); //throw new AssertionError();
@@ -733,7 +743,9 @@ namespace ICU4N.Numerics
             {
             }
 
+#pragma warning disable CS0672 // Member overrides obsolete member
             public override void Apply(IDecimalQuantity value)
+#pragma warning restore CS0672 // Member overrides obsolete member
             {
                 // TODO: Assert that value has already been rounded
             }

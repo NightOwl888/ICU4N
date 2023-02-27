@@ -135,7 +135,7 @@ namespace ICU4N.Numerics.BigMath
             }
         }
 
-        /** @return sign = 1, magnitude = val.magnitude & that.magnitude*/
+        /** @return sign = 1, magnitude = val.magnitude &amp; that.magnitude*/
         private static BigInteger AndPositive(BigInteger val, BigInteger that)
         {
             // PRE: both arguments are positive
@@ -158,7 +158,7 @@ namespace ICU4N.Numerics.BigMath
             return result;
         }
 
-        /** @return sign = positive.magnitude & magnitude = -negative.magnitude */
+        /** @return sign = positive.magnitude &amp; magnitude = -negative.magnitude */
         private static BigInteger AndDiffSigns(BigInteger positive, BigInteger negative)
         {
             // PRE: positive is positive and negative is negative
@@ -201,7 +201,7 @@ namespace ICU4N.Numerics.BigMath
             return result;
         }
 
-        /** @return sign = -1, magnitude = -(-longer.magnitude & -shorter.magnitude)*/
+        /** @return sign = -1, magnitude = -(-longer.magnitude &amp; -shorter.magnitude)*/
         private static BigInteger AndNegative(BigInteger longer, BigInteger shorter)
         {
             // PRE: longer and shorter are negative
@@ -315,7 +315,7 @@ namespace ICU4N.Numerics.BigMath
             }
         }
 
-        /** @return sign = 1, magnitude = val.magnitude & ~that.magnitude*/
+        /** @return sign = 1, magnitude = val.magnitude &amp; ~that.magnitude*/
         private static BigInteger AndNotPositive(BigInteger val, BigInteger that)
         {
             // PRE: both arguments are positive
@@ -337,7 +337,7 @@ namespace ICU4N.Numerics.BigMath
             return result;
         }
 
-        /** @return sign = 1, magnitude = positive.magnitude & ~(-negative.magnitude)*/
+        /** @return sign = 1, magnitude = positive.magnitude &amp; ~(-negative.magnitude)*/
         private static BigInteger AndNotPositiveNegative(BigInteger positive, BigInteger negative)
         {
             // PRE: positive > 0 && negative < 0
@@ -375,7 +375,7 @@ namespace ICU4N.Numerics.BigMath
             return result;
         }
 
-        /** @return sign = -1, magnitude = -(-negative.magnitude & ~positive.magnitude)*/
+        /** @return sign = -1, magnitude = -(-negative.magnitude &amp; ~positive.magnitude)*/
         private static BigInteger AndNotNegativePositive(BigInteger negative, BigInteger positive)
         {
             // PRE: negative < 0 && positive > 0
@@ -463,7 +463,7 @@ namespace ICU4N.Numerics.BigMath
             return result;
         }
 
-        /** @return sign = 1, magnitude = -val.magnitude & ~(-that.magnitude)*/
+        /** @return sign = 1, magnitude = -val.magnitude &amp; ~(-that.magnitude)*/
         private static BigInteger AndNotNegative(BigInteger val, BigInteger that)
         {
             // PRE: val < 0 && that < 0

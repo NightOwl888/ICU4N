@@ -1067,7 +1067,7 @@ namespace ICU4N.Numerics.BigMath
         *            exponent to which {@code this} is raised.
         * @return {@code this ^ n}.
         * @throws ArithmeticException
-        *             if {@code n < 0} or {@code n > 999999999}.
+        *             if {@code n &lt; 0} or {@code n &gt; 999999999}.
         */
         public static BigDecimal Pow(BigDecimal number, int n)
         {
@@ -1103,7 +1103,7 @@ namespace ICU4N.Numerics.BigMath
          *            rounding mode and precision for the result of this operation.
          * @return {@code this ^ n}.
          * @throws ArithmeticException
-         *             if {@code n < 0} or {@code n > 999999999}.
+         *             if {@code n &lt; 0} or {@code n &gt; 999999999}.
          */
         public static BigDecimal Pow(BigDecimal number, int n, MathContext mc)
         {
@@ -1374,7 +1374,7 @@ namespace ICU4N.Numerics.BigMath
 
         /**
         * Returns a new {@code BigDecimal} instance where the decimal point has
-        * been moved {@code n} places to the left. If {@code n < 0} then the
+        * been moved {@code n} places to the left. If {@code n &lt; 0} then the
         * decimal point is moved {@code -n} places to the right.
         * <para/>
         * The result is obtained by changing its scale. If the scale of the result
@@ -1382,7 +1382,7 @@ namespace ICU4N.Numerics.BigMath
         * zero.
         * <para/>
         * Note, that {@code movePointLeft(0)} returns a result which is
-        * mathematically equivalent, but which has {@code scale >= 0}.
+        * mathematically equivalent, but which has {@code scale &gt;= 0}.
         *
         * @param n
         *            number of placed the decimal point has to be moved.
@@ -1419,7 +1419,7 @@ namespace ICU4N.Numerics.BigMath
 
         /**
          * Returns a new {@code BigDecimal} instance where the decimal point has
-         * been moved {@code n} places to the right. If {@code n < 0} then the
+         * been moved {@code n} places to the right. If {@code n &lt; 0} then the
          * decimal point is moved {@code -n} places to the left.
          * <para/>
          * The result is obtained by changing its scale. If the scale of the result
@@ -1427,7 +1427,7 @@ namespace ICU4N.Numerics.BigMath
          * zero.
          * <para/>
          * Note, that {@code movePointRight(0)} returns a result which is
-         * mathematically equivalent, but which has scale >= 0.
+         * mathematically equivalent, but which has scale &gt;= 0.
          *
          * @param n
          *            number of placed the decimal point has to be moved.

@@ -211,31 +211,31 @@ namespace ICU4N.Numerics
         /* ----- Instance properties [all private and immutable] ----- */
         /* properties private */
 
-        /**
-         * The indicator. This may take the values:
-         * <ul>
-         * <li>ispos -- the number is positive <li>iszero -- the number is zero <li>isneg -- the number is negative
-         * </ul>
-         *
-         * @serial
-         */
+        /////**
+        //// * The indicator. This may take the values:
+        //// * <ul>
+        //// * <li>ispos -- the number is positive <li>iszero -- the number is zero <li>isneg -- the number is negative
+        //// * </ul>
+        //// *
+        //// * @serial
+        //// */
         private sbyte ind; // assumed undefined
                            // Note: some code below assumes IND = Sign [-1, 0, 1], at present.
                            // We only need two bits for this, but use a byte [also permits
                            // smooth future extension].
 
-        /**
-         * The formatting style. This may take the values:
-         * <ul>
-         * <li>MathContext.PLAIN -- no exponent needed <li>MathContext.SCIENTIFIC -- scientific notation required <li>
-         * MathContext.ENGINEERING -- engineering notation required
-         * </ul>
-         * <para/>
-         * This property is an optimization; it allows us to defer number layout until it is actually needed as a string,
-         * hence avoiding unnecessary formatting.
-         *
-         * @serial
-         */
+        /////**
+        //// * The formatting style. This may take the values:
+        //// * <ul>
+        //// * <li>MathContext.PLAIN -- no exponent needed <li>MathContext.SCIENTIFIC -- scientific notation required <li>
+        //// * MathContext.ENGINEERING -- engineering notation required
+        //// * </ul>
+        //// * <para/>
+        //// * This property is an optimization; it allows us to defer number layout until it is actually needed as a string,
+        //// * hence avoiding unnecessary formatting.
+        //// *
+        //// * @serial
+        //// */
         private byte form = (byte)ExponentForm.Plain; // assumed PLAIN
                                                       // We only need two bits for this, at present, but use a byte
                                                       // [again, to allow for smooth future extension]
@@ -1255,33 +1255,33 @@ namespace ICU4N.Numerics
             return this.CompareTo(rhs, plainMC);
         }
 
-        /**
-         * Compares this <code>BigDecimal</code> to another.
-         * <para/>
-         * Implements numeric comparison, (as defined in the decimal documentation, see {@link BigDecimal class header}),
-         * and returns a result of type <code>int</code>.
-         * <para/>
-         * The result will be:
-         * <table cellpadding=2>
-         * <tr>
-         * <td align=right><b>-1</b></td> <td>if the current object is less than the first parameter</td>
-         * </tr>
-         * <tr>
-         * <td align=right><b>0</b></td> <td>if the current object is equal to the first parameter</td>
-         * </tr>
-         * <tr>
-         * <td align=right><b>1</b></td> <td>if the current object is greater than the first parameter.</td>
-         * </tr>
-         * </table>
-         * <para/>
-         * A {@link #compareTo(BigDecimal)} method is also provided.
-         *
-         * @param rhs The <code>BigDecimal</code> for the right hand side of the comparison.
-         * @param set The <code>MathContext</code> arithmetic settings.
-         * @return An <code>int</code> whose value is -1, 0, or 1 as <code>this</code> is numerically less than, equal to,
-         *         or greater than <code>rhs</code>.
-         * @stable ICU 2.0
-         */
+        /////**
+        //// * Compares this <code>BigDecimal</code> to another.
+        //// * <para/>
+        //// * Implements numeric comparison, (as defined in the decimal documentation, see {@link BigDecimal class header}),
+        //// * and returns a result of type <code>int</code>.
+        //// * <para/>
+        //// * The result will be:
+        //// * <table cellpadding=2>
+        //// * <tr>
+        //// * <td align=right><b>-1</b></td> <td>if the current object is less than the first parameter</td>
+        //// * </tr>
+        //// * <tr>
+        //// * <td align=right><b>0</b></td> <td>if the current object is equal to the first parameter</td>
+        //// * </tr>
+        //// * <tr>
+        //// * <td align=right><b>1</b></td> <td>if the current object is greater than the first parameter.</td>
+        //// * </tr>
+        //// * </table>
+        //// * <para/>
+        //// * A {@link #compareTo(BigDecimal)} method is also provided.
+        //// *
+        //// * @param rhs The <code>BigDecimal</code> for the right hand side of the comparison.
+        //// * @param set The <code>MathContext</code> arithmetic settings.
+        //// * @return An <code>int</code> whose value is -1, 0, or 1 as <code>this</code> is numerically less than, equal to,
+        //// *         or greater than <code>rhs</code>.
+        //// * @stable ICU 2.0
+        //// */
 
         public int CompareTo(BigDecimal rhs, MathContext set)
         {
@@ -3592,7 +3592,6 @@ namespace ICU4N.Numerics
                                         var1[0] = (byte)0; // residue to 0 [this is all we'll test]
                                                            // var1len=1 -- [optimized out]
                                         goto outer_break;
-                                    compare_continue: { /* Intentionally blank */ }
                                     } while (false);
                                 compare_break: { /* Intentionally blank */ }
                                 }/* compare */
@@ -3668,7 +3667,6 @@ namespace ICU4N.Numerics
                      * to get here, V1 is less than V2, so divide V2 by 10 and go for the next digit
                      */
                     var2len--;
-                outer_continue: { /* Intentionally blank */ }
                 }
             outer_break: { /* Intentionally blank */ }
             }/* outer */
@@ -3928,7 +3926,6 @@ namespace ICU4N.Numerics
                     digit = bytecar[dp90]; // carry or borrow
                     op_continue: { /* Intentionally blank */ }
                 }
-            op_break: { /* Intentionally blank */ }
             }/* op */
 
             if (digit == 0)

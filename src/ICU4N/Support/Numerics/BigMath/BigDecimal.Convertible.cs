@@ -149,7 +149,7 @@ namespace ICU4N.Numerics.BigMath
         /// then engineering notation is used. Engineering notation is 
         /// similar to the scientific notation except that the exponent 
         /// is made to be a multiple of 3 such that the integer part 
-        /// is &gt= 1 and &lt 1000.
+        /// is &gt;= 1 and &lt; 1000.
         /// </para>
         /// <para>
         /// This overload uses the invariant culture to resolve the
@@ -177,7 +177,7 @@ namespace ICU4N.Numerics.BigMath
         /// then engineering notation is used. Engineering notation is 
         /// similar to the scientific notation except that the exponent 
         /// is made to be a multiple of 3 such that the integer part 
-        /// is &gt= 1 and &lt 1000.
+        /// is &gt;= 1 and &lt; 1000.
         /// </para>
         /// </remarks>
         /// <returns>

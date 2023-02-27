@@ -27,7 +27,7 @@ namespace ICU4N.Text
         /// corresponds to digits in the ASCII range '0' through '9'.
         /// </summary>
         /// <draft>ICU 60</draft>
-        public static readonly NumberingSystem Latin = LookupInstanceByName("latn");
+        public static NumberingSystem Latin { get; } = LookupInstanceByName("latn");
 
         /// <summary>
         /// Default constructor.  Returns a numbering system that uses the Western decimal

@@ -4,18 +4,21 @@ using System.Collections.Generic;
 
 namespace ICU4N.Util
 {
+    // ICU4N TODO: Remove once TimeUnitAmount is ported. This stub is just for XML docs.
+    internal class TimeUnitAmount { }
+
     /// <summary>
     /// Measurement unit for time units.
     /// </summary>
-    ///// <seealso cref="TimeUnitAmount"/>
+    /// <seealso cref="TimeUnitAmount"/>
     /// <stable>ICU 4.0</stable>
     internal class TimeUnit : MeasureUnit // ICU4N TODO: API - this was public in ICU4J
     {
         //private static final long serialVersionUID = -2839973855554750484L;
 
-        /**
-         * Here for serialization backward compatibility only.
-         */
+        /// <summary>
+        /// Here for serialization backward compatibility only.
+        /// </summary>
         private readonly int index;
 
         internal TimeUnit(string type, string code)

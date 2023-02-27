@@ -427,7 +427,7 @@ namespace ICU4N.Text
         /// documentation of <see cref="DecimalFormat"/>.
         /// </summary>
         /// <seealso cref="ParseIntegerOnly"/>
-        /// <seealso cref="DecimalFormat.ParseBigDecimal"/>
+        /// <seealso cref="DecimalFormat.ParseToBigDecimal"/>
         /// <seealso cref="Formatter.ParseObject(string, ParsePosition)"/>
         /// <stable>ICU 2.0</stable>
         public abstract J2N.Numerics.Number Parse(string text, ParsePosition parsePosition);

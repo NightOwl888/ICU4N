@@ -1,10 +1,7 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Numerics;
 using ICU4N.Text;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace ICU4N.Numerics
 {
@@ -57,273 +54,240 @@ namespace ICU4N.Numerics
     {
         private static readonly UnlocalizedNumberFormatter BASE = new UnlocalizedNumberFormatter();
 
-        /**
-         * An enum declaring how to render units, including currencies. Example outputs when formatting 123 USD and 123
-         * meters in <em>en-CA</em>:
-         *
-         * <ul>
-         * <li>NARROW: "$123.00" and "123 m"
-         * <li>SHORT: "US$ 123.00" and "123 m"
-         * <li>FULL_NAME: "123.00 US dollars" and "123 meters"
-         * <li>ISO_CODE: "USD 123.00" and undefined behavior
-         * <li>HIDDEN: "123.00" and "123"
-         * </ul>
-         *
-         * <para/>
-         * This enum is similar to {@link com.ibm.icu.text.MeasureFormat.FormatWidth}.
-         *
-         * @draft ICU 60
-         * @provisional This API might change or be removed in a future release.
-         * @see NumberFormatter
-         */
+        /// <summary>
+        /// An enum declaring how to render units, including currencies. Example outputs when formatting 123 USD and 123
+        /// meters in <em>en-CA</em>:
+        /// 
+        /// <list type="bullet">
+        ///     <item><term><see cref="Narrow"/></term><description>"$123.00" and "123 m"</description></item>
+        ///     <item><term><see cref="Short"/></term><description>"US$ 123.00" and "123 m"</description></item>
+        ///     <item><term><see cref="FullName"/></term><description>"123.00 US dollars" and "123 meters"</description></item>
+        ///     <item><term><see cref="ISOCode"/></term><description>"USD 123.00" and undefined behavior</description></item>
+        ///     <item><term><see cref="Hidden"/></term><description>"123.00" and "123"</description></item>
+        /// </list>
+        /// 
+        /// <para/>
+        /// This enum is similar to <see cref="MeasureFormat.FormatWidth"/>.
+        /// </summary>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        /// <seealso cref="NumberFormatter"/>
         public enum UnitWidth
         {
-            /**
-             * Print an abbreviated version of the unit name. Similar to SHORT, but always use the shortest available
-             * abbreviation or symbol. This option can be used when the context hints at the identity of the unit. For more
-             * information on the difference between NARROW and SHORT, see SHORT.
-             *
-             * <para/>
-             * In CLDR, this option corresponds to the "Narrow" format for measure units and the "¤¤¤¤¤" placeholder for
-             * currencies.
-             *
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             * @see NumberFormatter
-             */
+            /// <summary>
+            /// Print an abbreviated version of the unit name. Similar to <see cref="Short"/>, but always use the shortest available
+            /// abbreviation or symbol. This option can be used when the context hints at the identity of the unit. For more
+            /// information on the difference between <see cref="Narrow"/> and <see cref="Short"/>, see <see cref="Short"/>.
+            /// 
+            /// <para/>
+            /// In CLDR, this option corresponds to the "Narrow" format for measure units and the "¤¤¤¤¤" placeholder for
+            /// currencies.
+            /// </summary>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            /// <seealso cref="NumberFormatter"/>
             Narrow,
 
-            /**
-             * Print an abbreviated version of the unit name. Similar to NARROW, but use a slightly wider abbreviation or
-             * symbol when there may be ambiguity. This is the default behavior.
-             *
-             * <para/>
-             * For example, in <em>es-US</em>, the SHORT form for Fahrenheit is "{0} °F", but the NARROW form is "{0}°",
-             * since Fahrenheit is the customary unit for temperature in that locale.
-             *
-             * <para/>
-             * In CLDR, this option corresponds to the "Short" format for measure units and the "¤" placeholder for
-             * currencies.
-             *
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             * @see NumberFormatter
-             */
+            /// <summary>
+            /// Print an abbreviated version of the unit name. Similar to <see cref="Narrow"/>, but use a slightly wider abbreviation or
+            /// symbol when there may be ambiguity. This is the default behavior.
+            /// 
+            /// <para/>
+            /// For example, in <em>es-US</em>, the <see cref="Short"/> form for Fahrenheit is "{0} °F", but the NARROW form is "{0}°",
+            /// since Fahrenheit is the customary unit for temperature in that locale.
+            /// 
+            /// <para/>
+            /// In CLDR, this option corresponds to the "Short" format for measure units and the "¤" placeholder for
+            /// currencies.
+            /// </summary>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            /// <seealso cref="NumberFormatter"/>
             Short,
 
-            /**
-             * Print the full name of the unit, without any abbreviations.
-             *
-             * <para/>
-             * In CLDR, this option corresponds to the default format for measure units and the "¤¤¤" placeholder for
-             * currencies.
-             *
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             * @see NumberFormatter
-             */
+            /// <summary>
+            /// Print the full name of the unit, without any abbreviations.
+            /// 
+            /// <para/>
+            /// In CLDR, this option corresponds to the default format for measure units and the "¤¤¤" placeholder for
+            /// currencies.
+            /// </summary>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            /// <seealso cref="NumberFormatter"/>
             FullName,
 
-            /**
-             * Use the three-digit ISO XXX code in place of the symbol for displaying currencies. The behavior of this
-             * option is currently undefined for use with measure units.
-             *
-             * <para/>
-             * In CLDR, this option corresponds to the "¤¤" placeholder for currencies.
-             *
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             * @see NumberFormatter
-             */
+            /// <summary>
+            /// Use the three-digit ISO XXX code in place of the symbol for displaying currencies. The behavior of this
+            /// option is currently undefined for use with measure units.
+            /// 
+            /// <para/>
+            /// In CLDR, this option corresponds to the "¤¤" placeholder for currencies.
+            /// </summary>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            /// <seealso cref="NumberFormatter"/>
             ISOCode,
 
-            /**
-             * Format the number according to the specified unit, but do not display the unit. For currencies, apply
-             * monetary symbols and formats as with SHORT, but omit the currency symbol. For measure units, the behavior is
-             * equivalent to not specifying the unit at all.
-             *
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             * @see NumberFormatter
-             */
+            /// <summary>
+            /// Format the number according to the specified unit, but do not display the unit. For currencies, apply
+            /// monetary symbols and formats as with <see cref="Short"/>, but omit the currency symbol. For measure units, the behavior is
+            /// equivalent to not specifying the unit at all.
+            /// </summary>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            /// <seealso cref="NumberFormatter"/>
             Hidden,
         }
 
-        /**
-         * An enum declaring how to denote positive and negative numbers. Example outputs when formatting 123 and -123 in
-         * <em>en-US</em>:
-         *
-         * <ul>
-         * <li>AUTO: "123" and "-123"
-         * <li>ALWAYS: "+123" and "-123"
-         * <li>NEVER: "123" and "123"
-         * <li>ACCOUNTING: "$123" and "($123)"
-         * <li>ACCOUNTING_ALWAYS: "+$123" and "($123)"
-         * </ul>
-         *
-         * <para/>
-         * The exact format, including the position and the code point of the sign, differ by locale.
-         *
-         * @draft ICU 60
-         * @provisional This API might change or be removed in a future release.
-         * @see NumberFormatter
-         */
+        /// <summary>
+        /// An enum declaring how to denote positive and negative numbers. Example outputs when formatting 123 and -123 in
+        /// <em>en-US</em>:
+        /// 
+        /// <list type="bullet">
+        ///     <item><term><see cref="Auto"/></term><description>"123" and "-123"</description></item>
+        ///     <item><term><see cref="Always"/></term><description>"+123" and "-123"</description></item>
+        ///     <item><term><see cref="Never"/></term><description>"123" and "123"</description></item>
+        ///     <item><term><see cref="Accounting"/></term><description>"$123" and "($123)"</description></item>
+        ///     <item><term><see cref="AccountingAlways"/></term><description>"+$123" and "($123)"</description></item>
+        /// </list>
+        /// </summary>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        /// <seealso cref="NumberFormatter"/>
         public enum SignDisplay
         {
-            /**
-             * Show the minus sign on negative numbers, and do not show the sign on positive numbers. This is the default
-             * behavior.
-             *
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             * @see NumberFormatter
-             */
+            /// <summary>
+            /// Show the minus sign on negative numbers, and do not show the sign on positive numbers. This is the default
+            /// behavior.
+            /// </summary>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            /// <seealso cref="NumberFormatter"/>
             Auto,
 
-            /**
-             * Show the minus sign on negative numbers and the plus sign on positive numbers.
-             *
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             * @see NumberFormatter
-             */
+            /// <summary>
+            /// Show the minus sign on negative numbers and the plus sign on positive numbers.
+            /// </summary>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            /// <seealso cref="NumberFormatter"/>
             Always,
 
-            /**
-             * Do not show the sign on positive or negative numbers.
-             *
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             * @see NumberFormatter
-             */
+            /// <summary>
+            /// Do not show the sign on positive or negative numbers.
+            /// </summary>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            /// <seealso cref="NumberFormatter"/>
             Never,
 
-            /**
-             * Use the locale-dependent accounting format on negative numbers, and do not show the sign on positive numbers.
-             *
-             * <para/>
-             * The accounting format is defined in CLDR and varies by locale; in many Western locales, the format is a pair
-             * of parentheses around the number.
-             *
-             * <para/>
-             * Note: Since CLDR defines the accounting format in the monetary context only, this option falls back to the
-             * AUTO sign display strategy when formatting without a currency unit. This limitation may be lifted in the
-             * future.
-             *
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             * @see NumberFormatter
-             */
+            /// <summary>
+            /// Use the locale-dependent accounting format on negative numbers, and do not show the sign on positive numbers.
+            /// 
+            /// <para/>
+            /// The accounting format is defined in CLDR and varies by locale; in many Western locales, the format is a pair
+            /// of parentheses around the number.
+            /// 
+            /// <para/>
+            /// Note: Since CLDR defines the accounting format in the monetary context only, this option falls back to the
+            /// <see cref="Auto"/> sign display strategy when formatting without a currency unit. This limitation may be lifted in the
+            /// future.
+            /// </summary>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            /// <seealso cref="NumberFormatter"/>
             Accounting,
 
-            /**
-             * Use the locale-dependent accounting format on negative numbers, and show the plus sign on positive numbers.
-             * For more information on the accounting format, see the ACCOUNTING sign display strategy.
-             *
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             * @see NumberFormatter
-             */
+            /// <summary>
+            /// Use the locale-dependent accounting format on negative numbers, and show the plus sign on positive numbers.
+            /// For more information on the accounting format, see the <see cref="Accounting"/> sign display strategy.
+            /// </summary>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            /// <seealso cref="NumberFormatter"/>
             AccountingAlways,
         }
 
-        /**
-         * An enum declaring how to render the decimal separator. Example outputs when formatting 1 and 1.1 in
-         * <em>en-US</em>:
-         *
-         * <ul>
-         * <li>AUTO: "1" and "1.1"
-         * <li>ALWAYS: "1." and "1.1"
-         * </ul>
-         *
-         * @draft ICU 60
-         * @provisional This API might change or be removed in a future release.
-         * @see NumberFormatter
-         */
+        /// <summary>
+        /// An enum declaring how to render the decimal separator. Example outputs when formatting 1 and 1.1 in
+        /// <em>en-US</em>:
+        /// 
+        /// <list type="bullet">
+        ///     <item><term><see cref="Auto"/></term><description>"1" and "1.1"</description></item>
+        ///     <item><term><see cref="Always"/></term><description>"1." and "1.1"</description></item>
+        /// </list>
+        /// </summary>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        /// <seealso cref="NumberFormatter"/>
         public enum DecimalSeparatorDisplay
         {
-            /**
-             * Show the decimal separator when there are one or more digits to display after the separator, and do not show
-             * it otherwise. This is the default behavior.
-             *
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             * @see NumberFormatter
-             */
+            /// <summary>
+            /// Show the decimal separator when there are one or more digits to display after the separator, and do not show
+            /// it otherwise. This is the default behavior.
+            /// </summary>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            /// <seealso cref="NumberFormatter"/>
             Auto,
 
-            /**
-             * Always show the decimal separator, even if there are no digits to display after the separator.
-             *
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             * @see NumberFormatter
-             */
+            /// <summary>
+            /// Always show the decimal separator, even if there are no digits to display after the separator.
+            /// </summary>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            /// <seealso cref="NumberFormatter"/>
             Always,
         }
 
-        /**
-         * Use a default threshold of 3. This means that the third time .format() is called, the data structures get built
-         * using the "safe" code path. The first two calls to .format() will trigger the unsafe code path.
-         */
+        /// <summary>
+        /// Use a default threshold of 3. This means that the third time .Format() is called, the data structures get built
+        /// using the "safe" code path. The first two calls to .Format() will trigger the unsafe code path.
+        /// </summary>
         internal const long DEFAULT_THRESHOLD = 3;
 
         // ICU4N specific - made the class static instead of using a private constructor
 
-        /////**
-        //// * Private constructor, not designed for instantiation.
-        //// */
-        ////private NumberFormatter()
-        ////{
-        ////}
-
-        /**
-         * Call this method at the beginning of a NumberFormatter fluent chain in which the locale is not currently known at
-         * the call site.
-         *
-         * @return An {@link UnlocalizedNumberFormatter}, to be used for chaining.
-         * @draft ICU 60
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// Call this method at the beginning of a <see cref="NumberFormatter"/> fluent chain in which the locale is not currently known at
+        /// the call site.
+        /// </summary>
+        /// <returns>An <see cref="UnlocalizedNumberFormatter"/>, to be used for chaining.</returns>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public static UnlocalizedNumberFormatter With()
         {
             return BASE;
         }
 
-        /**
-         * Call this method at the beginning of a NumberFormatter fluent chain in which the locale is known at the call
-         * site.
-         *
-         * @param locale
-         *            The locale from which to load formats and symbols for number formatting.
-         * @return A {@link LocalizedNumberFormatter}, to be used for chaining.
-         * @draft ICU 60
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// Call this method at the beginning of a <see cref="NumberFormatter"/> fluent chain in which the locale is known at the call
+        /// site.
+        /// </summary>
+        /// <param name="locale">The locale from which to load formats and symbols for number formatting.</param>
+        /// <returns>A <see cref="LocalizedNumberFormatter"/>, to be used for chaining.</returns>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public static LocalizedNumberFormatter WithCulture(CultureInfo locale)
         {
             return BASE.Culture(locale);
         }
 
-        /**
-         * Call this method at the beginning of a NumberFormatter fluent chain in which the locale is known at the call
-         * site.
-         *
-         * @param locale
-         *            The locale from which to load formats and symbols for number formatting.
-         * @return A {@link LocalizedNumberFormatter}, to be used for chaining.
-         * @draft ICU 60
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// Call this method at the beginning of a NumberFormatter fluent chain in which the locale is known at the call
+        /// site.
+        /// </summary>
+        /// <param name="locale">The locale from which to load formats and symbols for number formatting.</param>
+        /// <returns>A <see cref="LocalizedNumberFormatter"/>, to be used for chaining.</returns>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public static LocalizedNumberFormatter WithCulture(UCultureInfo locale)
         {
             return BASE.Culture(locale);
         }
 
-        /**
-         * @internal
-         * @deprecated ICU 60 This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("ICU 60 This API is ICU internal only.")]
         public static UnlocalizedNumberFormatter FromDecimalFormat(DecimalFormatProperties properties,
             DecimalFormatSymbols symbols, DecimalFormatProperties exportedProperties)

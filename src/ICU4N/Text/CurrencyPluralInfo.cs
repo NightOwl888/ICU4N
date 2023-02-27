@@ -220,7 +220,9 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
         public override int GetHashCode()
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
         {
             return pluralCountToCurrencyUnitPattern.GetHashCode()
                 ^ pluralRules.GetHashCode()

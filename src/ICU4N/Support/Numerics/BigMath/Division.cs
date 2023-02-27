@@ -277,7 +277,7 @@ namespace ICU4N.Numerics.BigMath
 
         /**
         * Divides an unsigned long a by an unsigned int b. It is supposed that the
-        * most significant bit of b is set to 1, i.e. b < 0
+        * most significant bit of b is set to 1, i.e. b &lt; 0
         * 
         * @param a the dividend
         * @param b the divisor

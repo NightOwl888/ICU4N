@@ -1168,7 +1168,7 @@ namespace ICU4N.Dev.Test.Format
         {
             String arg = "0.0";
             DecimalFormat format = new DecimalFormat("00");
-            double aNumber = 0l;
+            double aNumber = 0L;
             try
             {
                 aNumber = format.Parse(arg).ToDouble();

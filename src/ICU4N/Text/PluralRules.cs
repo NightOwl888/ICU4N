@@ -1089,7 +1089,9 @@ namespace ICU4N.Text
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
+#pragma warning disable CS0809 // Obsolete member overrides non-obsolete member
             public override string ToString(string format, IFormatProvider provider)
+#pragma warning restore CS0809 // Obsolete member overrides non-obsolete member
             {
                 return ToString(); // We don't allow any customization - this is a "fixed" decimal with a set number of places
             }

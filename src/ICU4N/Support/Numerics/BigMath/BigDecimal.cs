@@ -371,7 +371,7 @@ namespace ICU4N.Numerics.BigMath
         /// This happens as <c>0.1</c> cannot be represented exactly in binary.
         /// <para>
         /// To generate a big decimal instance which is equivalent to <c>0.1</c> use the
-        /// <see cref="BigDecimal(string)"/> constructor.
+        /// <see cref="BigDecimal.Parse(string, IFormatProvider?)"/> method.
         /// </para>
         /// </remarks>
         /// <exception cref="FormatException">
@@ -732,14 +732,14 @@ namespace ICU4N.Numerics.BigMath
         * Compares this {@code BigDecimal} with {@code val}. Returns one of the
         * three values {@code 1}, {@code 0}, or {@code -1}. The method behaves as
         * if {@code this.subtract(val)} is computed. If this difference is > 0 then
-        * 1 is returned, if the difference is < 0 then -1 is returned, and if the
+        * 1 is returned, if the difference is &lt; 0 then -1 is returned, and if the
         * difference is 0 then 0 is returned. This means, that if two decimal
         * instances are compared which are equal in value but differ in scale, then
         * these two instances are considered as equal.
         *
         * @param val
         *            value to be compared with {@code this}.
-        * @return {@code 1} if {@code this > val}, {@code -1} if {@code this < val},
+        * @return {@code 1} if {@code this > val}, {@code -1} if {@code this &lt; val},
         *         {@code 0} if {@code this == val}.
         * @throws NullPointerException
         *             if {@code val == null}.
@@ -1154,7 +1154,7 @@ namespace ICU4N.Numerics.BigMath
         * It returns the value 0 with the most approximated scale of type
         * {@code int}. if {@code longScale > Integer.MAX_VALUE} the
         * scale will be {@code Integer.MAX_VALUE}; if
-        * {@code longScale < Integer.MIN_VALUE} the scale will be
+        * {@code longScale &lt; Integer.MIN_VALUE} the scale will be
         * {@code Integer.MIN_VALUE}; otherwise {@code longScale} is
         * casted to the type {@code int}.
         *

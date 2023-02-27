@@ -408,9 +408,7 @@ namespace ICU4N.Numerics.BigMath
 
         public static MathContext Parse(string s)
         {
-            Exception error;
-            MathContext context;
-            if (!TryParse(s, out context))
+            if (!TryParse(s, out MathContext context))
                 throw new FormatException(Messages.math0E); //$NON-NLS-1$
 
             return context;

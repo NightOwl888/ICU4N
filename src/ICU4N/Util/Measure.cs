@@ -1,5 +1,14 @@
 ﻿using System;
 
+namespace ICU4N.Text
+{
+    // ICU4N TODO: Remove once MeasureFormat is ported. This stub is just for XML docs.
+    internal class MeasureFormat
+    {
+        public enum FormatWidth { }
+    }
+}
+
 namespace ICU4N.Util
 {
     /// <summary>
@@ -8,14 +17,14 @@ namespace ICU4N.Util
     /// unit, such as feet or meters.
     /// <para/>
     /// Measure objects are parsed and formatted by subclasses of
-    /// <see cref="MeasureFormat"/>.
+    /// <see cref="ICU4N.Text.MeasureFormat"/>.
     /// <para/>
     /// Measure objects are immutable. All subclasses must guarantee that.
     /// (However, subclassing is discouraged.)
     /// </summary>
     /// <seealso cref="J2N.Numerics.Number"/>
     /// <seealso cref="MeasureUnit"/>
-    /// <seealso cref="MeasureFormat"/>
+    /// <seealso cref="ICU4N.Text.MeasureFormat"/>
     /// <author>Alan Liu</author>
     /// <stable>ICU 3.0</stable>
     // ICU4N TODO: API - Make generic? Generally subclasses will only be 1 numeric type

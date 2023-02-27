@@ -49,7 +49,7 @@ namespace ICU4N.Numerics.BigMath
         * It encodes how many iterations of Miller-Rabin test are need to get an
         * error bound not greater than {@code 2<sup>(-100)</sup>}. For example:
         * for a {@code 1000}-bit number we need {@code 4} iterations, since
-        * {@code BITS[3] < 1000 <= BITS[4]}.
+        * {@code BITS[3] &lt; 1000 &lt;= BITS[4]}.
         */
         private static readonly int[] BITS = { 0, 0, 1854, 1233, 927, 747, 627, 543,
             480, 431, 393, 361, 335, 314, 295, 279, 265, 253, 242, 232, 223,

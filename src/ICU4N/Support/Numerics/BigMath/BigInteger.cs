@@ -1340,7 +1340,7 @@ namespace ICU4N.Numerics.BigMath
 
         /**
          * Returns a string containing a string representation of this {@code
-         * BigInteger} with base radix. If {@code radix < CharHelper.MIN_RADIX} or
+         * BigInteger} with base radix. If {@code radix &lt; CharHelper.MIN_RADIX} or
          * {@code radix > CharHelper.MAX_RADIX} then a decimal representation is
          * returned. The CharHelpers of the string representation are generated with
          * method {@code CharHelper.forDigit}.

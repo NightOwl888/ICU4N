@@ -185,8 +185,8 @@ namespace ICU4N.Text
     /// <para/>When using <see cref="ParseCurrency"/>, all currencies are accepted, not just the currency
     /// currently set in the formatter. In addition, the formatter is able to parse every currency style
     /// format for a particular locale no matter which style the formatter is constructed with. For
-    /// example, a formatter instance gotten from <see cref="NumberFormat.GetInstance(UCultureInfo, NumberFormatStyle.CurrencyStyle)"/>
-    /// can parse both "USD1.00" and "3.00 US dollars".
+    /// example, a formatter instance gotten from <see cref="NumberFormat.GetInstance(UCultureInfo, NumberFormatStyle)"/>
+    /// with <see cref="NumberFormatStyle.CurrencyStyle"/> can parse both "USD1.00" and "3.00 US dollars".
     /// 
     /// <para/>Whitespace characters (lenient mode) and bidi control characters (lenient and strict mode),
     /// collectively called "ignorables", do not need to match in identity or quantity between the
@@ -981,7 +981,7 @@ namespace ICU4N.Text
                 }
                 return result;
             }
-            catch (ParseException e)
+            catch (FormatException) // ICU4N TODO: Factor out the need for this catch by making the above calls safe. Note this was ParseException in ICU4J.
             {
                 return null;
             }

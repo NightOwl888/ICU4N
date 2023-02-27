@@ -54,8 +54,8 @@ namespace ICU4N.Numerics.BigMath
          * @throws NullPointerException
          *             if {@code in == null}.
          * @throws NumberFormatException
-         *             if {@code offset < 0} or {@code len <= 0} or {@code
-         *             offset+len-1 < 0} or {@code offset+len-1 >= in.length}.
+         *             if {@code offset &lt; 0} or {@code len &lt;= 0} or {@code
+         *             offset+len-1 &lt; 0} or {@code offset+len-1 &gt;= in.length}.
          * @throws NumberFormatException
          *             if in does not contain a valid string representation of a big
          *             decimal.
@@ -68,7 +68,7 @@ namespace ICU4N.Numerics.BigMath
             // Original state
             int begin = startIndex; // first index to be copied
             int last = startIndex + (length - 1); // last index to be copied
-            string scaleString = null; // buffer for scale
+            //string scaleString = null; // buffer for scale
             StringBuilder unscaledBuffer; // buffer for unscaled value
             long newScale; // the new scale
 
@@ -168,9 +168,9 @@ namespace ICU4N.Numerics.BigMath
             }
 
             // State that is part of BigDecimal (and used to create it).
-            long smallValue;
+            //long smallValue;
             int precision = 0;
-            int bitLength;
+            //int bitLength;
 
             string unscaledString = unscaledBuffer.ToString();
             //BigDecimal result = new BigDecimal();

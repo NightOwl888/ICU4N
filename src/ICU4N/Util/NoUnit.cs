@@ -17,7 +17,7 @@ namespace ICU4N.Util
         /// </summary>
         /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static readonly NoUnit BASE
+        public static NoUnit Base { get; }
 #pragma warning disable CS0618 // Type or member is obsolete
             = (NoUnit)MeasureUnit.InternalGetInstance("none", "base");
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -27,7 +27,7 @@ namespace ICU4N.Util
         /// </summary>
         /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static readonly NoUnit PERCENT
+        public static NoUnit Percent { get; }
 #pragma warning disable CS0618 // Type or member is obsolete
             = (NoUnit)MeasureUnit.InternalGetInstance("none", "percent");
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -37,7 +37,7 @@ namespace ICU4N.Util
         /// </summary>
         /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static readonly NoUnit PERMILLE
+        public static NoUnit PerMille { get; }
 #pragma warning disable CS0618 // Type or member is obsolete
             = (NoUnit)MeasureUnit.InternalGetInstance("none", "permille");
 #pragma warning restore CS0618 // Type or member is obsolete

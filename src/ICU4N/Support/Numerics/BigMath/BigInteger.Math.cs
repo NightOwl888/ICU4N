@@ -140,16 +140,16 @@ namespace ICU4N.Numerics.BigMath
 
         /**
          * Tests whether the bit at position n in {@code this} is set. The result is
-         * equivalent to {@code this & (2^n) != 0}.
+         * equivalent to {@code this &amp; (2^n) != 0}.
          * <para/>
          * <b>Implementation Note:</b> Usage of this method is not recommended as
          * the current implementation is not efficient.
          *
          * @param n
          *            position where the bit in {@code this} has to be inspected.
-         * @return {@code this & (2^n) != 0}.
+         * @return {@code this &amp; (2^n) != 0}.
          * @throws ArithmeticException
-         *             if {@code n < 0}.
+         *             if {@code n &lt; 0}.
          */
         public static bool TestBit(BigInteger value, int n)
         {
@@ -203,7 +203,7 @@ namespace ICU4N.Numerics.BigMath
         *            position where the bit in {@code this} has to be set.
         * @return {@code this | 2^n}.
         * @throws ArithmeticException
-        *             if {@code n < 0}.
+        *             if {@code n &lt; 0}.
         */
         public static BigInteger SetBit(BigInteger value, int n)
         {
@@ -217,16 +217,16 @@ namespace ICU4N.Numerics.BigMath
         /**
         * Returns a new {@code BigInteger} which has the same binary representation
         * as {@code this} but with the bit at position n cleared. The result is
-        * equivalent to {@code this & ~(2^n)}.
+        * equivalent to {@code this &amp; ~(2^n)}.
         * <para/>
         * <b>Implementation Note:</b> Usage of this method is not recommended as
         * the current implementation is not efficient.
         *
         * @param n
         *            position where the bit in {@code this} has to be cleared.
-        * @return {@code this & ~(2^n)}.
+        * @return {@code this &amp; ~(2^n)}.
         * @throws ArithmeticException
-        *             if {@code n < 0}.
+        *             if {@code n &lt; 0}.
         */
         public static BigInteger ClearBit(BigInteger value, int n)
         {
@@ -249,7 +249,7 @@ namespace ICU4N.Numerics.BigMath
         *            position where the bit in {@code this} has to be flipped.
         * @return {@code this ^ 2^n}.
         * @throws ArithmeticException
-        *             if {@code n < 0}.
+        *             if {@code n &lt; 0}.
         */
         public static BigInteger FlipBit(BigInteger value, int n)
         {
@@ -333,7 +333,7 @@ namespace ICU4N.Numerics.BigMath
         }
 
         /**
-        * Returns a new {@code BigInteger} whose value is {@code this & ~val}.
+        * Returns a new {@code BigInteger} whose value is {@code this &amp; ~val}.
         * Evaluating {@code x.andNot(val)} returns the same result as {@code
         * x.and(val.not())}.
         * <para/>
@@ -342,7 +342,7 @@ namespace ICU4N.Numerics.BigMath
         *
         * @param val
         *            value to be not'ed and then and'ed with {@code this}.
-        * @return {@code this & ~val}.
+        * @return {@code this &amp; ~val}.
         * @throws NullPointerException
         *             if {@code val == null}.
         */
@@ -428,7 +428,7 @@ namespace ICU4N.Numerics.BigMath
          *            exponent to which {@code this} is raised.
          * @return {@code this ^ exp}.
          * @throws ArithmeticException
-         *             if {@code exp < 0}.
+         *             if {@code exp &lt; 0}.
          */
         public static BigInteger Pow(BigInteger value, int exp)
         {
@@ -661,7 +661,7 @@ namespace ICU4N.Numerics.BigMath
          * @throws NullPointerException
          *             if {@code m == null}
          * @throws ArithmeticException
-         *             if {@code m < 0 or} if {@code this} is not relatively prime
+         *             if {@code m &lt; 0 or} if {@code this} is not relatively prime
          *             to {@code m}
          */
         public static BigInteger ModInverse(BigInteger value, BigInteger m)
@@ -716,7 +716,7 @@ namespace ICU4N.Numerics.BigMath
          * @throws NullPointerException
          *             if {@code m == null} or {@code exponent == null}.
          * @throws ArithmeticException
-         *             if {@code m < 0} or if {@code exponent<0} and this is not
+         *             if {@code m &lt; 0} or if {@code exponent &lt; 0} and this is not
          *             relatively prime to {@code m}.
          */
         public static BigInteger ModPow(BigInteger value, BigInteger exponent, BigInteger m)
@@ -775,7 +775,7 @@ namespace ICU4N.Numerics.BigMath
          * @throws NullPointerException
          *             if {@code m == null}.
          * @throws ArithmeticException
-         *             if {@code m < 0}.
+         *             if {@code m &lt; 0}.
          */
         public static BigInteger Mod(BigInteger value, BigInteger m)
         {
@@ -797,7 +797,7 @@ namespace ICU4N.Numerics.BigMath
        * Tests whether this {@code BigInteger} is probably prime. If {@code true}
        * is returned, then this is prime with a probability beyond
        * (1-1/2^certainty). If {@code false} is returned, then this is definitely
-       * composite. If the argument {@code certainty} <= 0, then this method
+       * composite. If the argument {@code certainty} &lt;= 0, then this method
        * returns true.
        *
        * @param certainty
@@ -817,7 +817,7 @@ namespace ICU4N.Numerics.BigMath
         *
         * @return smallest integer > {@code this} which is robably prime.
         * @throws ArithmeticException
-        *             if {@code this < 0}.
+        *             if {@code this &lt; 0}.
         */
         public static BigInteger NextProbablePrime(BigInteger value)
         {
@@ -842,7 +842,7 @@ namespace ICU4N.Numerics.BigMath
         *            random generator used to generate the new {@code BigInteger}.
         * @return probably prime random {@code BigInteger} instance.
         * @throws IllegalArgumentException
-        *             if {@code bitLength < 2}.
+        *             if {@code bitLength &lt; 2}.
         */
         public static BigInteger ProbablePrime(int bitLength, Random rnd)
         {

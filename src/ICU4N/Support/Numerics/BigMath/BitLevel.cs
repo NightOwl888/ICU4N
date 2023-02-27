@@ -151,7 +151,7 @@ namespace ICU4N.Numerics.BigMath
         // val should have enough place (and one digit more)
 
         /// <summary>
-        /// Performs <c>val &lt;&lt;= count<c></c>.
+        /// Performs <c>val &lt;&lt;= count</c>.
         /// </summary>
         /// <param name="val"></param>
         /// <param name="count"></param>

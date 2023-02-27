@@ -65,7 +65,7 @@ namespace ICU4N.Support.Numerics
                 exponent++;
             }
 
-            /// Construct a new decimal expansion with the mantissa
+            // Construct a new decimal expansion with the mantissa
             ArbitraryDecimal ad = new ArbitraryDecimal(mantissa);
 
             // If the exponent is less than 0, we need to repeatedly
@@ -91,10 +91,10 @@ namespace ICU4N.Support.Numerics
                 return ad.ToString();
         }
 
-        /// <summary>Private class used for manipulating
+        /// <summary>Private class used for manipulating</summary>
         class ArbitraryDecimal
         {
-            /// <summary>Digits in the decimal expansion, one byte per digit
+            /// <summary>Digits in the decimal expansion, one byte per digit</summary>
             byte[] digits;
             /// <summary> 
             /// How many digits are *after* the decimal point
