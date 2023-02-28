@@ -2217,10 +2217,14 @@ namespace ICU4N.Dev.Test.Format
                     // locale doesn't matter here
                     new DecimalFormat(pat);
                 }
-                catch (ArgumentException e1)
+                catch (FormatException e1) // ICU4N: Changed from ArgumentException to FormatException, since this is a parse error
                 {
                     e = e1;
                 }
+                //catch (ArgumentException e1)
+                //{
+                //    e = e1;
+                //}
                 //catch (IndexOutOfBoundsException e1) // ICU4N TODO: Do we need this?
                 //{
                 //    e = e1;
@@ -6103,7 +6107,7 @@ namespace ICU4N.Dev.Test.Format
                     new DecimalFormat(cas[0]);
                     fail("Should have thrown on malformed pattern");
                 }
-                catch (ArgumentException ex)
+                catch (FormatException ex) // ICU4N: Changed from ArgumentException to FormatException, since this is a parse error
                 {
                     assertTrue("Exception should contain \"Malformed pattern\": " + ex.Message,
                             ex.Message.Contains("Malformed pattern"));

@@ -54,14 +54,14 @@ namespace ICU4N.Numerics
          * @throws IllegalArgumentException
          *             If there is a syntax error in the pattern string.
          */
-        public static DecimalFormatProperties ParseToProperties(string pattern, int ignoreRounding)
+        public static DecimalFormatProperties ParseToProperties(string pattern, int ignoreRounding) // ICU4N TODO: Make TryParseToProperties
         {
             DecimalFormatProperties properties = new DecimalFormatProperties();
             ParseToExistingPropertiesImpl(pattern, properties, ignoreRounding);
             return properties;
         }
 
-        public static DecimalFormatProperties ParseToProperties(String pattern)
+        public static DecimalFormatProperties ParseToProperties(string pattern) // ICU4N TODO: Make TryParseToProperties
         {
             return ParseToProperties(pattern, PatternStringParser.IGNORE_ROUNDING_NEVER);
         }
@@ -81,12 +81,12 @@ namespace ICU4N.Numerics
          *             If there was a syntax error in the pattern string.
          */
         public static void ParseToExistingProperties(string pattern, DecimalFormatProperties properties,
-                int ignoreRounding)
+                int ignoreRounding) // ICU4N TODO: Make TryParse version of this.
         {
             ParseToExistingPropertiesImpl(pattern, properties, ignoreRounding);
         }
 
-        public static void ParseToExistingProperties(string pattern, DecimalFormatProperties properties)
+        public static void ParseToExistingProperties(string pattern, DecimalFormatProperties properties) // ICU4N TODO: Make TryParse version of this.
         {
             ParseToExistingProperties(pattern, properties, PatternStringParser.IGNORE_ROUNDING_NEVER);
         }
@@ -100,20 +100,10 @@ namespace ICU4N.Numerics
             public ParsedSubpatternInfo positive;
             public ParsedSubpatternInfo negative;
 
-
-
             internal ParsedPatternInfo(string pattern)
             {
                 this.pattern = pattern;
             }
-
-
-
-
-
-
-
-
 
             char IAffixPatternProvider.this[AffixPatternProviderFlags flags, int index]
             {
@@ -266,7 +256,7 @@ namespace ICU4N.Numerics
                 return codePoint;
             }
 
-            internal ArgumentException ToParseException(string message) // ICU4N TODO: Make FormatException?
+            internal FormatException ToParseException(string message)
             {
                 StringBuilder sb = new StringBuilder();
                 sb.Append("Malformed pattern for ICU DecimalFormat: \"");
@@ -275,7 +265,7 @@ namespace ICU4N.Numerics
                 sb.Append(message);
                 sb.Append(" at position ");
                 sb.Append(offset);
-                return new ArgumentException(sb.ToString());
+                return new FormatException(sb.ToString());
             }
         }
 

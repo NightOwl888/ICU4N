@@ -946,7 +946,7 @@ namespace ICU4N.Numerics
                 {
                     PatternStringParser.ParseToExistingProperties(pattern, properties);
                 }
-                catch (ArgumentException e)
+                catch (FormatException) // ICU4N specific - converted from ParseException to FormatException
                 {
                     // This should only happen if there is a bug in CLDR data. Fail silently.
                 }
