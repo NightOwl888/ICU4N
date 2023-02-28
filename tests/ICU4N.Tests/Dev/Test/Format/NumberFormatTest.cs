@@ -6425,7 +6425,7 @@ namespace ICU4N.Dev.Test.Format
             expect2(df, 1234, "1,234");
             df.CurrencyUsage = (CurrencyUsage.Standard);
             expect2(df, 1234, "1,234.00");
-            df.CurrencyUsage = (null);
+            df.SetCurrencyUsage(null); // ICU4N: calling internal method because we don't allow null to be set on CurrencyUsage property
             expect2(df, 1234, "1,234");
         }
 
