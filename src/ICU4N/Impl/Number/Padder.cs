@@ -36,7 +36,7 @@ namespace ICU4N.Numerics
     {
         public static readonly string FallbackPaddingString = "\u0020"; // i.e. a space
 
-        public enum PadPosition
+        public enum PadPosition // ICU4N TODO: API - merge with ICU4N.Text.PadPosition?
         {
             BeforePrefix,
             AfterPrefix,
