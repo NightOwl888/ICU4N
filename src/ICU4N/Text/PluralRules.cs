@@ -2581,6 +2581,7 @@ namespace ICU4N.Text
             return new FormatException(GetExceptionMessage(status, source, context));
         }
 
+#pragma warning disable CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
         internal static string GetExceptionMessage(ParseRuleStatus status, string source, string context) => status switch
         {
             ParseRuleStatus.MisplacedEndRangeBound => string.Format(SR.MisplacedEndRangeBound, context),
@@ -2601,6 +2602,7 @@ namespace ICU4N.Text
             ParseRuleStatus.ConstraintModulusMustBeDigits => string.Format(SR.ConstraintModulusMustBeDigits, source, context),
             ParseRuleStatus.ConstraintValueMustBeDigits => string.Format(SR.ConstraintValueMustBeDigits, source, context),
         };
+#pragma warning restore CS8509 // The switch expression does not handle all possible values of its input type (it is not exhaustive).
 
 #nullable restore
         internal static class SR

@@ -214,7 +214,7 @@ namespace ICU4N.Numerics
         private static long MakeTag(int offset, int type, int state, int cp)
         {
             long tag = 0L;
-            tag |= offset;
+            tag |= (uint)offset;
             tag |= (-(long)type) << 32;
             tag |= ((long)state) << 36;
             tag |= ((long)cp) << 40;

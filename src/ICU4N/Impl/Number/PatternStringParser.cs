@@ -315,7 +315,7 @@ namespace ICU4N.Numerics
             }
             result.paddingLocation = paddingLocation;
             state.Next(); // consume the '*'
-            result.paddingEndpoints |= state.offset;
+            result.paddingEndpoints |= (uint)state.offset;
             ConsumeLiteral(state);
             result.paddingEndpoints |= ((long)state.offset) << 32;
         }

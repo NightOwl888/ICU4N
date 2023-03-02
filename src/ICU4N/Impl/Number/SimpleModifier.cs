@@ -1,9 +1,9 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Text;
 using J2N;
 using System;
 using System.Diagnostics;
 using Field = ICU4N.Text.NumberFormatField;
+using SimpleFormatter = ICU4N.Text.SimpleFormatter;
 
 namespace ICU4N.Numerics
 {

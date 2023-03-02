@@ -16,17 +16,17 @@ namespace ICU4N.Util
     {
         //private static final long serialVersionUID = -2839973855554750484L;
 
-        /// <summary>
-        /// Here for serialization backward compatibility only.
-        /// </summary>
-        private readonly int index;
+        ///// <summary>
+        ///// Here for serialization backward compatibility only.
+        ///// </summary>
+        //private readonly int index;
 
         internal TimeUnit(string type, string code)
 #pragma warning disable CS0618 // Type or member is obsolete
             : base(type, code)
 #pragma warning restore CS0618 // Type or member is obsolete
         {
-            index = 0;
+            //index = 0;
         }
 
         private static readonly IList<TimeUnit> values = new TimeUnit[] { Second, Minute, Hour, Day, Week, Month, Year }.AsReadOnly();

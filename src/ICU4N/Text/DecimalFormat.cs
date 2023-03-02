@@ -259,11 +259,11 @@ namespace ICU4N.Text
         ////** New serialization in ICU 59: declare different version from ICU 58. */
         ////private static final long serialVersionUID = 864413376551465018L;
 
-        /// <summary>
-        /// One non-transient field such that deserialization can determine the version of the class. This
-        /// field has existed since the very earliest versions of DecimalFormat (in ICU4J).
-        /// </summary>
-        private readonly int serialVersionOnStream = 5;
+        ///// <summary>
+        ///// One non-transient field such that deserialization can determine the version of the class. This
+        ///// field has existed since the very earliest versions of DecimalFormat (in ICU4J).
+        ///// </summary>
+        //private readonly int serialVersionOnStream = 5;
 
         //=====================================================================================//
         //                                   INSTANCE FIELDS                                   //

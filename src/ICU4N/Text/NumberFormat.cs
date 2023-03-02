@@ -1341,7 +1341,7 @@ namespace ICU4N.Text
         {
             get
             {
-                Currency c = Currency;
+                Currency? c = Currency;
                 if (c is null)
                 {
                     UCultureInfo uloc = ValidCulture;
