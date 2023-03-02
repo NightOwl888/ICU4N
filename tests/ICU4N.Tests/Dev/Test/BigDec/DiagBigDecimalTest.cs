@@ -172,11 +172,11 @@ namespace ICU4N.Dev.Test.BigDec
             double dneg;
             double dpos5;
             double dneg5;
-            double dmin;
+            //double dmin;
             double dmax;
             double d;
             string[] badstrings;
-            int i = 0;
+            //int i = 0;
 
             // constants [statically-called constructors]
             TestFmwk.assertTrue("con001", (BigDecimal.Zero.ToString(CultureInfo.InvariantCulture)).Equals("0"));
@@ -416,7 +416,7 @@ namespace ICU4N.Dev.Test.BigDec
             dneg5 = -dpos5;
             TestFmwk.assertTrue("cdo004", ((new BigDecimal(dneg5)).ToString(CultureInfo.InvariantCulture)).Equals("-0.5"));
             TestFmwk.assertTrue("cdo005", ((new BigDecimal(dpos5)).ToString(CultureInfo.InvariantCulture)).Equals("0.5"));
-            dmin = double.Epsilon; // ICU4N: Corrected MIN_VALUE to Epsilon (smallest postive value)
+            //dmin = double.Epsilon; // ICU4N: Corrected MIN_VALUE to Epsilon (smallest postive value)
             dmax = double.MaxValue;
             //if (!isJDK15OrLater) // for some reason we format using scientific
             //                     // notation on 1.5 after 30 decimals or so
@@ -753,15 +753,14 @@ namespace ICU4N.Dev.Test.BigDec
             TestFmwk.assertTrue("cuc002", (BigDecimal.One.ToString(CultureInfo.InvariantCulture)).Equals("1"));
             TestFmwk.assertTrue("cuc003", (BigDecimal.Ten.ToString(CultureInfo.InvariantCulture)).Equals("10"));
 
-            RoundingMode constantVal; // workaround for "Comparing identical expressions" warnings
-            TestFmwk.assertTrue("cuc010", BigDecimal.RoundCeiling == (constantVal = RoundingMode.Ceiling));
-            TestFmwk.assertTrue("cuc011", BigDecimal.RoundDown == (constantVal = RoundingMode.Down));
-            TestFmwk.assertTrue("cuc012", BigDecimal.RoundFloor == (constantVal = RoundingMode.Floor));
-            TestFmwk.assertTrue("cuc013", BigDecimal.RoundHalfDown == (constantVal = RoundingMode.HalfDown));
-            TestFmwk.assertTrue("cuc014", BigDecimal.RoundHalfEven == (constantVal = RoundingMode.HalfEven));
-            TestFmwk.assertTrue("cuc015", BigDecimal.RoundHalfUp == (constantVal = RoundingMode.HalfUp));
-            TestFmwk.assertTrue("cuc016", BigDecimal.RoundUnnecessary == (constantVal = RoundingMode.Unnecessary));
-            TestFmwk.assertTrue("cuc017", BigDecimal.RoundUp == (constantVal = RoundingMode.Up));
+            TestFmwk.assertTrue("cuc010", BigDecimal.RoundCeiling == RoundingMode.Ceiling);
+            TestFmwk.assertTrue("cuc011", BigDecimal.RoundDown == RoundingMode.Down);
+            TestFmwk.assertTrue("cuc012", BigDecimal.RoundFloor == RoundingMode.Floor);
+            TestFmwk.assertTrue("cuc013", BigDecimal.RoundHalfDown == RoundingMode.HalfDown);
+            TestFmwk.assertTrue("cuc014", BigDecimal.RoundHalfEven == RoundingMode.HalfEven);
+            TestFmwk.assertTrue("cuc015", BigDecimal.RoundHalfUp == RoundingMode.HalfUp);
+            TestFmwk.assertTrue("cuc016", BigDecimal.RoundUnnecessary == RoundingMode.Unnecessary);
+            TestFmwk.assertTrue("cuc017", BigDecimal.RoundUp == RoundingMode.Up);
 
             TestFmwk.assertTrue("cuc020", (MathContext.Default.Digits) == 9);
             TestFmwk.assertTrue("cuc021", (MathContext.Default.Form) == ExponentForm.Scientific);
@@ -3229,10 +3228,10 @@ namespace ICU4N.Dev.Test.BigDec
         [Test]
         public void diagdoublevalue()
         {
+#if FEATURE_IKVM
             NumberStyle numberStyle = NumberStyle.Float;
             CultureInfo provider = CultureInfo.InvariantCulture;
 
-#if FEATURE_IKVM
             string val;
             // 1999.03.07 Infinities no longer errors
             val = "-1";
@@ -3275,10 +3274,10 @@ namespace ICU4N.Dev.Test.BigDec
         [Test]
         public void diagfloatvalue()
         {
+#if FEATURE_IKVM
             NumberStyle numberStyle = NumberStyle.Float;
             CultureInfo provider = CultureInfo.InvariantCulture;
 
-#if FEATURE_IKVM
             string val;
             // 1999.03.07 Infinities no longer errors
             val = "-1";

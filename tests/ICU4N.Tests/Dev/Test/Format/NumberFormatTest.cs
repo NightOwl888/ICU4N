@@ -1678,7 +1678,7 @@ namespace ICU4N.Dev.Test.Format
             /**
              * For serialization
              */
-            private static readonly long serialVersionUID = -305601227915602172L;
+            //private static readonly long serialVersionUID = -305601227915602172L;
 
             public PI() { }
 
@@ -2697,8 +2697,10 @@ namespace ICU4N.Dev.Test.Format
             DecimalFormat nf = (DecimalFormat)NumberFormat.GetInstance(new UCultureInfo("en"));
             if (false)
             { // for debugging specific value
+#pragma warning disable CS0162 // Unreachable code detected
                 nf.RoundingMode = Numerics.BigMath.RoundingMode.HalfUp;// (BigDecimal.ROUND_HALF_UP);
                 checkRounding(nf, BigDecimal.Parse("300.0300000000", CultureInfo.InvariantCulture), 0, BigDecimal.Parse("0.020000000", CultureInfo.InvariantCulture));
+#pragma warning restore CS0162 // Unreachable code detected
             }
             // full tests
             int[] roundingIncrements = { 1, 2, 5, 20, 50, 100 };
