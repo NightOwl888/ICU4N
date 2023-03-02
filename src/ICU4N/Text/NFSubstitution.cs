@@ -1,10 +1,10 @@
-﻿using J2N.Numerics;
+﻿using ICU4N.Numerics;
+using J2N.Text;
 using System;
 using System.Text;
-using Long = J2N.Numerics.Int64;
 using Double = J2N.Numerics.Double;
-using J2N.Text;
-using ICU4N.Numerics;
+using Long = J2N.Numerics.Int64;
+using Number = J2N.Numerics.Number;
 
 namespace ICU4N.Text
 {
@@ -408,7 +408,7 @@ namespace ICU4N.Text
 
             // if the result is an integer, from here on out we work in integer
             // space (saving time and memory and preserving accuracy)
-            if (numberToFormat == Math.Floor(numberToFormat) && ruleSet != null)
+            if (numberToFormat == Math.Floor(numberToFormat) && ruleSet != null) // ICU4N: This is quite a bit faster than using numberToFormat.IsInteger()
             {
                 ruleSet.Format((long)numberToFormat, toInsertInto, position + pos, recursionCount);
 
@@ -549,7 +549,7 @@ namespace ICU4N.Text
                 // propagate back upward, and null substitutions don't affect
                 // the result.
                 result = ComposeRuleValue(result, baseValue);
-                if (result == (long)result)
+                if (result == (long)result) // ICU4N: This is quite a bit faster than using result.IsInteger()
                 {
                     return Long.GetInstance((long)result);
                 }
@@ -1156,7 +1156,7 @@ namespace ICU4N.Text
                     double result = tempResult.ToDouble();
 
                     result = ComposeRuleValue(result, baseValue);
-                    if (result == (long)result)
+                    if (result == (long)result) // ICU4N: This is quite a bit faster than using result.IsInteger()
                     {
                         return Long.GetInstance((long)result);
                     }
@@ -1803,7 +1803,7 @@ namespace ICU4N.Text
 
             // if the result is an integer, from here on out we work in integer
             // space (saving time and memory and preserving accuracy)
-            if (numberToFormat == Math.Floor(numberToFormat) && ruleSet != null)
+            if (numberToFormat == Math.Floor(numberToFormat) && ruleSet != null) // ICU4N: This is quite a bit faster than using numberToFormat.IsInteger()
             {
                 ruleSet.Format((long)numberToFormat, toInsertInto, position + pos, recursionCount);
 
