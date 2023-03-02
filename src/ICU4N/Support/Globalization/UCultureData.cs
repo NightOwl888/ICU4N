@@ -9,6 +9,11 @@ namespace ICU4N.Globalization
         internal string cultureName; // Copied from UCultureInfo upon creation. This should always be in sync.
         internal string? numbersKeyword; // Copied from UCultureInfo upon creation. This should always be in sync because the collection is readonly.
 
+        public UCultureData() // ICU4N TODO: Remove this constructor
+        {
+            cultureName = string.Empty;
+        }
+
         public string CultureName => cultureName;
         public string? NumbersKeyword => numbersKeyword;
 
