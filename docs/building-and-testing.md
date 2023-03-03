@@ -5,7 +5,8 @@
 ### Prerequisites
 
 - [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell) 3.0 or higher (see [this question](http://stackoverflow.com/questions/1825585/determine-installed-powershell-version) to check your PowerShell version)
-- [.NET 6 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+- [.NET 7.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+- [.NET Framework 4.6.2 Developer Pack or Higher](https://dotnet.microsoft.com/en-us/download/dotnet-framework)
 
 ### Execution
 
@@ -21,11 +22,14 @@ To build the source, clone or download and unzip the repository. From the reposi
 
 ##### Linux or macOS
 
+Currently not supported due to dependency on al.exe from .NET Framework.
+<!--
 ```console
 ./build [options]
 ```
 
 > **NOTE:** The `build` file will need to be given permission to run using the command `chmod u+x build` before the first execution.
+-->
 
 #### Build Options
 
@@ -84,7 +88,7 @@ Then all you need to do is choose the `ICU4N Local Packages` feed from the dropd
 ### Prerequisites
 
 1. Visual Studio 2019 or higher
-2. [.NET 6.0 SDK or higher](https://dotnet.microsoft.com/download/visual-studio-sdks)
+2. [.NET 7.0 SDK or higher](https://dotnet.microsoft.com/download/visual-studio-sdks)
 
 > **NOTE:** Preview versions of .NET SDK require the "Use previews of the .NET SDK (requires restart)" option to be enabled in Visual Studio under Tools > Options > Environment > Preview Features. .NET 6.0 is not supported on Visual Studio 2019, so the only option available for building on VS 2019 is to use a pre-release .NET 6.0 SDK.
 

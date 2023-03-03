@@ -38,16 +38,16 @@ steps:
     sdkVersion: '${{ parameters.dotNetSdkVersion }}'
 
 - task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.416'
+  displayName: 'Use .NET sdk 5.0.408'
   inputs:
-    version: 3.1.416
-  condition: and(succeeded(), contains('${{ parameters.testTargetFrameworks }}', 'netcoreapp3.'))
+    version: 5.0.408
+  condition: and(succeeded(), contains('${{ parameters.testTargetFrameworks }}', 'net5.'))
 
 - task: UseDotNet@2
-  displayName: 'Use .NET sdk 5.0.404'
+  displayName: 'Use .NET sdk 6.0.406'
   inputs:
-    version: 5.0.404
-  condition: and(succeeded(), contains('${{ parameters.testTargetFrameworks }}', 'net5.'))
+    version: 6.0.406
+  condition: and(succeeded(), contains('${{ parameters.testTargetFrameworks }}', 'net6.'))
 
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Pipeline Artifacts: ${{ parameters.binaryArtifactName }}'
