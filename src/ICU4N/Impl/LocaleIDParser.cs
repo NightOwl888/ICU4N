@@ -729,7 +729,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 #else
         public IDictionary<string, string> Keywords
 #endif
-            => GetKeywords().AsReadOnly();
+            => J2N.Collections.Generic.Extensions.DictionaryExtensions.AsReadOnly(GetKeywords());
 
         private IDictionary<string, string> GetKeywords()
         { 
@@ -777,7 +777,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
                         m[key] = value;
                     } while (Next() == ITEM_SEPARATOR);
                 }
-                keywords = m ?? new Dictionary<string, string>().AsReadOnly();
+                keywords = m ?? J2N.Collections.Generic.Extensions.DictionaryExtensions.AsReadOnly(new Dictionary<string, string>());
             }
 
             return keywords;
@@ -895,7 +895,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
                             if (m.Count == 0)
                             {
                                 // force new map
-                                keywords = new Dictionary<string, string>().AsReadOnly();
+                                keywords = J2N.Collections.Generic.Extensions.DictionaryExtensions.AsReadOnly(new Dictionary<string, string>());
                             }
                         }
                     }
