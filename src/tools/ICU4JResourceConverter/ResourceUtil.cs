@@ -25,7 +25,7 @@ namespace JavaResourceConverter
             "coll", 
             "curr", // Do we need these?
             "lang",
-            //"rbnf",
+            "rbnf",
             "region",
             "translit",
             //"unit",

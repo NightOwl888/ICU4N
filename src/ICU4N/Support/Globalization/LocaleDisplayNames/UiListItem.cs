@@ -71,9 +71,6 @@ namespace ICU4N.Globalization
         /// <stable>ICU 55</stable>
         public bool Equals(UiListItem other)
         {
-            if (ReferenceEquals(this, other))
-                return true;
-
             return NameInDisplayLocale.Equals(other.NameInDisplayLocale)
                     && NameInSelf.Equals(other.NameInSelf)
                     && Minimized.Equals(other.Minimized)
@@ -126,7 +123,7 @@ namespace ICU4N.Globalization
             return new UiListItemComparer(comparer, inSelf);
         }
 
-        private class UiListItemComparer : IComparer<UiListItem>
+        private sealed class UiListItemComparer : IComparer<UiListItem>
         {
             private readonly IComparer<string> collator;
             private readonly bool useSelf;

@@ -6,6 +6,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Integer = J2N.Numerics.Int32;
 
 namespace ICU4N.Dev.Test.Format
 {
@@ -563,7 +564,7 @@ namespace ICU4N.Dev.Test.Format
 
             for (int i = 0; i < 3; i++)
             {
-                String @out = mf.Format(new Object[] { i });
+                String @out = mf.Format(new Object[] { Integer.GetInstance(i) });
                 if (SUFFIX[i] == null)
                 {
                     if (!@out.Equals(PREFIX[i]))

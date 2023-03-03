@@ -11,15 +11,190 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using JCG = J2N.Collections.Generic;
+using Double = J2N.Numerics.Double;
+using Float = J2N.Numerics.Single;
+using Integer = J2N.Numerics.Int32;
+using Long = J2N.Numerics.Int64;
+using Short = J2N.Numerics.Int16;
+using Byte = J2N.Numerics.Byte;
+using SByte = J2N.Numerics.SByte;
 using StringBuffer = System.Text.StringBuilder;
+using static ICU4N.Text.PluralRules;
+using J2N.Numerics;
+using ICU4N.Numerics;
 
 namespace ICU4N.Text
 {
-    // ICU4N TODO: Missing dependencies, DateFormat, DecimalFormat, RuleBasedNumberFormat, BigDecimal, others
+    // ICU4N TODO: Missing dependencies, DateFormat, DecimalFormat, others
     internal class DateFormat { } // ICU4N TODO: Remove when DateFormat is ported
-    internal class DecimalFormat { public bool ParseBigDecimal { get; set; } } // ICU4N TODO: Remove when DecimalFormat is ported
+    //internal class DecimalFormat : NumberFormat // ICU4N TODO: Remove when DecimalFormat is ported
+    //{
+
+    //    // ICU4N TODO: Move to DecimalFormat when it is ported
+    //    public enum PadPosition
+    //    {
+    //        BeforePrefix,
+    //        AfterPrefix,
+    //        BeforeSuffix,
+    //        AfterSuffix,
+    //    }
+
+
+    //    // ICU4N TODO: This class should have all synchronized properties to match ICU4J
+
+    //    [NonSerialized]
+    //    internal volatile DecimalFormatSymbols symbols;
+
+    //    internal DecimalFormatProperties properties;
+    //    internal DecimalFormatProperties exportedProperties;
+
+    //    protected void RefreshFormatter()
+    //    {
+    //        // ICU4N TODO
+    //    }
+
+    //    protected DecimalFormat() { }
+
+    //    //public DecimalFormat(string pattern)
+    //    //{
+    //    //    symbols = DefaultSymbols;
+    //    //    //properties = new DecimalFormatProperties();
+    //    //    //exportedProperties = new DecimalFormatProperties();
+    //    //    //// Regression: ignore pattern rounding information if the pattern has currency symbols.
+    //    //    //setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_IF_CURRENCY);
+    //    //    //refreshFormatter();
+    //    //}
+
+    //    public DecimalFormat(string pattern, DecimalFormatSymbols symbols)
+    //    {
+    //        this.symbols = (DecimalFormatSymbols)symbols.Clone();
+    //        //properties = new DecimalFormatProperties();
+    //        //exportedProperties = new DecimalFormatProperties();
+    //        //// Regression: ignore pattern rounding information if the pattern has currency symbols.
+    //        //setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_IF_CURRENCY);
+    //        //refreshFormatter();
+    //    }
+
+    //    /// <summary>
+    //    /// Internal constructor used by <see cref="NumberFormat"/>.
+    //    /// </summary>
+    //    internal DecimalFormat(string pattern, DecimalFormatSymbols symbols, NumberFormatStyle choice)
+    //    {
+    //        this.symbols = (DecimalFormatSymbols)symbols.Clone();
+    //        //properties = new DecimalFormatProperties();
+    //        //exportedProperties = new DecimalFormatProperties();
+    //        //// If choice is a currency type, ignore the rounding information.
+    //        //if (choice == CURRENCYSTYLE
+    //        //    || choice == ISOCURRENCYSTYLE
+    //        //    || choice == ACCOUNTINGCURRENCYSTYLE
+    //        //    || choice == CASHCURRENCYSTYLE
+    //        //    || choice == STANDARDCURRENCYSTYLE
+    //        //    || choice == PLURALCURRENCYSTYLE)
+    //        //{
+    //        //    setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_ALWAYS);
+    //        //}
+    //        //else
+    //        //{
+    //        //    setPropertiesFromPattern(pattern, PatternStringParser.IGNORE_ROUNDING_IF_CURRENCY);
+    //        //}
+    //        //refreshFormatter();
+    //    }
+
+    //    public bool ParseBigDecimal { get; set; }
+
+    //    public bool DecimalSeparatorAlwaysShown { get; set; }
+
+    //    /**
+    //    * Sets the decimal format symbols used by this formatter. The formatter uses a copy of the
+    //    * provided symbols.
+    //    *
+    //    * @param newSymbols desired DecimalFormatSymbols
+    //    * @see DecimalFormatSymbols
+    //    * @stable ICU 2.0
+    //    */
+    //    public /*synchronized*/ void SetDecimalFormatSymbols(DecimalFormatSymbols newSymbols)
+    //    {
+    //        symbols = (DecimalFormatSymbols)newSymbols.Clone();
+    //        //refreshFormatter();
+    //    }
+
+    //    public /*synchronized*/ void ApplyPattern(string pattern)
+    //    {
+    //        // ICU4N TODO: Parse properties from pattern
+    //    }
+
+    //    public /*synchronized*/ string ToPattern()
+    //    {
+    //        return string.Empty; // ICU4N TODO: Finish implementation
+    //    }
+
+    //    public IFixedDecimal GetFixedDecimal(double number)
+    //    {
+    //        return new FixedDecimal(number, MaximumFractionDigits); // No places to the right of the decimal
+    //    }
+
+    //    public override J2N.Numerics.Number Parse(string text, ParsePosition parsePosition)
+    //    {
+    //        int startIndex = parsePosition.Index;
+
+    //        // ICU4N TODO: Parse into long
+    //        //throw new NotImplementedException();
+    //        return Double.GetInstance(double.Parse(text.Substring(startIndex), NumberStyles.Integer, CultureInfo.InvariantCulture));
+    //    }
+
+    //    public override StringBuffer Format(long number, StringBuffer result, FieldPosition fieldPosition)
+    //    {
+    //        string formatted = number.ToString(CultureInfo.InvariantCulture);
+    //        return result.Append(formatted);
+
+    //        //int startIndex = fieldPosition.BeginIndex;
+    //        //int length = fieldPosition.EndIndex - startIndex;
+    //        //// ICU4N TODO: Format number
+    //        ////throw new NotImplementedException();
+    //        //char[] chars = new char[length];
+    //        //string formatted = number.ToString(CultureInfo.InvariantCulture);
+    //        //formatted.CopyTo(0, chars, 0, length);
+    //        //return result.Insert(startIndex, chars, startIndex, length);
+    //    }
+
+    //    public override StringBuffer Format(double number, StringBuffer result, FieldPosition fieldPosition)
+    //    {
+    //        string formatted = number.ToString("#,##0.################", CultureInfo.InvariantCulture);
+    //        return result.Append(formatted);
+
+    //        //int startIndex = fieldPosition.BeginIndex;
+    //        //int length = fieldPosition.EndIndex - startIndex;
+    //        //// ICU4N TODO: Format number
+    //        ////throw new NotImplementedException();
+    //        //char[] chars = new char[length];
+    //        //string formatted = number.ToString("#,##0.################", CultureInfo.InvariantCulture);
+    //        //formatted.CopyTo(0, chars, 0, length);
+    //        //return toAppendTo.Insert(startIndex, chars, startIndex, length);
+    //    }
+
+    //    public override StringBuffer Format(BigInteger number, StringBuffer result, FieldPosition fieldPosition)
+    //    {
+    //        string formatted = number.ToString(CultureInfo.InvariantCulture);
+    //        return result.Append(formatted);
+
+    //        //int startIndex = fieldPosition.BeginIndex;
+    //        //int length = fieldPosition.EndIndex - startIndex;
+    //        //// ICU4N TODO: Format number
+    //        ////throw new NotImplementedException();
+    //        //char[] chars = new char[length];
+    //        //string formatted = number.ToString(CultureInfo.InvariantCulture);
+    //        //formatted.CopyTo(0, chars, 0, length);
+    //        //return toAppendTo.Insert(startIndex, chars, startIndex, length);
+    //    }
+
+    //    public override StringBuffer Format(BigDecimal number, StringBuffer toAppendTo, FieldPosition pos)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
 
     /// <icuenhanced><see cref="MessageFormat"/></icuenhanced><icu>_usage_</icu>
     /// <summary>
@@ -1049,7 +1224,12 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">If this format uses named arguments.</exception>
         /// <exception cref="ArgumentNullException">If <paramref name="pos"/> argument is null.</exception>
         /// <stable>ICU 3.0</stable>
-        public StringBuffer Format(object[] arguments, StringBuffer result,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            StringBuffer Format(object[] arguments, StringBuffer result,
                                          FieldPosition pos)
         {
             if (pos == null)
@@ -1087,7 +1267,12 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentNullException">If <paramref name="pos"/> argument is null.</exception>
         /// <returns>The passed-in <see cref="StringBuffer"/>.</returns>
         /// <stable>ICU 3.8</stable>
-        public StringBuffer Format(IDictionary<string, object> arguments, StringBuffer result,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            StringBuffer Format(IDictionary<string, object> arguments, StringBuffer result,
                                          FieldPosition pos)
         {
             if (pos == null)
@@ -1163,7 +1348,12 @@ namespace ICU4N.Text
         /// an array of <see cref="object"/> and this format uses named arguments.</exception>
         /// <exception cref="ArgumentNullException">If <paramref name="pos"/> argument is null.</exception>
         /// <stable>ICU 3.0</stable>
-        public override sealed StringBuffer Format(object arguments, StringBuffer result,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            override sealed StringBuffer Format(object arguments, StringBuffer result,
                                          FieldPosition pos)
         {
             if (pos == null)
@@ -1622,7 +1812,7 @@ namespace ICU4N.Text
 
             if (cachedFormatters != null)
             {
-                other.cachedFormatters = new Dictionary<int, Formatter>();
+                other.cachedFormatters = new JCG.Dictionary<int, Formatter>(); // ICU4N: Use J2N.Collections.Generic.Dictionary<TKey, TValue> because this uses structural equality.
                 foreach (var entry in cachedFormatters)
                 {
                     other.cachedFormatters[entry.Key] = entry.Value;
@@ -1823,8 +2013,7 @@ namespace ICU4N.Text
                     if (dest.Attributes != null)
                     {
                         // We only need argId if we add it into the attributes.
-                        //argId = Integer.valueOf(argNumber);
-                        argId = argNumber;
+                        argId = Integer.GetInstance(argNumber);
                     }
                     if (0 <= argNumber && argNumber < args.Length)
                     {
@@ -1878,7 +2067,7 @@ namespace ICU4N.Text
                 {
                     // Handles all ArgType.SIMPLE, and formatters from setFormat() and its siblings.
                     if (formatter is ChoiceFormat ||
-                        //formatter is PluralFormat ||
+                        formatter is PluralFormat ||
                         formatter is SelectFormat)
                     {
                         // We only handle nested formats here if they were provided via setFormat() or its siblings.
@@ -1916,38 +2105,35 @@ namespace ICU4N.Text
                     // ICU4N TODO: Implementation
                     // ArgType.NONE, or
                     // any argument which got reset to null via setFormat() or its siblings.
-                    //if (arg is Number)
-                    //if (arg.IsNumber())
-                    //{
-                    //    // format number if can
-                    //    dest.FormatAndAppend(GetStockNumberFormatter(), arg);
-                    //}
+                    if (arg is J2N.Numerics.Number)
+                    {
+                        // format number if can
+                        dest.FormatAndAppend(GetStockNumberFormatter(), arg);
+                    }
                     ////else if (arg is Date)
                     //else if (arg is DateTime)
                     //{
                     //    // format a Date if can
                     //    dest.FormatAndAppend(GetStockDateFormatter(), arg);
                     //}
-                    //else
-                    //{
+                    else
+                    {
                         dest.Append(arg.ToString());
-                    //}
+                    }
                 }
                 else if (argType == MessagePatternArgType.Choice)
                 {
-                    //if (!(arg id Number)) 
-                    if (!arg.IsNumber())
+                    if (!TryConvertNumber(arg, out J2N.Numerics.Number num)) 
                     {
                         throw new ArgumentException("'" + arg + "' is not a Number");
                     }
-                    double number = Convert.ToDouble(arg); //((Number)arg).doubleValue();
+                    double number = num.ToDouble();
                     int subMsgStart = FindChoiceSubMessage(msgPattern, i, number);
                     FormatComplexSubMessage(subMsgStart, null, args, argsMap, dest);
                 }
                 else if (argType.HasPluralStyle())
                 {
-                    //if (!(arg is Number))
-                    if (!arg.IsNumber())
+                    if (!TryConvertNumber(arg, out J2N.Numerics.Number number))
                     {
                         throw new ArgumentException("'" + arg + "' is not a Number");
                     }
@@ -1968,13 +2154,12 @@ namespace ICU4N.Text
                         }
                         selector = ordinalProvider;
                     }
-                    //Number number = (Number)arg;
-                    decimal number = (decimal)arg;
+                    //Number number = (Number)arg; // ICU4N: Set above
                     double offset = msgPattern.GetPluralOffset(i);
                     PluralSelectorContext context =
                             new PluralSelectorContext(i, argName, number, offset);
                     int subMsgStart = PluralFormat.FindSubMessage(
-                            msgPattern, i, selector, context, (double)number);
+                            msgPattern, i, selector, context, number.ToDouble());
                     FormatComplexSubMessage(subMsgStart, context, args, argsMap, dest);
                 }
                 else if (argType == MessagePatternArgType.Select)
@@ -2025,7 +2210,7 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        subMsgString = sb.Append(msgString, prevIndex, index).ToString();
+                        subMsgString = sb.Append(msgString, prevIndex, index - prevIndex).ToString(); // ICU4N: Corrected 3rd arg
                     }
                     break;
                 }
@@ -2035,7 +2220,7 @@ namespace ICU4N.Text
                     {
                         sb = new StringBuilder();
                     }
-                    sb.Append(msgString, prevIndex, index);
+                    sb.Append(msgString, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                     if (type == MessagePatternPartType.ReplaceNumber)
                     {
                         if (pluralNumber.forReplaceNumber)
@@ -2056,7 +2241,7 @@ namespace ICU4N.Text
                     {
                         sb = new StringBuilder();
                     }
-                    sb.Append(msgString, prevIndex, index);
+                    sb.Append(msgString, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                     prevIndex = index;
                     i = msgPattern.GetLimitPartIndex(i);
                     index = msgPattern.GetPart(i).Limit;
@@ -2076,6 +2261,65 @@ namespace ICU4N.Text
             }
         }
 
+        // ICU4N specific - since we don't have a common number type, we make the determination if it is
+        // a number by attempting to cast it to each numeric type and wrapping into a J2N.Numerics.Number if it
+        // is not already. In Java, this step is handled automatically by the compiler.
+        private static bool TryConvertNumber(object value, out J2N.Numerics.Number result)
+        {
+            result = default;
+            if (value is int i)
+            {
+                result = Integer.GetInstance(i);
+                return true;
+            }
+            if (value is long l)
+            {
+                result = Long.GetInstance(l);
+                return true;
+            }
+            if (value is double d)
+            {
+                result = Double.GetInstance(d);
+                return true;
+            }
+            if (value is J2N.Numerics.Number number)
+            {
+                result = number;
+                return true;
+            }
+            if (value is float f)
+            {
+                result = Float.GetInstance(f);
+                return true;
+            }
+            if (value is short s)
+            {
+                result = Short.GetInstance(s);
+                return true;
+            }
+            if (value is decimal de)
+            {
+                result = Double.GetInstance(Convert.ToDouble(de));
+                return true;
+            }
+            if (value is ushort us)
+            {
+                result = Short.GetInstance(Convert.ToInt16(us));
+                return true;
+            }
+            if (value is ulong ul)
+            {
+                result = Long.GetInstance(Convert.ToInt64(ul));
+                return true;
+            }
+            if (value is uint ui)
+            {
+                result = Integer.GetInstance(Convert.ToInt32(ui));
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         /// Read as much literal string from the pattern string as possible. This stops
         /// as soon as it finds an argument, or it reaches the end of the string.
@@ -2093,7 +2337,7 @@ namespace ICU4N.Text
                 MessagePatternPart part = msgPattern.GetPart(i);
                 MessagePatternPartType type = part.Type;
                 int index = part.Index;
-                b.Append(msgString, prevIndex, index);
+                b.Append(msgString, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                 if (type == MessagePatternPartType.ArgStart || type == MessagePatternPartType.MsgLimit)
                 {
                     return b.ToString();
@@ -2131,7 +2375,7 @@ namespace ICU4N.Text
         /// <returns>the sub-message start part index.</returns>
         private static int FindChoiceSubMessage(MessagePattern pattern, int partIndex, double number)
         {
-            int count = pattern.CountParts();
+            int count = pattern.PartCount;
             int msgStart;
             // Iterate over (ARG_INT|DOUBLE, ARG_SELECTOR, message) tuples
             // until ARG_LIMIT or end of choice-only pattern.
@@ -2264,7 +2508,7 @@ namespace ICU4N.Text
         /// <returns>the "other" sub-message start part index.</returns>
         private int FindOtherSubMessage(int partIndex)
         {
-            int count = msgPattern.CountParts();
+            int count = msgPattern.PartCount;
             MessagePatternPart part = msgPattern.GetPart(partIndex);
             if (part.Type.HasNumericValue())
             {
@@ -2336,7 +2580,7 @@ namespace ICU4N.Text
         /// </summary>
         internal sealed class PluralSelectorContext
         {
-            internal PluralSelectorContext(int start, string name, /*Number*/ decimal num, double off)
+            internal PluralSelectorContext(int start, string name, J2N.Numerics.Number num, double off)
             {
                 startIndex = start;
                 argName = name;
@@ -2349,7 +2593,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    number = (double)num - off;
+                    number = Double.GetInstance(num.ToDouble() - off);
                 }
                 offset = off;
             }
@@ -2363,8 +2607,7 @@ namespace ICU4N.Text
             internal int startIndex;
             internal string argName;
             /** argument number - plural offset */
-            //Number number;
-            internal object number;
+            internal J2N.Numerics.Number number;
             internal double offset;
             // Output values for plural selection with decimals.
             /** -1 if REPLACE_NUMBER, 0 arg not found, >0 ARG_START index */
@@ -2414,18 +2657,19 @@ namespace ICU4N.Text
                     context.formatter = msgFormat.GetStockNumberFormatter();
                     context.forReplaceNumber = true;
                 }
-                Debug.Assert((double)context.number /*.doubleValue()*/ == number);  // argument number minus the offset
+                Debug.Assert(context.number.ToDouble() == number);  // argument number minus the offset
                 context.numberString = context.formatter.Format(context.number);
-                // ICU4N TODO: DecimalFormat
-                //if (context.formatter is DecimalFormat)
-                //{
-                //    IFixedDecimal dec = ((DecimalFormat)context.formatter).GetFixedDecimal(number);
-                //    return rules.Select(dec);
-                //}
-                //else
-                //{
-                return rules.Select(number);
-                //}
+                if (context.formatter is DecimalFormat decimalFormat)
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    IFixedDecimal dec = decimalFormat.GetFixedDecimal(number);
+                    return rules.Select(dec);
+#pragma warning restore CS0618 // Type or member is obsolete
+                }
+                else
+                {
+                    return rules.Select(number);
+                }
             }
             private MessageFormat msgFormat;
             private PluralRules rules;
@@ -2532,7 +2776,7 @@ namespace ICU4N.Text
                             newFormat = NumberFormat.GetInstance(uCulure);
                             // ICU4N TODO: Finish implementation
                             //newFormat = new DecimalFormat(style,
-                            //        new DecimalFormatSymbols(ulocale));
+                            //        new DecimalFormatSymbols(uCulure));
                             break;
                     }
                     break;
@@ -2583,63 +2827,63 @@ namespace ICU4N.Text
                 //            break;
                 //    }
                 //    break;
-                //case TYPE_SPELLOUT:
-                //    {
-                //        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(ulocale,
-                //                RuleBasedNumberFormat.SPELLOUT);
-                //        string ruleset = style.Trim();
-                //        if (ruleset.Length != 0)
-                //        {
-                //            try
-                //            {
-                //                rbnf.DefaultRuleSet = ruleset;
-                //            }
-                //            catch (Exception e)
-                //            {
-                //                // warn invalid ruleset
-                //            }
-                //        }
-                //        newFormat = rbnf;
-                //    }
-                //    break;
-                //case TYPE_ORDINAL:
-                //    {
-                //        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(ulocale,
-                //                RuleBasedNumberFormat.ORDINAL);
-                //        string ruleset = style.Trim();
-                //        if (ruleset.Length != 0)
-                //        {
-                //            try
-                //            {
-                //                rbnf.setDefaultRuleSet(ruleset);
-                //            }
-                //            catch (Exception e)
-                //            {
-                //                // warn invalid ruleset
-                //            }
-                //        }
-                //        newFormat = rbnf;
-                //    }
-                //    break;
-                //case TYPE_DURATION:
-                //    {
-                //        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(ulocale,
-                //                RuleBasedNumberFormat.DURATION);
-                //        String ruleset = style.Trim();
-                //        if (ruleset.Length != 0)
-                //        {
-                //            try
-                //            {
-                //                rbnf.setDefaultRuleSet(ruleset);
-                //            }
-                //            catch (Exception e)
-                //            {
-                //                // warn invalid ruleset
-                //            }
-                //        }
-                //        newFormat = rbnf;
-                //    }
-                //    break;
+                case TYPE_SPELLOUT:
+                    {
+                        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(uCulure,
+                            NumberPresentation.SpellOut);
+                        string ruleset = style.Trim();
+                        if (ruleset.Length != 0)
+                        {
+                            try
+                            {
+                                rbnf.SetDefaultRuleSet(ruleset);
+                            }
+                            catch (Exception)
+                            {
+                                // warn invalid ruleset
+                            }
+                        }
+                        newFormat = rbnf;
+                    }
+                    break;
+                case TYPE_ORDINAL:
+                    {
+                        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(uCulure,
+                                NumberPresentation.Ordinal);
+                        string ruleset = style.Trim();
+                        if (ruleset.Length != 0)
+                        {
+                            try
+                            {
+                                rbnf.SetDefaultRuleSet(ruleset);
+                            }
+                            catch (Exception)
+                            {
+                                // warn invalid ruleset
+                            }
+                        }
+                        newFormat = rbnf;
+                    }
+                    break;
+                case TYPE_DURATION:
+                    {
+                        RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(uCulure,
+                                NumberPresentation.Duration);
+                        string ruleset = style.Trim();
+                        if (ruleset.Length != 0)
+                        {
+                            try
+                            {
+                                rbnf.SetDefaultRuleSet(ruleset);
+                            }
+                            catch (Exception)
+                            {
+                                // warn invalid ruleset
+                            }
+                        }
+                        newFormat = rbnf;
+                    }
+                    break;
                 default:
                     throw new ArgumentException("Unknown format type \"" + type + "\"");
             }
@@ -2749,7 +2993,7 @@ namespace ICU4N.Text
             customFormatArgStarts = null;
             // The last two "parts" can at most be ARG_LIMIT and MSG_LIMIT
             // which we need not examine.
-            int limit = msgPattern.CountParts() - 2;
+            int limit = msgPattern.PartCount - 2;
             // This loop starts at part index 1 because we do need to examine
             // ARG_START parts. (But we can ignore the MSG_START.)
             for (int i = 1; i < limit; ++i)
@@ -2785,7 +3029,7 @@ namespace ICU4N.Text
         {
             if (CachedFormatters == null)
             {
-                CachedFormatters = new Dictionary<int, Formatter>();
+                CachedFormatters = new JCG.Dictionary<int, Formatter>(); // ICU4N: Use J2N.Collections.Generic.Dictionary<TKey, TValue> because this uses structural equality.
             }
             CachedFormatters[argStart] = formatter;
         }
@@ -2959,7 +3203,7 @@ namespace ICU4N.Text
             {
                 try
                 {
-                    app.Append(s, startIndex, count);
+                    app.Append(s, startIndex, count); // ICU4N: 3rd parameter corrected by the method signature
                     length += count;
                 }
                 catch (IOException e)
@@ -3011,7 +3255,7 @@ namespace ICU4N.Text
             {
                 try
                 {
-                    app.Append(s, startIndex, count);
+                    app.Append(s, startIndex, count); // ICU4N: 3rd parameter corrected by the method signature
                     length += count;
                 }
                 catch (IOException e)
@@ -3037,7 +3281,7 @@ namespace ICU4N.Text
             {
                 try
                 {
-                    app.Append(s, startIndex, count);
+                    app.Append(s, startIndex, count); // ICU4N: 3rd parameter corrected by the method signature
                     length += count;
                 }
                 catch (IOException e)

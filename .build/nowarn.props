@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup Label="Warnings to be Disabled in All Projects">
+    <!-- This warning seems to be a false warning and a duplicate of CS8618, except it is not being affected by the MemberNotNullAttribute -->
+    <NoWarn Label="Member must have a non-null value when exiting.">$(NoWarn);CS8774</NoWarn>
+  </PropertyGroup>
+</Project>

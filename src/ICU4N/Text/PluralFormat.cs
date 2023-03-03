@@ -1,8 +1,10 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using ICU4N.Numerics;
 using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using static ICU4N.Text.PluralRules;
+using Double = J2N.Numerics.Double;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -406,7 +409,7 @@ namespace ICU4N.Text
             ulocale = locale;
             pluralRules = (rules == null) ? PluralRules.ForLocale(ulocale, type) // ICU4N TODO: Make extension method for UCultureInfo.GetPluralRules(PluralType)..?
                                           : rules;
-            pluralRulesWrapper = new PluralSelectorAdapter(pluralRules); // ICU4N: Have to pass a reference to pluralRules in the constructor
+            // ICU4N: Factored out pluralRulesWrapper by implementing IPluralSelector directly on PluralRules
             ResetPattern();
             this.numberFormat = (numberFormat == null) ? NumberFormat.GetInstance(ulocale) : numberFormat;
         }
@@ -473,7 +476,7 @@ namespace ICU4N.Text
             MessagePattern pattern, int partIndex,
             IPluralSelector selector, object context, double number)
         {
-            int count = pattern.CountParts();
+            int count = pattern.PartCount;
             double offset;
             MessagePatternPart part = pattern.GetPart(partIndex);
             if (part.Type.HasNumericValue())
@@ -592,29 +595,8 @@ namespace ICU4N.Text
             string Select(object context, double number);
         }
 
-        // See PluralSelector:
-        // We could avoid this adapter class if we made PluralSelector public
-        // (or at least publicly visible) and had PluralRules implement PluralSelector.
-        private sealed class PluralSelectorAdapter : IPluralSelector
-        {
-            private PluralRules pluralRules;
-            public PluralSelectorAdapter(PluralRules pluralRules)
-            {
-                this.pluralRules = pluralRules;
-            }
-            public string Select(object context, double number)
-            {
-#pragma warning disable 612, 618
-                IFixedDecimal dec = (IFixedDecimal)context;
-                return pluralRules.Select(dec);
-#pragma warning restore 612, 618
-            }
-        }
-
-#if FEATURE_SERIALIZABLE
-        [NonSerialized]
-#endif
-        private PluralSelectorAdapter pluralRulesWrapper;
+        // ICU4N: Factored out PluralSelectorAdapter class and pluralRulesWrapper field by implementing
+        // IPluralSelector directly on PluralRules.
 
         /// <summary>
         /// Formats a plural message for a given number.
@@ -628,7 +610,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.0</stable>
         public string Format(double number)
         {
-            return Format(number, number);
+            return Format(Double.GetInstance(number), number);
         }
 
         /// <summary>
@@ -647,21 +629,26 @@ namespace ICU4N.Text
         /// appended.</returns>
         /// <exception cref="ArgumentException">if number cannot be converted to a <see cref="double"/>.</exception>
         /// <stable>ICU 3.8</stable>
-        public override StringBuffer Format(object number, StringBuffer toAppendTo,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(object number, StringBuffer toAppendTo,
                 FieldPosition pos)
         {
-            if (!number.IsNumber())
+            if (!(number is J2N.Numerics.Number num))
             {
                 throw new ArgumentException("'" + number + "' is not a Number");
             }
-            toAppendTo.Append(Format(number, Convert.ToDouble(number)));
+            toAppendTo.Append(Format(num, num.ToInt64()));
             return toAppendTo;
         }
 
-        private string Format(/*Number*/ object numberObject, double number)
+        private string Format(J2N.Numerics.Number numberObject, double number)
         {
             // If no pattern was applied, return the formatted number.
-            if (msgPattern == null || msgPattern.CountParts() == 0)
+            if (msgPattern is null || msgPattern.PartCount == 0)
             {
                 return numberFormat.Format(numberObject);
             }
@@ -680,17 +667,16 @@ namespace ICU4N.Text
             }
 #pragma warning disable 612, 618
             IFixedDecimal dec;
-            // ICU4N TODO: 
-            //if (numberFormat is DecimalFormat)
-            //{
-            //    dec = ((DecimalFormat)numberFormat).GetFixedDecimal(numberMinusOffset);
-            //}
-            //else
-            //{
-            dec = new FixedDecimal(numberMinusOffset);
+            if (numberFormat is DecimalFormat decimalFormat)
+            {
+                dec = decimalFormat.GetFixedDecimal(numberMinusOffset);
+            }
+            else
+            {
+                dec = new FixedDecimal(numberMinusOffset);
 #pragma warning restore 612, 618
-            //}
-            int partIndex = FindSubMessage(msgPattern, 0, pluralRulesWrapper, dec, number);
+            }
+            int partIndex = FindSubMessage(msgPattern, 0, pluralRules, dec, number);
             // Replace syntactic # signs in the top level of this sub-message
             // (not in nested arguments) with the formatted number-offset.
             StringBuilder result = null;
@@ -708,7 +694,7 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        return result.Append(pattern, prevIndex, index).ToString();
+                        return result.Append(pattern, prevIndex, index - prevIndex).ToString(); // ICU4N: Corrected 3rd arg
                     }
                 }
                 else if (type == MessagePatternPartType.ReplaceNumber ||
@@ -719,7 +705,7 @@ namespace ICU4N.Text
                     {
                         result = new StringBuilder();
                     }
-                    result.Append(pattern, prevIndex, index);
+                    result.Append(pattern, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                     if (type == MessagePatternPartType.ReplaceNumber)
                     {
                         result.Append(numberString);
@@ -732,7 +718,7 @@ namespace ICU4N.Text
                     {
                         result = new StringBuilder();
                     }
-                    result.Append(pattern, prevIndex, index);
+                    result.Append(pattern, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                     prevIndex = index;
                     partIndex = msgPattern.GetLimitPartIndex(partIndex);
                     index = msgPattern.GetPart(partIndex).Limit;
@@ -742,6 +728,85 @@ namespace ICU4N.Text
             }
         }
 
+#if FEATURE_SPAN
+
+        private const int CharStackBufferSize = 128;
+
+#nullable enable
+        internal static unsafe bool TryFormat(double value, Span<char> destination, out int charsWritten, MessagePattern msgPattern, LocalizedNumberFormatter numberFormatter, PluralRules pluralRules)
+        {
+            string numberString;
+            // If no pattern was applied, return the formatted number.
+            if (msgPattern is null || msgPattern.PartCount == 0)
+            {
+                numberString = numberFormatter.Format(value).ToString();// ICU4N TODO: Pass in temp destination on stack
+                bool success = numberString.TryCopyTo(destination);
+                charsWritten = success ? numberString.Length : 0;
+                return success;
+            }
+
+            double offset = msgPattern.GetPluralOffset(0);
+            // Get the appropriate sub-message.
+            // Select it based on the formatted number-offset.
+            double numberMinusOffset = value - offset;
+
+            if (offset == 0)
+            {
+                // ICU4N TODO: Pass in temp destination on stack
+                numberString = numberFormatter.Format(value).ToString();  // could be BigDecimal etc.
+            }
+            else
+            {
+                // ICU4N TODO: Pass in temp destination on stack
+                numberString = numberFormatter.Format(numberMinusOffset).ToString();
+            }
+#pragma warning disable 612, 618
+            IFixedDecimal dec = numberFormatter.Format(numberMinusOffset).FixedDecimal;
+#pragma warning restore 612, 618
+            string pattern = msgPattern.PatternString;
+            int partIndex = FindSubMessage(msgPattern, 0, pluralRules, dec, value);
+            // Replace syntactic # signs in the top level of this sub-message
+            // (not in nested arguments) with the formatted number-offset.
+            char* stackPtr = stackalloc char[CharStackBufferSize];
+            ValueStringBuilder result = new ValueStringBuilder(new Span<char>(stackPtr, CharStackBufferSize));
+            int prevIndex = msgPattern.GetPart(partIndex).Limit;
+            while (true)
+            {
+                MessagePatternPart part = msgPattern.GetPart(++partIndex);
+                MessagePatternPartType type = part.Type;
+                int index = part.Index;
+                if (type == MessagePatternPartType.MsgLimit)
+                {
+                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                    break;
+                }
+                else if (type == MessagePatternPartType.ReplaceNumber ||
+                          // JDK compatibility mode: Remove SKIP_SYNTAX.
+                          (type == MessagePatternPartType.SkipSyntax && msgPattern.JdkAposMode))
+                {
+                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                    if (type == MessagePatternPartType.ReplaceNumber)
+                    {
+                        result.Append(numberString);
+                    }
+                    prevIndex = part.Limit;
+                }
+                else if (type == MessagePatternPartType.ArgStart)
+                {
+                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                    prevIndex = index;
+                    partIndex = msgPattern.GetLimitPartIndex(partIndex);
+                    index = msgPattern.GetPart(partIndex).Limit;
+                    MessagePattern.AppendReducedApostrophes(pattern, prevIndex, index, ref result);
+                    prevIndex = index;
+                }
+            }
+            return result.TryCopyTo(destination, out charsWritten);
+        }
+
+#nullable restore
+#endif
+
         /// <summary>
         /// This method is not yet supported by <see cref="PluralFormat"/>.
         /// </summary>
@@ -750,12 +815,12 @@ namespace ICU4N.Text
         /// and upon return, the position where parsing left off.  If the position
         /// has not changed upon return, then parsing failed.</param>
         /// <returns>nothing because this method is not yet implemented.</returns>
-        /// <exception cref="InvalidOperationException">will always be thrown by this method.</exception>
+        /// <exception cref="NotSupportedException">will always be thrown by this method.</exception>
         /// <stable>ICU 3.8</stable>
-        public virtual /*Number*/object Parse(string text, ParsePosition parsePosition)
+        public virtual J2N.Numerics.Number Parse(string text, ParsePosition parsePosition)
         {
             // You get number ranges from this. You can't get an exact number.
-            throw new InvalidOperationException();
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -766,103 +831,109 @@ namespace ICU4N.Text
         /// and upon return, the position where parsing left off.  If the position
         /// has not changed upon return, then parsing failed.</param>
         /// <returns>nothing because this method is not yet implemented.</returns>
-        /// <exception cref="InvalidOperationException">will always be thrown by this method.</exception>
+        /// <exception cref="NotSupportedException">will always be thrown by this method.</exception>
         /// <stable>ICU 3.8</stable>
         public override object ParseObject(string source, ParsePosition pos)
         {
-            throw new InvalidOperationException();
+            throw new NotSupportedException();
         }
 
-        //// ICU4N TODO: Finish implementation
-        /////**
-        //// * This method returns the PluralRules type found from parsing.
-        //// * @param source the string to be parsed.
-        //// * @param pos defines the position where parsing is to begin,
-        //// * and upon return, the position where parsing left off.  If the position
-        //// * is a negative index, then parsing failed.
-        //// * @return Returns the PluralRules type. For example, it could be "zero", "one", "two", "few", "many" or "other")
-        //// */
-        /////*package*/
-        ////internal string ParseType(string source, RbnfLenientScanner scanner, FieldPosition pos)
-        ////{
-        ////    // If no pattern was applied, return null.
-        ////    if (msgPattern == null || msgPattern.CountParts() == 0)
-        ////    {
-        ////        pos.BeginIndex = -1;
-        ////        pos.EndIndex = -1;
-        ////        return null;
-        ////    }
-        ////    int partIndex = 0;
-        ////    int currMatchIndex;
-        ////    int count = msgPattern.CountParts();
-        ////    int startingAt = pos.BeginIndex;
-        ////    if (startingAt < 0)
-        ////    {
-        ////        startingAt = 0;
-        ////    }
+        /// <summary>
+        /// This method returns the <see cref="PluralRules"/> type found from parsing.
+        /// </summary>
+        /// <param name="source">The string to be parsed.</param>
+        /// <param name="scanner"></param>
+        /// <param name="pos">Defines the position where parsing is to begin,
+        /// and upon return, the position where parsing left off. If the position
+        /// is a negative index, then parsing failed.
+        /// </param>
+        /// <returns>Returns the <see cref="PluralRules"/> type. For example,
+        /// it could be "zero", "one", "two", "few", "many" or "other".</returns>
+        /*package*/
+#pragma warning disable CS0618 // Type or member is obsolete
+        internal string ParseType(string source, IRbnfLenientScanner scanner, FieldPosition pos)
+#pragma warning restore CS0618 // Type or member is obsolete
+        {
+            // If no pattern was applied, return null.
+            if (msgPattern == null || msgPattern.PartCount == 0)
+            {
+                pos.BeginIndex = -1;
+                pos.EndIndex = -1;
+                return null;
+            }
+            int partIndex = 0;
+            int currMatchIndex;
+            int count = msgPattern.PartCount;
+            int startingAt = pos.BeginIndex;
+            if (startingAt < 0)
+            {
+                startingAt = 0;
+            }
 
-        ////    // The keyword is null until we need to match against a non-explicit, not-"other" value.
-        ////    // Then we get the keyword from the selector.
-        ////    // (In other words, we never call the selector if we match against an explicit value,
-        ////    // or if the only non-explicit keyword is "other".)
-        ////    String keyword = null;
-        ////    String matchedWord = null;
-        ////    int matchedIndex = -1;
-        ////    // Iterate over (ARG_SELECTOR ARG_START message ARG_LIMIT) tuples
-        ////    // until the end of the plural-only pattern.
-        ////    while (partIndex < count)
-        ////    {
-        ////        Part partSelector = msgPattern.GetPart(partIndex++);
-        ////        if (partSelector.PartType != PartType.ArgSelector)
-        ////        {
-        ////            // Bad format
-        ////            continue;
-        ////        }
+            // The keyword is null until we need to match against a non-explicit, not-"other" value.
+            // Then we get the keyword from the selector.
+            // (In other words, we never call the selector if we match against an explicit value,
+            // or if the only non-explicit keyword is "other".)
+            string keyword = null;
+            string matchedWord = null;
+            int matchedIndex = -1;
+            // Iterate over (ARG_SELECTOR ARG_START message ARG_LIMIT) tuples
+            // until the end of the plural-only pattern.
+            while (partIndex < count)
+            {
+                var partSelector = msgPattern.GetPart(partIndex++);
+                if (partSelector.Type != MessagePatternPartType.ArgSelector)
+                {
+                    // Bad Format
+                    continue;
+                }
 
-        ////        Part partStart = msgPattern.GetPart(partIndex++);
-        ////        if (partStart.PartType != PartType.MsgStart)
-        ////        {
-        ////            // Bad format
-        ////            continue;
-        ////        }
+                var partStart = msgPattern.GetPart(partIndex++);
+                if (partStart.Type != MessagePatternPartType.MsgStart)
+                {
+                    // Bad Format
+                    continue;
+                }
 
-        ////        Part partLimit = msgPattern.GetPart(partIndex++);
-        ////        if (partLimit.PartType != PartType.MsgLimit)
-        ////        {
-        ////            // Bad format
-        ////            continue;
-        ////        }
+                var partLimit = msgPattern.GetPart(partIndex++);
+                if (partLimit.Type != MessagePatternPartType.MsgLimit)
+                {
+                    // Bad Format
+                    continue;
+                }
 
-        ////        String currArg = pattern.Substring(partStart.Limit, partLimit.Index);
-        ////        if (scanner != null)
-        ////        {
-        ////            // If lenient parsing is turned ON, we've got some time consuming parsing ahead of us.
-        ////            int[] scannerMatchResult = scanner.findText(source, currArg, startingAt);
-        ////            currMatchIndex = scannerMatchResult[0];
-        ////        }
-        ////        else
-        ////        {
-        ////            currMatchIndex = source.IndexOf(currArg, startingAt);
-        ////        }
-        ////        if (currMatchIndex >= 0 && currMatchIndex >= matchedIndex && (matchedWord == null || currArg.Length > matchedWord.Length))
-        ////        {
-        ////            matchedIndex = currMatchIndex;
-        ////            matchedWord = currArg;
-        ////            keyword = pattern.Substring(partStart.Limit, partLimit.Index - partStart.Limit); // ICU4N: Corrected 2nd arg
-        ////        }
-        ////    }
-        ////    if (keyword != null)
-        ////    {
-        ////        pos.BeginIndex = matchedIndex;
-        ////        pos.EndIndex = (matchedIndex + matchedWord.Length);
-        ////        return keyword;
-        ////    }
+                string currArg = pattern.Substring(partStart.Limit, partLimit.Index - partStart.Limit); // ICU4N: Corrected 2nd arg
+                if (scanner != null)
+                {
+                    // If lenient parsing is turned ON, we've got some time consuming parsing ahead of us.
+#pragma warning disable CS0618 // Type or member is obsolete
+                    int[] scannerMatchResult = scanner.FindText(source, currArg, startingAt);
+#pragma warning restore CS0618 // Type or member is obsolete
+                    currMatchIndex = scannerMatchResult[0];
+                }
+                else
+                {
+                    currMatchIndex = source.IndexOf(currArg, startingAt);
+                }
+                if (currMatchIndex >= 0 && currMatchIndex >= matchedIndex && (matchedWord == null || currArg.Length > matchedWord.Length))
+                {
+                    matchedIndex = currMatchIndex;
+                    matchedWord = currArg;
+                    keyword = pattern.Substring(partStart.Limit, partLimit.Index - partStart.Limit); // ICU4N: Corrected 2nd arg
+                }
+            }
+            if (keyword != null)
+            {
+                pos.BeginIndex = matchedIndex;
+                pos.EndIndex = (matchedIndex + matchedWord.Length);
+                return keyword;
+            }
 
-        ////    // Not found!
-        ////    pos.BeginIndex = -1;
-        ////    pos.EndIndex = -1;
-        ////    return null;
-        ////}
+            // Not found!
+            pos.BeginIndex = -1;
+            pos.EndIndex = -1;
+            return null;
+        }
 
         /// <summary>
         /// Sets the locale used by this <see cref="PluralFormat"/> object.
@@ -952,7 +1023,8 @@ namespace ICU4N.Text
         {
             // ICU4N TODO: Object serialization
             //@in.defaultReadObject();
-            pluralRulesWrapper = new PluralSelectorAdapter(pluralRules);
+            // ICU4N: Factored out PluralSelectorAdapter by implementing IPluralSelector directly on PluralRules
+            //pluralRulesWrapper = new PluralSelectorAdapter(pluralRules);
             // Ignore the parsedValues from an earlier class version (before ICU 4.8)
             // and rebuild the msgPattern.
             parsedValues = null;

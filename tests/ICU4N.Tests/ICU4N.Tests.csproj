@@ -2,10 +2,19 @@
   
   <PropertyGroup>
     <RootNamespace>ICU4N</RootNamespace>
+
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    
+    <!-- Disable IKVM unless on Windows so we can debug on Linux -->
+    <DisableIkvm Condition="!$([MSBuild]::IsOSPlatform('Windows'))">false</DisableIkvm>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>$(NoWarn);1701;1702</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' != 'net452' And '$(DisableIkvm)' != 'true' ">
+    <DefineConstants>$(DefineConstants);FEATURE_IKVM</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,6 +41,11 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net452' And '$(DisableIkvm)' != 'true' ">
+    <PackageReference Include="IKVM.Maven.Sdk" Version="$(IKVMMavenSdkPackageReferenceVersion)" />
+    <MavenReference Include="com.ibm.icu:icu4j" Version="$(ICU4JMavenPackageReferenceVersion)" />
   </ItemGroup>
   
   <ItemGroup>

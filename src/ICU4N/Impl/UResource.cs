@@ -294,7 +294,7 @@ namespace ICU4N.Impl
         /// <param name="key">Output-only, receives the key of the i'th item.</param>
         /// <param name="value">Output-only, receives the value of the i'th item.</param>
         /// <returns>true if i is non-negative and less than <see cref="Length"/>.</returns>
-        bool GetKeyAndValue(int i, ResourceKey key, ResourceValue value);
+        bool GetKeyAndValue(int i, ResourceKey key, ResourceValue value); // ICU4N TODO: API - make output params to make this design more clear ?
     }
 
     /// <summary>

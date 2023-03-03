@@ -34,7 +34,7 @@ namespace ICU4N.Impl
     }
 
     /// <summary>
-    /// IDNA2003 implementation code, moved out of <see cref="Text.IDNA"/>
+    /// IDNA2003 implementation code, moved out of <see cref="ICU4N.Text.IDNA"/>
     /// while extending that class to support IDNA2008/UTS #46 as well.
     /// </summary>
     /// <author>Ram Viswanadha</author>

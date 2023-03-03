@@ -814,6 +814,9 @@ namespace ICU4N.Impl
             }
 
             Assembly satelliteAssembly;
+#if DEBUG
+            var dotNetCultures = new HashSet<string>(CultureInfo.GetCultures(CultureTypes.NeutralCultures | CultureTypes.SpecificCultures).Select(c => c.Name));
+#endif
 
             foreach (var cultureName in cultureNames)
             {
@@ -841,6 +844,17 @@ namespace ICU4N.Impl
                 //                    set.Add(localeID);
                 //            }
                 //            AppDomain.Unload(dom);
+
+#if DEBUG
+                // ICU4N TODO: The cultures that contain this string make the debugger bomb when they are loaded
+                // (although the tests pass). So, to allow debugging for now, we simply are excluding these cultures.
+                // We need to revisit this to make all of the tests pass in debug mode.
+                //if (cultureName.Contains("--"))
+                if (!dotNetCultures.Contains(cultureName))
+                {
+                    continue;
+                }
+#endif
 
                 if ((satelliteAssembly = ICUData.GetSatelliteAssemblyOrDefault(assembly, cultureName)) != null)
                 {

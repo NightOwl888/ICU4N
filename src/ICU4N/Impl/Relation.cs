@@ -67,12 +67,12 @@ namespace ICU4N.Impl
                 setComparerParam = setComparator == null ? null : new object[] { setComparator };
                 if (setComparator == null)
                 {
-                    this.setCreator = ((Type)setCreator).GetConstructor(new Type[0]);
+                    this.setCreator = setCreator.GetConstructor(new Type[0]);
                     this.setCreator.Invoke(setComparerParam); // check to make sure compiles
                 }
                 else
                 {
-                    this.setCreator = ((Type)setCreator).GetConstructor(new Type[] { typeof(IComparer<TValue>) });
+                    this.setCreator = setCreator.GetConstructor(new Type[] { typeof(IComparer<TValue>) });
                     this.setCreator.Invoke(setComparerParam); // check to make sure compiles
                 }
                 data = map == null ? new JCG.Dictionary<TKey, ISet<TValue>>() : map;
@@ -122,16 +122,14 @@ namespace ICU4N.Impl
 
         private class Enumerator : IEnumerator<KeyValuePair<TKey, TValue>>
         {
-            private readonly Relation<TKey, TValue> outerInstance;
             private readonly IEnumerator<KeyValuePair<TKey, ISet<TValue>>> dataEnumerator;
             private TKey key;
             private IEnumerator<TValue> setEnumerator;
             private KeyValuePair<TKey, TValue> current;
             
-            public Enumerator(Relation<TKey, TValue> outerInstance)
+            public Enumerator(Relation<TKey, TValue> relation)
             {
-                this.outerInstance = outerInstance;
-                this.dataEnumerator = outerInstance.data.GetEnumerator();
+                this.dataEnumerator = relation.data.GetEnumerator();
             }
 
             public KeyValuePair<TKey, TValue> Current => current;
@@ -200,15 +198,21 @@ namespace ICU4N.Impl
         //      return set.iterator().next();
         //  }
 
-        public ISet<TValue> GetAll(TKey key)
+        public virtual ISet<TValue> GetAll(TKey key) // ICU4N TODO: API - why a duplicate API?
         {
             return data.Get(key);
         }
 
-        public ISet<TValue> Get(TKey key)
+        public virtual ISet<TValue> Get(TKey key)
         {
             return data.Get(key);
         }
+
+        //public virtual ISet<TValue> this[TKey key] // ICU4N specific - allow setting/getting with indexer
+        //{
+        //    get => data.Get(key);
+        //    set => data[key] = value;
+        //}
 
         public override int GetHashCode()
         {
@@ -231,10 +235,7 @@ namespace ICU4N.Impl
 
         #endregion
 
-        //public virtual bool IsEmpty // ICU4N specific - removed because this is not .NET-like
-        //{
-        //    get { return data.Count == 0; }
-        //}
+        public virtual bool IsEmpty => data.Count == 0;
 
         public virtual ICollection<TKey> Keys => data.Keys;
 
@@ -303,7 +304,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public virtual ISet<TValue> RemoveAll(TKey key)
+        public virtual ISet<TValue> RemoveAll(TKey key) // ICU4N TODO: API - rename ExceptWith
         {
             try
             {
@@ -315,7 +316,7 @@ namespace ICU4N.Impl
 
                 return null;
             }
-            catch (NullReferenceException)
+            catch (ArgumentNullException)
             {
                 return null; // data doesn't allow null, eg ConcurrentHashMap
             }
@@ -336,7 +337,7 @@ namespace ICU4N.Impl
                 }
                 return result;
             }
-            catch (NullReferenceException)
+            catch (ArgumentNullException)
             {
                 return false; // data doesn't allow null, eg ConcurrentHashMap
             }
@@ -367,7 +368,7 @@ namespace ICU4N.Impl
         // ICU4N specific - SimpleEntry class not needed, since we have implemented IEnumerator.
         // KeyValuePair is sealed anyway, so this won't work.
 
-        public virtual Relation<TKey, TValue> AddAllInverted<K>(Relation<TValue, K> source)
+        public virtual Relation<TKey, TValue> AddAllInverted<K>(Relation<TValue, K> source) // ICU4N TODO: API - rename UnionWithInverted ?
                 where K : class, TKey
         {
             foreach (var entry in source)
@@ -377,7 +378,7 @@ namespace ICU4N.Impl
             return this;
         }
 
-        public virtual Relation<TKey, TValue> AddAllInverted<K>(IDictionary<TValue, K> source)
+        public virtual Relation<TKey, TValue> AddAllInverted<K>(IDictionary<TValue, K> source) // ICU4N TODO: API - rename UnionWithInverted ?
                 where K : class, TKey
         {
             foreach (var entry in source)
@@ -413,7 +414,7 @@ namespace ICU4N.Impl
             throw new NotSupportedException();
         }
 
-        public virtual bool RemoveAll(Relation<TKey, TValue> toBeRemoved)
+        public virtual bool RemoveAll(Relation<TKey, TValue> toBeRemoved) // ICU4N TODO: API - rename ExceptWith
         {
             bool result = false;
             foreach (var key in toBeRemoved.Keys)
@@ -434,12 +435,12 @@ namespace ICU4N.Impl
             return result;
         }
 
-        public virtual ISet<TValue> RemoveAll(params TKey[] keys)
+        public virtual ISet<TValue> RemoveAll(params TKey[] keys) // ICU4N TODO: API - rename ExceptWith
         {
             return RemoveAll((ICollection<TKey>)keys);
         }
 
-        public virtual bool RemoveAll(TKey key, IEnumerable<TValue> toBeRemoved)
+        public virtual bool RemoveAll(TKey key, IEnumerable<TValue> toBeRemoved) // ICU4N TODO: API - rename ExceptWith
         {
             bool result = false;
             foreach (var value in toBeRemoved)
@@ -449,7 +450,7 @@ namespace ICU4N.Impl
             return result;
         }
 
-        public virtual ISet<TValue> RemoveAll(ICollection<TKey> toBeRemoved)
+        public virtual ISet<TValue> RemoveAll(ICollection<TKey> toBeRemoved) // ICU4N TODO: API - rename ExceptWith
         {
             ISet<TValue> result = new JCG.HashSet<TValue>();
             foreach (var key in toBeRemoved)
@@ -462,7 +463,7 @@ namespace ICU4N.Impl
                         result.UnionWith(removals);
                     }
                 }
-                catch (NullReferenceException)
+                catch (ArgumentNullException)
                 {
                     // data doesn't allow null, eg ConcurrentHashMap
                 }

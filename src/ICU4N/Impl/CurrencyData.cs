@@ -23,9 +23,9 @@ namespace ICU4N.Impl
         {
         }
 
-        public abstract IDictionary<string, string> GetUnitPatterns();
+        public abstract IDictionary<string, string> GetUnitPatterns(); // ICU4N TODO: API - make into property ?
         public abstract CurrencyFormatInfo GetFormatInfo(string isoCode);
-        public abstract CurrencySpacingInfo GetSpacingInfo();
+        public abstract CurrencySpacingInfo GetSpacingInfo(); // ICU4N TODO: API - make into property ?
         public abstract string GetNarrowSymbol(string isoCode);
     }
 
@@ -50,7 +50,7 @@ namespace ICU4N.Impl
     {
         private static readonly int SpacingTypeCount = Enum.GetNames(typeof(SpacingType)).Length;
         private static readonly int SpacingPatternCount = Enum.GetNames(typeof(SpacingPattern)).Length;
-        private readonly string[][] symbols = Arrays.NewRectangularArray<string>(SpacingTypeCount, SpacingTypeCount);
+        private readonly string[][] symbols = Arrays.NewRectangularArray<string>(SpacingTypeCount, SpacingPatternCount);
 
         public bool HasBeforeCurrency { get; set; } = false;
         public bool HasAfterCurrency { get; set; } = false;

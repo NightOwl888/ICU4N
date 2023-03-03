@@ -5,8 +5,8 @@ using System.Diagnostics;
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// Helper class for frozen <see cref="Text.UnicodeSet"/>s, implements <see cref="Contains(int)"/> and 
-    /// <see cref="Span(string, int, Text.SpanCondition, out int)"/> optimized for BMP code points.
+    /// Helper class for frozen <see cref="ICU4N.Text.UnicodeSet"/>s, implements <see cref="Contains(int)"/> and 
+    /// <see cref="Span(string, int, ICU4N.Text.SpanCondition, out int)"/> optimized for BMP code points.
     /// <para/>
     /// Latin-1: Look up bytes.
     /// 2-byte characters: Bits organized vertically.
@@ -304,7 +304,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Same as <see cref="Text.UnicodeSet.FindCodePoint(int)"/> except that the binary search is restricted for finding code
+        /// Same as <see cref="ICU4N.Text.UnicodeSet.FindCodePoint(int)"/> except that the binary search is restricted for finding code
         /// points in a certain range.
         /// <para/>
         /// For restricting the search for finding in the range start..end, pass in lo=FindCodePoint(start) and

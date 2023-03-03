@@ -16,6 +16,7 @@ using J2N.Collections.Generic;
 using Random = System.Random;
 using StringBuffer = System.Text.StringBuilder;
 using ICU4N.Text;
+using System.Reflection;
 
 namespace ICU4N.Dev.Test
 {
@@ -1036,23 +1037,19 @@ namespace ICU4N.Dev.Test
 
         protected static bool CheckDefaultPrivateConstructor(Type classToBeTested)
         {
-            // ICU4N TODO: Finish
-            throw new NotImplementedException();
-            //ConstructorInfo constructor = classToBeTested.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null, null, null);
+            ConstructorInfo constructor = classToBeTested.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[0], null);
 
-            //// Check that the constructor is private.
-            ////bool isPrivate = Modifier.isPrivate(constructor.GetModifiers());
-            //bool isPrivate = constructor.IsPrivate;
+            // Check that the constructor is private.
+            bool isPrivate = constructor.IsPrivate;
 
-            //// Call the constructor for coverage.
-            ////constructor.setAccessible(true);
-            //constructor.Invoke(new object[0]);
+            // Call the constructor for coverage.
+            constructor.Invoke(new object[0]);
 
-            //if (!isPrivate)
-            //{
-            //    Errln("Default private constructor for class: " + classToBeTested.Name + " is not private.");
-            //}
-            //return isPrivate;
+            if (!isPrivate)
+            {
+                Errln("Default private constructor for class: " + classToBeTested.Name + " is not private.");
+            }
+            return isPrivate;
         }
 
         /**

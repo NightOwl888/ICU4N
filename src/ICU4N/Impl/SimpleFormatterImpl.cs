@@ -2,9 +2,12 @@
 
 namespace ICU4N.Impl
 {
+    // ICU4N TODO: Remove once SimpleFormatter is ported. This stub is just for XML docs.
+    internal class SimpleFormatter { }
+
     /// <summary>
     /// Formats simple patterns like "{1} was born in {0}".
-    /// Internal version of <see cref="Text.SimpleFormatter"/>
+    /// Internal version of <see cref="SimpleFormatter"/>
     /// with only static methods, to avoid wrapper objects.
     /// </summary>
     /// <remarks>

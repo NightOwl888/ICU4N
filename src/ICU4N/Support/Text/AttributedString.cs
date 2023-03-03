@@ -237,9 +237,7 @@ namespace ICU4N.Support.Text
                 {
                     return null;
                 }
-                IList<Range> ranges; // = (IList<Range>)attrString.attributeMap.get(attribute);
-                attrString.attributeMap.TryGetValue(attribute, out ranges);
-                if (ranges == null)
+                if (!attrString.attributeMap.TryGetValue(attribute, out IList<Range> ranges) || ranges is null)
                 {
                     return null;
                 }
@@ -628,9 +626,8 @@ namespace ICU4N.Support.Text
             //    Map.Entry <?, ?> entry = (Map.Entry <?, ?>) it.next();
             foreach (var entry in attributes)
             {
-                IList<Range> ranges = new List<Range>(1);
-                ranges.Add(new Range(0, text.Length, entry.Value));
-                attributeMap[(AttributedCharacterIteratorAttribute)entry.Key] = ranges;
+                IList<Range> ranges = new List<Range>(1) { new Range(0, text.Length, entry.Value) };
+                attributeMap[entry.Key] = ranges;
             }
         }
 
@@ -653,9 +650,7 @@ namespace ICU4N.Support.Text
                 throw new ArgumentException();
             }
 
-            IList<Range> ranges; //= attributeMap.get(attribute);
-            attributeMap.TryGetValue(attribute, out ranges);
-            if (ranges == null)
+            if (!attributeMap.TryGetValue(attribute, out IList<Range> ranges) || ranges is null)
             {
                 ranges = new List<Range>(1);
                 attributeMap[attribute] = ranges;
@@ -680,128 +675,142 @@ namespace ICU4N.Support.Text
         public void AddAttribute(AttributedCharacterIteratorAttribute attribute,
                 object value, int start, int end)
         {
-            throw new NotImplementedException(); // ICU4N TODO:
-            //if (null == attribute)
-            //{
-            //    throw new ArgumentNullException(nameof(attribute));
-            //}
-            //if (start < 0 || end > text.Length || start >= end)
-            //{
-            //    throw new ArgumentException();
-            //}
+            if (null == attribute)
+            {
+                throw new ArgumentNullException(nameof(attribute));
+            }
+            if (start < 0 || end > text.Length || start >= end)
+            {
+                throw new ArgumentException();
+            }
 
-            //if (value == null)
-            //{
-            //    return;
-            //}
+            if (value == null)
+            {
+                return;
+            }
 
-            //lock (syncLock)
-            //{
-            //    IList<Range> ranges; // = attributeMap.get(attribute);
-            //    attributeMap.TryGetValue(attribute, out ranges);
-            //    if (ranges == null)
-            //    {
-            //        ranges = new List<Range>(1);
-            //        ranges.Add(new Range(start, end, value));
-            //        attributeMap[attribute] = ranges;
-            //        return;
-            //    }
-            //    //ListIterator<Range> it = ranges.listIterator();
-            //    //while (it.hasNext())
-            //    //{
-            //    //    Range range = it.next();
-            //    var toRemove = new List<Range>();
-            //    var toAdd = new Dictionary<Range, int>();
-            //    int position = 0;
-            //    for (int i = 0; i < ranges.Count; i++)
-            //    {
-            //        position = i;
-            //        Range range = ranges[i];
-            //        if (end <= range.start)
-            //        {
-            //            //it.previous();
-            //            position--;
-            //            break;
-            //        }
-            //        else if (start < range.end
-            //              || (start == range.end && value.Equals(range.value)))
-            //        {
-            //            Range r1 = null, r3;
-            //            //it.remove();
-            //            toRemove.Add(range);
-            //            r1 = new Range(range.start, start, range.value);
-            //            r3 = new Range(end, range.end, range.value);
+            lock (syncLock)
+            {
+                if (!attributeMap.TryGetValue(attribute, out IList<Range> ranges) || ranges is null)
+                {
+                    ranges = new List<Range>(1)
+                    {
+                        new Range(start, end, value)
+                    };
+                    attributeMap[attribute] = ranges;
+                    return;
+                }
+                //ListIterator<Range> it = ranges.listIterator();
+                //while (it.hasNext())
+                //{
+                //    Range range = it.next();
+                //var toRemove = new List<Range>();
+                //var toAdd = new Dictionary<Range, int>();
+                int i = 0;
+                for (; i < ranges.Count; i++)
+                {
+                    Range range = ranges[i];
+                    if (end <= range.start)
+                    {
+                        //it.previous();
+                        //position--;
+                        break;
+                    }
+                    else if (start < range.end
+                          || (start == range.end && value.Equals(range.value)))
+                    {
+                        Range r1 = null, r3;
+                        //it.remove();
+                        //toRemove.Add(range);
+                        Remove(ranges, ref i);
+                        r1 = new Range(range.start, start, range.value);
+                        r3 = new Range(end, range.end, range.value);
 
-            //            while (end > range.end && i < ranges.Count /*it.hasNext()*/)
-            //            {
-            //                //range = it.next();
-            //                i++;
-            //                position = i;
-            //                range = ranges[i];
-            //                if (end <= range.end)
-            //                {
-            //                    if (end > range.start
-            //                            || (end == range.start && value.Equals(range.value)))
-            //                    {
-            //                        //it.remove();
-            //                        toRemove.Add(range);
-            //                        r3 = new Range(end, range.end, range.value);
-            //                        break;
-            //                    }
-            //                }
-            //                else
-            //                {
-            //                    //it.remove();
-            //                    toRemove.Add(range);
-            //                }
-            //            }
+                        while (end > range.end && i < ranges.Count /*it.hasNext()*/)
+                        {
+                            //range = it.next();
+                            i++;
+                            range = ranges[i];
+                            if (end <= range.end)
+                            {
+                                if (end > range.start
+                                        || (end == range.start && value.Equals(range.value)))
+                                {
+                                    //it.remove();
+                                    //toRemove.Add(range);
+                                    Remove(ranges, ref i);
+                                    r3 = new Range(end, range.end, range.value);
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                //it.remove();
+                                //toRemove.Add(range);
+                                //i--;
+                                Remove(ranges, ref i);
+                            }
+                        }
 
-            //            if (value.Equals(r1.value))
-            //            {
-            //                if (value.Equals(r3.value))
-            //                {
-            //                    it.add(new Range(r1.start < start ? r1.start : start,
-            //                            r3.end > end ? r3.end : end, r1.value));
-            //                }
-            //                else
-            //                {
-            //                    it.add(new Range(r1.start < start ? r1.start : start,
-            //                            end, r1.value));
-            //                    if (r3.start < r3.end)
-            //                    {
-            //                        it.add(r3);
-            //                    }
-            //                }
-            //            }
-            //            else
-            //            {
-            //                if (value.Equals(r3.value))
-            //                {
-            //                    if (r1.start < r1.end)
-            //                    {
-            //                        it.add(r1);
-            //                    }
-            //                    it.add(new Range(start, r3.end > end ? r3.end : end,
-            //                            r3.value));
-            //                }
-            //                else
-            //                {
-            //                    if (r1.start < r1.end)
-            //                    {
-            //                        it.add(r1);
-            //                    }
-            //                    it.add(new Range(start, end, value));
-            //                    if (r3.start < r3.end)
-            //                    {
-            //                        it.add(r3);
-            //                    }
-            //                }
-            //            }
-            //            return;
-            //        }
-            //    }
-            //    it.add(new Range(start, end, value));
-            //}
+                        if (value.Equals(r1.value))
+                        {
+                            if (value.Equals(r3.value))
+                            {
+                                //it.add(new Range(r1.start < start ? r1.start : start,
+                                //        r3.end > end ? r3.end : end, r1.value));
+                                Add(ranges, ref i, new Range(r1.start < start ? r1.start : start,
+                                    r3.end > end ? r3.end : end, r1.value)); // ICU4N TODO: Add i++?
+                            }
+                            else
+                            {
+                                //it.add(new Range(r1.start < start ? r1.start : start,
+                                //        end, r1.value));
+                                Add(ranges, ref i, new Range(r1.start < start ? r1.start : start,
+                                    end, r1.value)); // ICU4N TODO: Add i++?
+
+                                if (r3.start < r3.end)
+                                {
+                                    //it.add(r3);
+                                    Add(ranges, ref i, r3); // ICU4N TODO: Add i++?
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (value.Equals(r3.value))
+                            {
+                                if (r1.start < r1.end)
+                                {
+                                    //it.add(r1);
+                                    Add(ranges, ref i, r1); // ICU4N TODO: Add i++?
+                                }
+                                //it.add(new Range(start, r3.end > end ? r3.end : end,
+                                //        r3.value));
+                                Add(ranges, ref i, new Range(start, r3.end > end ? r3.end : end,
+                                    r3.value)); // ICU4N TODO: Add i++?
+                            }
+                            else
+                            {
+                                if (r1.start < r1.end)
+                                {
+                                    //it.add(r1);
+                                    Add(ranges, ref i, r1); // ICU4N TODO: Add i++?
+                                }
+                                //it.add(new Range(start, end, value));
+                                Add(ranges, ref i, new Range(start, end, value));
+                                if (r3.start < r3.end)
+                                {
+                                    //it.add(r3);
+                                    Add(ranges, ref i, r3);
+                                }
+                            }
+                        }
+                        return;
+                    }
+                }
+                //it.add(new Range(start, end, value));
+                Add(ranges, ref i, new Range(start, end, value));
+            }
 
             //ListIterator<Range> it = ranges.listIterator();
             //while (it.hasNext())
@@ -884,6 +893,20 @@ namespace ICU4N.Support.Text
             //    }
             //}
             //it.add(new Range(start, end, value));
+        }
+
+        private static void Add(IList<Range> list, ref int index, Range value)
+        {
+            if (index == list.Count)
+                list.Add(value);
+            else
+                list.Insert(index, value);
+            index++;
+        }
+
+        private static void Remove(IList<Range> list, ref int index)
+        {
+            list.RemoveAt(index);
         }
 
         /// <summary>

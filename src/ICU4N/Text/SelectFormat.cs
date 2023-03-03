@@ -240,7 +240,7 @@ namespace ICU4N.Text
         /// <returns>The sub-message start part index.</returns>
         internal static int FindSubMessage(MessagePattern pattern, int partIndex, string keyword)
         {
-            int count = pattern.CountParts();
+            int count = pattern.PartCount;
             int msgStart = 0;
             // Iterate over (ARG_SELECTOR, message) pairs until ARG_LIMIT or end of select-only pattern.
             do
@@ -282,7 +282,7 @@ namespace ICU4N.Text
                 throw new ArgumentException("Invalid formatting argument.");
             }
             // If no pattern was applied, throw an exception
-            if (msgPattern == null || msgPattern.CountParts() == 0)
+            if (msgPattern == null || msgPattern.PartCount == 0)
             {
                 throw new InvalidOperationException("Invalid format error.");
             }
@@ -311,7 +311,7 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        return result.Append(pattern, prevIndex, index).ToString();
+                        return result.Append(pattern, prevIndex, index - prevIndex).ToString(); // ICU4N: Corrected 3rd arg
                     }
                 }
                 else if (type == MessagePatternPartType.SkipSyntax)
@@ -320,7 +320,7 @@ namespace ICU4N.Text
                     {
                         result = new StringBuilder();
                     }
-                    result.Append(pattern, prevIndex, index);
+                    result.Append(pattern, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                     prevIndex = part.Limit;
                 }
                 else if (type == MessagePatternPartType.ArgStart)
@@ -329,7 +329,7 @@ namespace ICU4N.Text
                     {
                         result = new StringBuilder();
                     }
-                    result.Append(pattern, prevIndex, index);
+                    result.Append(pattern, prevIndex, index - prevIndex); // ICU4N: Corrected 3rd arg
                     prevIndex = index;
                     i = msgPattern.GetLimitPartIndex(i);
                     index = msgPattern.GetPart(i).Limit;
@@ -350,12 +350,17 @@ namespace ICU4N.Text
         /// <returns>the string buffer passed in as <paramref name="toAppendTo"/>, with formatted text appended.</returns>
         /// <exception cref="ArgumentException">when the given keyword is not a <see cref="string"/> or not a "pattern identifier".</exception>
         /// <stable>ICU 4.4</stable>
-        public override StringBuffer Format(object keyword, StringBuffer toAppendTo,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            override StringBuffer Format(object keyword, StringBuffer toAppendTo,
                 FieldPosition pos)
         {
-            if (keyword is string)
+            if (keyword is string str)
             {
-                toAppendTo.Append(Format((string)keyword));
+                toAppendTo.Append(Format(str));
             }
             else
             {

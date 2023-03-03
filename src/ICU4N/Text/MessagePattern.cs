@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Text
 {
@@ -89,14 +90,14 @@ namespace ICU4N.Text
         /// The argument has no specified type.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        None,
+        None = 0,
 
         /// <summary>
         /// The argument has a "simple" type which is provided by the <see cref="MessagePatternPartType.ArgType"/> part.
         /// An <see cref="MessagePatternPartType.ArgStyle"/> part might follow that.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        Simple,
+        Simple = 1,
 
         /// <summary>
         /// The argument is a <see cref="ChoiceFormat"/> with one or more
@@ -104,7 +105,7 @@ namespace ICU4N.Text
         /// <see cref="MessagePatternPartType.ArgSelector"/>, message) tuples.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        Choice,
+        Choice = 2,
 
         /// <summary>
         /// The argument is a cardinal-number <see cref="PluralFormat"/> with an optional <see cref="MessagePatternPartType.ArgInt"/> 
@@ -115,20 +116,20 @@ namespace ICU4N.Text
         /// Otherwise the message immediately follows the <see cref="MessagePatternPartType.ArgSelector"/>.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        Plural,
+        Plural = 3,
 
         /// <summary>
         /// The argument is a <see cref="SelectFormat"/> with one or more (<see cref="MessagePatternPartType.ArgSelector"/>, message) pairs.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        Select,
+        Select = 4,
 
         /// <summary>
         /// The argument is an ordinal-number <see cref="PluralFormat"/>
         /// with the same style parts sequence and semantics as <see cref="MessagePatternArgType.Plural"/>
         /// </summary>
         /// <stable>ICU 50</stable>
-        SelectOrdinal
+        SelectOrdinal = 5
     }
 
     /// <summary>
@@ -357,7 +358,7 @@ namespace ICU4N.Text
                 MessagePatternPartType type = Type;
                 if (type == MessagePatternPartType.ArgStart || type == MessagePatternPartType.ArgLimit)
                 {
-                    return argTypes[value];
+                    return (MessagePatternArgType)value;
                 }
                 else
                 {
@@ -424,8 +425,6 @@ namespace ICU4N.Text
         private readonly char length;
         private short value;
         internal int limitPartIndex;
-
-        private static readonly MessagePatternArgType[] argTypes = (MessagePatternArgType[])Enum.GetValues(typeof(MessagePatternArgType));
     }
 
     /// <summary>
@@ -444,7 +443,7 @@ namespace ICU4N.Text
     /// The parser handles named and numbered message arguments and allows both in one message.
     /// <para/>
     /// Once a pattern has been parsed successfully, iterate through the parsed data
-    /// with <see cref="CountParts()"/>, <see cref="GetPart(int)"/> and related methods.
+    /// with <see cref="PartCount"/>, <see cref="GetPart(int)"/> and related methods.
     /// <para/>
     /// The data logically represents a parse tree, but is stored and accessed
     /// as a list of "parts" for fast and simple parsing and to minimize object allocations.
@@ -622,7 +621,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Clears this <see cref="MessagePattern"/>.
-        /// <see cref="CountParts()"/> will return 0.
+        /// <see cref="PartCount"/> will return 0.
         /// </summary>
         /// <stable>ICU 4.8</stable>
         public void Clear()
@@ -645,7 +644,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Clears this <see cref="MessagePattern"/> and sets the <see cref="Text.ApostropheMode"/>.
-        /// <see cref="CountParts()"/> will return 0.
+        /// <see cref="PartCount"/> will return 0.
         /// </summary>
         /// <param name="mode">The new <see cref="Text.ApostropheMode"/></param>
         /// <stable>ICU 4.8</stable>
@@ -775,7 +774,7 @@ namespace ICU4N.Text
             }
             StringBuilder modified = null;
             // Iterate backward so that the insertion indexes do not change.
-            int count = CountParts();
+            int count = PartCount;
             for (int i = count; i > 0;)
             {
                 MessagePatternPart part;
@@ -804,17 +803,14 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>the number of pattern parts.</returns>
         /// <stable>ICU 4.8</stable>
-        public int CountParts()
-        {
-            return parts.Count;
-        }
+        public int PartCount => parts.Count;
 
         /// <summary>
         /// Gets the i-th pattern "part".
         /// </summary>
-        /// <param name="i">The index of the <see cref="MessagePatternPart"/> data. (0..<see cref="CountParts()"/>-1)</param>
+        /// <param name="i">The index of the <see cref="MessagePatternPart"/> data. (0..<see cref="PartCount"/>-1)</param>
         /// <returns>the i-th pattern "part".</returns>
-        /// <exception cref="IndexOutOfRangeException">if partIndex is outside the (0..<see cref="CountParts()"/>-1) range</exception>
+        /// <exception cref="IndexOutOfRangeException">if partIndex is outside the (0..<see cref="PartCount"/>-1) range</exception>
         /// <stable>ICU 4.8</stable>
         public MessagePatternPart GetPart(int i)
         {
@@ -825,9 +821,9 @@ namespace ICU4N.Text
         /// Returns the <see cref="MessagePatternPartType"/> of the i-th pattern "part".
         /// Convenience method for <c>GetPart(i).Type</c>.
         /// </summary>
-        /// <param name="i">The index of the Part data. (0..<see cref="CountParts()"/>-1)</param>
+        /// <param name="i">The index of the Part data. (0..<see cref="PartCount()"/>-1)</param>
         /// <returns>The <see cref="MessagePatternPartType"/> of the i-th <see cref="MessagePatternPart"/>.</returns>
-        /// <exception cref="IndexOutOfRangeException">if partIndex is outside the (0..<see cref="CountParts()"/>-1) range</exception>
+        /// <exception cref="IndexOutOfRangeException">if partIndex is outside the (0..<see cref="PartCount()"/>-1) range</exception>
         /// <stable>ICU 4.8</stable>
         public MessagePatternPartType GetPartType(int i)
         {
@@ -838,9 +834,9 @@ namespace ICU4N.Text
         /// Returns the pattern index of the specified pattern "part".
         /// Convenience method for <c>GetPart(partIndex).Index</c>.
         /// </summary>
-        /// <param name="partIndex">The index of the Part data. (0..<see cref="CountParts()"/>-1)</param>
+        /// <param name="partIndex">The index of the Part data. (0..<see cref="PartCount"/>-1)</param>
         /// <returns>The pattern index of this <see cref="MessagePatternPart"/>.</returns>
-        /// <exception cref="IndexOutOfRangeException">if partIndex is outside the (0..<see cref="CountParts()"/>-1) range</exception>
+        /// <exception cref="IndexOutOfRangeException">if partIndex is outside the (0..<see cref="PartCount"/>-1) range</exception>
         /// <stable>ICU 4.8</stable>
         public int GetPatternIndex(int partIndex)
         {
@@ -859,6 +855,22 @@ namespace ICU4N.Text
             int index = part.Index;
             return msg.Substring(index, part.Length); // ICU4N: (index + part.Length) - index = part.Length
         }
+
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns the slice of the pattern string indicated by the <paramref name="part"/>.
+        /// Convenience method for <c>PatternString.Substring(part.Index, part.Limit - part.Index)</c>.
+        /// </summary>
+        /// <param name="part">A part of this <see cref="MessagePattern"/>.</param>
+        /// <returns>The substring associated with <paramref name="part"/>.</returns>
+        /// <stable>ICU 4.8</stable>
+        public ReadOnlySpan<char> AsSpan(MessagePatternPart part)
+        {
+            int index = part.Index;
+            return msg.AsSpan(index, part.Length); // ICU4N: (index + part.Length) - index = part.Length
+        }
+#endif
 
         /// <summary>
         /// Compares the <paramref name="part"/>'s substring with the input string <paramref name="s"/>.
@@ -907,9 +919,9 @@ namespace ICU4N.Text
         /// <summary>
         /// Returns the "offset:" value of a <see cref="PluralFormat"/> argument, or 0 if none is specified.
         /// </summary>
-        /// <param name="pluralStart">the index of the first <see cref="PluralFormat"/> argument style part. (0..<see cref="CountParts()"/>-1)</param>
+        /// <param name="pluralStart">the index of the first <see cref="PluralFormat"/> argument style part. (0..<see cref="PartCount"/>-1)</param>
         /// <returns>the "offset:" value.</returns>
-        /// <exception cref="IndexOutOfRangeException">if start is outside the (0..<see cref="CountParts()"/>-1) range.</exception>
+        /// <exception cref="IndexOutOfRangeException">if start is outside the (0..<see cref="PartCount"/>-1) range.</exception>
         /// <stable>ICU 4.8</stable>
         public double GetPluralOffset(int pluralStart)
         {
@@ -934,7 +946,7 @@ namespace ICU4N.Text
         /// <see cref="MessagePatternPartType.ArgStart"/> or <see cref="MessagePatternPartType.MsgStart"/>.</param>
         /// <returns>The first i&gt;start where GetPart(i).Type==<see cref="MessagePatternPartType.ArgLimit"/>|<see cref="MessagePatternPartType.MsgLimit"/> at the same nesting level,
         /// or start itself if getPartType(msgStart)!=ARG|MSG_START.</returns>
-        /// <exception cref="IndexOutOfRangeException">if start is outside the (0..<see cref="CountParts()"/>-1) range.</exception>
+        /// <exception cref="IndexOutOfRangeException">if start is outside the (0..<see cref="PartCount()"/>-1) range.</exception>
         /// <stable>ICU 4.8</stable>
         public int GetLimitPartIndex(int start)
         {
@@ -975,7 +987,7 @@ namespace ICU4N.Text
             MessagePattern newMsg = (MessagePattern)base.MemberwiseClone();
 
             // Clone the list
-            var newParts = new List<MessagePatternPart>();
+            var newParts = new JCG.List<MessagePatternPart>(); // ICU4N: This uses structural equality
             foreach (var part in parts)
                 newParts.Add((MessagePatternPart)part.Clone());
 
@@ -1677,7 +1689,7 @@ namespace ICU4N.Text
                 int i = s.IndexOf('\'', start);
                 if (i < 0 || i >= limit)
                 {
-                    sb.Append(s, start, limit);
+                    sb.Append(s, start, limit - start); // ICU4N: Corrected 3rd arg
                     break;
                 }
                 if (i == doubleApos)
@@ -1690,11 +1702,46 @@ namespace ICU4N.Text
                 else
                 {
                     // Append text between apostrophes and skip this one.
-                    sb.Append(s, start, i);
+                    sb.Append(s, start, i - start); // ICU4N: Corrected 3rd arg
                     doubleApos = start = i + 1;
                 }
             }
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Appends the s[start, limit[ substring to sb, but with only half of the apostrophes
+        /// according to JDK pattern behavior.
+        /// </summary>
+        /// <internal/>
+        internal static void AppendReducedApostrophes(string s, int start, int limit,
+                                             ref ValueStringBuilder sb)
+        {
+            int doubleApos = -1;
+            for (; ; )
+            {
+                int i = s.IndexOf('\'', start);
+                if (i < 0 || i >= limit)
+                {
+                    sb.Append(s.AsSpan(start, limit - start)); // ICU4N: Corrected 2nd arg
+                    break;
+                }
+                if (i == doubleApos)
+                {
+                    // Double apostrophe at start-1 and start==i, append one.
+                    sb.Append('\'');
+                    ++start;
+                    doubleApos = -1;
+                }
+                else
+                {
+                    // Append text between apostrophes and skip this one.
+                    sb.Append(s.AsSpan(start, i - start)); // ICU4N: Corrected 2nd arg
+                    doubleApos = start = i + 1;
+                }
+            }
+        }
+#endif
 
         private int SkipWhiteSpace(int index)
         {
@@ -1859,7 +1906,7 @@ namespace ICU4N.Text
                     // remove lead surrogate from the end of the prefix
                     --limit;
                 }
-                prefix.Append(s, start, limit).Append(" ...");
+                prefix.Append(s, start, limit - start).Append(" ..."); // ICU4N: Corrected 3rd arg
             }
             return prefix.Append("\"").ToString();
         }
@@ -1881,7 +1928,7 @@ namespace ICU4N.Text
 
         private ApostropheMode aposMode;
         private string msg;
-        private IList<MessagePatternPart> parts = new List<MessagePatternPart>();
+        private IList<MessagePatternPart> parts = new JCG.List<MessagePatternPart>(); // ICU4N: This uses structural equality
         private IList<double> numericValues;
         private bool hasArgNames;
         private bool hasArgNumbers;

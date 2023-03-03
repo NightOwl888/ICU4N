@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29025.244
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{57271E32-0E88-4696-A477-D00D99DF06F7}"
 	ProjectSection(SolutionItems) = preProject
@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{F00080
 		.build\dependencies.props = .build\dependencies.props
 		.build\icu4j-download-urls.txt = .build\icu4j-download-urls.txt
 		.build\nuget.props = .build\nuget.props
+		.build\nowarn.props = .build\nowarn.props
 		.build\runbuild.ps1 = .build\runbuild.ps1
 		.build\TestReferences.Common.targets = .build\TestReferences.Common.targets
 		.build\TestTargetFramework.props = .build\TestTargetFramework.props

@@ -1723,7 +1723,7 @@ namespace ICU4N.Impl
 
         public static string[] SplitString(string src, string target)
         {
-            return Regex.Split(src, "\\Q" + target + "\\E");
+            return Regex.Split(src, "\\Q" + target + "\\E"); // ICU4N TODO: This is broken on .NET (\Q and \E are not supported)
         }
 
         /// <summary>

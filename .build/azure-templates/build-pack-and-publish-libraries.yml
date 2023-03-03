@@ -50,7 +50,7 @@ steps:
     command: custom
     projects: '${{ parameters.solutionFilesConvention }}'
     custom: build
-    arguments: '--configuration ${{ parameters.buildConfiguration }} --verbosity normal /p:Platform="${{ parameters.buildPlatform }}" /p:InformationalVersion="${{ parameters.informationalVersion }}" /p:FileVersion="${{ parameters.fileVersion }}" /p:AssemblyVersion="${{ parameters.assemblyVersion }}" /p:PackageVersion="${{ parameters.packageVersion }}" /p:TestAllTargetFrameworks=true /p:PortableDebugTypeOnly=true'
+    arguments: '--configuration ${{ parameters.buildConfiguration }} --verbosity normal /p:Platform="${{ parameters.buildPlatform }}" /p:InformationalVersion="${{ parameters.informationalVersion }}" /p:FileVersion="${{ parameters.fileVersion }}" /p:AssemblyVersion="${{ parameters.assemblyVersion }}" /p:PackageVersion="${{ parameters.packageVersion }}" /p:TestAllTargetFrameworks=true /p:PortableDebugTypeOnly=true /p:DisableIkvm=true'
 
   # Packs the project binaries into .nupkg files (NuGet).
   # Note that we are outputting .symbols.nupkg files as well 
@@ -93,7 +93,7 @@ steps:
     foreach ($framework in $testTargetFrameworks) {
         $outputPath = "$outputRoot/$framework"
         Write-Host "Publishing '$framework' to '$outputPath'..."
-        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:TestAllTargetFrameworks=true
+        dotnet publish --output "$outputPath" --framework "$framework" --configuration "$configuration" --no-build --no-restore --verbosity normal /p:TestAllTargetFrameworks=true /p:DisableIkvm=true
     }
   displayName: 'dotnet publish ${{ parameters.testTargetFrameworks }}'
 

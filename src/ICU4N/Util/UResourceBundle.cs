@@ -713,17 +713,15 @@ namespace ICU4N.Util
         /// access individual members of an integer array. It is always returned as a whole.
         /// </summary>
         /// <stable>ICU 3.8</stable>
-        public virtual int Length => 1;
+        public virtual int Length => 1; // ICU4N: This was getSize() in ICU4J
 
-        /**
-         * {@icu} Returns the type of a resource.
-         * Available types are {@link #INT INT}, {@link #ARRAY ARRAY},
-         * {@link #BINARY BINARY}, {@link #INT_VECTOR INT_VECTOR},
-         * {@link #STRING STRING}, {@link #TABLE TABLE}.
-         *
-         * @return type of the given resource.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Gets the type of a resource.
+        /// Available types are <see cref="UResourceType.Int32"/>, <see cref="UResourceType.Array"/>,
+        /// <see cref="UResourceType.Binary"/>, <see cref="UResourceType.Int32Vector"/>,
+        /// <see cref="UResourceType.String"/>, <see cref="UResourceType.Table"/>.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
         public virtual UResourceType Type => UResourceType.None;
 
         /// <summary>

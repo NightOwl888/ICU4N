@@ -182,7 +182,7 @@ namespace ICU4N.Impl
             return csLength == (length - start) && RegionMatches(start, cs, csLength);
         }
 
-        public int CompareTo(string cs)
+        public int CompareTo(string cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
         {
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;
@@ -197,7 +197,7 @@ namespace ICU4N.Impl
             return length - csLength;
         }
 
-        public int CompareTo(StringBuilder cs)
+        public int CompareTo(StringBuilder cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
         {
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;
@@ -212,7 +212,7 @@ namespace ICU4N.Impl
             return length - csLength;
         }
 
-        public int CompareTo(char[] cs)
+        public int CompareTo(char[] cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
         {
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;
@@ -227,7 +227,7 @@ namespace ICU4N.Impl
             return length - csLength;
         }
 
-        public int CompareTo(ICharSequence cs)
+        public int CompareTo(ICharSequence cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
         {
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;

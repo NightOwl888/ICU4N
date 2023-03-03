@@ -4,9 +4,11 @@ using ICU4N.Util;
 using J2N.Collections.Generic.Extensions;
 using J2N.Text;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Resources;
 using System.Text;
+using System.Threading;
 
 namespace ICU4N.Impl
 {
@@ -18,7 +20,7 @@ namespace ICU4N.Impl
         : PluralRulesFactory
 #pragma warning restore 612, 618
     {
-        private readonly IDictionary<string, PluralRules> rulesIdToRules;
+        private readonly ConcurrentDictionary<string, PluralRules> rulesIdToRules = new ConcurrentDictionary<string, PluralRules>();
         // lazy init, use getLocaleIdToRulesIdMap to access
         private IDictionary<string, string> localeIdToCardinalRulesId;
         private IDictionary<string, string> localeIdToOrdinalRulesId;
@@ -27,8 +29,8 @@ namespace ICU4N.Impl
         private static readonly IDictionary<string, PluralRanges> localeIdToPluralRanges = LoadLocaleIdToPluralRanges();
 #pragma warning restore 612, 618
 
-        private readonly object syncLock = new object();
-        private readonly object rulesIdToRulesLock = new object();
+        private object syncLock = new object();
+        private bool localeRulesInitialized;
 
         /// <summary>
         /// Access through singleton.
@@ -36,7 +38,6 @@ namespace ICU4N.Impl
 #pragma warning disable 612, 618
         private PluralRulesLoader()
         {
-            rulesIdToRules = new Dictionary<string, PluralRules>();
         }
 #pragma warning restore 612, 618
 
@@ -60,26 +61,32 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns the functionally equivalent locale.
         /// </summary>
-#pragma warning disable 672
-        public override UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, bool[] isAvailable)
-#pragma warning restore 672
+#pragma warning disable CS0672 // Type or member is obsolete
+        public override UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, out bool isAvailable)
+#pragma warning restore CS0672 // Type or member is obsolete
         {
-            if (isAvailable != null && isAvailable.Length > 0)
-            {
-                string localeId = UCultureInfo.Canonicalize(locale.Name);
-                IDictionary<string, string> idMap = GetLocaleIdToRulesIdMap(PluralType.Cardinal);
-                isAvailable[0] = idMap.ContainsKey(localeId);
-            }
+            string localeId = UCultureInfo.Canonicalize(locale.Name);
+            IDictionary<string, string> idMap = GetLocaleIdToRulesIdMap(PluralType.Cardinal);
+            isAvailable = idMap.ContainsKey(localeId);
+#pragma warning disable CS0618 // Type or member is obsolete
+            return GetFunctionalEquivalent(locale);
+#pragma warning restore CS0618 // Type or member is obsolete
+        }
 
+        /// <summary>
+        /// Returns the functionally equivalent locale.
+        /// </summary>
+#pragma warning disable CS0672 // Type or member is obsolete
+        public override UCultureInfo GetFunctionalEquivalent(UCultureInfo locale) // ICU4N specific: Added overload so we don't need to pass a null parameter
+#pragma warning restore CS0672 // Type or member is obsolete
+        {
             string rulesId = GetRulesIdForLocale(locale, PluralType.Cardinal);
-            if (rulesId == null || rulesId.Trim().Length == 0)
+            if (rulesId is null || rulesId.Trim().Length == 0)
             {
                 return UCultureInfo.InvariantCulture; // ultimate fallback
             }
 
-            UCultureInfo result;
-            GetRulesIdToEquivalentULocaleMap().TryGetValue(rulesId, out result);
-            if (result == null)
+            if (!RulesIdToEquivalentULocaleMap.TryGetValue(rulesId, out UCultureInfo result) || result is null)
             {
                 return UCultureInfo.InvariantCulture; // ultimate fallback
             }
@@ -99,10 +106,13 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns the lazily-constructed map.
         /// </summary>
-        private IDictionary<string, UCultureInfo> GetRulesIdToEquivalentULocaleMap()
+        private IDictionary<string, UCultureInfo> RulesIdToEquivalentULocaleMap
         {
-            CheckBuildRulesIdMaps();
-            return rulesIdToEquivalentULocale;
+            get
+            {
+                CheckBuildRulesIdMaps();
+                return rulesIdToEquivalentULocale;
+            }
         }
 
         /// <summary>
@@ -112,69 +122,61 @@ namespace ICU4N.Impl
         /// </summary>
         private void CheckBuildRulesIdMaps()
         {
-            bool haveMap;
-            lock (syncLock)
+            LazyInitializer.EnsureInitialized(ref rulesIdToEquivalentULocale, ref localeRulesInitialized, ref syncLock, LoadRulesIdMaps);
+        }
+
+        /// <summary>
+        /// constructs the localeIdToRulesId and rulesIdToEquivalentULocale
+        /// maps. These exactly reflect the contents of the locales
+        /// resource in plurals.res.
+        /// </summary>
+        /// <returns>The rulesIdToEquivalentULocale map.</returns>
+        private IDictionary<string, UCultureInfo> LoadRulesIdMaps()
+        {
+            // ICU4N: Simplified this using LazyInitializer and an external lock.
+            try
             {
-                haveMap = localeIdToCardinalRulesId != null;
-            }
-            if (!haveMap)
-            {
-                IDictionary<string, string> tempLocaleIdToCardinalRulesId;
-                IDictionary<string, string> tempLocaleIdToOrdinalRulesId;
-                IDictionary<string, UCultureInfo> tempRulesIdToEquivalentULocale;
-                try
+                UResourceBundle pluralb = GetPluralBundle();
+                // Read cardinal-number rules.
+                UResourceBundle localeb = pluralb.Get("locales");
+
+                // sort for convenience of getAvailableULocales
+                localeIdToCardinalRulesId = new SortedDictionary<string, string>(StringComparer.Ordinal);
+                // not visible
+                rulesIdToEquivalentULocale = new Dictionary<string, UCultureInfo>();
+
+                for (int i = 0; i < localeb.Length; ++i)
                 {
-                    UResourceBundle pluralb = GetPluralBundle();
-                    // Read cardinal-number rules.
-                    UResourceBundle localeb = pluralb.Get("locales");
+                    UResourceBundle b = localeb.Get(i);
+                    string id = b.Key;
+                    string value = b.GetString().Intern();
+                    localeIdToCardinalRulesId[id] = value;
 
-                    // sort for convenience of getAvailableULocales
-                    tempLocaleIdToCardinalRulesId = new SortedDictionary<string, string>(StringComparer.Ordinal);
-                    // not visible
-                    tempRulesIdToEquivalentULocale = new Dictionary<string, UCultureInfo>();
-
-                    for (int i = 0; i < localeb.Length; ++i)
+                    if (!rulesIdToEquivalentULocale.ContainsKey(value))
                     {
-                        UResourceBundle b = localeb.Get(i);
-                        string id = b.Key;
-                        string value = b.GetString().Intern();
-                        tempLocaleIdToCardinalRulesId[id] = value;
-
-                        if (!tempRulesIdToEquivalentULocale.ContainsKey(value))
-                        {
-                            tempRulesIdToEquivalentULocale[value] = new UCultureInfo(id);
-                        }
-                    }
-
-                    // Read ordinal-number rules.
-                    localeb = pluralb.Get("locales_ordinals");
-                    tempLocaleIdToOrdinalRulesId = new SortedDictionary<string, string>(StringComparer.Ordinal);
-                    for (int i = 0; i < localeb.Length; ++i)
-                    {
-                        UResourceBundle b = localeb.Get(i);
-                        string id = b.Key;
-                        string value = b.GetString().Intern();
-                        tempLocaleIdToOrdinalRulesId[id] = value;
+                        rulesIdToEquivalentULocale[value] = new UCultureInfo(id);
                     }
                 }
-                catch (MissingManifestResourceException)
-                {
-                    // dummy so we don't try again
-                    tempLocaleIdToCardinalRulesId = new Dictionary<string, string>();
-                    tempLocaleIdToOrdinalRulesId = new Dictionary<string, string>();
-                    tempRulesIdToEquivalentULocale = new Dictionary<string, UCultureInfo>();
-                }
 
-                lock (syncLock)
+                // Read ordinal-number rules.
+                localeb = pluralb.Get("locales_ordinals");
+                localeIdToOrdinalRulesId = new SortedDictionary<string, string>(StringComparer.Ordinal);
+                for (int i = 0; i < localeb.Length; ++i)
                 {
-                    if (localeIdToCardinalRulesId == null)
-                    {
-                        localeIdToCardinalRulesId = tempLocaleIdToCardinalRulesId;
-                        localeIdToOrdinalRulesId = tempLocaleIdToOrdinalRulesId;
-                        rulesIdToEquivalentULocale = tempRulesIdToEquivalentULocale;
-                    }
+                    UResourceBundle b = localeb.Get(i);
+                    string id = b.Key;
+                    string value = b.GetString().Intern();
+                    localeIdToOrdinalRulesId[id] = value;
                 }
             }
+            catch (MissingManifestResourceException)
+            {
+                // dummy so we don't try again
+                localeIdToCardinalRulesId = new Dictionary<string, string>();
+                localeIdToOrdinalRulesId = new Dictionary<string, string>();
+                rulesIdToEquivalentULocale = new Dictionary<string, UCultureInfo>();
+            }
+            return rulesIdToEquivalentULocale;
         }
 
         /// <summary>
@@ -205,58 +207,39 @@ namespace ICU4N.Impl
         /// </summary>
         public virtual PluralRules GetRulesForRulesId(string rulesId)
         {
-            // synchronize on the map.  release the lock temporarily while we build the rules.
-            PluralRules rules = null;
-            bool hasRules;  // Separate boolean because stored rules can be null.
-            lock (rulesIdToRulesLock)
-            {
-                hasRules = rulesIdToRules.ContainsKey(rulesId);
-                if (hasRules)
-                {
-                    rulesIdToRules.TryGetValue(rulesId, out rules);  // can be null
-                }
-            }
-            if (!hasRules)
-            {
+            return rulesIdToRules.GetOrAdd(rulesId, (key) => {
+
+                UResourceBundle setb;
                 try
                 {
                     UResourceBundle pluralb = GetPluralBundle();
                     UResourceBundle rulesb = pluralb.Get("rules");
-                    UResourceBundle setb = rulesb.Get(rulesId);
-
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < setb.Length; ++i)
-                    {
-                        UResourceBundle b = setb.Get(i);
-                        if (i > 0)
-                        {
-                            sb.Append("; ");
-                        }
-                        sb.Append(b.Key);
-                        sb.Append(": ");
-                        sb.Append(b.GetString());
-                    }
-                    rules = PluralRules.ParseDescription(sb.ToString());
-                }
-                catch (FormatException)
-                {
+                    setb = rulesb.Get(key);
                 }
                 catch (MissingManifestResourceException)
                 {
+                    return null; // can be null
                 }
-                lock (rulesIdToRulesLock)
+
+                var ruleList = new PluralRules.RuleList();
+                bool parseFailure = false;
+                for (int i = 0; i < setb.Length; ++i)
                 {
-                    if (rulesIdToRules.ContainsKey(rulesId))
+                    UResourceBundle b = setb.Get(i);
+                    if (PluralRules.TryParseRule(b.Key, b.GetString(), out PluralRules.Rule rule))
                     {
-                        rulesIdToRules.TryGetValue(rulesId, out rules);
+                        ruleList.AddRule(rule);
                     }
                     else
                     {
-                        rulesIdToRules[rulesId] = rules;  // can be null
+                        parseFailure = true;
                     }
                 }
-            }
-            return rules;
+                if (parseFailure || ruleList.Count == 0)
+                    return null; // can be null
+
+                return new PluralRules(ruleList.Finish());
+            });
         }
 
         /// <summary>

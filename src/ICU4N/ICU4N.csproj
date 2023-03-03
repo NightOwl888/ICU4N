@@ -1,9 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net451;net40</TargetFrameworks>
+    <TargetFrameworks>net6.0;netstandard2.0;net451;net40</TargetFrameworks>
     <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard1.3' ">$(DefineConstants);LIBLOG_PORTABLE</DefineConstants>
 
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    
     <SatelliteAssemblyTargetFramework>netstandard2.0</SatelliteAssemblyTargetFramework>
   </PropertyGroup>
 
@@ -33,7 +35,11 @@
   <ItemGroup>
     <PackageReference Include="J2N" Version="$(J2NPackageReferenceVersion)" />
   </ItemGroup>
-  
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
+  </ItemGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
   </ItemGroup>
@@ -58,12 +64,32 @@
     <ICU4JWorkingDirectory>$(ArtifactsDir)/icu4j-temp</ICU4JWorkingDirectory>
     <ICU4JResourcesDirectory>$(ICU4JWorkingDirectory)/icu4j-transformed</ICU4JResourcesDirectory>
   </PropertyGroup>
-  
+
   <ItemGroup Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)">
     <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
   </ItemGroup>
+
+  <!--
+  <ItemGroup>
+    <SatelliteAssemblies Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll"/>
+  </ItemGroup>
+
+  <ItemGroup Label="Specifies generated sattelite assemblies should be copied to the output folder (and dependent projects as well)"
+             Condition=" '$(_IsPublishing)' != 'true' ">
+    <None Include="$(ICU4NSatelliteAssemblyOutputDir)/**/*.resources.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+  </ItemGroup>
   
-  <Target Name="CreateIntermediateTargetsFile" BeforeTargets="DownloadICU4J" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
+  <Target Name="PublishSatelliteAssemblies" AfterTargets="Publish" Condition=" '$(_IsPublishing)' == 'true' ">
+    <Message Importance="high" Text="Publishing Satellite Assemblies for $(TargetFramework)..."/>
+
+    <Copy SourceFiles="@(SatelliteAssemblies)"
+          DestinationFolder="$(PublishDir)"
+          SkipUnchangedFiles="true" />
+  </Target>
+  -->
+  
+  <!-- ICU4N NOTE: To debug on Linux/macOS, the contents of the _artifacts/SatelliteAssemblies and the file _artifactsDirectory/fullLocaleNames.lst must be copied to the local _artifacts folder. These currently won't build on non-Windows platforms. -->
+  <Target Name="CreateIntermediateTargetsFile" BeforeTargets="DownloadICU4J" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' And $([MSBuild]::IsOSPlatform('Windows')) ">
 
     <PropertyGroup>
       <Major>$(PackageVersion.Split('.')[0])</Major>
@@ -78,7 +104,7 @@
     <None Include="$(SolutionDir)_artifacts/$(AssemblyName).targets" Pack="true" PackagePath="build/$(AssemblyName).targets" />
   </ItemGroup>
 
-  <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
+  <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' And $([MSBuild]::IsOSPlatform('Windows')) ">
     
     <PropertyGroup>
       <Major>$(PackageVersion.Split('.')[0])</Major>
@@ -101,7 +127,7 @@
     <Error Condition=" '$(IsICU4JFileDownloaded)' != 'true' And !Exists('$(ICU4JJarFilePath)') " Text="The build cannot continue without $(ICU4JJarFilePath). Use Maven search (https://mvnrepository.com or https://search.maven.org/) to look for the file and download it manually to $(ICU4JJarFilePath). Alternatively, check the ICU Releases Page: https://github.com/unicode-org/icu/releases." />
   </Target>
     
-  <Target Name="ExecICU4JResourceConverter" AfterTargets="GenerateSatelliteAssemblies" BeforeTargets="GenerateOurSatelliteAssemblies" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
+  <Target Name="ExecICU4JResourceConverter" AfterTargets="GenerateSatelliteAssemblies" BeforeTargets="GenerateOurSatelliteAssemblies" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' And $([MSBuild]::IsOSPlatform('Windows')) ">
     
     <CheckWhetherResourcesRequireUpdate SourceFilePath="$(ICU4JJarFilePath)" DestinationPath="$(ICU4JResourcesDirectory)">
       <Output PropertyName="ResourcesRequireUpdate" TaskParameter="RequiresUpdate" />
@@ -124,7 +150,7 @@
     <Exec Command="$(RunICU4JResourceConverterCommand)" Condition=" '$(ResourcesRequireUpdate.ToLowerInvariant())' == 'true' " />
   </Target>
 
-  <Target Name="GenerateOurSatelliteAssemblies" AfterTargets="ExecICU4JResourceConverter" BeforeTargets="DeploySatelliteAssemblies" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' ">
+  <Target Name="GenerateOurSatelliteAssemblies" AfterTargets="ExecICU4JResourceConverter" BeforeTargets="DeploySatelliteAssemblies" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' And $([MSBuild]::IsOSPlatform('Windows')) ">
 
     <PropertyGroup>
       <TemplateAssemblyFilePath>$(IntermediateOutputPath)$(TargetName)$(TargetExt)</TemplateAssemblyFilePath>
@@ -371,6 +397,21 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Norm2AllModesExtension.tt</DependentUpon>
     </None>
+    <None Include="Impl\Number\AffixUtilsExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AffixUtilsExtension.tt</DependentUpon>
+    </None>
+    <None Include="Impl\Number\NumberStringBuilderExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>NumberStringBuilderExtension.tt</DependentUpon>
+    </None>
+    <None Include="Impl\TextTrieMapExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TextTrieMapExtension.tt</DependentUpon>
+    </None>
     <None Include="Text\FilteredBreakIteratorBuilderExtension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -424,6 +465,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Normalizer2ImplExtension.tt</DependentUpon>
     </Compile>
+    <Compile Update="Impl\Number\AffixUtilsExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AffixUtilsExtension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\Number\NumberStringBuilderExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>NumberStringBuilderExtension.tt</DependentUpon>
+    </Compile>
     <Compile Update="Impl\PatternPropsExtension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -443,6 +494,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>StandardPluralExtension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\TextTrieMapExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TextTrieMapExtension.tt</DependentUpon>
     </Compile>
     <Compile Update="Impl\UCasePropsExtension.cs">
       <DesignTime>True</DesignTime>
@@ -473,6 +529,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>UTS46Extension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Support\Numerics\BigMath\Messages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
     <Compile Update="Support\Text\UnicodeSetExtensionsExtension.cs">
       <DesignTime>True</DesignTime>
@@ -551,6 +612,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ICUConfig.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Update="Support\Numerics\BigMath\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
@@ -570,6 +635,14 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Normalizer2ImplExtension.cs</LastGenOutput>
     </None>
+    <None Update="Impl\Number\AffixUtilsExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>AffixUtilsExtension.cs</LastGenOutput>
+    </None>
+    <None Update="Impl\Number\NumberStringBuilderExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NumberStringBuilderExtension.cs</LastGenOutput>
+    </None>
     <None Update="Impl\PatternPropsExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>PatternPropsExtension.cs</LastGenOutput>
@@ -585,6 +658,10 @@
     <None Update="Impl\StandardPluralExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>StandardPluralExtension.cs</LastGenOutput>
+    </None>
+    <None Update="Impl\TextTrieMapExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TextTrieMapExtension.cs</LastGenOutput>
     </None>
     <None Update="Impl\UCasePropsExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

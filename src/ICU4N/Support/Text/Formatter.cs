@@ -13,7 +13,12 @@ namespace ICU4N.Support.Text
     /// methods to be named Format and there was a collision.
     /// </summary>
     // ICU4N TODO: API - Add IFormatProvider, ICustomFormatter. See: https://stackoverflow.com/a/35577288
-    internal abstract class Formatter
+#if FEATURE_LEGACY_NUMBER_FORMAT
+    public
+#else
+    internal
+#endif
+    abstract class Formatter
 #if FEATURE_CLONEABLE
         : ICloneable
 #endif
@@ -106,7 +111,12 @@ namespace ICU4N.Support.Text
         /// of the alignment field in the formatted text.</param>
         /// <returns>The <see cref="StringBuffer"/>.</returns>
         /// <exception cref="ArgumentException">If the object cannot be formatted by this format.</exception>
-        public abstract StringBuffer Format(object obj, StringBuffer buffer,
+#if FEATURE_FIELDPOSITION
+        public
+#else
+        internal
+#endif
+            abstract StringBuffer Format(object obj, StringBuffer buffer,
                 FieldPosition field);
 
         /// <summary>
@@ -121,7 +131,7 @@ namespace ICU4N.Support.Text
         /// <returns>An <see cref="AttributedCharacterIterator"/> with the formatted object
         /// and attributes.</returns>
         /// <exception cref="ArgumentException">if the object cannot be formatted by this format.</exception>
-        public virtual AttributedCharacterIterator FormatToCharacterIterator(object obj)
+        public virtual AttributedCharacterIterator FormatToCharacterIterator(object obj) // ICU4N TODO: API - Add overloads for specific number types?
         {
             return new AttributedString(Format(obj)).GetIterator();
         }
@@ -267,7 +277,12 @@ namespace ICU4N.Support.Text
     /// <see cref="Formatter.FormatToCharacterIterator(object)"/> method returns
     /// in subclasses.
     /// </summary>
-    internal class FormatField : AttributedCharacterIteratorAttribute
+#if FEATURE_FIELDPOSITION
+    public
+#else
+    internal
+#endif
+        class FormatField : AttributedCharacterIteratorAttribute
     {
 
         //private static readonly long serialVersionUID = 276966692217360283L; // ICU4N: .NET serialization doesn't require this
