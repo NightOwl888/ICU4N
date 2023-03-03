@@ -518,7 +518,12 @@ namespace ICU4N.Numerics //ICU4N.Impl.Number
         public CurrencyPluralInfo CurrencyPluralInfo
         {
             get => currencyPluralInfo;
-            set => currencyPluralInfo = value;
+            set
+            {
+                // TODO: In order to maintain immutability, we have to perform a clone here.
+                // It would be better to just retire CurrencyPluralInfo entirely.
+                currencyPluralInfo = (CurrencyPluralInfo)value?.Clone();
+            }
         }
 
         public CurrencyUsage? CurrencyUsage
