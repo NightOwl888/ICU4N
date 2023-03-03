@@ -36,6 +36,10 @@
     <PackageReference Include="J2N" Version="$(J2NPackageReferenceVersion)" />
   </ItemGroup>
 
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net7.0' ">
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
+  </ItemGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="$(MicrosoftExtensionsCachingMemoryPackageReferenceVersion)" />
   </ItemGroup>
