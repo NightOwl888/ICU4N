@@ -3,8 +3,7 @@
   <PropertyGroup>
     <!-- Set to false to never automatically reference the ICU4N.Resources NuGet package -->
     <IncludeICU4NResources Condition=" '$(IncludeICU4NResources)' == '' ">true</IncludeICU4NResources>
-    <!-- Set to false to exclude the $(MSBuildProjectName).targets file from being automatically packed with the project -->
-    <IncludeICU4NTargetsFile Condition=" '$(IncludeICU4NTargetsFile)' == '' ">true</IncludeICU4NTargetsFile>
+
     <ICU4NPackageVersion>$version$</ICU4NPackageVersion>
     <ICU4NMajorVersion>$(ICU4NPackageVersion.Split('.'))[0]</ICU4NMajorVersion>
     <ICU4NMinorVersion>$(ICU4NPackageVersion.Split('.'))[1]</ICU4NMinorVersion>
@@ -45,12 +44,5 @@
     </PropertyGroup>
     <Error Text="$(ICU4NResourcesErrorMessage)" Condition=" '$(IncludeICU4NResources.ToLowerInvariant())' == 'true' And '$(ICU4NDataExists.ToLowerInvariant())' == 'false' " />
   </Target>
-
-  <!-- Re-package this file in any dependent NuGet package, so projects that depend on it also include ICU data by default -->
-  <!-- NOTE: This will include the current ICU4N version number. If the party packing the assembly switches to a different version, the copy of this
-    file in the corresponding package version will be read instead of this copy, so the data version will track the library version. -->
-  <ItemGroup Condition=" '$(IncludeICU4NTargetsFile.ToLowerInvariant())' == 'true' ">
-    <None Include="$(MSBuildThisFileFullPath)" Link="$(MSBuildProjectName).targets" Pack="true" PackagePath="build/$(MSBuildProjectName).targets" Visible="true" />
-  </ItemGroup>
 
 </Project>
