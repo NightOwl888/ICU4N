@@ -107,7 +107,7 @@
   </Target>
 
   <ItemGroup>
-    <None Include="$(SolutionDir)_artifacts/$(AssemblyName).targets" Pack="true" PackagePath="buildTransitive/$(AssemblyName).targets" />
+    <None Include="$(SolutionDir)_artifacts/$(AssemblyName).targets" Pack="true" PackagePath="buildTransitive/$(TargetFramework)/$(AssemblyName).targets" />
   </ItemGroup>
 
   <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' And $([MSBuild]::IsOSPlatform('Windows')) ">
