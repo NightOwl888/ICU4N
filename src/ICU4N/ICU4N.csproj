@@ -108,6 +108,8 @@
 
   <ItemGroup>
     <None Include="$(SolutionDir)_artifacts/$(AssemblyName).targets" Pack="true" PackagePath="buildTransitive/$(TargetFramework)/$(AssemblyName).targets" />
+    <!-- NOTE: This file is required to prevent NuGet warnings and NuGet Package Explorer from crashing, but the netstandard2.0 folder is required for it to function on that TFM. -->
+    <None Include="$(SolutionDir)_artifacts/$(AssemblyName).targets" Pack="true" PackagePath="buildTransitive/$(AssemblyName).targets" />
   </ItemGroup>
 
   <Target Name="DownloadICU4J" BeforeTargets="ExecICU4JResourceConverter" Returns="$(ICU4JJarFilePath)" Condition=" '$(TargetFramework)' == '$(SatelliteAssemblyTargetFramework)' And $([MSBuild]::IsOSPlatform('Windows')) ">
