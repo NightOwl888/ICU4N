@@ -4,7 +4,6 @@ using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Xml.Linq;
 
 namespace ICU4N.Text
 {
@@ -40,20 +39,20 @@ namespace ICU4N.Text
          * These are a pile of fraction rules in declared order. They may have alternate
          * ways to represent fractions.
          */
-        LinkedList<NFRule> fractionRules;
+        private LinkedList<NFRule> fractionRules;
 
         /** -x */
-        private const int NEGATIVE_RULE_INDEX = 0;
+        private const int NegativeRuleIndex = 0;
         /** x.x */
-        private const int IMPROPER_FRACTION_RULE_INDEX = 1;
+        private const int ImproperFractionRuleIndex = 1;
         /** 0.x */
-        private const int PROPER_FRACTION_RULE_INDEX = 2;
+        private const int ProperFractionRuleIndex = 2;
         /** x.0 */
-        private const int MASTER_RULE_INDEX = 3;
+        private const int MasterRuleIndex = 3;
         /** Inf */
-        private const int INFINITY_RULE_INDEX = 4;
+        private const int InfinityRuleIndex = 4;
         /** NaN */
-        private const int NAN_RULE_INDEX = 5;
+        private const int NaNRuleIndex = 5;
 
         /**
          * The RuleBasedNumberFormat that owns this rule
@@ -78,7 +77,7 @@ namespace ICU4N.Text
         /**
          * Limit of recursion. It's about a 64 bit number formatted in base 2.
          */
-        private static readonly int RECURSION_LIMIT = 64;
+        private static readonly int RecursionLimit = 64;
 
         //-----------------------------------------------------------------------
         // construction
@@ -248,27 +247,27 @@ namespace ICU4N.Text
             long baseValue = rule.BaseValue;
             if (baseValue == NFRule.NEGATIVE_NUMBER_RULE)
             {
-                nonNumericalRules[NFRuleSet.NEGATIVE_RULE_INDEX] = rule;
+                nonNumericalRules[NFRuleSet.NegativeRuleIndex] = rule;
             }
             else if (baseValue == NFRule.IMPROPER_FRACTION_RULE)
             {
-                SetBestFractionRule(NFRuleSet.IMPROPER_FRACTION_RULE_INDEX, rule, true);
+                SetBestFractionRule(NFRuleSet.ImproperFractionRuleIndex, rule, true);
             }
             else if (baseValue == NFRule.PROPER_FRACTION_RULE)
             {
-                SetBestFractionRule(NFRuleSet.PROPER_FRACTION_RULE_INDEX, rule, true);
+                SetBestFractionRule(NFRuleSet.ProperFractionRuleIndex, rule, true);
             }
             else if (baseValue == NFRule.MASTER_RULE)
             {
-                SetBestFractionRule(NFRuleSet.MASTER_RULE_INDEX, rule, true);
+                SetBestFractionRule(NFRuleSet.MasterRuleIndex, rule, true);
             }
             else if (baseValue == NFRule.INFINITY_RULE)
             {
-                nonNumericalRules[NFRuleSet.INFINITY_RULE_INDEX] = rule;
+                nonNumericalRules[NFRuleSet.InfinityRuleIndex] = rule;
             }
             else if (baseValue == NFRule.NAN_RULE)
             {
-                nonNumericalRules[NFRuleSet.NAN_RULE_INDEX] = rule;
+                nonNumericalRules[NFRuleSet.NaNRuleIndex] = rule;
             }
         }
 
@@ -464,7 +463,7 @@ namespace ICU4N.Text
          */
         public void Format(long number, StringBuilder toInsertInto, int pos, int recursionCount)
         {
-            if (recursionCount >= RECURSION_LIMIT)
+            if (recursionCount >= RecursionLimit)
             {
                 throw new InvalidOperationException("Recursion limit exceeded when applying ruleSet " + name);
             }
@@ -482,7 +481,7 @@ namespace ICU4N.Text
          */
         public void Format(double number, StringBuilder toInsertInto, int pos, int recursionCount)
         {
-            if (recursionCount >= RECURSION_LIMIT)
+            if (recursionCount >= RecursionLimit)
             {
                 throw new InvalidOperationException("Recursion limit exceeded when applying ruleSet " + name);
             }
@@ -505,7 +504,7 @@ namespace ICU4N.Text
 
             if (double.IsNaN(number))
             {
-                NFRule rule = nonNumericalRules[NAN_RULE_INDEX];
+                NFRule rule = nonNumericalRules[NaNRuleIndex];
                 if (rule == null)
                 {
                     rule = owner.DefaultNaNRule;
@@ -518,9 +517,9 @@ namespace ICU4N.Text
             // positive number)
             if (number < 0)
             {
-                if (nonNumericalRules[NEGATIVE_RULE_INDEX] != null)
+                if (nonNumericalRules[NegativeRuleIndex] != null)
                 {
-                    return nonNumericalRules[NEGATIVE_RULE_INDEX];
+                    return nonNumericalRules[NegativeRuleIndex];
                 }
                 else
                 {
@@ -530,7 +529,7 @@ namespace ICU4N.Text
 
             if (double.IsInfinity(number))
             {
-                NFRule rule = nonNumericalRules[INFINITY_RULE_INDEX];
+                NFRule rule = nonNumericalRules[InfinityRuleIndex];
                 if (rule == null)
                 {
                     rule = owner.DefaultInfinityRule;
@@ -541,23 +540,23 @@ namespace ICU4N.Text
             // if the number isn't an integer, we use one f the fraction rules...
             if (number != Math.Floor(number))
             {
-                if (number < 1 && nonNumericalRules[PROPER_FRACTION_RULE_INDEX] != null)
+                if (number < 1 && nonNumericalRules[ProperFractionRuleIndex] != null)
                 {
                     // if the number is between 0 and 1, return the proper
                     // fraction rule
-                    return nonNumericalRules[PROPER_FRACTION_RULE_INDEX];
+                    return nonNumericalRules[ProperFractionRuleIndex];
                 }
-                else if (nonNumericalRules[IMPROPER_FRACTION_RULE_INDEX] != null)
+                else if (nonNumericalRules[ImproperFractionRuleIndex] != null)
                 {
                     // otherwise, return the improper fraction rule
-                    return nonNumericalRules[IMPROPER_FRACTION_RULE_INDEX];
+                    return nonNumericalRules[ImproperFractionRuleIndex];
                 }
             }
 
             // if there's a master rule, use it to Format the number
-            if (nonNumericalRules[MASTER_RULE_INDEX] != null)
+            if (nonNumericalRules[MasterRuleIndex] != null)
             {
-                return nonNumericalRules[MASTER_RULE_INDEX];
+                return nonNumericalRules[MasterRuleIndex];
             }
             else
             {
@@ -597,9 +596,9 @@ namespace ICU4N.Text
             // (if there isn't one, pretend the number is positive)
             if (number < 0)
             {
-                if (nonNumericalRules[NEGATIVE_RULE_INDEX] != null)
+                if (nonNumericalRules[NegativeRuleIndex] != null)
                 {
-                    return nonNumericalRules[NEGATIVE_RULE_INDEX];
+                    return nonNumericalRules[NegativeRuleIndex];
                 }
                 else
                 {
@@ -663,7 +662,7 @@ namespace ICU4N.Text
                 return result;
             }
             // else use the master rule
-            return nonNumericalRules[MASTER_RULE_INDEX];
+            return nonNumericalRules[MasterRuleIndex];
         }
 
         /**
@@ -918,7 +917,7 @@ namespace ICU4N.Text
             // Switch the fraction rules to mirror the DecimalFormatSymbols.
             if (fractionRules != null)
             {
-                for (int nonNumericalIdx = IMPROPER_FRACTION_RULE_INDEX; nonNumericalIdx <= MASTER_RULE_INDEX; nonNumericalIdx++)
+                for (int nonNumericalIdx = ImproperFractionRuleIndex; nonNumericalIdx <= MasterRuleIndex; nonNumericalIdx++)
                 {
                     if (nonNumericalRules[nonNumericalIdx] != null)
                     {
