@@ -64,7 +64,7 @@ namespace ICU4N.Text
         /// <returns>A new substitution constructed according to the description.</returns>
         /// <exception cref="ArgumentException">
         /// <paramref name="description"/> starts with '&lt;'
-        /// and <paramref name="rule"/>.<see cref="NFRule.BaseValue"/> is <see cref="NFRule.NEGATIVE_NUMBER_RULE"/>.
+        /// and <paramref name="rule"/>.<see cref="NFRule.BaseValue"/> is <see cref="NFRule.NegativeNumberRule"/>.
         /// <para/>
         /// -or-
         /// <para/>
@@ -91,7 +91,7 @@ namespace ICU4N.Text
             switch (description[0])
             {
                 case '<':
-                    if (rule.BaseValue == NFRule.NEGATIVE_NUMBER_RULE)
+                    if (rule.BaseValue == NFRule.NegativeNumberRule)
                     {
                         // throw an exception if the rule is a negative number rule
                         ////CLOVER:OFF
@@ -101,9 +101,9 @@ namespace ICU4N.Text
                         throw new ArgumentException("<< not allowed in negative-number rule");
                         ////CLOVER:ON
                     }
-                    else if (rule.BaseValue == NFRule.IMPROPER_FRACTION_RULE
-                             || rule.BaseValue == NFRule.PROPER_FRACTION_RULE
-                             || rule.BaseValue == NFRule.MASTER_RULE)
+                    else if (rule.BaseValue == NFRule.ImproperFractionRule
+                             || rule.BaseValue == NFRule.ProperFractionRule
+                             || rule.BaseValue == NFRule.MasterRule)
                     {
                         // if the rule is a fraction rule, return an IntegralPartSubstitution
                         return new IntegralPartSubstitution(pos, ruleSet, description);
@@ -123,15 +123,15 @@ namespace ICU4N.Text
                     }
 
                 case '>':
-                    if (rule.BaseValue == NFRule.NEGATIVE_NUMBER_RULE)
+                    if (rule.BaseValue == NFRule.NegativeNumberRule)
                     {
                         // if the rule is a negative-number rule, return
                         // an AbsoluteValueSubstitution
                         return new AbsoluteValueSubstitution(pos, ruleSet, description);
                     }
-                    else if (rule.BaseValue == NFRule.IMPROPER_FRACTION_RULE
-                             || rule.BaseValue == NFRule.PROPER_FRACTION_RULE
-                             || rule.BaseValue == NFRule.MASTER_RULE)
+                    else if (rule.BaseValue == NFRule.ImproperFractionRule
+                             || rule.BaseValue == NFRule.ProperFractionRule
+                             || rule.BaseValue == NFRule.MasterRule)
                     {
                         // if the rule is a fraction rule, return a
                         // FractionalPartSubstitution

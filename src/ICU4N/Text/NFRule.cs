@@ -25,34 +25,34 @@ namespace ICU4N.Text
         /**
          * Special base value used to identify a negative-number rule
          */
-        internal const int NEGATIVE_NUMBER_RULE = -1;
+        internal const int NegativeNumberRule = -1;
 
         /**
          * Special base value used to identify an improper fraction (x.x) rule
          */
-        internal const int IMPROPER_FRACTION_RULE = -2;
+        internal const int ImproperFractionRule = -2;
 
         /**
          * Special base value used to identify a proper fraction (0.x) rule
          */
-        internal const int PROPER_FRACTION_RULE = -3;
+        internal const int ProperFractionRule = -3;
 
         /**
          * Special base value used to identify a master rule
          */
-        internal const int MASTER_RULE = -4;
+        internal const int MasterRule = -4;
 
         /**
          * Special base value used to identify an infinity rule
          */
-        internal const int INFINITY_RULE = -5;
+        internal const int InfinityRule = -5;
 
         /**
          * Special base value used to identify a not a number rule
          */
-        internal const int NAN_RULE = -6;
+        internal const int NaNRule = -6;
 
-        internal static readonly Long ZERO = Long.GetInstance(0);
+        internal static readonly Long Zero = Long.GetInstance(0);
 
         //-----------------------------------------------------------------------
         // data members
@@ -148,10 +148,10 @@ namespace ICU4N.Text
             // then leave the description alone, initialize the rule's
             // rule text and substitutions, and return that rule
             if (brack2 < 0 || brack1 > brack2
-                || rule1.baseValue == PROPER_FRACTION_RULE
-                || rule1.baseValue == NEGATIVE_NUMBER_RULE
-                || rule1.baseValue == INFINITY_RULE
-                || rule1.baseValue == NAN_RULE)
+                || rule1.baseValue == ProperFractionRule
+                || rule1.baseValue == NegativeNumberRule
+                || rule1.baseValue == InfinityRule
+                || rule1.baseValue == NaNRule)
             {
                 rule1.ExtractSubstitutions(owner, description, predecessor);
             }
@@ -167,8 +167,8 @@ namespace ICU4N.Text
                 // of the special rules)
                 if ((rule1.baseValue > 0
                      && rule1.baseValue % (Power(rule1.radix, rule1.exponent)) == 0)
-                    || rule1.baseValue == IMPROPER_FRACTION_RULE
-                    || rule1.baseValue == MASTER_RULE)
+                    || rule1.baseValue == ImproperFractionRule
+                    || rule1.baseValue == MasterRule)
                 {
 
                     // if it passes that test, new up the second rule.  If the
@@ -185,20 +185,20 @@ namespace ICU4N.Text
                             ++rule1.baseValue;
                         }
                     }
-                    else if (rule1.baseValue == IMPROPER_FRACTION_RULE)
+                    else if (rule1.baseValue == ImproperFractionRule)
                     {
                         // if the description began with "x.x" and contains bracketed
                         // text, it describes both the improper fraction rule and
                         // the proper fraction rule
-                        rule2.baseValue = PROPER_FRACTION_RULE;
+                        rule2.baseValue = ProperFractionRule;
                     }
-                    else if (rule1.baseValue == MASTER_RULE)
+                    else if (rule1.baseValue == MasterRule)
                     {
                         // if the description began with "x.0" and contains bracketed
                         // text, it describes both the master rule and the
                         // improper fraction rule
                         rule2.baseValue = rule1.baseValue;
-                        rule1.baseValue = IMPROPER_FRACTION_RULE;
+                        rule1.baseValue = ImproperFractionRule;
                     }
 
                     // both rules have the same radix and exponent (i.e., the
@@ -397,32 +397,32 @@ namespace ICU4N.Text
                 }
                 else if (descriptor.Equals("-x", StringComparison.Ordinal))
                 {
-                    SetBaseValue(NEGATIVE_NUMBER_RULE);
+                    SetBaseValue(NegativeNumberRule);
                 }
                 else if (descriptorLength == 3)
                 {
                     if (firstChar == '0' && lastChar == 'x')
                     {
-                        SetBaseValue(PROPER_FRACTION_RULE);
+                        SetBaseValue(ProperFractionRule);
                         decimalPoint = descriptor[1];
                     }
                     else if (firstChar == 'x' && lastChar == 'x')
                     {
-                        SetBaseValue(IMPROPER_FRACTION_RULE);
+                        SetBaseValue(ImproperFractionRule);
                         decimalPoint = descriptor[1];
                     }
                     else if (firstChar == 'x' && lastChar == '0')
                     {
-                        SetBaseValue(MASTER_RULE);
+                        SetBaseValue(MasterRule);
                         decimalPoint = descriptor[1];
                     }
                     else if (descriptor.Equals("NaN", StringComparison.Ordinal))
                     {
-                        SetBaseValue(NAN_RULE);
+                        SetBaseValue(NaNRule);
                     }
                     else if (descriptor.Equals("Inf", StringComparison.Ordinal))
                     {
-                        SetBaseValue(INFINITY_RULE);
+                        SetBaseValue(InfinityRule);
                     }
                 }
             }
@@ -701,27 +701,27 @@ namespace ICU4N.Text
             StringBuilder result = new StringBuilder();
 
             // start with the rule descriptor.  Special-case the special rules
-            if (baseValue == NEGATIVE_NUMBER_RULE)
+            if (baseValue == NegativeNumberRule)
             {
                 result.Append("-x: ");
             }
-            else if (baseValue == IMPROPER_FRACTION_RULE)
+            else if (baseValue == ImproperFractionRule)
             {
                 result.Append('x').Append(decimalPoint == 0 ? '.' : decimalPoint).Append("x: ");
             }
-            else if (baseValue == PROPER_FRACTION_RULE)
+            else if (baseValue == ProperFractionRule)
             {
                 result.Append('0').Append(decimalPoint == 0 ? '.' : decimalPoint).Append("x: ");
             }
-            else if (baseValue == MASTER_RULE)
+            else if (baseValue == MasterRule)
             {
                 result.Append('x').Append(decimalPoint == 0 ? '.' : decimalPoint).Append("0: ");
             }
-            else if (baseValue == INFINITY_RULE)
+            else if (baseValue == InfinityRule)
             {
                 result.Append("Inf: ");
             }
-            else if (baseValue == NAN_RULE)
+            else if (baseValue == NaNRule)
             {
                 result.Append("NaN: ");
             }
@@ -1014,15 +1014,15 @@ namespace ICU4N.Text
             {
                 // commented out because ParsePosition doesn't have error index in 1.1.x
                 //                parsePosition.ErrorIndex = pp.ErrorIndex;
-                return ZERO;
+                return Zero;
             }
-            if (baseValue == INFINITY_RULE)
+            if (baseValue == InfinityRule)
             {
                 // If you match this, don't try to perform any calculations on it.
                 parsePosition.Index = pp.Index;
                 return Double.GetInstance(double.PositiveInfinity);
             }
-            if (baseValue == NAN_RULE)
+            if (baseValue == NaNRule)
             {
                 // If you match this, don't try to perform any calculations on it.
                 parsePosition.Index = pp.Index;
@@ -1292,7 +1292,7 @@ namespace ICU4N.Text
                 // if we make it here, this was an unsuccessful match, and we
                 // leave pp unchanged and return 0
                 pp.Index = 0;
-                return ZERO;
+                return Zero;
 
                 // if "delimiter" is empty, or consists only of ignorable characters
                 // (i.e., is semantically empty), thwe we obviously can't search
@@ -1306,7 +1306,7 @@ namespace ICU4N.Text
             else
             {
                 ParsePosition tempPP = new ParsePosition(0);
-                Number result = ZERO;
+                Number result = Zero;
                 // try to match the whole string against the substitution
                 Number tempResult = sub.DoParse(text, tempPP, baseVal, upperBound,
                         formatter.LenientParseEnabled);

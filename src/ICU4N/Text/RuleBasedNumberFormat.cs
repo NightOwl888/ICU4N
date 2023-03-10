@@ -1338,8 +1338,8 @@ namespace ICU4N.Text
             return Format(new Numerics.BigDecimal(number), toAppendTo, pos);
         }
 
-        private static readonly Numerics.BigDecimal MAX_VALUE = Numerics.BigDecimal.GetInstance(long.MaxValue);
-        private static readonly Numerics.BigDecimal MIN_VALUE = Numerics.BigDecimal.GetInstance(long.MinValue);
+        private static readonly Numerics.BigDecimal MaxValue = Numerics.BigDecimal.GetInstance(long.MaxValue);
+        private static readonly Numerics.BigDecimal MinValue = Numerics.BigDecimal.GetInstance(long.MinValue);
 
         /// <summary>
         /// Formats the specified number using the formatter's default rule set.
@@ -1361,7 +1361,7 @@ namespace ICU4N.Text
                                    StringBuffer toAppendTo,
                                    FieldPosition pos)
         {
-            if (MIN_VALUE.CompareTo(number) > 0 || MAX_VALUE.CompareTo(number) < 0)
+            if (MinValue.CompareTo(number) > 0 || MaxValue.CompareTo(number) < 0)
             {
                 // We're outside of our normal range that this framework can handle.
                 // The DecimalFormat will provide more accurate results.
@@ -1402,7 +1402,7 @@ namespace ICU4N.Text
 
             // keep track of the largest number of characters consumed in
             // the various trials, and the result that corresponds to it
-            Number result = NFRule.ZERO;
+            Number result = NFRule.Zero;
             ParsePosition highWaterMark = new ParsePosition(workingPos.Index);
 
             // iterate over the public rule sets (beginning with the default one)

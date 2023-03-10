@@ -245,27 +245,27 @@ namespace ICU4N.Text
         internal void SetNonNumericalRule(NFRule rule)
         {
             long baseValue = rule.BaseValue;
-            if (baseValue == NFRule.NEGATIVE_NUMBER_RULE)
+            if (baseValue == NFRule.NegativeNumberRule)
             {
                 nonNumericalRules[NFRuleSet.NegativeRuleIndex] = rule;
             }
-            else if (baseValue == NFRule.IMPROPER_FRACTION_RULE)
+            else if (baseValue == NFRule.ImproperFractionRule)
             {
                 SetBestFractionRule(NFRuleSet.ImproperFractionRuleIndex, rule, true);
             }
-            else if (baseValue == NFRule.PROPER_FRACTION_RULE)
+            else if (baseValue == NFRule.ProperFractionRule)
             {
                 SetBestFractionRule(NFRuleSet.ProperFractionRuleIndex, rule, true);
             }
-            else if (baseValue == NFRule.MASTER_RULE)
+            else if (baseValue == NFRule.MasterRule)
             {
                 SetBestFractionRule(NFRuleSet.MasterRuleIndex, rule, true);
             }
-            else if (baseValue == NFRule.INFINITY_RULE)
+            else if (baseValue == NFRule.InfinityRule)
             {
                 nonNumericalRules[NFRuleSet.InfinityRuleIndex] = rule;
             }
-            else if (baseValue == NFRule.NAN_RULE)
+            else if (baseValue == NFRule.NaNRule)
             {
                 nonNumericalRules[NFRuleSet.NaNRuleIndex] = rule;
             }
@@ -398,9 +398,9 @@ namespace ICU4N.Text
             {
                 if (rule != null)
                 {
-                    if (rule.BaseValue == NFRule.IMPROPER_FRACTION_RULE
-                        || rule.BaseValue == NFRule.PROPER_FRACTION_RULE
-                        || rule.BaseValue == NFRule.MASTER_RULE)
+                    if (rule.BaseValue == NFRule.ImproperFractionRule
+                        || rule.BaseValue == NFRule.ProperFractionRule
+                        || rule.BaseValue == NFRule.MasterRule)
                     {
                         foreach (NFRule fractionRule in fractionRules)
                         {
@@ -837,7 +837,7 @@ namespace ICU4N.Text
             // that determines the value we return.
 
             ParsePosition highWaterMark = new ParsePosition(0);
-            Number result = NFRule.ZERO;
+            Number result = NFRule.Zero;
             Number tempResult;
 
             // dump out if there's no text to parse
