@@ -287,7 +287,7 @@ namespace ICU4N.Text
             {
                 NFSubstitution that2 = (NFSubstitution)that;
 
-                return pos == that2.pos
+                return pos == that2.pos // ICU4N TODO: Compare RuleSets (once we fix the Equals() to check all duplicate non-numeric sets for various decimal characters)
                     && (ruleSet != null || that2.ruleSet == null) // can't compare tree structure, no .equals or recurse
                     && (numberFormat == null ? (that2.numberFormat == null) : numberFormat.Equals(that2.numberFormat));
             }
@@ -1831,7 +1831,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="number"/> * <see cref="denominator"/>.</returns>
         public override long TransformNumber(long number)
         {
-            return (long)Math.Round(number * denominator);
+            return (long)Math.Round(number * denominator); // ICU4N NOTE: This is different than the Java default of ToPositiveInfinity (Math.Ceiling()), but only this makes the tests pass
         }
 
         /// <summary>
@@ -1841,7 +1841,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="number"/> * <see cref="denominator"/>.</returns>
         public override double TransformNumber(double number)
         {
-            return Math.Round(number * denominator);
+            return Math.Round(number * denominator); // ICU4N NOTE: This is different than the Java default of ToPositiveInfinity (Math.Ceiling()), but only this makes the tests pass
         }
 
         //-----------------------------------------------------------------------

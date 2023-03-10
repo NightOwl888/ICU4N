@@ -562,7 +562,7 @@ namespace ICU4N.Text
             {
                 // and if we haven't yet returned a rule, use FindNormalRule()
                 // to find the applicable rule
-                return FindNormalRule((long)Math.Round(number)); // ICU4N: Added cast to long
+                return FindNormalRule((long)Math.Round(number)); // ICU4N NOTE: This is different than the Java default of ToPositiveInfinity (Math.Ceiling()), but only this makes the tests pass
             }
         }
 
@@ -696,7 +696,7 @@ namespace ICU4N.Text
             {
                 leastCommonMultiple = Lcm(leastCommonMultiple, rules[i].BaseValue);
             }
-            long numerator = (long)Math.Round(number * leastCommonMultiple); // ICU4N: Added cast to long
+            long numerator = (long)Math.Round(number * leastCommonMultiple); // ICU4N NOTE: This is different than the Java default of ToPositiveInfinity (Math.Ceiling()), but only this makes the tests pass
 
             // for each rule, do the following...
             long tempDifference;
@@ -745,7 +745,7 @@ namespace ICU4N.Text
                     && rules[winner + 1].BaseValue == rules[winner].BaseValue)
             {
                 if (Math.Round(number * rules[winner].BaseValue) < 1
-                        || Math.Round(number * rules[winner].BaseValue) >= 2)
+                        || Math.Round(number * rules[winner].BaseValue) >= 2) // ICU4N NOTE: This is different than the Java default of ToPositiveInfinity (Math.Ceiling()), but only this makes the tests pass
                 {
                     ++winner;
                 }

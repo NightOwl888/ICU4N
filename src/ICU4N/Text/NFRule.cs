@@ -889,7 +889,7 @@ namespace ICU4N.Text
                 {
                     // We're in a fractional rule, and we have to match the NumeratorSubstitution behavior.
                     // 2.3 can become 0.2999999999999998 for the fraction due to rounding errors.
-                    pluralVal = Math.Round(pluralVal * Power(radix, exponent));
+                    pluralVal = Math.Round(pluralVal * Power(radix, exponent)); // ICU4N NOTE: This is different than the Java default of ToPositiveInfinity (Math.Ceiling()), but only this makes the tests pass
                 }
                 else
                 {

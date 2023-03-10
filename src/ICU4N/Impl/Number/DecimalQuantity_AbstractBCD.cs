@@ -496,7 +496,7 @@ namespace ICU4N.Numerics
                 for (; i <= -22; i += 22) n /= 1e22;
                 n /= DOUBLE_MULTIPLIERS[-i];
             }
-            long result = (long)Math.Ceiling(n); // ICU4N: AwayFromZero rounding mode is implemented as the Math.Ceiling() method. See: https://stackoverflow.com/a/70596191
+            long result = (long)Math.Ceiling(n); // ICU4N: Changed from Math.Round() to Math.Ceiling (ToPositiveInfinity equivalent, the Java default)
             if (result != 0)
             {
                 SetToLongImpl(result);

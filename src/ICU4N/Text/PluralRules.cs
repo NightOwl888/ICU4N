@@ -835,7 +835,7 @@ namespace ICU4N.Text
                         n = -n;
                     }
                     int baseFactor = (int)Math.Pow(10, v);
-                    long scaled = (long)Math.Round(n * baseFactor);
+                    long scaled = (long)Math.Round(n * baseFactor); // ICU4N NOTE: This is different than the Java default of ToPositiveInfinity (Math.Ceiling()), but only this makes the tests pass
                     return (int)(scaled % baseFactor);
                 }
             }
@@ -3019,7 +3019,7 @@ namespace ICU4N.Text
                 return r.Keyword;
             }
 
-            public virtual ICollection<string> GetKeywords()
+            public virtual ICollection<string> GetKeywords() // ICU4N TODO: API Return Keys directly and change to a property. There is no way to add to it, anyway.
             {
                 return rules.Keys.ToList();
             }
