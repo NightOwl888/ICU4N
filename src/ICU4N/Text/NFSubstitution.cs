@@ -37,7 +37,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// The <see cref="DecimalFormat"/> this substitution uses to format its result,
-        /// or null.  (Either this or ruleSet has to be non-null.)
+        /// or null.  (Either this or <see cref="ruleSet"/> has to be non-null.)
         /// </summary>
         internal readonly DecimalFormat numberFormat;
 
