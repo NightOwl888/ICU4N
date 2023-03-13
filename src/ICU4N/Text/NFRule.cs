@@ -630,7 +630,7 @@ namespace ICU4N.Text
             }
         }
 
-        private static readonly string[] RULE_PREFIXES = new string[] {
+        private static readonly string[] RulePrefixes = new string[] {
             "<<", "<%", "<#", "<0",
             ">>", ">%", ">#", ">0",
             "=%", "=#", "=0"
@@ -649,7 +649,7 @@ namespace ICU4N.Text
             if (ruleText.Length > 0)
             {
                 int pos;
-                foreach (string str in RULE_PREFIXES)
+                foreach (string str in RulePrefixes)
                 {
                     pos = ruleText.IndexOf(str, StringComparison.Ordinal);
                     if (pos != -1 && (result == -1 || pos < result))
