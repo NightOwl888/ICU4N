@@ -95,7 +95,7 @@ namespace ICU4N.Numerics
 
             bool useCurrency = ((properties.Currency != null) || properties.CurrencyPluralInfo != null
                     || properties.CurrencyUsage != null || affixProvider.HasCurrencySign);
-            Currency currency = CustomSymbolCurrency.Resolve(properties.Currency, locale, symbols);
+            Currency currency = CustomSymbolCurrency.Resolve(properties.Currency, locale, symbols); // ICU4N NOTE: locale is never referenced here
             CurrencyUsage? currencyUsage = properties.CurrencyUsage;
             bool explicitCurrencyUsage = currencyUsage != null;
             if (!explicitCurrencyUsage)
