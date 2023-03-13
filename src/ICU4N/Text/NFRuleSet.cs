@@ -39,7 +39,7 @@ namespace ICU4N.Text
          * These are a pile of fraction rules in declared order. They may have alternate
          * ways to represent fractions.
          */
-        private LinkedList<NFRule> fractionRules;
+        private List<NFRule> fractionRules;
 
         /** -x */
         private const int NegativeRuleIndex = 0;
@@ -77,7 +77,7 @@ namespace ICU4N.Text
         /**
          * Limit of recursion. It's about a 64 bit number formatted in base 2.
          */
-        private static readonly int RecursionLimit = 64;
+        private const int RecursionLimit = 64;
 
         //-----------------------------------------------------------------------
         // construction
@@ -284,9 +284,9 @@ namespace ICU4N.Text
             {
                 if (fractionRules == null)
                 {
-                    fractionRules = new LinkedList<NFRule>();
+                    fractionRules = new List<NFRule>();
                 }
-                fractionRules.AddLast(newRule);
+                fractionRules.Add(newRule);
             }
             NFRule bestResult = nonNumericalRules[originalIndex];
             if (bestResult == null)
@@ -494,7 +494,7 @@ namespace ICU4N.Text
          * @param number The number being formatted.
          * @return The rule that should be used to Format it
          */
-        internal NFRule FindRule(double number)
+        internal NFRule FindRule(double number) // ICU4N TODO: Pass in IDecimalFormatSymbols to get the current NaN and Infinity strings
         {
             // if this is a fraction rule set, use FindFractionRuleSetRule()
             if (isFractionRuleSet)
