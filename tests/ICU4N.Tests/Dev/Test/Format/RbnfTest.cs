@@ -1143,6 +1143,162 @@ namespace ICU4N.Dev.Test.Format
             }
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// This is a proof of concept test to show that it is possible to use <see cref="double.ToString(string?, IFormatProvider?)"/>
+        /// in place of <see cref="DecimalFormat"/> for built-in cultures. We will still need a static replacement for DecimalFormat
+        /// for custom RuleBasedNumberFormat rules, since there are options that are not available in .NET when making custom format
+        /// strings.
+        /// </summary>
+        [Test]
+        public void TestAllLocales_DecimalFormatPattern()
+        {
+
+            var diff = new System.Collections.Generic.Dictionary<UCultureInfo, string>();
+
+            String[] names = {
+                " (spellout) ",
+                " (ordinal) ",
+                " (duration) ", // English only
+                " (numbering system)",
+            };
+
+            foreach (UCultureInfo loc in NumberFormat.GetUCultures(UCultureTypes.AllCultures))
+            {
+                CultureInfo culture = loc.ToCultureInfo();
+                for (int j = 0; j < names.Length; ++j)
+                {
+                    RuleBasedNumberFormat fmt = new RuleBasedNumberFormat(loc, (NumberPresentation)j + 1);
+                    //if (!loc.Equals(fmt.ActualCulture))
+                    //{
+                    //    // Skip the redundancy
+                    //    break;
+                    //}
+
+                    double number = 12345678.9012345678901234567890;
+                    //double number = double.NegativeInfinity;
+                    string pattern = fmt.DecimalFormat.ToPattern();
+                    string icuNumberFormat = fmt.DecimalFormat.Format(number);
+
+                    var symbols = fmt.DecimalFormatSymbols;
+                    string[] digits = symbols.DigitStringsLocal;
+
+                    //var info = (NumberFormatInfo)culture.NumberFormat.Clone();
+                    var info = new NumberFormatInfo();
+                    //info.NativeDigits = digits; // No effect in .NET
+                    //info.DigitSubstitution = DigitShapes.NativeNational; // No effect in .NET
+                    info.NumberGroupSeparator = symbols.GroupingSeparatorString;
+                    info.NumberDecimalSeparator = symbols.DecimalSeparatorString;
+                    info.NumberGroupSizes = GetGroupingSizes(pattern);
+
+                    info.NegativeSign = symbols.MinusSignString;
+                    info.PositiveSign = symbols.PlusSignString;
+
+                    info.NaNSymbol = symbols.NaN;
+                    info.PositiveInfinitySymbol = symbols.Infinity;
+                    info.NegativeInfinitySymbol = info.NegativeSign + symbols.Infinity;
+                        
+
+
+                    string tempNetNumberFormat = number.ToString(pattern, info);
+
+                    string netNumberFormat = tempNetNumberFormat;
+                    if (!AreAsciiDigits(digits))
+                    {
+                        using var sb = new ICU4N.Support.Text.ValueStringBuilder(new char[64]);
+                        int charsWritten = 0;
+                        foreach (char ch in tempNetNumberFormat)
+                        {
+                            if (IsAsciiDigit(ch))
+                            {
+                                string text = digits[ch - 48];
+                                sb.Append(text);
+                                charsWritten += text.Length;
+                            }
+                            else
+                            {
+                                sb.Append(ch);
+                                charsWritten++;
+                            }
+                        }
+                        netNumberFormat = sb.ToString();
+                    }
+
+                    if (icuNumberFormat != netNumberFormat)
+                        diff.TryAdd(loc, string.Concat(icuNumberFormat, "|", netNumberFormat));
+                }
+            }
+
+            assertEquals("", 0, diff.Count);
+        }
+
+        public static bool AreAsciiDigits(string[] digits)
+        {
+            if (digits.Length != 10)
+                return false;
+            return digits[0] == "0" && digits[1] == "1" && digits[2] == "2" && digits[3] == "3" && digits[4] == "4" &&
+                digits[5] == "5" && digits[6] == "6" && digits[7] == "7" && digits[8] == "8" && digits[9] == "9";
+        }
+
+        public static int[] GetGroupingSizes(string pattern)
+        {
+            // This is how the group sizes are determined in ICU - need to deconstruct.
+            PatternStringParser.ParsedPatternInfo patternInfo = PatternStringParser.ParseToPatternInfo(pattern);
+            PatternStringParser.ParsedSubpatternInfo positive = patternInfo.positive;
+            // Grouping settings
+            short grouping1 = (short)(positive.groupingSizes & 0xffff);
+            short grouping2 = (short)((positive.groupingSizes.TripleShift(16)) & 0xffff);
+            short grouping3 = (short)((positive.groupingSizes.TripleShift(32)) & 0xffff);
+
+            int groupingSize = grouping1 < 0 ? 0 : grouping1;
+            int secondaryGroupingSize = grouping3 != -1 ? (grouping2 < 0 ? 0 : grouping2) : 0;
+            if (groupingSize == 0 || secondaryGroupingSize == 0)
+                return new int[] { groupingSize };
+
+            return new int[] { groupingSize, secondaryGroupingSize };
+            //if (grouping2 != -1)
+            //{
+            //    groupingSize = grouping1;
+            //}
+            //else
+            //{
+            //    groupingSize = 0; // -1; // .NET defaults to 0, not -1
+            //}
+            //if (grouping3 != -1)
+            //{
+            //    //secondaryGroupingSize = grouping2;
+            //    return new int[] { groupingSize, grouping2 };
+            //}
+            //else
+            //{
+            //    //secondaryGroupingSize = 0; // -1; // .NET defaults to 0, not -1
+            //    return new int[] { groupingSize };
+            //}
+        }
+
+        /// <summary>Indicates whether a character is categorized as an ASCII digit.</summary>
+        /// <param name="c">The character to evaluate.</param>
+        /// <returns>true if <paramref name="c"/> is an ASCII digit; otherwise, false.</returns>
+        /// <remarks>
+        /// This determines whether the character is in the range '0' through '9', inclusive.
+        /// </remarks>
+        public static bool IsAsciiDigit(char c) => IsBetween(c, '0', '9');
+
+        /// <summary>Indicates whether a character is within the specified inclusive range.</summary>
+        /// <param name="c">The character to evaluate.</param>
+        /// <param name="minInclusive">The lower bound, inclusive.</param>
+        /// <param name="maxInclusive">The upper bound, inclusive.</param>
+        /// <returns>true if <paramref name="c"/> is within the specified range; otherwise, false.</returns>
+        /// <remarks>
+        /// The method does not validate that <paramref name="maxInclusive"/> is greater than or equal
+        /// to <paramref name="minInclusive"/>.  If <paramref name="maxInclusive"/> is less than
+        /// <paramref name="minInclusive"/>, the behavior is undefined.
+        /// </remarks>
+        public static bool IsBetween(char c, char minInclusive, char maxInclusive) =>
+            (uint)(c - minInclusive) <= (uint)(maxInclusive - minInclusive);
+#endif
+
         [Test]
         public void TestAllLocales()
         {
