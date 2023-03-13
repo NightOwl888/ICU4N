@@ -2213,12 +2213,13 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Returns the named rule set.  Throws an IllegalArgumentException
-         * if this formatter doesn't have a rule set with that name.
-         * @param name The name of the desired rule set
-         * @return The rule set with that name
-         */
+        /// <summary>
+        /// Returns the named rule set. Throws an <see cref="ArgumentException"/>
+        /// if this formatter doesn't have a rule set with that name.
+        /// </summary>
+        /// <param name="name">The name of the desired rule set.</param>
+        /// <returns>The rule set with that name.</returns>
+        /// <exception cref="ArgumentException">No rule exists with the provided <paramref name="name"/>.</exception>
         internal NFRuleSet FindRuleSet(string name)
         {
             if (!ruleSetsMap.TryGetValue(name, out NFRuleSet result) || result == null)
