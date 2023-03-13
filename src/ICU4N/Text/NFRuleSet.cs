@@ -4,6 +4,8 @@ using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Double = J2N.Numerics.Double;
+using Long = J2N.Numerics.Int64;
 
 namespace ICU4N.Text
 {
@@ -20,78 +22,85 @@ namespace ICU4N.Text
         // data members
         //-----------------------------------------------------------------------
 
-        /**
-         * The rule set's name
-         */
+        /// <summary>
+        /// The rule set's name
+        /// </summary>
         private readonly string name;
 
-        /**
-         * The rule set's regular rules
-         */
+        /// <summary>
+        /// The rule set's regular rules
+        /// </summary>
         private NFRule[] rules;
 
-        /**
-         * The rule set's non-numerical rules like negative, fractions, infinity and NaN
-         */
+        /// <summary>
+        /// The rule set's non-numerical rules like negative, fractions, infinity and NaN
+        /// </summary>
         internal readonly NFRule[] nonNumericalRules = new NFRule[6];
 
-        /**
-         * These are a pile of fraction rules in declared order. They may have alternate
-         * ways to represent fractions.
-         */
+        /// <summary>
+        /// These are a pile of fraction rules in declared order. They may have alternate
+        /// ways to represent fractions.
+        /// </summary>
         private List<NFRule> fractionRules;
 
-        /** -x */
+        /// <summary>-x</summary>
         private const int NegativeRuleIndex = 0;
-        /** x.x */
+        /// <summary>x.x</summary>
         private const int ImproperFractionRuleIndex = 1;
-        /** 0.x */
+        /// <summary>0.x</summary>
         private const int ProperFractionRuleIndex = 2;
-        /** x.0 */
+        /// <summary>x.0</summary>
         private const int MasterRuleIndex = 3;
-        /** Inf */
+        /// <summary>Inf</summary>
         private const int InfinityRuleIndex = 4;
-        /** NaN */
+        /// <summary>NaN</summary>
         private const int NaNRuleIndex = 5;
 
-        /**
-         * The RuleBasedNumberFormat that owns this rule
-         */
+        /// <summary>
+        /// The <see cref="RuleBasedNumberFormat"/> that owns this rule
+        /// </summary>
         internal readonly RuleBasedNumberFormat owner;
 
-        /**
-         * True if the rule set is a fraction rule set.  A fraction rule set
-         * is a rule set that is used to Format the fractional part of a
-         * number.  It is called from a >> substitution in another rule set's
-         * fraction rule, and is only called upon to Format values between
-         * 0 and 1.  A fraction rule set has different rule-selection
-         * behavior than a regular rule set.
-         */
+        /// <summary>
+        /// True if the rule set is a fraction rule set.  A fraction rule set
+        /// is a rule set that is used to Format the fractional part of a
+        /// number.  It is called from a >> substitution in another rule set's
+        /// fraction rule, and is only called upon to Format values between
+        /// 0 and 1.  A fraction rule set has different rule-selection
+        /// behavior than a regular rule set.
+        /// </summary>
         private bool isFractionRuleSet = false;
 
-        /**
-         * True if the rule set is parseable.
-         */
+        /// <summary>
+        /// True if the rule set is parseable.
+        /// </summary>
         private readonly bool isParseable;
 
-        /**
-         * Limit of recursion. It's about a 64 bit number formatted in base 2.
-         */
+        /// <summary>
+        /// Limit of recursion. It's about a 64 bit number formatted in base 2.
+        /// </summary>
         private const int RecursionLimit = 64;
 
         //-----------------------------------------------------------------------
         // construction
         //-----------------------------------------------------------------------
 
-        /**
-         * Constructs a rule set.
-         * @param owner The formatter that owns this rule set
-         * @param descriptions An array of Strings representing rule set
-         * descriptions.  On exit, this rule set's entry in the array will
-         * have been stripped of its rule set name and any trailing whitespace.
-         * @param index The index into "descriptions" of the description
-         * for the rule to be constructed
-         */
+        /// <summary>
+        /// Constructs a rule set.
+        /// </summary>
+        /// <param name="owner">The <see cref="RuleBasedNumberFormat"/> that owns this rule set.</param>
+        /// <param name="descriptions">An array of Strings representing rule set
+        /// descriptions.  On exit, this rule set's entry in the array will
+        /// have been stripped of its rule set name and any trailing whitespace.</param>
+        /// <param name="index">The index into "descriptions" of the description
+        /// for the rule to be constructed.</param>
+        /// <exception cref="ArgumentException">
+        /// A rule description within <paramref name="descriptions"/> contains the empty string.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A rule set name doesn't end with a colon (:).
+        /// </exception>
         public NFRuleSet(RuleBasedNumberFormat owner, string[] descriptions, int index)
         {
             this.owner = owner;
@@ -149,15 +158,40 @@ namespace ICU4N.Text
             // by parseRules()
         }
 
-        /**
-         * Construct the subordinate data structures used by this object.
-         * This function is called by the RuleBasedNumberFormat constructor
-         * after all the rule sets have been created to actually parse
-         * the description and build rules from it.  Since any rule set
-         * can refer to any other rule set, we have to have created all of
-         * them before we can create anything else.
-         * @param description The textual description of this rule set
-         */
+        /// <summary>
+        /// Construct the subordinate data structures used by this object.
+        /// This function is called by the <see cref="RuleBasedNumberFormat"/> constructor
+        /// after all the rule sets have been created to actually parse
+        /// the description and build rules from it. Since any rule set
+        /// can refer to any other rule set, we have to have created all of
+        /// them before we can create anything else.
+        /// </summary>
+        /// <param name="description">The textual description of this rule set.</param>
+        /// <exception cref="ArgumentException">
+        /// The rules in <paramref name="description"/> are not specified in the correct order.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A rule within <paramref name="description"/> does not have a defined type ("ordinal" or "cardinal").
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A rule within <paramref name="description"/> has an invalid type (one other than "ordinal" or "cardinal").
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <paramref name="description"/> starts with '&lt;'
+        /// and its base value is <see cref="NFRule.NegativeNumberRule"/>.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <paramref name="description"/> starts with '&gt;'
+        /// and <see cref="NFRuleSet.IsFractionSet"/> is <c>true</c>.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <paramref name="description"/> starts with a <see cref="char"/> other than '&lt;', '&gt;', or '='.
+        /// </exception>
         public void ParseRules(string description)
         {
             // (the number of elements in the description list isn't necessarily
@@ -238,10 +272,10 @@ namespace ICU4N.Text
             tempRules.CopyTo(rules);
         }
 
-        /**
-         * Set one of the non-numerical rules.
-         * @param rule The rule to set.
-         */
+        /// <summary>
+        /// Set one of the non-numerical rules.
+        /// </summary>
+        /// <param name="rule">The rule to set.</param>
         internal void SetNonNumericalRule(NFRule rule)
         {
             long baseValue = rule.BaseValue;
@@ -271,14 +305,14 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Determine the best fraction rule to use. Rules matching the decimal point from
-         * DecimalFormatSymbols become the main set of rules to use.
-         * @param originalIndex The index into nonNumericalRules
-         * @param newRule The new rule to consider
-         * @param rememberRule Should the new rule be added to fractionRules.
-         */
-        private void SetBestFractionRule(int originalIndex, NFRule newRule, bool rememberRule)
+        /// <summary>
+        /// Determine the best fraction rule to use. Rules matching the decimal point from
+        /// <see cref="DecimalFormatSymbols"/> become the main set of rules to use.
+        /// </summary>
+        /// <param name="originalIndex">The index into <see cref="nonNumericalRules"/>.</param>
+        /// <param name="newRule">The new rule to consider.</param>
+        /// <param name="rememberRule">Should the new rule be added to <see cref="fractionRules"/>.</param>
+        private void SetBestFractionRule(int originalIndex, NFRule newRule, bool rememberRule) // ICU4N TODO: Get rid of "rememberRule" parameter (this will only be used during construction). Create GetBestFractionRule() method for formatter.
         {
             if (rememberRule)
             {
@@ -305,14 +339,14 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Flags this rule set as a fraction rule set.  This function is
-         * called during the construction process once we know this rule
-         * set is a fraction rule set.  We don't know a rule set is a
-         * fraction rule set until we see it used somewhere.  This function
-         * is not ad must not be called at any time other than during
-         * construction of a RuleBasedNumberFormat.
-         */
+        /// <summary>
+        /// Flags this rule set as a fraction rule set. This function is
+        /// called during the construction process once we know this rule
+        /// set is a fraction rule set. We don't know a rule set is a
+        /// fraction rule set until we see it used somewhere. This function
+        /// is not and must not be called at any time other than during
+        /// construction of a <see cref="RuleBasedNumberFormat"/>.
+        /// </summary>
         public void MakeIntoFractionRuleSet()
         {
             isFractionRuleSet = true;
@@ -322,11 +356,11 @@ namespace ICU4N.Text
         // boilerplate
         //-----------------------------------------------------------------------
 
-        /**
-         * Compares two rule sets for equality.
-         * @param that The other rule set
-         * @return true if the two rule sets are functionally equivalent.
-         */
+        /// <summary>
+        /// Compares two rule sets for equality.
+        /// </summary>
+        /// <param name="that">The other rule set.</param>
+        /// <returns><c>true</c> if the two rule sets are functionally equivalent.</returns>
         public override bool Equals(object that)
         {
             // if different classes, they're not equal
@@ -343,9 +377,9 @@ namespace ICU4N.Text
                 {
                     return false;
                 }
-
+                
                 // ...then compare the non-numerical rule lists...
-                for (int i = 0; i < nonNumericalRules.Length; i++)
+                for (int i = 0; i < nonNumericalRules.Length; i++) // ICU4N TODO: We should be comparing fractionRules here, too
                 {
                     if (!Utility.ObjectEquals(nonNumericalRules[i], that2.nonNumericalRules[i]))
                     {
@@ -367,19 +401,19 @@ namespace ICU4N.Text
             }
         }
 
-        public override int GetHashCode()
+        /// <inheritdoc/>
+        public override int GetHashCode() // ICU4N TODO: Create real hash code - we can definitely rule out cases here.
         {
             //assert false : "hashCode not designed";
             return 42;
         }
 
-
-        /**
-         * Builds a textual representation of a rule set.
-         * @return A textual representation of a rule set.  This won't
-         * necessarily be the same description that the rule set was
-         * constructed with, but it will produce the same results.
-         */
+        /// <summary>
+        /// Builds a textual representation of a rule set.
+        /// </summary>
+        /// <returns>A textual representation of a rule set. This won't
+        /// necessarily be the same description that the rule set was
+        /// constructed with, but it will produce the same results.</returns>
         public override string ToString()
         {
             StringBuilder result = new StringBuilder();
@@ -398,9 +432,10 @@ namespace ICU4N.Text
             {
                 if (rule != null)
                 {
-                    if (rule.BaseValue == NFRule.ImproperFractionRule
+                    if (fractionRules != null && // ICU4N: There was a bug in ICU4J here - this collection may be null, so we need to use the default value in those cases
+                        (rule.BaseValue == NFRule.ImproperFractionRule
                         || rule.BaseValue == NFRule.ProperFractionRule
-                        || rule.BaseValue == NFRule.MasterRule)
+                        || rule.BaseValue == NFRule.MasterRule))
                     {
                         foreach (NFRule fractionRule in fractionRules)
                         {
@@ -424,43 +459,41 @@ namespace ICU4N.Text
         // simple accessors
         //-----------------------------------------------------------------------
 
-        /**
-         * Says whether this rule set is a fraction rule set.
-         * @return true if this rule is a fraction rule set; false if it isn't
-         */
+        /// <summary>
+        /// <c>true</c> if this rule is a fraction rule set; <c>false</c> if it isn't.
+        /// </summary>
         public bool IsFractionSet => isFractionRuleSet;
 
-        /**
-         * Returns the rule set's name
-         * @return The rule set's name
-         */
+        /// <summary>
+        /// Gets the rule set's names
+        /// </summary>
         public string Name => name;
 
-        /**
-         * Return true if the rule set is public.
-         * @return true if the rule set is public
-         */
+        /// <summary>
+        /// Returns <c>true</c> if the rule set is public.
+        /// </summary>
         public bool IsPublic => !name.StartsWith("%%", StringComparison.Ordinal);
 
 
-        /**
-         * Return true if the rule set can be used for parsing.
-         * @return true if the rule set can be used for parsing.
-         */
+        /// <summary>
+        /// Returns <c>true</c> if the rule set can be used for parsing.
+        /// </summary>
         public bool IsParseable => isParseable;
 
         //-----------------------------------------------------------------------
         // formatting
         //-----------------------------------------------------------------------
 
-        /**
-         * Formats a long.  Selects an appropriate rule and dispatches
-         * control to it.
-         * @param number The number being formatted
-         * @param toInsertInto The string where the result is to be placed
-         * @param pos The position in toInsertInto where the result of
-         * this operation is to be inserted
-         */
+        /// <summary>
+        /// Formats the <paramref name="number"/>. Selects an appropriate rule and dispatches
+        /// control to it.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <param name="toInsertInto">The string where the result is to be placed.</param>
+        /// <param name="pos">The position in toInsertInto where the result of
+        /// this operation is to be inserted.</param>
+        /// <param name="recursionCount">The number of recursive calls to this method.</param>
+        /// <exception cref="InvalidOperationException">The <paramref name="recursionCount"/> went over the <see cref="RecursionLimit"/>.</exception>
         public void Format(long number, StringBuilder toInsertInto, int pos, int recursionCount)
         {
             if (recursionCount >= RecursionLimit)
@@ -471,14 +504,16 @@ namespace ICU4N.Text
             applicableRule.DoFormat(number, toInsertInto, pos, ++recursionCount);
         }
 
-        /**
-         * Formats a double.  Selects an appropriate rule and dispatches
-         * control to it.
-         * @param number The number being formatted
-         * @param toInsertInto The string where the result is to be placed
-         * @param pos The position in toInsertInto where the result of
-         * this operation is to be inserted
-         */
+        /// <summary>
+        /// Formats the <paramref name="number"/>. Selects an appropriate rule and dispatches
+        /// control to it.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <param name="toInsertInto">The string where the result is to be placed.</param>
+        /// <param name="pos">The position in toInsertInto where the result of
+        /// this operation is to be inserted.</param>
+        /// <param name="recursionCount">The number of recursive calls to this method.</param>
+        /// <exception cref="InvalidOperationException">The <paramref name="recursionCount"/> went over the <see cref="RecursionLimit"/>.</exception>
         public void Format(double number, StringBuilder toInsertInto, int pos, int recursionCount)
         {
             if (recursionCount >= RecursionLimit)
@@ -489,11 +524,11 @@ namespace ICU4N.Text
             applicableRule.DoFormat(number, toInsertInto, pos, ++recursionCount);
         }
 
-        /**
-         * Selects an appropriate rule for formatting the number.
-         * @param number The number being formatted.
-         * @return The rule that should be used to Format it
-         */
+        /// <summary>
+        /// Selects an appropriate rule for formatting the number.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <returns>The rule that should be used to format it</returns>
         internal NFRule FindRule(double number) // ICU4N TODO: Pass in IDecimalFormatSymbols to get the current NaN and Infinity strings
         {
             // if this is a fraction rule set, use FindFractionRuleSetRule()
@@ -566,22 +601,29 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * If the value passed to FindRule() is a positive integer, FindRule()
-         * uses this function to select the appropriate rule.  The result will
-         * generally be the rule with the highest base value less than or equal
-         * to the number.  There is one exception to this: If that rule has
-         * two substitutions and a base value that is not an even multiple of
-         * its divisor, and the number itself IS an even multiple of the rule's
-         * divisor, then the result will be the rule that preceded the original
-         * result in the rule list.  (This behavior is known as the "rollback
-         * rule", and is used to handle optional text: a rule with optional
-         * text is represented internally as two rules, and the rollback rule
-         * selects appropriate between them.  This avoids things like "two
-         * hundred zero".)
-         * @param number The number being formatted
-         * @return The rule to use to Format this number
-         */
+        /// <summary>
+        /// If the value passed to <see cref="FindRule(double)"/> is a positive integer, <see cref="FindRule(double)"/>
+        /// uses this function to select the appropriate rule.  The result will
+        /// generally be the rule with the highest base value less than or equal
+        /// to the number.  There is one exception to this: If that rule has
+        /// two substitutions and a base value that is not an even multiple of
+        /// its divisor, and the number itself IS an even multiple of the rule's
+        /// divisor, then the result will be the rule that preceded the original
+        /// result in the rule list.  (This behavior is known as the "rollback
+        /// rule", and is used to handle optional text: a rule with optional
+        /// text is represented internally as two rules, and the rollback rule
+        /// selects appropriate between them. This avoids things like "two
+        /// hundred zero".)
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <returns>The rule to use to format this number.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// This rule set cannot format the <paramref name="number"/> because it doesn't contain a corresponding rule.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// The rule requires a rollback rule, but there is no valid rule to roll back to.
+        /// </exception>
         private NFRule FindNormalRule(long number)
         {
             // if this is a fraction rule set, use FindFractionRuleSetRule()
@@ -665,21 +707,21 @@ namespace ICU4N.Text
             return nonNumericalRules[MasterRuleIndex];
         }
 
-        /**
-         * If this rule is a fraction rule set, this function is used by
-         * FindRule() to select the most appropriate rule for formatting
-         * the number.  Basically, the base value of each rule in the rule
-         * set is treated as the denominator of a fraction.  Whichever
-         * denominator can produce the fraction closest in value to the
-         * number passed in is the result.  If there's a tie, the earlier
-         * one in the list wins.  (If there are two rules in a row with the
-         * same base value, the first one is used when the numerator of the
-         * fraction would be 1, and the second rule is used the rest of the
-         * time.
-         * @param number The number being formatted (which will always be
-         * a number between 0 and 1)
-         * @return The rule to use to Format this number
-         */
+        /// <summary>
+        /// If this rule is a fraction rule set, this function is used by
+        /// <see cref="FindRule(double)"/> to select the most appropriate rule for formatting
+        /// the number. Basically, the base value of each rule in the rule
+        /// set is treated as the denominator of a fraction. Whichever
+        /// denominator can produce the fraction closest in value to the
+        /// number passed in is the result. If there's a tie, the earlier
+        /// one in the list wins.  (If there are two rules in a row with the
+        /// same base value, the first one is used when the numerator of the
+        /// fraction would be 1, and the second rule is used the rest of the
+        /// time.
+        /// </summary>
+        /// <param name="number">The number being formatted (which will always be
+        /// a number between 0 and 1).</param>
+        /// <returns>The rule to use to format this number.</returns>
         private NFRule FindFractionRuleSetRule(double number)
         {
             // the obvious way to do this (multiply the value being formatted
@@ -755,9 +797,9 @@ namespace ICU4N.Text
             return rules[winner];
         }
 
-        /**
-         * Calculates the least common multiple of x and y.
-         */
+        /// <summary>
+        /// Calculates the least common multiple of <paramref name="x"/> and <paramref name="y"/>.
+        /// </summary>
         private static long Lcm(long x, long y)
         {
             // binary gcd algorithm from Knuth, "The Art of Computer Programming,"
@@ -809,27 +851,27 @@ namespace ICU4N.Text
         // parsing
         //-----------------------------------------------------------------------
 
-        /**
-         * Parses a string.  Matches the string to be parsed against each
-         * of its rules (with a base value less than upperBound) and returns
-         * the value produced by the rule that matched the most characters
-         * in the source string.
-         * @param text The string to parse
-         * @param parsePosition The initial position is ignored and assumed
-         * to be 0.  On exit, this object has been updated to point to the
-         * first character position this rule set didn't consume.
-         * @param upperBound Limits the rules that can be allowed to match.
-         * Only rules whose base values are strictly less than upperBound
-         * are considered.
-         * @return The numerical result of parsing this string.  This will
-         * be the matching rule's base value, composed appropriately with
-         * the results of matching any of its substitutions.  The object
-         * will be an instance of Long if it's an integral value; otherwise,
-         * it will be an instance of Double.  This function always returns
-         * a valid object: If nothing matched the input string at all,
-         * this function returns new Long(0), and the parse position is
-         * left unchanged.
-         */
+        /// <summary>
+        /// Parses a string. Matches the string to be parsed against each
+        /// of its rules (with a base value less than <paramref name="upperBound"/>) and returns
+        /// the value produced by the rule that matched the most characters
+        /// in the source string.
+        /// </summary>
+        /// <param name="text">The string to parse.</param>
+        /// <param name="parsePosition">The initial position is ignored and assumed
+        /// to be 0. On exit, this object has been updated to point to the
+        /// first character position this rule set didn't consume.</param>
+        /// <param name="upperBound">Limits the rules that can be allowed to match.
+        /// Only rules whose base values are strictly less than <paramref name="upperBound"/>
+        /// are considered.</param>
+        /// <returns>The numerical result of parsing this string. This will
+        /// be the matching rule's base value, composed appropriately with
+        /// the results of matching any of its substitutions. The object
+        /// will be an instance of <see cref="Long"/> if it's an integral value; otherwise,
+        /// it will be an instance of <see cref="Double"/>. This function always returns
+        /// a valid object: If nothing matched the input string at all,
+        /// this function returns <c>Long.GetInstance(0)</c>, and the parse position is
+        /// left unchanged.</returns>
         public Number Parse(string text, ParsePosition parsePosition, double upperBound)
         {
             // try matching each rule in the rule set against the text being
