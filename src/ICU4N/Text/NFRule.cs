@@ -22,34 +22,34 @@ namespace ICU4N.Text
         // constants
         //-----------------------------------------------------------------------
 
-        /**
-         * Special base value used to identify a negative-number rule
-         */
+        /// <summary>
+        /// Special base value used to identify a negative-number rule
+        /// </summary>
         internal const int NegativeNumberRule = -1;
 
-        /**
-         * Special base value used to identify an improper fraction (x.x) rule
-         */
+        /// <summary>
+        /// Special base value used to identify an improper fraction (x.x) rule
+        /// </summary>
         internal const int ImproperFractionRule = -2;
 
-        /**
-         * Special base value used to identify a proper fraction (0.x) rule
-         */
+        /// <summary>
+        /// Special base value used to identify a proper fraction (0.x) rule
+        /// </summary>
         internal const int ProperFractionRule = -3;
 
-        /**
-         * Special base value used to identify a master rule
-         */
+        /// <summary>
+        /// Special base value used to identify a master rule
+        /// </summary>
         internal const int MasterRule = -4;
 
-        /**
-         * Special base value used to identify an infinity rule
-         */
+        /// <summary>
+        /// Special base value used to identify an infinity rule
+        /// </summary>
         internal const int InfinityRule = -5;
 
-        /**
-         * Special base value used to identify a not a number rule
-         */
+        /// <summary>
+        /// Special base value used to identify a not a number rule
+        /// </summary>
         internal const int NaNRule = -6;
 
         internal static readonly Long Zero = Long.GetInstance(0);
@@ -58,73 +58,95 @@ namespace ICU4N.Text
         // data members
         //-----------------------------------------------------------------------
 
-        /**
-         * The rule's base value
-         */
+        /// <summary>
+        /// The rule's base value
+        /// </summary>
         private long baseValue;
 
-        /**
-         * The rule's radix (the radix to the power of the exponent equals
-         * the rule's divisor)
-         */
+        /// <summary>
+        /// The rule's radix (the radix to the power of the exponent equals
+        /// the rule's divisor)
+        /// </summary>
         private int radix = 10;
 
-        /**
-         * The rule's exponent (the radix raised to the power of the exponent
-         * equals the rule's divisor)
-         */
+        /// <summary>
+        /// The rule's exponent (the radix raised to the power of the exponent
+        /// equals the rule's divisor)
+        /// </summary>
         private short exponent = 0;
 
-        /**
-         * If this is a fraction rule, this is the decimal point from DecimalFormatSymbols to match.
-         */
+        /// <summary>
+        /// If this is a fraction rule, this is the decimal point from <see cref="IDecimalFormatSymbols"/> to match.
+        /// </summary>
         private char decimalPoint = (char)0;
 
-        /**
-         * The rule's rule text.  When formatting a number, the rule's text
-         * is inserted into the result string, and then the text from any
-         * substitutions is inserted into the result string
-         */
+        /// <summary>
+        /// The rule's rule text. When formatting a number, the rule's text
+        /// is inserted into the result string, and then the text from any
+        /// substitutions is inserted into the result string.
+        /// </summary>
         private string ruleText = null;
 
-        /**
-         * The rule's plural Format when defined. This is not a substitution
-         * because it only works on the current baseValue. It's normally not used
-         * due to the overhead.
-         */
+        /// <summary>
+        /// The rule's plural Format when defined. This is not a substitution
+        /// because it only works on the current baseValue. It's normally not used
+        /// due to the overhead.
+        /// </summary>
         private PluralFormat rulePatternFormat = null;
 
-        /**
-         * The rule's first substitution (the one with the lower offset
-         * into the rule text)
-         */
+        /// <summary>
+        /// The rule's first substitution (the one with the lower offset
+        /// into the rule text)
+        /// </summary>
         private NFSubstitution sub1 = null;
 
-        /**
-         * The rule's second substitution (the one with the higher offset
-         * into the rule text)
-         */
+        /// <summary>
+        /// The rule's second substitution (the one with the higher offset
+        /// into the rule text)
+        /// </summary>
         private NFSubstitution sub2 = null;
 
-        /**
-         * The RuleBasedNumberFormat that owns this rule
-         */
+        /// <summary>
+        /// The <see cref="RuleBasedNumberFormat"/> that owns this rule.
+        /// </summary>
         private readonly RuleBasedNumberFormat formatter;
 
         //-----------------------------------------------------------------------
         // construction
         //-----------------------------------------------------------------------
 
-        /**
-         * Creates one or more rules based on the description passed in.
-         * @param description The description of the rule(s).
-         * @param owner The rule set containing the new rule(s).
-         * @param predecessor The rule that precedes the new one(s) in "owner"'s
-         * rule list
-         * @param ownersOwner The RuleBasedNumberFormat that owns the
-         * rule set that owns the new rule(s)
-         * @param returnList One or more instances of NFRule are added and returned here
-         */
+        /// <summary>
+        /// Creates one or more rules based on the <paramref name="description"/> passed in.
+        /// </summary>
+        /// <param name="description">The description of the rule(s).</param>
+        /// <param name="owner">The rule set containing the new rule(s).</param>
+        /// <param name="predecessor">The rule that precedes the new one(s) in "owner"'s
+        /// rule list.</param>
+        /// <param name="ownersOwner">The <see cref="RuleBasedNumberFormat"/> that owns the
+        /// rule set that owns the new rule(s).</param>
+        /// <param name="returnList">One or more instances of <see cref="NFRule"/> are added
+        /// and returned here.</param>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="predecessor"/>.<see cref="NFRule.ruleText"/> does not have a defined type ("ordinal" or "cardinal").
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// <paramref name="predecessor"/>.<see cref="NFRule.ruleText"/> has an invalid type (one other than "ordinal" or "cardinal").
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <paramref name="predecessor"/>.<see cref="NFRule.ruleText"/> starts with '&lt;'
+        /// and <paramref name="predecessor"/>.<see cref="NFRule.BaseValue"/> is <see cref="NFRule.NegativeNumberRule"/>.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <paramref name="predecessor"/>.<see cref="NFRule.ruleText"/> starts with '&gt;'
+        /// and <paramref name="owner"/>.<see cref="NFRuleSet.IsFractionSet"/> is <c>true</c>.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <paramref name="predecessor"/>.<see cref="NFRule.ruleText"/> starts with a <see cref="char"/> other than '&lt;', '&gt;', or '='.
+        /// </exception>
         public static void MakeRules(string description,
                                        NFRuleSet owner,
                                        NFRule predecessor,
@@ -255,28 +277,40 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Nominal constructor for NFRule.  Most of the work of constructing
-         * an NFRule is actually performed by makeRules().
-         */
+        /// <summary>
+        /// Nominal constructor for <see cref="NFRule"/>.  Most of the work of constructing
+        /// an <see cref="NFRule"/> is actually performed by
+        /// <see cref="MakeRules(string, NFRuleSet, NFRule, RuleBasedNumberFormat, IList{NFRule})"/>.
+        /// </summary>
+        /// <param name="formatter">The <see cref="RuleBasedNumberFormat"/> that owns this rule.</param>
+        /// <param name="ruleText">The rule's rule text. When formatting a number, the rule's text
+        /// is inserted into the result string, and then the text from any
+        /// substitutions is inserted into the result string.</param>
         public NFRule(RuleBasedNumberFormat formatter, string ruleText)
         {
             this.formatter = formatter;
             this.ruleText = ruleText == null ? null : ParseRuleDescriptor(ruleText);
         }
 
-        /**
-         * This function parses the rule's rule descriptor (i.e., the base
-         * value and/or other tokens that precede the rule's rule text
-         * in the description) and sets the rule's base value, radix, and
-         * exponent according to the descriptor.  (If the description doesn't
-         * include a rule descriptor, then this function sets everything to
-         * default values and the rule set sets the rule's real base value).
-         * @param description The rule's description
-         * @return If "description" included a rule descriptor, this is
-         * "description" with the descriptor and any trailing whitespace
-         * stripped off.  Otherwise; it's "descriptor" unchanged.
-         */
+        /// <summary>
+        /// This function parses the rule's rule descriptor (i.e., the base
+        /// value and/or other tokens that precede the rule's rule text
+        /// in the description) and sets the rule's base value, radix, and
+        /// exponent according to the descriptor.  (If the description doesn't
+        /// include a rule descriptor, then this function sets everything to
+        /// default values and the rule set sets the rule's real base value).
+        /// </summary>
+        /// <param name="description">The rule's description.</param>
+        /// <returns>If <paramref name="description"/> included a rule descriptor, this is
+        /// <paramref name="description"/> with the descriptor and any trailing whitespace
+        /// stripped off.  Otherwise; it's <paramref name="description"/> unchanged.</returns>
+        /// <exception cref="ArgumentException">
+        /// The <paramref name="description"/> contains an illegal character.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// The rule's radix is effectively zero.
+        /// </exception>
         private string ParseRuleDescriptor(string description)
         {
             string descriptor;
@@ -441,14 +475,35 @@ namespace ICU4N.Text
             return description;
         }
 
-        /**
-         * Searches the rule's rule text for the substitution tokens,
-         * creates the substitutions, and removes the substitution tokens
-         * from the rule's rule text.
-         * @param owner The rule set containing this rule
-         * @param predecessor The rule preceding this one in "owners" rule list
-         * @param ruleText The rule text
-         */
+        /// <summary>
+        /// Searches the rule's rule text for the substitution tokens,
+        /// creates the substitutions, and removes the substitution tokens
+        /// from the rule's rule text.
+        /// </summary>
+        /// <param name="owner">The rule set containing this rule.</param>
+        /// <param name="ruleText">The rule text.</param>
+        /// <param name="predecessor">The rule preceding this one in "owners" rule list.</param>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="ruleText"/> does not have a defined type ("ordinal" or "cardinal").
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// <paramref name="ruleText"/> has an invalid type (one other than "ordinal" or "cardinal").
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <paramref name="ruleText"/> starts with '&lt;'
+        /// and <paramref name="predecessor"/>.<see cref="NFRule.BaseValue"/> is <see cref="NFRule.NegativeNumberRule"/>.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <paramref name="ruleText"/> starts with '&gt;'
+        /// and <paramref name="owner"/>.<see cref="NFRuleSet.IsFractionSet"/> is <c>true</c>.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <paramref name="ruleText"/> starts with a <see cref="char"/> other than '&lt;', '&gt;', or '='.
+        /// </exception>
         private void ExtractSubstitutions(NFRuleSet owner,
                                           string ruleText,
                                           NFRule predecessor)
@@ -493,17 +548,28 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Searches the rule's rule text for the first substitution token,
-         * creates a substitution based on it, and removes the token from
-         * the rule's rule text.
-         * @param owner The rule set containing this rule
-         * @param predecessor The rule preceding this one in the rule set's
-         * rule list
-         * @return The newly-created substitution.  This is never null; if
-         * the rule text doesn't contain any substitution tokens, this will
-         * be a NullSubstitution.
-         */
+        /// <summary>
+        /// Searches the rule's rule text for the first substitution token,
+        /// creates a substitution based on it, and removes the token from
+        /// the rule's rule text.
+        /// </summary>
+        /// <param name="owner">The rule set containing this rule.</param>
+        /// <param name="predecessor">The rule preceding this one in the rule set's
+        /// rule list.</param>
+        /// <returns>The newly-created substitution or <c>null</c>.</returns>
+        /// <exception cref="ArgumentException">
+        /// A substitution within <see name="ruleText"/> starts with '&lt;'
+        /// and <paramref name="predecessor"/>.<see cref="NFRule.BaseValue"/> is <see cref="NFRule.NegativeNumberRule"/>.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <see name="ruleText"/> starts with '&gt;'
+        /// and <paramref name="owner"/>.<see cref="NFRuleSet.IsFractionSet"/> is <c>true</c>.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <see name="ruleText"/> starts with a <see cref="char"/> other than '&lt;', '&gt;', or '='.
+        /// </exception>
         private NFSubstitution ExtractSubstitution(NFRuleSet owner,
                                                    NFRule predecessor)
         {
@@ -564,13 +630,13 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Sets the rule's base value, and causes the radix and exponent
-         * to be recalculated.  This is used during construction when we
-         * don't know the rule's base value until after it's been
-         * constructed.  It should not be used at any other time.
-         * @param newBaseValue The new base value for the rule.
-         */
+        /// <summary>
+        /// Sets the rule's base value, and causes the radix and exponent
+        /// to be recalculated.  This is used during construction when we
+        /// don't know the rule's base value until after it's been
+        /// constructed.  It should not be used at any other time.
+        /// </summary>
+        /// <param name="newBaseValue">The new base value for the rule.</param>
         internal void SetBaseValue(long newBaseValue)
         {
             // set the base value
@@ -601,11 +667,11 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * This calculates the rule's exponent based on its radix and base
-         * value.  This will be the highest power the radix can be raised to
-         * and still produce a result less than or equal to the base value.
-         */
+        /// <summary>
+        /// This calculates the rule's exponent based on its radix and base
+        /// value. This will be the highest power the radix can be raised to
+        /// and still produce a result less than or equal to the base value.
+        /// </summary>
         private short GetExpectedExponent()
         {
             // since the log of 0, or the log base 0 of something, causes an
@@ -636,13 +702,14 @@ namespace ICU4N.Text
             "=%", "=#", "=0"
         };
 
-        /**
-         * Searches the rule's rule text for any of the specified strings.
-         * @return The index of the first match in the rule's rule text
-         * (i.e., the first substring in the rule's rule text that matches
-         * _any_ of the strings in "strings").  If none of the strings in
-         * "strings" is found in the rule's rule text, returns -1.
-         */
+        /// <summary>
+        /// Searches the rule's rule text for any of the specified strings.
+        /// </summary>
+        /// <param name="ruleText">The rule text.</param>
+        /// <returns>The index of the first match in the rule's rule text
+        /// (i.e., the first substring in the rule's rule text that matches
+        /// _any_ of the strings in "strings").  If none of the strings in
+        /// "strings" is found in the rule's rule text, returns -1.</returns>
         private static int IndexOfAnyRulePrefix(string ruleText)
         {
             int result = -1;
@@ -665,11 +732,11 @@ namespace ICU4N.Text
         // boilerplate
         //-----------------------------------------------------------------------
 
-        /**
-         * Tests two rules for equality.
-         * @param that The rule to compare this one against
-         * @return True if the two rules are functionally equivalent
-         */
+        /// <summary>
+        /// Tests two rules for equality.
+        /// </summary>
+        /// <param name="that">The rule to compare this one against.</param>
+        /// <returns><c>true</c> if the two rules are functionally equivalent.</returns>
         public override bool Equals(object that)
         {
             if (that is NFRule that2)
@@ -684,18 +751,19 @@ namespace ICU4N.Text
             return false;
         }
 
-        public override int GetHashCode()
+        /// <inheritdoc/>
+        public override int GetHashCode() // ICU4N TODO: Create real hash code - we can definitely rule out cases here.
         {
             //assert false : "hashCode not designed";
             return 42;
         }
 
-        /**
-         * Returns a textual representation of the rule.  This won't
-         * necessarily be the same as the description that this rule
-         * was created with, but it will produce the same result.
-         * @return A textual description of the rule
-         */
+        /// <summary>
+        /// Returns a textual representation of the rule. This won't
+        /// necessarily be the same as the description that this rule
+        /// was created with, but it will produce the same result.
+        /// </summary>
+        /// <returns>A textual description of the rule.</returns>
         public override string ToString()
         {
             StringBuilder result = new StringBuilder();
@@ -775,38 +843,33 @@ namespace ICU4N.Text
         // simple accessors
         //-----------------------------------------------------------------------
 
-        /**
-         * Returns the rule's base value
-         * @return The rule's base value
-         */
-        public char DecimalPoint => decimalPoint;
+        /// <summary>
+        /// Gets the rule's decimal point character.
+        /// </summary>
+        public char DecimalPoint => decimalPoint; // ICU4N TODO: Make this into a string
 
-        /**
-         * Returns the rule's base value
-         * @return The rule's base value
-         */
+        /// <summary>
+        /// Gets the rule's base value.
+        /// </summary>
         public long BaseValue => baseValue;
 
-        /**
-         * Returns the rule's divisor (the value that cotrols the behavior
-         * of its substitutions)
-         * @return The rule's divisor
-         */
+        /// <summary>
+        /// Gets the rule's divisor (the value that controls the behavior
+        /// of its substitutions).
+        /// </summary>
         public long Divisor => Power(radix, exponent);
 
         //-----------------------------------------------------------------------
         // formatting
         //-----------------------------------------------------------------------
 
-        /**
-         * Formats the number, and inserts the resulting text into
-         * toInsertInto.
-         * @param number The number being formatted
-         * @param toInsertInto The string where the resultant text should
-         * be inserted
-         * @param pos The position in toInsertInto where the resultant text
-         * should be inserted
-         */
+        /// <summary>
+        /// Formats the <paramref name="number"/>, and inserts the resulting text into <paramref name="toInsertInto"/>.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <param name="toInsertInto">The string where the resultant text should be inserted.</param>
+        /// <param name="pos">The position in toInsertInto where the resultant text should be inserted.</param>
+        /// <param name="recursionCount">The number of recursive calls to this method.</param>
         public void DoFormat(long number, StringBuilder toInsertInto, int pos, int recursionCount)
         {
             // first, insert the rule's rule text into toInsertInto at the
@@ -848,15 +911,13 @@ namespace ICU4N.Text
             sub1?.DoSubstitution(number, toInsertInto, pos - (sub1.Pos > pluralRuleStart ? lengthOffset : 0), recursionCount);
         }
 
-        /**
-         * Formats the number, and inserts the resulting text into
-         * toInsertInto.
-         * @param number The number being formatted
-         * @param toInsertInto The string where the resultant text should
-         * be inserted
-         * @param pos The position in toInsertInto where the resultant text
-         * should be inserted
-         */
+        /// <summary>
+        /// Formats the <paramref name="number"/>, and inserts the resulting text into <paramref name="toInsertInto"/>.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <param name="toInsertInto">The string where the resultant text should be inserted.</param>
+        /// <param name="pos">The position in toInsertInto where the resultant text should be inserted.</param>
+        /// <param name="recursionCount">The number of recursive calls to this method.</param>
         public void DoFormat(double number, StringBuilder toInsertInto, int pos, int recursionCount)
         {
             // first, insert the rule's rule text into toInsertInto at the
@@ -910,13 +971,20 @@ namespace ICU4N.Text
             sub1?.DoSubstitution(number, toInsertInto, pos - (sub1.Pos > pluralRuleStart ? lengthOffset : 0), recursionCount);
         }
 
-        /**
-         * This is an equivalent to Math.pow that accurately works on 64-bit numbers
-         * @param base The base
-         * @param exponent The exponent
-         * @return radix ** exponent
-         * @see Math#pow(double, double)
-         */
+        /// <summary>
+        /// This is an equivalent to <see cref="Math.Pow(double, double)"/> that accurately works on 64-bit numbers.
+        /// </summary>
+        /// <param name="base">The base.</param>
+        /// <param name="exponent">The exponent.</param>
+        /// <returns>radix ** exponent.</returns>
+        /// <seealso cref="Math.Pow(double, double)"/>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="exponent"/> is less than zero.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// <paramref name="base"/> is less than zero.
+        /// </exception>
         internal static long Power(long @base, short exponent)
         {
             if (exponent < 0)
@@ -937,14 +1005,14 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Used by the owning rule set to determine whether to invoke the
-         * rollback rule (i.e., whether this rule or the one that precedes
-         * it in the rule set's list should be used to Format the number)
-         * @param number The number being formatted
-         * @return True if the rule set should use the rule that precedes
-         * this one in its list; false if it should use this rule
-         */
+        /// <summary>
+        /// Used by the owning rule set to determine whether to invoke the
+        /// rollback rule (i.e., whether this rule or the one that precedes
+        /// it in the rule set's list should be used to Format the number).
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <returns><c>true</c> if the rule set should use the rule that precedes
+        /// this one in its list; <c>false</c> if it should use this rule.</returns>
         public bool ShouldRollBack(long number)
         {
             // we roll back if the rule contains a modulus substitution,
@@ -975,24 +1043,26 @@ namespace ICU4N.Text
         // parsing
         //-----------------------------------------------------------------------
 
-        /**
-         * Attempts to parse the string with this rule.
-         * @param text The string being parsed
-         * @param parsePosition On entry, the value is ignored and assumed to
-         * be 0. On exit, this has been updated with the position of the first
-         * character not consumed by matching the text against this rule
-         * (if this rule doesn't match the text at all, the parse position
-         * if left unchanged (presumably at 0) and the function returns
-         * new Long(0)).
-         * @param isFractionRule True if this rule is contained within a
-         * fraction rule set.  This is only used if the rule has no
-         * substitutions.
-         * @return If this rule matched the text, this is the rule's base value
-         * combined appropriately with the results of parsing the substitutions.
-         * If nothing matched, this is new Long(0) and the parse position is
-         * left unchanged.  The result will be an instance of Long if the
-         * result is an integer and Double otherwise.  The result is never null.
-         */
+        /// <summary>
+        /// Attempts to parse the string with this rule.
+        /// </summary>
+        /// <param name="text">The string being parsed.</param>
+        /// <param name="parsePosition">On entry, the value is ignored and assumed to
+        /// be 0. On exit, this has been updated with the position of the first
+        /// character not consumed by matching the text against this rule
+        /// (if this rule doesn't match the text at all, the parse position
+        /// if left unchanged (presumably at 0) and the function returns
+        /// <c>Long.GetInstance(0)</c>.</param>
+        /// <param name="isFractionRule"><c>true</c> if this rule is contained within a
+        /// fraction rule set. This is only used if the rule has no
+        /// substitutions.</param>
+        /// <param name="upperBound">When matching the substitution, it will only
+        /// consider rules with base values lower than this value.</param>
+        /// <returns>If this rule matched the text, this is the rule's base value
+        /// combined appropriately with the results of parsing the substitutions.
+        /// If nothing matched, this is <c>Long.GetInstance(0)</c> and the parse position is
+        /// left unchanged.  The result will be an instance of <see cref="Long"/> if the
+        /// result is an integer and <see cref="Double"/> otherwise. The result is never <c>null</c>.</returns>
         public Number DoParse(string text, ParsePosition parsePosition, bool isFractionRule,
                               double upperBound)
         {
@@ -1158,22 +1228,22 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * This function is used by parse() to match the text being parsed
-         * against a possible prefix string.  This function
-         * matches characters from the beginning of the string being parsed
-         * to characters from the prospective prefix.  If they match, pp is
-         * updated to the first character not matched, and the result is
-         * the unparsed part of the string.  If they don't match, the whole
-         * string is returned, and pp is left unchanged.
-         * @param text The string being parsed
-         * @param prefix The text to match against
-         * @param pp On entry, ignored and assumed to be 0.  On exit, points
-         * to the first unmatched character (assuming the whole prefix matched),
-         * or is unchanged (if the whole prefix didn't match).
-         * @return If things match, this is the unparsed part of "text";
-         * if they didn't match, this is "text".
-         */
+        /// <summary>
+        /// This function is used by <see cref="DoParse(string, ParsePosition, bool, double)"/>
+        /// to match the text being parsed against a possible prefix string. This function
+        /// matches characters from the beginning of the string being parsed
+        /// to characters from the prospective prefix.  If they match, <paramref name="pp"/> is
+        /// updated to the first character not matched, and the result is
+        /// the unparsed part of the string. If they don't match, the whole
+        /// string is returned, and <paramref name="pp"/> is left unchanged.
+        /// </summary>
+        /// <param name="text">The string being parsed.</param>
+        /// <param name="prefix">The text to match against.</param>
+        /// <param name="pp">On entry, ignored and assumed to be 0.  On exit, points
+        /// to the first unmatched character (assuming the whole prefix matched),
+        /// or is unchanged (if the whole prefix didn't match).</param>
+        /// <returns>If things match, this is the unparsed part of <paramref name="text"/>;
+        /// if they didn't match, this is <paramref name="text"/>.</returns>
         private string StripPrefix(string text, string prefix, ParsePosition pp)
         {
             // if the prefix text is empty, dump out without doing anything
@@ -1204,32 +1274,34 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Used by parse() to match a substitution and any following text.
-         * "text" is searched for instances of "delimiter".  For each instance
-         * of delimiter, the intervening text is tested to see whether it
-         * matches the substitution.  The longest match wins.
-         * @param text The string being parsed
-         * @param startPos The position in "text" where we should start looking
-         * for "delimiter".
-         * @param baseVal A partial parse result (often the rule's base value),
-         * which is combined with the result from matching the substitution
-         * @param delimiter The string to search "text" for.
-         * @param pp Ignored and presumed to be 0 on entry.  If there's a match,
-         * on exit this will point to the first unmatched character.
-         * @param sub If we find "delimiter" in "text", this substitution is used
-         * to match the text between the beginning of the string and the
-         * position of "delimiter."  (If "delimiter" is the empty string, then
-         * this function just matches against this substitution and updates
-         * everything accordingly.)
-         * @param upperBound When matching the substitution, it will only
-         * consider rules with base values lower than this value.
-         * @return If there's a match, this is the result of composing
-         * baseValue with the result of matching the substitution.  Otherwise,
-         * this is new Long(0).  It's never null.  If the result is an integer,
-         * this will be an instance of Long; otherwise, it's an instance of
-         * Double.
-         */
+        /// <summary>
+        /// Used by <see cref="DoParse(string, ParsePosition, bool, double)"/>
+        /// to match a substitution and any following text.
+        /// <paramref name="text"/> is searched for instances of <paramref name="delimiter"/>
+        /// For each instance of <paramref name="delimiter"/>, the intervening text is tested
+        /// to see whether it matches the substitution <paramref name="sub"/>. The longest match wins.
+        /// </summary>
+        /// <param name="text">The string being parsed.</param>
+        /// <param name="startPos">The position in <paramref name="text"/> where we should start
+        /// looking for <paramref name="delimiter"/>.</param>
+        /// <param name="baseVal">A partial parse result (often the rule's base value),
+        /// which is combined with the result from matching the substitution <paramref name="sub"/>.</param>
+        /// <param name="delimiter">The string to search <paramref name="text"/> for.</param>
+        /// <param name="pluralFormatDelimiter"></param>
+        /// <param name="pp">Ignored and presumed to be 0 on entry. If there's a match,
+        /// on exit this will point to the first unmatched character.</param>
+        /// <param name="sub">If we find <paramref name="delimiter"/> in <paramref name="text"/>, this substitution is used
+        /// to match the text between the beginning of the string and the
+        /// position of <paramref name="delimiter"/>. (If "delimiter" is the empty string, then
+        /// this function just matches against this substitution and updates
+        /// everything accordingly.)</param>
+        /// <param name="upperBound">When matching the substitution, it will only
+        /// consider rules with base values lower than this value.</param>
+        /// <returns>If there's a match, this is the result of composing
+        /// <paramref name="baseVal"/> with the result of matching the substitution. Otherwise,
+        /// this is <c>Long.GetInstance(0)</c>. It's never <c>null</c>. If the result is an integer,
+        /// this will be an instance of <see cref="Long"/>; otherwise, it's an instance of
+        /// <see cref="Double"/>.</returns>
         private Number MatchToDelimiter(string text, int startPos, double baseVal,
                                         string delimiter, PluralFormat pluralFormatDelimiter, ParsePosition pp, NFSubstitution sub, double upperBound)
         {
@@ -1333,20 +1405,19 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Used by StripPrefix() to match characters.  If lenient parse mode
-         * is off, this just calls startsWith().  If lenient parse mode is on,
-         * this function uses CollationElementIterators to match characters in
-         * the strings (only primary-order differences are significant in
-         * determining whether there's a match).
-         * @param str The string being tested
-         * @param prefix The text we're hoping to see at the beginning
-         * of "str"
-         * @return If "prefix" is found at the beginning of "str", this
-         * is the number of characters in "str" that were matched (this
-         * isn't necessarily the same as the length of "prefix" when matching
-         * text with a collator).  If there's no match, this is 0.
-         */
+        /// <summary>
+        /// Used by <see cref="StripPrefix(string, string, ParsePosition)"/> to match characters. If lenient parse mode
+        /// is off, this just calls <see cref="string.StartsWith(string, StringComparison)"/> using <see cref="StringComparison.Ordinal"/>.
+        /// If lenient parse mode is on, this function uses <see cref="CollationElementIterator"/>s to match characters in
+        /// the strings (only primary-order differences are significant in
+        /// determining whether there's a match).
+        /// </summary>
+        /// <param name="str">The string being tested.</param>
+        /// <param name="prefix">The text we're hoping to see at the beginning of <paramref name="str"/>.</param>
+        /// <returns>If <paramref name="prefix"/> is found at the beginning of <paramref name="str"/>, this
+        /// is the number of characters in <paramref name="str"/> that were matched (this
+        /// isn't necessarily the same as the length of <paramref name="prefix"/> when matching
+        /// text with a collator). If there's no match, this is 0.</returns>
         private int PrefixLength(string str, string prefix)
         {
             // if we're looking for an empty prefix, it obviously matches
@@ -1373,21 +1444,22 @@ namespace ICU4N.Text
             return 0;
         }
 
-        /**
-         * Searches a string for another string.  If lenient parsing is off,
-         * this just calls indexOf().  If lenient parsing is on, this function
-         * uses CollationElementIterator to match characters, and only
-         * primary-order differences are significant in determining whether
-         * there's a match.
-         * @param str The string to search
-         * @param key The string to search "str" for
-         * @param startingAt The index into "str" where the search is to
-         * begin
-         * @return A two-element array of ints.  Element 0 is the position
-         * of the match, or -1 if there was no match.  Element 1 is the
-         * number of characters in "str" that matched (which isn't necessarily
-         * the same as the length of "key")
-         */
+        /// <summary>
+        /// Searches a string for another string. If lenient parsing is off,
+        /// this just calls <see cref="string.IndexOf(string, int, StringComparison)"/>.
+        /// If lenient parsing is on, this function
+        /// uses <see cref="CollationElementIterator"/> to match characters, and only
+        /// primary-order differences are significant in determining whether
+        /// there's a match.
+        /// </summary>
+        /// <param name="str">The string to search.</param>
+        /// <param name="key">The string to search <paramref name="str"/> for.</param>
+        /// <param name="pluralFormatKey"></param>
+        /// <param name="startingAt">The index into <paramref name="str"/> where the search is to begin.</param>
+        /// <returns>A two-element array of ints.  Element 0 is the position
+        /// of the match, or -1 if there was no match.  Element 1 is the
+        /// number of characters in <paramref name="str"/> that matched (which isn't necessarily
+        /// the same as the length of <paramref name="key"/>).</returns>
         private int[] FindText(string str, string key, PluralFormat pluralFormatKey, int startingAt)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -1428,14 +1500,14 @@ namespace ICU4N.Text
             return new int[] { str.IndexOf(key, startingAt, StringComparison.Ordinal), key.Length };
         }
 
-        /**
-         * Checks to see whether a string consists entirely of ignorable
-         * characters.
-         * @param str The string to test.
-         * @return true if the string is empty of consists entirely of
-         * characters that the number formatter's collator says are
-         * ignorable at the primary-order level.  false otherwise.
-         */
+        /// <summary>
+        /// Checks to see whether a string consists entirely of ignorable
+        /// characters.
+        /// </summary>
+        /// <param name="str">The string to test.</param>
+        /// <returns><c>true</c> if the string is empty of consists entirely of
+        /// characters that the number formatter's collator says are
+        /// ignorable at the primary-order level; <c>false</c> otherwise.</returns>
         private bool AllIgnorable(string str)
         {
             // if the string is empty, we can just return true
