@@ -1,5 +1,6 @@
 ﻿using ICU4N.Text;
 using System;
+#nullable enable
 
 namespace ICU4N.Globalization
 {
@@ -13,7 +14,7 @@ namespace ICU4N.Globalization
     /// divisor and formats the quotient. Represented by &lt;&lt; in normal
     /// rules.
     /// </summary>
-    internal class MultiplierSubstitution : NumberFormatSubstitution
+    internal sealed class MultiplierSubstitution : NumberFormatSubstitution
     {
         //-----------------------------------------------------------------------
         // data members
@@ -37,6 +38,7 @@ namespace ICU4N.Globalization
         /// <param name="rule">The rule that owns this substitution.</param>
         /// <param name="ruleSet">The ruleSet this substitution uses to format its result.</param>
         /// <param name="description">The description describing this substitution.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="rule"/> is <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="rule"/>.<see cref="NumberFormatRule.Divisor"/> is 0,
         /// which would cause infinite recursion.</exception>
         internal MultiplierSubstitution(int pos,
@@ -45,6 +47,8 @@ namespace ICU4N.Globalization
                                ReadOnlySpan<char> description)
             : base(pos, ruleSet, description)
         {
+            if (rule is null)
+                throw new ArgumentNullException(nameof(rule));
 
             // the owning rule's divisor affects the behavior of this
             // substitution.  Rather than keeping a back-pointer to the
@@ -66,7 +70,7 @@ namespace ICU4N.Globalization
         /// <exception cref="InvalidOperationException">The calculated divisor is 0.</exception>
         public override void SetDivisor(int radix, short exponent)
         {
-            divisor = NFRule.Power(radix, exponent);
+            divisor = NumberFormatRule.Power(radix, exponent);
 
             if (divisor == 0)
             {
@@ -79,11 +83,11 @@ namespace ICU4N.Globalization
         //-----------------------------------------------------------------------
 
         /// <summary>
-        /// Augments the superclass's <see cref="Equals(object)"/> function by comparing divisors.
+        /// Augments the superclass's <see cref="Equals(object?)"/> function by comparing divisors.
         /// </summary>
         /// <param name="that">The other substitution</param>
         /// <returns><c>true</c> if the two substitutions are functionally equal.</returns>
-        public override bool Equals(object that)
+        public override bool Equals(object? that)
         {
             return base.Equals(that) && divisor == ((MultiplierSubstitution)that).divisor;
         }

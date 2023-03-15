@@ -1,5 +1,5 @@
-﻿using ICU4N.Text;
-using System;
+﻿using System;
+#nullable enable
 
 namespace ICU4N.Globalization
 {
@@ -13,7 +13,7 @@ namespace ICU4N.Globalization
     /// divisor and formats the remainder. Represented by "&gt;&gt;" in a
     /// regular rule.
     /// </summary>
-    internal class ModulusSubstitution : NumberFormatSubstitution
+    internal sealed class ModulusSubstitution : NumberFormatSubstitution
     {
         //-----------------------------------------------------------------------
         // data members
@@ -28,7 +28,7 @@ namespace ICU4N.Globalization
         /// If this is a &gt;&gt;&gt; substitution, the rule to use to format
         /// the substitution value.  Otherwise, <c>null</c>.
         /// </summary>
-        private readonly NumberFormatRule ruleToUse;
+        private readonly NumberFormatRule? ruleToUse;
 
         //-----------------------------------------------------------------------
         // construction
@@ -47,6 +47,7 @@ namespace ICU4N.Globalization
         /// rule in its rule set's rule list.</param>
         /// <param name="ruleSet">The rule set that owns this substitution.</param>
         /// <param name="description">The description for this substitution.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="rule"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
         /// <paramref name="description"/> length is 1.
         /// <para/>
@@ -62,11 +63,13 @@ namespace ICU4N.Globalization
         /// which would cause infinite recursion.</exception>
         internal ModulusSubstitution(int pos,
                 NumberFormatRule rule,
-                NumberFormatRule rulePredecessor,
+                NumberFormatRule? rulePredecessor,
                 NumberFormatRuleSet ruleSet,
                 ReadOnlySpan<char> description)
             : base(pos, ruleSet, description)
         {
+            if (rule is null)
+                throw new ArgumentNullException(nameof(rule));
 
             // the owning rule's divisor controls the behavior of this
             // substitution: rather than keeping a backpointer to the rule,
@@ -103,7 +106,7 @@ namespace ICU4N.Globalization
         /// <exception cref="InvalidOperationException">The calculated divisor is 0.</exception>
         public override void SetDivisor(int radix, short exponent)
         {
-            divisor = NFRule.Power(radix, exponent);
+            divisor = NumberFormatRule.Power(radix, exponent);
 
             if (divisor == 0)
             { // this will cause recursion
@@ -116,11 +119,11 @@ namespace ICU4N.Globalization
         //-----------------------------------------------------------------------
 
         /// <summary>
-        /// Augments the inherited <see cref="Equals(object)"/> function by comparing divisors.
+        /// Augments the inherited <see cref="Equals(object?)"/> function by comparing divisors.
         /// </summary>
         /// <param name="that">The other substitution.</param>
         /// <returns><c>true</c> if the two substitutions are functionally equivalent.</returns>
-        public override bool Equals(object that)
+        public override bool Equals(object? that)
         {
             if (base.Equals(that))
             {
@@ -264,7 +267,7 @@ namespace ICU4N.Globalization
         //    {
         //        // but if it IS a >>> substitution, we have to do it here: we
         //        // use the specific rule's doParse() method, and then we have to
-        //        // do some of the other work of NFRuleSet.parse()
+        //        // do some of the other work of NumberFormatRuleSet.parse()
         //        Number tempResult = ruleToUse.DoParse(text, parsePosition, false, upperBound);
 
         //        if (parsePosition.Index != 0)

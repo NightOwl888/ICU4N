@@ -1,4 +1,5 @@
 ﻿using System;
+#nullable enable
 
 namespace ICU4N.Globalization
 {
@@ -11,7 +12,7 @@ namespace ICU4N.Globalization
     /// A substitution that formats the fractional part of a number. This is
     /// represented by &gt;&gt; in a fraction rule.
     /// </summary>
-    internal class FractionalPartSubstitution : NumberFormatSubstitution
+    internal sealed class FractionalPartSubstitution : NumberFormatSubstitution
     {
         //-----------------------------------------------------------------------
         // data members
@@ -67,7 +68,7 @@ namespace ICU4N.Globalization
             {
                 byDigits = false;
                 useSpaces = true;
-                this.ruleSet.MakeIntoFractionRuleSet();
+                this.ruleSet!.MakeIntoFractionRuleSet();
             }
         }
 

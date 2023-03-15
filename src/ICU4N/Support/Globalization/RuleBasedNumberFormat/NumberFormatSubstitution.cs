@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+#nullable enable
 
 namespace ICU4N.Globalization
 {
 #if FEATURE_SPAN
     //===================================================================
-    // NFSubstitution (abstract base class)
+    // NumberFormatSubstitution (abstract base class)
     //===================================================================
 
     /// <summary>
@@ -29,19 +30,149 @@ namespace ICU4N.Globalization
         /// The rule set this substitution uses to format its result, or null.
         /// (Either this or <see cref="numberFormatPattern"/> has to be non-null.)
         /// </summary>
-        internal readonly NumberFormatRuleSet ruleSet;
+        internal readonly NumberFormatRuleSet? ruleSet;
 
         /// <summary>
         /// The pattern string this substitution uses to format its result, or <c>null</c>.
         /// (Either this or <see cref="ruleSet"/> has to be non-null.)
         /// </summary>
-        internal readonly string numberFormatPattern;
+        internal readonly string? numberFormatPattern;
 
         //-----------------------------------------------------------------------
         // construction
         //-----------------------------------------------------------------------
 
-        // ICU4N TODO: Implementation
+        /// <summary>
+        /// Parses the description, creates the right kind of substitution,
+        /// and initializes it based on the description.
+        /// </summary>
+        /// <param name="pos">The substitution's position in the rule text of the
+        /// rule that owns it.</param>
+        /// <param name="rule">The rule containing this substitution.</param>
+        /// <param name="rulePredecessor">The rule preceding the one that contains
+        /// this substitution in the rule set's rule list (this is used
+        /// only for &gt;&gt;&gt; substitutions).</param>
+        /// <param name="ruleSet">The rule set containing the rule containing this substitution.</param>
+        /// <param name="owner">The <see cref="INumberFormatRules"/> that ultimately owns
+        /// this substitution.</param>
+        /// <param name="description">The description to parse to build the substitution
+        /// (this is just the substring of the rule's description containing
+        /// the substitution token itself).</param>
+        /// <returns>A new substitution constructed according to the description.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="rule"/>, <paramref name="ruleSet"/>
+        /// or <paramref name="owner"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="description"/> starts with '&lt;'
+        /// and <paramref name="rule"/>.<see cref="NumberFormatRule.BaseValue"/> is <see cref="NumberFormatRule.NegativeNumberRule"/>.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// <paramref name="description"/> starts with '&gt;'
+        /// and <paramref name="ruleSet"/>.<see cref="NumberFormatRuleSet.IsFractionSet"/> is <c>true</c>.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// <paramref name="description"/> starts with a <see cref="char"/> other than '&lt;', '&gt;', or '='.
+        /// </exception>
+        public static NumberFormatSubstitution? MakeSubstitution(
+            int pos,
+            NumberFormatRule rule,
+            NumberFormatRule? rulePredecessor,
+            NumberFormatRuleSet ruleSet,
+            INumberFormatRules owner,
+            ReadOnlySpan<char> description)
+        {
+            if (rule is null)
+                throw new ArgumentNullException(nameof(rule));
+            if (ruleSet is null)
+                throw new ArgumentNullException(nameof(ruleSet));
+            if (owner is null)
+                throw new ArgumentNullException(nameof(owner));
+
+            // if the description is empty, return a NullSubstitution
+            if (description.Length == 0)
+            {
+                return null;
+            }
+
+            switch (description[0])
+            {
+                case '<':
+                    if (rule.BaseValue == NumberFormatRule.NegativeNumberRule)
+                    {
+                        // throw an exception if the rule is a negative number rule
+                        ////CLOVER:OFF
+                        // If you look at the call hierarchy of this method, the rule would
+                        // never be directly modified by the user and therefore makes the
+                        // following pointless unless the user changes the ruleset.
+                        throw new ArgumentException("<< not allowed in negative-number rule");
+                        ////CLOVER:ON
+                    }
+                    else if (rule.BaseValue == NumberFormatRule.ImproperFractionRule
+                             || rule.BaseValue == NumberFormatRule.ProperFractionRule
+                             || rule.BaseValue == NumberFormatRule.MasterRule)
+                    {
+                        // if the rule is a fraction rule, return an IntegralPartSubstitution
+                        return new IntegralPartSubstitution(pos, ruleSet, description);
+                    }
+                    else if (ruleSet.IsFractionSet)
+                    {
+                        // if the rule set containing the rule is a fraction
+                        // rule set, return a NumeratorSubstitution
+                        return new NumeratorSubstitution(pos, rule.BaseValue,
+                                                         owner.DefaultRuleSet, description);
+                    }
+                    else
+                    {
+                        // otherwise, return a MultiplierSubstitution
+                        return new MultiplierSubstitution(pos, rule, ruleSet,
+                                                          description);
+                    }
+
+                case '>':
+                    if (rule.BaseValue == NumberFormatRule.NegativeNumberRule)
+                    {
+                        // if the rule is a negative-number rule, return
+                        // an AbsoluteValueSubstitution
+                        return new AbsoluteValueSubstitution(pos, ruleSet, description);
+                    }
+                    else if (rule.BaseValue == NumberFormatRule.ImproperFractionRule
+                             || rule.BaseValue == NumberFormatRule.ProperFractionRule
+                             || rule.BaseValue == NumberFormatRule.MasterRule)
+                    {
+                        // if the rule is a fraction rule, return a
+                        // FractionalPartSubstitution
+                        return new FractionalPartSubstitution(pos, ruleSet, description);
+                    }
+                    else if (ruleSet.IsFractionSet)
+                    {
+                        // if the rule set owning the rule is a fraction rule set,
+                        // throw an exception
+                        ////CLOVER:OFF
+                        // If you look at the call hierarchy of this method, the rule would
+                        // never be directly modified by the user and therefore makes the
+                        // following pointless unless the user changes the ruleset.
+                        throw new ArgumentException(">> not allowed in fraction rule set");
+                        ////CLOVER:ON
+                    }
+                    else
+                    {
+                        // otherwise, return a ModulusSubstitution
+                        return new ModulusSubstitution(pos, rule, rulePredecessor,
+                                                       ruleSet, description);
+                    }
+                case '=':
+                    return new SameValueSubstitution(pos, ruleSet, description);
+                default:
+                    // and if it's anything else, throw an exception
+                    ////CLOVER:OFF
+                    // If you look at the call hierarchy of this method, the rule would
+                    // never be directly modified by the user and therefore makes the
+                    // following pointless unless the user changes the ruleset.
+                    throw new ArgumentException("Illegal substitution character");
+                    ////CLOVER:ON
+            }
+        }
 
         /// <summary>
         /// Base constructor for substitutions. This constructor sets up the
@@ -50,7 +181,9 @@ namespace ICU4N.Globalization
         /// <param name="pos">The substitution's position in the owning rule's rule text.</param>
         /// <param name="ruleSet">The rule set that owns this substitution.</param>
         /// <param name="description">The substitution descriptor (i.e., the text
-        /// inside the token characters)</param>
+        /// inside the token characters).</param>
+        /// <exception cref="ArgumentNullException"><paramref name="description"/> starts with a '%'
+        /// and <paramref name="ruleSet"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">
         /// <paramref name="description"/> length is 1.
         /// <para/>
@@ -64,7 +197,7 @@ namespace ICU4N.Globalization
         /// </exception>
         [SuppressMessage("Major Code Smell", "S1871:Two branches in a conditional structure should not have exactly the same implementation", Justification = "These are tested in a specific order")]
         private protected NumberFormatSubstitution(int pos, // ICU4N: Changed from internal to private protected
-                       NumberFormatRuleSet ruleSet,
+                       NumberFormatRuleSet? ruleSet,
                        ReadOnlySpan<char> description)
         {
             // initialize the substitution's position in its parent rule
@@ -94,6 +227,9 @@ namespace ICU4N.Globalization
             }
             else if (description[0] == '%')
             {
+                if (ruleSet is null)
+                    throw new ArgumentNullException(nameof(ruleSet));
+
                 // if the description contains a rule set name, that's the rule
                 // set we use to format the result: get a reference to the
                 // names rule set
@@ -149,7 +285,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <param name="that">The substitution to compare this one to.</param>
         /// <returns><c>true</c> if the two substitutions are functionally equivalent.</returns>
-        public override bool Equals(object that)
+        public override bool Equals(object? that)
         {
             // compare class and all of the fields all substitutions have
             // in common
@@ -161,7 +297,7 @@ namespace ICU4N.Globalization
             {
                 return true;
             }
-            if (this.GetType() == that.GetType()) // ICU4N TODO: This probably won't work for inherited members. Need to check.
+            if (this.GetType() == that.GetType()) // ICU4N NOTE: This compares the type of the subclass, also, so this method is used in those classes to check the type.
             {
                 NumberFormatSubstitution that2 = (NumberFormatSubstitution)that;
 
@@ -290,7 +426,7 @@ namespace ICU4N.Globalization
         //    //if (double.IsInfinity(numberToFormat))
         //    //{
         //    //    // This is probably a minus rule. Combine it with an infinite rule.
-        //    //    NFRule infiniteRule = ruleSet.FindRule(double.PositiveInfinity);
+        //    //    NumberFormatRule infiniteRule = ruleSet.FindRule(double.PositiveInfinity);
         //    //    infiniteRule.DoFormat(numberToFormat, toInsertInto, position + pos, recursionCount);
         //    //    return;
         //    //}

@@ -1,4 +1,5 @@
 ﻿using System;
+#nullable enable
 
 namespace ICU4N.Globalization
 {
@@ -10,12 +11,12 @@ namespace ICU4N.Globalization
     /// </summary>
     internal interface INumberFormatRules
     {
-        ///// <summary>
-        ///// Gets a reference to the current default rule set. The default
-        ///// rule set is the last public rule set in the description, or the one
-        ///// most recently set.
-        ///// </summary>
-        //NumberFormatRuleSet DefaultRuleSet { get; } // ICU4N TODO: This needs to come from NumberingSystem.Description (culture data) and be passed in all format methods
+        /// <summary>
+        /// Gets a reference to the current default rule set. The default
+        /// rule set is the last public rule set in the description, or the one
+        /// most recently set.
+        /// </summary>
+        NumberFormatRuleSet DefaultRuleSet { get; }
 
         /// <summary>
         /// Returns the named rule set. Throws an <see cref="ArgumentException"/>
@@ -24,7 +25,7 @@ namespace ICU4N.Globalization
         /// <param name="name">The name of the desired rule set.</param>
         /// <returns>The rule set with that name.</returns>
         /// <exception cref="ArgumentException">No rule exists with the provided <paramref name="name"/>.</exception>
-        NumberFormatRuleSet FindRuleSet(string name);
+        NumberFormatRuleSet FindRuleSet(string name); // ICU4N TODO: API - Change this to GetRuleSet()/TryGetRuleSet()/ContainsRuleSet() to make this easier to work with.
     }
 #endif
 }

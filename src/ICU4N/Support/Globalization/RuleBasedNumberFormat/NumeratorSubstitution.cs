@@ -1,4 +1,5 @@
 ﻿using System;
+#nullable enable
 
 namespace ICU4N.Globalization
 {
@@ -13,7 +14,7 @@ namespace ICU4N.Globalization
     /// formats the result. It is represented by &lt;&lt; in the rules
     /// in a fraction rule set.
     /// </summary>
-    internal class NumeratorSubstitution : NumberFormatSubstitution
+    internal sealed class NumeratorSubstitution : NumberFormatSubstitution
     {
         //-----------------------------------------------------------------------
         // data members
@@ -57,7 +58,7 @@ namespace ICU4N.Globalization
         /// </exception>
         internal NumeratorSubstitution(int pos,
                               double denominator,
-                              NumberFormatRuleSet ruleSet,
+                              NumberFormatRuleSet? ruleSet,
                               ReadOnlySpan<char> description)
             : base(pos, ruleSet, FixDescription(description))
         {
@@ -96,13 +97,11 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <param name="that">The other <see cref="NumeratorSubstitution"/>.</param>
         /// <returns><c>true</c> if the two objects are functionally equivalent.</returns>
-        public override bool Equals(object that)
+        public override bool Equals(object? that)
         {
-            if (that is NumeratorSubstitution that2)
+            if (base.Equals(that))
             {
-                if (!base.Equals(that))
-                    return false;
-
+                NumeratorSubstitution that2 = (NumeratorSubstitution)that;
                 return denominator == that2.denominator && withZeros == that2.withZeros;
             }
             return false;

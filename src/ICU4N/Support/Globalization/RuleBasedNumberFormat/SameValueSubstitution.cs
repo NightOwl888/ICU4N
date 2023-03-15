@@ -1,4 +1,5 @@
 ﻿using System;
+#nullable enable
 
 namespace ICU4N.Globalization
 {
@@ -11,7 +12,7 @@ namespace ICU4N.Globalization
     /// A substitution that passes the value passed to it through unchanged.
     /// Represented by == in rule descriptions.
     /// </summary>
-    internal class SameValueSubstitution : NumberFormatSubstitution
+    internal sealed class SameValueSubstitution : NumberFormatSubstitution
     {
         //-----------------------------------------------------------------------
         // construction

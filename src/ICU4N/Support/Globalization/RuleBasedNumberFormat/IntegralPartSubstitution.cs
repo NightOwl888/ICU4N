@@ -1,4 +1,5 @@
 ﻿using System;
+#nullable enable
 
 namespace ICU4N.Globalization
 {
@@ -11,7 +12,7 @@ namespace ICU4N.Globalization
     /// A substitution that formats the number's integral part. This is
     /// represented by &lt;&lt; in a fraction rule.
     /// </summary>
-    internal class IntegralPartSubstitution : NumberFormatSubstitution
+    internal sealed class IntegralPartSubstitution : NumberFormatSubstitution
     {
         //-----------------------------------------------------------------------
         // construction

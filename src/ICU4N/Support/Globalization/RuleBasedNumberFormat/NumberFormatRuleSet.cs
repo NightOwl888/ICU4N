@@ -1,6 +1,9 @@
-﻿using System;
+﻿using ICU4N.Impl;
+using ICU4N.Text;
+using System;
 using System.Collections.Generic;
 using System.Text;
+#nullable enable
 
 namespace ICU4N.Globalization
 {
@@ -12,7 +15,7 @@ namespace ICU4N.Globalization
     /// control to it, and to arbitrate between different rules when parsing
     /// a number.
     /// </summary>
-    internal partial class NumberFormatRuleSet
+    internal sealed partial class NumberFormatRuleSet
     {
         //-----------------------------------------------------------------------
         // data members
@@ -26,19 +29,18 @@ namespace ICU4N.Globalization
         /// <summary>
         /// The rule set's regular rules
         /// </summary>
-        private NumberFormatRule[] rules;
-
+        private NumberFormatRule[]? rules;
 
         /// <summary>
         /// The rule set's non-numerical rules like negative, fractions, infinity and NaN
         /// </summary>
-        internal readonly NumberFormatRule[] nonNumericalRules = new NumberFormatRule[6];
+        internal readonly NumberFormatRule?[] nonNumericalRules = new NumberFormatRule[6];
 
         /// <summary>
         /// These are a pile of fraction rules in declared order. They may have alternate
         /// ways to represent fractions.
         /// </summary>
-        private List<NumberFormatRule> fractionRules;
+        private List<NumberFormatRule>? fractionRules;
 
         /// <summary>-x</summary>
         private const int NegativeRuleIndex = 0;
@@ -82,7 +84,252 @@ namespace ICU4N.Globalization
         // construction
         //-----------------------------------------------------------------------
 
-        // ICU4N TODO: Implementation
+        /// <summary>
+        /// Constructs a rule set.
+        /// </summary>
+        /// <param name="owner">The <see cref="INumberFormatRules"/> that owns this rule set.</param>
+        /// <param name="description">The description of this rule set.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="description"/> is zero length.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// The rule set name within <paramref name="description"/> doesn't end in a colon (:).
+        /// </exception>
+        public NumberFormatRuleSet(INumberFormatRules owner, ReadOnlySpan<char> description)
+        {
+            this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
+
+            if (description.Length == 0)
+                throw new ArgumentException("Empty rule set description");
+
+            // if the description begins with a rule set name (the rule set
+            // name can be omitted in formatter descriptions that consist
+            // of only one rule set), copy it out into our "name" member
+            // and delete it from the description
+            if (description[0] == '%')
+            {
+                int pos = description.IndexOf(':');
+                if (pos == -1)
+                {
+                    throw new ArgumentException("Rule set name doesn't end in colon");
+                }
+                else
+                {
+                    ReadOnlySpan<char> name = description.Slice(0, pos); // ICU4N: Checked 2nd parameter
+                    this.isParseable = !name.EndsWith("@noparse", StringComparison.Ordinal);
+                    if (!this.isParseable)
+                    {
+                        name = name.Slice(0, name.Length - 8); // Remove the @noparse from the name
+                    }
+                    this.name = new string(name);
+                }
+            }
+            else
+            {
+                // if the description doesn't begin with a rule set name, its
+                // name is "%default"
+                this.name = "%default";
+                isParseable = true;
+            }
+
+            // all of the other members of NumberFormatRuleSet are initialized
+            // by ParseRules()
+        }
+
+        /// <summary>
+        /// Construct the subordinate data structures used by this object.
+        /// This function is called by the <see cref="RuleBasedNumberFormat"/> constructor
+        /// after all the rule sets have been created to actually parse
+        /// the description and build rules from it. Since any rule set
+        /// can refer to any other rule set, we have to have created all of
+        /// them before we can create anything else.
+        /// </summary>
+        /// <param name="description">The textual description of this rule set.</param>
+        /// <exception cref="ArgumentException">
+        /// The rules in <paramref name="description"/> are not specified in the correct order.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A rule within <paramref name="description"/> does not have a defined type ("ordinal" or "cardinal").
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A rule within <paramref name="description"/> has an invalid type (one other than "ordinal" or "cardinal").
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <paramref name="description"/> starts with '&lt;'
+        /// and its base value is <see cref="NumberFormatRule.NegativeNumberRule"/>.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <paramref name="description"/> starts with '&gt;'
+        /// and <see cref="NumberFormatRuleSet.IsFractionSet"/> is <c>true</c>.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// A substitution within <paramref name="description"/> starts with a <see cref="char"/> other than '&lt;', '&gt;', or '='.
+        /// </exception>
+        public void ParseRules(ReadOnlySpan<char> description)
+        {
+            // (the number of elements in the description list isn't necessarily
+            // the number of rules-- some descriptions may expend into two rules)
+            LinkedList<NumberFormatRule> tempRules = new LinkedList<NumberFormatRule>();
+
+            // we keep track of the rule before the one we're currently working
+            // on solely to support >>> substitutions
+            NumberFormatRule? predecessor = null;
+
+            // Iterate through the rules.  The rules
+            // are separated by semicolons (there's no escape facility: ALL
+            // semicolons are rule delimiters)
+            var ruleTokens = description.AsTokens(';', PatternProps.WhiteSpace);
+            while (ruleTokens.MoveNext())
+            {
+                // makeRules (a factory method on NumberFormatRule) will return either
+                // a single rule or an array of rules.  Either way, add them
+                // to our rule vector
+                NumberFormatRule.MakeRules(ruleTokens.Current.Text, this, predecessor, owner, tempRules);
+                if (tempRules.Count != 0)
+                {
+                    predecessor = tempRules.Last!.Value;
+                }
+            }
+
+            // for rules that didn't specify a base value, their base values
+            // were initialized to 0.  Make another pass through the list and
+            // set all those rules' base values.  We also remove any special
+            // rules from the list and put them into their own member variables
+            long defaultBaseValue = 0;
+
+            foreach (NumberFormatRule rule in tempRules)
+            {
+                long baseValue = rule.BaseValue;
+                if (baseValue == 0)
+                {
+                    // if the rule's base value is 0, fill in a default
+                    // base value (this will be 1 plus the preceding
+                    // rule's base value for regular rule sets, and the
+                    // same as the preceding rule's base value in fraction
+                    // rule sets)
+                    rule.SetBaseValue(defaultBaseValue);
+                }
+                else
+                {
+                    // if it's a regular rule that already knows its base value,
+                    // check to make sure the rules are in order, and update
+                    // the default base value for the next rule
+                    if (baseValue < defaultBaseValue)
+                    {
+                        throw new ArgumentException("Rules are not in order, base: " +
+                                baseValue + " < " + defaultBaseValue);
+                    }
+                    defaultBaseValue = baseValue;
+                }
+                if (!isFractionRuleSet)
+                {
+                    ++defaultBaseValue;
+                }
+            }
+
+            // finally, we can copy the rules from the vector into a
+            // fixed-length array
+            rules = new NumberFormatRule[tempRules.Count];
+            tempRules.CopyTo(rules, 0);
+        }
+
+        /// <summary>
+        /// Set one of the non-numerical rules.
+        /// </summary>
+        /// <param name="rule">The rule to set.</param>
+        internal void SetNonNumericalRule(NumberFormatRule rule)
+        {
+            long baseValue = rule.BaseValue;
+            if (baseValue == NumberFormatRule.NegativeNumberRule)
+            {
+                nonNumericalRules[NumberFormatRuleSet.NegativeRuleIndex] = rule;
+            }
+            else if (baseValue == NumberFormatRule.ImproperFractionRule)
+            {
+                SetBestFractionRule(NumberFormatRuleSet.ImproperFractionRuleIndex, rule, true);
+            }
+            else if (baseValue == NumberFormatRule.ProperFractionRule)
+            {
+                SetBestFractionRule(NumberFormatRuleSet.ProperFractionRuleIndex, rule, true);
+            }
+            else if (baseValue == NumberFormatRule.MasterRule)
+            {
+                SetBestFractionRule(NumberFormatRuleSet.MasterRuleIndex, rule, true);
+            }
+            else if (baseValue == NumberFormatRule.InfinityRule)
+            {
+                nonNumericalRules[NumberFormatRuleSet.InfinityRuleIndex] = rule;
+            }
+            else if (baseValue == NumberFormatRule.NaNRule)
+            {
+                nonNumericalRules[NumberFormatRuleSet.NaNRuleIndex] = rule;
+            }
+        }
+
+        /// <summary>
+        /// Determine the best fraction rule to use. Rules matching the decimal point from
+        /// <see cref="DecimalFormatSymbols"/> become the main set of rules to use.
+        /// </summary>
+        /// <param name="originalIndex">The index into <see cref="nonNumericalRules"/>.</param>
+        /// <param name="newRule">The new rule to consider.</param>
+        /// <param name="rememberRule">Should the new rule be added to <see cref="fractionRules"/>.</param>
+        private void SetBestFractionRule(int originalIndex, NumberFormatRule newRule, bool rememberRule) // ICU4N TODO: Get rid of "rememberRule" parameter (this will only be used during construction). Create GetBestFractionRule() method for formatter.
+        {
+            if (rememberRule)
+            {
+                if (fractionRules is null)
+                {
+                    fractionRules = new List<NumberFormatRule>();
+                }
+                fractionRules.Add(newRule);
+            }
+            NumberFormatRule? bestResult = nonNumericalRules[originalIndex];
+            if (bestResult is null)
+            {
+                nonNumericalRules[originalIndex] = newRule;
+            }
+            //else
+            //{
+            //    // We have more than one. Which one is better?
+            //    DecimalFormatSymbols decimalFormatSymbols = owner.DecimalFormatSymbols;
+            //    if (decimalFormatSymbols.DecimalSeparator == newRule.DecimalPoint)
+            //    {
+            //        nonNumericalRules[originalIndex] = newRule;
+            //    }
+            //    // else leave it alone
+            //}
+        }
+
+        /// <summary>
+        /// Gets the best fraction rule for the supplied <paramref name="decimalFormatSymbols"/> or <c>null</c>
+        /// if no rule was found.
+        /// <para/>
+        /// This is purely a runtime method. It should always be used when parsing or formatting non-numerical rules.
+        /// </summary>
+        /// <param name="originalIndex">The index into <see cref="nonNumericalRules"/>.</param>
+        /// <param name="decimalFormatSymbols">The decimal format symbols for the current request.</param>
+        /// <returns>The best rule that was registered during the construction of this class or <c>null</c> if no rule was found.</returns>
+        public NumberFormatRule? GetBestFractionRule(int originalIndex, IDecimalFormatSymbols decimalFormatSymbols)
+        {
+            if (fractionRules is not null)
+            {
+                foreach (var rule in fractionRules)
+                {
+                    if (rule.BaseValue == originalIndex && decimalFormatSymbols.DecimalSeparatorString == rule.DecimalPoint)
+                    {
+                        return rule;
+                    }
+                }
+            }
+            return nonNumericalRules[originalIndex];
+        }
 
         /// <summary>
         /// Flags this rule set as a fraction rule set. This function is
@@ -106,14 +353,14 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <param name="that">The other rule set.</param>
         /// <returns><c>true</c> if the two rule sets are equivalent.</returns>
-        public override bool Equals(object that)
+        public override bool Equals(object? that)
         {
             // if different classes, they're not equal
             if (that is NumberFormatRuleSet that2)
             {
                 // otherwise, compare the members one by one...
                 if (!name.Equals(that2.name, StringComparison.Ordinal)
-                        || rules.Length != that2.rules.Length
+                        || rules!.Length != that2.rules!.Length // This is never null after construction
                         || isFractionRuleSet != that2.isFractionRuleSet)
                 {
                     return false;
@@ -186,17 +433,17 @@ namespace ICU4N.Globalization
             result.Append(name).Append(":\n");
 
             // followed by the regular rules...
-            foreach (NumberFormatRule rule in rules)
+            foreach (NumberFormatRule rule in rules!)
             {
                 result.Append(rule.ToString()).Append('\n');
             }
 
             // followed by the special rules (if they exist)
-            foreach (NumberFormatRule rule in nonNumericalRules)
+            foreach (NumberFormatRule? rule in nonNumericalRules)
             {
-                if (rule != null)
+                if (rule is not null)
                 {
-                    if (fractionRules != null && // ICU4N: There was a bug in ICU4J here - this collection may be null, so we need to use the default value in those cases
+                    if (fractionRules is not null && // ICU4N: There was a bug in ICU4J here - this collection may be null, so we need to use the default value in those cases
                         (rule.BaseValue == NumberFormatRule.ImproperFractionRule
                         || rule.BaseValue == NumberFormatRule.ProperFractionRule
                         || rule.BaseValue == NumberFormatRule.MasterRule))

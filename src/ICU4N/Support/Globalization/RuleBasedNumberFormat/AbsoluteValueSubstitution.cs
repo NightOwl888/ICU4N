@@ -1,4 +1,5 @@
 ﻿using System;
+#nullable enable
 
 namespace ICU4N.Globalization
 {
@@ -11,7 +12,7 @@ namespace ICU4N.Globalization
     /// A substitution that formats the absolute value of the number.
     /// This substitution is represented by &gt;&gt; in a negative-number rule.
     /// </summary>
-    internal class AbsoluteValueSubstitution : NumberFormatSubstitution
+    internal sealed class AbsoluteValueSubstitution : NumberFormatSubstitution
     {
         //-----------------------------------------------------------------------
         // construction
