@@ -100,24 +100,28 @@ namespace ICU4N.Globalization
         // ICU4N specific - we hold a reference to PluralRules instead of PluralFormat for now.
         // Once we figure out a way to format PluralFormat, this may need to be changed back.
 
-        /// <summary>
-        /// The rule's pluaral rules when defined. This is not a substitution
-        /// because it only works on the current <see cref="baseValue"/>. It's normally not
-        /// used due to the overhead.
-        /// </summary>
-        private PluralRules? pluralRules = null;
+        ///// <summary>
+        ///// The rule's pluaral rules when defined. This is not a substitution
+        ///// because it only works on the current <see cref="baseValue"/>. It's normally not
+        ///// used due to the overhead.
+        ///// </summary>
+        //private PluralRules? pluralRules = null; // ICU4N TODO: This must be instantiated in CultureData so it can be shared with instances of UNumberFormatInfo. It is instantiated using PluralRules.ForLocale(), but this needs to be fixed to pass the culture name as a string.
 
         /// <summary>
-        /// The rule's plural rule text when defined. This value is not defined when <see cref="pluralRules"/> is <c>null</c>.
+        /// The plural rules message pattern when defined.
+        /// </summary>
+        private MessagePattern? pluralMessagePattern = null;
+
+        /// <summary>
+        /// The rule's plural rule text when defined. This value is not defined when <see cref="pluralMessagePattern"/> is <c>null</c>.
         /// </summary>
         private string? pluralRulesText = null;
 
         /// <summary>
-        /// The rule's plural type when defined. This value is not defined when <see cref="pluralRules"/> is <c>null</c>.
+        /// The rule's plural type when defined. This value is not defined when <see cref="pluralMessagePattern"/> is <c>null</c>.
         /// </summary>
         private PluralType pluralType;
 
-        // ICU4N TODO: Use a MessagePattern instance instead of pluralRulesText to do the rule parsing during construction?
 
         /// <summary>
         /// The rule's first substitution (the one with the lower offset
@@ -607,7 +611,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Extracts the plural rules from the <paramref name="ruleText"/> and sets the
-        /// <see cref="pluralRules"/>, <see cref="pluralRulesText"/>, and <see cref="pluralType"/>
+        /// <see cref="pluralMessagePattern"/>, <see cref="pluralRulesText"/>, and <see cref="pluralType"/>
         /// fields, if a plural rule was found.
         /// </summary>
         /// <param name="ruleText">The rule text.</param>
@@ -643,8 +647,9 @@ namespace ICU4N.Globalization
                     throw new ArgumentException(string.Concat(type, " is an unknown type"));
                 }
                 ReadOnlySpan<char> pluralRuleText = ruleText.Slice(endType + 1, pluralRuleEnd - (endType + 1)); // ICU4N: Corrected 2nd parameter
-                this.pluralRules = PluralRules.ParseDescription(pluralRuleText);
+                //this.pluralRules = PluralRules.ParseDescription(pluralRuleText);
                 this.pluralRulesText = new string(pluralRuleText);
+                this.pluralMessagePattern = new MessagePattern().ParsePluralStyle(pluralRulesText);
 
                 //rulePatternFormat = formatter.CreatePluralFormat(pluralType,
                 //        ruleText.Substring(endType + 1, pluralRuleEnd - (endType + 1))); // ICU4N: Corrected 2nd parameter

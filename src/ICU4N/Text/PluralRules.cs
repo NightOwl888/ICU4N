@@ -3129,7 +3129,7 @@ namespace ICU4N.Text
         /// rules.
         /// </returns>
         /// <stable>ICU 3.8</stable>
-        public static PluralRules ForLocale(UCultureInfo locale)
+        public static PluralRules ForLocale(UCultureInfo locale) // ICU4N TODO: API - change to GetInstance() to match .NET ?
         {
 #pragma warning disable 612, 618
             return PluralRulesFactory.DefaultFactory.ForLocale(locale, PluralType.Cardinal);
@@ -3155,7 +3155,7 @@ namespace ICU4N.Text
         /// rules.
         /// </returns>
         /// <stable>ICU 54</stable>
-        public static PluralRules ForLocale(CultureInfo locale)
+        public static PluralRules ForLocale(CultureInfo locale) // ICU4N TODO: API - change to GetInstance() to match .NET ?
         {
             return ForLocale(locale.ToUCultureInfo());
         }
@@ -3179,7 +3179,7 @@ namespace ICU4N.Text
         /// rules.
         /// </returns>
         /// <stable>ICU 50</stable>
-        public static PluralRules ForLocale(UCultureInfo locale, PluralType type)
+        public static PluralRules ForLocale(UCultureInfo locale, PluralType type) // ICU4N TODO: API - change to GetInstance() to match .NET ?
         {
 #pragma warning disable 612, 618
             return PluralRulesFactory.DefaultFactory.ForLocale(locale, type);
@@ -3205,7 +3205,7 @@ namespace ICU4N.Text
         /// rules.
         /// </returns>
         /// <stable>ICU 54</stable>
-        public static PluralRules ForLocale(CultureInfo locale, PluralType type)
+        public static PluralRules ForLocale(CultureInfo locale, PluralType type) // ICU4N TODO: API - change to GetInstance() to match .NET ?
         {
             return ForLocale(locale.ToUCultureInfo(), type);
         }
