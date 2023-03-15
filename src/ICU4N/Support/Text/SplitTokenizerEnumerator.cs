@@ -248,6 +248,9 @@ namespace ICU4N.Text
     {
         /// <summary>
         /// These are the characters used by the Java Pattern class, which is a subset of the characters that are used in the .NET Regex class for "\s".
+        /// <para/>
+        /// Note this set is slightly different than <see cref="ICU4N.Impl.PatternProps.WhiteSpace"/>,
+        /// which is the set matched from <see cref="ICU4N.Impl.PatternProps.IsWhiteSpace(int)"/>.
         /// </summary>
         public static readonly char[] PatternWhiteSpace = new char[] { (char)0x09, (char)0x0a, (char)0x0b, (char)0x0c, (char)0x0d, (char)0x20 };
 

@@ -1,4 +1,6 @@
-﻿namespace ICU4N.Impl
+﻿using J2N.Collections.Generic;
+
+namespace ICU4N.Impl
 {
     /// <summary>
     /// Implements the immutable Unicode properties Pattern_Syntax and Pattern_White_Space.
@@ -106,6 +108,24 @@
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// These are the non-supplementary characters that match the <see cref="IsWhiteSpace(int)"/> method.
+        /// </summary>
+        // Note this set is slightly different than<see cref="ICU4N.Text.SplitTokenizerEnumerator.PatternWhiteSpace"/>,
+        // which is the set that Java uses.
+        public static readonly char[] WhiteSpace = LoadWhiteSpace(); // new char[] { (char)0x0009, (char)0x000a, (char)0x000b, (char)0x000c, (char)0x000d, (char)0x0020, (char)0x0085, (char)0x200e, (char)0x200f, (char)0x2028, (char)0x2029 };
+
+        private static char[] LoadWhiteSpace() // ICU4N TODO: API - change to ImmutableArray<char>?
+        {
+            var result = new List<char>(11);
+            for (int i = UChar.MinCodePoint; i < UChar.MinSupplementaryCodePoint; i++)
+            {
+                if (IsWhiteSpace(i))
+                    result.Add((char)i);
+            }
+            return result.ToArray();
         }
 
         // ICU4N specific - SkipWhiteSpace(ICharSequence s, int i) moved to PatternPropsExtension.tt
