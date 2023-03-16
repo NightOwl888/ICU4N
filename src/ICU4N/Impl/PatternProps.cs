@@ -1,4 +1,4 @@
-﻿using J2N.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ICU4N.Impl
 {
@@ -108,24 +108,6 @@ namespace ICU4N.Impl
             {
                 return false;
             }
-        }
-
-        /// <summary>
-        /// These are the non-supplementary characters that match the <see cref="IsWhiteSpace(int)"/> method.
-        /// </summary>
-        // Note this set is slightly different than<see cref="ICU4N.Text.SplitTokenizerEnumerator.PatternWhiteSpace"/>,
-        // which is the set that Java uses.
-        public static readonly char[] WhiteSpace = LoadWhiteSpace(); // new char[] { (char)0x0009, (char)0x000a, (char)0x000b, (char)0x000c, (char)0x000d, (char)0x0020, (char)0x0085, (char)0x200e, (char)0x200f, (char)0x2028, (char)0x2029 };
-
-        private static char[] LoadWhiteSpace() // ICU4N TODO: API - change to ImmutableArray<char>?
-        {
-            var result = new List<char>(11);
-            for (int i = UChar.MinCodePoint; i < UChar.MinSupplementaryCodePoint; i++)
-            {
-                if (IsWhiteSpace(i))
-                    result.Add((char)i);
-            }
-            return result.ToArray();
         }
 
         // ICU4N specific - SkipWhiteSpace(ICharSequence s, int i) moved to PatternPropsExtension.tt
@@ -258,5 +240,25 @@ namespace ICU4N.Impl
             unchecked((int)0xffffff0e),  // 8: 3001..3003, 3008..301F
             0x00010001   // 9: 3020, 3030
         };
+
+
+        /// <summary>
+        /// These are the non-supplementary characters that match the <see cref="IsWhiteSpace(int)"/> method.
+        /// </summary>
+        // Note this set is slightly different than<see cref="ICU4N.Text.SplitTokenizerEnumerator.PatternWhiteSpace"/>,
+        // which is the set that Java uses.
+        // IMPORTANT: This must exist physically in the code after latin1 for the static initialiation to work in the correct order.
+        public static readonly char[] WhiteSpace = LoadWhiteSpace();
+
+        private static char[] LoadWhiteSpace() // ICU4N TODO: API - change to ImmutableArray<char>?
+        {
+            var result = new List<char>(11);
+            for (int i = UChar.MinCodePoint; i < UChar.MinSupplementaryCodePoint; i++)
+            {
+                if (IsWhiteSpace(i))
+                    result.Add((char)i);
+            }
+            return result.ToArray();
+        }
     }
 }
