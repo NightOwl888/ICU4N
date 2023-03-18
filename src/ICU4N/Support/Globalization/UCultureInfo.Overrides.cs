@@ -1,6 +1,7 @@
 ﻿using ICU4N.Impl.Locale;
 using System;
 using System.Globalization;
+#nullable enable
 
 namespace ICU4N.Globalization
 {
@@ -77,7 +78,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <stable>ICU 3.0</stable>
         // ICU4N specific: This was named getBaseName() in ICU4J
-        public /*override*/ string Name => GetName(localeID); // always normalized
+        public /*override*/ string Name => name ?? (name = GetName(localeID)); // always normalized
 
         /// <inheritdoc/>
         public /*override*/ string NativeName => isInvariantCulture ? CultureInfo.InvariantCulture.NativeName : GetDisplayName(localeID, localeID);
@@ -118,7 +119,7 @@ namespace ICU4N.Globalization
         /// If the three-letter language abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
 #if FEATURE_CULTUREINFO_THREELETTERISOLANGUAGENAME
-        public /*override*/ string ThreeLetterISOLanguageName     
+        public /*override*/ string ThreeLetterISOLanguageName
 #else
         public string ThreeLetterISOLanguageName
 #endif
@@ -127,7 +128,7 @@ namespace ICU4N.Globalization
 
 #if FEATURE_CULTUREINFO_THREELETTERWINDOWSLANGUAGENAME
         /// <inheritdoc/>
-        public /*override*/ string ThreeLetterWindowsLanguageName => culture?.ThreeLetterWindowsLanguageName; // Windows API
+        public /*override*/ string? ThreeLetterWindowsLanguageName => culture?.ThreeLetterWindowsLanguageName; // Windows API
 #endif
 
         /// <inheritdoc/>
@@ -141,6 +142,7 @@ namespace ICU4N.Globalization
         public /*new*/ void ClearCachedData()
         {
             // this.culture = null;
+            name = null;
             baseLocale = null;
             extensions = null;
             keywords = null;
@@ -175,7 +177,7 @@ namespace ICU4N.Globalization
         // is of questionable value
         public /*new*/ static UCultureInfo CreateSpecificCulture(string name)
         {
-            UCultureInfo culture;
+            UCultureInfo? culture;
 
             try
             {
@@ -247,8 +249,8 @@ namespace ICU4N.Globalization
                 return true;
 
             // Special case - compare against invariant culture
-            if (isInvariantCulture && value is CultureInfo culture)
-                return CultureInfo.InvariantCulture.Equals(culture);
+            if (isInvariantCulture && value is CultureInfo cultureInfo)
+                return CultureInfo.InvariantCulture.Equals(cultureInfo);
 
             if (value is UCultureInfo uCulture)
                 return localeID.Equals(uCulture.localeID);

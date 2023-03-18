@@ -11,6 +11,7 @@ using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnicodeLocaleExtensionClass = ICU4N.Impl.Locale.UnicodeLocaleExtension;
+#nullable enable
 
 namespace ICU4N.Globalization
 {
@@ -68,35 +69,40 @@ namespace ICU4N.Globalization
 #if FEATURE_CULTUREINFO_SERIALIZABLE
         [NonSerialized]
 #endif
-        private volatile BaseLocale baseLocale;
+        private volatile BaseLocale? baseLocale;
 
 #if FEATURE_CULTUREINFO_SERIALIZABLE
         [NonSerialized]
 #endif
-        private volatile LocaleExtensions extensions;
+        private volatile string? name;
+
+#if FEATURE_CULTUREINFO_SERIALIZABLE
+        [NonSerialized]
+#endif
+        private volatile LocaleExtensions? extensions;
 
 #if FEATURE_CULTUREINFO_SERIALIZABLE
         [NonSerialized]
 #endif
 #if FEATURE_READONLYDICTIONARY
-        private volatile IReadOnlyDictionary<string, string> keywords;
+        private volatile IReadOnlyDictionary<string, string>? keywords;
 #else
-        private volatile IDictionary<string, string> keywords;
+        private volatile IDictionary<string, string>? keywords;
 #endif
 
 #if FEATURE_CULTUREINFO_SERIALIZABLE
         [NonSerialized]
 #endif
 #if FEATURE_READONLYDICTIONARY
-        private volatile IReadOnlyDictionary<string, string> unicodeLocales;
+        private volatile IReadOnlyDictionary<string, string>? unicodeLocales;
 #else
-        private volatile IDictionary<string, string> unicodeLocales;
+        private volatile IDictionary<string, string>? unicodeLocales;
 #endif
 
 #if FEATURE_CULTUREINFO_SERIALIZABLE
         [NonSerialized]
 #endif
-        private volatile string languageTag;
+        private volatile string? languageTag;
 
         private const string UndeterminedWithSeparator = LanguageTag.Undetermined + "-";
 
