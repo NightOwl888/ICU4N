@@ -57,7 +57,48 @@ namespace ICU4N.Text
         /// a rules-based numbering system such as <c>%hebrew</c> for Hebrew numbers or <c>%roman-upper</c>
         /// for upper-case Roman numerals.
         /// </summary>
+        /// <draft>ICU 60.1</draft>
         NumberingSystem = 4,
+    }
+
+    /// <summary>
+    /// Extensions to <see cref="NumberPresentation"/>.
+    /// </summary>
+    internal static class NumberPresentationExtensions
+    {
+        /// <summary>
+        /// Gets the rule name key to lookup this rule in the ICU resources.
+        /// <para/>
+        /// This is used internally to lookup the resource data.
+        /// </summary>
+        /// <param name="presentation">This <see cref="NumberPresentation"/> value.</param>
+        /// <returns>The rule name key to lookup this rule in the ICU resources.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="presentation"/> value was not recognized.</exception>
+        internal static string ToRuleNameKey(this NumberPresentation presentation) => presentation switch // ICU4N: This was originally in RuleBasedNumberFormat
+        {
+            NumberPresentation.SpellOut => "RBNFRules/SpelloutRules",
+            NumberPresentation.Ordinal => "RBNFRules/OrdinalRules",
+            NumberPresentation.Duration => "RBNFRules/DurationRules",
+            NumberPresentation.NumberingSystem => "RBNFRules/NumberingSystemRules",
+            _ => throw new ArgumentOutOfRangeException(nameof(presentation), $"Not expected presentation value: {presentation}"),
+        };
+
+        /// <summary>
+        /// Gets the rule localizations key to lookup this rule in the ICU resources.
+        /// <para/>
+        /// This is used internally to lookup the resource data.
+        /// </summary>
+        /// <param name="presentation">This <see cref="NumberPresentation"/> value.</param>
+        /// <returns>The rule localizations key to lookup this rule in the ICU resources.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="presentation"/> value was not recognized.</exception>
+        internal static string ToRuleLocalizationsKey(this NumberPresentation presentation) => presentation switch // ICU4N: This was originally in RuleBasedNumberFormat
+        {
+            NumberPresentation.SpellOut => "SpelloutLocalizations",
+            NumberPresentation.Ordinal => "OrdinalLocalizations",
+            NumberPresentation.Duration => "DurationLocalizations",
+            NumberPresentation.NumberingSystem => "NumberingSystemLocalizations",
+            _ => throw new ArgumentOutOfRangeException(nameof(presentation), $"Not expected presentation value: {presentation}"),
+        };
     }
 
 
@@ -538,7 +579,7 @@ namespace ICU4N.Text
 #else
     internal
 #endif
-        class RuleBasedNumberFormat : NumberFormat
+        partial class RuleBasedNumberFormat : NumberFormat
     {
         //-----------------------------------------------------------------------
         // constants

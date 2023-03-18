@@ -22,13 +22,13 @@ namespace ICU4N.Globalization
         /// <c>true</c> if this substitution should have the default "by digits"
         /// behavior; <c>false</c> otherwise.
         /// </summary>
-        private readonly bool byDigits;
+        internal readonly bool byDigits; // Internal for testing
 
         /// <summary>
         /// <c>true</c> if we automatically insert spaces to separate names of digits
         /// set to <c>false</c> by '>>>' in fraction rules, used by Thai.
         /// </summary>
-        private readonly bool useSpaces;
+        internal readonly bool useSpaces; // Internal for testing
 
         //-----------------------------------------------------------------------
         // construction

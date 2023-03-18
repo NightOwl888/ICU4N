@@ -24,12 +24,12 @@ namespace ICU4N.Globalization
         /// The denominator of the fraction we're finding the numerator for.
         /// (The base value of the rule that owns this substitution.)
         /// </summary>
-        private readonly double denominator;
+        internal readonly double denominator; // Internal for testing
 
         /// <summary>
         /// True if we format leading zeros (this is a hack for Hebrew spellout).
         /// </summary>
-        private readonly bool withZeros;
+        internal readonly bool withZeros; // Internal for testing
 
         //-----------------------------------------------------------------------
         // construction

@@ -18,7 +18,7 @@ namespace ICU4N.Text
     /// based on some part of the number being formatted.
     /// </summary>
     /// <author>Richard Gillam</author>
-    internal abstract class NFSubstitution
+    internal abstract partial class NFSubstitution
     {
         //-----------------------------------------------------------------------
         // data members
@@ -738,7 +738,7 @@ namespace ICU4N.Text
     /// divisor and formats the quotient. Represented by &lt;&lt; in normal
     /// rules.
     /// </summary>
-    internal class MultiplierSubstitution : NFSubstitution
+    internal partial class MultiplierSubstitution : NFSubstitution
     {
         //-----------------------------------------------------------------------
         // data members
@@ -902,7 +902,7 @@ namespace ICU4N.Text
     /// divisor and formats the remainder. Represented by "&gt;&gt;" in a
     /// regular rule.
     /// </summary>
-    internal class ModulusSubstitution : NFSubstitution
+    internal partial class ModulusSubstitution : NFSubstitution
     {
         //-----------------------------------------------------------------------
         // data members
@@ -1315,7 +1315,7 @@ namespace ICU4N.Text
     /// A substitution that formats the fractional part of a number. This is
     /// represented by &gt;&gt; in a fraction rule.
     /// </summary>
-    internal class FractionalPartSubstitution : NFSubstitution
+    internal partial class FractionalPartSubstitution : NFSubstitution
     {
         //-----------------------------------------------------------------------
         // data members
@@ -1674,7 +1674,7 @@ namespace ICU4N.Text
     /// formats the result. It is represented by &lt;&lt; in the rules
     /// in a fraction rule set.
     /// </summary>
-    internal class NumeratorSubstitution : NFSubstitution
+    internal partial class NumeratorSubstitution : NFSubstitution
     {
         //-----------------------------------------------------------------------
         // data members

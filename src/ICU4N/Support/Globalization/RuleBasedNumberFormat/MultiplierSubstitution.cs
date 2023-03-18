@@ -23,7 +23,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// The divisor of the rule that owns this substitution.
         /// </summary>
-        private long divisor;
+        internal long divisor; // Internal for testing
 
         //-----------------------------------------------------------------------
         // construction

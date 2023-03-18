@@ -70,13 +70,13 @@ namespace ICU4N.Globalization
         /// The rule's radix (the radix to the power of the exponent equals
         /// the rule's divisor)
         /// </summary>
-        private int radix = 10;
+        internal int radix = 10; // Internal for testing
 
         /// <summary>
         /// The rule's exponent (the radix raised to the power of the exponent
         /// equals the rule's divisor)
         /// </summary>
-        private short exponent = 0;
+        internal short exponent = 0; // Internal for testing
 
         /// <summary>
         /// If this is a fraction rule, this is the decimal point from <see cref="IDecimalFormatSymbols"/> to match.
@@ -88,7 +88,7 @@ namespace ICU4N.Globalization
         /// is inserted into the result string, and then the text from any
         /// substitutions is inserted into the result string.
         /// </summary>
-        private string? ruleText = null;
+        internal string? ruleText = null; // Internal for testing
 
         ///// <summary>
         ///// The rule's plural Format when defined. This is not a substitution
@@ -110,30 +110,30 @@ namespace ICU4N.Globalization
         /// <summary>
         /// The plural rules message pattern when defined.
         /// </summary>
-        private MessagePattern? pluralMessagePattern = null;
+        internal MessagePattern? pluralMessagePattern = null; // Internal for testing
 
         /// <summary>
         /// The rule's plural rule text when defined. This value is not defined when <see cref="pluralMessagePattern"/> is <c>null</c>.
         /// </summary>
-        private string? pluralRulesText = null;
+        internal string? pluralRulesText = null; // Internal for testing
 
         /// <summary>
         /// The rule's plural type when defined. This value is not defined when <see cref="pluralMessagePattern"/> is <c>null</c>.
         /// </summary>
-        private PluralType pluralType;
+        internal PluralType pluralType; // Internal for testing
 
 
         /// <summary>
         /// The rule's first substitution (the one with the lower offset
         /// into the rule text)
         /// </summary>
-        private NumberFormatSubstitution? sub1 = null;
+        internal NumberFormatSubstitution? sub1 = null; // Internal for testing
 
         /// <summary>
         /// The rule's second substitution (the one with the higher offset
         /// into the rule text)
         /// </summary>
-        private NumberFormatSubstitution? sub2 = null;
+        internal NumberFormatSubstitution? sub2 = null; // Internal for testing
 
         /// <summary>
         /// The <see cref="INumberFormatRules"/> that owns this formatter.
@@ -377,14 +377,15 @@ namespace ICU4N.Globalization
                 // along with any trailing whitespace, out of the original
                 // description
                 descriptor = description.Slice(0, p); // ICU4N: Checked 2nd parameter
-                //++p;
-                //while (p < description.Length && PatternProps.IsWhiteSpace(description[p]))
-                //{
-                //    ++p;
-                //}
+                ++p;
+                while (p < description.Length && PatternProps.IsWhiteSpace(description[p]))
+                {
+                    ++p;
+                }
+                return ParseRuleDescriptor(descriptor, description.Slice(p));
                 //description = description.Slice(p).TrimStart(PatternProps.WhiteSpace);
 
-                return ParseRuleDescriptor(descriptor, description.Slice(p + 1).TrimStart(PatternProps.WhiteSpace));
+                //return ParseRuleDescriptor(descriptor, description.Slice(p + 1).TrimStart(PatternProps.WhiteSpace));
             }
             // else use the default base value for now.
 
@@ -586,10 +587,10 @@ namespace ICU4N.Globalization
                                         ReadOnlySpan<char> ruleText,
                                         NumberFormatRule? predecessor)
         {
-            sub1 = ExtractSubstitution(owner, ruleText, predecessor, out ReadOnlySpan<char> prefix1, out ReadOnlySpan<char> suffix1);
+            sub1 = ExtractSubstitution(owner, offset: 0, ruleText, predecessor, out ReadOnlySpan<char> prefix1, out ReadOnlySpan<char> suffix1);
             if (sub1 is not null)
             {
-                sub2 = ExtractSubstitution(owner, suffix1, predecessor, out ReadOnlySpan<char> prefix2, out ReadOnlySpan<char> suffix2);
+                sub2 = ExtractSubstitution(owner, offset: prefix1.Length, suffix1, predecessor, out ReadOnlySpan<char> prefix2, out ReadOnlySpan<char> suffix2);
                 if (sub2 is not null)
                 {
                     // We have a 3 parts to concatenate to a string
@@ -625,10 +626,10 @@ namespace ICU4N.Globalization
         private void ExtractPluralRules(ReadOnlySpan<char> ruleText)
         {
             int pluralRuleStart = ruleText.IndexOf("$(", StringComparison.Ordinal);
-            int pluralRuleEnd = pluralRuleStart >= 0 ? ruleText.Slice(pluralRuleStart).IndexOf(")$", StringComparison.Ordinal) : -1;
+            int pluralRuleEnd = pluralRuleStart >= 0 ? ruleText.Slice(pluralRuleStart).IndexOf(")$", StringComparison.Ordinal) + pluralRuleStart : -1;
             if (pluralRuleEnd >= 0)
             {
-                int endType = ruleText.Slice(pluralRuleStart).IndexOf(',');
+                int endType = ruleText.Slice(pluralRuleStart).IndexOf(',') + pluralRuleStart;
                 if (endType < 0)
                 {
                     throw new ArgumentException(string.Concat("Rule \"", ruleText, "\" does not have a defined type"));
@@ -662,6 +663,7 @@ namespace ICU4N.Globalization
         /// the rule's rule text.
         /// </summary>
         /// <param name="owner">The rule set containing this rule.</param>
+        /// <param name="offset">The offset into the original description text where <paramref name="ruleText"/> begins.</param>
         /// <param name="ruleText">The rule text.</param>
         /// <param name="predecessor">The rule preceding this one in the rule set's
         /// rule list.</param>
@@ -684,6 +686,7 @@ namespace ICU4N.Globalization
         /// A substitution within <see name="ruleText"/> starts with a <see cref="char"/> other than '&lt;', '&gt;', or '='.
         /// </exception>
         private NumberFormatSubstitution? ExtractSubstitution(NumberFormatRuleSet owner,
+                                        int offset,
                                         ReadOnlySpan<char> ruleText,
                                         NumberFormatRule? predecessor,
                                         out ReadOnlySpan<char> prefix,
@@ -716,7 +719,7 @@ namespace ICU4N.Globalization
                 // otherwise the substitution token ends with the same character
                 // it began with
                 char c = ruleText[subStart];
-                subEnd = ruleText.Slice(subStart + 1).IndexOf(c);
+                subEnd = ruleText.Slice(subStart + 1).IndexOf(c) + subStart + 1;
                 // special case for '<%foo<<'
                 if (c == '<' && subEnd != -1 && subEnd < ruleText.Length - 1 && ruleText[subEnd + 1] == c)
                 {
@@ -745,7 +748,7 @@ namespace ICU4N.Globalization
             // if we get here, we have a real substitution token (or at least
             // some text bounded by substitution token characters).  Use
             // MakeSubstitution() to create the right kind of substitution
-            return NumberFormatSubstitution.MakeSubstitution(subStart, this, predecessor, owner,
+            return NumberFormatSubstitution.MakeSubstitution(offset + subStart, this, predecessor, owner,
                     this.numberFormatRules, ruleText.Slice(subStart, (subEnd + 1) - subStart)); // ICU4N: Corrected 2nd parameter
         }
 
@@ -971,7 +974,6 @@ namespace ICU4N.Globalization
         /// of its substitutions).
         /// </summary>
         public long Divisor => Power(radix, exponent);
-
     }
 #endif
 }

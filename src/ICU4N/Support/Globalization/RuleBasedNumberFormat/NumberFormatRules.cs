@@ -31,40 +31,40 @@ namespace ICU4N.Globalization
         /// The formatter's rule sets.
         /// </summary>
         //[NonSerialized]
-        private readonly NumberFormatRuleSet[] ruleSets;
+        internal readonly NumberFormatRuleSet[] ruleSets; // Internal for testing
 
         /// <summary>
         /// The formatter's rule names mapped to rule sets.
         /// </summary>
         //[NonSerialized]
-        private readonly IDictionary<string, NumberFormatRuleSet> ruleSetsMap;
+        internal readonly IDictionary<string, NumberFormatRuleSet> ruleSetsMap; // Internal for testing
 
         /// <summary>
         /// A pointer to the formatter's default rule set. This is always included
         /// in <see cref="ruleSets"/>.
         /// </summary>
         //[NonSerialized]
-        private readonly NumberFormatRuleSet defaultRuleSet; // ICU4N TODO: API - Change to CurrentRuleSet to match .NET?
+        internal readonly NumberFormatRuleSet defaultRuleSet; // ICU4N TODO: API - Change to CurrentRuleSet to match .NET? // Internal for testing
 
         /// <summary>
         /// If the description specifies lenient-parse rules, they're stored here until
         /// the collator is created.
         /// </summary>
         //[NonSerialized]
-        private readonly string? lenientParseRules;
+        internal readonly string? lenientParseRules; // Internal for testing
 
         /// <summary>
         /// If the description specifies post-process rules, they're stored here until
         /// post-processing is required.
         /// </summary>
         //[NonSerialized]
-        private readonly string? postProcessRules; // ICU4N TODO: Do we need to lazy load this? Or is it dependent on passed in culture?
+        internal readonly string? postProcessRules; // ICU4N TODO: Do we need to lazy load this? Or is it dependent on passed in culture? // Internal for testing
 
         /// <summary>
         /// The public rule set names;
         /// </summary>
         /// <serial/>
-        private readonly string[] publicRuleSetNames;
+        internal readonly string[] publicRuleSetNames; // Internal for testing
 
         //-----------------------------------------------------------------------
         // construction
@@ -76,16 +76,28 @@ namespace ICU4N.Globalization
             IsNamedRule(ruleText, DurationRuleName);
 
         private static bool IsSpecialRule(ReadOnlySpan<char> ruleText)
-            => IsNamedRule(ruleText, LenientParseRuleName) || IsNamedRule(ruleText, PostProcessRuleName);
+            => ruleText.StartsWith(LenientParseRuleName, StringComparison.Ordinal) || ruleText.StartsWith(PostProcessRuleName, StringComparison.Ordinal);
 
-        private static bool IsPrivateRule(ReadOnlySpan<char> ruleText)
-            => ruleText.StartsWith("%%", StringComparison.Ordinal);
-
-        private static bool IsNamedRule(ReadOnlySpan<char> ruleText, string ruleName)
+        private static bool IsSpecialRule(ReadOnlySpan<char> ruleText, string ruleName)
             => ruleText.StartsWith(ruleName, StringComparison.Ordinal);
 
+        private static bool IsNamedRule(ReadOnlySpan<char> ruleText, string ruleName)
+            => ruleText.Equals(ruleName, StringComparison.Ordinal);
+
+        /// <summary>
+        /// This extracts the special information from the rule sets before the
+        /// main parsing starts. Extra whitespace must have already been removed
+        /// from the description. If found, the special information is extracted from the
+        /// description and returned. Note: the trailing semicolon at the end of the special
+        /// rules is stripped. <see cref="IsSpecialRule(ReadOnlySpan{char}, string)"/> should be
+        /// called prior to this method and <see cref="IsSpecialRule(ReadOnlySpan{char})"/> should be
+        /// checked prior to all subsequent processing of the string to ensure the special rule is
+        /// not processed further.</summary>
+        /// <param name="ruleText">The rbnf description with extra whitespace removed.</param>
+        /// <param name="ruleName">The name of the special rule text to extract (including the leading %%).</param>
+        /// <returns>The special rule text.</returns>
         private static ReadOnlySpan<char> ExtractSpecialRule(ReadOnlySpan<char> ruleText, string ruleName)
-            => ruleText.Slice(ruleName.Length, ruleText.Length - ruleName.Length);
+            => ruleText.Slice(ruleName.Length).TrimStart(PatternProps.WhiteSpace).TrimEnd(';');
 
         public NumberFormatRules(ReadOnlySpan<char> description) // ICU4N TODO: Add a localizations parameter? We need to work out a way to allow users to supply these, but they don't matter for built-in rules. The jagged array is really ugly, but we should probably include an overload for compatibility reasons.
         {
@@ -95,19 +107,19 @@ namespace ICU4N.Globalization
             // 1st pass: pre-flight parsing the description and count the number of
             // rule sets (";%" marks the end of one rule set and the beginning
             // of the next)
-            int numRuleSets = 1;
-            SplitTokenizerEnumerator ruleTokens = description.AsTokens(";%", PatternProps.WhiteSpace);
+            int numRuleSets = 0; // ICU4N: Since we are counting the rule segments instead of the delimiters, we start at 0 instead of 1.
+            SplitTokenizerEnumerator ruleTokens = description.AsTokens(";%", delimiterLength: 1, PatternProps.WhiteSpace, TrimBehavior.Start);
             while (ruleTokens.MoveNext())
             {
                 ReadOnlySpan<char> ruleToken = ruleTokens.Current.Text;
-                if (IsNamedRule(ruleToken, LenientParseRuleName))
+                if (IsSpecialRule(ruleToken, LenientParseRuleName))
                 {
                     lenientParseRules = new string(ExtractSpecialRule(ruleToken, LenientParseRuleName));
                     continue; // Don't count this rule
                 }
-                if (IsNamedRule(ruleToken, PostProcessRuleName))
+                if (IsSpecialRule(ruleToken, PostProcessRuleName))
                 {
-                    lenientParseRules = new string(ExtractSpecialRule(ruleToken, PostProcessRuleName));
+                    postProcessRules = new string(ExtractSpecialRule(ruleToken, PostProcessRuleName));
                     continue; // Don't count this rule
                 }
 
@@ -116,7 +128,7 @@ namespace ICU4N.Globalization
 
             // our rule list is an array of the appropriate size
             ruleSets = new NumberFormatRuleSet[numRuleSets];
-            ruleSetsMap = new Dictionary<string, NumberFormatRuleSet>(numRuleSets * 2 + 1);
+            ruleSetsMap = new Dictionary<string, NumberFormatRuleSet>(numRuleSets); // ICU4N: Corrected allocation calculation
 
             // Used to count the number of public rule sets
             // Public rule sets have names that begin with % instead of %%.
@@ -130,7 +142,7 @@ namespace ICU4N.Globalization
             // sets before we can actually set everything up
             int curRuleSet = 0;
 
-            ruleTokens = description.AsTokens(";%", PatternProps.WhiteSpace);
+            ruleTokens = description.AsTokens(";%", delimiterLength: 1, PatternProps.WhiteSpace, TrimBehavior.Start);
             while (ruleTokens.MoveNext())
             {
                 // Skip special rules
@@ -142,10 +154,10 @@ namespace ICU4N.Globalization
                 ruleSets[curRuleSet] = ruleSet;
                 string currentName = ruleSet.Name;
                 ruleSetsMap[currentName] = ruleSet;
-                if (!IsPrivateRule(currentName))
+                if (ruleSet.IsPublic)
                 {
                     ++publicRuleSetCount;
-                    if (defaultRuleSet is null && IsDefaultCandidateRule(ruleToken))
+                    if (defaultRuleSet is null && IsDefaultCandidateRule(currentName))
                     {
                         defaultRuleSet = ruleSet;
                     }
@@ -166,26 +178,26 @@ namespace ICU4N.Globalization
             // Set the default ruleset to the last public ruleset, unless one of the predefined
             // ruleset names %spellout-numbering, %digits-ordinal, or %duration is found
 
-            if (defaultRuleSet == null)
+            if (defaultRuleSet is null)
             {
                 for (int i = ruleSets.Length - 1; i >= 0; --i)
                 {
-                    if (!IsPrivateRule(ruleSets[i].Name))
+                    if (ruleSets[i].IsPublic)
                     {
                         defaultRuleSet = ruleSets[i];
                         break;
                     }
                 }
             }
-            if (defaultRuleSet == null)
+            if (defaultRuleSet is null)
             {
                 defaultRuleSet = ruleSets[ruleSets.Length - 1];
             }
 
-            // 3rd pass: finally, we can go back through the temporary descriptions
-            // list and finish setting up the substructure
-            ruleTokens = description.AsTokens(";%", PatternProps.WhiteSpace);
-            for (int i = 0; i < ruleSets.Length && ruleTokens.MoveNext(); i++)
+            // 3rd pass: finally, we can go back through the descriptions
+            // and finish setting up the substructure
+            ruleTokens = description.AsTokens(";%", delimiterLength: 1, PatternProps.WhiteSpace, TrimBehavior.Start);
+            for (int i = 0; i < ruleSets.Length && ruleTokens.MoveNext(); )
             {
                 // Skip special rules
                 ReadOnlySpan<char> ruleToken = ruleTokens.Current.Text;
@@ -193,6 +205,7 @@ namespace ICU4N.Globalization
                     continue;
 
                 ruleSets[i].ParseRules(ruleToken);
+                i++;
             }
 
             // Now that the rules are initialized, the 'real' default rule
@@ -203,7 +216,7 @@ namespace ICU4N.Globalization
             publicRuleSetCount = 0;
             for (int i = ruleSets.Length - 1; i >= 0; i--)
             {
-                if (!IsPrivateRule(ruleSets[i].Name))
+                if (ruleSets[i].IsPublic)
                 {
                     publicRuleSetTemp[publicRuleSetCount++] = ruleSets[i].Name;
                 }

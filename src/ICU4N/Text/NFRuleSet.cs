@@ -16,7 +16,7 @@ namespace ICU4N.Text
     /// control to it, and to arbitrate between different rules when parsing
     /// a number.
     /// </summary>
-    internal sealed class NFRuleSet
+    internal sealed partial class NFRuleSet
     {
         //-----------------------------------------------------------------------
         // data members
@@ -44,17 +44,17 @@ namespace ICU4N.Text
         private List<NFRule> fractionRules;
 
         /// <summary>-x</summary>
-        private const int NegativeRuleIndex = 0;
+        internal const int NegativeRuleIndex = 0;
         /// <summary>x.x</summary>
-        private const int ImproperFractionRuleIndex = 1;
+        internal const int ImproperFractionRuleIndex = 1;
         /// <summary>0.x</summary>
-        private const int ProperFractionRuleIndex = 2;
+        internal const int ProperFractionRuleIndex = 2;
         /// <summary>x.0</summary>
-        private const int MasterRuleIndex = 3;
+        internal const int MasterRuleIndex = 3;
         /// <summary>Inf</summary>
-        private const int InfinityRuleIndex = 4;
+        internal const int InfinityRuleIndex = 4;
         /// <summary>NaN</summary>
-        private const int NaNRuleIndex = 5;
+        internal const int NaNRuleIndex = 5;
 
         /// <summary>
         /// The <see cref="RuleBasedNumberFormat"/> that owns this rule

@@ -16,7 +16,7 @@ namespace ICU4N.Text
     /// inserts its text into the result string and then passes control to its
     /// substitutions, which do the same thing.
     /// </summary>
-    internal sealed class NFRule
+    internal sealed partial class NFRule
     {
         //-----------------------------------------------------------------------
         // constants

@@ -29,7 +29,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// The rule set's regular rules
         /// </summary>
-        private NumberFormatRule[]? rules;
+        internal NumberFormatRule[]? rules; // Internal for testing
 
         /// <summary>
         /// The rule set's non-numerical rules like negative, fractions, infinity and NaN
@@ -40,20 +40,20 @@ namespace ICU4N.Globalization
         /// These are a pile of fraction rules in declared order. They may have alternate
         /// ways to represent fractions.
         /// </summary>
-        private List<NumberFormatRule>? fractionRules;
+        internal List<NumberFormatRule>? fractionRules; // Internal for testing
 
         /// <summary>-x</summary>
-        private const int NegativeRuleIndex = 0;
+        internal const int NegativeRuleIndex = 0; // Internal for testing
         /// <summary>x.x</summary>
-        private const int ImproperFractionRuleIndex = 1;
+        internal const int ImproperFractionRuleIndex = 1; // Internal for testing
         /// <summary>0.x</summary>
-        private const int ProperFractionRuleIndex = 2;
+        internal const int ProperFractionRuleIndex = 2; // Internal for testing
         /// <summary>x.0</summary>
-        private const int MasterRuleIndex = 3;
+        internal const int MasterRuleIndex = 3; // Internal for testing
         /// <summary>Inf</summary>
-        private const int InfinityRuleIndex = 4;
+        internal const int InfinityRuleIndex = 4; // Internal for testing
         /// <summary>NaN</summary>
-        private const int NaNRuleIndex = 5;
+        internal const int NaNRuleIndex = 5; // Internal for testing
 
         /// <summary>
         /// The <see cref="INumberFormatRules"/> that owns this rule
@@ -87,9 +87,33 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Constructs a rule set.
         /// </summary>
-        /// <param name="owner">The <see cref="INumberFormatRules"/> that owns this rule set.</param>
-        /// <param name="description">The description of this rule set.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
+        /// <param name = "owner" > The <see cref= "INumberFormatRules" /> that owns this rule set.</param>
+        /// <param name = "description" > The description of this rule set.</param>
+        /// <exception cref="ArgumentNullException"><paramref name= "owner" /> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">
+        /// <paramref name= "description" /> is zero length.
+        /// <para/>
+        /// -or-
+        /// <para/>
+        /// The rule set name within<paramref name="description"/> doesn't end in a colon (:).
+        /// </exception>
+        public NumberFormatRuleSet(INumberFormatRules owner, ReadOnlySpan<char> description)
+        {
+            this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
+            ExtractRuleSetName(description, out ReadOnlySpan<char> name, out isParseable);
+            this.name = new string(name);
+
+            // all of the other members of NumberFormatRuleSet are initialized
+            // by ParseRules()
+        }
+
+        /// <summary>
+        /// Processes a rule set description, separating name from description as appropriate.
+        /// </summary>
+        /// <param name="description">The rule set text.</param>
+        /// <param name="name">Upon return, contains the name of the rule set.</param>
+        /// <param name="isParseable">Upon return, contains a value indicating whether the rule set allows parsing.</param>
+        /// <returns>The description minus any <paramref name="name"/> token, for further processing.</returns>
         /// <exception cref="ArgumentException">
         /// <paramref name="description"/> is zero length.
         /// <para/>
@@ -97,10 +121,8 @@ namespace ICU4N.Globalization
         /// <para/>
         /// The rule set name within <paramref name="description"/> doesn't end in a colon (:).
         /// </exception>
-        public NumberFormatRuleSet(INumberFormatRules owner, ReadOnlySpan<char> description)
+        private static ReadOnlySpan<char> ExtractRuleSetName(ReadOnlySpan<char> description, out ReadOnlySpan<char> name, out bool isParseable)
         {
-            this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
-
             if (description.Length == 0)
                 throw new ArgumentException("Empty rule set description");
 
@@ -117,25 +139,30 @@ namespace ICU4N.Globalization
                 }
                 else
                 {
-                    ReadOnlySpan<char> name = description.Slice(0, pos); // ICU4N: Checked 2nd parameter
-                    this.isParseable = !name.EndsWith("@noparse", StringComparison.Ordinal);
-                    if (!this.isParseable)
+                    name = description.Slice(0, pos); // ICU4N: Checked 2nd parameter
+                    isParseable = !name.EndsWith("@noparse", StringComparison.Ordinal);
+                    if (!isParseable)
                     {
                         name = name.Slice(0, name.Length - 8); // Remove the @noparse from the name
                     }
-                    this.name = new string(name);
+
+                    while (pos < description.Length && PatternProps.IsWhiteSpace(description[++pos]))
+                    {
+                        // ICU4N: Intentionally empty
+                    }
+
+                    // Remove the name from the description and return it.
+                    return description.Slice(pos);
                 }
             }
             else
             {
                 // if the description doesn't begin with a rule set name, its
                 // name is "%default"
-                this.name = "%default";
+                name = "%default";
                 isParseable = true;
+                return description;
             }
-
-            // all of the other members of NumberFormatRuleSet are initialized
-            // by ParseRules()
         }
 
         /// <summary>
@@ -148,6 +175,10 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <param name="description">The textual description of this rule set.</param>
         /// <exception cref="ArgumentException">
+        /// The rules in <paramref name="description"/> is zero length.
+        /// <para/>
+        /// -or-
+        /// <para/>
         /// The rules in <paramref name="description"/> are not specified in the correct order.
         /// <para/>
         /// -or-
@@ -174,6 +205,18 @@ namespace ICU4N.Globalization
         /// </exception>
         public void ParseRules(ReadOnlySpan<char> description)
         {
+            if (description.Length == 0)
+                throw new ArgumentException("Empty rule set description");
+
+            // This method is expected to be called within a separate loop than the constructor call. So,
+            // we must account for the fact that the new loop will contain the ruleset name, stripping it off here.
+            // We already stored the name and isParseable values in the constructor, so we ignore them here.
+            description = ExtractRuleSetName(description, out var _, out var _);
+
+            // Check again to ensure our description without a name is not empty.
+            if (description.Length == 0)
+                throw new ArgumentException("Empty rule set description");
+
             // (the number of elements in the description list isn't necessarily
             // the number of rules-- some descriptions may expend into two rules)
             LinkedList<NumberFormatRule> tempRules = new LinkedList<NumberFormatRule>();
@@ -185,7 +228,7 @@ namespace ICU4N.Globalization
             // Iterate through the rules.  The rules
             // are separated by semicolons (there's no escape facility: ALL
             // semicolons are rule delimiters)
-            var ruleTokens = description.AsTokens(';', PatternProps.WhiteSpace);
+            var ruleTokens = description.AsTokens(';', PatternProps.WhiteSpace, TrimBehavior.Start);
             while (ruleTokens.MoveNext())
             {
                 // makeRules (a factory method on NumberFormatRule) will return either
@@ -253,15 +296,15 @@ namespace ICU4N.Globalization
             }
             else if (baseValue == NumberFormatRule.ImproperFractionRule)
             {
-                SetBestFractionRule(NumberFormatRuleSet.ImproperFractionRuleIndex, rule, true);
+                SetFractionRule(rule); // Lookup with NumberFormatRuleSet.ImproperFractionRuleIndex
             }
             else if (baseValue == NumberFormatRule.ProperFractionRule)
             {
-                SetBestFractionRule(NumberFormatRuleSet.ProperFractionRuleIndex, rule, true);
+                SetFractionRule(rule); // Lookup with NumberFormatRuleSet.ProperFractionRuleIndex
             }
             else if (baseValue == NumberFormatRule.MasterRule)
             {
-                SetBestFractionRule(NumberFormatRuleSet.MasterRuleIndex, rule, true);
+                SetFractionRule(rule); // Lookup with NumberFormatRuleSet.MasterRuleIndex
             }
             else if (baseValue == NumberFormatRule.InfinityRule)
             {
@@ -277,34 +320,14 @@ namespace ICU4N.Globalization
         /// Determine the best fraction rule to use. Rules matching the decimal point from
         /// <see cref="DecimalFormatSymbols"/> become the main set of rules to use.
         /// </summary>
-        /// <param name="originalIndex">The index into <see cref="nonNumericalRules"/>.</param>
         /// <param name="newRule">The new rule to consider.</param>
-        /// <param name="rememberRule">Should the new rule be added to <see cref="fractionRules"/>.</param>
-        private void SetBestFractionRule(int originalIndex, NumberFormatRule newRule, bool rememberRule) // ICU4N TODO: Get rid of "rememberRule" parameter (this will only be used during construction). Create GetBestFractionRule() method for formatter.
+        private void SetFractionRule(NumberFormatRule newRule)
         {
-            if (rememberRule)
+            if (fractionRules is null)
             {
-                if (fractionRules is null)
-                {
-                    fractionRules = new List<NumberFormatRule>();
-                }
-                fractionRules.Add(newRule);
+                fractionRules = new List<NumberFormatRule>();
             }
-            NumberFormatRule? bestResult = nonNumericalRules[originalIndex];
-            if (bestResult is null)
-            {
-                nonNumericalRules[originalIndex] = newRule;
-            }
-            //else
-            //{
-            //    // We have more than one. Which one is better?
-            //    DecimalFormatSymbols decimalFormatSymbols = owner.DecimalFormatSymbols;
-            //    if (decimalFormatSymbols.DecimalSeparator == newRule.DecimalPoint)
-            //    {
-            //        nonNumericalRules[originalIndex] = newRule;
-            //    }
-            //    // else leave it alone
-            //}
+            fractionRules.Add(newRule);
         }
 
         /// <summary>
@@ -313,22 +336,29 @@ namespace ICU4N.Globalization
         /// <para/>
         /// This is purely a runtime method. It should always be used when parsing or formatting non-numerical rules.
         /// </summary>
-        /// <param name="originalIndex">The index into <see cref="nonNumericalRules"/>.</param>
+        /// <param name="originalIndex">The identifier for the type of fraction rule, one of
+        /// <see cref="ImproperFractionRuleIndex"/>, <see cref="ProperFractionRuleIndex"/> or <see cref="MasterRuleIndex"/>.</param>
         /// <param name="decimalFormatSymbols">The decimal format symbols for the current request.</param>
         /// <returns>The best rule that was registered during the construction of this class or <c>null</c> if no rule was found.</returns>
         public NumberFormatRule? GetBestFractionRule(int originalIndex, IDecimalFormatSymbols decimalFormatSymbols)
         {
             if (fractionRules is not null)
             {
+                NumberFormatRule? first = null;
                 foreach (var rule in fractionRules)
                 {
-                    if (rule.BaseValue == originalIndex && decimalFormatSymbols.DecimalSeparatorString == rule.DecimalPoint)
+                    if (rule.BaseValue != originalIndex)
+                        continue;
+
+                    first = rule;
+                    if (decimalFormatSymbols.DecimalSeparatorString == rule.DecimalPoint)
                     {
                         return rule;
                     }
                 }
+                return first;
             }
-            return nonNumericalRules[originalIndex];
+            return null;
         }
 
         /// <summary>

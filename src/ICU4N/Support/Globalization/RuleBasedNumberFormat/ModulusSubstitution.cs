@@ -22,13 +22,13 @@ namespace ICU4N.Globalization
         /// <summary>
         /// The divisor of the rule owning this substitution
         /// </summary>
-        private long divisor;
+        internal long divisor; // Internal for testing
 
         /// <summary>
         /// If this is a &gt;&gt;&gt; substitution, the rule to use to format
         /// the substitution value.  Otherwise, <c>null</c>.
         /// </summary>
-        private readonly NumberFormatRule? ruleToUse;
+        internal readonly NumberFormatRule? ruleToUse; // Internal for testing
 
         //-----------------------------------------------------------------------
         // construction
@@ -87,7 +87,7 @@ namespace ICU4N.Globalization
             // what's done with that value after it's obtained: >>> short-
             // circuits the rule-search process and goes straight to the
             // specified rule to format the substitution value
-            if (description.Equals(">>>"))
+            if (description.Equals(">>>", StringComparison.Ordinal))
             {
                 ruleToUse = rulePredecessor;
             }
