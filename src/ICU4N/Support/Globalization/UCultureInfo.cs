@@ -754,8 +754,12 @@ namespace ICU4N.Globalization
         /// <param name="localeID">The locale ID.</param>
         /// <returns>The canonicalized ID.</returns>
         /// <stable>ICU 3.0</stable>
+        /// <exception cref="ArgumentNullException"><paramref name="localeID"/> is <c>null</c>.</exception>
         public static string Canonicalize(string localeID)
         {
+            if (localeID is null)
+                throw new ArgumentNullException(nameof(localeID));
+
             LocaleIDParser parser = new LocaleIDParser(localeID, true);
             string baseName = parser.GetBaseName();
             bool foundVariant = false;
