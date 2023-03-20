@@ -374,6 +374,7 @@ namespace ICU4N.Util
                                                                    disableFallback);
 
                 case RootType.Missing:
+                    goto default;
                 default:
                     UResourceBundle b;
                     try
