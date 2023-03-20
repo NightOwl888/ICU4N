@@ -105,7 +105,7 @@ namespace ICU4N.Impl
         /// <internal>ICU 3.0</internal>
         public static UCultureInfo GetFunctionalEquivalent(string baseName, Assembly assembly,
             string resName, string keyword, UCultureInfo locID,
-            bool[] isAvailable, bool omitDefault)
+            bool[] isAvailable, bool omitDefault) // ICU4N TODO: API - Break into 2 overloads, one with an out isAvailable param and one without
         {
             locID.Keywords.TryGetValue(keyword, out string kwVal);
             string baseLoc = locID.Name;
