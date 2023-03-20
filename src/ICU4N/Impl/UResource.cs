@@ -1,4 +1,5 @@
-﻿using ICU4N.Util;
+﻿using ICU4N.Support.Text;
+using ICU4N.Util;
 using J2N.IO;
 using J2N.Text;
 using System;
@@ -160,9 +161,16 @@ namespace ICU4N.Impl
             return s;
         }
 
-        private string InternalSubString(int start, int end)
+        private unsafe string InternalSubString(int start, int length)
         {
-            StringBuilder sb = new StringBuilder(end - start);
+            int end = length - start;
+#if FEATURE_SPAN
+            const int CharStackBufferSize = 32;
+            char* stackPtr = stackalloc char[CharStackBufferSize];
+            ValueStringBuilder sb = new ValueStringBuilder(new Span<char>(stackPtr, CharStackBufferSize));
+#else
+            StringBuilder sb = new StringBuilder(length);
+#endif
             for (int i = start; i < end; ++i)
             {
                 sb.Append((char)bytes[offset + i]);
@@ -173,20 +181,27 @@ namespace ICU4N.Impl
         /// <summary>
         /// Creates a new .NET <see cref="string"/> for a sub-sequence of this resource key string.
         /// </summary>
-        public string Substring(int start)
+        public string Substring(int startIndex)
         {
-            Debug.Assert(0 <= start && start < length);
-            return InternalSubString(start, length);
+            // ICU4N: Added guard clauses
+            if (startIndex < 0)
+                throw new ArgumentOutOfRangeException(nameof(startIndex), "Non-negative number required.");
+            if (startIndex >= length)
+                throw new ArgumentOutOfRangeException(nameof(startIndex), "Index and length must refer to a location within the string.");
+            return InternalSubString(startIndex, length);
         }
 
         /// <summary>
         /// Creates a new .NET <see cref="string"/> for a sub-sequence of this resource key string.
         /// </summary>
-        public string Substring(int start, int end) // ICU4N TODO: API Change 2nd param behavior to be like .NET ?
+        public string Substring(int startIndex, int length) // ICU4N: Changed end to length (.NET convention)
         {
-            Debug.Assert(0 <= start && start < length);
-            Debug.Assert(start <= end && end <= length);
-            return InternalSubString(start, end);
+            // ICU4N: Added guard clauses
+            if (startIndex < 0)
+                throw new ArgumentOutOfRangeException(nameof(startIndex), "Non-negative number required.");
+            if (startIndex > this.length - length)
+                throw new ArgumentOutOfRangeException(nameof(startIndex), "Index and length must refer to a location within the string.");
+            return InternalSubString(startIndex, length);
         }
 
         private bool RegionMatches(byte[] otherBytes, int otherOffset, int n)
