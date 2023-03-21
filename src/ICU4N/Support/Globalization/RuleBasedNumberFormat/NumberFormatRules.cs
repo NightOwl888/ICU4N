@@ -1,7 +1,11 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Text;
+using ICU4N.Util;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Resources;
+using System.Text;
 #nullable enable
 
 namespace ICU4N.Globalization
@@ -67,8 +71,127 @@ namespace ICU4N.Globalization
         internal readonly string[] publicRuleSetNames; // Internal for testing
 
         //-----------------------------------------------------------------------
+        // cache
+        //-----------------------------------------------------------------------
+
+        private static readonly SoftCache<CacheKey, NumberFormatRules> rulesCache = new SoftCache<CacheKey, NumberFormatRules>();
+
+        private struct CacheKey : IEquatable<CacheKey>
+        {
+            public string Name;
+            public NumberPresentation NumberPresentation;
+
+            public CacheKey(string baseName, NumberPresentation presentation)
+            {
+                Name = baseName ?? throw new ArgumentNullException(nameof(baseName));
+                NumberPresentation = presentation;
+            }
+
+            public bool Equals(CacheKey other)
+            {
+                return Name.Equals(other.Name) && NumberPresentation.Equals(other.NumberPresentation);
+            }
+
+            public override bool Equals([NotNullWhen(true)] object? obj)
+            {
+                if (obj is CacheKey other)
+                    return Equals(other);
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return Name.GetHashCode() ^ NumberPresentation.GetHashCode();
+            }
+
+            public override string ToString()
+            {
+                return string.Concat(Name.ToString(), ", ", NumberPresentation.ToString());
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cultureName"></param>
+        /// <returns></returns>
+        /// <exception cref="MissingManifestResourceException">If no resource bundle for the specified
+        /// <paramref name="cultureName"/> can be found.</exception>
+        private static ICUResourceBundle GetBundle(string cultureName)
+        {
+            return (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuRuleBasedNumberFormatBaseName,
+                cultureName, ICUResourceBundle.IcuDataAssembly, disableFallback: false);
+        }
+
+        private static string GetRulesForCulture(ICUResourceBundle? bundle, string cultureName, NumberPresentation format, out string[][]? localizations)
+        {
+            // Reuse the bundle if it doesn't exist.
+            bundle ??= GetBundle(cultureName);
+
+            StringBuilder description = new StringBuilder();
+            localizations = null;
+
+            try
+            {
+                ICUResourceBundle rules = bundle.GetWithFallback(format.ToRuleNameKey());
+                UResourceBundleEnumerator it = rules.GetEnumerator();
+                while (it.MoveNext())
+                {
+                    description.Append(it.Current.GetString());
+                }
+            }
+            catch (MissingManifestResourceException)
+            {
+                // ICU4N: Intentionally blank
+            }
+
+            // We use findTopLevel() instead of get() because
+            // it's faster when we know that it's usually going to fail.
+            UResourceBundle locNamesBundle = bundle.FindTopLevel(format.ToRuleLocalizationsKey());
+            if (locNamesBundle != null)
+            {
+                localizations = new string[locNamesBundle.Length][];
+                for (int i = 0; i < localizations.Length; ++i)
+                {
+                    localizations[i] = locNamesBundle.Get(i).GetStringArray();
+                }
+            }
+            // else there are no localized names. It's not that important.
+
+            return description.ToString();
+        }
+
+        //-----------------------------------------------------------------------
         // construction
         //-----------------------------------------------------------------------
+
+        // ICU4N TODO: API Overloads of strings (cultureName) for each of these
+
+        // ICU4N TODO: API Overload for CultureInfo
+
+        // ICU4N TODO: API Overload for UCultureInfo
+
+        // ICU4N TODO: API Overload for CultureInfo, NumberPresentation
+
+        public static NumberFormatRules GetInstance(UCultureInfo culture, NumberPresentation format)
+        {
+            if (culture is null)
+                throw new ArgumentNullException(nameof(culture));
+
+            // Use the bundle to normalize cacheId based on what is available, so we only cache
+            // the minimum number of instances. In ICU4J, the bundle was used to set actual/valid locale,
+            // so this should be good enough for a cache key name.
+            ICUResourceBundle? bundle = GetBundle(culture.Name);
+            string name = bundle?.UCulture.Name ?? string.Empty; // Go to invariant if there was no bundle.
+            CacheKey cacheKey = new CacheKey(name, format);
+
+            return rulesCache.GetOrCreate(cacheKey, (key) =>
+            {
+                string rules = GetRulesForCulture(bundle, key.Name, format, out string[][]? localizations);
+                return new NumberFormatRules(rules); // ICU4N TODO: localizations
+            });
+        }
 
         public static bool IsDefaultCandidateRule(ReadOnlySpan<char> ruleText)
             => IsNamedRule(ruleText, SpelloutNumberingRuleName) ||
@@ -99,7 +222,7 @@ namespace ICU4N.Globalization
         private static ReadOnlySpan<char> ExtractSpecialRule(ReadOnlySpan<char> ruleText, string ruleName)
             => ruleText.Slice(ruleName.Length).TrimStart(PatternProps.WhiteSpace).TrimEnd(';');
 
-        public NumberFormatRules(ReadOnlySpan<char> description) // ICU4N TODO: Add a localizations parameter? We need to work out a way to allow users to supply these, but they don't matter for built-in rules. The jagged array is really ugly, but we should probably include an overload for compatibility reasons.
+        internal NumberFormatRules(ReadOnlySpan<char> description) // ICU4N TODO: Add a localizations parameter? We need to work out a way to allow users to supply these, but they don't matter for built-in rules. The jagged array is really ugly, but we should probably include an overload for compatibility reasons.
         {
             if (description.Length == 0)
                 throw new ArgumentException("Empty rules description");
