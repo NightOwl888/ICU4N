@@ -356,7 +356,7 @@ namespace ICU4N.Impl
             return (ICUResourceBundle)HandleGet(index, null, this);
         }
 
-        public virtual ICUResourceBundle At(String key)
+        public virtual ICUResourceBundle At(string key)
         {
             // don't ever presume the key is an int in disguise, like ResourceArray does.
             if (this is ICUResourceBundleImpl.ResourceTable)
@@ -1600,7 +1600,9 @@ namespace ICU4N.Impl
             return GetBundle(reader, baseName, localeID, root);
         }
 
-        protected override string LocaleID => wholeBundle.localeID;
+#nullable enable
+        protected internal override string LocaleID => wholeBundle.localeID; // never null
+#nullable restore
 
         protected internal override string BaseName => wholeBundle.baseName;
 
