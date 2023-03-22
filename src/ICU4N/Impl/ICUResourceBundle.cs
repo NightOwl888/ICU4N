@@ -678,7 +678,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        locales[i++] = new UCultureInfo(locstr);
+                        locales[i++] = new UCultureInfo(locstr, isReadOnly: true, useDataCache: false);
                     }
                 }
             }
