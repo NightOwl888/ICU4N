@@ -179,10 +179,18 @@ namespace ICU4N.Globalization
             if (culture is null)
                 throw new ArgumentNullException(nameof(culture));
 
+            return GetInstance(culture.Name, format);
+        }
+
+        public static NumberFormatRules GetInstance(string cultureName, NumberPresentation format)
+        {
+            if (cultureName is null)
+                throw new ArgumentNullException(nameof(cultureName));
+
             // Use the bundle to normalize cacheId based on what is available, so we only cache
             // the minimum number of instances. In ICU4J, the bundle was used to set actual/valid locale,
             // so this should be good enough for a cache key name.
-            ICUResourceBundle? bundle = GetBundle(culture.Name);
+            ICUResourceBundle? bundle = GetBundle(cultureName);
             string name = bundle?.UCulture.Name ?? string.Empty; // Go to invariant if there was no bundle.
             CacheKey cacheKey = new CacheKey(name, format);
 
