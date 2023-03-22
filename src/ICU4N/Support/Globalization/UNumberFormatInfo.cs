@@ -3,6 +3,7 @@
 
 using ICU4N.Text;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 #nullable enable
 
@@ -17,6 +18,13 @@ namespace ICU4N.Globalization
 
         public UNumberFormatInfo()
         {
+        }
+
+        internal UNumberFormatInfo(UCultureData cultureData)
+        {
+            Debug.Assert(cultureData is not null);
+            cultureData.GetNFIValues(this);
+            this.cultureData = cultureData;
         }
 
         private static void VerifyDecimalSeparator(string decSep, string propertyName)
@@ -91,7 +99,21 @@ namespace ICU4N.Globalization
             }
         }
 
-        // ICU4N TODO: CurrentInfo
+        public static UNumberFormatInfo CurrentInfo
+        {
+            get
+            {
+                UCultureInfo culture = UCultureInfo.CurrentCulture;
+
+                UNumberFormatInfo? info = culture.numInfo;
+                if (info != null)
+                {
+                    return info;
+                }
+                // returns non-nullable when passed typeof(NumberFormatInfo)
+                return (UNumberFormatInfo)culture.GetFormat(typeof(UNumberFormatInfo))!;
+            }
+        }
 
         public static UNumberFormatInfo InvariantInfo => s_invariantInfo ??=
             // Lazy create the invariant info. This cannot be done in a .cctor because exceptions can
@@ -99,15 +121,33 @@ namespace ICU4N.Globalization
             new UNumberFormatInfo { isReadOnly = true };
 
 
-        // ICU4N TODO: GetInstance(IFormatProvider? formatProvider)
-        public static UNumberFormatInfo GetInstance(UCultureInfo culture)
+        public static UNumberFormatInfo GetInstance(IFormatProvider? formatProvider)
         {
-            throw new NotImplementedException(); // ICU4N TODO: Complete implementation
-        }
+            return formatProvider == null ?
+                CurrentInfo : // Fast path for a null provider
+                GetProviderNonNull(formatProvider);
 
-        public static UNumberFormatInfo GetInstance(CultureInfo culture)
-        {
-            throw new NotImplementedException(); // ICU4N TODO: Complete implementation
+            static UNumberFormatInfo GetProviderNonNull(IFormatProvider provider)
+            {
+                // Fast path for a regular CultureInfo
+                if (provider is UCultureInfo cultureProvider)
+                {
+                    return cultureProvider.numInfo ?? cultureProvider.NumberFormat;
+                }
+
+                if (provider is CultureInfo dotnetCultureProvider)
+                {
+                    return dotnetCultureProvider.ToUCultureInfo().NumberFormat;
+                }
+
+                if (provider is NumberFormatInfo)
+                    throw new NotSupportedException(SR.NotSupported_NumberFormatInfo); // ICU4N TODO: Add a best effort to convert this
+
+                return
+                    provider as UNumberFormatInfo ?? // Fast path for an NFI
+                    provider.GetFormat(typeof(UNumberFormatInfo)) as UNumberFormatInfo ??
+                    CurrentInfo;
+            }
         }
 
         public object Clone()
@@ -119,7 +159,7 @@ namespace ICU4N.Globalization
 
         public object? GetFormat(Type? formatType)
         {
-            return formatType == typeof(NumberFormatInfo) ? this : null;
+            return formatType == typeof(UNumberFormatInfo) ? this : null;
         }
 
         private static class SR
@@ -135,6 +175,7 @@ namespace ICU4N.Globalization
             public const string InvalidOperation_ReadOnly = "Instance is read-only.";
 
             public const string NotSupported_UseNativeDigitsInstead = "Use UCultureInfo.NativeDigits instead.";
+            public const string NotSupported_NumberFormatInfo = "NumberFormatInfo is not a currently supported provider. Populate a UNumberFormatInfo with the desired values instead.";
         }
     }
 }

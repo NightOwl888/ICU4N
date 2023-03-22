@@ -1,6 +1,7 @@
 ﻿using ICU4N.Impl.Locale;
 using System;
 using System.Globalization;
+using System.Threading;
 #nullable enable
 
 namespace ICU4N.Globalization
@@ -9,6 +10,30 @@ namespace ICU4N.Globalization
     {
 
         /*new*/ public UCultureTypes CultureTypes => isNeutralCulture ? UCultureTypes.NeutralCultures : UCultureTypes.SpecificCultures;
+
+        public /*override*/ UNumberFormatInfo NumberFormat
+        {
+            get
+            {
+                if (numInfo == null)
+                {
+                    UNumberFormatInfo temp = new UNumberFormatInfo(cultureData);
+                    temp.isReadOnly = isReadOnly;
+                    Interlocked.CompareExchange(ref numInfo, temp, null);
+                }
+                return numInfo!;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
+                VerifyWritable();
+                numInfo = value;
+            }
+        }
 
         ///// <inheritdoc/>
         //public override Calendar Calendar => isInvariantCulture ? CultureInfo.InvariantCulture.Calendar : culture.Calendar;
@@ -148,6 +173,7 @@ namespace ICU4N.Globalization
             keywords = null;
             unicodeLocales = null;
             languageTag = null;
+            UCultureData.ClearCachedData();
         }
 
         /// <summary>
@@ -234,6 +260,16 @@ namespace ICU4N.Globalization
             return this; // ICU4N TODO: UCultureInfo is not immutable, so we will need a real clone implementation
         }
 
+        public bool IsReadOnly => isReadOnly;
+
+        private void VerifyWritable()
+        {
+            if (isReadOnly)
+            {
+                throw new InvalidOperationException(SR.InvalidOperation_ReadOnly);
+            }
+        }
+
         /// <summary>
         /// Returns <c>true</c> if the other object is another <see cref="UCultureInfo"/> with the
         /// same full name.
@@ -243,7 +279,7 @@ namespace ICU4N.Globalization
         /// <param name="value"></param>
         /// <returns><c>true</c> if this <see cref="UCultureInfo"/> is equal to the specified <paramref name="value"/>.</returns>
         /// <stable>ICU 3.0</stable>
-        public override bool Equals(object value)
+        public override bool Equals(object? value)
         {
             if (ReferenceEquals(this, value))
                 return true;
@@ -272,17 +308,31 @@ namespace ICU4N.Globalization
             return localeID.GetHashCode();
         }
 
-        ///// <inheritdoc/>
         //// ICU4N: Unfortunately, when DateTimeFormatInfo or NumberFormatInfo
         //// are requested here, the return type must match because internally .NET
         //// will try to cast to the type that was requested. This means there is no
         //// way to customize the default string.Format() method for numeric and date
         //// types without either wrapping those arguments in custom IFormattable types
         //// to request something other than DateTimeFormatInfo or NumberFormatInfo.
-        //public override object GetFormat(Type formatType)
-        //{
-        //    return culture.GetFormat(formatType);
-        //}
+
+        /// <inheritdoc/>
+        public /*override*/ object? GetFormat(Type? formatType)
+        {
+            if (formatType == typeof(UNumberFormatInfo))
+            {
+                return NumberFormat;
+            }
+            if (formatType == typeof(NumberFormatInfo))
+            {
+                return culture.NumberFormat;
+            }
+            if (formatType == typeof(DateTimeFormatInfo))
+            {
+                return culture.DateTimeFormat;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Returns a string representation of this object.
@@ -291,6 +341,11 @@ namespace ICU4N.Globalization
         public override string ToString()
         {
             return localeID;
+        }
+
+        private static class SR
+        {
+            public const string InvalidOperation_ReadOnly = "Instance is read-only.";
         }
     }
 }

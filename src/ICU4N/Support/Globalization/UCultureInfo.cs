@@ -5,6 +5,7 @@ using J2N.Collections.Generic.Extensions;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Resources;
@@ -23,18 +24,18 @@ namespace ICU4N.Globalization
 #if FEATURE_CULTUREINFO_SERIALIZABLE
     [Serializable]
 #endif
-    public sealed partial class UCultureInfo : /*CultureInfo,*/ IComparable<UCultureInfo>
+    public sealed partial class UCultureInfo : /*CultureInfo,*/ IFormatProvider, IComparable<UCultureInfo>
 #if FEATURE_CLONEABLE
         , ICloneable
 #endif
     {
-        private static readonly CacheBase<string, string> nameCache = new SoftCache<string, string>();
+        internal static readonly CacheBase<string, string> nameCache = new SoftCache<string, string>();
 
         /// <summary>
         /// ICU locale ID, in .NET, this is referred to as the FullName.
         /// This is the <a href="https://tools.ietf.org/html/bcp47">BCP 47</a> representation of the culture.
         /// </summary>
-        private readonly string localeID;
+        internal readonly string localeID;
 
         /// <summary>
         /// The closest match for the current UCultureInfo as a CultureInfo
@@ -47,11 +48,21 @@ namespace ICU4N.Globalization
         // special keyword key for Unicode locale attributes
         private const string LocaleAttributeKey = "attribute";
 
+        private static UCultureInfo invariantCultureInfo = new UCultureInfo(CultureInfo.InvariantCulture, isReadOnly: true);
+
         /// <summary>
         /// Gets the <see cref="UCultureInfo"/> object that is culture-independent (invariant).
         /// </summary>
         // ICU4N: This corresponds to the ROOT in ICU4J
-        public static UCultureInfo InvariantCulture { get; } = new UCultureInfo("", CultureInfo.InvariantCulture);
+        public static UCultureInfo InvariantCulture
+        {
+            get
+            {
+                Debug.Assert(invariantCultureInfo is not null);
+                return invariantCultureInfo;
+            }
+        }
+        //public static UCultureInfo InvariantCulture { get; } = new UCultureInfo("", CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Gets the English culture. We cache it statically to optimize the <see cref="EnglishName"/> property.
@@ -59,8 +70,13 @@ namespace ICU4N.Globalization
         private static readonly UCultureInfo English = new UCultureInfo("en", new CultureInfo("en"));
 
         private readonly LocaleID localeIdentifier;
-        private readonly bool isNeutralCulture;
-        private readonly bool isInvariantCulture;
+        internal readonly bool isNeutralCulture;
+        internal readonly bool isInvariantCulture;
+
+        internal readonly UCultureData cultureData;
+        internal UNumberFormatInfo? numInfo;
+
+        private bool isReadOnly;
 
         /// <summary>
         /// Cache the locale data container fields.
@@ -185,22 +201,43 @@ namespace ICU4N.Globalization
         {
             this.localeID = name;
             this.culture = culture;
+            this.isReadOnly = false;
 
             this.localeIdentifier = new LocaleIDParser(localeID ?? string.Empty).GetLocaleID();
 
             // NOTE: Invariant culture is not neutral
             this.isNeutralCulture = localeIdentifier.IsNeutralCulture;
             this.isInvariantCulture = localeIdentifier.IsInvariantCulture;
+
+            this.cultureData = UCultureData.GetCultureData(this);
         }
 
-        /// <summary>
-        /// Construct a <see cref="UCultureInfo"/> from a <see cref="ToCultureInfo"/>.
-        /// </summary>
-        /// <param name="culture">A <see cref="ToCultureInfo"/>.</param>
-        private UCultureInfo(CultureInfo culture)
-            : this(GetFullName(culture.ToUCultureInfo().ToString()), culture)
+        // Constructor for invariant culture property
+        private UCultureInfo(CultureInfo culture, bool isReadOnly)
         {
+            Debug.Assert(culture is not null);
+
+            this.localeID = string.Empty;
+            this.culture = culture;
+            this.isReadOnly = isReadOnly;
+
+            this.localeIdentifier = new LocaleID(string.Empty, string.Empty, string.Empty, string.Empty);
+
+            // NOTE: Invariant culture is not neutral
+            this.isNeutralCulture = localeIdentifier.IsNeutralCulture;
+            this.isInvariantCulture = localeIdentifier.IsInvariantCulture;
+
+            this.cultureData = UCultureData.CreateCultureWithInvariantData(this);
         }
+
+        ///// <summary>
+        ///// Construct a <see cref="UCultureInfo"/> from a <see cref="ToCultureInfo"/>.
+        ///// </summary>
+        ///// <param name="culture">A <see cref="ToCultureInfo"/>.</param>
+        //private UCultureInfo(CultureInfo culture)
+        //    : this(GetFullName(culture.ToUCultureInfo().ToString()), culture)
+        //{
+        //}
 
         /// <summary>
         /// <icu/> Constructs a <see cref="UCultureInfo"/> from a RFC 3066 locale ID. The <paramref name="name"/> consists
@@ -222,6 +259,25 @@ namespace ICU4N.Globalization
         public UCultureInfo(string name)
             : this(GetFullName(name), null)
         {
+            this.culture = DotNetLocaleHelper.ToCultureInfo(this);
+        }
+
+        internal UCultureInfo(string name, bool isReadOnly, bool useDataCache)
+        {
+            Debug.Assert(name is not null);
+
+            this.localeID = GetFullName(name);
+
+            this.isReadOnly = isReadOnly;
+
+            this.localeIdentifier = new LocaleIDParser(localeID ?? string.Empty).GetLocaleID();
+
+            // NOTE: Invariant culture is not neutral
+            this.isNeutralCulture = localeIdentifier.IsNeutralCulture;
+            this.isInvariantCulture = localeIdentifier.IsInvariantCulture;
+
+            this.cultureData = UCultureData.GetCultureData(this, useDataCache);
+
             this.culture = DotNetLocaleHelper.ToCultureInfo(this);
         }
 

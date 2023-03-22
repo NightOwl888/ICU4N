@@ -2,14 +2,17 @@
 using J2N;
 using System;
 using System.Linq;
+using System.Threading;
 #nullable enable
 
 namespace ICU4N.Globalization
 {
     public sealed partial class UNumberFormatInfo
     {
+        internal UCultureData? cultureData;
+
         internal string currencySymbol = "\x00a4";  // U+00a4 is the symbol for International Monetary Fund.
-        internal string exponentMultiplicationSign = "×";
+        internal string exponentMultiplicationSign = "\u00D7";
         internal string exponentSeparator = "E";
 
         internal string positiveSign = "+";
@@ -23,8 +26,8 @@ namespace ICU4N.Globalization
         internal string nanSymbol = "NaN";
         internal string positiveInfinitySymbol = "∞"; // ICU4N: This differs from .NET //"Infinity";
         internal string negativeInfinitySymbol = "-∞"; // ICU4N: This differs from .NET //"-Infinity"; // NOTE THIS CURRENTLY IS NOT IN USE BY ICU
-        internal string currencyInternationalSymbol = "XXX";
-        internal ICU4N.Util.Currency currency = ICU4N.Util.Currency.GetInstance("XXX");
+        internal string currencyInternationalSymbol = "XXX"; // ICU4N TODO: This is in RegionInfo in .NET. Perhaps our Currency formatter should accept a URegionInfo to supply this.
+        //internal ICU4N.Util.Currency currency = ICU4N.Util.Currency.GetInstance("XXX");
         internal string percentDecimalSeparator = ".";
         internal string percentGroupSeparator = ",";
         internal string percentSymbol = "%";
@@ -56,6 +59,32 @@ namespace ICU4N.Globalization
         internal string? currencySpacingSurroundingMatchSuffix = "[:digit:]";
         internal string? currencySpacingInsertBetweenSuffix = " ";
 
+
+        internal string? numberingSystemName = "latn";
+        internal bool isAlgorithmic = false;
+
+        // Capitalization Settings
+        internal bool capitalizationForListOrMenu = false;
+        internal bool capitalizationForStandAlone = false;
+
+        internal UCultureData CultureData
+        {
+            get
+            {
+                if (cultureData is null)
+                {
+                    // Since we have no other choice, we re
+                    UCultureData temp = UCultureData.Invariant;
+                    Interlocked.CompareExchange(ref cultureData, temp, null);
+                }
+                return cultureData;
+            }
+        }
+
+        internal object SentenceBreakIteratorLock => CultureData.SentenceBreakIteratorLock;
+        internal BreakIterator SentenceBreakIterator => CultureData.SentenceBreakIterator;
+        internal PluralRules OrdinalPluralRules => CultureData.OrdinalPluralRules;
+        internal PluralRules CardinalPluralRules => CultureData.CardinalPluralRules;
 
         /// <summary>
         /// Gets or sets the string to use as the currency symbol.
@@ -296,25 +325,25 @@ namespace ICU4N.Globalization
         //    }
         //}
 
-        /// <summary>
-        /// Gets or sets the international string denoting the local currency.
-        /// <para/>
-        /// The default for <see cref="InvariantInfo"/> is "XXX".
-        /// </summary>
-        /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
-        /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
-        public string CurrencyInternationalSymbol
-        {
-            get => currencyInternationalSymbol;
-            set
-            {
-                if (value is null)
-                    throw new ArgumentNullException(nameof(value));
+        ///// <summary>
+        ///// Gets or sets the international string denoting the local currency.
+        ///// <para/>
+        ///// The default for <see cref="InvariantInfo"/> is "XXX".
+        ///// </summary>
+        ///// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
+        ///// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        //public string CurrencyInternationalSymbol
+        //{
+        //    get => currencyInternationalSymbol;
+        //    set
+        //    {
+        //        if (value is null)
+        //            throw new ArgumentNullException(nameof(value));
 
-                VerifyWritable();
-                currencyInternationalSymbol = value;
-            }
-        }
+        //        VerifyWritable();
+        //        currencyInternationalSymbol = value;
+        //    }
+        //}
 
         /// <summary>
         /// Gets or sets the string that denotes that the associated number is negative.
@@ -708,10 +737,10 @@ namespace ICU4N.Globalization
             set => PositiveInfinitySymbol = value;
         }
 
-        string IDecimalFormatSymbols.InternationalCurrencySymbol
+        string IDecimalFormatSymbols.InternationalCurrencySymbol // ICU4N TODO: This is in RegionInfo in .NET, so probably shouldn't be part of this interface.
         {
-            get => CurrencyInternationalSymbol;
-            set => CurrencyInternationalSymbol = value;
+            get => currencyInternationalSymbol;
+            set => currencyInternationalSymbol = value;
         }
 
         char IDecimalFormatSymbols.MinusSign
