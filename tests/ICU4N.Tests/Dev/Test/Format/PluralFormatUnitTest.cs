@@ -221,7 +221,7 @@ namespace ICU4N.Dev.Test.Format
             }
             foreach (UCultureInfo locale0 in same.Keys)
             {
-                PluralRules rules = PluralRules.ForLocale(locale0);
+                PluralRules rules = PluralRules.GetInstance(locale0);
                 String localeName = locale0.ToString().Length == 0 ? "root" : locale0.ToString();
                 Logln(localeName + "\t=\t" + same[locale0]);
                 Logln(localeName + "\ttoString\t" + rules.ToString());

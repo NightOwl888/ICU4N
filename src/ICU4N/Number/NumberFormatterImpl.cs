@@ -255,7 +255,7 @@ namespace ICU4N.Numerics
                 if (rules == null)
                 {
                     // Lazily create PluralRules
-                    rules = PluralRules.ForLocale(macros.loc);
+                    rules = PluralRules.GetInstance(macros.loc);
                 }
                 patternMod.SetSymbols(micros.symbols, currency, unitWidth, rules);
             }
@@ -278,7 +278,7 @@ namespace ICU4N.Numerics
                 if (rules == null)
                 {
                     // Lazily create PluralRules
-                    rules = PluralRules.ForLocale(macros.loc);
+                    rules = PluralRules.GetInstance(macros.loc);
                 }
                 chain = LongNameHandler.ForMeasureUnit(macros.loc, macros.unit, unitWidth, rules, chain);
             }
@@ -287,7 +287,7 @@ namespace ICU4N.Numerics
                 if (rules == null)
                 {
                     // Lazily create PluralRules
-                    rules = PluralRules.ForLocale(macros.loc);
+                    rules = PluralRules.GetInstance(macros.loc);
                 }
                 chain = LongNameHandler.ForCurrencyLongNames(macros.loc, currency, rules, chain);
             }
@@ -304,7 +304,7 @@ namespace ICU4N.Numerics
                 if (rules == null)
                 {
                     // Lazily create PluralRules
-                    rules = PluralRules.ForLocale(macros.loc);
+                    rules = PluralRules.GetInstance(macros.loc);
                 }
                 CompactType compactType = (macros.unit is Currency && macros.unitWidth != UnitWidth.FullName)
                     ? CompactType.Currency

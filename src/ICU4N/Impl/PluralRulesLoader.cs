@@ -7,8 +7,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Resources;
-using System.Text;
 using System.Threading;
+#nullable enable
 
 namespace ICU4N.Impl
 {
@@ -20,7 +20,7 @@ namespace ICU4N.Impl
         : PluralRulesFactory
 #pragma warning restore 612, 618
     {
-        private readonly ConcurrentDictionary<string, PluralRules> rulesIdToRules = new ConcurrentDictionary<string, PluralRules>();
+        private readonly ConcurrentDictionary<string, PluralRules?> rulesIdToRules = new ConcurrentDictionary<string, PluralRules?>();
         // lazy init, use getLocaleIdToRulesIdMap to access
         private IDictionary<string, string> localeIdToCardinalRulesId;
         private IDictionary<string, string> localeIdToOrdinalRulesId;
@@ -184,11 +184,29 @@ namespace ICU4N.Impl
         /// rulesId, return null. The rulesId might be the empty string if the rule
         /// is the default rule.
         /// </summary>
-        public virtual string GetRulesIdForLocale(UCultureInfo locale, PluralType type)
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
+        public virtual string? GetRulesIdForLocale(UCultureInfo locale, PluralType type)
         {
+            if (locale is null)
+                throw new ArgumentNullException(nameof(locale));
+
+            return GetRulesIdForLocale(locale.Name, type);
+        }
+
+        /// <summary>
+        /// Gets the rulesId from the localeName ,with locale fallback. If there is no
+        /// rulesId, return null. The rulesId might be the empty string if the rule
+        /// is the default rule.
+        /// </summary>
+        /// <exception cref="ArgumentNullException"><paramref name="localeName"/> is <c>null</c>.</exception>
+        public virtual string? GetRulesIdForLocale(string localeName, PluralType type) // ICU4N: Added overload to decouple from UCultureInfo
+        {
+            if (localeName is null)
+                throw new ArgumentNullException(nameof(localeName));
+
             IDictionary<string, string> idMap = GetLocaleIdToRulesIdMap(type);
-            string localeId = UCultureInfo.Canonicalize(locale.Name);
-            string rulesId = null;
+            string localeId = UCultureInfo.Canonicalize(localeName);
+            string? rulesId;
             while (!idMap.TryGetValue(localeId, out rulesId) || null == rulesId)
             {
                 int ix = localeId.LastIndexOf('_');
@@ -205,8 +223,12 @@ namespace ICU4N.Impl
         /// Gets the rule from the rulesId. If there is no rule for this rulesId,
         /// return null.
         /// </summary>
-        public virtual PluralRules GetRulesForRulesId(string rulesId)
+        /// <exception cref="ArgumentNullException"><paramref name="rulesId"/> is <c>null</c>.</exception>
+        public virtual PluralRules? GetRulesForRulesId(string rulesId)
         {
+            if (rulesId is null)
+                throw new ArgumentNullException(nameof(rulesId));
+
             return rulesIdToRules.GetOrAdd(rulesId, (key) => {
 
                 UResourceBundle setb;
@@ -256,17 +278,22 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns the plural rules for the the locale. If we don't have data,
         /// <see cref="PluralRules.Default"/> is returned.
+        /// <para/>
+        /// This method is named <c>forLocale</c> in ICU4J.
         /// </summary>
 #pragma warning disable 672
-        public override PluralRules ForLocale(UCultureInfo locale, PluralType type)
+        public override PluralRules GetInstance(string localeName, PluralType type)
 #pragma warning restore 672
         {
-            string rulesId = GetRulesIdForLocale(locale, type);
+            if (localeName is null)
+                throw new ArgumentNullException(nameof(localeName));
+
+            string? rulesId = GetRulesIdForLocale(localeName, type);
             if (rulesId == null || rulesId.Trim().Length == 0)
             {
                 return PluralRules.Default;
             }
-            PluralRules rules = GetRulesForRulesId(rulesId);
+            PluralRules? rules = GetRulesForRulesId(rulesId);
             if (rules == null)
             {
                 rules = PluralRules.Default;
@@ -305,7 +332,7 @@ namespace ICU4N.Impl
             // TODO markdavis Fix the bad fallback, here and elsewhere in this file.
             string localeId = UCultureInfo.Canonicalize(locale.Name);
 #pragma warning disable 612, 618
-            PluralRanges result;
+            PluralRanges? result;
 #pragma warning restore 612, 618
             while (!localeIdToPluralRanges.TryGetValue(localeId, out result) || null == result)
             {

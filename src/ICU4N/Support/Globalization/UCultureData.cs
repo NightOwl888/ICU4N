@@ -113,11 +113,11 @@ namespace ICU4N.Globalization
 
         // Do NOT call this in the constructor of UCultureInfo
         public PluralRules OrdinalPluralRules
-            => LazyInitializer.EnsureInitialized(ref ordinalPluralRules, () => PluralRules.ForLocale(culture, PluralType.Ordinal));
+            => LazyInitializer.EnsureInitialized(ref ordinalPluralRules, () => PluralRules.GetInstance(name, PluralType.Ordinal));
 
         // Do NOT call this in the constructor of UCultureInfo
         public PluralRules CardinalPluralRules
-            => LazyInitializer.EnsureInitialized(ref cardinalPluralRules, () => PluralRules.ForLocale(culture, PluralType.Cardinal));
+            => LazyInitializer.EnsureInitialized(ref cardinalPluralRules, () => PluralRules.GetInstance(name, PluralType.Cardinal));
 
 
         private object? nonNullIfNFIInitialized; // Marker to tell us we are "done" loading NFI data if not null.

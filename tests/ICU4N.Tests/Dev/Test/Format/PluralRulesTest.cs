@@ -50,7 +50,7 @@ namespace ICU4N.Dev.Test.Format
 
             foreach (UCultureInfo locale in new UCultureInfo[] { new UCultureInfo("en"), new UCultureInfo("cy"), new UCultureInfo("ar") })
             {
-                PluralRules rules = factory.ForLocale(locale);
+                PluralRules rules = factory.GetInstance(locale);
 
                 assertEquals(locale + " NaN", "other", rules.Select(double.NaN));
                 assertEquals(locale + " ∞", "other", rules.Select(double.PositiveInfinity));
@@ -376,7 +376,7 @@ namespace ICU4N.Dev.Test.Format
             //main: 
             foreach (UCultureInfo locale in factory.GetUCultures())
             {
-                PluralRules rules = factory.ForLocale(locale);
+                PluralRules rules = factory.GetInstance(locale);
                 IDictionary<String, PluralRules> keywordToRule = new Dictionary<String, PluralRules>();
                 ICollection<FixedDecimalSamples> samples = new JCG.LinkedHashSet<FixedDecimalSamples>();
 
@@ -556,17 +556,17 @@ namespace ICU4N.Dev.Test.Format
         public void TestBuiltInRules()
         {
             // spot check
-            PluralRules rules = factory.ForLocale(new UCultureInfo("en-US"));
+            PluralRules rules = factory.GetInstance(new UCultureInfo("en-US"));
             assertEquals("us 0", PluralRules.KeywordOther, rules.Select(0));
             assertEquals("us 1", PluralRules.KeywordOne, rules.Select(1));
             assertEquals("us 2", PluralRules.KeywordOther, rules.Select(2));
 
-            rules = factory.ForLocale(new UCultureInfo("ja-JP"));
+            rules = factory.GetInstance(new UCultureInfo("ja-JP"));
             assertEquals("ja 0", PluralRules.KeywordOther, rules.Select(0));
             assertEquals("ja 1", PluralRules.KeywordOther, rules.Select(1));
             assertEquals("ja 2", PluralRules.KeywordOther, rules.Select(2));
 
-            rules = factory.ForLocale(UCultureInfo.CreateCanonical("ru"));
+            rules = factory.GetInstance(UCultureInfo.CreateCanonical("ru"));
             assertEquals("ru 0", PluralRules.KeywordMany, rules.Select(0));
             assertEquals("ru 1", PluralRules.KeywordOne, rules.Select(1));
             assertEquals("ru 2", PluralRules.KeywordFew, rules.Select(2));
@@ -718,7 +718,7 @@ namespace ICU4N.Dev.Test.Format
             }
             foreach (UCultureInfo locale in uniqueRuleSet)
             {
-                PluralRules rules = factory.ForLocale(locale);
+                PluralRules rules = factory.GetInstance(locale);
                 Logln("\nlocale: " + (locale == UCultureInfo.InvariantCulture ? "root" : locale.ToString()) + ", rules: " + rules);
                 ICollection<String> keywords = rules.Keywords;
                 foreach (String keyword in keywords)
@@ -882,7 +882,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestOrdinal()
         {
-            PluralRules pr = factory.ForLocale(new UCultureInfo("en"), PluralType.Ordinal);
+            PluralRules pr = factory.GetInstance(new UCultureInfo("en"), PluralType.Ordinal);
             assertEquals("PluralRules(en-ordinal).select(2)", "two", pr.Select(2));
         }
 
@@ -936,7 +936,7 @@ namespace ICU4N.Dev.Test.Format
                 }
                 foreach (PluralType type in Enum.GetValues(typeof(PluralType)))
                 {
-                    PluralRules rules = PluralRules.ForLocale(locale, type);
+                    PluralRules rules = PluralRules.GetInstance(locale, type);
                     foreach (PluralRulesSampleType sampleType in Enum.GetValues(typeof(PluralRulesSampleType)))
                     {
                         if (type == PluralType.Ordinal)
@@ -986,7 +986,7 @@ namespace ICU4N.Dev.Test.Format
                 UCultureInfo locale = new UCultureInfo((String)test[0][0]);
                 // NumberType numberType = (NumberType) test[1];
                 ISet<double> explicits = (ISet<double>)test[0][1];
-                PluralRules pluralRules = factory.ForLocale(locale);
+                PluralRules pluralRules = factory.GetInstance(locale);
                 JCG.LinkedHashSet<string> remaining = new JCG.LinkedHashSet<string>(possibleKeywords);
                 for (int i = 1; i < test.Length; ++i)
                 {
@@ -1097,7 +1097,7 @@ namespace ICU4N.Dev.Test.Format
                     {
                         continue; // skip for now
                     }
-                    PluralRules rules = factory.ForLocale(locale);
+                    PluralRules rules = factory.GetInstance(locale);
                     for (int i = 1; i < parts.Length; ++i)
                     {
                         checkCategoriesAndExpected(localeString, parts[i], rules);
@@ -1340,12 +1340,12 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestJavaLocaleFactory()
         {
-            PluralRules rulesU0 = PluralRules.ForLocale(new UCultureInfo("fr-FR"));
-            PluralRules rulesJ0 = PluralRules.ForLocale(new CultureInfo("fr-FR"));
+            PluralRules rulesU0 = PluralRules.GetInstance(new UCultureInfo("fr-FR"));
+            PluralRules rulesJ0 = PluralRules.GetInstance(new CultureInfo("fr-FR"));
             assertEquals("forLocale()", rulesU0, rulesJ0);
 
-            PluralRules rulesU1 = PluralRules.ForLocale(new UCultureInfo("fr-FR"), PluralType.Ordinal);
-            PluralRules rulesJ1 = PluralRules.ForLocale(new CultureInfo("fr-FR"), PluralType.Ordinal);
+            PluralRules rulesU1 = PluralRules.GetInstance(new UCultureInfo("fr-FR"), PluralType.Ordinal);
+            PluralRules rulesJ1 = PluralRules.GetInstance(new CultureInfo("fr-FR"), PluralType.Ordinal);
             assertEquals("forLocale() with type", rulesU1, rulesJ1);
         }
 
