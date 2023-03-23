@@ -48,7 +48,7 @@ namespace ICU4N.Globalization
         // special keyword key for Unicode locale attributes
         private const string LocaleAttributeKey = "attribute";
 
-        private static UCultureInfo invariantCultureInfo = new UCultureInfo(CultureInfo.InvariantCulture, isReadOnly: true);
+        private static readonly UCultureInfo invariantCultureInfo = new UCultureInfo(UCultureData.Invariant, isReadOnly: true);
 
         /// <summary>
         /// Gets the <see cref="UCultureInfo"/> object that is culture-independent (invariant).
@@ -213,12 +213,15 @@ namespace ICU4N.Globalization
         }
 
         // Constructor for invariant culture property
-        private UCultureInfo(CultureInfo culture, bool isReadOnly)
+        // ICU4N TODO: Clean up constructors. We ought to be using localeId from UCultureData, but need to
+        // think through how to correctly populate UCultureData. We need a shared parser that everything
+        // can use to get the bits from a localeID. Does that piece need to be used elsewhere? Possibly...
+        private UCultureInfo(UCultureData cultureData, bool isReadOnly)
         {
-            Debug.Assert(culture is not null);
+            Debug.Assert(cultureData is not null);
 
             this.localeID = string.Empty;
-            this.culture = culture;
+            this.culture = CultureInfo.InvariantCulture;
             this.isReadOnly = isReadOnly;
 
             this.localeIdentifier = new LocaleID(string.Empty, string.Empty, string.Empty, string.Empty);
@@ -227,7 +230,7 @@ namespace ICU4N.Globalization
             this.isNeutralCulture = localeIdentifier.IsNeutralCulture;
             this.isInvariantCulture = localeIdentifier.IsInvariantCulture;
 
-            this.cultureData = UCultureData.CreateCultureWithInvariantData(this);
+            this.cultureData = cultureData;
         }
 
         ///// <summary>
@@ -626,7 +629,7 @@ namespace ICU4N.Globalization
         /// returns <c>null</c>.
         /// </summary>
         /// <stable>ICU 3.2</stable>
-        internal UCultureInfo GetParent() // ICU4N: Exposed through Parent property, but in that case we never have null
+        internal UCultureInfo? GetParent() // ICU4N: Exposed through Parent property, but in that case we never have null
         {
             if (localeID.Length == 0 || localeID[0] == '@')
             {

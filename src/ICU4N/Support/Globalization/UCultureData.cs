@@ -16,16 +16,15 @@ namespace ICU4N.Globalization
     internal class UCultureData
     {
         // Basics
-        internal UCultureInfo culture;
         internal string localeID; // Name you passed in (ie: en-US, en, or de-DE-PHONEBOOK)
-        private bool isInvariantCulture;
+        private bool isInvariantCulture; // ICU4N TODO: Move the logic for dealing with these to UCultureData from UCultureInfo, as is the case in .NET
         private bool isNeutralCulture;
 
         // Identity
         internal string name; // normalized locale name (ie: en-US) - same as UCultureInfo.Name property.
 
         // Numbers
-        internal string? numbersKeyword; // The numbers keyword from the original passed in string (en@numbers=thai). Copied from UCultureInfo upon creation. This is always in sync because the collection is readonly.
+        private readonly string? numbersKeyword; // The numbers keyword from the original passed in string (en@numbers=thai). Copied from UCultureInfo upon creation. This is always in sync because the collection is readonly.
         internal string? positiveSign; // (user can override) positive sign
         internal string? negativeSign; // (user can override) negative sign
         // (nfi populates these 5, don't have to be = undef)
@@ -55,7 +54,7 @@ namespace ICU4N.Globalization
 
 
         // Currency
-        internal string? cfKeyword; // The currency format keyword from the original localeID
+        internal readonly string? cfKeyword; // The currency format keyword from the original localeID
         internal string? currency; // (user can override) local monetary symbol
         internal string? intlMonetarySymbol; // international monetary symbol (RegionInfo)
         //internal string? _sEnglishCurrency; // English name for this currency
@@ -79,8 +78,11 @@ namespace ICU4N.Globalization
         internal bool capitalizationForListOrMenu;
         internal bool capitalizationForStandAlone;
         private BreakIterator? sentenceBreakIterator;
+        private readonly string? lbKeyword; // Controls the resource data set that is looked up - line break behavior
+        private readonly string? ssKeyword; // If "ss=standard", wraps a sentence iterator in a SimpleFilteredSentenceBreakIterator
 
-        // IMPORTANT: There is a concurrency bug somewhere in the dictionary-based break iterators. This
+
+        // IMPORTANT: There is likely a concurrency bug somewhere in the dictionary-based break iterators. This
         // lock is static and exposed publically only to work around this problem. Once the bug has been
         // tracked down, we can make this non-static and remove the SentenceBreakIteratorLock property.
         private static readonly object sentenceBreakIteratorLock = new object();
@@ -105,7 +107,7 @@ namespace ICU4N.Globalization
                     if (sentenceBreakIterator is not null)
                         return sentenceBreakIterator;
 
-                    sentenceBreakIterator = BreakIterator.GetSentenceInstance(culture);
+                    sentenceBreakIterator = BreakIterator.GetSentenceInstance(name, localeID, lbKeyword, ssKeyword);
                     return sentenceBreakIterator;
                 }
             }
@@ -158,10 +160,16 @@ namespace ICU4N.Globalization
             });
         }
 
-        internal static UCultureData CreateCultureWithInvariantData(UCultureInfo cultureInfo)
+        private static UCultureData CreateCultureWithInvariantData()
         {
-            return new UCultureData(cultureInfo, skipKeywords: true);
+            var invariant = new UCultureData();
+            invariant.localeID = string.Empty;
+            invariant.name = string.Empty;
+            invariant.isInvariantCulture = true;
+            invariant.isNeutralCulture = false;
             // The rest is lazy-loaded from resources
+
+            return invariant;
         }
 
         // CONFUSING: The ctor of UCultureInfo is responsible for setting its own cultureData field.
@@ -170,7 +178,7 @@ namespace ICU4N.Globalization
         // 2. UCultureInfo.InvariantCulture.cultureData is set
         // 3. UCultureInfo.invariantCultureInfo is set (backing field for UCultureInfo.InvariantCulture)
         // 4. This property is then able to return cultureData since both have been initialized.
-        internal static UCultureData Invariant => s_Invariant ??= UCultureInfo.InvariantCulture.cultureData;
+        internal static UCultureData Invariant => s_Invariant ??= CreateCultureWithInvariantData();
         private static volatile UCultureData? s_Invariant;
 
         // Cache of cultures we've already looked up
@@ -188,7 +196,9 @@ namespace ICU4N.Globalization
         {
             Debug.Assert(cultureInfo is not null);
 
-            if (cultureInfo.Equals(UCultureInfo.InvariantCulture))
+            // ICU4N: We cannot use the invariant culture if there are keywords to parse,
+            // so we must use localeID here.
+            if (string.IsNullOrEmpty(cultureInfo.FullName))
             {
                 return Invariant;
             }
@@ -246,7 +256,6 @@ namespace ICU4N.Globalization
         internal UCultureData(UCultureInfo cultureInfo, bool skipKeywords = false)
         {
             Debug.Assert(cultureInfo is not null);
-            this.culture = cultureInfo;
             this.localeID = cultureInfo.localeID;
             this.isInvariantCulture = cultureInfo.isInvariantCulture;
             this.isNeutralCulture = cultureInfo.isNeutralCulture;
@@ -256,7 +265,13 @@ namespace ICU4N.Globalization
             {
                 cultureInfo.Keywords.TryGetValue("numbers", out numbersKeyword);
                 cultureInfo.Keywords.TryGetValue("cf", out cfKeyword);
+                cultureInfo.Keywords.TryGetValue("lb", out lbKeyword);
+                cultureInfo.Keywords.TryGetValue("ss", out ssKeyword);
             }
+        }
+
+        private UCultureData()
+        {
         }
 
         internal void GetNFIValues(UNumberFormatInfo nfi)
