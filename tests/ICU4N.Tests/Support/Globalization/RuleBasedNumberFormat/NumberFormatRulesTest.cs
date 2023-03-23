@@ -4,6 +4,8 @@ using ICU4N.Text;
 using ICU4N.Util;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Resources;
 using System.Text;
 
@@ -12,6 +14,46 @@ namespace ICU4N.Globalization
     internal class NumberFormatRulesTest : TestFmwk
     {
 #if FEATURE_SPAN
+
+        //[Test]
+        ////[Ignore("This is just to try to work out what to cache")]
+        //public void TestRuleSizes_AllCultures()
+        //{
+        //    Dictionary<string, Tuple<string, string, string, string>> sizes = new Dictionary<string, Tuple<string, string, string, string>>();
+        //    var sw = new System.Diagnostics.Stopwatch();
+        //    TimeSpan rulesResourceLookupTime;
+        //    TimeSpan rulesParseTime;
+
+        //    string[] names = {
+        //        " (spellout) ",
+        //        " (ordinal) ",
+        //        " (duration) ", // English only
+        //        " (numbering system)",
+        //    };
+
+        //    foreach (var culture in UCultureInfo.GetCultures(UCultureTypes.AllCultures))
+        //    {
+        //        foreach (NumberPresentation numberPresentation in Enum.GetValues<NumberPresentation>())
+        //        {
+        //            RuleBasedNumberFormat expected = new RuleBasedNumberFormat(culture, numberPresentation);
+
+        //            sw.Restart();
+        //            string rules = GetRulesForCulture(culture, numberPresentation, out string[][] localizations);
+        //            sw.Stop();
+        //            rulesResourceLookupTime = sw.Elapsed;
+
+        //            sw.Restart();
+        //            NumberFormatRules actual = new NumberFormatRules(rules);
+        //            sw.Stop();
+        //            rulesParseTime = sw.Elapsed;
+
+        //            if (!sizes.ContainsKey(culture.ToString()))
+        //                sizes.Add(culture.ToString(), new Tuple<string, string, string, string>(Lucene.Net.Util.RamUsageEstimator.HumanSizeOf(rules), rulesResourceLookupTime.ToString(), Lucene.Net.Util.RamUsageEstimator.HumanSizeOf(actual), rulesParseTime.ToString()));
+
+        //            //AssertEquivalentRulesEngines(culture, expected, actual);
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Spot check for invariant culture
@@ -32,7 +74,7 @@ namespace ICU4N.Globalization
         }
 
         [Test]
-        //[Ignore("Slow - Run manually to debug")]
+        [Ignore("Slow - Run manually to debug")]
         public void TestRuleParsing_AllCultures()
         {
             string[] names = {
@@ -207,7 +249,7 @@ namespace ICU4N.Globalization
 
         // Pulled from constructor of RuleBasedNumberFormat.
         // ICU4N TODO: Move this to CultureData and use the solution from there for this test.
-        private string GetRulesForCulture(UCultureInfo locale, NumberPresentation format, out string[][] localizations)
+        private static string GetRulesForCulture(UCultureInfo locale, NumberPresentation format, out string[][] localizations)
         {
             ICUResourceBundle bundle = (ICUResourceBundle)UResourceBundle.
                             GetBundleInstance(ICUData.IcuRuleBasedNumberFormatBaseName, locale);
