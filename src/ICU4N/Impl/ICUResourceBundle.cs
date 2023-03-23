@@ -1386,6 +1386,15 @@ namespace ICU4N.Impl
                     ICUResourceBundle.IcuDataAssembly, openType);
         }
 
+        // ICU4N specific overload so we can use Name (baseName in ICU4J) to
+        // decouple from UCultureInfo.
+        public static ICUResourceBundle GetBundleInstance(
+            string baseName, string localeID, OpenType openType)
+        {
+            return GetBundleInstance(baseName, localeID,
+                    ICUResourceBundle.IcuDataAssembly, openType);
+        }
+
         // ICU4N specific overload so we can pass the Assembly from submodules (since 
         // the main assembly won't see submodules by default).
         public static ICUResourceBundle GetBundleInstance(

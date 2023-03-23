@@ -33,7 +33,7 @@ namespace ICU4N.Impl
         /// Convenience override for callers using locales.  This calls
         /// <see cref="Get(UCultureInfo, int, out UCultureInfo)"/> with <see cref="LocaleKey.KindAny"/> for kind.
         /// </summary>
-        public virtual object Get(UCultureInfo locale) // ICU4N TODO: API - Use indexer?
+        public virtual object Get(UCultureInfo locale)
         {
             return Get(locale, LocaleKey.KindAny);
         }
@@ -77,6 +77,36 @@ namespace ICU4N.Impl
         {
             actualResult = null;
             ICUServiceKey key = CreateKey(locale, kind);
+
+            object result = GetKey(key, out string temp);
+            if (result != null)
+            {
+                int n = temp.IndexOf('/');
+                if (n >= 0)
+                {
+                    temp = temp.Substring(n + 1);
+                }
+                actualResult = new UCultureInfo(temp);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Convenience override for callers using locales.  This uses
+        /// <see cref="CreateKey(string, int)"/> to create a key, calls 
+        /// <see cref="ICUService.GetKey(ICUServiceKey)"/>, and then
+        /// returns the <paramref name="actualResult"/> from
+        /// <see cref="ICUService.GetKey(ICUServiceKey)"/> (stripping any prefix)
+        /// into a <see cref="UCultureInfo"/>.
+        /// </summary>
+        /// <param name="localeName">The localeID or full name of the locale.</param>
+        /// <param name="kind"></param>
+        /// <param name="actualResult"></param>
+        /// <returns></returns>
+        public virtual object Get(string localeName, int kind, out UCultureInfo actualResult) // ICU4N: Added to decouple services from UCultureInfo
+        {
+            actualResult = null;
+            ICUServiceKey key = CreateKey(localeName, kind);
 
             object result = GetKey(key, out string temp);
             if (result != null)
@@ -277,11 +307,21 @@ namespace ICU4N.Impl
         /// </summary>
         public static LocaleKey CreateWithCanonical(UCultureInfo locale, string canonicalFallbackID, int kind)
         {
-            if (locale == null)
+            return CreateWithCanonical(locale.FullName, canonicalFallbackID, kind);
+        }
+
+        /// <summary>
+        /// Create a <see cref="LocaleKey"/> with canonical primary and fallback IDs.
+        /// <para/>
+        /// Note that <paramref name="localeFullName"/> is the same as locale.Name in ICU4J.
+        /// </summary>
+        public static LocaleKey CreateWithCanonical(string localeFullName, string canonicalFallbackID, int kind) // ICU4N: Added overload to decouple from UCultureInfo
+        {
+            if (localeFullName is null)
             {
                 return null;
             }
-            string canonicalPrimaryID = locale.FullName;
+            string canonicalPrimaryID = localeFullName;
             return new LocaleKey(canonicalPrimaryID, canonicalPrimaryID, canonicalFallbackID, kind);
         }
 

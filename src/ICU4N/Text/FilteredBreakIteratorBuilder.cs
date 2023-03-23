@@ -55,6 +55,23 @@ namespace ICU4N.Text
         }
 
         /// <summary>
+        /// Construct a <see cref="FilteredBreakIteratorBuilder"/> based on sentence break exception rules in a locale.
+        /// The rules are taken from CLDR exception data for the locale,
+        /// see http://www.unicode.org/reports/tr35/tr35-general.html#Segmentation_Exceptions
+        /// This is the equivalent of calling createInstance(UErrorCode&amp;)
+        /// and then repeatedly calling addNoBreakAfter(...) with the contents
+        /// of the CLDR exception data.
+        /// </summary>
+        /// <param name="where">The locale name.</param>
+        /// <returns>The new builder.</returns>
+        /// <draft>ICU 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public static FilteredBreakIteratorBuilder GetInstance(string where)
+        {
+            return new SimpleFilteredSentenceBreakIteratorBuilder(where);
+        }
+
+        /// <summary>
         /// Construct an empty <see cref="FilteredBreakIteratorBuilder"/>.
         /// In this state, it will not suppress any segment boundaries.
         /// </summary>
