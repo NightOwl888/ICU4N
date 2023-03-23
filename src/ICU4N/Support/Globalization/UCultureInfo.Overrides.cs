@@ -21,7 +21,7 @@ namespace ICU4N.Globalization
                     temp.isReadOnly = isReadOnly;
                     Interlocked.CompareExchange(ref numInfo, temp, null);
                 }
-                return numInfo!;
+                return numInfo;
             }
             set
             {

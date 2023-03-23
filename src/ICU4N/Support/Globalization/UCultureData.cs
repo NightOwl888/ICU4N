@@ -122,7 +122,7 @@ namespace ICU4N.Globalization
             => LazyInitializer.EnsureInitialized(ref cardinalPluralRules, () => PluralRules.GetInstance(name, PluralType.Cardinal));
 
 
-        private object? nonNullIfNFIInitialized; // Marker to tell us we are "done" loading NFI data if not null.
+        internal object? nonNullIfNFIInitialized; // Marker to tell us we are "done" loading NFI data if not null.
 
         [MemberNotNull(nameof(positiveSign))]
         [MemberNotNull(nameof(negativeSign))]
@@ -475,8 +475,8 @@ namespace ICU4N.Globalization
                 cultureData.positiveInfinity ??= Default.PositiveInfinity;
                 cultureData.negativeInfinity ??= Default.GetNegativeInfinity(cultureData.negativeSign, cultureData.positiveInfinity); // Not in CLDR
                 cultureData.naN ??= Default.NaN;
-                cultureData.monetaryDecimal ??= cultureData.decimalSeparator ?? Default.DecimalSeparator;
-                cultureData.monetaryGroupSeparator ??= cultureData.groupSeparator ?? Default.GroupSeparator;
+                cultureData.monetaryDecimal ??= cultureData.decimalSeparator;
+                cultureData.monetaryGroupSeparator ??= cultureData.groupSeparator;
                 cultureData.exponentMultiplicationSign ??= Default.ExponentMultiplicationSign;
             }
 

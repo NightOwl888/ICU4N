@@ -18,6 +18,7 @@ namespace ICU4N.Globalization
 
         public UNumberFormatInfo()
         {
+            this.cultureData = UCultureData.Invariant;
         }
 
         internal UNumberFormatInfo(UCultureData cultureData)

@@ -1,6 +1,7 @@
 ﻿using ICU4N.Text;
 using J2N;
 using System;
+using System.Data;
 using System.Linq;
 using System.Threading;
 #nullable enable
@@ -9,7 +10,20 @@ namespace ICU4N.Globalization
 {
     public sealed partial class UNumberFormatInfo
     {
-        internal UCultureData? cultureData;
+        private struct CharDefault
+        {
+            public static readonly char[] Digits = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+            public const char DecimalSeparator = '.';
+            public const char GroupingSeparator = ',';
+            public const char Percent = '%';
+            public const char MinusSign = '-';
+            public const char PlusSign = '+';
+            public const char PerMille = '\u2030';
+        }
+
+
+        internal UCultureData cultureData;
 
         internal string currencySymbol = "\x00a4";  // U+00a4 is the symbol for International Monetary Fund.
         internal string exponentMultiplicationSign = "\u00D7";
@@ -67,19 +81,7 @@ namespace ICU4N.Globalization
         internal bool capitalizationForListOrMenu = false;
         internal bool capitalizationForStandAlone = false;
 
-        internal UCultureData CultureData
-        {
-            get
-            {
-                if (cultureData is null)
-                {
-                    // Since we have no other choice, we re
-                    UCultureData temp = UCultureData.Invariant;
-                    Interlocked.CompareExchange(ref cultureData, temp, null);
-                }
-                return cultureData;
-            }
-        }
+        internal UCultureData CultureData => cultureData;
 
         internal object SentenceBreakIteratorLock => CultureData.SentenceBreakIteratorLock;
         internal BreakIterator SentenceBreakIterator => CultureData.SentenceBreakIterator;
@@ -681,7 +683,7 @@ namespace ICU4N.Globalization
 
         char IDecimalFormatSymbols.DecimalSeparator
         {
-            get => NumberDecimalSeparator[0];
+            get => NumberDecimalSeparator.Length == 1 ? NumberDecimalSeparator[0] : CharDefault.DecimalSeparator;
             set => NumberDecimalSeparator = char.ToString(value);
         }
 
@@ -697,7 +699,7 @@ namespace ICU4N.Globalization
             set => Digit = value;
         }
 
-        char[] IDecimalFormatSymbols.Digits => nativeDigitChars = nativeDigits.Select(d => d[0]).ToArray();
+        char[] IDecimalFormatSymbols.Digits => NativeDigits.Any(d => d.Length > 1) ? CharDefault.Digits : NativeDigits.Select(d => d[0]).ToArray();
 
         string[] IDecimalFormatSymbols.DigitStrings
         {
@@ -721,7 +723,7 @@ namespace ICU4N.Globalization
 
         char IDecimalFormatSymbols.GroupingSeparator
         {
-            get => NumberGroupSeparator[0];
+            get => NumberGroupSeparator.Length == 1 ? NumberGroupSeparator[0] : CharDefault.GroupingSeparator;
             set => NumberGroupSeparator = char.ToString(value);
         }
 
@@ -745,7 +747,7 @@ namespace ICU4N.Globalization
 
         char IDecimalFormatSymbols.MinusSign
         {
-            get => NegativeSign[0];
+            get => NegativeSign.Length == 1 ? NegativeSign[0] : CharDefault.MinusSign;
             set => NegativeSign = char.ToString(value);
         }
 
@@ -757,7 +759,7 @@ namespace ICU4N.Globalization
 
         char IDecimalFormatSymbols.MonetaryDecimalSeparator
         {
-            get => CurrencyDecimalSeparator[0];
+            get => CurrencyDecimalSeparator.Length == 1 ? CurrencyDecimalSeparator[0] : CharDefault.DecimalSeparator;
             set => CurrencyDecimalSeparator = char.ToString(value);
         }
 
@@ -769,7 +771,7 @@ namespace ICU4N.Globalization
 
         char IDecimalFormatSymbols.MonetaryGroupingSeparator
         {
-            get => CurrencyGroupSeparator[0];
+            get => CurrencyGroupSeparator.Length == 1 ? CurrencyGroupSeparator[0] : CharDefault.GroupingSeparator;
             set => CurrencyGroupSeparator = char.ToString(value);
         }
 
@@ -798,7 +800,7 @@ namespace ICU4N.Globalization
 
         char IDecimalFormatSymbols.Percent
         {
-            get => PercentSymbol[0];
+            get => PercentSymbol.Length == 1 ? PercentSymbol[0] : CharDefault.Percent;
             set => PercentSymbol = char.ToString(value);
         }
 
@@ -810,7 +812,7 @@ namespace ICU4N.Globalization
 
         char IDecimalFormatSymbols.PerMill
         {
-            get => PerMilleSymbol[0];
+            get => PerMilleSymbol.Length == 1 ? PerMilleSymbol[0] : CharDefault.PerMille;
             set => PerMilleSymbol = char.ToString(value);
         }
 
@@ -822,7 +824,7 @@ namespace ICU4N.Globalization
 
         char IDecimalFormatSymbols.PlusSign
         {
-            get => PositiveSign[0];
+            get => PositiveSign.Length == 1 ? PositiveSign[0] : CharDefault.PlusSign;
             set => PositiveSign = char.ToString(value);
         }
 
@@ -840,7 +842,7 @@ namespace ICU4N.Globalization
 
         char IDecimalFormatSymbols.ZeroDigit
         {
-            get => nativeDigits[0][0];
+            get => nativeDigits[0].Length == 1 ? nativeDigits[0][0] : CharDefault.Digits[0];
             set => throw new NotSupportedException(SR.NotSupported_UseNativeDigitsInstead);
         }
 
