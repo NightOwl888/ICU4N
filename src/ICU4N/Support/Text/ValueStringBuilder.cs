@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 #nullable enable
 
-namespace ICU4N.Support.Text
+namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
 {
     internal ref partial struct ValueStringBuilder
     {
