@@ -92,6 +92,22 @@ namespace ICU4N.Globalization
             }
         }
 
+        private static void VerifyDigitSubstitution(UDigitShapes digitSub, string propertyName)
+        {
+            switch (digitSub)
+            {
+                //case UDigitShapes.Context:
+                case UDigitShapes.None:
+                case UDigitShapes.NativeNational:
+                    // Success.
+                    break;
+
+                default:
+                    throw new ArgumentException(SR.Argument_InvalidDigitSubstitution, propertyName);
+            }
+        }
+
+
         private void VerifyWritable()
         {
             if (isReadOnly)
@@ -165,8 +181,8 @@ namespace ICU4N.Globalization
 
         private static class SR
         {
-            
             public const string Argument_EmptyDecString = "Decimal separator cannot be the empty string.";
+            public const string Argument_InvalidDigitSubstitution = "The DigitSubstitution property must be of a valid member of the UDigitShapes enumeration. Valid entries include NativeNational or None.";
             public const string Argument_InvalidNativeDigitCount = "The NativeDigits array must contain exactly ten members.";
             public const string Argument_InvalidNativeDigitValue = "Each member of the NativeDigits array must be a single text element (one or more UTF16 code points) with a Unicode Nd (Number, Decimal Digit) property indicating it is a digit.";
             public const string Argument_InvalidGroupSize = "Every element in the value array should be between one and nine, except for the last element, which can be zero.";

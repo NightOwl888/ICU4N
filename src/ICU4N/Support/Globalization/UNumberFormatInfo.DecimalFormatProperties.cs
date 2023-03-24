@@ -66,6 +66,7 @@ namespace ICU4N.Globalization
             }
         }
 
+        internal int[] NumberGroupSizesLocal => numberGroupSizes;
         internal string NumberPattern => CultureData.decimalFormat;
     }
 }

@@ -65,6 +65,8 @@ namespace ICU4N.Globalization
         ////internal int percentNegativePattern;
         //internal int percentDecimalDigits = 2;
 
+        internal int digitSubstitution = (int)UDigitShapes.NativeNational; // ICU4N: Not yet functional. See the UDigitShapes header.
+
         // ICU4N: These correspond with GetPatternForCurrencySpacing() in ICU4J, as separate fields.
         internal string? currencySpacingMatchPrefix = "[:^S:]";
         internal string? currencySpacingSurroundingMatchPrefix = "[:digit:]";
@@ -244,6 +246,25 @@ namespace ICU4N.Globalization
                 VerifyNativeDigits(value, nameof(value));
                 nativeDigits = value;
                 nativeDigitChars = null; // Invalidate the cache. This is lazily loaded on demand.
+            }
+        }
+
+        internal string[] NativeDigitsLocal => nativeDigits;
+
+        /// <summary>
+        /// Gets or sets a value that specifies how the graphical user interface displays the shape of a digit.
+        /// </summary>
+        /// <value>One of the enumeration values that specifies the culture-specific digit shape.</value>
+        /// <exception cref="InvalidOperationException">The current <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        /// <exception cref="ArgumentException">The value in a set operation is not a valid <see cref="UDigitShapes"/> value.</exception>
+        internal UDigitShapes DigitSubstitution // ICU4N: Not yet functional. See the UDigitShapes header.
+        {
+            get => (UDigitShapes)digitSubstitution;
+            set
+            {
+                VerifyWritable();
+                VerifyDigitSubstitution(value, nameof(value));
+                digitSubstitution = (int)value;
             }
         }
 
