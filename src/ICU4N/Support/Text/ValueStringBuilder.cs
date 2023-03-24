@@ -168,6 +168,21 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             _pos += count;
         }
 
+        public void Insert(int index, ReadOnlySpan<char> s)
+        {
+            int count = s.Length;
+
+            if (_pos > (_chars.Length - count))
+            {
+                Grow(count);
+            }
+
+            int remaining = _pos - index;
+            _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
+            s.CopyTo(_chars.Slice(index));
+            _pos += count;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Append(char c)
         {
