@@ -255,7 +255,7 @@ namespace ICU4N.Globalization
 
         internal UCultureData(UCultureInfo cultureInfo, bool skipKeywords = false)
         {
-            Debug.Assert(cultureInfo is not null);
+            Debug.Assert(cultureInfo != null);
             this.localeID = cultureInfo.localeID;
             this.isInvariantCulture = cultureInfo.isInvariantCulture;
             this.isNeutralCulture = cultureInfo.isNeutralCulture;
@@ -307,9 +307,10 @@ namespace ICU4N.Globalization
             nfi.capitalizationForListOrMenu = capitalizationForListOrMenu;
             nfi.capitalizationForStandAlone = capitalizationForStandAlone;
 
+            nfi.numberGroupSizes = grouping; // Note that we share the same array instance across instances of UNumberFormatInfo
 
-            // ICU4N TODO: decimalFormat > numberGroupSizes
             // ICU4N TODO: currencyFormat > currencyGroupSizes
+            // ICU4N TODO: percentFormat > percentGroupSizes
         }
 
         private static string[] ConvertDigits(string digitString)
@@ -551,6 +552,8 @@ namespace ICU4N.Globalization
                 cultureData.accountingFormat ??= Default.AccountingFormat;
                 cultureData.percentFormat ??= Default.PercentFormat;
                 cultureData.scientificFormat ??= Default.ScientificFormat;
+
+                cultureData.grouping = IcuNumber.GetGroupingSizes(cultureData.decimalFormat);
             }
 
             public void Put(int index, IResourceTable table, ResourceKey key, ResourceValue value, bool noFallback)
