@@ -11,7 +11,7 @@ using System.Text;
 namespace ICU4N.Globalization
 {
 #if FEATURE_SPAN
-    public sealed class NumberFormatRules : INumberFormatRules
+    public sealed partial class NumberFormatRules : INumberFormatRules
     {
         //-----------------------------------------------------------------------
         // constants

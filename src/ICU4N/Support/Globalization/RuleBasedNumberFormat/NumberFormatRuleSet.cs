@@ -331,16 +331,16 @@ namespace ICU4N.Globalization
         }
 
         /// <summary>
-        /// Gets the best fraction rule for the supplied <paramref name="decimalFormatSymbols"/> or <c>null</c>
+        /// Gets the best fraction rule for the supplied <paramref name="info"/> or <c>null</c>
         /// if no rule was found.
         /// <para/>
         /// This is purely a runtime method. It should always be used when parsing or formatting non-numerical rules.
         /// </summary>
         /// <param name="originalIndex">The identifier for the type of fraction rule, one of
         /// <see cref="ImproperFractionRuleIndex"/>, <see cref="ProperFractionRuleIndex"/> or <see cref="MasterRuleIndex"/>.</param>
-        /// <param name="decimalFormatSymbols">The decimal format symbols for the current request.</param>
+        /// <param name="info">The decimal format symbols for the current request.</param>
         /// <returns>The best rule that was registered during the construction of this class or <c>null</c> if no rule was found.</returns>
-        public NumberFormatRule? GetBestFractionRule(int originalIndex, IDecimalFormatSymbols decimalFormatSymbols)
+        public NumberFormatRule? GetBestFractionRule(int originalIndex, UNumberFormatInfo info)
         {
             if (fractionRules is not null)
             {
@@ -350,8 +350,8 @@ namespace ICU4N.Globalization
                     if (rule.BaseValue != originalIndex)
                         continue;
 
-                    first = rule;
-                    if (decimalFormatSymbols.DecimalSeparatorString == rule.DecimalPoint)
+                    first ??= rule;
+                    if (info.NumberDecimalSeparator == rule.DecimalPoint) // ICU4N NOTE: If we wanted to support formatting for percent, currency, etc, we would need to add a parameter to make a choice here...not sure if ICU4J does that.
                     {
                         return rule;
                     }

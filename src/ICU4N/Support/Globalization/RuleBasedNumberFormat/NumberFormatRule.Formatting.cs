@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ICU4N.Support.Text;
+using System;
+using System.Diagnostics;
 #nullable enable
 
 namespace ICU4N.Globalization
@@ -6,7 +8,75 @@ namespace ICU4N.Globalization
 #if FEATURE_SPAN
     internal partial class NumberFormatRule
     {
-        // ICU4N TODO: Main Formatting methods
+        //-----------------------------------------------------------------------
+        // formatting
+        //-----------------------------------------------------------------------
+
+        /// <summary>
+        /// Formats the <paramref name="number"/>, and inserts the resulting text into <paramref name="toInsertInto"/>.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <param name="toInsertInto">The string where the resultant text should be inserted.</param>
+        /// <param name="pos">The position in toInsertInto where the resultant text should be inserted.</param>
+        /// <param name="info">The <see cref="UNumberFormatInfo"/> that contains the culture specific number formatting settings.</param>
+        /// <param name="recursionCount">The number of recursive calls to this method.</param>
+        public void DoFormat(double number, ref ValueStringBuilder toInsertInto, int pos, UNumberFormatInfo info, int recursionCount)
+        {
+            Debug.Assert(info != null);
+
+            // first, insert the rule's rule text into toInsertInto at the
+            // specified position, then insert the results of the substitutions
+            // into the right places in toInsertInto
+            // [again, we have two copies of this routine that do the same thing
+            // so that we don't sacrifice precision in a long by casting it
+            // to a double]
+            int pluralRuleStart = ruleText!.Length; // ICU4N: This is always populated during construction in the ExtractSubstitutions method.
+            int lengthOffset = 0;
+            if (pluralMessagePattern is null)
+            {
+                toInsertInto.Insert(pos, ruleText);
+            }
+            else
+            {
+                pluralRuleStart = ruleText.IndexOf("$(", StringComparison.Ordinal);
+                int pluralRuleEnd = ruleText.IndexOf(")$", pluralRuleStart, StringComparison.Ordinal);
+                int initialLength = toInsertInto.Length;
+                if (pluralRuleEnd < ruleText.Length - 1)
+                {
+                    throw new NotImplementedException("Plural Format not yet implemented");
+                    //#if FEATURE_SPAN
+                    //                    toInsertInto.Insert(pos, ruleText.AsSpan(pluralRuleEnd + 2));
+                    //#else
+                    //                    toInsertInto.Insert(pos, ruleText.Substring(pluralRuleEnd + 2));
+                    //#endif
+                    //                }
+                    //                double pluralVal = number;
+                    //                if (0 <= pluralVal && pluralVal < 1)
+                    //                {
+                    //                    // We're in a fractional rule, and we have to match the NumeratorSubstitution behavior.
+                    //                    // 2.3 can become 0.2999999999999998 for the fraction due to rounding errors.
+                    //                    pluralVal = Math.Round(pluralVal * Power(radix, exponent)); // ICU4N NOTE: This is different than the Java default of ToPositiveInfinity (Math.Ceiling()), but only this makes the tests pass
+                    //                }
+                    //                else
+                    //                {
+                    //                    pluralVal = pluralVal / Power(radix, exponent);
+                    //                }
+                    //                //toInsertInto.Insert(pos, rulePatternFormat.Format((long)(pluralVal)));
+                    //                // ICU4N TODO: implement plural format
+
+                    //                if (pluralRuleStart > 0)
+                    //                {
+                    //#if FEATURE_SPAN
+                    //                    toInsertInto.Insert(pos, ruleText.AsSpan(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
+                    //#else
+                    //                    toInsertInto.Insert(pos, ruleText.Substring(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
+                    //#endif
+                }
+                lengthOffset = ruleText.Length - (toInsertInto.Length - initialLength);
+            }
+            sub2?.DoSubstitution(number, ref toInsertInto, pos - (sub2.Pos > pluralRuleStart ? lengthOffset : 0), info, recursionCount);
+            sub1?.DoSubstitution(number, ref toInsertInto, pos - (sub1.Pos > pluralRuleStart ? lengthOffset : 0), info, recursionCount);
+        }
 
         /// <summary>
         /// This is an equivalent to <see cref="Math.Pow(double, double)"/> that accurately works on 64-bit numbers.

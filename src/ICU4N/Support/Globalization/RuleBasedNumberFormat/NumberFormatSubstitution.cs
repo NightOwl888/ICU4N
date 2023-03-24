@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ICU4N.Support.Text;
+using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 #nullable enable
 
@@ -404,55 +406,58 @@ namespace ICU4N.Globalization
         //    //}
         //}
 
-        ///// <summary>
-        ///// Performs a mathematical operation on the number, formats it using
-        ///// either <see cref="ruleSet"/> or <see cref="numberFormatPattern"/>, and inserts the result into
-        ///// <paramref name="toInsertInto"/>.
-        ///// </summary>
-        ///// <param name="number">The number being formatted.</param>
-        ///// <param name="toInsertInto">The string we insert the result into.</param>
-        ///// <param name="position">The position in <paramref name="toInsertInto"/> where the owning rule's
-        ///// rule text begins (this value is added to this substitution's
-        ///// position to determine exactly where to insert the new text).</param>
-        ///// <param name="recursionCount">The number of recursive calls to this method.</param>
-        //public virtual void DoSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount) // ICU4N TODO: Need to pass UNumberFormatInfo here
-        //{
-        //    throw new NotImplementedException(); // ICU4N TODO: Implementation
+        /// <summary>
+        /// Performs a mathematical operation on the number, formats it using
+        /// either <see cref="ruleSet"/> or <see cref="numberFormatPattern"/>, and inserts the result into
+        /// <paramref name="toInsertInto"/>.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <param name="toInsertInto">The string we insert the result into.</param>
+        /// <param name="position">The position in <paramref name="toInsertInto"/> where the owning rule's
+        /// rule text begins (this value is added to this substitution's
+        /// position to determine exactly where to insert the new text).</param>
+        /// <param name="info">The <see cref="UNumberFormatInfo"/> that contains the culture specific number formatting settings.</param>
+        /// <param name="recursionCount">The number of recursive calls to this method.</param>
+        public virtual void DoSubstitution(double number, ref ValueStringBuilder toInsertInto, int position, UNumberFormatInfo info, int recursionCount) // ICU4N TODO: Need to pass UNumberFormatInfo here
+        {
+            Debug.Assert(info != null);
 
-        //    //// perform a transformation on the number being formatted that
-        //    //// is dependent on the type of substitution this is
-        //    //double numberToFormat = TransformNumber(number);
+            // perform a transformation on the number being formatted that
+            // is dependent on the type of substitution this is
+            double numberToFormat = TransformNumber(number);
 
-        //    //if (double.IsInfinity(numberToFormat))
-        //    //{
-        //    //    // This is probably a minus rule. Combine it with an infinite rule.
-        //    //    NumberFormatRule infiniteRule = ruleSet.FindRule(double.PositiveInfinity);
-        //    //    infiniteRule.DoFormat(numberToFormat, toInsertInto, position + pos, recursionCount);
-        //    //    return;
-        //    //}
+            if (double.IsInfinity(numberToFormat))
+            {
+                // This is probably a minus rule. Combine it with an infinite rule.
+                NumberFormatRule infiniteRule = ruleSet!.FindRule(double.PositiveInfinity, info);
+                infiniteRule.DoFormat(numberToFormat, ref toInsertInto, position + pos, info, recursionCount);
+                return;
+            }
 
-        //    //// if the result is an integer, from here on out we work in integer
-        //    //// space (saving time and memory and preserving accuracy)
-        //    //if (numberToFormat == Math.Floor(numberToFormat) && ruleSet != null) // ICU4N: This is quite a bit faster than using numberToFormat.IsInteger()
-        //    //{
-        //    //    ruleSet.Format((long)numberToFormat, toInsertInto, position + pos, recursionCount);
+            // if the result is an integer, from here on out we work in integer
+            // space (saving time and memory and preserving accuracy)
+            if (numberToFormat == Math.Floor(numberToFormat) && ruleSet != null) // ICU4N: This is quite a bit faster than using numberToFormat.IsInteger()
+            {
+                ruleSet.Format((long)numberToFormat, ref toInsertInto, position + pos, info, recursionCount);
 
-        //    //    // if the result isn't an integer, then call either our rule set's
-        //    //    // format() method or our DecimalFormat's format() method to
-        //    //    // format the result
-        //    //}
-        //    //else
-        //    //{
-        //    //    if (ruleSet != null)
-        //    //    {
-        //    //        ruleSet.Format(numberToFormat, toInsertInto, position + pos, recursionCount);
-        //    //    }
-        //    //    else
-        //    //    {
-        //    //        toInsertInto.Insert(position + this.pos, numberFormat.Format(numberToFormat));
-        //    //    }
-        //    //}
-        //}
+                // if the result isn't an integer, then call either our rule set's
+                // format() method or our DecimalFormat's format() method to
+                // format the result
+            }
+            else
+            {
+                if (ruleSet != null)
+                {
+                    ruleSet.Format(numberToFormat, ref toInsertInto, position + pos, info, recursionCount);
+                }
+                else
+                {
+                    //toInsertInto.Insert(position + this.pos, numberFormat.Format(numberToFormat));
+                    // ICU4N TODO: Add a pos parameter to the FormatDouble method so we can do this in one step.
+                    toInsertInto.Insert(position + pos, IcuNumber.FormatDouble(numberToFormat, numberFormatPattern, info));
+                }
+            }
+        }
 
         /// <summary>
         /// Subclasses override this function to perform some kind of
