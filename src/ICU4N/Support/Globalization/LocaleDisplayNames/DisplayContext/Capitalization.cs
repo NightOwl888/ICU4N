@@ -38,4 +38,20 @@ namespace ICU4N.Globalization
         /// <draft>ICU 60</draft>
         Standalone,
     }
+
+    /// <summary>
+    /// Extensions for <see cref="Capitalization"/>.
+    /// </summary>
+    internal static class CapitalizationExtensions
+    {
+        /// <summary>
+        /// Returns a boolean telling whether a given integral value, or its name as a string,
+        /// exists in the <see cref="Capitalization"/> enumeration.
+        /// </summary>
+        /// <param name="capitalization">This <see cref="Capitalization"/>.</param>
+        /// <returns><c>true</c> if a given integral value, or its name as a string, exists in
+        /// a specified enumeration; <c>false</c> otherwise.</returns>
+        internal static bool IsDefined(this Capitalization capitalization)
+            => capitalization >= Capitalization.None && capitalization <= Capitalization.MiddleOfSentence;
+    }
 }

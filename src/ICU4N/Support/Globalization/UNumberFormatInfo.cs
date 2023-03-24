@@ -170,6 +170,9 @@ namespace ICU4N.Globalization
             public const string Argument_InvalidNativeDigitCount = "The NativeDigits array must contain exactly ten members.";
             public const string Argument_InvalidNativeDigitValue = "Each member of the NativeDigits array must be a single text element (one or more UTF16 code points) with a Unicode Nd (Number, Decimal Digit) property indicating it is a digit.";
             public const string Argument_UnknownCurrencySpacing = "Unknown currency spacing: {0}.";
+
+            public const string ArgumentOutOfRange_Enum = "The enumeration value '{0}' was out of range of the '{1}' enum.";
+
             public const string ArgumentNull_Array = "Array cannot be null.";
             public const string ArgumentNull_ArrayValue = "Found a null value within an array.";
 
