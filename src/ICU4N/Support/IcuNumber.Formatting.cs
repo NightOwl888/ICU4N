@@ -1,10 +1,13 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Numerics;
+using ICU4N.Support;
 using ICU4N.Support.Text;
+using ICU4N.Text;
 using J2N.Numerics;
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using static ICU4N.Text.PluralRules;
 #nullable enable
 
 namespace ICU4N
@@ -136,7 +139,7 @@ namespace ICU4N
                 return;
             }
 
-            string[] digits = info.NativeDigits; // Clones array locally
+            string[] digits = info.NativeDigitsLocal;
 
             // .NET formatters always return ASCII digits, so if they are
             // specified, we can do a single operation.
@@ -194,7 +197,7 @@ namespace ICU4N
                 sb.TryCopyTo(destination, out charsWritten);
         }
 
-        public static string FormatDouble(double value, string? format, UNumberFormatInfo info)
+        public static string FormatDouble(double value, ReadOnlySpan<char> format, UNumberFormatInfo info)
         {
             var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             return FormatDouble(ref sb, value, format, info) ?? sb.ToString();
@@ -210,6 +213,104 @@ namespace ICU4N
         }
 
 
+        // format is the decimalFormat string for the current culture
+        public static string FormatPlural(double value, ReadOnlySpan<char> format, MessagePattern? messagePattern, PluralRules pluralRules, UNumberFormatInfo info)
+        {
+            // ICU4N TODO: Need to decide the best way to deal with format pattern
+            if (format.Length == 0)
+                format = info.CultureData.decimalFormat.AsSpan();
+
+            // If no pattern was applied, return the formatted number.
+            if (messagePattern is null || messagePattern.PartCount == 0)
+                return FormatDouble(value, format, info);
+
+            double offset = messagePattern.GetPluralOffset(pluralStart: 0); // From ApplyPattern() method
+
+            // Get the appropriate sub-message.
+            // Select it based on the formatted number-offset.
+            double numberMinusOffset = value - offset;
+            string numberString;
+
+            if (offset == 0)
+            {
+                numberString = FormatDouble(value, format, info);
+            }
+            else
+            {
+                numberString = FormatDouble(numberMinusOffset, format, info);
+            }
+#pragma warning disable 612, 618
+            // ICU4N NOTE: This is how we get the values for 'v' and 'f'
+            // for the current context. See: https://github.com/jeffijoe/messageformat.net/blob/master/src/Jeffijoe.MessageFormat/Formatting/Formatters/PluralContext.cs
+            // and the docummentation for the Operand enum.
+
+            string decimalString;
+            if (AreAsciiDigits(info.NativeDigitsLocal))
+            {
+                decimalString = numberString;
+            }
+            else
+            {
+                // We need to make sure we have ascii digits to inspect here
+                // both for the length and the value to parse.
+                var asciiInfo = (UNumberFormatInfo)info.Clone();
+                asciiInfo.nativeDigits = AsciiDigits;
+                decimalString = FormatDouble(numberMinusOffset, format, asciiInfo);
+            }
+
+            int dotIndex = decimalString.IndexOf('.');
+            
+            int v = 0;
+            long f = 0;
+            if (dotIndex != -1)
+            {
+                ReadOnlySpan<char> fractionSpan = decimalString.AsSpan(dotIndex + 1, decimalString.Length - dotIndex - 1);
+                v = fractionSpan.Length;
+                f = long.Parse(fractionSpan, NumberStyles.None, CultureInfo.InvariantCulture);
+            }
+            IFixedDecimal dec = new FixedDecimal(numberMinusOffset, v, f);
+#pragma warning restore 612, 618
+            int partIndex = PluralFormat.FindSubMessage(messagePattern, 0, pluralRules, dec, value);
+
+            // Replace syntactic # signs in the top level of this sub-message
+            // (not in nested arguments) with the formatted number-offset.
+
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            int prevIndex = messagePattern.GetPart(partIndex).Limit;
+            string pattern = messagePattern.PatternString;
+            while (true)
+            {
+                MessagePatternPart part = messagePattern.GetPart(++partIndex);
+                MessagePatternPartType type = part.Type;
+                int index = part.Index;
+                if (type == MessagePatternPartType.MsgLimit)
+                {
+                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                    return result.ToString();
+                }
+                else if (type == MessagePatternPartType.ReplaceNumber ||
+                          // JDK compatibility mode: Remove SKIP_SYNTAX.
+                          (type == MessagePatternPartType.SkipSyntax && messagePattern.JdkAposMode))
+                {
+                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                    if (type == MessagePatternPartType.ReplaceNumber)
+                    {
+                        result.Append(numberString);
+                    }
+                    prevIndex = part.Limit;
+                }
+                else if (type == MessagePatternPartType.ArgStart)
+                {
+                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                    prevIndex = index;
+                    partIndex = messagePattern.GetLimitPartIndex(partIndex);
+                    index = messagePattern.GetPart(partIndex).Limit;
+                    MessagePattern.AppendReducedApostrophes(pattern, prevIndex, index, ref result);
+                    prevIndex = index;
+                }
+            }
+        }
+
         private static bool TryCopyTo(string source, Span<char> destination, out int charsWritten)
         {
             Debug.Assert(source != null);
@@ -224,6 +325,8 @@ namespace ICU4N
             return false;
         }
 #endif
+
+        private static string[] AsciiDigits = new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 
         private static bool AreAsciiDigits(string[] digits)
         {

@@ -51,6 +51,10 @@ namespace ICU4N.Dev.Test.Format
                         }
                         assertEquals("Locale: " + locales[i] + ", number: " + n,
                                      expected, plf.Format(n));
+#if FEATURE_SPAN
+                        // Tests the new IcuNumber class
+                        TestIcuNumber_PluralFormat(locales[i], n, testPattern, null, expected, "Locale: " + locales[i] + ", number: " + n);
+#endif
                     }
                 }
                 catch (ArgumentException e)
@@ -59,6 +63,19 @@ namespace ICU4N.Dev.Test.Format
                 }
             }
         }
+
+#if FEATURE_SPAN
+        public void TestIcuNumber_PluralFormat(string culture, int number, string pluralPattern, string decimalPattern, string expected, string assertMessage)
+        {
+            var locale = new UCultureInfo(culture);
+            MessagePattern messagePattern = new MessagePattern();
+            messagePattern.ParsePluralStyle(pluralPattern);
+            PluralRules pluralRules = PluralRules.GetInstance(locale);
+            string actual = IcuNumber.FormatPlural(number, decimalPattern, messagePattern, pluralRules, locale.NumberFormat);
+
+            assertEquals(assertMessage, expected, actual);
+        }
+#endif
 
         [Test]
         public void TestOneFormLocales()

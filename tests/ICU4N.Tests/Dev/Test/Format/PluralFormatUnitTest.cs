@@ -344,7 +344,7 @@ namespace ICU4N.Dev.Test.Format
                 "Widgets, five (5-1=4) there be.",
                 "There is a bling widget and 5 other widgets.",
                 "There is a bling widget and 6 other widgets.",
-        };
+            };
             String pluralStyle =
                     "offset:1.0 "
                             + "=0 {There are no widgets.} "

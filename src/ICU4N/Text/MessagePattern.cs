@@ -881,8 +881,26 @@ namespace ICU4N.Text
         /// <stable>ICU 4.8</stable>
         public bool PartSubstringMatches(MessagePatternPart part, string s)
         {
+#if FEATURE_SPAN
+            return PartSubstringMatches(part, s.AsSpan());
+#else
             return part.Length == s.Length && msg.RegionMatches(part.Index, s, 0, part.Length, StringComparison.Ordinal);
+#endif
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Compares the <paramref name="part"/>'s substring with the input string <paramref name="s"/>.
+        /// </summary>
+        /// <param name="part">A part of this <see cref="MessagePattern"/>.</param>
+        /// <param name="s">A string.</param>
+        /// <returns>true if <c>GetSubstring(part).Equals(s)</c>.</returns>
+        /// <stable>ICU 4.8</stable>
+        public bool PartSubstringMatches(MessagePatternPart part, ReadOnlySpan<char> s)
+        {
+            return part.Length == s.Length && msg.AsSpan(part.Index, part.Length).Equals(s.Slice(0, part.Length), StringComparison.Ordinal);
+        }
+#endif
 
         /// <summary>
         /// Returns the numeric value associated with an <see cref="MessagePatternPartType.ArgInt"/> 
