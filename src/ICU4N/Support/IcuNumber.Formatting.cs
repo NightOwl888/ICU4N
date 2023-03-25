@@ -213,9 +213,28 @@ namespace ICU4N
         }
 
 
+        public static string FormatPlural(double value, ReadOnlySpan<char> format, MessagePattern? messagePattern, UNumberFormatInfo info)
+        {
+            Debug.Assert(info != null);
+
+            PluralRules pluralRules = info.CardinalPluralRules;
+            return FormatPlural(value, format, messagePattern, pluralRules, info);
+        }
+
+        public static string FormatPlural(double value, ReadOnlySpan<char> format, MessagePattern? messagePattern, PluralType pluralType, UNumberFormatInfo info)
+        {
+            Debug.Assert(info != null);
+
+            PluralRules pluralRules = PluralType.Ordinal ? info.OrdinalPluralRules : info.CardinalPluralRules;
+            return FormatPlural(value, format, messagePattern, pluralRules, info);
+        }
+
         // format is the decimalFormat string for the current culture
         public static string FormatPlural(double value, ReadOnlySpan<char> format, MessagePattern? messagePattern, PluralRules pluralRules, UNumberFormatInfo info)
         {
+            Debug.Assert(pluralRules != null);
+            Debug.Assert(info != null);
+
             // ICU4N TODO: Need to decide the best way to deal with format pattern
             if (format.Length == 0)
                 format = info.CultureData.decimalFormat.AsSpan();

@@ -43,34 +43,31 @@ namespace ICU4N.Globalization
                 int initialLength = toInsertInto.Length;
                 if (pluralRuleEnd < ruleText.Length - 1)
                 {
-                    throw new NotImplementedException("Plural Format not yet implemented");
-                    //#if FEATURE_SPAN
-                    //                    toInsertInto.Insert(pos, ruleText.AsSpan(pluralRuleEnd + 2));
-                    //#else
-                    //                    toInsertInto.Insert(pos, ruleText.Substring(pluralRuleEnd + 2));
-                    //#endif
-                    //                }
-                    //                double pluralVal = number;
-                    //                if (0 <= pluralVal && pluralVal < 1)
-                    //                {
-                    //                    // We're in a fractional rule, and we have to match the NumeratorSubstitution behavior.
-                    //                    // 2.3 can become 0.2999999999999998 for the fraction due to rounding errors.
-                    //                    pluralVal = Math.Round(pluralVal * Power(radix, exponent)); // ICU4N NOTE: This is different than the Java default of ToPositiveInfinity (Math.Ceiling()), but only this makes the tests pass
-                    //                }
-                    //                else
-                    //                {
-                    //                    pluralVal = pluralVal / Power(radix, exponent);
-                    //                }
-                    //                //toInsertInto.Insert(pos, rulePatternFormat.Format((long)(pluralVal)));
-                    //                // ICU4N TODO: implement plural format
-
-                    //                if (pluralRuleStart > 0)
-                    //                {
-                    //#if FEATURE_SPAN
-                    //                    toInsertInto.Insert(pos, ruleText.AsSpan(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
-                    //#else
-                    //                    toInsertInto.Insert(pos, ruleText.Substring(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
-                    //#endif
+#if FEATURE_SPAN
+                    toInsertInto.Insert(pos, ruleText.AsSpan(pluralRuleEnd + 2));
+#else
+                    toInsertInto.Insert(pos, ruleText.Substring(pluralRuleEnd + 2));
+#endif
+                }
+                double pluralVal = number;
+                if (0 <= pluralVal && pluralVal < 1)
+                {
+                    // We're in a fractional rule, and we have to match the NumeratorSubstitution behavior.
+                    // 2.3 can become 0.2999999999999998 for the fraction due to rounding errors.
+                    pluralVal = Math.Round(pluralVal * Power(radix, exponent)); // ICU4N NOTE: This is different than the Java default of ToPositiveInfinity (Math.Ceiling()), but only this makes the tests pass
+                }
+                else
+                {
+                    pluralVal = pluralVal / Power(radix, exponent);
+                }
+                toInsertInto.Insert(pos, IcuNumber.FormatPlural((long)pluralVal, null, pluralMessagePattern, info));
+                if (pluralRuleStart > 0)
+                {
+#if FEATURE_SPAN
+                    toInsertInto.Insert(pos, ruleText.AsSpan(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
+#else
+                    toInsertInto.Insert(pos, ruleText.Substring(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
+#endif
                 }
                 lengthOffset = ruleText.Length - (toInsertInto.Length - initialLength);
             }
