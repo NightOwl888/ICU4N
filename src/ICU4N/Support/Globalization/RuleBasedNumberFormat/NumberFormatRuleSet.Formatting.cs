@@ -19,8 +19,33 @@ namespace ICU4N.Globalization
         /// <param name="info">The <see cref="UNumberFormatInfo"/> that contains the culture specific number formatting settings.</param>
         /// <param name="recursionCount">The number of recursive calls to this method.</param>
         /// <exception cref="InvalidOperationException">The <paramref name="recursionCount"/> went over the <see cref="RecursionLimit"/>.</exception>
+        public void Format(long number, ref ValueStringBuilder toInsertInto, int pos, UNumberFormatInfo info, int recursionCount)
+        {
+            Debug.Assert(info != null);
+
+            if (recursionCount >= RecursionLimit)
+            {
+                throw new InvalidOperationException("Recursion limit exceeded when applying ruleSet " + name);
+            }
+            NumberFormatRule applicableRule = FindNormalRule(number, info);
+            applicableRule.DoFormat(number, ref toInsertInto, pos, info, ++recursionCount);
+        }
+
+        /// <summary>
+        /// Formats the <paramref name="number"/>. Selects an appropriate rule and dispatches
+        /// control to it.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <param name="toInsertInto">The string where the result is to be placed.</param>
+        /// <param name="pos">The position in toInsertInto where the result of
+        /// this operation is to be inserted.</param>
+        /// <param name="info">The <see cref="UNumberFormatInfo"/> that contains the culture specific number formatting settings.</param>
+        /// <param name="recursionCount">The number of recursive calls to this method.</param>
+        /// <exception cref="InvalidOperationException">The <paramref name="recursionCount"/> went over the <see cref="RecursionLimit"/>.</exception>
         public void Format(double number, ref ValueStringBuilder toInsertInto, int pos, UNumberFormatInfo info, int recursionCount)
         {
+            Debug.Assert(info != null);
+
             if (recursionCount >= RecursionLimit)
             {
                 throw new InvalidOperationException("Recursion limit exceeded when applying ruleSet " + name);

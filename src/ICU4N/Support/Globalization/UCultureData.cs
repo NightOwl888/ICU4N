@@ -1,4 +1,5 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Numerics;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
@@ -28,9 +29,11 @@ namespace ICU4N.Globalization
         internal string? positiveSign; // (user can override) positive sign
         internal string? negativeSign; // (user can override) negative sign
         // (nfi populates these 5, don't have to be = undef)
-        //internal int digits; // (user can override) number of fractional digits
+        internal int maxFractionDigits; // (user can override) maximum number of fractional digits
+        internal int minFractionDigits; // (user can override) minimum number of fractional digits
         //internal int iNegativeNumber; // (user can override) negative number format
         internal string? decimalFormat; // The format string for for general numbers
+        internal NumberPatternStringProperties decimalPatternProperties; // The format properties for general numbers (from the parsed string)
         internal int[]? grouping; // (user can override) grouping of digits
         internal string? decimalSeparator; // (user can override) decimal separator
         internal string? groupSeparator; // (user can override) thousands separator
@@ -46,9 +49,11 @@ namespace ICU4N.Globalization
         internal string? percent; // Percent (%) symbol
         internal string? perMille; // PerMille symbol
         internal string? percentFormat; // The format string for percent
+        internal NumberPatternStringProperties percentPatternProperties; // The format properties for percent numbers (from the parsed string)
 
         // Scientific
         internal string? scientificFormat; // The format string for scientific
+        internal NumberPatternStringProperties scientificPatternProperties; // The format properties for scientific numbers (from the parsed string)
         internal string? exponentSeparator; // The string used to separate the mantissa from the exponent. Examples: "x10^" for 1.23x10^4, "E" for 1.23E4. Used in localized patterns and formatted strings.
         internal string? exponentMultiplicationSign;
 
@@ -172,12 +177,6 @@ namespace ICU4N.Globalization
             return invariant;
         }
 
-        // CONFUSING: The ctor of UCultureInfo is responsible for setting its own cultureData field.
-        // So, the sequence is:
-        // 1. UCultureInfo.constructor call
-        // 2. UCultureInfo.InvariantCulture.cultureData is set
-        // 3. UCultureInfo.invariantCultureInfo is set (backing field for UCultureInfo.InvariantCulture)
-        // 4. This property is then able to return cultureData since both have been initialized.
         internal static UCultureData Invariant => s_Invariant ??= CreateCultureWithInvariantData();
         private static volatile UCultureData? s_Invariant;
 
@@ -307,6 +306,10 @@ namespace ICU4N.Globalization
             nfi.capitalizationForListOrMenu = capitalizationForListOrMenu;
             nfi.capitalizationForStandAlone = capitalizationForStandAlone;
 
+            nfi.decimalPatternProperties = decimalPatternProperties;
+            nfi.numberMaximumDecimalDigits = maxFractionDigits;
+            nfi.numberMinimumDecimalDigits = minFractionDigits;
+
             nfi.numberGroupSizes = grouping; // Note that we share the same array instance across instances of UNumberFormatInfo
 
             // ICU4N TODO: currencyFormat > currencyGroupSizes
@@ -407,7 +410,7 @@ namespace ICU4N.Globalization
 
         private const string CapitalizationSettings = "contextTransforms/number-spellout";
 
-        private struct Default
+        internal struct Default
         {
             // Symbol data
 
@@ -435,6 +438,13 @@ namespace ICU4N.Globalization
             public const string DecimalFormat = "#,##0.###";
             public const string PercentFormat = "#,##0%";
             public const string ScientificFormat = "#E0";
+
+            public static int[] GetDecimalGroupSizes() => new int[] { 3 };
+            public static int[] GetCurrencyGroupSizes() => new int[] { 3 };
+            public static int[] GetPercentGroupSizes() => new int[] { 3 };
+
+            public const int DecimalMaximumFractionDigits = 3;
+            public const int DecimalMinimumFractionDigits = 0;
         }
 
 
@@ -553,7 +563,25 @@ namespace ICU4N.Globalization
                 cultureData.percentFormat ??= Default.PercentFormat;
                 cultureData.scientificFormat ??= Default.ScientificFormat;
 
-                cultureData.grouping = IcuNumber.GetGroupingSizes(cultureData.decimalFormat);
+                // ICU4N TODO: We can save up to 4 allocations here if we can figure out how to
+                // separate the pattern string parsing business logic from ParsedPatternInfo, ParsedPatternSubInfo,
+                // and DecimalFormatProperties.
+                var properties = new DecimalFormatProperties();
+
+                cultureData.decimalPatternProperties = PatternStringParser.ParseToPatternStringProperties(cultureData.decimalFormat, properties, PatternStringParser.IGNORE_ROUNDING_NEVER);
+                cultureData.grouping = cultureData.decimalPatternProperties.GroupingSizes ?? Default.GetDecimalGroupSizes();
+                cultureData.maxFractionDigits = cultureData.decimalPatternProperties.MaximumFractionDigits ?? Default.DecimalMaximumFractionDigits;
+                cultureData.minFractionDigits = cultureData.decimalPatternProperties.MinimumFractionDigits ?? Default.DecimalMinimumFractionDigits;
+                //cultureData.grouping = IcuNumber.GetGroupingSizes(cultureData.decimalFormat);
+
+                properties.Clear();
+                cultureData.percentPatternProperties = PatternStringParser.ParseToPatternStringProperties(cultureData.percentFormat, properties, PatternStringParser.IGNORE_ROUNDING_NEVER);
+                //cultureData.percentGroupingSizes = cultureData.percentPatternProperties.GroupingSizes ?? Default.GetPercentGroupSizes();
+
+                properties.Clear();
+                cultureData.scientificPatternProperties = PatternStringParser.ParseToPatternStringProperties(cultureData.scientificFormat, properties, PatternStringParser.IGNORE_ROUNDING_NEVER);
+                //cultureData.scientificGroupingSizes = cultureData.scientificPatternProperties.GroupingSizes ?? Default.GetPercentGroupSizes();
+
             }
 
             public void Put(int index, IResourceTable table, ResourceKey key, ResourceValue value, bool noFallback)

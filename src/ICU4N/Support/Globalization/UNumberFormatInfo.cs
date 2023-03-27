@@ -189,6 +189,10 @@ namespace ICU4N.Globalization
             public const string Argument_UnknownCurrencySpacing = "Unknown currency spacing: {0}.";
 
             public const string ArgumentOutOfRange_Enum = "The enumeration value '{0}' was out of range of the '{1}' enum.";
+            public const string ArgumentOutOfRange_MaxDigits = "{0} must be greater than or equal to {1}.";
+            public const string ArgumentOutOfRange_MinDigits = "{0} must be less than or equal to {1}.";
+            public const string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
+            public const string ArgumentOutOfRange_Range = "Valid values are between {0} and {1}, inclusive.";
 
             public const string ArgumentNull_Array = "Array cannot be null.";
             public const string ArgumentNull_ArrayValue = "Found a null value within an array.";

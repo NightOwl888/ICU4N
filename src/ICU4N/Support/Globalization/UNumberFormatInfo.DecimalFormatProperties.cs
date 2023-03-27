@@ -1,14 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ICU4N.Numerics;
+using System;
 
 namespace ICU4N.Globalization
 {
     public sealed partial class UNumberFormatInfo
     {
+        internal NumberPatternStringProperties decimalPatternProperties; // The settings parsed from decimalFormat pattern string
+
         internal int[] numberGroupSizes = new int[] { 3 };
+        internal int numberMaximumDecimalDigits = 2; // ICU4N TODO: Check default value for invariant
+        internal int numberMinimumDecimalDigits = 2; // ICU4N TODO: Check default value for invariant
+        //internal int currencyDecimalDigits = 2;
+        //internal int percentDecimalDigits = 2;
+
 
         /// <summary>
         /// Check the values of the groupSize array.
@@ -68,5 +72,43 @@ namespace ICU4N.Globalization
 
         internal int[] NumberGroupSizesLocal => numberGroupSizes;
         internal string NumberPattern => CultureData.decimalFormat;
+
+        public int NumberMinimumDecimalDigits
+        {
+            get => numberMinimumDecimalDigits;
+            set
+            {
+                // ICU4N specific - added guard clauses instead of putting in "corrective" side effects
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), SR.ArgumentOutOfRange_NeedNonNegNum);
+                if (value > NumberMaximumDecimalDigits)
+                    throw new ArgumentOutOfRangeException(nameof(value),
+                        string.Format(SR.ArgumentOutOfRange_MinDigits, nameof(NumberMinimumDecimalDigits), nameof(NumberMaximumDecimalDigits)));
+
+                VerifyWritable();
+                numberMinimumDecimalDigits = value;
+            }
+        }
+
+        public int NumberMaximumDecimalDigits
+        {
+            get => numberMaximumDecimalDigits;
+            set
+            {
+                // ICU4N specific - added guard clause instead of putting in "corrective" side effects
+                if (value < numberMinimumDecimalDigits)
+                    throw new ArgumentOutOfRangeException(nameof(value),
+                        string.Format(SR.ArgumentOutOfRange_MaxDigits, nameof(NumberMaximumDecimalDigits), nameof(NumberMinimumDecimalDigits)));
+                // ICU4N TODO: Adding the same limit as in .NET of 99. Once we stop using the .NET
+                // formatter, we can eliminate this check, as ICU has no such limitation.
+                if (value > 99)
+                    throw new ArgumentOutOfRangeException(nameof(value),
+                        string.Format(SR.ArgumentOutOfRange_MinDigits, nameof(NumberMinimumDecimalDigits), 99));
+
+                VerifyWritable();
+                numberMaximumDecimalDigits = value;
+            }
+        }
+
     }
 }

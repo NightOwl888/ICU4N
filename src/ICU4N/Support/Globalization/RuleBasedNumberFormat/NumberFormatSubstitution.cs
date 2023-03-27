@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Numerics;
+using ICU4N.Support.Text;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -39,6 +40,8 @@ namespace ICU4N.Globalization
         /// (Either this or <see cref="ruleSet"/> has to be non-null.)
         /// </summary>
         internal readonly string? numberFormatPattern;
+
+        internal NumberPatternStringProperties numberPatternProperties;
 
         //-----------------------------------------------------------------------
         // construction
@@ -248,6 +251,7 @@ namespace ICU4N.Globalization
                 //this.numberFormat = (DecimalFormat)ruleSet.owner.DecimalFormat.Clone();
                 //this.numberFormat.ApplyPattern(description);
                 this.numberFormatPattern = new string(description);
+                this.numberPatternProperties = PatternStringParser.ParseToPatternStringProperties(this.numberFormatPattern, PatternStringParser.IGNORE_ROUNDING_NEVER);
             }
             else if (description[0] == '>')
             {
@@ -351,60 +355,66 @@ namespace ICU4N.Globalization
         // 2. Pass in UNumberFormatInfo (or perhaps IDecimalFormatSymbols?)
         // 3. Use a NumberBuffer so we don't have to have separate overloads for different data types for all of the business logic? Need to investigate.
 
-        ///// <summary>
-        ///// Performs a mathematical operation on the number, formats it using
-        ///// either <see cref="ruleSet"/> or <see cref="numberFormatPattern"/>, and inserts the result into
-        ///// <paramref name="toInsertInto"/>.
-        ///// </summary>
-        ///// <param name="number">The number being formatted.</param>
-        ///// <param name="toInsertInto">The string we insert the result into.</param>
-        ///// <param name="position">The position in toInsertInto where the owning rule's
-        ///// rule text begins (this value is added to this substitution's
-        ///// position to determine exactly where to insert the new text).</param>
-        ///// <param name="recursionCount">The number of recursive calls to this method.</param>
-        //public virtual void DoSubstitution(long number, StringBuilder toInsertInto, int position, int recursionCount) // ICU4N TODO: Need to pass UNumberFormatInfo here
-        //{
-        //    throw new NotImplementedException(); // ICU4N TODO: Implementation
+        /// <summary>
+        /// Performs a mathematical operation on the number, formats it using
+        /// either <see cref="ruleSet"/> or <see cref="numberFormatPattern"/>, and inserts the result into
+        /// <paramref name="toInsertInto"/>.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <param name="toInsertInto">The string we insert the result into.</param>
+        /// <param name="position">The position in toInsertInto where the owning rule's
+        /// rule text begins (this value is added to this substitution's
+        /// position to determine exactly where to insert the new text).</param>
+        /// <param name="info">The <see cref="UNumberFormatInfo"/> that contains the culture specific number formatting settings.</param>
+        /// <param name="recursionCount">The number of recursive calls to this method.</param>
+        public virtual void DoSubstitution(long number, ref ValueStringBuilder toInsertInto, int position, UNumberFormatInfo info, int recursionCount)
+        {
+            Debug.Assert(info != null);
 
-        //    //if (ruleSet != null)
-        //    //{
-        //    //    // Perform a transformation on the number that is dependent
-        //    //    // on the type of substitution this is, then just call its
-        //    //    // rule set's format() method to format the result
-        //    //    long numberToFormat = TransformNumber(number);
+            if (ruleSet != null)
+            {
+                // Perform a transformation on the number that is dependent
+                // on the type of substitution this is, then just call its
+                // rule set's format() method to format the result
+                long numberToFormat = TransformNumber(number);
 
-        //    //    ruleSet.Format(numberToFormat, toInsertInto, position + pos, recursionCount);
-        //    //}
-        //    //else
-        //    //{
-        //    //    if (number <= MAX_INT64_IN_DOUBLE)
-        //    //    {
-        //    //        // or perform the transformation on the number (preserving
-        //    //        // the result's fractional part if the formatter it set
-        //    //        // to show it), then use that formatter's format() method
-        //    //        // to format the result
-        //    //        double numberToFormat = TransformNumber((double)number);
-        //    //        if (numberFormat.MaximumFractionDigits == 0)
-        //    //        {
-        //    //            numberToFormat = Math.Floor(numberToFormat);
-        //    //        }
+                ruleSet.Format(numberToFormat, ref toInsertInto, position + pos, info, recursionCount);
+            }
+            else
+            {
+                if (number <= MAX_INT64_IN_DOUBLE)
+                {
+                    // or perform the transformation on the number (preserving
+                    // the result's fractional part if the formatter it set
+                    // to show it), then use that formatter's format() method
+                    // to format the result
+                    double numberToFormat = TransformNumber((double)number);
+                    //if (info.MaximumFractionDigits == 0)
+                    //if (info.NumberMaximumDecimalDigits == 0) // ICU4N TODO: This needs to be derived from the format string (numberFormatPattern)
+                    //if (NumberPatternStringProperties.GetEffectiveMaximumFractionDigits(info.NumberMaximumDecimalDigits, ref numberPatternProperties, ref info.decimalPatternProperties) == 0)
+                    if ((numberPatternProperties.MaximumFractionDigits ?? -1) == 0)
+                    {
+                        numberToFormat = Math.Floor(numberToFormat);
+                    }
 
-        //    //        toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
-        //    //    }
-        //    //    else
-        //    //    {
-        //    //        // We have gone beyond double precision. Something has to give.
-        //    //        // We're favoring accuracy of the large number over potential rules
-        //    //        // that round like a CompactDecimalFormat, which is not a common use case.
-        //    //        //
-        //    //        // Perform a transformation on the number that is dependent
-        //    //        // on the type of substitution this is, then just call its
-        //    //        // rule set's format() method to format the result
-        //    //        long numberToFormat = TransformNumber(number);
-        //    //        toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
-        //    //    }
-        //    //}
-        //}
+                    //toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
+                    toInsertInto.Insert(position + pos, IcuNumber.FormatDouble(numberToFormat, numberFormatPattern, info, numberPatternProperties.GroupingSizes));
+                }
+                else
+                {
+                    // We have gone beyond double precision. Something has to give.
+                    // We're favoring accuracy of the large number over potential rules
+                    // that round like a CompactDecimalFormat, which is not a common use case.
+                    //
+                    // Perform a transformation on the number that is dependent
+                    // on the type of substitution this is, then just call its
+                    // rule set's format() method to format the result
+                    long numberToFormat = TransformNumber(number);
+                    //toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
+                    toInsertInto.Insert(position + pos, IcuNumber.FormatInt64(numberToFormat, numberFormatPattern, info));
+                }
+            }
+        }
 
         /// <summary>
         /// Performs a mathematical operation on the number, formats it using
@@ -418,7 +428,7 @@ namespace ICU4N.Globalization
         /// position to determine exactly where to insert the new text).</param>
         /// <param name="info">The <see cref="UNumberFormatInfo"/> that contains the culture specific number formatting settings.</param>
         /// <param name="recursionCount">The number of recursive calls to this method.</param>
-        public virtual void DoSubstitution(double number, ref ValueStringBuilder toInsertInto, int position, UNumberFormatInfo info, int recursionCount) // ICU4N TODO: Need to pass UNumberFormatInfo here
+        public virtual void DoSubstitution(double number, ref ValueStringBuilder toInsertInto, int position, UNumberFormatInfo info, int recursionCount)
         {
             Debug.Assert(info != null);
 

@@ -1,5 +1,6 @@
 ﻿using ICU4N.Support.Text;
 using System;
+using System.Diagnostics;
 #nullable enable
 
 namespace ICU4N.Globalization
@@ -148,35 +149,36 @@ namespace ICU4N.Globalization
         // formatting
         //-----------------------------------------------------------------------
 
-        // ICU4N TODO: Implementation
+        /// <summary>
+        /// If this is a &gt;&gt;&gt; substitution, use <see cref="ruleToUse"/> to fill in
+        /// the substitution. Otherwise, just use the superclass function.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <param name="toInsertInto">The string to insert the result of this substitution
+        /// into.</param>
+        /// <param name="position">The position of the rule text in <paramref name="toInsertInto"/>.</param>
+        /// <param name="info">The <see cref="UNumberFormatInfo"/> that contains the culture specific number formatting settings.</param>
+        /// <param name="recursionCount">The number of recursive calls to this method.</param>
+        public override void DoSubstitution(long number, ref ValueStringBuilder toInsertInto, int position, UNumberFormatInfo info, int recursionCount)
+        {
+            Debug.Assert(info != null);
 
-        ///// <summary>
-        ///// If this is a &gt;&gt;&gt; substitution, use <see cref="ruleToUse"/> to fill in
-        ///// the substitution. Otherwise, just use the superclass function.
-        ///// </summary>
-        ///// <param name="number">The number being formatted.</param>
-        ///// <param name="toInsertInto">The string to insert the result of this substitution
-        ///// into.</param>
-        ///// <param name="position">The position of the rule text in <paramref name="toInsertInto"/>.</param>
-        ///// <param name="recursionCount">The number of recursive calls to this method.</param>
-        //public override void DoSubstitution(long number, StringBuilder toInsertInto, int position, int recursionCount)
-        //{
-        //    // if this isn't a >>> substitution, just use the inherited version
-        //    // of this function (which uses either a rule set or a DecimalFormat
-        //    // to format its substitution value)
-        //    if (ruleToUse == null)
-        //    {
-        //        base.DoSubstitution(number, toInsertInto, position, recursionCount);
+            // if this isn't a >>> substitution, just use the inherited version
+            // of this function (which uses either a rule set or a DecimalFormat
+            // to format its substitution value)
+            if (ruleToUse is null)
+            {
+                base.DoSubstitution(number, ref toInsertInto, position, info, recursionCount);
 
-        //    }
-        //    else
-        //    {
-        //        // a >>> substitution goes straight to a particular rule to
-        //        // format the substitution value
-        //        long numberToFormat = TransformNumber(number);
-        //        ruleToUse.DoFormat(numberToFormat, toInsertInto, position + pos, recursionCount);
-        //    }
-        //}
+            }
+            else
+            {
+                // a >>> substitution goes straight to a particular rule to
+                // format the substitution value
+                long numberToFormat = TransformNumber(number);
+                ruleToUse.DoFormat(numberToFormat, ref toInsertInto, position + pos, info, recursionCount);
+            }
+        }
 
         /// <summary>
         /// If this is a &gt;&gt;&gt; substitution, use <see cref="ruleToUse"/> to fill in
@@ -190,10 +192,12 @@ namespace ICU4N.Globalization
         /// <param name="recursionCount">The number of recursive calls to this method.</param>
         public override void DoSubstitution(double number, ref ValueStringBuilder toInsertInto, int position, UNumberFormatInfo info, int recursionCount)
         {
+            Debug.Assert(info != null);
+
             // if this isn't a >>> substitution, just use the inherited version
             // of this function (which uses either a rule set or a DecimalFormat
             // to format its substitution value)
-            if (ruleToUse == null)
+            if (ruleToUse is null)
             {
                 base.DoSubstitution(number, ref toInsertInto, position, info, recursionCount);
 

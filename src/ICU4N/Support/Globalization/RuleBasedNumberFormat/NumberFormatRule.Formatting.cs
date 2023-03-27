@@ -20,6 +20,57 @@ namespace ICU4N.Globalization
         /// <param name="pos">The position in toInsertInto where the resultant text should be inserted.</param>
         /// <param name="info">The <see cref="UNumberFormatInfo"/> that contains the culture specific number formatting settings.</param>
         /// <param name="recursionCount">The number of recursive calls to this method.</param>
+        public void DoFormat(long number, ref ValueStringBuilder toInsertInto, int pos, UNumberFormatInfo info, int recursionCount)
+        {
+            Debug.Assert(info != null);
+
+            // first, insert the rule's rule text into toInsertInto at the
+            // specified position, then insert the results of the substitutions
+            // into the right places in toInsertInto (notice we do the
+            // substitutions in reverse order so that the offsets don't get
+            // messed up)
+            int pluralRuleStart = ruleText!.Length;
+            int lengthOffset = 0;
+            if (pluralMessagePattern is null)
+            {
+                toInsertInto.Insert(pos, ruleText);
+            }
+            else
+            {
+                pluralRuleStart = ruleText.IndexOf("$(", StringComparison.Ordinal);
+                int pluralRuleEnd = ruleText.IndexOf(")$", pluralRuleStart, StringComparison.Ordinal);
+                int initialLength = toInsertInto.Length;
+                if (pluralRuleEnd < ruleText.Length - 1)
+                {
+#if FEATURE_SPAN
+                    toInsertInto.Insert(pos, ruleText.AsSpan(pluralRuleEnd + 2));
+#else
+                    toInsertInto.Insert(pos, ruleText.Substring(pluralRuleEnd + 2));
+#endif
+                }
+                toInsertInto.Insert(pos, IcuNumber.FormatPlural((double)number / Power(radix, exponent), null, pluralMessagePattern, info));
+                if (pluralRuleStart > 0)
+                {
+#if FEATURE_SPAN
+                    toInsertInto.Insert(pos, ruleText.AsSpan(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
+#else
+                    toInsertInto.Insert(pos, ruleText.Substring(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
+#endif
+                }
+                lengthOffset = ruleText.Length - (toInsertInto.Length - initialLength);
+            }
+            sub2?.DoSubstitution(number, ref toInsertInto, pos - (sub2.Pos > pluralRuleStart ? lengthOffset : 0), info, recursionCount);
+            sub1?.DoSubstitution(number, ref toInsertInto, pos - (sub1.Pos > pluralRuleStart ? lengthOffset : 0), info, recursionCount);
+        }
+
+        /// <summary>
+        /// Formats the <paramref name="number"/>, and inserts the resulting text into <paramref name="toInsertInto"/>.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <param name="toInsertInto">The string where the resultant text should be inserted.</param>
+        /// <param name="pos">The position in toInsertInto where the resultant text should be inserted.</param>
+        /// <param name="info">The <see cref="UNumberFormatInfo"/> that contains the culture specific number formatting settings.</param>
+        /// <param name="recursionCount">The number of recursive calls to this method.</param>
         public void DoFormat(double number, ref ValueStringBuilder toInsertInto, int pos, UNumberFormatInfo info, int recursionCount)
         {
             Debug.Assert(info != null);

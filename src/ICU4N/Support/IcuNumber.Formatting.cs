@@ -68,7 +68,7 @@ namespace ICU4N
         /// Non-null if an existing string can be returned, in which case the builder will be unmodified.
         /// Null if no existing string was returned, in which case the formatted output is in the builder.
         /// </returns>
-        private static unsafe string? FormatDouble(ref ValueStringBuilder sb, double value, ReadOnlySpan<char> format, UNumberFormatInfo info)
+        private static unsafe string? FormatDouble(ref ValueStringBuilder sb, double value, ReadOnlySpan<char> format, UNumberFormatInfo info, int[]? numberGroupSizesOverride)
         {
             Debug.Assert(info != null);
 
@@ -84,7 +84,7 @@ namespace ICU4N
 
             char* pTempFormatted = stackalloc char[CharStackBufferSize];
             Span<char> tempFormatted = new Span<char>(pTempFormatted, CharStackBufferSize);
-            var nfi = ToNumberFormatInfo(info);
+            var nfi = ToNumberFormatInfo(info, numberGroupSizesOverride);
             if (value.TryFormat(tempFormatted, out int charsWrittenTemp, format, nfi))
             {
                 AppendConvertedDigits(ref sb, new ReadOnlySpan<char>(pTempFormatted, charsWrittenTemp), info);
@@ -106,13 +106,13 @@ namespace ICU4N
         /// Non-null if an existing string can be returned, in which case the builder will be unmodified.
         /// Null if no existing string was returned, in which case the formatted output is in the builder.
         /// </returns>
-        private static unsafe string? FormatInt64(ref ValueStringBuilder sb, long value, ReadOnlySpan<char> format, UNumberFormatInfo info)
+        private static unsafe string? FormatInt64(ref ValueStringBuilder sb, long value, ReadOnlySpan<char> format, UNumberFormatInfo info, int[]? numberGroupSizesOverride)
         {
             Debug.Assert(info != null);
 
             char* pTempFormatted = stackalloc char[CharStackBufferSize];
             Span<char> tempFormatted = new Span<char>(pTempFormatted, CharStackBufferSize);
-            var nfi = ToNumberFormatInfo(info);
+            var nfi = ToNumberFormatInfo(info, numberGroupSizesOverride);
             if (value.TryFormat(tempFormatted, out int charsWrittenTemp, format, nfi))
             {
                 AppendConvertedDigits(ref sb, new ReadOnlySpan<char>(pTempFormatted, charsWrittenTemp), info);
@@ -162,7 +162,7 @@ namespace ICU4N
             }
         }
 
-        private static NumberFormatInfo ToNumberFormatInfo(UNumberFormatInfo info)
+        private static NumberFormatInfo ToNumberFormatInfo(UNumberFormatInfo info, int[]? numberGroupSizesOverride)
         {
             var nfi = new NumberFormatInfo();
 
@@ -170,7 +170,7 @@ namespace ICU4N
             //nfi.DigitSubstitution = (DigitShapes)info.DigitSubstitution; // No effect in .NET
             nfi.NumberGroupSeparator = info.NumberGroupSeparator;
             nfi.NumberDecimalSeparator = info.NumberDecimalSeparator;
-            nfi.NumberGroupSizes = info.NumberGroupSizesLocal;
+            nfi.NumberGroupSizes = numberGroupSizesOverride ?? info.NumberGroupSizesLocal;
 
             nfi.NegativeSign = info.NegativeSign;
             nfi.PositiveSign = info.PositiveSign;
@@ -182,38 +182,38 @@ namespace ICU4N
             return nfi;
         }
 
-        public static string FormatInt64(long value, string? format, UNumberFormatInfo info)
+        public static string FormatInt64(long value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
         {
             var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            return FormatInt64(ref sb, value, format, info) ?? sb.ToString();
+            return FormatInt64(ref sb, value, format, info, numberGroupSizesOverride) ?? sb.ToString();
         }
 
-        public static bool TryFormatInt64(long value, ReadOnlySpan<char> format, UNumberFormatInfo info, Span<char> destination, out int charsWritten)
+        public static bool TryFormatInt64(long value, ReadOnlySpan<char> format, UNumberFormatInfo info, Span<char> destination, out int charsWritten, int[]? numberGroupSizesOverride = null)
         {
             var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            string? s = FormatInt64(ref sb, value, format, info);
+            string? s = FormatInt64(ref sb, value, format, info, numberGroupSizesOverride);
             return s != null ?
                 TryCopyTo(s, destination, out charsWritten) :
                 sb.TryCopyTo(destination, out charsWritten);
         }
 
-        public static string FormatDouble(double value, ReadOnlySpan<char> format, UNumberFormatInfo info)
+        public static string FormatDouble(double value, ReadOnlySpan<char> format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
         {
             var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            return FormatDouble(ref sb, value, format, info) ?? sb.ToString();
+            return FormatDouble(ref sb, value, format, info, numberGroupSizesOverride) ?? sb.ToString();
         }
 
-        public static bool TryFormatDouble(double value, ReadOnlySpan<char> format, UNumberFormatInfo info, Span<char> destination, out int charsWritten)
+        public static bool TryFormatDouble(double value, ReadOnlySpan<char> format, UNumberFormatInfo info, Span<char> destination, out int charsWritten, int[]? numberGroupSizesOverride = null)
         {
             var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            string? s = FormatDouble(ref sb, value, format, info);
+            string? s = FormatDouble(ref sb, value, format, info, numberGroupSizesOverride);
             return s != null ?
                 TryCopyTo(s, destination, out charsWritten) :
                 sb.TryCopyTo(destination, out charsWritten);
         }
 
 
-        public static string FormatPlural(double value, ReadOnlySpan<char> format, MessagePattern? messagePattern, UNumberFormatInfo info)
+        public static string FormatPlural(double value, string? format, MessagePattern? messagePattern, UNumberFormatInfo info)
         {
             Debug.Assert(info != null);
 
@@ -221,27 +221,35 @@ namespace ICU4N
             return FormatPlural(value, format, messagePattern, pluralRules, info);
         }
 
-        public static string FormatPlural(double value, ReadOnlySpan<char> format, MessagePattern? messagePattern, PluralType pluralType, UNumberFormatInfo info)
+        public static string FormatPlural(double value, string? format, MessagePattern? messagePattern, PluralType pluralType, UNumberFormatInfo info)
         {
             Debug.Assert(info != null);
 
-            PluralRules pluralRules = PluralType.Ordinal ? info.OrdinalPluralRules : info.CardinalPluralRules;
+            PluralRules pluralRules = pluralType == PluralType.Ordinal ? info.OrdinalPluralRules : info.CardinalPluralRules;
             return FormatPlural(value, format, messagePattern, pluralRules, info);
         }
 
         // format is the decimalFormat string for the current culture
-        public static string FormatPlural(double value, ReadOnlySpan<char> format, MessagePattern? messagePattern, PluralRules pluralRules, UNumberFormatInfo info)
+        public static string FormatPlural(double value, string? format, MessagePattern? messagePattern, PluralRules pluralRules, UNumberFormatInfo info)
         {
             Debug.Assert(pluralRules != null);
             Debug.Assert(info != null);
 
+            int[] numberGroupSizesOverride;
             // ICU4N TODO: Need to decide the best way to deal with format pattern
-            if (format.Length == 0)
-                format = info.CultureData.decimalFormat.AsSpan();
+            if (string.IsNullOrEmpty(format))
+            {
+                format = info.NumberPattern;
+                numberGroupSizesOverride = info.decimalPatternProperties.GroupingSizes ?? UCultureData.Default.GetDecimalGroupSizes();
+            }
+            else
+            {
+                numberGroupSizesOverride = GetGroupingSizes(format);
+            }
 
             // If no pattern was applied, return the formatted number.
             if (messagePattern is null || messagePattern.PartCount == 0)
-                return FormatDouble(value, format, info);
+                return FormatDouble(value, format, info, numberGroupSizesOverride);
 
             double offset = messagePattern.GetPluralOffset(pluralStart: 0); // From ApplyPattern() method
 
@@ -252,11 +260,11 @@ namespace ICU4N
 
             if (offset == 0)
             {
-                numberString = FormatDouble(value, format, info);
+                numberString = FormatDouble(value, format, info, numberGroupSizesOverride);
             }
             else
             {
-                numberString = FormatDouble(numberMinusOffset, format, info);
+                numberString = FormatDouble(numberMinusOffset, format, info, numberGroupSizesOverride);
             }
 #pragma warning disable 612, 618
             // ICU4N NOTE: This is how we get the values for 'v' and 'f'
@@ -274,7 +282,7 @@ namespace ICU4N
                 // both for the length and the value to parse.
                 var asciiInfo = (UNumberFormatInfo)info.Clone();
                 asciiInfo.nativeDigits = AsciiDigits;
-                decimalString = FormatDouble(numberMinusOffset, format, asciiInfo);
+                decimalString = FormatDouble(numberMinusOffset, format, asciiInfo, numberGroupSizesOverride);
             }
 
             int dotIndex = decimalString.IndexOf('.');
