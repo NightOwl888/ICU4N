@@ -1,4 +1,7 @@
-﻿using System;
+﻿using ICU4N.Numerics;
+using ICU4N.Support.Text;
+using System;
+using System.Diagnostics;
 #nullable enable
 
 namespace ICU4N.Globalization
@@ -76,55 +79,56 @@ namespace ICU4N.Globalization
         // formatting
         //-----------------------------------------------------------------------
 
-        // ICU4N TODO: Implementation
+        /// <summary>
+        /// If in "by digits" mode, fills in the substitution one decimal digit
+        /// at a time using the rule set containing this substitution.
+        /// Otherwise, uses the superclass function.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <param name="toInsertInto">The string to insert the result of formatting
+        /// the substitution into.</param>
+        /// <param name="position">The position of the owning rule's rule text in
+        /// <paramref name="toInsertInto"/>.</param>
+        /// <param name="info">The <see cref="UNumberFormatInfo"/> that contains the culture specific number formatting settings.</param>
+        /// <param name="recursionCount">The number of recursive calls to this method.</param>
+        public override void DoSubstitution(double number, ref ValueStringBuilder toInsertInto, int position, UNumberFormatInfo info, int recursionCount)
+        {
+            Debug.Assert(info != null);
 
-        ///// <summary>
-        ///// If in "by digits" mode, fills in the substitution one decimal digit
-        ///// at a time using the rule set containing this substitution.
-        ///// Otherwise, uses the superclass function.
-        ///// </summary>
-        ///// <param name="number">The number being formatted.</param>
-        ///// <param name="toInsertInto">The string to insert the result of formatting
-        ///// the substitution into.</param>
-        ///// <param name="position">The position of the owning rule's rule text in
-        ///// <paramref name="toInsertInto"/>.</param>
-        ///// <param name="recursionCount">The number of recursive calls to this method.</param>
-        //public override void DoSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount)
-        //{
-        //    if (!byDigits)
-        //    {
-        //        // if we're not in "byDigits" mode, just use the inherited
-        //        // doSubstitution() routine
-        //        base.DoSubstitution(number, toInsertInto, position, recursionCount);
-        //    }
-        //    else
-        //    {
-        //        // if we're in "byDigits" mode, transform the value into an integer
-        //        // by moving the decimal point eight places to the right and
-        //        // pulling digits off the right one at a time, formatting each digit
-        //        // as an integer using this substitution's owning rule set
-        //        // (this is slower, but more accurate, than doing it from the
-        //        // other end)
+            if (!byDigits)
+            {
+                // if we're not in "byDigits" mode, just use the inherited
+                // doSubstitution() routine
+                base.DoSubstitution(number, ref toInsertInto, position, info, recursionCount);
+            }
+            else
+            {
+                // if we're in "byDigits" mode, transform the value into an integer
+                // by moving the decimal point eight places to the right and
+                // pulling digits off the right one at a time, formatting each digit
+                // as an integer using this substitution's owning rule set
+                // (this is slower, but more accurate, than doing it from the
+                // other end)
 
-        //        DecimalQuantity_DualStorageBCD fq = new DecimalQuantity_DualStorageBCD(number);
-        //        fq.RoundToInfinity(); // ensure doubles are resolved using slow path
+                DecimalQuantity_DualStorageBCD fq = new DecimalQuantity_DualStorageBCD(number);
+                fq.RoundToInfinity(); // ensure doubles are resolved using slow path
 
-        //        bool pad = false;
-        //        int mag = fq.LowerDisplayMagnitude;
-        //        while (mag < 0)
-        //        {
-        //            if (pad && useSpaces)
-        //            {
-        //                toInsertInto.Insert(position + pos, ' ');
-        //            }
-        //            else
-        //            {
-        //                pad = true;
-        //            }
-        //            ruleSet.Format(fq.GetDigit(mag++), toInsertInto, position + pos, recursionCount);
-        //        }
-        //    }
-        //}
+                bool pad = false;
+                int mag = fq.LowerDisplayMagnitude;
+                while (mag < 0)
+                {
+                    if (pad && useSpaces)
+                    {
+                        toInsertInto.Insert(position + pos, ' ');
+                    }
+                    else
+                    {
+                        pad = true;
+                    }
+                    ruleSet!.Format(fq.GetDigit(mag++), ref toInsertInto, position + pos, info, recursionCount);
+                }
+            }
+        }
 
         /// <summary>
         /// Returns the fractional part of the <paramref name="number"/>, which will always be

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ICU4N.Support.Text;
+using System;
+using System.Diagnostics;
 #nullable enable
 
 namespace ICU4N.Globalization
@@ -117,61 +119,64 @@ namespace ICU4N.Globalization
         // formatting
         //-----------------------------------------------------------------------
 
-        // ICU4N TODO: Implementation
+        /// <summary>
+        /// Performs a mathematical operation on the number, formats it using
+        /// either <c>ruleSet</c> or <c>numberFormat</c>, and inserts the result into
+        /// <paramref name="toInsertInto"/>.
+        /// </summary>
+        /// <param name="number">The number being formatted.</param>
+        /// <param name="toInsertInto">The string we insert the result into.</param>
+        /// <param name="position">The position in toInsertInto where the owning rule's
+        /// rule text begins (this value is added to this substitution's
+        /// position to determine exactly where to insert the new text).</param>
+        /// <param name="info">The <see cref="UNumberFormatInfo"/> that contains the culture specific number formatting settings.</param>
+        /// <param name="recursionCount">The number of recursive calls to this method.</param>
+        public override void DoSubstitution(double number, ref ValueStringBuilder toInsertInto, int position, UNumberFormatInfo info, int recursionCount)
+        {
+            Debug.Assert(info != null);
 
-        ///// <summary>
-        ///// Performs a mathematical operation on the number, formats it using
-        ///// either <c>ruleSet</c> or <c>numberFormat</c>, and inserts the result into
-        ///// <paramref name="toInsertInto"/>.
-        ///// </summary>
-        ///// <param name="number">The number being formatted.</param>
-        ///// <param name="toInsertInto">The string we insert the result into.</param>
-        ///// <param name="position">The position in toInsertInto where the owning rule's
-        ///// rule text begins (this value is added to this substitution's
-        ///// position to determine exactly where to insert the new text).</param>
-        ///// <param name="recursionCount">The number of recursive calls to this method.</param>
-        //public override void DoSubstitution(double number, StringBuilder toInsertInto, int position, int recursionCount)
-        //{
-        //    // perform a transformation on the number being formatted that
-        //    // is dependent on the type of substitution this is
-        //    //String s = toInsertInto.toString();
-        //    double numberToFormat = TransformNumber(number);
+            // perform a transformation on the number being formatted that
+            // is dependent on the type of substitution this is
+            //String s = toInsertInto.toString();
+            double numberToFormat = TransformNumber(number);
 
-        //    if (withZeros && ruleSet != null)
-        //    {
-        //        // if there are leading zeros in the decimal expansion then emit them
-        //        long nf = (long)numberToFormat;
-        //        int len = toInsertInto.Length;
-        //        while ((nf *= 10) < denominator)
-        //        {
-        //            toInsertInto.Insert(position + pos, ' ');
-        //            ruleSet.Format(0, toInsertInto, position + pos, recursionCount);
-        //        }
-        //        position += toInsertInto.Length - len;
-        //    }
+            if (withZeros && ruleSet != null)
+            {
+                // if there are leading zeros in the decimal expansion then emit them
+                long nf = (long)numberToFormat;
+                int len = toInsertInto.Length;
+                while ((nf *= 10) < denominator)
+                {
+                    toInsertInto.Insert(position + pos, ' ');
+                    ruleSet.Format(0, ref toInsertInto, position + pos, info, recursionCount);
+                }
+                position += toInsertInto.Length - len;
+            }
 
-        //    // if the result is an integer, from here on out we work in integer
-        //    // space (saving time and memory and preserving accuracy)
-        //    if (numberToFormat == Math.Floor(numberToFormat) && ruleSet != null) // ICU4N: This is quite a bit faster than using numberToFormat.IsInteger()
-        //    {
-        //        ruleSet.Format((long)numberToFormat, toInsertInto, position + pos, recursionCount);
+            // if the result is an integer, from here on out we work in integer
+            // space (saving time and memory and preserving accuracy)
+            if (numberToFormat == Math.Floor(numberToFormat) && ruleSet != null) // ICU4N: This is quite a bit faster than using numberToFormat.IsInteger()
+            {
+                ruleSet.Format((long)numberToFormat, ref toInsertInto, position + pos, info, recursionCount);
 
-        //        // if the result isn't an integer, then call either our rule set's
-        //        // format() method or our DecimalFormat's format() method to
-        //        // format the result
-        //    }
-        //    else
-        //    {
-        //        if (ruleSet != null)
-        //        {
-        //            ruleSet.Format(numberToFormat, toInsertInto, position + pos, recursionCount);
-        //        }
-        //        else
-        //        {
-        //            toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
-        //        }
-        //    }
-        //}
+                // if the result isn't an integer, then call either our rule set's
+                // format() method or our DecimalFormat's format() method to
+                // format the result
+            }
+            else
+            {
+                if (ruleSet != null)
+                {
+                    ruleSet.Format(numberToFormat, ref toInsertInto, position + pos, info, recursionCount);
+                }
+                else
+                {
+                    //toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
+                    // ICU4N TODO: Fix this format to return on the stack, when possible
+                    toInsertInto.Insert(position + pos, IcuNumber.FormatDouble(numberToFormat, numberFormatPattern, info, numberPatternProperties.GroupingSizes));
+                }
+            }
+        }
 
         /// <summary>
         /// Returns the number being formatted times the denominator.
