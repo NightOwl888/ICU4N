@@ -1,4 +1,5 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using System;
@@ -26,6 +27,7 @@ namespace ICU4N.Globalization
         private const string DigitsOrdinalRuleName = "%digits-ordinal";
         private const string DurationRuleName = "%duration";
 
+        private const int RuleStringMaxStackBufferSize = 256;
 
         //-----------------------------------------------------------------------
         // data members
@@ -182,7 +184,7 @@ namespace ICU4N.Globalization
             return GetInstance(culture.Name, format);
         }
 
-        public static NumberFormatRules GetInstance(string cultureName, NumberPresentation format)
+        internal static NumberFormatRules GetInstance(string cultureName, NumberPresentation format)
         {
             if (cultureName is null)
                 throw new ArgumentNullException(nameof(cultureName));
@@ -197,7 +199,7 @@ namespace ICU4N.Globalization
             return rulesCache.GetOrCreate(cacheKey, (key) =>
             {
                 string rules = GetRulesForCulture(bundle, key.Name, format, out string[][]? localizations);
-                return new NumberFormatRules(rules); // ICU4N TODO: localizations
+                return new NumberFormatRules(rules, stripWhiteSpace: false); // ICU4N TODO: localizations
             });
         }
 
@@ -230,10 +232,21 @@ namespace ICU4N.Globalization
         private static ReadOnlySpan<char> ExtractSpecialRule(ReadOnlySpan<char> ruleText, string ruleName)
             => ruleText.Slice(ruleName.Length).TrimStart(PatternProps.WhiteSpace).TrimEnd(';');
 
-        internal NumberFormatRules(ReadOnlySpan<char> description) // ICU4N TODO: Add a localizations parameter? We need to work out a way to allow users to supply these, but they don't matter for built-in rules. The jagged array is really ugly, but we should probably include an overload for compatibility reasons.
+
+        internal NumberFormatRules(ReadOnlySpan<char> description)
+            : this(description, stripWhiteSpace: true)
+        {
+        }
+
+        private NumberFormatRules(ReadOnlySpan<char> description, bool stripWhiteSpace) // ICU4N TODO: Add a localizations parameter? We need to work out a way to allow users to supply these, but they don't matter for built-in rules. The jagged array is really ugly, but we should probably include an overload for compatibility reasons.
         {
             if (description.Length == 0)
                 throw new ArgumentException("Empty rules description");
+
+            if (stripWhiteSpace)
+            {
+                description = StripWhiteSpace(description);
+            }
 
             // 1st pass: pre-flight parsing the description and count the number of
             // rule sets (";%" marks the end of one rule set and the beginning
@@ -380,14 +393,75 @@ namespace ICU4N.Globalization
             }
         }
 
+        /// <summary>
+        /// This method is used by the constructor to strip whitespace between rules (i.e.,
+        /// after semicolons).
+        /// </summary>
+        /// <param name="description">The formatter description.</param>
+        /// <returns>The description with all the whitespace that follows semicolons
+        /// taken out.</returns>
+        private ReadOnlySpan<char> StripWhiteSpace(ReadOnlySpan<char> description)
+        {
+            int descriptionLength = description.Length;
 
+            // since we don't have a method that deletes characters
+            // create a new StringBuffer to copy the text into
+            ValueStringBuilder result = descriptionLength <= RuleStringMaxStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[RuleStringMaxStackBufferSize])
+                : new ValueStringBuilder(descriptionLength);
 
+            // iterate through the characters...
+            int start = 0;
+            while (start < descriptionLength)
+            {
+                // seek to the first non-whitespace character...
+                while (start < descriptionLength
+                       && PatternProps.IsWhiteSpace(description[start]))
+                {
+                    ++start;
+                }
 
-        // ICU4N TODO: Implementation
+                //if the first non-whitespace character is semicolon, skip it and continue
+                if (start < descriptionLength && description[start] == ';')
+                {
+                    start += 1;
+                    continue;
+                }
+
+                // locate the next semicolon in the text and copy the text from
+                // our current position up to that semicolon into the result
+                int p = description.Slice(start).IndexOf(';') + start;
+                if (p == -1)
+                {
+                    // or if we don't find a semicolon, just copy the rest of
+                    // the string into the result
+                    result.Append(description.Slice(start));
+                    break;
+                }
+                else if (p < descriptionLength)
+                {
+                    result.Append(description.Slice(start, (p + 1) - start)); // ICU4N: Corrected 2nd parameter
+                    start = p + 1;
+                }
+                else
+                {
+                    // when we get here, we've seeked off the end of the string, and
+                    // we terminate the loop (we continue until *start* is -1 rather
+                    // than until *p* is -1, because otherwise we'd miss the last
+                    // rule in the description)
+                    break;
+                }
+            }
+            // ICU4N: We must heap allocate here because the ValueStringBuilder may return from the
+            // stack, which is out of scope after this point.
+            return result.ToString();
+        }
 
         //-----------------------------------------------------------------------
         // INumberFormatRules members
         //-----------------------------------------------------------------------
+
+        internal NumberFormatRuleSet DefaultRuleSet => defaultRuleSet;
 
         /// <summary>
         /// Gets a reference to the formatter's default rule set. The default
@@ -401,15 +475,16 @@ namespace ICU4N.Globalization
         /// if this formatter doesn't have a rule set with that name.
         /// </summary>
         /// <param name="name">The name of the desired rule set.</param>
+        /// <param name="throwIfNotFound"><c>true</c> to throw if not found, otherwise <c>false</c> to return <c>null</c> instead.</param>
         /// <returns>The rule set with that name.</returns>
         /// <exception cref="ArgumentException">No rule exists with the provided <paramref name="name"/>.</exception>
-        private NumberFormatRuleSet FindRuleSet(string name)
+        internal NumberFormatRuleSet FindRuleSet(string name, bool throwIfNotFound = true)
         {
-            if (!ruleSetsMap!.TryGetValue(name, out NumberFormatRuleSet? result) || result is null)
+            if ((!ruleSetsMap!.TryGetValue(name, out NumberFormatRuleSet ? result) || result is null) && throwIfNotFound)
             {
                 throw new ArgumentException("No rule set named " + name);
             }
-            return result;
+            return result!; // Assume we know what we are doing if we pass throwIfNotFound
         }
 
         NumberFormatRuleSet INumberFormatRules.FindRuleSet(string name) => FindRuleSet(name);
