@@ -1,4 +1,5 @@
 ﻿using ICU4N.Globalization;
+using ICU4N.Numerics;
 using ICU4N.Text;
 using J2N.Globalization;
 using J2N.Numerics;
@@ -9,7 +10,6 @@ using System.Numerics;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 using Double = J2N.Numerics.Double;
-using ICU4N.Numerics;
 
 namespace ICU4N.Dev.Test.Format
 {
@@ -1177,7 +1177,7 @@ namespace ICU4N.Dev.Test.Format
                 CultureInfo culture = loc.ToCultureInfo();
                 for (int j = 0; j < names.Length; ++j)
                 {
-                    RuleBasedNumberFormat fmt = new RuleBasedNumberFormat(loc, (NumberPresentation)j + 1);
+                    RuleBasedNumberFormat fmt = new RuleBasedNumberFormat(loc, (NumberPresentation)j); // ICU4N: Changed the value to be 0 based
                     //if (!loc.Equals(fmt.ActualCulture))
                     //{
                     //    // Skip the redundancy
@@ -1324,7 +1324,7 @@ namespace ICU4N.Dev.Test.Format
             {
                 for (int j = 0; j < names.Length; ++j)
                 {
-                    RuleBasedNumberFormat fmt = new RuleBasedNumberFormat(loc, (NumberPresentation)j + 1);
+                    RuleBasedNumberFormat fmt = new RuleBasedNumberFormat(loc, (NumberPresentation)j); // ICU4N: Changed the value to be 0 based
                     if (!loc.Equals(fmt.ActualCulture))
                     {
                         // Skip the redundancy
