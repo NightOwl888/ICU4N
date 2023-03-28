@@ -122,13 +122,13 @@ namespace ICU4N.Globalization
                 //    return nonNumericalRules[ImproperFractionRuleIndex];
                 //}
                 NumberFormatRule temp;
-                if (number < 1 && (temp = GetBestFractionRule(ProperFractionRuleIndex, info)) is not null)
+                if (number < 1 && (temp = GetBestFractionRule(NumberFormatRule.ProperFractionRule, info)) is not null)
                 {
                     // if the number is between 0 and 1, return the proper
                     // fraction rule
                     return temp;
                 }
-                else if ((temp = GetBestFractionRule(ImproperFractionRuleIndex, info)) is not null)
+                else if ((temp = GetBestFractionRule(NumberFormatRule.ImproperFractionRule, info)) is not null)
                 {
                     // otherwise, return the improper fraction rule
                     return temp;
@@ -254,7 +254,7 @@ namespace ICU4N.Globalization
             }
             // else use the master rule
             //return nonNumericalRules[MasterRuleIndex];
-            return GetBestFractionRule(MasterRuleIndex, info);
+            return GetBestFractionRule(NumberFormatRule.MasterRule, info);
         }
 
         /// <summary>

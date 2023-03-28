@@ -337,7 +337,8 @@ namespace ICU4N.Globalization
         /// This is purely a runtime method. It should always be used when parsing or formatting non-numerical rules.
         /// </summary>
         /// <param name="originalIndex">The identifier for the type of fraction rule, one of
-        /// <see cref="ImproperFractionRuleIndex"/>, <see cref="ProperFractionRuleIndex"/> or <see cref="MasterRuleIndex"/>.</param>
+        /// <see cref="NumberFormatRule.ImproperFractionRule"/>, <see cref="NumberFormatRule.ProperFractionRule"/> or
+        /// <see cref="NumberFormatRule.MasterRule"/>.</param>
         /// <param name="info">The decimal format symbols for the current request.</param>
         /// <returns>The best rule that was registered during the construction of this class or <c>null</c> if no rule was found.</returns>
         public NumberFormatRule? GetBestFractionRule(int originalIndex, UNumberFormatInfo info)
