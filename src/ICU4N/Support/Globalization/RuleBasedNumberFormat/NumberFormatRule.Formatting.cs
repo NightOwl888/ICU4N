@@ -48,7 +48,7 @@ namespace ICU4N.Globalization
                     toInsertInto.Insert(pos, ruleText.Substring(pluralRuleEnd + 2));
 #endif
                 }
-                toInsertInto.Insert(pos, IcuNumber.FormatPlural((double)number / Power(radix, exponent), null, pluralMessagePattern, info));
+                toInsertInto.Insert(pos, IcuNumber.FormatPlural((double)number / Power(radix, exponent), null, pluralMessagePattern, pluralType, info));
                 if (pluralRuleStart > 0)
                 {
 #if FEATURE_SPAN
@@ -111,7 +111,7 @@ namespace ICU4N.Globalization
                 {
                     pluralVal = pluralVal / Power(radix, exponent);
                 }
-                toInsertInto.Insert(pos, IcuNumber.FormatPlural((long)pluralVal, null, pluralMessagePattern, info));
+                toInsertInto.Insert(pos, IcuNumber.FormatPlural((long)pluralVal, null, pluralMessagePattern, pluralType, info));
                 if (pluralRuleStart > 0)
                 {
 #if FEATURE_SPAN
