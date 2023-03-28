@@ -1,12 +1,14 @@
 ﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Numerics;
-using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
 using J2N.Numerics;
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Text;
 using static ICU4N.Text.PluralRules;
 #nullable enable
 
@@ -413,17 +415,7 @@ namespace ICU4N
             // ICU4N TODO: Need to validate ruleset name is not a private set and that it exists (in callers, don't throw here)
             NumberFormatRuleSet ruleSet = ruleSetName is null ? rules.DefaultRuleSet : rules.FindRuleSet(ruleSetName, throwIfNotFound: false);
             rules.Format(ref sb, value, ruleSet, info);
-            
-            if (info.Capitalization == Capitalization.BeginningOfSentence ||
-                (info.Capitalization == Capitalization.UIListOrMenu && info.capitalizationForListOrMenu) ||
-                (info.Capitalization == Capitalization.Standalone && info.capitalizationForStandAlone))
-            {
-                //// ICU4N TODO: use threadlocal here so we can reuse this instance?
-                //BreakIterator capitalizationBrkIter = (BreakIterator)info.SentenceBreakIterator.Clone(); // Clone to the current thread
-                //string temp = new string(sb.AsSpan());
-                //sb.Length = 0;
-                //sb.Append(UChar.ToTitleCase()) // ICU4N TODO: Factor out locale from ToTitleCase() and move to UCultureData.
-            }
+            AdjustForContext(ref sb, info);
         }
 
         public static string FormatInt64RuleBased(long value, NumberFormatRules rules, string? ruleSet,  UNumberFormatInfo info)
@@ -444,6 +436,44 @@ namespace ICU4N
             // ICU4N TODO: Need to validate ruleset name is not a private set and that it exists (in callers, don't throw here)
             NumberFormatRuleSet ruleSet = ruleSetName is null ? rules.DefaultRuleSet : rules.FindRuleSet(ruleSetName, throwIfNotFound: false);
             rules.Format(ref sb, value, ruleSet, info);
+            AdjustForContext(ref sb, info);
+        }
+
+        private static void AdjustForContext(ref ValueStringBuilder sb, UNumberFormatInfo info)
+        {
+            if (info.Capitalization == Capitalization.None || sb.Length == 0 || !UChar.IsLower(CodePointAt(sb.AsSpan(0, 2), 0)))
+            {
+                return;
+            }
+
+            if (info.Capitalization == Capitalization.BeginningOfSentence ||
+                (info.Capitalization == Capitalization.UIListOrMenu && info.capitalizationForListOrMenu) ||
+                (info.Capitalization == Capitalization.Standalone && info.capitalizationForStandAlone))
+            {
+                // ICU4N TODO: We could save heap allocations if we pass through the Span<char> or ValueStringBuilder to accomplish the capitalization in place.
+
+                // ICU4N TODO: use threadlocal here so we can reuse this instance?
+                BreakIterator capitalizationBrkIter = (BreakIterator)info.SentenceBreakIterator.Clone(); // Clone to the current thread
+                string temp = new string(sb.AsSpan()); // Do not call sb.ToString() because we don't want to Dispose() the ValueStringBuilder yet.
+                sb.Length = 0; // Replace the entire input with the capitalized text
+                capitalizationBrkIter.SetText(temp);
+                sb.Append(CaseMapImpl.ToTitle(info.CaseLocale, UChar.TitleCaseNoLowerCase | UChar.TitleCaseNoBreakAdjustment, capitalizationBrkIter, temp));
+            }
+        }
+
+        private static int CodePointAt(this ReadOnlySpan<char> seq, int index) // ICU4N TODO: Move to J2N
+        {
+            int len = seq.Length;
+            if (index < 0 || index >= len)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            char high = seq[index++];
+            if (index >= len)
+                return high;
+            char low = seq[index];
+            if (char.IsSurrogatePair(high, low))
+                return Character.ToCodePoint(high, low);
+            return high;
         }
 
         private static bool TryCopyTo(string source, Span<char> destination, out int charsWritten)

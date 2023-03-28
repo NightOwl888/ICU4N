@@ -1,4 +1,5 @@
-﻿using ICU4N.Text;
+﻿using ICU4N.Impl;
+using ICU4N.Text;
 using System;
 using System.Threading;
 #nullable enable
@@ -8,6 +9,9 @@ namespace ICU4N.Globalization
     public sealed partial class UNumberFormatInfo
     {
         private Capitalization capitalization = Capitalization.None;
+        internal CaseLocale caseLocale; // The CaseLocale value for capitalization
+
+        internal CaseLocale CaseLocale => caseLocale;
 
         /// <summary>
         /// Gets or sets the capitalization display context for number formatting,

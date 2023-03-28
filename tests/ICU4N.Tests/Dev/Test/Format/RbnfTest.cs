@@ -1876,6 +1876,61 @@ namespace ICU4N.Dev.Test.Format
             }
         }
 
+        class TextCapiltaizationItem
+        {
+            public string locale;
+            public NumberPresentation format;
+            public Capitalization capitalization;
+            public double value;
+            public string expectedResult;
+            // Simple constructor
+            public TextCapiltaizationItem(string loc, NumberPresentation fmt, Capitalization ctxt, double val, string expRes)
+            {
+                locale = loc;
+                format = fmt;
+                capitalization = ctxt;
+                value = val;
+                expectedResult = expRes;
+            }
+        }
+
+#if FEATURE_SPAN
+        [Test]
+        public void TestContext_IcuNumber()
+        {
+            TextCapiltaizationItem[] items = new TextCapiltaizationItem[] {
+                new TextCapiltaizationItem( "sv", NumberPresentation.SpellOut, Capitalization.MiddleOfSentence,     123.45, "ett\u00ADhundra\u00ADtjugo\u00ADtre komma fyra fem" ),
+                new TextCapiltaizationItem( "sv", NumberPresentation.SpellOut, Capitalization.BeginningOfSentence,  123.45, "Ett\u00ADhundra\u00ADtjugo\u00ADtre komma fyra fem" ),
+                new TextCapiltaizationItem( "sv", NumberPresentation.SpellOut, Capitalization.UIListOrMenu,         123.45, "ett\u00ADhundra\u00ADtjugo\u00ADtre komma fyra fem" ),
+                new TextCapiltaizationItem( "sv", NumberPresentation.SpellOut, Capitalization.Standalone,           123.45, "ett\u00ADhundra\u00ADtjugo\u00ADtre komma fyra fem" ),
+                new TextCapiltaizationItem( "en", NumberPresentation.SpellOut, Capitalization.MiddleOfSentence,     123.45, "one hundred twenty-three point four five" ),
+                new TextCapiltaizationItem( "en", NumberPresentation.SpellOut, Capitalization.BeginningOfSentence,  123.45, "One hundred twenty-three point four five" ),
+                new TextCapiltaizationItem( "en", NumberPresentation.SpellOut, Capitalization.UIListOrMenu,         123.45, "One hundred twenty-three point four five" ),
+                new TextCapiltaizationItem( "en", NumberPresentation.SpellOut, Capitalization.Standalone,           123.45, "One hundred twenty-three point four five" ),
+            };
+            foreach (TextCapiltaizationItem item in items)
+            {
+                UCultureInfo locale = new UCultureInfo(item.locale);
+                var info = (UNumberFormatInfo)locale.NumberFormat.Clone();
+                info.Capitalization = item.capitalization;
+                var rules = item.format switch
+                {
+                    NumberPresentation.SpellOut => info.SpellOut,
+                    NumberPresentation.Ordinal => info.Ordinal,
+                    NumberPresentation.Duration => info.Duration,
+                    NumberPresentation.NumberingSystem => info.NumberingSystem,
+                    _ => throw new InvalidOperationException()
+                };
+                
+                string result = IcuNumber.FormatDoubleRuleBased(item.value, rules, ruleSet: null, info); // rbnf.Format(item.value, rbnf.DefaultRuleSetName);
+                if (!result.Equals(item.expectedResult))
+                {
+                    Errln("Error for locale " + item.locale + ", capitalization " + item.capitalization + ", expected " + item.expectedResult + ", got " + result);
+                }
+            }
+        }
+#endif
+
         [Test]
         public void TestInfinityNaN()
         {

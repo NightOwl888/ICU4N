@@ -82,6 +82,7 @@ namespace ICU4N.Globalization
         // Capitalization Settings
         internal bool capitalizationForListOrMenu;
         internal bool capitalizationForStandAlone;
+        internal CaseLocale caseLocale; // The captialization locale setting
         private BreakIterator? sentenceBreakIterator;
         private readonly string? lbKeyword; // Controls the resource data set that is looked up - line break behavior
         private readonly string? ssKeyword; // If "ss=standard", wraps a sentence iterator in a SimpleFilteredSentenceBreakIterator
@@ -172,6 +173,7 @@ namespace ICU4N.Globalization
             invariant.name = string.Empty;
             invariant.isInvariantCulture = true;
             invariant.isNeutralCulture = false;
+            invariant.caseLocale = CaseLocale.Root;
             // The rest is lazy-loaded from resources
 
             return invariant;
@@ -259,6 +261,7 @@ namespace ICU4N.Globalization
             this.isInvariantCulture = cultureInfo.isInvariantCulture;
             this.isNeutralCulture = cultureInfo.isNeutralCulture;
             this.name = cultureInfo.Name; // base name from ICU
+            this.caseLocale = UCaseProperties.GetCaseLocale(cultureInfo.Language);
 
             if (!skipKeywords)
             {
@@ -305,6 +308,7 @@ namespace ICU4N.Globalization
 
             nfi.capitalizationForListOrMenu = capitalizationForListOrMenu;
             nfi.capitalizationForStandAlone = capitalizationForStandAlone;
+            nfi.caseLocale = caseLocale;
 
             nfi.decimalPatternProperties = decimalPatternProperties;
             nfi.numberMaximumDecimalDigits = maxFractionDigits;
