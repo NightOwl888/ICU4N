@@ -66,6 +66,9 @@ namespace ICU4N.Text
     /// </summary>
     internal static class NumberPresentationExtensions
     {
+        internal static bool IsDefined(this NumberPresentation presentation)
+            => presentation >= NumberPresentation.SpellOut && presentation <= NumberPresentation.NumberingSystem;
+
         /// <summary>
         /// Gets the rule name key to lookup this rule in the ICU resources.
         /// <para/>
