@@ -22,9 +22,9 @@ namespace ICU4N.Impl
     {
         private readonly ConcurrentDictionary<string, PluralRules?> rulesIdToRules = new ConcurrentDictionary<string, PluralRules?>();
         // lazy init, use getLocaleIdToRulesIdMap to access
-        private IDictionary<string, string> localeIdToCardinalRulesId;
-        private IDictionary<string, string> localeIdToOrdinalRulesId;
-        private IDictionary<string, UCultureInfo> rulesIdToEquivalentULocale;
+        private IDictionary<string, string>? localeIdToCardinalRulesId;
+        private IDictionary<string, string>? localeIdToOrdinalRulesId;
+        private IDictionary<string, UCultureInfo>? rulesIdToEquivalentULocale;
 #pragma warning disable 612, 618
         private static readonly IDictionary<string, PluralRanges> localeIdToPluralRanges = LoadLocaleIdToPluralRanges();
 #pragma warning restore 612, 618
@@ -564,7 +564,7 @@ namespace ICU4N.Impl
 #pragma warning disable 612, 618
                         pr.Freeze();
 #pragma warning restore 612, 618
-                        foreach (string locale in locales)
+                        foreach (string locale in locales!)
                         {
                             tempLocaleIdToPluralRanges[locale] = pr;
                         }
@@ -585,7 +585,7 @@ namespace ICU4N.Impl
                 }
             }
             // do last one
-            foreach (string locale in locales)
+            foreach (string locale in locales!)
             {
                 tempLocaleIdToPluralRanges[locale] = pr;
             }

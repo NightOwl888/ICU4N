@@ -23,7 +23,7 @@ namespace ICU4N.Globalization
 
         internal UNumberFormatInfo(UCultureData cultureData)
         {
-            Debug.Assert(cultureData is not null);
+            Debug.Assert(cultureData != null);
             cultureData.GetNFIValues(this);
             this.cultureData = cultureData;
         }
