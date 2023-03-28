@@ -284,7 +284,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestEnglishSpellout()
         {
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new CultureInfo("en-US"),
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(new CultureInfo("en-US"),
                     NumberPresentation.SpellOut);
             string[][] testData = new string[][] {
                 new string[] { "1", "one" },
@@ -318,7 +318,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestOrdinalAbbreviations()
         {
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new CultureInfo("en-US"),
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(new CultureInfo("en-US"),
                     NumberPresentation.Ordinal);
             string[][] testData = new string[][] {
                 new string[] { "1", "1st" },
@@ -349,7 +349,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestDurations()
         {
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new CultureInfo("en-US"),
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(new CultureInfo("en-US"),
                    NumberPresentation.Duration);
             string[][] testData = new string[][] {
                 new string[] { "3,600", "1:00:00" },             //move me and I fail
@@ -374,7 +374,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestSpanishSpellout()
         {
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new CultureInfo("es-es"),
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(new CultureInfo("es-es"),
                 NumberPresentation.SpellOut);
             string[][] testData = new string[][] {
                 new string[] { "1", "uno" },
@@ -410,7 +410,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestFrenchSpellout()
         {
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new CultureInfo("fr-FR"),
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(new CultureInfo("fr-FR"),
                     NumberPresentation.SpellOut);
             string[][] testData = new string[][] {
                 new string[] { "1", "un" },
@@ -451,7 +451,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestSwissFrenchSpellout()
         {
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new CultureInfo("fr-CH"),
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(new CultureInfo("fr-CH"),
                     NumberPresentation.SpellOut);
             string[][] testData = new string[][] {
                 new string[] { "1", "un" },
@@ -492,7 +492,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestItalianSpellout()
         {
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new CultureInfo("it"),
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(new CultureInfo("it"),
                     NumberPresentation.SpellOut);
             string[][] testData = new string[][] {
                 new string[] { "1", "uno" },
@@ -526,7 +526,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestGermanSpellout()
         {
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new CultureInfo("de-DE"),
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(new CultureInfo("de-DE"),
                     NumberPresentation.SpellOut);
             string[][] testData = new string[][] {
                 new string[] { "1", "eins" },
@@ -558,7 +558,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestThaiSpellout()
         {
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new CultureInfo("th-TH"),
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(new CultureInfo("th-TH"),
                     NumberPresentation.SpellOut);
             string[][] testData = new string[][] {
                 new string[] { "0", "\u0e28\u0e39\u0e19\u0e22\u0e4c" },
@@ -587,7 +587,7 @@ namespace ICU4N.Dev.Test.Format
             String enRules = "%digits-ordinal:"
                     + "-x: −>>;"
                     + "0: =#,##0=$(ordinal,one{st}two{nd}few{rd}other{th})$;";
-            RuleBasedNumberFormat enFormatter = new RuleBasedNumberFormat(enRules, new UCultureInfo("en"));
+            RbnfFormattterSettings enFormatter = new RbnfFormattterSettings(enRules, new UCultureInfo("en"));
             string[][] enTestData = new string[][] {
                 new string[] { "1", "1st" },
                 new string[] { "2", "2nd" },
@@ -647,7 +647,7 @@ namespace ICU4N.Dev.Test.Format
                     + "%%fractions-feminine:"
                     + "10: <%spellout-numbering< $(cardinal,one{десятая}other{десятых})$;"
                     + "100: <%spellout-numbering< $(cardinal,one{сотая}other{сотых})$;";
-            RuleBasedNumberFormat ruFormatter = new RuleBasedNumberFormat(ruRules, new UCultureInfo("ru"));
+            RbnfFormattterSettings ruFormatter = new RbnfFormattterSettings(ruRules, new UCultureInfo("ru"));
             string[][] ruTestData = new string[][] {
                 new string[] { "1", "один" },
                 new string[] { "100", "сто" },
@@ -680,6 +680,14 @@ namespace ICU4N.Dev.Test.Format
             {
                 Errln("Got " + result + " for 21000");
             }
+#if FEATURE_SPAN
+            NumberFormatRules russianRules = ruFormatter.CreateNumberFormatRules();
+            string result2 = IcuNumber.FormatInt64RuleBased(21000, russianRules, ruleSet: null, new UCultureInfo("ru").NumberFormat);
+            if (!"двадцать один тысяча".Equals(result2, StringComparison.Ordinal))
+            {
+                Errln("Got " + result + " for 21000");
+            }
+#endif
         }
 
         /**
@@ -789,7 +797,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestFractionalRuleSet()
         {
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(fracRules,
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(fracRules,
                     new CultureInfo("en"));
 
             string[][] testData = new string[][] {
@@ -826,7 +834,7 @@ namespace ICU4N.Dev.Test.Format
         public void TestSwedishSpellout()
         {
             CultureInfo locale = new CultureInfo("sv");
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(locale,
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(locale,
                     NumberPresentation.SpellOut);
 
             string[][] testDataDefault = new string[][] {
@@ -942,7 +950,7 @@ namespace ICU4N.Dev.Test.Format
                 "  \u0e40\u0e2d\u0e47\u0e14;\n" +
                 "  =%default=;\n ; ;; ";
 
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(thaiRules, new CultureInfo("th-TH"));
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(thaiRules, new CultureInfo("th-TH"));
 
             string[][] testData = new string[][] {
                 new string[] { "0", "\u0e28\u0e39\u0e19\u0e22\u0e4c" },
@@ -990,7 +998,7 @@ namespace ICU4N.Dev.Test.Format
                 new string[] { "0.000001175494351", "zero point zero zero zero zero zero one one seven five four nine four three five one" },
             };
 
-            RuleBasedNumberFormat formatter = new RuleBasedNumberFormat(new CultureInfo("en-US"), NumberPresentation.SpellOut);
+            RbnfFormattterSettings formatter = new RbnfFormattterSettings(new CultureInfo("en-US"), NumberPresentation.SpellOut);
             doTest(formatter, testData, true);
         }
 
@@ -1374,6 +1382,93 @@ namespace ICU4N.Dev.Test.Format
             if (errors.Length > 0)
             {
                 Errln(errors.ToString());
+            }
+        }
+
+        void doTest(RbnfFormattterSettings formatterSettings, string[][] testData,
+                    bool testParsing)
+        {
+            RuleBasedNumberFormat formatter = formatterSettings.formatter;
+            //        NumberFormat decFmt = NumberFormat.getInstance(Locale.US);
+            NumberFormat decFmt = new DecimalFormat("#,###.################");
+            try
+            {
+                for (int i = 0; i < testData.Length; i++)
+                {
+                    String number = testData[i][0];
+                    String expectedWords = testData[i][1];
+                    if (IsVerbose())
+                    {
+                        Logln("test[" + i + "] number: " + number + " target: " + expectedWords);
+                    }
+                    Number num = decFmt.Parse(number);
+                    String actualWords = formatter.Format(num);
+
+                    if (!actualWords.Equals(expectedWords))
+                    {
+                        Errln("Spot check format failed: for " + number + ", expected\n    "
+                                + expectedWords + ", but got\n    " +
+                                actualWords);
+                    }
+                    else if (testParsing)
+                    {
+                        String actualNumber = decFmt.Format(formatter
+                                .Parse(actualWords));
+
+                        if (!actualNumber.Equals(number))
+                        {
+                            Errln("Spot check parse failed: for " + actualWords +
+                                    ", expected " + number + ", but got " +
+                                    actualNumber);
+                        }
+                    }
+
+#if FEATURE_SPAN
+                    UCultureInfo locale = formatterSettings.locale;
+                    NumberFormatRules rules = formatterSettings.CreateNumberFormatRules();
+                    string ruleSet = formatterSettings.DefaultRuleSet ?? null;
+                    UNumberFormatInfo info = formatterSettings.info ?? UNumberFormatInfo.GetInstance(locale);
+
+                    if (num is J2N.Numerics.Int64)
+                    {
+                        actualWords = IcuNumber.FormatInt64RuleBased(num.ToInt64(), rules, ruleSet, info);
+                    }
+                    else if (num is ICU4N.Numerics.BigMath.BigInteger bi)
+                    {
+                        actualWords = IcuNumber.FormatBigIntegerRuleBased(System.Numerics.BigInteger.Parse(bi.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture), rules, ruleSet, info);
+                    }
+                    else // Assume double
+                    {
+                        actualWords = IcuNumber.FormatDoubleRuleBased(num.ToDouble(), rules, ruleSet, info);
+                    }
+
+                    if (!actualWords.Equals(expectedWords))
+                    {
+                        Errln("Spot check format failed: for " + number + ", expected\n    "
+                                + expectedWords + ", but got\n    " +
+                                actualWords);
+                    }
+                    else if (testParsing)
+                    {
+                        String actualNumber = decFmt.Format(formatter
+                                .Parse(actualWords));
+
+                        if (!actualNumber.Equals(number))
+                        {
+                            Errln("Spot check parse failed: for " + actualWords +
+                                    ", expected " + number + ", but got " +
+                                    actualNumber);
+                        }
+                    }
+#endif
+                }
+            }
+            catch (Exception e)
+            {
+                Errln("Test failed with exception: " + e.ToString());
+                Console.WriteLine(e.ToString());
+                //e.printStackTrace();
+                //Errln("Test failed with exception: " + e.toString());
             }
         }
 
@@ -1805,7 +1900,7 @@ namespace ICU4N.Dev.Test.Format
                     + "Inf: infinite;"
                     + "NaN: not a number;"
                     + "0: =#,##0=;";
-            RuleBasedNumberFormat enFormatter = new RuleBasedNumberFormat(enRules, new UCultureInfo("en"));
+            RbnfFormattterSettings enFormatter = new RbnfFormattterSettings(enRules, new UCultureInfo("en"));
             string[][] enTestData = new string[][] {
                 new string[] {"1", "1"},
                 new string[] {"\u221E", "infinite"},
@@ -1820,7 +1915,7 @@ namespace ICU4N.Dev.Test.Format
             enRules = "%default:"
                     + "-x: ->>;"
                     + "0: =#,##0=;";
-            enFormatter = new RuleBasedNumberFormat(enRules, new UCultureInfo("en"));
+            enFormatter = new RbnfFormattterSettings(enRules, new UCultureInfo("en"));
             string[][] enDefaultTestData = new string[][] {
                 new string[] {"1", "1"},
                 new string[] {"\u221E", "∞"},
@@ -1851,7 +1946,7 @@ namespace ICU4N.Dev.Test.Format
                     + "7: seven;"
                     + "8: eight;"
                     + "9: nine;";
-            RuleBasedNumberFormat enFormatter = new RuleBasedNumberFormat(enRules, new UCultureInfo("en"));
+            RbnfFormattterSettings enFormatter = new RbnfFormattterSettings(enRules, new UCultureInfo("en"));
             string[][] enTestPointData = new string[][] {
                         new string[] {"1.1", "one point one"},
                         new string[] {"1.23", "one point two three"},
@@ -1860,7 +1955,9 @@ namespace ICU4N.Dev.Test.Format
             doTest(enFormatter, enTestPointData, true);
             DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(new UCultureInfo("en"));
             decimalFormatSymbols.DecimalSeparator = (',');
-            enFormatter.SetDecimalFormatSymbols(decimalFormatSymbols);
+            enFormatter.formatter.SetDecimalFormatSymbols(decimalFormatSymbols);
+            enFormatter.info = (UNumberFormatInfo)new UCultureInfo("en").NumberFormat.Clone();
+            enFormatter.info.NumberDecimalSeparator = ",";
             string[][] enTestCommaData = new string[][] {
                         new string[] {"1.1", "one comma one"},
                         new string[] {"1.23", "one comma two three"},
@@ -1934,7 +2031,7 @@ namespace ICU4N.Dev.Test.Format
         [Test]
         public void TestLargeNumbers()
         {
-            RuleBasedNumberFormat rbnf = new RuleBasedNumberFormat(new UCultureInfo("en-US"), NumberPresentation.SpellOut);
+            RbnfFormattterSettings rbnf = new RbnfFormattterSettings(new UCultureInfo("en-US"), NumberPresentation.SpellOut);
 
             string[][] enTestFullData = new string[][] {
                 new string[] {"-9007199254740991", "minus nine quadrillion seven trillion one hundred ninety-nine billion two hundred fifty-four million seven hundred forty thousand nine hundred ninety-one"}, // Maximum precision in both a double and a long
@@ -2011,6 +2108,82 @@ namespace ICU4N.Dev.Test.Format
             assertEquals("zero point zero zero one", rbnf.Format(0.0005));
             assertEquals("infinity", rbnf.Format(double.PositiveInfinity));
             assertEquals("not a number", rbnf.Format(double.NaN));
+        }
+
+
+        private class RbnfFormattterSettings
+        {
+            public readonly UCultureInfo locale = null;
+            public readonly NumberPresentation format = default;
+            public readonly string description = null; // Rules
+            public readonly RuleBasedNumberFormat formatter;
+            public readonly CreateOption createOption;
+            private string defaultRuleSet = null;
+            public UNumberFormatInfo info = null;
+            public string DefaultRuleSet => defaultRuleSet;
+
+            public enum CreateOption
+            {
+                DescriptionAndLocale,
+                LocaleAndFormat,
+            }
+
+            public RbnfFormattterSettings(string description, UCultureInfo locale)
+            {
+                this.description = description ?? throw new ArgumentNullException(nameof(description));
+                this.locale = locale ?? throw new ArgumentNullException(nameof(locale));
+                this.formatter = new RuleBasedNumberFormat(description, locale);
+                this.createOption = CreateOption.DescriptionAndLocale;
+            }
+
+            public RbnfFormattterSettings(string description, CultureInfo locale)
+            {
+                this.description = description ?? throw new ArgumentNullException(nameof(description));
+                this.locale = locale.ToUCultureInfo() ?? throw new ArgumentNullException(nameof(locale));
+                this.formatter = new RuleBasedNumberFormat(description, locale);
+                this.createOption = CreateOption.DescriptionAndLocale;
+            }
+
+            public RbnfFormattterSettings(UCultureInfo locale, NumberPresentation format)
+            {
+                if (!format.IsDefined())
+                    throw new ArgumentOutOfRangeException(nameof(format));
+                this.locale = locale ?? throw new ArgumentNullException(nameof(locale));
+                this.format = format;
+                this.formatter = new RuleBasedNumberFormat(locale, format);
+                this.createOption = CreateOption.LocaleAndFormat;
+            }
+
+            public RbnfFormattterSettings(CultureInfo locale, NumberPresentation format)
+            {
+                if (!format.IsDefined())
+                    throw new ArgumentOutOfRangeException(nameof(format));
+                this.locale = locale.ToUCultureInfo() ?? throw new ArgumentNullException(nameof(locale));
+                this.format = format;
+                this.formatter = new RuleBasedNumberFormat(locale, format);
+                this.createOption = CreateOption.LocaleAndFormat;
+            }
+
+            public void SetDefaultRuleSet(string defaultRuleSet)
+            {
+                this.defaultRuleSet = defaultRuleSet;
+                this.formatter.SetDefaultRuleSet(defaultRuleSet);
+            }
+
+#if FEATURE_SPAN
+            public NumberFormatRules CreateNumberFormatRules()
+            {
+                switch (createOption)
+                {
+                    case CreateOption.DescriptionAndLocale:
+                        return new NumberFormatRules(description);
+                    case CreateOption.LocaleAndFormat:
+                        return NumberFormatRules.GetInstance(locale, format);
+                    default:
+                        throw new InvalidOperationException("Not a valid option");
+                }
+            }
+#endif
         }
     }
 }
