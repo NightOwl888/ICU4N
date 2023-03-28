@@ -131,6 +131,9 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             }
         }
 
+        public void Insert(int index, char value)
+            => Insert(index, value, count: 1);
+
         public void Insert(int index, char value, int count)
         {
             if (_pos > _chars.Length - count)
@@ -153,6 +156,11 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
 
             int count = s.Length;
 
+            if (count == 0)
+            {
+                return;
+            }
+
             if (_pos > (_chars.Length - count))
             {
                 Grow(count);
@@ -171,6 +179,11 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
         public void Insert(int index, ReadOnlySpan<char> s)
         {
             int count = s.Length;
+
+            if (count == 0)
+            {
+                return;
+            }
 
             if (_pos > (_chars.Length - count))
             {
