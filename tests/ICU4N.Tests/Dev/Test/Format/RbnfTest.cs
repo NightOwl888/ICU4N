@@ -1424,23 +1424,7 @@ namespace ICU4N.Dev.Test.Format
                     }
 
 #if FEATURE_SPAN
-                    UCultureInfo locale = formatterSettings.locale;
-                    NumberFormatRules rules = formatterSettings.CreateNumberFormatRules();
-                    string ruleSet = formatterSettings.DefaultRuleSet ?? null;
-                    UNumberFormatInfo info = formatterSettings.info ?? UNumberFormatInfo.GetInstance(locale);
-
-                    if (num is J2N.Numerics.Int64)
-                    {
-                        actualWords = IcuNumber.FormatInt64RuleBased(num.ToInt64(), rules, ruleSet, info);
-                    }
-                    else if (num is ICU4N.Numerics.BigMath.BigInteger bi)
-                    {
-                        actualWords = IcuNumber.FormatBigIntegerRuleBased(System.Numerics.BigInteger.Parse(bi.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture), rules, ruleSet, info);
-                    }
-                    else // Assume double
-                    {
-                        actualWords = IcuNumber.FormatDoubleRuleBased(num.ToDouble(), rules, ruleSet, info);
-                    }
+                    actualWords = formatterSettings.FormatWithIcuNumber(num);
 
                     if (!actualWords.Equals(expectedWords))
                     {
@@ -2109,81 +2093,127 @@ namespace ICU4N.Dev.Test.Format
             assertEquals("infinity", rbnf.Format(double.PositiveInfinity));
             assertEquals("not a number", rbnf.Format(double.NaN));
         }
+    }
 
+    public class RbnfFormattterSettings
+    {
+        public readonly UCultureInfo locale = null;
+        public readonly NumberPresentation format = default;
+        public readonly string description = null; // Rules
+        public readonly RuleBasedNumberFormat formatter;
+        public readonly CreateOption createOption;
+        private string defaultRuleSet = null;
+        public UNumberFormatInfo info = null;
+        public string DefaultRuleSet => defaultRuleSet;
 
-        private class RbnfFormattterSettings
+        public enum CreateOption
         {
-            public readonly UCultureInfo locale = null;
-            public readonly NumberPresentation format = default;
-            public readonly string description = null; // Rules
-            public readonly RuleBasedNumberFormat formatter;
-            public readonly CreateOption createOption;
-            private string defaultRuleSet = null;
-            public UNumberFormatInfo info = null;
-            public string DefaultRuleSet => defaultRuleSet;
+            DescriptionAndLocale,
+            LocaleAndFormat,
+        }
 
-            public enum CreateOption
-            {
-                DescriptionAndLocale,
-                LocaleAndFormat,
-            }
+        public RbnfFormattterSettings(string description, UCultureInfo locale)
+        {
+            this.description = description ?? throw new ArgumentNullException(nameof(description));
+            this.locale = locale ?? throw new ArgumentNullException(nameof(locale));
+            this.formatter = new RuleBasedNumberFormat(description, locale);
+            this.createOption = CreateOption.DescriptionAndLocale;
+        }
 
-            public RbnfFormattterSettings(string description, UCultureInfo locale)
-            {
-                this.description = description ?? throw new ArgumentNullException(nameof(description));
-                this.locale = locale ?? throw new ArgumentNullException(nameof(locale));
-                this.formatter = new RuleBasedNumberFormat(description, locale);
-                this.createOption = CreateOption.DescriptionAndLocale;
-            }
+        public RbnfFormattterSettings(string description, CultureInfo locale)
+        {
+            this.description = description ?? throw new ArgumentNullException(nameof(description));
+            this.locale = locale.ToUCultureInfo() ?? throw new ArgumentNullException(nameof(locale));
+            this.formatter = new RuleBasedNumberFormat(description, locale);
+            this.createOption = CreateOption.DescriptionAndLocale;
+        }
 
-            public RbnfFormattterSettings(string description, CultureInfo locale)
-            {
-                this.description = description ?? throw new ArgumentNullException(nameof(description));
-                this.locale = locale.ToUCultureInfo() ?? throw new ArgumentNullException(nameof(locale));
-                this.formatter = new RuleBasedNumberFormat(description, locale);
-                this.createOption = CreateOption.DescriptionAndLocale;
-            }
+        public RbnfFormattterSettings(UCultureInfo locale, NumberPresentation format)
+        {
+            if (!format.IsDefined())
+                throw new ArgumentOutOfRangeException(nameof(format));
+            this.locale = locale ?? throw new ArgumentNullException(nameof(locale));
+            this.format = format;
+            this.formatter = new RuleBasedNumberFormat(locale, format);
+            this.createOption = CreateOption.LocaleAndFormat;
+        }
 
-            public RbnfFormattterSettings(UCultureInfo locale, NumberPresentation format)
-            {
-                if (!format.IsDefined())
-                    throw new ArgumentOutOfRangeException(nameof(format));
-                this.locale = locale ?? throw new ArgumentNullException(nameof(locale));
-                this.format = format;
-                this.formatter = new RuleBasedNumberFormat(locale, format);
-                this.createOption = CreateOption.LocaleAndFormat;
-            }
+        public RbnfFormattterSettings(CultureInfo locale, NumberPresentation format)
+        {
+            if (!format.IsDefined())
+                throw new ArgumentOutOfRangeException(nameof(format));
+            this.locale = locale.ToUCultureInfo() ?? throw new ArgumentNullException(nameof(locale));
+            this.format = format;
+            this.formatter = new RuleBasedNumberFormat(locale, format);
+            this.createOption = CreateOption.LocaleAndFormat;
+        }
 
-            public RbnfFormattterSettings(CultureInfo locale, NumberPresentation format)
-            {
-                if (!format.IsDefined())
-                    throw new ArgumentOutOfRangeException(nameof(format));
-                this.locale = locale.ToUCultureInfo() ?? throw new ArgumentNullException(nameof(locale));
-                this.format = format;
-                this.formatter = new RuleBasedNumberFormat(locale, format);
-                this.createOption = CreateOption.LocaleAndFormat;
-            }
-
-            public void SetDefaultRuleSet(string defaultRuleSet)
-            {
-                this.defaultRuleSet = defaultRuleSet;
-                this.formatter.SetDefaultRuleSet(defaultRuleSet);
-            }
+        public void SetDefaultRuleSet(string defaultRuleSet)
+        {
+            this.defaultRuleSet = defaultRuleSet;
+            this.formatter.SetDefaultRuleSet(defaultRuleSet);
+        }
 
 #if FEATURE_SPAN
-            public NumberFormatRules CreateNumberFormatRules()
+        public NumberFormatRules CreateNumberFormatRules()
+        {
+            switch (createOption)
             {
-                switch (createOption)
-                {
-                    case CreateOption.DescriptionAndLocale:
-                        return new NumberFormatRules(description);
-                    case CreateOption.LocaleAndFormat:
-                        return NumberFormatRules.GetInstance(locale, format);
-                    default:
-                        throw new InvalidOperationException("Not a valid option");
-                }
+                case CreateOption.DescriptionAndLocale:
+                    return new NumberFormatRules(description);
+                case CreateOption.LocaleAndFormat:
+                    return NumberFormatRules.GetInstance(locale, format);
+                default:
+                    throw new InvalidOperationException("Not a valid option");
             }
-#endif
         }
+
+        public string FormatWithIcuNumber(long num)
+        {
+            NumberFormatRules rules = CreateNumberFormatRules();
+            string ruleSet = DefaultRuleSet;
+            UNumberFormatInfo numberFormatInfo = this.info ?? UNumberFormatInfo.GetInstance(locale);
+
+            return IcuNumber.FormatInt64RuleBased(num, rules, ruleSet, numberFormatInfo);
+        }
+
+        public string FormatWithIcuNumber(double num)
+        {
+            NumberFormatRules rules = CreateNumberFormatRules();
+            string ruleSet = DefaultRuleSet;
+            UNumberFormatInfo numberFormatInfo = this.info ?? UNumberFormatInfo.GetInstance(locale);
+
+            return IcuNumber.FormatDoubleRuleBased(num, rules, ruleSet, numberFormatInfo);
+        }
+
+        public string FormatWithIcuNumber(System.Numerics.BigInteger num)
+        {
+            NumberFormatRules rules = CreateNumberFormatRules();
+            string ruleSet = DefaultRuleSet;
+            UNumberFormatInfo numberFormatInfo = this.info ?? UNumberFormatInfo.GetInstance(locale);
+
+            return IcuNumber.FormatBigIntegerRuleBased(num, rules, ruleSet, numberFormatInfo);
+        }
+
+        public string FormatWithIcuNumber(J2N.Numerics.Number num)
+        {
+            NumberFormatRules rules = CreateNumberFormatRules();
+            string ruleSet = DefaultRuleSet;
+            UNumberFormatInfo numberFormatInfo = this.info ?? UNumberFormatInfo.GetInstance(locale);
+
+            if (num is J2N.Numerics.Int64)
+            {
+                return IcuNumber.FormatInt64RuleBased(num.ToInt64(), rules, ruleSet, numberFormatInfo);
+            }
+            else if (num is ICU4N.Numerics.BigMath.BigInteger bi)
+            {
+                return IcuNumber.FormatBigIntegerRuleBased(System.Numerics.BigInteger.Parse(bi.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture), rules, ruleSet, numberFormatInfo);
+            }
+            else // Assume double
+            {
+                return IcuNumber.FormatDoubleRuleBased(num.ToDouble(), rules, ruleSet, numberFormatInfo);
+            }
+        }
+#endif
     }
 }
