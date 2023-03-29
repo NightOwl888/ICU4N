@@ -391,7 +391,7 @@ namespace ICU4N
             Debug.Assert(rules != null);
             Debug.Assert(info != null);
 
-            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            var sb = new ValueStringBuilder(stackalloc char[RuleBasedCharStackBufferSize]);
             FormatBigIntegerRuleBased(ref sb, value, rules, ruleSet, info);
             return sb.ToString();
         }
@@ -418,7 +418,7 @@ namespace ICU4N
             Debug.Assert(rules != null);
             Debug.Assert(info != null);
 
-            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            var sb = new ValueStringBuilder(stackalloc char[RuleBasedCharStackBufferSize]);
             FormatDoubleRuleBased(ref sb, value, rules, ruleSet, info);
             return sb.ToString();
         }
@@ -439,7 +439,7 @@ namespace ICU4N
             Debug.Assert(rules != null);
             Debug.Assert(info != null);
 
-            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            var sb = new ValueStringBuilder(stackalloc char[RuleBasedCharStackBufferSize]);
             FormatInt64RuleBased(ref sb, value, rules, ruleSet, info);
             return sb.ToString();
         }
