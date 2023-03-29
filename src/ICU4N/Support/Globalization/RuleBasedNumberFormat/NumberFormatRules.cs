@@ -458,6 +458,98 @@ namespace ICU4N.Globalization
         }
 
         //-----------------------------------------------------------------------
+        // boilerplate
+        //-----------------------------------------------------------------------
+
+        // ICU4N specific: Being that this class is immutable, it doesn't make a lot of sense for a Clone() method.
+        // We can just use this instance on any thread.
+
+        /// <summary>
+        /// Tests two <see cref="NumberFormatRules"/> instances for equality.
+        /// </summary>
+        /// <param name="obj">The object to compare with this one.</param>
+        /// <returns><c>true</c> if the two objects contain the same behavior; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public override bool Equals(object? obj)
+        {
+            if (obj is null) return false;
+            if (this == obj) return true;
+            if (GetType() != obj.GetType()) return false;
+            NumberFormatRules other = (NumberFormatRules)obj;
+
+            // compare their lenient-parse and pose process rules
+            if (lenientParseRules != other.lenientParseRules || postProcessRules != other.postProcessRules)
+                return false;
+
+            // if that succeeds, then compare their rule set lists
+            if (ruleSets.Length != other.ruleSets.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < ruleSets.Length; i++)
+            {
+                if (!ruleSets[i].Equals(other.ruleSets[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <inheritdoc/>
+        public override int GetHashCode()
+        {
+            int hashCode = 1;
+            hashCode = 31 * hashCode + (lenientParseRules?.GetHashCode() ?? 0);
+            hashCode = 31 * hashCode + (postProcessRules?.GetHashCode() ?? 0);
+            hashCode = 31 * hashCode + ruleSets.Length.GetHashCode();
+            return hashCode;
+        }
+
+        /// <summary>
+        /// Generates a textual description of these rules.
+        /// </summary>
+        /// <returns>A <see cref="string"/> containing a rule set that will produce a <see cref="NumberFormatRules"/>
+        /// with identical behavior to this one. This won't necessarily be identical
+        /// to the rule set description that it was originally built with, but will produce
+        /// the same result.</returns>
+        /// <stable>ICU 2.0</stable>
+        public override string ToString()
+        {
+            // accumulate the descriptions of all the rule sets in a
+            // StringBuffer, then cast it to a String and return it
+            StringBuilder result = new StringBuilder(ruleSets.Length * 20);
+            foreach (NumberFormatRuleSet ruleSet in ruleSets)
+            {
+                result.Append(ruleSet.ToString());
+            }
+            return result.ToString();
+        }
+
+        //-----------------------------------------------------------------------
+        // public API functions
+        //-----------------------------------------------------------------------
+
+        /// <summary>
+        /// Gets or sets the name of the default rule set. If the default rule set is not public, returns <see cref="string.Empty"/>.
+        /// </summary>
+        /// <draft>ICU 60.1</draft>
+        // ICU4N specific - removed setter because this class is immutable and the rule set name can be specified on the Format/Parse APIs
+        public string DefaultRuleSetName
+        {
+            get
+            {
+                if (defaultRuleSet != null && defaultRuleSet.IsPublic)
+                {
+                    return defaultRuleSet.Name;
+                }
+                return string.Empty;
+            }
+        }
+
+
+        //-----------------------------------------------------------------------
         // INumberFormatRules members
         //-----------------------------------------------------------------------
 
