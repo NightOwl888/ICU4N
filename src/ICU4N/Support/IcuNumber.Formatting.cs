@@ -16,7 +16,9 @@ namespace ICU4N
 {
     internal static partial class IcuNumber
     {
-        private const int CharStackBufferSize = 32;
+        private const int CharStackBufferSize = 32; // General numbers
+        public const int PluralCharStackBufferSize = 64; // Plural formatting
+        public const int RuleBasedCharStackBufferSize = 128; // Rule based
 
 
         ///// Parses the given pattern string and overwrites the settings specified in the pattern string.
@@ -248,7 +250,9 @@ namespace ICU4N
             Debug.Assert(info != null);
 
             PluralRules pluralRules = info.CardinalPluralRules;
-            return FormatPlural(value, format, messagePattern, pluralRules, info);
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[PluralCharStackBufferSize]);
+            FormatPlural(ref sb, value, format, messagePattern, pluralRules, info);
+            return sb.ToString();
         }
 
         public static string FormatPlural(double value, string? format, MessagePattern? messagePattern, PluralType pluralType, UNumberFormatInfo info)
@@ -256,11 +260,21 @@ namespace ICU4N
             Debug.Assert(info != null);
 
             PluralRules pluralRules = pluralType == PluralType.Ordinal ? info.OrdinalPluralRules : info.CardinalPluralRules;
-            return FormatPlural(value, format, messagePattern, pluralRules, info);
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[PluralCharStackBufferSize]);
+            FormatPlural(ref sb, value, format, messagePattern, pluralRules, info);
+            return sb.ToString();
+        }
+
+        public static void FormatPlural(ref ValueStringBuilder sb, double value, string? format, MessagePattern? messagePattern, PluralType pluralType, UNumberFormatInfo info)
+        {
+            Debug.Assert(info != null);
+
+            PluralRules pluralRules = pluralType == PluralType.Ordinal ? info.OrdinalPluralRules : info.CardinalPluralRules;
+            FormatPlural(ref sb, value, format, messagePattern, pluralRules, info);
         }
 
         // format is the decimalFormat string for the current culture
-        public static string FormatPlural(double value, string? format, MessagePattern? messagePattern, PluralRules pluralRules, UNumberFormatInfo info)
+        public static void FormatPlural(ref ValueStringBuilder sb, double value, string? format, MessagePattern? messagePattern, PluralRules pluralRules, UNumberFormatInfo info)
         {
             Debug.Assert(pluralRules != null);
             Debug.Assert(info != null);
@@ -279,35 +293,39 @@ namespace ICU4N
 
             // If no pattern was applied, return the formatted number.
             if (messagePattern is null || messagePattern.PartCount == 0)
-                return FormatDouble(value, format, info, numberGroupSizesOverride);
+            {
+                FormatDouble(ref sb, value, format, info, numberGroupSizesOverride);
+                return;
+            }
 
             double offset = messagePattern.GetPluralOffset(pluralStart: 0); // From ApplyPattern() method
 
             // Get the appropriate sub-message.
             // Select it based on the formatted number-offset.
             double numberMinusOffset = value - offset;
-            string numberString;
+            ValueStringBuilder temp = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
 
             if (offset == 0)
             {
-                numberString = FormatDouble(value, format, info, numberGroupSizesOverride);
+                FormatDouble(ref temp, value, format, info, numberGroupSizesOverride); // ICU4N NOTE: This is how we might format decimal/BigDecimal at some point (just like in ICU4J)
             }
             else
             {
-                numberString = FormatDouble(numberMinusOffset, format, info, numberGroupSizesOverride);
+                FormatDouble(ref temp, numberMinusOffset, format, info, numberGroupSizesOverride);
             }
 #pragma warning disable 612, 618
             // ICU4N NOTE: This is how we get the values for 'v' and 'f'
             // for the current context. See: https://github.com/jeffijoe/messageformat.net/blob/master/src/Jeffijoe.MessageFormat/Formatting/Formatters/PluralContext.cs
             // and the docummentation for the Operand enum.
 
-            string decimalString;
-            if (AreAsciiDigits(info.NativeDigitsLocal))
+            string numberString = temp.ToString();
+            string decimalString = numberString;
+
+            if (!AreAsciiDigits(info.NativeDigitsLocal))
             {
-                decimalString = numberString;
-            }
-            else
-            {
+                // ICU4N TODO: This allocation (and the parse below) can be eliminated by returning the 'v' and 'f' values
+                // from the above FormatDouble() operation prior to replacing the ASCII digits with native digits.
+
                 // We need to make sure we have ascii digits to inspect here
                 // both for the length and the value to parse.
                 var asciiInfo = (UNumberFormatInfo)info.Clone();
@@ -331,8 +349,6 @@ namespace ICU4N
 
             // Replace syntactic # signs in the top level of this sub-message
             // (not in nested arguments) with the formatted number-offset.
-
-            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             int prevIndex = messagePattern.GetPart(partIndex).Limit;
             string pattern = messagePattern.PatternString;
             while (true)
@@ -342,27 +358,27 @@ namespace ICU4N
                 int index = part.Index;
                 if (type == MessagePatternPartType.MsgLimit)
                 {
-                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
-                    return result.ToString();
+                    sb.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                    return;
                 }
                 else if (type == MessagePatternPartType.ReplaceNumber ||
                           // JDK compatibility mode: Remove SKIP_SYNTAX.
                           (type == MessagePatternPartType.SkipSyntax && messagePattern.JdkAposMode))
                 {
-                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                    sb.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
                     if (type == MessagePatternPartType.ReplaceNumber)
                     {
-                        result.Append(numberString);
+                        sb.Append(numberString);
                     }
                     prevIndex = part.Limit;
                 }
                 else if (type == MessagePatternPartType.ArgStart)
                 {
-                    result.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
+                    sb.Append(pattern.AsSpan(prevIndex, index - prevIndex)); // ICU4N: Corrected 2nd arg
                     prevIndex = index;
                     partIndex = messagePattern.GetLimitPartIndex(partIndex);
                     index = messagePattern.GetPart(partIndex).Limit;
-                    MessagePattern.AppendReducedApostrophes(pattern, prevIndex, index, ref result);
+                    MessagePattern.AppendReducedApostrophes(pattern, prevIndex, index, ref sb);
                     prevIndex = index;
                 }
             }

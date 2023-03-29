@@ -48,7 +48,24 @@ namespace ICU4N.Globalization
                     toInsertInto.Insert(pos, ruleText.Substring(pluralRuleEnd + 2));
 #endif
                 }
-                toInsertInto.Insert(pos, IcuNumber.FormatPlural((double)number / Power(radix, exponent), null, pluralMessagePattern, pluralType, info));
+                double pluralVal = (double)number / Power(radix, exponent);
+#if FEATURE_SPAN
+                unsafe
+                {
+                    var sb = new ValueStringBuilder(stackalloc char[IcuNumber.PluralCharStackBufferSize]);
+                    try
+                    {
+                        IcuNumber.FormatPlural(ref sb, pluralVal, null, pluralMessagePattern, pluralType, info);
+                        toInsertInto.Insert(pos, new ReadOnlySpan<char>(sb.GetCharsPointer(), sb.Length));
+                    }
+                    finally
+                    {
+                        sb.Dispose();
+                    }
+                }
+#else
+                toInsertInto.Insert(pos, IcuNumber.FormatPlural(pluralVal, null, pluralMessagePattern, pluralType, info));
+#endif
                 if (pluralRuleStart > 0)
                 {
 #if FEATURE_SPAN
@@ -111,7 +128,23 @@ namespace ICU4N.Globalization
                 {
                     pluralVal = pluralVal / Power(radix, exponent);
                 }
+#if FEATURE_SPAN
+                unsafe
+                {
+                    var sb = new ValueStringBuilder(stackalloc char[IcuNumber.PluralCharStackBufferSize]);
+                    try
+                    {
+                        IcuNumber.FormatPlural(ref sb, (long)pluralVal, null, pluralMessagePattern, pluralType, info);
+                        toInsertInto.Insert(pos, new ReadOnlySpan<char>(sb.GetCharsPointer(), sb.Length));
+                    }
+                    finally
+                    {
+                        sb.Dispose();
+                    }
+                }
+#else
                 toInsertInto.Insert(pos, IcuNumber.FormatPlural((long)pluralVal, null, pluralMessagePattern, pluralType, info));
+#endif
                 if (pluralRuleStart > 0)
                 {
 #if FEATURE_SPAN

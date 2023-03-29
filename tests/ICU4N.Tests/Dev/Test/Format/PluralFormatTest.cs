@@ -70,8 +70,7 @@ namespace ICU4N.Dev.Test.Format
             var locale = new UCultureInfo(culture);
             MessagePattern messagePattern = new MessagePattern();
             messagePattern.ParsePluralStyle(pluralPattern);
-            PluralRules pluralRules = PluralRules.GetInstance(locale);
-            string actual = IcuNumber.FormatPlural(number, decimalPattern, messagePattern, pluralRules, locale.NumberFormat);
+            string actual = IcuNumber.FormatPlural(number, decimalPattern, messagePattern, locale.NumberFormat);
 
             assertEquals(assertMessage, expected, actual);
         }

@@ -157,8 +157,7 @@ namespace ICU4N
             var locale = new UCultureInfo(culture);
             MessagePattern messagePattern = new MessagePattern();
             messagePattern.ParsePluralStyle(pluralPattern);
-            PluralRules pluralRules = PluralRules.GetInstance(locale, pluralType);
-            string actual = IcuNumber.FormatPlural(number, decimalPattern, messagePattern, pluralRules, locale.NumberFormat);
+            string actual = IcuNumber.FormatPlural(number, decimalPattern, messagePattern, pluralType, locale.NumberFormat);
 
             assertEquals(assertMessage, expected, actual);
         }
