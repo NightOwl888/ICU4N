@@ -6,8 +6,6 @@ namespace ICU4N.Globalization
 #if FEATURE_SPAN
     public sealed partial class NumberFormatRules
     {
-        private const int CharStackBufferSize = 128;
-
         //-----------------------------------------------------------------------
         // formatting implementation
         //-----------------------------------------------------------------------
