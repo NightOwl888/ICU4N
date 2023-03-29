@@ -411,7 +411,7 @@ namespace ICU4N.Globalization
                     // rule set's format() method to format the result
                     long numberToFormat = TransformNumber(number);
                     //toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
-                    toInsertInto.Insert(position + pos, IcuNumber.FormatInt64(numberToFormat, numberFormatPattern, info));
+                    toInsertInto.Insert(position + pos, IcuNumber.FormatInt64(numberToFormat, numberFormatPattern, info, numberPatternProperties.GroupingSizes));
                 }
             }
         }
@@ -464,7 +464,7 @@ namespace ICU4N.Globalization
                 {
                     //toInsertInto.Insert(position + this.pos, numberFormat.Format(numberToFormat));
                     // ICU4N TODO: Add a pos parameter to the FormatDouble method so we can do this in one step.
-                    toInsertInto.Insert(position + pos, IcuNumber.FormatDouble(numberToFormat, numberFormatPattern, info));
+                    toInsertInto.Insert(position + pos, IcuNumber.FormatDouble(numberToFormat, numberFormatPattern, info, numberPatternProperties.GroupingSizes));
                 }
             }
         }
