@@ -724,7 +724,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         /// <summary>
         /// Returns a map of the keywords and values, or null if there are none.
         /// </summary>
-#if FEATURE_READONLYDICTIONARY
+#if FEATURE_IREADONLYCOLLECTIONS
         public IReadOnlyDictionary<string, string> Keywords
 #else
         public IDictionary<string, string> Keywords

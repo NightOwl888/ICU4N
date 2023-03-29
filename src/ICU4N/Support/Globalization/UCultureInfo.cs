@@ -100,7 +100,7 @@ namespace ICU4N.Globalization
 #if FEATURE_CULTUREINFO_SERIALIZABLE
         [NonSerialized]
 #endif
-#if FEATURE_READONLYDICTIONARY
+#if FEATURE_IREADONLYCOLLECTIONS
         private volatile IReadOnlyDictionary<string, string>? keywords;
 #else
         private volatile IDictionary<string, string>? keywords;
@@ -109,7 +109,7 @@ namespace ICU4N.Globalization
 #if FEATURE_CULTUREINFO_SERIALIZABLE
         [NonSerialized]
 #endif
-#if FEATURE_READONLYDICTIONARY
+#if FEATURE_IREADONLYCOLLECTIONS
         private volatile IReadOnlyDictionary<string, string>? unicodeLocales;
 #else
         private volatile IDictionary<string, string>? unicodeLocales;
@@ -773,7 +773,7 @@ namespace ICU4N.Globalization
         /// <icu/> Gets a read-only dictionary of keywords and values for this locale.
         /// </summary>
         /// <stable>ICU 60</stable>
-#if FEATURE_READONLYDICTIONARY
+#if FEATURE_IREADONLYCOLLECTIONS
         public IReadOnlyDictionary<string, string> Keywords
 #else
         public IDictionary<string, string> Keywords
@@ -795,7 +795,7 @@ namespace ICU4N.Globalization
         /// <param name="localeID">The locale ID.</param>
         /// <returns>A read-only dictionary of keywords and values.</returns>
         /// <stable>ICU 60</stable>
-#if FEATURE_READONLYDICTIONARY
+#if FEATURE_IREADONLYCOLLECTIONS
         public static IReadOnlyDictionary<string, string> GetKeywords(string localeID)
 #else
         public static IDictionary<string, string> GetKeywords(string localeID)
@@ -2899,7 +2899,7 @@ namespace ICU4N.Globalization
         /// The keys will be all lowercase.
         /// </summary>
         /// <draft>ICU 60</draft>
-#if FEATURE_READONLYDICTIONARY
+#if FEATURE_IREADONLYCOLLECTIONS
         public IReadOnlyDictionary<char, string> Extensions
 #else
         public IDictionary<char, string> Extensions
@@ -2921,7 +2921,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <draft>ICU 60</draft>
         // ICU4N: Corresponds to both GetUnicodeLocaleKeys() and GetUnicodeLocaleType(string) in ICU4J
-#if FEATURE_READONLYDICTIONARY
+#if FEATURE_IREADONLYCOLLECTIONS
         public IReadOnlyDictionary<string, string> UnicodeLocales
 #else
         public IDictionary<string, string> UnicodeLocales

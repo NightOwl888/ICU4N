@@ -46,7 +46,7 @@
     <DefineConstants>$(DefineConstants);FEATURE_EXCEPTION_HRESULT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_MICROSOFT_EXTENSIONS_CACHING</DefineConstants>
-    <DefineConstants>$(DefineConstants);FEATURE_READONLYDICTIONARY</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_IREADONLYCOLLECTIONS</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_REGEX_MATCHTIMEOUT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TASK_ASYNC_AWAIT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TASK_RUN</DefineConstants>
@@ -93,7 +93,7 @@
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_DEFAULTTHREADCURRENTCULTURE</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_EXCEPTION_HRESULT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_MICROSOFT_EXTENSIONS_CACHING</DefineConstants>
-    <DefineConstants>$(DefineConstants);FEATURE_READONLYDICTIONARY</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_IREADONLYCOLLECTIONS</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_REGEX_MATCHTIMEOUT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TASK_ASYNC_AWAIT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TASK_RUN</DefineConstants>
