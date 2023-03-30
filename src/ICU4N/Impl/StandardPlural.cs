@@ -45,7 +45,12 @@ namespace ICU4N.Impl
     /// </summary>
     public static partial class StandardPluralUtil
     {
-        private static readonly IList<StandardPlural> values = ((StandardPlural[])Enum.GetValues(typeof(StandardPlural))).AsReadOnly();
+        private static readonly IList<StandardPlural> values =
+#if FEATURE_ILIST_ASREADONLY
+            System.Collections.Generic.CollectionExtensions.AsReadOnly(Enum.GetValues<StandardPlural>());
+#else
+            ((StandardPlural[])Enum.GetValues(typeof(StandardPlural))).AsReadOnly();
+#endif
 
         /// <summary>
         /// Gets an unmodifiable List of all standard plural form constants.

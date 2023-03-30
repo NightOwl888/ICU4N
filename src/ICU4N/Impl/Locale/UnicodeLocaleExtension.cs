@@ -91,7 +91,7 @@ namespace ICU4N.Impl.Locale
 #else
         public virtual IDictionary<string, string> UnicodeLocales
 #endif
-            => _keywords.AsReadOnly();
+            => JCG.Extensions.DictionaryExtensions.AsReadOnly(_keywords);
 
         public virtual string GetUnicodeLocaleType(string unicodeLocaleKey)
         {

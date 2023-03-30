@@ -29,7 +29,12 @@ namespace ICU4N.Util
             //index = 0;
         }
 
-        private static readonly IList<TimeUnit> values = new TimeUnit[] { Second, Minute, Hour, Day, Week, Month, Year }.AsReadOnly();
+        private static readonly IList<TimeUnit> values =
+#if FEATURE_ILIST_ASREADONLY
+            System.Collections.Generic.CollectionExtensions.AsReadOnly(new TimeUnit[] { Second, Minute, Hour, Day, Week, Month, Year });
+#else
+            new TimeUnit[] { Second, Minute, Hour, Day, Week, Month, Year }.AsReadOnly();
+#endif
 
         /// <summary>
         /// Gets the available values.

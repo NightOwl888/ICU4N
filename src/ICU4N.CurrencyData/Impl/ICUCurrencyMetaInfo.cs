@@ -222,7 +222,11 @@ namespace ICU4N.Impl
 
             internal IList<T> ToList()
             {
+#if FEATURE_ILIST_ASREADONLY
+                return System.Collections.Generic.CollectionExtensions.AsReadOnly(list);
+#else
                 return list.AsReadOnly();
+#endif
             }
         }
 
@@ -241,7 +245,11 @@ namespace ICU4N.Impl
 
             public IList<CurrencyInfo> ToList()
             {
+#if FEATURE_ILIST_ASREADONLY
+                return System.Collections.Generic.CollectionExtensions.AsReadOnly(result);
+#else
                 return result.AsReadOnly();
+#endif
             }
 
             public int Collects => Everything;

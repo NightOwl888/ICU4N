@@ -448,8 +448,11 @@ namespace ICU4N.Impl
                             IServiceFactory f = factories[i];
                             f.UpdateVisibleIDs(mutableMap);
                         }
-
+#if FEATURE_IDICTIONARY_ASREADONLY
+                        return System.Collections.Generic.CollectionExtensions.AsReadOnly(mutableMap);
+#else
                         return mutableMap.AsReadOnly();
+#endif
                     }
                     finally
                     {
@@ -593,7 +596,11 @@ namespace ICU4N.Impl
                             dncache[f.GetDisplayName(id, locale)] = id;
                         }
 
+#if FEATURE_IDICTIONARY_ASREADONLY
+                        dncache = System.Collections.Generic.CollectionExtensions.AsReadOnly(dncache);
+#else
                         dncache = dncache.AsReadOnly();
+#endif
                         dnref = new LocaleRef(dncache, locale, com);
                     }
                     else
@@ -607,7 +614,11 @@ namespace ICU4N.Impl
             ICUServiceKey matchKey = CreateKey(matchID);
             if (matchKey == null)
             {
+#if FEATURE_IDICTIONARY_ASREADONLY
+                return System.Collections.Generic.CollectionExtensions.AsReadOnly(dncache);
+#else
                 return dncache.AsReadOnly();
+#endif
             }
 
             // ICU4N: Rather than copying and then removing the items (which isn't allowed with

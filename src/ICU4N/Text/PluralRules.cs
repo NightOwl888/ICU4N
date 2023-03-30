@@ -1708,7 +1708,8 @@ namespace ICU4N.Text
          * digit :           0|1|2|3|4|5|6|7|8|9
          * range :           value'..'value
          */
-        private static ParseRuleStatus TryParseConstraint(ReadOnlySpan<char> description, out IConstraint result, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition)
+#pragma warning disable CS9091 // This returns local 'enumerator' by reference but it is not a ref local
+        private unsafe static ParseRuleStatus TryParseConstraint(ReadOnlySpan<char> description, out IConstraint result, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition)
         {
             result = default;
             token = null;
@@ -1930,6 +1931,7 @@ namespace ICU4N.Text
             }
             return ParseRuleStatus.OK;
         }
+#pragma warning restore CS9091 // This returns local 'enumerator' by reference but it is not a ref local
 
 #else
 

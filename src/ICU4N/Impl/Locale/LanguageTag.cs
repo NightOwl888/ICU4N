@@ -628,15 +628,30 @@ namespace ICU4N.Impl.Locale
 
         public virtual string Language => _language;
 
-        public virtual IList<string> Extlangs => _extlangs.AsReadOnly();
+        public virtual IList<string> Extlangs
+#if FEATURE_ILIST_ASREADONLY
+            => System.Collections.Generic.CollectionExtensions.AsReadOnly(_extlangs);
+#else
+            => _extlangs.AsReadOnly();
+#endif
 
         public virtual string Script => _script;
 
         public virtual string Region => _region;
 
-        public virtual IList<string> Variants => _variants.AsReadOnly();
+        public virtual IList<string> Variants
+#if FEATURE_ILIST_ASREADONLY
+            => System.Collections.Generic.CollectionExtensions.AsReadOnly(_variants);
+#else
+            => _variants.AsReadOnly();
+#endif
 
-        public virtual IList<string> Extensions => _extensions.AsReadOnly();
+        public virtual IList<string> Extensions
+#if FEATURE_ILIST_ASREADONLY
+            => System.Collections.Generic.CollectionExtensions.AsReadOnly(_extensions);
+#else
+            => _extensions.AsReadOnly();
+#endif
 
         public virtual string PrivateUse => _privateuse;
 
