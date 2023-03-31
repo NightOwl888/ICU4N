@@ -4,6 +4,7 @@ using ICU4N.Text;
 using ICU4N.Util;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Resources;
 using System.Text;
@@ -70,7 +71,7 @@ namespace ICU4N.Globalization
         /// The public rule set names;
         /// </summary>
         /// <serial/>
-        internal readonly string[] publicRuleSetNames; // Internal for testing
+        internal readonly ReadOnlyCollection<string> publicRuleSetNames; // Internal for testing
 
         //-----------------------------------------------------------------------
         // cache
@@ -370,7 +371,7 @@ namespace ICU4N.Globalization
             {
                 // confirm the names, if any aren't in the rules, that's an error
                 // it is ok if the rules contain public rule sets that are not in this list
-                for (int i = 0; i < publicRuleSetNames.Length; ++i)
+                for (int i = 0; i < publicRuleSetNames.Count; ++i)
                 {
                     string name = publicRuleSetNames[i];
                     bool found = false;
@@ -389,7 +390,7 @@ namespace ICU4N.Globalization
             }
             else
             {
-                publicRuleSetNames = publicRuleSetTemp;
+                publicRuleSetNames = new ReadOnlyCollection<string>(publicRuleSetTemp);
             }
         }
 
@@ -548,6 +549,16 @@ namespace ICU4N.Globalization
             }
         }
 
+        /// <summary>
+        /// Gets a collection of the names of all of the public rule sets.
+        /// </summary>
+        /// <draft>ICU 60.1</draft>
+#if FEATURE_IREADONLYCOLLECTIONS
+        public IReadOnlyList<string> RuleSetNames
+#else
+        public IList<string> RuleSetNames
+#endif
+            => publicRuleSetNames;
 
         //-----------------------------------------------------------------------
         // INumberFormatRules members
