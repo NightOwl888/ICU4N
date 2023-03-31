@@ -88,5 +88,30 @@ namespace ICU4N.Globalization
             NumberPresentation.NumberingSystem => "NumberingSystemLocalizations",
             _ => throw new ArgumentOutOfRangeException(nameof(presentation), $"Not expected presentation value: {presentation}"),
         };
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Gets the selected <see cref="NumberFormatRules"/> for the current <paramref name="presentation"/>.
+        /// </summary>
+        /// <param name="presentation">This <see cref="NumberPresentation"/> value.</param>
+        /// <param name="info">The localized number formatting info.</param>
+        /// <returns>The selected <info cref="NumberFormatRules"/> instance.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="info"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The <paramref name="presentation"/> value was not recognized.</exception>
+        internal static NumberFormatRules ToNumberFormatRules(this NumberPresentation presentation, UNumberFormatInfo info)
+        {
+            if (info is null)
+                throw new ArgumentNullException(nameof(info));
+
+            return presentation switch
+            {
+                NumberPresentation.SpellOut => info.SpellOut,
+                NumberPresentation.Ordinal => info.Ordinal,
+                NumberPresentation.Duration => info.Duration,
+                NumberPresentation.NumberingSystem => info.NumberingSystem,
+                _ => throw new ArgumentOutOfRangeException(nameof(presentation), $"Not expected presentation value: {presentation}"),
+            };
+        }
+#endif
     }
 }
