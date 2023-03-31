@@ -107,21 +107,10 @@ namespace ICU4N.Globalization
                 return rule;
             }
 
+            NumberFormatRule temp;
             // if the number isn't an integer, we use one f the fraction rules...
             if (number != Math.Floor(number))
             {
-                //if (number < 1 && nonNumericalRules[ProperFractionRuleIndex] != null)
-                //{
-                //    // if the number is between 0 and 1, return the proper
-                //    // fraction rule
-                //    return nonNumericalRules[ProperFractionRuleIndex];
-                //}
-                //else if (nonNumericalRules[ImproperFractionRuleIndex] != null)
-                //{
-                //    // otherwise, return the improper fraction rule
-                //    return nonNumericalRules[ImproperFractionRuleIndex];
-                //}
-                NumberFormatRule temp;
                 if (number < 1 && (temp = GetBestFractionRule(NumberFormatRule.ProperFractionRule, info)) is not null)
                 {
                     // if the number is between 0 and 1, return the proper
@@ -136,9 +125,9 @@ namespace ICU4N.Globalization
             }
 
             // if there's a master rule, use it to Format the number
-            if (nonNumericalRules[MasterRuleIndex] != null)
+            if ((temp = GetBestFractionRule(NumberFormatRule.MasterRule, info)) is not null)
             {
-                return nonNumericalRules[MasterRuleIndex];
+                return temp;
             }
             else
             {
@@ -253,7 +242,6 @@ namespace ICU4N.Globalization
                 return result;
             }
             // else use the master rule
-            //return nonNumericalRules[MasterRuleIndex];
             return GetBestFractionRule(NumberFormatRule.MasterRule, info);
         }
 
