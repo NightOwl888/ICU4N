@@ -60,15 +60,16 @@ namespace ICU4N.Impl
             {
                 this.baseName = baseName;
                 this.localeID = localeID;
-                this.uculture = new UCultureInfo(localeID);
                 this.loader = loader;
                 this.reader = reader;
             }
 
             internal string baseName;
             internal string localeID;
-            internal UCultureInfo uculture;
+            private volatile UCultureInfo uculture;
             internal Assembly loader;
+
+            public UCultureInfo UCulture => uculture ??= new UCultureInfo(localeID); // ICU4N specific: Lazy-load the UCultureInfo instance so we don't fill up our UCultureData cache with all of the cultures the first time one is instantiated.
 
             /// <summary>
             /// Access to the bits and bytes of the resource bundle.
@@ -1615,7 +1616,7 @@ namespace ICU4N.Impl
 
         protected internal override string BaseName => wholeBundle.baseName;
 
-        public override UCultureInfo UCulture => wholeBundle.uculture;
+        public override UCultureInfo UCulture => wholeBundle.UCulture;
 
         /// <summary>
         /// Returns true if this is the root bundle, or an item in the root bundle.
