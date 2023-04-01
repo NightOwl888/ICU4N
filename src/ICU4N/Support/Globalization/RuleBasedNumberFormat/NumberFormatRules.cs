@@ -169,7 +169,7 @@ namespace ICU4N.Globalization
         // construction
         //-----------------------------------------------------------------------
 
-        // ICU4N TODO: API Overloads of strings (cultureName) for each of these
+        // ICU4N TODO: API Overloads of strings (cultureName) for each of these (requires a common way to validate/parse culture strings that we don't yet have)
 
         // ICU4N TODO: API Overload for CultureInfo
 
@@ -177,7 +177,7 @@ namespace ICU4N.Globalization
 
         // ICU4N TODO: API Overload for CultureInfo, NumberPresentation
 
-        public static NumberFormatRules GetInstance(UCultureInfo culture, NumberPresentation format)
+        internal static NumberFormatRules GetInstance(UCultureInfo culture, NumberPresentation format) // ICU4N TODO: API - make public when we have format/parse methods that accept one of these?
         {
             if (culture is null)
                 throw new ArgumentNullException(nameof(culture));
