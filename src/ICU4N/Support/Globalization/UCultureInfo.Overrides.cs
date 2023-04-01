@@ -11,30 +11,6 @@ namespace ICU4N.Globalization
 
         /*new*/ public UCultureTypes CultureTypes => isNeutralCulture ? UCultureTypes.NeutralCultures : UCultureTypes.SpecificCultures;
 
-        public /*override*/ UNumberFormatInfo NumberFormat
-        {
-            get
-            {
-                if (numInfo == null)
-                {
-                    UNumberFormatInfo temp = new UNumberFormatInfo(cultureData);
-                    temp.isReadOnly = isReadOnly;
-                    Interlocked.CompareExchange(ref numInfo, temp, null);
-                }
-                return numInfo;
-            }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                VerifyWritable();
-                numInfo = value;
-            }
-        }
-
         ///// <inheritdoc/>
         //public override Calendar Calendar => isInvariantCulture ? CultureInfo.InvariantCulture.Calendar : culture.Calendar;
 
@@ -108,12 +84,38 @@ namespace ICU4N.Globalization
         /// <inheritdoc/>
         public /*override*/ string NativeName => isInvariantCulture ? CultureInfo.InvariantCulture.NativeName : GetDisplayName(localeID, localeID);
 
-        ///// <inheritdoc/>
-        //public override NumberFormatInfo NumberFormat
-        //{
-        //    get => culture.NumberFormat;
-        //    set => culture.NumberFormat = value;
-        //}
+        /// <summary>
+        /// Gets or sets a <see cref="UNumberFormatInfo"/> that defines the culturally appropriate format of
+        /// displaying numbers, currency, and percentage.
+        /// </summary>
+        /// <value>A <see cref="UNumberFormatInfo"/> that defines the culturally appropriate format of
+        /// displaying numbers, currency, and percentage.</value>
+        /// <exception cref="ArgumentNullException">The property is set to <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException">The <see cref="NumberFormat"/> property or any
+        /// of the <see cref="UNumberFormatInfo"/> properties is set, and the <see cref="UCultureInfo"/> is read-only.</exception>
+        public /*override*/ UNumberFormatInfo NumberFormat
+        {
+            get
+            {
+                if (numInfo == null)
+                {
+                    UNumberFormatInfo temp = new UNumberFormatInfo(cultureData);
+                    temp.isReadOnly = isReadOnly;
+                    Interlocked.CompareExchange(ref numInfo, temp, null);
+                }
+                return numInfo;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(value));
+                }
+
+                VerifyWritable();
+                numInfo = value;
+            }
+        }
 
         ///// <inheritdoc/>
         //public override Calendar[] OptionalCalendars => isInvariantCulture ? CultureInfo.InvariantCulture.OptionalCalendars : culture.OptionalCalendars;
@@ -250,16 +252,144 @@ namespace ICU4N.Globalization
 
 
         /// <summary>
-        /// This is for compatibility with <see cref="ToCultureInfo"/> -- in actuality, since <see cref="UCultureInfo"/> is
-        /// immutable, there is no reason to clone it, so this API returns 'this'.
+        /// Creates a writable copy of the current <see cref="UCultureInfo"/>.
         /// </summary>
-        /// <returns>This object.</returns>
-        /// <stable>ICU 3.0</stable>
+        /// <returns>A copy of the current <see cref="UCultureInfo"/>.</returns>
+        /// <remarks>
+        /// The clone is writable even if the original <see cref="UCultureInfo"/> is read-only.
+        /// Therefore, the properties of the clone can be modified.
+        /// <para/>
+        /// A shallow copy of an object is a copy of the object only. If the object contains
+        /// references to other objects, the shallow copy does not create copies of the referred
+        /// objects. It refers to the original objects instead. In contrast, a deep copy of an object
+        /// creates a copy of the object and a copy of everything directly or indirectly referenced by
+        /// that object.
+        /// <para/>
+        /// The <see cref="Clone()"/> method creates an enhanced shallow copy. The objects returned by
+        /// the <see cref="NumberFormat"/>, DateTimeFormat, TextInfo, and Calendar properties are also copied.
+        /// Consequently, the cloned <see cref="UCultureInfo"/> object can modify its copied properties without
+        /// affecting the original <see cref="UCultureInfo"/> object.
+        /// </remarks>
+        /// <draft>ICU 60.1</draft>
         public /*override*/ object Clone()
         {
-            return this; // ICU4N TODO: UCultureInfo is not immutable, so we will need a real clone implementation
+            // ICU4N: UCultureInfo is not immutable, so we need a real clone implementation unlike in ICU4J
+            UCultureInfo ci = (UCultureInfo)MemberwiseClone();
+            ci.isReadOnly = false;
+
+            // If this is exactly our type, we can make certain optimizations so that we don't allocate NumberFormatInfo or DTFI unless
+            // they've already been allocated.  If this is a derived type, we'll take a more generic codepath.
+            //if (!_isInherited)
+            //{
+                //if (dateTimeInfo != null)
+                //{
+                //    ci.dateTimeInfo = (DateTimeFormatInfo)dateTimeInfo.Clone();
+                //}
+                if (numInfo != null)
+                {
+                    ci.numInfo = (UNumberFormatInfo)numInfo.Clone();
+                }
+            //}
+            //else
+            //{
+            //    ci.DateTimeFormat = (UDateTimeFormatInfo)this.DateTimeFormat.Clone();
+            //    ci.NumberFormat = (UNumberFormatInfo)this.NumberFormat.Clone();
+            //}
+
+            //if (textInfo != null)
+            //{
+            //    ci.textInfo = (UTextInfo)textInfo.Clone();
+            //}
+
+            //if (dateTimeInfo != null && dateTimeInfo.Calendar == calendar)
+            //{
+            //    // Usually when we access CultureInfo.DateTimeFormat first time, we create the DateTimeFormatInfo object
+            //    // using CultureInfo.Calendar. i.e. CultureInfo.DateTimeInfo.Calendar == CultureInfo.calendar.
+            //    // When cloning CultureInfo, if we know it's still the case that CultureInfo.DateTimeInfo.Calendar == CultureInfo.calendar
+            //    // then we can keep the same behavior for the cloned object and no need to create another calendar object.
+            //    ci.calendar = ci.DateTimeFormat.Calendar;
+            //}
+            //else if (calendar != null)
+            //{
+            //    ci.calendar = (UCalendar)calendar.Clone();
+            //}
+
+            return ci;
         }
 
+        /// <summary>
+        /// Returns a read-only wrapper around the specified <see cref="UCultureInfo"/> object.
+        /// </summary>
+        /// <param name="ci">The <see cref="UCultureInfo"/> object to wrap.</param>
+        /// <returns>A read-only <see cref="UCultureInfo"/> wrapper around ci.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="ci"/> is <c>null</c>.</exception>
+        /// <remarks>
+        /// This wrapper prevents any modifications to <paramref name="ci"/>, or the objects returned by
+        /// the DateTimeFormat and <see cref="NumberFormat"/> properties.
+        /// </remarks>
+        /// <draft>ICU 60.1</draft>
+        public static UCultureInfo ReadOnly(UCultureInfo ci)
+        {
+            if (ci == null)
+            {
+                throw new ArgumentNullException(nameof(ci));
+            }
+
+            if (ci.IsReadOnly)
+            {
+                return ci;
+            }
+            UCultureInfo newInfo = (UCultureInfo)ci.MemberwiseClone();
+
+            //if (!ci.IsNeutralCulture)
+            {
+                // If this is exactly our type, we can make certain optimizations so that we don't allocate NumberFormatInfo or DTFI unless
+                // they've already been allocated.  If this is a derived type, we'll take a more generic codepath.
+                //if (!ci._isInherited)
+                //{
+                    //if (ci.dateTimeInfo != null)
+                    //{
+                    //    newInfo.dateTimeInfo = UDateTimeFormatInfo.ReadOnly(ci.dateTimeInfo);
+                    //}
+                    if (ci.numInfo != null)
+                    {
+                        newInfo.numInfo = UNumberFormatInfo.ReadOnly(ci.numInfo);
+                    }
+                //}
+                //else
+                //{
+                //    newInfo.DateTimeFormat = DateTimeFormatInfo.ReadOnly(ci.DateTimeFormat);
+                //    newInfo.NumberFormat = NumberFormatInfo.ReadOnly(ci.NumberFormat);
+                //}
+            }
+
+            //if (ci.textInfo != null)
+            //{
+            //    newInfo.textInfo = UTextInfo.ReadOnly(ci.textInfo);
+            //}
+
+            //if (ci.calendar != null)
+            //{
+            //    newInfo.calendar = UCalendar.ReadOnly(ci.calendar);
+            //}
+
+            // Don't set the read-only flag too early.
+            // We should set the read-only flag here.  Otherwise, info.DateTimeFormat will not be able to set.
+            newInfo.isReadOnly = true;
+
+            return newInfo;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the current <see cref="UCultureInfo"/> is read-only.
+        /// </summary>
+        /// <value><c>true</c> if the current <see cref="UCultureInfo"/> is read-only; otherwise, <c>false</c>.
+        /// The default is <c>false</c>.</value>
+        /// <remarks>
+        /// If the <see cref="UCultureInfo"/> is read-only, the DateTimeFormat and <see cref="NumberFormat"/>
+        /// instances are also read-only.
+        /// </remarks>
+        /// <draft>ICU 60.1</draft>
         public bool IsReadOnly => isReadOnly;
 
         private void VerifyWritable()
