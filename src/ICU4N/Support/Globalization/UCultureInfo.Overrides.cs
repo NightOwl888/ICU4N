@@ -162,21 +162,26 @@ namespace ICU4N.Globalization
         public /*override*/ string TwoLetterISOLanguageName
             => GetTwoLetterISOLanguageName(localeID); // ISO 639-1
 
-        /// <summary>
-        /// Refreshes cached culture-related information.
-        /// This is to cover the <see cref="ToCultureInfo"/> API.
-        /// </summary>
-        public /*new*/ void ClearCachedData()
-        {
-            // this.culture = null;
-            name = null;
-            baseLocale = null;
-            extensions = null;
-            keywords = null;
-            unicodeLocales = null;
-            languageTag = null;
-            UCultureData.ClearCachedData();
-        }
+        // According to the Microsoft docs, this API only exists to refresh
+        // when the culture settings of the underlying OS change. We may need
+        // this eventually if we ever sync this with the OS, but for now it
+        // probably makes more sense to nix it.
+
+        /////// <summary>
+        /////// Refreshes cached culture-related information.
+        /////// This is to cover the <see cref="ToCultureInfo"/> API.
+        /////// </summary>
+        ////public /*new*/ void ClearCachedData()
+        ////{
+        ////    // this.culture = null;
+        ////    name = null;
+        ////    baseLocale = null;
+        ////    extensions = null;
+        ////    keywords = null;
+        ////    unicodeLocales = null;
+        ////    languageTag = null;
+        ////    UCultureData.ClearCachedData();
+        ////}
 
         /// <summary>
         /// Creates a <see cref="UCultureInfo"/> that represents the specific culture
