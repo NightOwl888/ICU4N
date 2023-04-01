@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace ICU4N.Globalization
 {
@@ -11,29 +12,31 @@ namespace ICU4N.Globalization
     public enum NumberPresentation
     {
         /// <summary>
-        /// Indicates to create a spellout formatter that spells out a value
+        /// Indicates to use a spellout formatter that spells out a value
         /// in words in the desired language.
         /// </summary>
         /// <draft>ICU 60.1</draft>
         SpellOut = 0,
 
         /// <summary>
-        /// Indicates to create an ordinal formatter that attaches an ordinal
+        /// Indicates to use an ordinal formatter that attaches an ordinal
         /// suffix from the desired language to the end of the number (e.g. "123rd").
         /// </summary>
         /// <draft>ICU 60.1</draft>
         Ordinal = 1,
 
         /// <summary>
-        /// Indicates to create a duration formatter that formats a duration in
+        /// Indicates to use a duration formatter that formats a duration in
         /// seconds as hours, minutes, and seconds.
         /// </summary>
         /// <draft>ICU 60.1</draft>
+        [Browsable(false)]
+        [EditorBrowsable(EditorBrowsableState.Never)] // ICU4N TODO: Do we need this? We have TimeSpan.ToString() which seems to cover. Need research.
         Duration = 2,
 
         /// <summary>
-        /// Indicates to create a numbering system formatter to format a number in
-        /// a rules-based numbering system such as <c>%hebrew</c> for Hebrew numbers or <c>%roman-upper</c>
+        /// Indicates to use a numbering system formatter to format a number in
+        /// an algorithmic numbering system such as <c>%hebrew</c> for Hebrew numbers or <c>%roman-upper</c>
         /// for upper-case Roman numerals.
         /// </summary>
         /// <draft>ICU 60.1</draft>

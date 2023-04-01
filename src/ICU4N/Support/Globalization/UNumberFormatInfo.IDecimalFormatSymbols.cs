@@ -3,8 +3,9 @@ using J2N;
 using System;
 using System.Data;
 using System.Linq;
-using System.Threading;
 #nullable enable
+
+// ICU4N: Corresponds primarily with icu4j/main/classes/core/src/com/ibm/icu/text/DecimalFormatSymbols.java
 
 namespace ICU4N.Globalization
 {
@@ -97,7 +98,8 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
-        public string CurrencySymbol
+        /// <draft>ICU 60.1</draft>
+        internal string CurrencySymbol // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => currencySymbol;
             set
@@ -118,6 +120,7 @@ namespace ICU4N.Globalization
         /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         /// <exception cref="ArgumentException">The property is being set to the empty string.</exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        /// <draft>ICU 60.1</draft>
         public string NumberDecimalSeparator
         {
             get => numberDecimalSeparator;
@@ -137,6 +140,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        /// <draft>ICU 60.1</draft>
         public string NumberGroupSeparator // ICU4N: Corresponds to GroupingSeparatorString in ICU4J
         {
             get => numberGroupSeparator;
@@ -156,6 +160,7 @@ namespace ICU4N.Globalization
         ///// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         ///// <exception cref="ArgumentException">The property is being set to the empty string.</exception>
         ///// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        ///// <draft>ICU 60.1</draft>
         //public string PercentDecimalSeparator // ICU4N: Corresponds to GroupingSeparatorString in ICU4J, but currently isn't read by DecimalFormat. TODO: Implement in DecimalFormat/NumberFormat?
         //{
         //    get => percentDecimalSeparator;
@@ -175,6 +180,7 @@ namespace ICU4N.Globalization
         ///// </summary>
         ///// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         ///// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        ///// <draft>ICU 60.1</draft>
         //public string PercentGroupSeparator // ICU4N: Corresponds to GroupingSeparatorString in ICU4J, but currently isn't read by DecimalFormat.  TODO: Implement in DecimalFormat/NumberFormat?
         //{
         //    get => percentGroupSeparator;
@@ -191,7 +197,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
         /// <stable>ICU 2.0</stable>
-        internal char Digit // ICU4N TODO: Make public ?
+        internal char Digit // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => digit;
             set
@@ -237,6 +243,7 @@ namespace ICU4N.Globalization
         /// have a numeric value of 1.
         /// </exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        /// <draft>ICU 60.1</draft>
         public string[] NativeDigits
         {
             get => (string[])nativeDigits.Clone();
@@ -257,7 +264,7 @@ namespace ICU4N.Globalization
         /// <value>One of the enumeration values that specifies the culture-specific digit shape.</value>
         /// <exception cref="InvalidOperationException">The current <see cref="UNumberFormatInfo"/> object is read-only.</exception>
         /// <exception cref="ArgumentException">The value in a set operation is not a valid <see cref="UDigitShapes"/> value.</exception>
-        internal UDigitShapes DigitSubstitution // ICU4N: Not yet functional. See the UDigitShapes header.
+        internal UDigitShapes DigitSubstitution // ICU4N: Not yet functional. See the UDigitShapes header. // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => (UDigitShapes)digitSubstitution;
             set
@@ -274,7 +281,7 @@ namespace ICU4N.Globalization
         /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
         /// <stable>ICU 54</stable>
-        public string ExponentMultiplicationSign
+        internal string ExponentMultiplicationSign // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => exponentMultiplicationSign;
             set
@@ -295,7 +302,7 @@ namespace ICU4N.Globalization
         /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
         /// <stable>ICU 2.0</stable>
-        public string ExponentSeparator
+        internal string ExponentSeparator // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => exponentSeparator;
             set
@@ -315,7 +322,8 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
-        public string PositiveInfinitySymbol // ICU4N: Corresponds to InfinitySymbol in ICU4J // ICU4N TODO: Check default value and update docs.
+        /// <draft>ICU 60.1</draft>
+        public string PositiveInfinitySymbol // ICU4N: Corresponds to InfinitySymbol in ICU4J
         {
             get => positiveInfinitySymbol;
             set
@@ -335,6 +343,7 @@ namespace ICU4N.Globalization
         ///// </summary>
         ///// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         ///// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        ///// <draft>ICU 60.1</draft>
         //public string NegativeInfinitySymbol // ICU4N TODO: Doesn't correspond to a property in ICU4J DecimalFormat - need to implement..?
         //{
         //    get => negativeInfinitySymbol;
@@ -355,7 +364,8 @@ namespace ICU4N.Globalization
         ///// </summary>
         ///// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         ///// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
-        //public string CurrencyInternationalSymbol
+        ///// <draft>ICU 60.1</draft>
+        //public string CurrencyInternationalSymbol // ICU4N TODO: This was deprecated from DecimalFormatSymbols in ICU4J and is now supposed to be read from the Currency object. In .NET, it is exposed through RegionInfo, but is also looked up separately from CultureInfo. We probably don't want this here, but need to work out where.
         //{
         //    get => currencyInternationalSymbol;
         //    set
@@ -375,6 +385,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        /// <draft>ICU 60.1</draft>
         public string NegativeSign
         {
             get => negativeSign;
@@ -397,7 +408,8 @@ namespace ICU4N.Globalization
         /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         /// <exception cref="ArgumentException">The property is being set to the empty string.</exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
-        public string CurrencyDecimalSeparator // ICU4N: Corresponds with MonetaryDecimalSeparatorString in ICU4J
+        /// <draft>ICU 60.1</draft>
+        internal string CurrencyDecimalSeparator // ICU4N: Corresponds with MonetaryDecimalSeparatorString in ICU4J // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => currencyDecimalSeparator;
             set
@@ -415,7 +427,8 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
-        public string CurrencyGroupSeparator // ICU4N: Corresponds with MonetaryDecimalSeparatorString in ICU4J
+        /// <draft>ICU 60.1</draft>
+        internal string CurrencyGroupSeparator // ICU4N: Corresponds with MonetaryDecimalSeparatorString in ICU4J // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => currencyGroupSeparator;
             set
@@ -433,6 +446,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        /// <draft>ICU 60.1</draft>
         public string NaNSymbol
         {
             get => nanSymbol;
@@ -458,7 +472,7 @@ namespace ICU4N.Globalization
         ///// <seealso cref="FormatWidth"/>
         ///// <seealso cref="PadPosition"/>
         ///// <seealso cref="PadCharacter"/>
-        internal char PadEscape // ICU4N: The above doc seealso properties are from DecimalFormat orginally.
+        internal char PadEscape // ICU4N: The above doc seealso properties are from DecimalFormat orginally. // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => padEscape;
             set
@@ -476,7 +490,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
         /// <stable>ICU 2.0</stable>
-        internal char PatternSeparator
+        internal char PatternSeparator // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => patternSeparator;
             set
@@ -494,7 +508,7 @@ namespace ICU4N.Globalization
         /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
         /// <stable>ICU 58</stable>
-        public string PercentSymbol // ICU4N: Corresponds to PercentString in ICU4J
+        internal string PercentSymbol // ICU4N: Corresponds to PercentString in ICU4J // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => percentSymbol;
             set
@@ -515,7 +529,7 @@ namespace ICU4N.Globalization
         /// <exception cref="ArgumentNullException">The property is being set to <c>null</c>.</exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
         /// <stable>ICU 58</stable>
-        public string PerMilleSymbol // ICU4N: Corresponds to PerMillString in ICU4J
+        internal string PerMilleSymbol // ICU4N: Corresponds to PerMillString in ICU4J // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => perMilleSymbol;
             set
@@ -550,7 +564,11 @@ namespace ICU4N.Globalization
             }
         }
 
-        internal char SignificantDigit
+        /// <summary>
+        /// Gets or sets the character used to represent a significant digit in a pattern.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        internal char SignificantDigit // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => significantDigit;
             set
@@ -569,7 +587,8 @@ namespace ICU4N.Globalization
         /// The default for <see cref="InvariantInfo"/> is "[:^S:]".
         /// </summary>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
-        internal string? CurrencySpacingMatchPrefix // ICU4N TODO: Make public?
+        /// <draft>ICU 60.1</draft>
+        internal string? CurrencySpacingMatchPrefix // ICU4N TODO: Make public? This was an array in ICU4J, but need to work out what to do with these.
         {
             get => currencySpacingMatchPrefix;
             set
@@ -588,6 +607,7 @@ namespace ICU4N.Globalization
         /// The default for <see cref="InvariantInfo"/> is "[:^S:]".
         /// </summary>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        /// <draft>ICU 60.1</draft>
         internal string? CurrencySpacingMatchSuffix // ICU4N TODO: Make public?
         {
             get => currencySpacingMatchSuffix;
@@ -607,6 +627,7 @@ namespace ICU4N.Globalization
         /// The default for <see cref="InvariantInfo"/> is "[:digit:]".
         /// </summary>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        /// <draft>ICU 60.1</draft>
         internal string? CurrencySpacingSurroundingMatchPrefix // ICU4N TODO: Make public?
         {
             get => currencySpacingSurroundingMatchPrefix;
@@ -626,6 +647,7 @@ namespace ICU4N.Globalization
         /// The default for <see cref="InvariantInfo"/> is "[:digit:]".
         /// </summary>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        /// <draft>ICU 60.1</draft>
         internal string? CurrencySpacingSurroundingMatchSuffix // ICU4N TODO: Make public?
         {
             get => currencySpacingSurroundingMatchSuffix;
@@ -645,6 +667,7 @@ namespace ICU4N.Globalization
         /// The default for <see cref="InvariantInfo"/> is " ".
         /// </summary>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        /// <draft>ICU 60.1</draft>
         internal string? CurrencySpacingInsertBetweenPrefix // ICU4N TODO: Make public?
         {
             get => currencySpacingInsertBetweenPrefix;
@@ -664,6 +687,7 @@ namespace ICU4N.Globalization
         /// The default for <see cref="InvariantInfo"/> is " ".
         /// </summary>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/> object is read-only.</exception>
+        /// <draft>ICU 60.1</draft>
         internal string? CurrencySpacingInsertBetweenSuffix // ICU4N TODO: Make public?
         {
             get => currencySpacingInsertBetweenSuffix;

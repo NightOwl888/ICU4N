@@ -1,6 +1,8 @@
 ﻿using ICU4N.Numerics;
 using System;
 
+// ICU4N: Corresponds primarily with icu4j/main/classes/core/src/com/ibm/icu/impl/number/DecimalFormatProperties.java
+
 namespace ICU4N.Globalization
 {
     public sealed partial class UNumberFormatInfo
@@ -54,6 +56,7 @@ namespace ICU4N.Globalization
         /// </exception>
         /// <exception cref="InvalidOperationException">The property is being set and the <see cref="UNumberFormatInfo"/>
         /// object is read-only.</exception>
+        /// <draft>ICU 60.1</draft>
         public int[] NumberGroupSizes
         {
             get => (int[])numberGroupSizes.Clone();
@@ -73,7 +76,8 @@ namespace ICU4N.Globalization
         internal int[] NumberGroupSizesLocal => numberGroupSizes;
         internal string NumberPattern => CultureData.decimalFormat;
 
-        public int NumberMinimumDecimalDigits
+
+        internal int NumberMinimumDecimalDigits // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => numberMinimumDecimalDigits;
             set
@@ -90,7 +94,7 @@ namespace ICU4N.Globalization
             }
         }
 
-        public int NumberMaximumDecimalDigits
+        internal int NumberMaximumDecimalDigits // ICU4N TODO: API Make public once this is functional in formatters/parsers
         {
             get => numberMaximumDecimalDigits;
             set
