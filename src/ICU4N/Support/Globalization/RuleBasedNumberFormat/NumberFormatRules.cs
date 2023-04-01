@@ -92,7 +92,7 @@ namespace ICU4N.Globalization
 
             public bool Equals(CacheKey other)
             {
-                return Name.Equals(other.Name) && NumberPresentation.Equals(other.NumberPresentation);
+                return Name.Equals(other.Name) && NumberPresentation == other.NumberPresentation;
             }
 
             public override bool Equals([NotNullWhen(true)] object? obj)
