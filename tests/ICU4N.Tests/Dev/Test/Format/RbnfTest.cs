@@ -682,7 +682,7 @@ namespace ICU4N.Dev.Test.Format
             }
 #if FEATURE_SPAN
             NumberFormatRules russianRules = ruFormatter.CreateNumberFormatRules();
-            string result2 = IcuNumber.FormatInt64RuleBased(21000, russianRules, ruleSet: null, new UCultureInfo("ru").NumberFormat);
+            string result2 = IcuNumber.FormatInt64RuleBased(21000, russianRules, ruleSetName: null, new UCultureInfo("ru").NumberFormat);
             if (!"двадцать один тысяча".Equals(result2, StringComparison.Ordinal))
             {
                 Errln("Got " + result + " for 21000");
@@ -1913,16 +1913,9 @@ namespace ICU4N.Dev.Test.Format
                 UCultureInfo locale = new UCultureInfo(item.locale);
                 var info = (UNumberFormatInfo)locale.NumberFormat.Clone();
                 info.Capitalization = item.capitalization;
-                var rules = item.format switch
-                {
-                    NumberPresentation.SpellOut => info.SpellOut,
-                    NumberPresentation.Ordinal => info.Ordinal,
-                    NumberPresentation.Duration => info.Duration,
-                    NumberPresentation.NumberingSystem => info.NumberingSystem,
-                    _ => throw new InvalidOperationException()
-                };
-                
-                string result = IcuNumber.FormatDoubleRuleBased(item.value, rules, ruleSet: null, info); // rbnf.Format(item.value, rbnf.DefaultRuleSetName);
+                var rules = item.format.ToNumberFormatRules(info);
+
+                string result = IcuNumber.FormatDoubleRuleBased(item.value, rules, ruleSetName: null, info); // rbnf.Format(item.value, rbnf.DefaultRuleSetName);
                 if (!result.Equals(item.expectedResult))
                 {
                     Errln("Error for locale " + item.locale + ", capitalization " + item.capitalization + ", expected " + item.expectedResult + ", got " + result);

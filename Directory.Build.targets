@@ -5,8 +5,11 @@
   
   <!--Features in .NET 7+ only-->
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('net7.')) ">
+    
     <DefineConstants>$(DefineConstants);FEATURE_IDICTIONARY_ASREADONLY</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_ILIST_ASREADONLY</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_INT128</DefineConstants>
+    
   </PropertyGroup>
   
   <!--Features in .NET 6+ only-->
@@ -21,6 +24,13 @@
     <!-- For now, we only support Span on .NET 6. -->
     <DefineConstants>$(DefineConstants);FEATURE_SPANFORMATTABLE</DefineConstants>
 
+  </PropertyGroup>
+  
+  <!--Features in .NET 5+ only-->
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('net5.')) Or $(TargetFramework.StartsWith('net6.')) Or $(TargetFramework.StartsWith('net7.')) ">
+    
+    <DefineConstants>$(DefineConstants);FEATURE_HALF</DefineConstants>
+    
   </PropertyGroup>
 
   <!--Features in .NET Standard 2.x or .NET Core-->
