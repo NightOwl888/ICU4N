@@ -60,7 +60,7 @@ namespace ICU4N.Globalization
         /// <param name="number">The number being formatted.</param>
         /// <param name="info">The <see cref="UNumberFormatInfo"/> that contains the culture specific number formatting settings.</param>
         /// <returns>The rule that should be used to format it</returns>
-        internal NumberFormatRule FindRule(double number, UNumberFormatInfo info) // ICU4N TODO: Pass in IDecimalFormatSymbols to get the current NaN and Infinity strings
+        internal NumberFormatRule FindRule(double number, UNumberFormatInfo info)
         {
             Debug.Assert(info != null);
 
