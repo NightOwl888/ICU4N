@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netstandard2.0;net451;net40</TargetFrameworks>
+    <TargetFrameworks>net7.0;net6.0;netstandard2.0;net451;net40</TargetFrameworks>
     <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard1.3' ">$(DefineConstants);LIBLOG_PORTABLE</DefineConstants>
 
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -536,6 +536,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>UTS46Extension.tt</DependentUpon>
     </Compile>
+    <Compile Update="Support\FormatNumberRuleBasedExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FormatNumberRuleBasedExtension.tt</DependentUpon>
+    </Compile>
     <Compile Update="Support\Numerics\BigMath\Messages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -700,6 +705,10 @@
     <None Update="Globalization\UCharacterExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UCharacterExtension.cs</LastGenOutput>
+    </None>
+    <None Update="Support\FormatNumberRuleBasedExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FormatNumberRuleBasedExtension.cs</LastGenOutput>
     </None>
     <None Update="Support\Text\UnicodeSetExtensionsExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

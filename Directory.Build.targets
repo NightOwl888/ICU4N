@@ -3,7 +3,16 @@
   <Import Project="$(MSBuildThisFileDirectory)/.build/dependencies.props" Condition="Exists('$(MSBuildThisFileDirectory)/.build/dependencies.props')" />
   <Import Project="$(MSBuildThisFileDirectory)/.build/nowarn.props" Condition="Exists('$(MSBuildThisFileDirectory)/.build/nowarn.props')" />
   
-  <!--Features in .NET 6+ only -->
+  <!--Features in .NET 7+ only-->
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('net7.')) ">
+    
+    <DefineConstants>$(DefineConstants);FEATURE_IDICTIONARY_ASREADONLY</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_ILIST_ASREADONLY</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_INT128</DefineConstants>
+    
+  </PropertyGroup>
+  
+  <!--Features in .NET 6+ only-->
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('net6.')) Or $(TargetFramework.StartsWith('net7.')) ">
     
     <!-- For now, we only support ArrayPool on .NET 6. -->
@@ -15,6 +24,13 @@
     <!-- For now, we only support Span on .NET 6. -->
     <DefineConstants>$(DefineConstants);FEATURE_SPANFORMATTABLE</DefineConstants>
 
+  </PropertyGroup>
+  
+  <!--Features in .NET 5+ only-->
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('net5.')) Or $(TargetFramework.StartsWith('net6.')) Or $(TargetFramework.StartsWith('net7.')) ">
+    
+    <DefineConstants>$(DefineConstants);FEATURE_HALF</DefineConstants>
+    
   </PropertyGroup>
 
   <!--Features in .NET Standard 2.x or .NET Core-->
@@ -46,7 +62,7 @@
     <DefineConstants>$(DefineConstants);FEATURE_EXCEPTION_HRESULT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_MICROSOFT_EXTENSIONS_CACHING</DefineConstants>
-    <DefineConstants>$(DefineConstants);FEATURE_READONLYDICTIONARY</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_IREADONLYCOLLECTIONS</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_REGEX_MATCHTIMEOUT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TASK_ASYNC_AWAIT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TASK_RUN</DefineConstants>
@@ -70,7 +86,10 @@
     <DefineConstants>$(DefineConstants);FEATURE_THREADINTERRUPT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_BITARRAY_COPYTO</DefineConstants>
 
-    <DefineConstants>$(DefineConstants);FEATURE_LEGACY_NUMBER_FORMAT</DefineConstants>
+    <!-- NOTE: We have refactored the RuleBasedNumberFormat into the FormatNumberRuleBased class, but
+        it currently doesn't contain all of the features (parsing), nor do we have the DecimalFormat class functionality.
+        To add these features to the build, just add /p:IncludeLegacyNumberFormat to the command line. -->
+    <DefineConstants Condition=" '$(IncludeLegacyNumberFormat)' == 'true' ">$(DefineConstants);FEATURE_LEGACY_NUMBER_FORMAT</DefineConstants>
 
     <!--
     <DefineConstants>$(DefineConstants);FEATURE_FIELDPOSITION</DefineConstants>
@@ -93,7 +112,7 @@
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_DEFAULTTHREADCURRENTCULTURE</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_EXCEPTION_HRESULT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_MICROSOFT_EXTENSIONS_CACHING</DefineConstants>
-    <DefineConstants>$(DefineConstants);FEATURE_READONLYDICTIONARY</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_IREADONLYCOLLECTIONS</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_REGEX_MATCHTIMEOUT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TASK_ASYNC_AWAIT</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_TASK_RUN</DefineConstants>

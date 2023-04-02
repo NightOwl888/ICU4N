@@ -248,7 +248,7 @@ namespace ICU4N.Text
     {
         /// <returns>The list of MessageContentsNode nodes that this message contains.</returns>
         /// <stable>ICU 49</stable>
-        public virtual IList<MessageContentsNode> GetContents()
+        public virtual IList<MessageContentsNode> GetContents() // ICU4N TODO: API Make into a property
         {
             return list;
         }
@@ -279,7 +279,11 @@ namespace ICU4N.Text
         }
         internal MessageNode Freeze()
         {
+#if FEATURE_ILIST_ASREADONLY
+            list = System.Collections.Generic.CollectionExtensions.AsReadOnly(list);
+#else
             list = list.AsReadOnly();
+#endif
             return this;
         }
 
@@ -605,7 +609,11 @@ namespace ICU4N.Text
         }
         internal ComplexArgStyleNode Freeze()
         {
+#if FEATURE_ILIST_ASREADONLY
+            list = System.Collections.Generic.CollectionExtensions.AsReadOnly(list);
+#else
             list = list.AsReadOnly();
+#endif
             return this;
         }
 

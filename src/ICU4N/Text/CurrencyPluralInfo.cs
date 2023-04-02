@@ -263,7 +263,7 @@ namespace ICU4N.Text
         private void Initialize(UCultureInfo uloc)
         {
             ulocale = uloc;
-            pluralRules = PluralRules.ForLocale(uloc);
+            pluralRules = PluralRules.GetInstance(uloc);
             SetupCurrencyPluralPattern(uloc);
         }
 

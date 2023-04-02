@@ -124,7 +124,7 @@ namespace ICU4N.Globalization
                     int[] intVector = value.GetInt32Vector();
                     if (intVector.Length < 2) { continue; }
 
-                    int titlecaseInt = (dataTableCultureDisplayNames.displayContextOptions.Capitalization == Capitalization.UIListOrMenu)
+                    int titlecaseInt = (dataTableCultureDisplayNames.displayContextOptions.Capitalization == Capitalization.ForUIListOrMenu)
                             ? intVector[0] : intVector[1];
                     if (titlecaseInt == 0) { continue; }
 
@@ -190,8 +190,8 @@ namespace ICU4N.Globalization
             // Get values from the contextTransforms data if we need them
             // Also check whether we will need a break iterator (depends on the data)
             bool needBrkIter = false;
-            if (options.Capitalization == Capitalization.UIListOrMenu ||
-                    options.Capitalization == Capitalization.Standalone)
+            if (options.Capitalization == Capitalization.ForUIListOrMenu ||
+                    options.Capitalization == Capitalization.ForStandalone)
             {
                 capitalizationUsage = new bool[Enum.GetValues(typeof(CapitalizationContextUsage)).Length]; // initialized to all false
                 ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, locale);
@@ -207,7 +207,7 @@ namespace ICU4N.Globalization
                 needBrkIter = sink.hasCapitalizationUsage;
             }
             // Get a sentence break iterator if we will need it
-            if (needBrkIter || options.Capitalization == Capitalization.BeginningOfSentence)
+            if (needBrkIter || options.Capitalization == Capitalization.ForBeginningOfSentence)
             {
                 capitalizationBrkIter = BreakIterator.GetSentenceInstance(locale);
             }
@@ -222,7 +222,7 @@ namespace ICU4N.Globalization
         private string AdjustForUsageAndContext(CapitalizationContextUsage usage, string name)
         {
             if (name != null && name.Length > 0 && UChar.IsLower(name.CodePointAt(0)) &&
-                    (displayContextOptions.Capitalization == Capitalization.BeginningOfSentence ||
+                    (displayContextOptions.Capitalization == Capitalization.ForBeginningOfSentence ||
                     (capitalizationUsage != null && capitalizationUsage[(int)usage])))
             {
                 // Note, won't have capitalizationUsage != null && capitalizationUsage[usage.ordinal()]
@@ -626,12 +626,12 @@ namespace ICU4N.Globalization
             UCultureInfo minimized = UCultureInfo.MinimizeSubtags(modified, UCultureInfo.Minimize.FavorScript);
 #pragma warning restore 612, 618
             string tempName = modified.GetDisplayName(locale);
-            bool titlecase = capitalization == Capitalization.UIListOrMenu;
+            bool titlecase = capitalization == Capitalization.ForUIListOrMenu;
             string nameInDisplayLocale =
             titlecase ? ToTitleWholeStringNoLowercase(locale, tempName) : tempName;
             tempName = modified.GetDisplayName(modified);
             string nameInSelf = capitalization ==
-            Capitalization.UIListOrMenu ?
+            Capitalization.ForUIListOrMenu ?
                     ToTitleWholeStringNoLowercase(modified, tempName) : tempName;
             return new UiListItem(minimized, modified, nameInDisplayLocale, nameInSelf);
         }

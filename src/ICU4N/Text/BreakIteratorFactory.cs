@@ -6,6 +6,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Resources;
+#nullable enable
 
 namespace ICU4N.Text
 {
@@ -64,6 +65,19 @@ namespace ICU4N.Text
             return iter;
         }
 
+        // ICU4N NOTE: Passing localeID or FullName for localeID will work, but localeID is slightly more efficient because the lookup is cached.
+        public override BreakIterator CreateBreakIterator(string localeName, string localeID, string? lbKeyword, string? ssKeyword, int kind)
+        {
+            // TODO: convert to UCultureInfo when service switches over
+            if (service.IsDefault)
+            {
+                return CreateBreakInstance(localeName, lbKeyword, ssKeyword, kind);
+            }
+            BreakIterator iter = (BreakIterator)service.Get(localeID, kind, out UCultureInfo actualLoc);
+            iter.SetCulture(actualLoc, actualLoc); // services make no distinction between actual & valid
+            return iter;
+        }
+
         private class BFService : ICULocaleService
         {
             internal BFService()
@@ -110,23 +124,32 @@ namespace ICU4N.Text
                 "grapheme", "word", "line", "sentence", "title"
         };
 
+        private static BreakIterator CreateBreakInstance(UCultureInfo? locale, int kind)
+        {
+            string? lbKeyword = null;
+            string? ssKeyword = null;
+            locale?.Keywords.TryGetValue("lb", out lbKeyword);
+            locale?.Keywords.TryGetValue("ss", out ssKeyword);
 
-        private static BreakIterator CreateBreakInstance(UCultureInfo locale, int kind)
+            return CreateBreakInstance((locale ?? UCultureInfo.CurrentCulture).Name, lbKeyword, ssKeyword, kind);
+        }
+
+        // localeName is the same as baseName in ICU4J
+        private static BreakIterator CreateBreakInstance(string localeName, string? lbKeyValue, string? ssKeyword, int kind)
         {
 
-            RuleBasedBreakIterator iter = null;
+            RuleBasedBreakIterator? iter = null;
             ICUResourceBundle rb = ICUResourceBundle.
-                    GetBundleInstance(ICUData.IcuBreakIteratorBaseName, locale,
+                    GetBundleInstance(ICUData.IcuBreakIteratorBaseName, localeName,
                             OpenType.LocaleRoot);
 
             //
             //  Get the binary rules.
             //
-            ByteBuffer bytes = null;
-            string typeKeyExt = null;
+            ByteBuffer? bytes;
+            string? typeKeyExt = null;
             if (kind == BreakIterator.KIND_LINE)
             {
-                locale.Keywords.TryGetValue("lb", out string lbKeyValue);
                 if (lbKeyValue != null && (lbKeyValue.Equals("strict") || lbKeyValue.Equals("normal") || lbKeyValue.Equals("loose")))
                 {
                     typeKeyExt = "_" + lbKeyValue;
@@ -161,17 +184,16 @@ namespace ICU4N.Text
                 Assert.Fail(e);
             }
             // TODO: Determine valid and actual locale correctly.
-            UCultureInfo uloc = rb.Culture.ToUCultureInfo();
-            iter.SetCulture(uloc, uloc);
+            UCultureInfo uloc = rb.Culture.ToUCultureInfo(); // ICU4N TODO: This will round trip and desrtoy any keywords. Is this a bug?
+            iter!.SetCulture(uloc, uloc);
             iter.BreakType = kind;
 
             // filtered break
             if (kind == BreakIterator.KIND_SENTENCE)
             {
-                if (locale.Keywords.TryGetValue("ss", out string ssKeyword) && ssKeyword != null && ssKeyword.Equals("standard"))
+                if (ssKeyword != null && ssKeyword.Equals("standard"))
                 {
-                    UCultureInfo @base = new UCultureInfo(locale.Name);
-                    return FilteredBreakIteratorBuilder.GetInstance(@base).WrapIteratorWithFilter(iter);
+                    return FilteredBreakIteratorBuilder.GetInstance(localeName).WrapIteratorWithFilter(iter);
                 }
             }
 

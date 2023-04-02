@@ -15,12 +15,12 @@ namespace ICU4N.Globalization
         /// This is the default value.
         /// </summary>
         /// <draft>ICU 60</draft>
-        StandardNames,
+        StandardNames = 0,
         /// <summary>
         /// Use dialect names, when generating a locale name,
         /// e.g. en_GB displays as 'British English'.
         /// </summary>
         /// <draft>ICU 60</draft>
-        DialectNames,
+        DialectNames = 1,
     }
 }

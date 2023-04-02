@@ -1,4 +1,5 @@
-﻿using ICU4N.Numerics;
+﻿using ICU4N.Globalization;
+using ICU4N.Numerics;
 using ICU4N.Numerics.BigMath;
 using J2N;
 using J2N.Numerics;
@@ -64,6 +65,22 @@ namespace ICU4N.Numerics
         public static DecimalFormatProperties ParseToProperties(string pattern) // ICU4N TODO: Make TryParseToProperties
         {
             return ParseToProperties(pattern, PatternStringParser.IGNORE_ROUNDING_NEVER);
+        }
+
+        // ICU4N: Added to store only the deconstructed string in NumberFormatSubstitution and UCultureData so we can pass this
+        // info into the number formatting pipeline based on the string in a rule or default pattern for DecimalFormat.
+        // ICU4J simply throws out the string and uses these properties only (along with many others, but until we break free
+        // from the .NET formatter, we need the string.
+        internal static NumberPatternStringProperties ParseToPatternStringProperties(string pattern, int ignoreRounding)
+        {
+            DecimalFormatProperties properties = new DecimalFormatProperties();
+            return ParseToPatternStringProperties(pattern, properties, ignoreRounding);
+        }
+
+        internal static NumberPatternStringProperties ParseToPatternStringProperties(string pattern, DecimalFormatProperties reuse, int ignoreRounding)
+        {
+            ParseToExistingPropertiesImpl(pattern, reuse, ignoreRounding);
+            return new NumberPatternStringProperties(reuse);
         }
 
         /**
@@ -772,7 +789,7 @@ namespace ICU4N.Numerics
                 int paddingWidth = positive.widthExceptAffixes + AffixUtils.EstimateLength(posPrefix)
                         + AffixUtils.EstimateLength(posSuffix);
                 properties.FormatWidth = paddingWidth;
-                String rawPaddingString = patternInfo.GetString(AffixPatternProviderFlags.Padding);
+                string rawPaddingString = patternInfo.GetString(AffixPatternProviderFlags.Padding);
                 if (rawPaddingString.Length == 1)
                 {
                     properties.PadString = rawPaddingString;
@@ -834,4 +851,94 @@ namespace ICU4N.Numerics
             }
         }
     }
+
+#nullable enable
+    /// <summary>
+    /// A deconstructed pattern string. Contains all of the properties in a pattern string that can be used
+    /// to reconstitute a pattern string.
+    /// </summary>
+    // ICU4N specific
+    internal struct NumberPatternStringProperties
+    {
+        private bool decimalSeparatorAlwaysShown;
+        private bool exponentSignAlwaysShown;
+        private int? formatWidth;
+        private int[]? groupingSizes;
+        private int magnitudeMultiplier;
+        private int? maximumFractionDigits;
+        private int? minimumFractionDigits;
+        private int? maximumIntegerDigits;
+        private int? minimumIntegerDigits;
+        private int? maximumSignificantDigits;
+        private int? minimumSignificantDigits;
+        private int? minimumExponentDigits;
+        private Padder.PadPosition? padPosition;
+        private string? padString;
+        private BigMath.BigDecimal? roundingIncrement;
+
+        public bool DecimalSeparatorAlwaysShown => decimalSeparatorAlwaysShown;
+        public bool ExponentSignAlwaysShown => exponentSignAlwaysShown;
+        public int? FormatWidth => formatWidth;
+        public int[]? GroupingSizes => groupingSizes;
+        public int MagnitudeMultiplier => magnitudeMultiplier;
+        public int? MaximumFractionDigits => maximumFractionDigits;
+        public int? MinimumFractionDigits => minimumFractionDigits;
+        public int? MaximumIntegerDigits => maximumIntegerDigits;
+        public int? MinimumIntegerDigits => minimumIntegerDigits;
+        public int? MaximumSignificantDigits => maximumSignificantDigits;
+        public int? MinimumSignificantDigits => minimumSignificantDigits;
+        public int? MinimumExponentDigits => minimumExponentDigits;
+        public Padder.PadPosition? PadPosition => padPosition;
+        public string? PadString => padString;
+        public BigMath.BigDecimal? RoundingIncrement => roundingIncrement;
+        public NumberPatternStringProperties(DecimalFormatProperties properties)
+        {
+            decimalSeparatorAlwaysShown = properties.DecimalSeparatorAlwaysShown;
+            exponentSignAlwaysShown = properties.ExponentSignAlwaysShown;
+            formatWidth = ConvertNegativeOneToNull(properties.FormatWidth);
+            int groupingSize = properties.GroupingSize; // defaults to -1
+            int secondaryGroupingSize = properties.SecondaryGroupingSize; // defaults to -1
+            if (groupingSize != -1)
+            {
+                if (secondaryGroupingSize != -1)
+                    groupingSizes = new int[] { groupingSize, secondaryGroupingSize };
+                else
+                    groupingSizes = new int[] { groupingSize };
+            }
+            else
+                groupingSizes = null;
+            magnitudeMultiplier = properties.MagnitudeMultiplier; // defaults to 0
+            maximumFractionDigits = ConvertNegativeOneToNull(properties.MaximumFractionDigits);
+            minimumFractionDigits = ConvertNegativeOneToNull(properties.MinimumFractionDigits);
+            maximumIntegerDigits = ConvertNegativeOneToNull(properties.MaximumIntegerDigits);
+            minimumIntegerDigits = ConvertNegativeOneToNull(properties.MinimumIntegerDigits);
+            maximumSignificantDigits = ConvertNegativeOneToNull(properties.MaximumSignificantDigits);
+            minimumSignificantDigits = ConvertNegativeOneToNull(properties.MinimumSignificantDigits);
+            minimumExponentDigits = ConvertNegativeOneToNull(properties.MinimumExponentDigits);
+            padPosition = properties.PadPosition;
+            padString = properties.PadString;
+            roundingIncrement = properties.RoundingIncrement;
+        }
+
+        private static int? ConvertNegativeOneToNull(int value)
+            => value == -1 ? null : value;
+
+        // currentSetting should typically come from UNumberFormatInfo
+        // contextProperties should be the culture data prior to any changes the user made.
+        public static int GetEffectiveMaximumFractionDigits(int currentSetting, ref NumberPatternStringProperties localPatternProperties, ref NumberPatternStringProperties contextProperties)
+        {
+            return currentSetting == (contextProperties.maximumFractionDigits ?? -1) // -1 is just here to force a non-match. It has no other meaning and it should never happen.
+                ? localPatternProperties.maximumFractionDigits ?? contextProperties.maximumFractionDigits ?? currentSetting
+                : currentSetting; // If the current setting was changed by the user, it is authoritive.
+        }
+
+        public static int[] GetEffectiveGroupingSizes(int[] currentSetting, ref NumberPatternStringProperties localPatternProperties, ref NumberPatternStringProperties contextProperties)
+        {
+            return currentSetting == (contextProperties.groupingSizes ?? new int[0]) // new int[0] is just here to force a non-match. It has no other meaning and it should never happen.
+                ? localPatternProperties.groupingSizes ?? contextProperties.groupingSizes ?? currentSetting
+                : currentSetting; // If the current setting was changed by the user, it is authoritive.
+        }
+
+    }
+#nullable restore
 }

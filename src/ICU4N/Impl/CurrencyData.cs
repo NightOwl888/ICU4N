@@ -144,9 +144,19 @@ namespace ICU4N.Impl
             return fallback ? isoCode : null;
         }
 
-        public override IDictionary<string, string> SymbolMap => new Dictionary<string, string>().AsReadOnly();
+        public override IDictionary<string, string> SymbolMap
+#if FEATURE_IDICTIONARY_ASREADONLY
+            => System.Collections.Generic.CollectionExtensions.AsReadOnly(new Dictionary<string, string>());
+#else
+            => new Dictionary<string, string>().AsReadOnly();
+#endif
 
-        public override IDictionary<string, string> NameMap => new Dictionary<string, string>().AsReadOnly();
+        public override IDictionary<string, string> NameMap
+#if FEATURE_IDICTIONARY_ASREADONLY
+            => System.Collections.Generic.CollectionExtensions.AsReadOnly(new Dictionary<string, string>());
+#else
+            => new Dictionary<string, string>().AsReadOnly();
+#endif
 
         public override UCultureInfo UCulture
             => UCultureInfo.InvariantCulture;
@@ -155,7 +165,11 @@ namespace ICU4N.Impl
         {
             if (fallback)
             {
+#if FEATURE_IDICTIONARY_ASREADONLY
+                return System.Collections.Generic.CollectionExtensions.AsReadOnly(new Dictionary<string, string>());
+#else
                 return new Dictionary<string, string>().AsReadOnly();
+#endif
             }
             return null;
         }

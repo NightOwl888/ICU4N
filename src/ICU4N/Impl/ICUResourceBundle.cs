@@ -60,15 +60,16 @@ namespace ICU4N.Impl
             {
                 this.baseName = baseName;
                 this.localeID = localeID;
-                this.uculture = new UCultureInfo(localeID);
                 this.loader = loader;
                 this.reader = reader;
             }
 
             internal string baseName;
             internal string localeID;
-            internal UCultureInfo uculture;
+            private volatile UCultureInfo uculture;
             internal Assembly loader;
+
+            public UCultureInfo UCulture => uculture ??= new UCultureInfo(localeID); // ICU4N specific: Lazy-load the UCultureInfo instance so we don't fill up our UCultureData cache with all of the cultures the first time one is instantiated.
 
             /// <summary>
             /// Access to the bits and bytes of the resource bundle.
@@ -105,7 +106,7 @@ namespace ICU4N.Impl
         /// <internal>ICU 3.0</internal>
         public static UCultureInfo GetFunctionalEquivalent(string baseName, Assembly assembly,
             string resName, string keyword, UCultureInfo locID,
-            bool[] isAvailable, bool omitDefault)
+            bool[] isAvailable, bool omitDefault) // ICU4N TODO: API - Break into 2 overloads, one with an out isAvailable param and one without
         {
             locID.Keywords.TryGetValue(keyword, out string kwVal);
             string baseLoc = locID.Name;
@@ -356,7 +357,7 @@ namespace ICU4N.Impl
             return (ICUResourceBundle)HandleGet(index, null, this);
         }
 
-        public virtual ICUResourceBundle At(String key)
+        public virtual ICUResourceBundle At(string key)
         {
             // don't ever presume the key is an int in disguise, like ResourceArray does.
             if (this is ICUResourceBundleImpl.ResourceTable)
@@ -678,7 +679,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        locales[i++] = new UCultureInfo(locstr);
+                        locales[i++] = new UCultureInfo(locstr, isReadOnly: true, useDataCache: false);
                     }
                 }
             }
@@ -1386,6 +1387,15 @@ namespace ICU4N.Impl
                     ICUResourceBundle.IcuDataAssembly, openType);
         }
 
+        // ICU4N specific overload so we can use Name (baseName in ICU4J) to
+        // decouple from UCultureInfo.
+        public static ICUResourceBundle GetBundleInstance(
+            string baseName, string localeID, OpenType openType)
+        {
+            return GetBundleInstance(baseName, localeID,
+                    ICUResourceBundle.IcuDataAssembly, openType);
+        }
+
         // ICU4N specific overload so we can pass the Assembly from submodules (since 
         // the main assembly won't see submodules by default).
         public static ICUResourceBundle GetBundleInstance(
@@ -1600,11 +1610,13 @@ namespace ICU4N.Impl
             return GetBundle(reader, baseName, localeID, root);
         }
 
-        protected override string LocaleID => wholeBundle.localeID;
+#nullable enable
+        protected internal override string LocaleID => wholeBundle.localeID; // never null
+#nullable restore
 
         protected internal override string BaseName => wholeBundle.baseName;
 
-        public override UCultureInfo UCulture => wholeBundle.uculture;
+        public override UCultureInfo UCulture => wholeBundle.UCulture;
 
         /// <summary>
         /// Returns true if this is the root bundle, or an item in the root bundle.

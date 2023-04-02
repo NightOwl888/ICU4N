@@ -444,8 +444,11 @@ namespace ICU4N.Impl.Locale
                         KEYMAP[AsciiUtil.ToLower(bcpKeyId)] = keyData;
                     }
                 }
-            
+#if FEATURE_IDICTIONARY_ASREADONLY
+                BCP47_KEYS = System.Collections.Generic.CollectionExtensions.AsReadOnly(_Bcp47Keys);
+#else
                 BCP47_KEYS = _Bcp47Keys.AsReadOnly();
+#endif
             }
         }
 
@@ -495,7 +498,11 @@ namespace ICU4N.Impl.Locale
                 }
             }
             DEPRECATED_KEYS = _deprecatedKeys.AsReadOnly();
+#if FEATURE_IDICTIONARY_ASREADONLY
+            VALUE_TYPES = System.Collections.Generic.CollectionExtensions.AsReadOnly(_valueTypes);
+#else
             VALUE_TYPES = _valueTypes.AsReadOnly();
+#endif
         }
 
         /** Reads:
@@ -534,7 +541,11 @@ namespace ICU4N.Impl.Locale
                     _deprecatedKeyTypes[key2] = _deprecatedTypes.AsReadOnly();
                 }
             }
+#if FEATURE_IDICTIONARY_ASREADONLY
+            DEPRECATED_KEY_TYPES = System.Collections.Generic.CollectionExtensions.AsReadOnly(_deprecatedKeyTypes);
+#else
             DEPRECATED_KEY_TYPES = _deprecatedKeyTypes.AsReadOnly();
+#endif
         }
 
 

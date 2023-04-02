@@ -50,26 +50,72 @@ namespace ICU4N.Text
         /// ICU defines plural rules for many locales based on CLDR <i>Language Plural Rules</i>. For these predefined
         /// rules, see CLDR page at 
         /// <a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html</a>.
+        /// <para/>
+        /// This method is named <c>forLocale</c> in ICU4J.
         /// </summary>
         /// <param name="locale">The locale for which a <see cref="PluralRules"/> object is returned.</param>
         /// <param name="type">The plural type (e.g., cardinal or ordinal).</param>
         /// <returns>The predefined <see cref="PluralRules"/> object for this locale. If there's no predefined rules for
         /// this locale, the rules for the closest parent in the locale hierarchy that has one will be returned.
         /// The final fallback always returns the default rules.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public abstract PluralRules ForLocale(UCultureInfo locale, PluralType type);
+        public virtual PluralRules GetInstance(UCultureInfo locale, PluralType type)
+        {
+            if (locale is null)
+                throw new ArgumentNullException(nameof(locale));
+
+            return GetInstance(locale.Name, type);
+        }
+
+        /// <summary>
+        /// Provides access to the predefined <see cref="PluralRules"/> for a given locale and the plural type.
+        /// <para/>
+        /// ICU defines plural rules for many locales based on CLDR <i>Language Plural Rules</i>. For these predefined
+        /// rules, see CLDR page at 
+        /// <a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html</a>.
+        /// <para/>
+        /// This method is named <c>forLocale</c> in ICU4J.
+        /// </summary>
+        /// <param name="localeName">The locale for which a <see cref="PluralRules"/> object is returned.</param>
+        /// <param name="type">The plural type (e.g., cardinal or ordinal).</param>
+        /// <returns>The predefined <see cref="PluralRules"/> object for this locale. If there's no predefined rules for
+        /// this locale, the rules for the closest parent in the locale hierarchy that has one will be returned.
+        /// The final fallback always returns the default rules.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="localeName"/> is <c>null</c>.</exception>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")] // ICU4N: Added overload to allow looking up without tight coupling with UCultureInfo
+        public abstract PluralRules GetInstance(string localeName, PluralType type);
 
         /// <summary>
         /// Utility for getting <see cref="PluralType.Cardinal"/> rules.
+        /// <para/>
+        /// This method is named <c>forLocale</c> in ICU4J.
         /// </summary>
-        /// <param name="locale">the locale</param>
-        /// <returns>plural rules.</returns>
+        /// <param name="locale">The locale.</param>
+        /// <returns>Plural rules.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public PluralRules ForLocale(UCultureInfo locale)
+        public PluralRules GetInstance(UCultureInfo locale)
         {
-            return ForLocale(locale, PluralType.Cardinal);
+            return GetInstance(locale, PluralType.Cardinal);
+        }
+
+        /// <summary>
+        /// Utility for getting <see cref="PluralType.Cardinal"/> rules.
+        /// <para/>
+        /// This method is named <c>forLocale</c> in ICU4J.
+        /// </summary>
+        /// <param name="localeName">The locale name.</param>
+        /// <returns>Plural rules.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="localeName"/> is <c>null</c>.</exception>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")] // ICU4N: Added overload to allow looking up without tight coupling with UCultureInfo
+        public PluralRules GetInstance(string localeName)
+        {
+            return GetInstance(localeName, PluralType.Cardinal);
         }
 
         /// <summary>
@@ -80,7 +126,7 @@ namespace ICU4N.Text
         public abstract UCultureInfo[] GetUCultures();
 
         /// <summary>
-        /// Returns the 'functionally equivalent' locale with respect to plural rules. Calling PluralRules.forLocale with
+        /// Returns the 'functionally equivalent' locale with respect to plural rules. Calling <see cref="PluralRules.GetInstance(UCultureInfo)"/> with
         /// the functionally equivalent locale, and with the provided locale, returns rules that behave the same. 
         /// All locales with the same functionally equivalent locale have plural rules that behave the same. This is not
         /// exaustive; there may be other locales whose plural rules behave the same that do not have the same equivalent
@@ -95,7 +141,7 @@ namespace ICU4N.Text
         public abstract UCultureInfo GetFunctionalEquivalent(UCultureInfo locale, out bool isAvailable);
 
         /// <summary>
-        /// Returns the 'functionally equivalent' locale with respect to plural rules. Calling PluralRules.forLocale with
+        /// Returns the 'functionally equivalent' locale with respect to plural rules. Calling <see cref="PluralRules.GetInstance(UCultureInfo)"/> with
         /// the functionally equivalent locale, and with the provided locale, returns rules that behave the same. 
         /// All locales with the same functionally equivalent locale have plural rules that behave the same. This is not
         /// exaustive; there may be other locales whose plural rules behave the same that do not have the same equivalent
@@ -835,7 +881,7 @@ namespace ICU4N.Text
                         n = -n;
                     }
                     int baseFactor = (int)Math.Pow(10, v);
-                    long scaled = (long)Math.Round(n * baseFactor);
+                    long scaled = (long)Math.Round(n * baseFactor); // ICU4N NOTE: This is different than the Java default of ToPositiveInfinity (Math.Ceiling()), but only this makes the tests pass
                     return (int)(scaled % baseFactor);
                 }
             }
@@ -1662,7 +1708,8 @@ namespace ICU4N.Text
          * digit :           0|1|2|3|4|5|6|7|8|9
          * range :           value'..'value
          */
-        private static ParseRuleStatus TryParseConstraint(ReadOnlySpan<char> description, out IConstraint result, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition)
+#pragma warning disable CS9091 // This returns local 'enumerator' by reference but it is not a ref local
+        private unsafe static ParseRuleStatus TryParseConstraint(ReadOnlySpan<char> description, out IConstraint result, out ReadOnlySpan<char> token, out ReadOnlySpan<char> condition)
         {
             result = default;
             token = null;
@@ -1884,6 +1931,7 @@ namespace ICU4N.Text
             }
             return ParseRuleStatus.OK;
         }
+#pragma warning restore CS9091 // This returns local 'enumerator' by reference but it is not a ref local
 
 #else
 
@@ -3019,7 +3067,7 @@ namespace ICU4N.Text
                 return r.Keyword;
             }
 
-            public virtual ICollection<string> GetKeywords()
+            public virtual ICollection<string> GetKeywords() // ICU4N TODO: API Return Keys directly and change to a property. There is no way to add to it, anyway.
             {
                 return rules.Keys.ToList();
             }
@@ -3113,11 +3161,13 @@ namespace ICU4N.Text
         /// <summary>
         /// Provides access to the predefined cardinal-number <see cref="PluralRules"/> for a given
         /// <paramref name="locale"/>.
-        /// Same as <c>ForLocale(UCultureInfo, PluralType.Cardinal)</c>.
+        /// Same as <c>GetInstance(UCultureInfo, PluralType.Cardinal)</c>.
         /// <para/>
         /// ICU defines plural rules for many locales based on CLDR <i>Language Plural Rules</i>.
         /// For these predefined rules, see CLDR page at
         /// <a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html</a>.
+        /// <para/>
+        /// This method is named <c>forLocale</c> in ICU4J.
         /// </summary>
         /// <param name="locale">The locale for which a <see cref="PluralRules"/> object is
         /// returned.</param>
@@ -3128,22 +3178,26 @@ namespace ICU4N.Text
         /// be returned.  The final fallback always returns the default
         /// rules.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
         /// <stable>ICU 3.8</stable>
-        public static PluralRules ForLocale(UCultureInfo locale)
+        public static PluralRules GetInstance(UCultureInfo locale)
         {
-#pragma warning disable 612, 618
-            return PluralRulesFactory.DefaultFactory.ForLocale(locale, PluralType.Cardinal);
-#pragma warning restore 612, 618
+            if (locale is null)
+                throw new ArgumentNullException(nameof(locale));
+
+            return GetInstance(locale.Name);
         }
 
         /// <summary>
         /// Provides access to the predefined cardinal-number <see cref="PluralRules"/> for a given
         /// <see cref="CultureInfo"/>.
-        /// Same as <c>ForLocale(CultureInfo, PluralType.Cardinal)"/></c>
+        /// Same as <c>GetInstance(CultureInfo, PluralType.Cardinal)"/></c>
         /// <para/>
         /// ICU defines plural rules for many locales based on CLDR <i>Language Plural Rules</i>.
         /// For these predefined rules, see CLDR page at
         /// <a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html</a>.
+        /// <para/>
+        /// This method is named <c>forLocale</c> in ICU4J.
         /// </summary>
         /// <param name="locale">The locale for which a <see cref="PluralRules"/> object is
         /// returned.</param>
@@ -3154,10 +3208,46 @@ namespace ICU4N.Text
         /// be returned.  The final fallback always returns the default
         /// rules.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
         /// <stable>ICU 54</stable>
-        public static PluralRules ForLocale(CultureInfo locale)
+        public static PluralRules GetInstance(CultureInfo locale)
         {
-            return ForLocale(locale.ToUCultureInfo());
+            if (locale is null)
+                throw new ArgumentNullException(nameof(locale));
+
+            return GetInstance(locale.ToUCultureInfo().Name);
+        }
+
+        /// <summary>
+        /// Provides access to the predefined cardinal-number <see cref="PluralRules"/> for a given
+        /// <paramref name="localeName"/>.
+        /// Same as <c>GetInstance(CultureInfo, PluralType.Cardinal)"/></c>
+        /// <para/>
+        /// ICU defines plural rules for many locales based on CLDR <i>Language Plural Rules</i>.
+        /// For these predefined rules, see CLDR page at
+        /// <a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html</a>.
+        /// <para/>
+        /// This method is named <c>forLocale</c> in ICU4J.
+        /// </summary>
+        /// <param name="localeName">The locale name for which a <see cref="PluralRules"/> object is
+        /// returned.</param>
+        /// <returns>
+        /// The predefined <see cref="PluralRules"/> object for this <paramref name="localeName"/>.
+        /// If there's no predefined rules for this <paramref name="localeName"/>, the rules
+        /// for the closest parent in the <paramref name="localeName"/> hierarchy that has one will
+        /// be returned.  The final fallback always returns the default
+        /// rules.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="localeName"/> is <c>null</c>.</exception>
+        /// <draft>ICU 60.1</draft>
+        public static PluralRules GetInstance(string localeName) // ICU4N: Added overload to decouple from UCultureInfo
+        {
+            if (localeName is null)
+                throw new ArgumentNullException(nameof(localeName));
+
+#pragma warning disable 612, 618
+            return PluralRulesFactory.DefaultFactory.GetInstance(localeName, PluralType.Cardinal);
+#pragma warning restore 612, 618
         }
 
         /// <summary>
@@ -3167,6 +3257,8 @@ namespace ICU4N.Text
         /// ICU defines plural rules for many locales based on CLDR <i>Language Plural Rules</i>.
         /// For these predefined rules, see CLDR page at
         /// <a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html</a>.
+        /// <para/>
+        /// This method is named <c>forLocale</c> in ICU4J.
         /// </summary>
         /// <param name="locale">The locale for which a <see cref="PluralRules"/> object is
         /// returned.</param>
@@ -3178,12 +3270,14 @@ namespace ICU4N.Text
         /// be returned.  The final fallback always returns the default
         /// rules.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
         /// <stable>ICU 50</stable>
-        public static PluralRules ForLocale(UCultureInfo locale, PluralType type)
+        public static PluralRules GetInstance(UCultureInfo locale, PluralType type)
         {
-#pragma warning disable 612, 618
-            return PluralRulesFactory.DefaultFactory.ForLocale(locale, type);
-#pragma warning restore 612, 618
+            if (locale is null)
+                throw new ArgumentNullException(nameof(locale));
+
+            return GetInstance(locale.Name, type);
         }
 
         /// <summary>
@@ -3193,6 +3287,8 @@ namespace ICU4N.Text
         /// ICU defines plural rules for many locales based on CLDR <i>Language Plural Rules</i>.
         /// For these predefined rules, see CLDR page at
         /// <a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html</a>.
+        /// <para/>
+        /// This method is named <c>forLocale</c> in ICU4J.
         /// </summary>
         /// <param name="locale">The locale for which a <see cref="PluralRules"/> object is
         /// returned.</param>
@@ -3204,10 +3300,46 @@ namespace ICU4N.Text
         /// be returned.  The final fallback always returns the default
         /// rules.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="locale"/> is <c>null</c>.</exception>
         /// <stable>ICU 54</stable>
-        public static PluralRules ForLocale(CultureInfo locale, PluralType type)
+        public static PluralRules GetInstance(CultureInfo locale, PluralType type)
         {
-            return ForLocale(locale.ToUCultureInfo(), type);
+            if (locale is null)
+                throw new ArgumentNullException(nameof(locale));
+
+            return GetInstance(locale.ToUCultureInfo().Name, type);
+        }
+
+        /// <summary>
+        /// Provides access to the predefined <see cref="PluralRules"/> for a given
+        /// <paramref name="localeName"/> and the plural <paramref name="type"/>.
+        /// <para/>
+        /// ICU defines plural rules for many locales based on CLDR <i>Language Plural Rules</i>.
+        /// For these predefined rules, see CLDR page at
+        /// <a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html</a>.
+        /// <para/>
+        /// This method is named <c>forLocale</c> in ICU4J.
+        /// </summary>
+        /// <param name="localeName">The locale name for which a <see cref="PluralRules"/> object is
+        /// returned.</param>
+        /// <param name="type">The plural type (e.g., cardinal or ordinal).</param>
+        /// <returns>
+        /// The predefined <see cref="PluralRules"/> object for this <paramref name="localeName"/>.
+        /// If there's no predefined rules for this <paramref name="localeName"/>, the rules
+        /// for the closest parent in the <paramref name="localeName"/> hierarchy that has one will
+        /// be returned.  The final fallback always returns the default
+        /// rules.
+        /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="localeName"/> is <c>null</c>.</exception>
+        /// <draft>ICU 60.1</draft>
+        public static PluralRules GetInstance(string localeName, PluralType type) // ICU4N: Added overload to decouple from UCultureInfo
+        {
+            if (localeName is null)
+                throw new ArgumentNullException(nameof(localeName));
+
+#pragma warning disable 612, 618
+            return PluralRulesFactory.DefaultFactory.GetInstance(localeName, type);
+#pragma warning restore 612, 618
         }
 
 #if FEATURE_SPAN
@@ -3501,7 +3633,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns the 'functionally equivalent' locale with respect to
-        /// plural rules.  Calling <see cref="PluralRules.ForLocale(CultureInfo)"/> with the functionally equivalent
+        /// plural rules.  Calling <see cref="PluralRules.GetInstance(CultureInfo)"/> with the functionally equivalent
         /// locale, and with the provided locale, returns rules that behave the same.
         /// </summary>
         /// <remarks>
@@ -3525,7 +3657,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns the 'functionally equivalent' locale with respect to
-        /// plural rules.  Calling <see cref="PluralRules.ForLocale(CultureInfo)"/> with the functionally equivalent
+        /// plural rules.  Calling <see cref="PluralRules.GetInstance(CultureInfo)"/> with the functionally equivalent
         /// locale, and with the provided locale, returns rules that behave the same.
         /// </summary>
         /// <remarks>

@@ -756,7 +756,7 @@ namespace ICU4N.Impl
             return GetCaseLocale(locale.Language);
         }
         /// <summary>Accepts both 2- and 3-letter language subtags.</summary>
-        private static CaseLocale GetCaseLocale(string language)
+        internal static CaseLocale GetCaseLocale(string language) // ICU4N: Made internal so UCultureData can access and store CaseLocale.
         {
             // Check the subtag length to reduce the number of comparisons
             // for locales without special behavior.

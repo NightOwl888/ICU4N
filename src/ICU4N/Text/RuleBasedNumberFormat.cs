@@ -22,46 +22,6 @@ using StringBuffer = System.Text.StringBuilder;
 namespace ICU4N.Text
 {
     /// <summary>
-    /// The presentation of <see cref="RuleBasedNumberFormat"/>.
-    /// </summary>
-#if FEATURE_LEGACY_NUMBER_FORMAT
-    public
-#else
-    internal
-#endif
-        enum NumberPresentation
-    {
-        /// <summary>
-        /// Indicates to create a spellout formatter that spells out a value
-        /// in words in the desired language.
-        /// </summary>
-        /// <draft>ICU 60.1</draft>
-        SpellOut = 1,
-
-        /// <summary>
-        /// Indicates to create an ordinal formatter that attaches an ordinal
-        /// suffix from the desired language to the end of the number (e.g. "123rd").
-        /// </summary>
-        /// <draft>ICU 60.1</draft>
-        Ordinal = 2,
-
-        /// <summary>
-        /// Indicates to create a duration formatter that formats a duration in
-        /// seconds as hours, minutes, and seconds.
-        /// </summary>
-        /// <draft>ICU 60.1</draft>
-        Duration = 3,
-
-        /// <summary>
-        /// Indicates to create a numbering system formatter to format a number in
-        /// a rules-based numbering system such as <c>%hebrew</c> for Hebrew numbers or <c>%roman-upper</c>
-        /// for upper-case Roman numerals.
-        /// </summary>
-        NumberingSystem = 4,
-    }
-
-
-    /// <summary>
     /// A class that formats numbers according to a set of rules. This number formatter is
     /// typically used for spelling out numeric values in words (e.g., 25,3476 as
     /// "twenty-five thousand three hundred seventy-six" or "vingt-cinq mille trois
@@ -538,7 +498,7 @@ namespace ICU4N.Text
 #else
     internal
 #endif
-        class RuleBasedNumberFormat : NumberFormat
+        partial class RuleBasedNumberFormat : NumberFormat
     {
         //-----------------------------------------------------------------------
         // constants
@@ -839,7 +799,7 @@ namespace ICU4N.Text
 
             try
             {
-                ICUResourceBundle rules = bundle.GetWithFallback("RBNFRules/" + rulenames[(int)format - 1]);
+                ICUResourceBundle rules = bundle.GetWithFallback(format.ToRuleNameKey());
                 UResourceBundleEnumerator it = rules.GetEnumerator();
                 while (it.MoveNext())
                 {
@@ -852,7 +812,7 @@ namespace ICU4N.Text
 
             // We use findTopLevel() instead of get() because
             // it's faster when we know that it's usually going to fail.
-            UResourceBundle locNamesBundle = bundle.FindTopLevel(locnames[(int)format - 1]);
+            UResourceBundle locNamesBundle = bundle.FindTopLevel(format.ToRuleLocalizationsKey());
             if (locNamesBundle != null)
             {
                 localizations = new string[locNamesBundle.Length][];
@@ -865,13 +825,6 @@ namespace ICU4N.Text
 
             Init(description.ToString(), localizations);
         }
-
-        private static readonly string[] rulenames = {
-            "SpelloutRules", "OrdinalRules", "DurationRules", "NumberingSystemRules",
-        };
-        private static readonly string[] locnames = {
-            "SpelloutLocalizations", "OrdinalLocalizations", "DurationLocalizations", "NumberingSystemLocalizations",
-        };
 
         /// <summary>
         /// Creates a <see cref="RuleBasedNumberFormat"/> from a predefined description. Uses the
@@ -1338,8 +1291,8 @@ namespace ICU4N.Text
             return Format(new Numerics.BigDecimal(number), toAppendTo, pos);
         }
 
-        private static readonly Numerics.BigDecimal MAX_VALUE = Numerics.BigDecimal.GetInstance(long.MaxValue);
-        private static readonly Numerics.BigDecimal MIN_VALUE = Numerics.BigDecimal.GetInstance(long.MinValue);
+        private static readonly Numerics.BigDecimal MaxValue = Numerics.BigDecimal.GetInstance(long.MaxValue);
+        private static readonly Numerics.BigDecimal MinValue = Numerics.BigDecimal.GetInstance(long.MinValue);
 
         /// <summary>
         /// Formats the specified number using the formatter's default rule set.
@@ -1361,7 +1314,7 @@ namespace ICU4N.Text
                                    StringBuffer toAppendTo,
                                    FieldPosition pos)
         {
-            if (MIN_VALUE.CompareTo(number) > 0 || MAX_VALUE.CompareTo(number) < 0)
+            if (MinValue.CompareTo(number) > 0 || MaxValue.CompareTo(number) < 0)
             {
                 // We're outside of our normal range that this framework can handle.
                 // The DecimalFormat will provide more accurate results.
@@ -1402,7 +1355,7 @@ namespace ICU4N.Text
 
             // keep track of the largest number of characters consumed in
             // the various trials, and the result that corresponds to it
-            Number result = NFRule.ZERO;
+            Number result = NFRule.Zero;
             ParsePosition highWaterMark = new ParsePosition(workingPos.Index);
 
             // iterate over the public rule sets (beginning with the default one)
@@ -2213,12 +2166,13 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Returns the named rule set.  Throws an IllegalArgumentException
-         * if this formatter doesn't have a rule set with that name.
-         * @param name The name of the desired rule set
-         * @return The rule set with that name
-         */
+        /// <summary>
+        /// Returns the named rule set. Throws an <see cref="ArgumentException"/>
+        /// if this formatter doesn't have a rule set with that name.
+        /// </summary>
+        /// <param name="name">The name of the desired rule set.</param>
+        /// <returns>The rule set with that name.</returns>
+        /// <exception cref="ArgumentException">No rule exists with the provided <paramref name="name"/>.</exception>
         internal NFRuleSet FindRuleSet(string name)
         {
             if (!ruleSetsMap.TryGetValue(name, out NFRuleSet result) || result == null)

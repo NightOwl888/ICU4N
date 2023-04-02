@@ -402,7 +402,7 @@ namespace ICU4N.Impl
                     data[pair.Key] = pair.Value.AsReadOnly();
                 }
                 // now do top level
-                data = data.AsReadOnly();
+                data = JCG.Extensions.DictionaryExtensions.AsReadOnly(data);
                 frozen = true;
             }
             return this;

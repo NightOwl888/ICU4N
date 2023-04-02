@@ -1,5 +1,4 @@
-﻿using ICU4N.Support.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace ICU4N.Text
@@ -9,9 +8,16 @@ namespace ICU4N.Text
     /// Note, the specific numeric values are internal and may change.
     /// </summary>
     /// <stable>ICU 51</stable>
-    public enum DisplayContext
+    // ICU4N NOTE: IMPORTANT - do not use this when porting new code from Java.
+    // This enum has been refactored in the Support/Globalization/LocaleDisplayNames/DisplayContext folder
+    // into Capitalization, DialectHandling, DisplayLength, and DisplayLength enums and the DisplayContextOptions class.
+#if FEATURE_LEGACY_NUMBER_FORMAT
+    public
+#else
+    internal
+#endif
+        enum DisplayContext
     {
-        // ICU4N TODO: update docs below from en_GB to en-GB ?
         /**
          * ================================
          * Settings for DIALECT_HANDLING (use one)
@@ -110,7 +116,15 @@ namespace ICU4N.Text
     /// Type values for <see cref="DisplayContext"/>.
     /// </summary>
     /// <stable>ICU 51</stable>
-    public enum DisplayContextType
+    // ICU4N NOTE: IMPORTANT - do not use this when porting new code from Java.
+    // This enum has been refactored in the Support/Globalization/LocaleDisplayNames/DisplayContext folder
+    // into Capitalization, DialectHandling, DisplayLength, and DisplayLength enums and the DisplayContextOptions class.
+#if FEATURE_LEGACY_NUMBER_FORMAT
+    public
+#else
+    internal
+#endif
+        enum DisplayContextType
     {
         /// <summary>
         /// <see cref="DialectHandling"/> can be set to <see cref="DisplayContext.StandardNames"/> 
@@ -142,7 +156,15 @@ namespace ICU4N.Text
     /// Extension methods for <see cref="DisplayContext"/>.
     /// </summary>
     /// <draft>ICU4N 60</draft>
-    public static class DisplayContextExtensions
+    // ICU4N NOTE: IMPORTANT - do not use this when porting new code from Java.
+    // This enum has been refactored in the Support/Globalization/LocaleDisplayNames/DisplayContext folder
+    // into Capitalization, DialectHandling, DisplayLength, and DisplayLength enums and the DisplayContextOptions class.
+#if FEATURE_LEGACY_NUMBER_FORMAT
+    public
+#else
+    internal
+#endif
+        static class DisplayContextExtensions
     {
         private static IDictionary<DisplayContext, DisplayContextImpl> map = new Dictionary<DisplayContext, DisplayContextImpl>
         {

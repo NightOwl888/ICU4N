@@ -2636,7 +2636,7 @@ namespace ICU4N.Text
             {
                 if (rules == null)
                 {
-                    rules = PluralRules.ForLocale(msgFormat.UCulture, type);
+                    rules = PluralRules.GetInstance(msgFormat.UCulture, type);
                 }
                 // Select a sub-message according to how the number is formatted,
                 // which is specified in the selected sub-message.

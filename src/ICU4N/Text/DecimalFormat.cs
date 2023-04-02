@@ -968,10 +968,10 @@ namespace ICU4N.Text
 
         /// <inheritdoc/>
         /// <stable>ICU 49</stable>
-#if FEATURE_LEGACY_NUMBER_FORMAT
-        internal
-#else
+#if FEATURE_FIELDPOSITION && FEATURE_CURRENCYFORMATTING
         public
+#else
+        internal
 #endif
             override CurrencyAmount ParseCurrency(string text, ParsePosition parsePosition) // ICU4N: Changed ICharSequence to string
         {

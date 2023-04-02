@@ -86,12 +86,12 @@ namespace ICU4N.Impl.Locale
 
         public virtual ICollection<string> UnicodeLocaleKeys => _keywords.Keys.AsReadOnly(); // ICU4N TODO: API Make return type IReadOnlyCollection
 
-#if FEATURE_READONLYDICTIONARY
+#if FEATURE_IREADONLYCOLLECTIONS
         public virtual IReadOnlyDictionary<string, string> UnicodeLocales
 #else
         public virtual IDictionary<string, string> UnicodeLocales
 #endif
-            => _keywords.AsReadOnly();
+            => JCG.Extensions.DictionaryExtensions.AsReadOnly(_keywords);
 
         public virtual string GetUnicodeLocaleType(string unicodeLocaleKey)
         {

@@ -125,7 +125,7 @@ namespace ICU4N.Util
         /// <exception cref="MissingManifestResourceException">If no resource bundle for the specified <paramref name="baseName"/> can be found.</exception>
         /// <returns>A resource bundle for the given <paramref name="baseName"/> and <paramref name="localeName"/>.</returns>
         /// <stable>ICU 3.0</stable>
-        protected static UResourceBundle GetBundleInstance(string baseName, string localeName,
+        protected internal static UResourceBundle GetBundleInstance(string baseName, string localeName,
                                                            Assembly root, bool disableFallback)
         {
             return InstantiateBundle(baseName, localeName, root, disableFallback);
@@ -289,7 +289,7 @@ namespace ICU4N.Util
         /// </summary>
         /// <returns>The string representation of the localeID.</returns>
         /// <stable>ICU 3.0</stable>
-        protected abstract string LocaleID { get; }
+        protected internal abstract string LocaleID { get; }
 
         /// <summary>
         /// <icu/> Returns the base name of the resource bundle.
@@ -374,6 +374,7 @@ namespace ICU4N.Util
                                                                    disableFallback);
 
                 case RootType.Missing:
+                    goto default;
                 default:
                     UResourceBundle b;
                     try

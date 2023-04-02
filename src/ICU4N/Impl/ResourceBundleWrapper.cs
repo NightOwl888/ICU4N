@@ -81,7 +81,7 @@ namespace ICU4N.Impl
             }
         }
 
-        protected override string LocaleID => localeID;
+        protected internal override string LocaleID => localeID;
 
         protected internal override string BaseName
             => bundle.GetType().FullName.Replace('.', '/');

@@ -407,7 +407,7 @@ namespace ICU4N.Text
         private void Init(PluralRules rules, PluralType type, UCultureInfo locale, NumberFormat numberFormat)
         {
             ulocale = locale;
-            pluralRules = (rules == null) ? PluralRules.ForLocale(ulocale, type) // ICU4N TODO: Make extension method for UCultureInfo.GetPluralRules(PluralType)..?
+            pluralRules = (rules == null) ? PluralRules.GetInstance(ulocale, type) // ICU4N TODO: Make extension method for UCultureInfo.GetPluralRules(PluralType)..?
                                           : rules;
             // ICU4N: Factored out pluralRulesWrapper by implementing IPluralSelector directly on PluralRules
             ResetPattern();

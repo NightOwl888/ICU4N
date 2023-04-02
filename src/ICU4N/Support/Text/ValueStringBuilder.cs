@@ -10,9 +10,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 #nullable enable
 
-namespace ICU4N.Support.Text
+namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
 {
-    internal ref partial struct ValueStringBuilder
+    internal unsafe ref partial struct ValueStringBuilder
     {
         private char[]? _arrayToReturnToPool;
         private Span<char> _chars;
@@ -78,6 +78,18 @@ namespace ICU4N.Support.Text
             return ref MemoryMarshal.GetReference(_chars);
         }
 
+        // ICU4N: Added this to allow inserting one ValueStringBuilder to another
+        // without the compiler complaining about scope. The scoped keyword on 
+        // the ReadOnlySpan<char> parameter of Insert(int, ReadOnlySpan<char>) would
+        // also work, but since that requires LangVersion=>11.0 and that causes more compiler
+        // errors, we are going with this for now. Note we also marked this struct unsafe
+        // just like NumberBuffer is (it wasn't that way originally).
+        public char* GetCharsPointer()
+        {
+            // This is safe to do since we are a ref struct
+            return (char*)Unsafe.AsPointer(ref _chars[0]);
+        }
+
         public ref char this[int index]
         {
             get
@@ -131,6 +143,9 @@ namespace ICU4N.Support.Text
             }
         }
 
+        public void Insert(int index, char value)
+            => Insert(index, value, count: 1);
+
         public void Insert(int index, char value, int count)
         {
             if (_pos > _chars.Length - count)
@@ -153,6 +168,11 @@ namespace ICU4N.Support.Text
 
             int count = s.Length;
 
+            if (count == 0)
+            {
+                return;
+            }
+
             if (_pos > (_chars.Length - count))
             {
                 Grow(count);
@@ -165,6 +185,26 @@ namespace ICU4N.Support.Text
                 .AsSpan()
 #endif
                 .CopyTo(_chars.Slice(index));
+            _pos += count;
+        }
+
+        public void Insert(int index, ReadOnlySpan<char> s)
+        {
+            int count = s.Length;
+
+            if (count == 0)
+            {
+                return;
+            }
+
+            if (_pos > (_chars.Length - count))
+            {
+                Grow(count);
+            }
+
+            int remaining = _pos - index;
+            _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
+            s.CopyTo(_chars.Slice(index));
             _pos += count;
         }
 

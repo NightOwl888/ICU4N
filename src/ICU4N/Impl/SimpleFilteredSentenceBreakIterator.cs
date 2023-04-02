@@ -275,15 +275,20 @@ namespace ICU4N.Impl
         /// <summary>
         /// Filter set to store all exceptions.
         /// </summary>
-        private HashSet<ICharSequence> filterSet = new HashSet<ICharSequence>();
+        private readonly HashSet<ICharSequence> filterSet = new HashSet<ICharSequence>();
 
         internal const int Partial = (1 << 0); // < partial - need to run through forward trie
         internal const int Match = (1 << 1); // < exact match - skip this one.
         internal const int SuppressInReverse = (1 << 0);
         internal const int AddToForward = (1 << 1);
 
+        /// <summary>
+        /// Create <see cref="SimpleFilteredSentenceBreakIteratorBuilder"/> using given locale.
+        /// </summary>
+        /// <param name="loc">The locale to get filtered iterators.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="loc"/> is <c>null</c>.</exception>
         public SimpleFilteredSentenceBreakIteratorBuilder(CultureInfo loc)
-            : this(loc.ToUCultureInfo())
+            : this(loc?.ToUCultureInfo().Name ?? throw new ArgumentNullException(nameof(loc)))
         {
         }
 
@@ -291,13 +296,27 @@ namespace ICU4N.Impl
         /// Create <see cref="SimpleFilteredSentenceBreakIteratorBuilder"/> using given locale.
         /// </summary>
         /// <param name="loc">The locale to get filtered iterators.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="loc"/> is <c>null</c>.</exception>
         public SimpleFilteredSentenceBreakIteratorBuilder(UCultureInfo loc)
+            : this(loc?.Name ?? throw new ArgumentNullException(nameof(loc)))
+        {
+        }
+
+        /// <summary>
+        /// Create <see cref="SimpleFilteredSentenceBreakIteratorBuilder"/> using given locale name.
+        /// </summary>
+        /// <param name="localeName">The locale to get filtered iterators.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="localeName"/> is <c>null</c>.</exception>
+        public SimpleFilteredSentenceBreakIteratorBuilder(string localeName)
 #pragma warning disable 612, 618
             : base()
 #pragma warning restore 612, 618
         {
+            if (localeName is null)
+                throw new ArgumentNullException(nameof(localeName));
+
             ICUResourceBundle rb = ICUResourceBundle.GetBundleInstance(
-                    ICUData.IcuBreakIteratorBaseName, loc, OpenType.LocaleRoot);
+                    ICUData.IcuBreakIteratorBaseName, localeName, OpenType.LocaleRoot);
 
             ICUResourceBundle breaks = rb.FindWithFallback("exceptions/SentenceBreak");
 

@@ -780,6 +780,17 @@ namespace ICU4N.Text
 #pragma warning restore 612, 618
         }
 
+#nullable enable
+        // ICU4N: Added overload to allow looking up a sentence instance without being coupled to UCultureInfo
+        // ICU4N NOTE: Passing localeID or FullName for localeID will work, but localeID is slightly more efficient because the lookup is cached.
+        internal static BreakIterator GetSentenceInstance(string localeName, string localeID, string? lbKeyword, string? ssKeyword)
+        {
+#pragma warning disable 612, 618
+            return GetBreakInstance(localeName, localeID, lbKeyword, ssKeyword, KIND_SENTENCE);
+#pragma warning restore 612, 618
+        }
+#nullable restore
+
         /// <icu/>
         /// <summary>
         /// Returns a new instance of <see cref="BreakIterator"/> that locates title boundaries.
@@ -964,6 +975,33 @@ namespace ICU4N.Text
             return result;
         }
 
+#nullable enable
+        /// <summary>
+        /// Returns a particular kind of <see cref="BreakIterator"/> for a locale without using <see cref="UCultureInfo"/>.
+        /// Avoids writing a switch statement with GetXYZInstance(where) calls.
+        /// Note that the iterCache is not used, so caching the output is recommended.
+        /// </summary>
+        /// <internal/>
+        // ICU4N: Added overload to decouple from UCultureInfo.
+        // ICU4N NOTE: Passing localeID or FullName for localeID will work, but localeID is slightly more efficient because the lookup is cached.
+        [Obsolete("This API is ICU internal only.")]
+        internal static BreakIterator GetBreakInstance(string localeName, string localeID, string? lbKeyword, string? ssKeyword, int kind)
+        {
+            if (localeName is null)
+                throw new ArgumentNullException(nameof(localeName));
+            if (localeID is null)
+                throw new ArgumentNullException(nameof(localeID));
+
+            BreakIterator result = GetShim().CreateBreakIterator(localeName, localeID, lbKeyword, ssKeyword, kind);
+            if (result is RuleBasedBreakIterator rbbi)
+            {
+                rbbi.BreakType = kind;
+            }
+
+            return result;
+        }
+#nullable restore
+
         /// <summary>
         /// Returns a list of locales for which <see cref="BreakIterator"/>s can be used.
         /// </summary>
@@ -1021,6 +1059,9 @@ namespace ICU4N.Text
             public abstract CultureInfo[] GetCultures(UCultureTypes types); // ICU4N: Renamed from GetAvailableLocales
             public abstract UCultureInfo[] GetUCultures(UCultureTypes types); // ICU4N: Renamed from GetAvailableLocales
             public abstract BreakIterator CreateBreakIterator(UCultureInfo l, int k);
+#nullable enable
+            public abstract BreakIterator CreateBreakIterator(string localeName, string localeID, string? lbKeyword, string? ssKeyword, int kind); // ICU4N: Added to decouple from UCultureInfo
+#nullable restore
         }
 
         private static BreakIteratorServiceShim shim;

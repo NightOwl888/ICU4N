@@ -14,11 +14,11 @@ namespace ICU4N.Globalization
         /// This is the default behavior.
         /// </summary>
         /// <draft>ICU 60</draft>
-        Substitute,
+        Substitute = 0,
         /// <summary>
         /// Returns a null value when no data is available.
         /// </summary>
         /// <draft>ICU 60</draft>
-        NoSubstitute
+        NoSubstitute = 1,
     }
 }

@@ -1,5 +1,4 @@
-﻿using J2N.Collections.Generic;
-using J2N.Collections.Generic.Extensions;
+﻿using J2N.Collections.Generic.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,14 +14,14 @@ namespace ICU4N.Impl.Locale
     {
         private IDictionary<char, Extension> _map;
         private string _id;
-#if FEATURE_READONLYDICTIONARY
+#if FEATURE_IREADONLYCOLLECTIONS
         private volatile IReadOnlyDictionary<char, string> _extensions;
 #else
         private volatile IDictionary<char, string> _extensions;
 #endif
 
-        private static readonly IDictionary<char, Extension> EmptyMap =
-            new JCG.SortedDictionary<char, Extension>().AsReadOnly();
+        private static readonly IDictionary<char, Extension> EmptyMap = Collection.EmptyDictionary<char, Extension>();
+
 
         public static readonly LocaleExtensions EmptyExtensions = LoadEmptyExtensions();
         public static readonly LocaleExtensions CalendarJapanese = LoadCalendarJapanese();
@@ -162,7 +161,7 @@ namespace ICU4N.Impl.Locale
         }
 
         // ICU4N specific - Expose the dictionary so it can be on the public API of UCultureInfo
-#if FEATURE_READONLYDICTIONARY
+#if FEATURE_IREADONLYCOLLECTIONS
         public virtual IReadOnlyDictionary<char, string> Extensions
 #else
         public virtual IDictionary<char, string> Extensions
@@ -175,7 +174,7 @@ namespace ICU4N.Impl.Locale
                     var extensions = new JCG.SortedDictionary<char, string>();
                     foreach (var key in _map.Keys)
                         extensions[key] = GetExtensionValue(key);
-                    _extensions = extensions.AsReadOnly();
+                    _extensions = JCG.Extensions.DictionaryExtensions.AsReadOnly(extensions);
                 }
                 return _extensions;
             }
@@ -208,7 +207,7 @@ namespace ICU4N.Impl.Locale
         }
 
         // ICU4N specific - Expose the dictionary so it can be on the public API of UCultureInfo
-#if FEATURE_READONLYDICTIONARY
+#if FEATURE_IREADONLYCOLLECTIONS
         public virtual IReadOnlyDictionary<string, string> UnicodeLocales
 #else
         public virtual IDictionary<string, string> UnicodeLocales
@@ -218,7 +217,7 @@ namespace ICU4N.Impl.Locale
             {
                 if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out Extension ext) || ext == null)
                 {
-                    return new JCG.Dictionary<string, string>().AsReadOnly();
+                    return Collection.EmptyDictionary<string, string>();
                 }
                 Debug.Assert(ext is UnicodeLocaleExtension);
                 return ((UnicodeLocaleExtension)ext).UnicodeLocales;

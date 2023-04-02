@@ -17,9 +17,14 @@ namespace ICU4N.Dev.Test.Format
                 return false;
             }
 
-            public override PluralRules ForLocale(UCultureInfo locale, PluralType ordinal)
+            public override PluralRules GetInstance(string localeName, PluralType ordinal)
             {
-                return PluralRules.ForLocale(locale, ordinal);
+                return PluralRules.GetInstance(localeName, ordinal);
+            }
+
+            public override PluralRules GetInstance(UCultureInfo locale, PluralType ordinal)
+            {
+                return PluralRules.GetInstance(locale, ordinal);
             }
 
             public override UCultureInfo[] GetUCultures()

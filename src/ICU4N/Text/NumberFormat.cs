@@ -627,7 +627,7 @@ namespace ICU4N.Text
         /// <returns>A <see cref="CurrencyAmount"/>, or <c>null</c> upon failure.</returns>
         /// <stable>ICU 49</stable>
 
-#if FEATURE_FIELDPOSITION && FEATURE_PARSECURRENCY
+#if FEATURE_FIELDPOSITION && FEATURE_CURRENCYFORMATTING
         public
 #else
         internal

@@ -330,7 +330,7 @@ namespace ICU4N.Dev.Test.Util
                 };
             UCultureInfo french = new UCultureInfo("fr");
             CultureDisplayNames names = CultureDisplayNames.GetInstance(french,
-                new DisplayContextOptions { Capitalization = Capitalization.UIListOrMenu });
+                new DisplayContextOptions { Capitalization = Capitalization.ForUIListOrMenu });
             Logln("Contexts: " + names.DisplayContextOptions.ToString());
 
             Collator collator = Collator.GetInstance(french);
@@ -377,7 +377,7 @@ namespace ICU4N.Dev.Test.Util
             UCultureInfo french = new UCultureInfo("fr");
             Collator collator = Collator.GetInstance(french);
             CultureDisplayNames names = CultureDisplayNames.GetInstance(french,
-                new DisplayContextOptions { Capitalization = Capitalization.UIListOrMenu });
+                new DisplayContextOptions { Capitalization = Capitalization.ForUIListOrMenu });
 
             foreach (String malformed in new string[] { "en-a", "$", "ü--a", "en--US" })
             {

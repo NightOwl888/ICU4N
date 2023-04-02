@@ -20,13 +20,43 @@ namespace ICU4N.Text
         public void TestBasicSplitAndTrim()
         {
             ReadOnlySpan<char> text = " A test ; to split ";
-            var target = new SplitTokenizerEnumerator(text, ";", " ");
+            var target = text.AsTokens(";", " ");
 
             assertTrue("Expected token not found", target.MoveNext());
             assertTrue("'A test' not found", "A test".AsSpan().SequenceEqual(target.Current));
 
             assertTrue("Expected token not found", target.MoveNext());
             assertTrue("'to split' not found", "to split".AsSpan().SequenceEqual(target.Current));
+
+            assertFalse("Expected end of enumeration", target.MoveNext());
+        }
+
+        [Test]
+        public void TestBasicSplitAndTrimStart()
+        {
+            ReadOnlySpan<char> text = " A test ; to split ";
+            var target = text.AsTokens(";", " ", TrimBehavior.Start);
+
+            assertTrue("Expected token not found", target.MoveNext());
+            assertTrue("'A test' not found", "A test ".AsSpan().SequenceEqual(target.Current));
+
+            assertTrue("Expected token not found", target.MoveNext());
+            assertTrue("'to split' not found", "to split ".AsSpan().SequenceEqual(target.Current));
+
+            assertFalse("Expected end of enumeration", target.MoveNext());
+        }
+
+        [Test]
+        public void TestBasicSplitAndTrimEnd()
+        {
+            ReadOnlySpan<char> text = " A test ; to split ";
+            var target = text.AsTokens(";", " ", TrimBehavior.End);
+
+            assertTrue("Expected token not found", target.MoveNext());
+            assertTrue("'A test' not found", " A test".AsSpan().SequenceEqual(target.Current));
+
+            assertTrue("Expected token not found", target.MoveNext());
+            assertTrue("'to split' not found", " to split".AsSpan().SequenceEqual(target.Current));
 
             assertFalse("Expected end of enumeration", target.MoveNext());
         }
@@ -61,7 +91,7 @@ namespace ICU4N.Text
                 foreach (var rule2 in rule.Text.AsTokens(';', SplitTokenizerEnumerator.PatternWhiteSpace))
                 {
                     string name, value;
-                    var iter = new SplitTokenizerEnumerator(rule2.Text, ':', SplitTokenizerEnumerator.PatternWhiteSpace);
+                    var iter = rule2.Text.AsTokens(':', SplitTokenizerEnumerator.PatternWhiteSpace);
                     assertTrue("missing name", iter.MoveNext());
                     name = new string(iter.Current);
                     assertTrue("missing value", iter.MoveNext());

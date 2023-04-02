@@ -941,10 +941,10 @@ namespace ICU4N.Globalization
             {
                 DialectHandling NM_STD = DialectHandling.StandardNames;
                 DialectHandling NM_DIA = DialectHandling.DialectNames;
-                Capitalization CAP_BEG = Capitalization.BeginningOfSentence;
-                Capitalization CAP_MID = Capitalization.MiddleOfSentence;
-                Capitalization CAP_UIL = Capitalization.UIListOrMenu;
-                Capitalization CAP_STA = Capitalization.Standalone;
+                Capitalization CAP_BEG = Capitalization.ForBeginningOfSentence;
+                Capitalization CAP_MID = Capitalization.ForMiddleOfSentence;
+                Capitalization CAP_UIL = Capitalization.ForUIListOrMenu;
+                Capitalization CAP_STA = Capitalization.ForStandalone;
                 Capitalization CAP_NON = Capitalization.None;
                 DisplayLength LEN_FU = DisplayLength.Full;
                 DisplayLength LEN_SH = DisplayLength.Short;
