@@ -28,6 +28,7 @@
     <numericType clsCompliant="false" cSharpName="ushort">UInt16</numericType>
     <numericType clsCompliant="false" cSharpName="uint">UInt32</numericType>
     <numericType clsCompliant="false" cSharpName="ulong">UInt64</numericType>
+    <numericType clsCompliant="false" cSharpName="UInt128" feature="FEATURE_INT128">UInt128</numericType>
     <numericType clsCompliant="false" cSharpName="nuint">UIntPtr</numericType>
 
     <!-- floating point types -->

@@ -1193,6 +1193,116 @@ namespace ICU4N
             return IcuNumber.FormatUInt64RuleBased(value, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
+        // UInt128
+
+#if FEATURE_INT128
+        /// <summary>
+        /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
+        /// <paramref name="ruleSetName"/> and <paramref name="provider"/>.
+        /// </summary>
+        /// <param name="value">The numeric value to format.</param>
+        /// <param name="presentation">A <see cref="NumberPresentation"/> to select the appropriate rule-based formatter.</param>
+        /// <param name="ruleSetName">The name of the rule set to format the number with.
+        /// This must be the name of a valid public rule set for the selected formatter, which can be found using
+        /// the <see cref="NumberFormatRules.RuleSetNames"/> property of <see cref="UNumberFormatInfo.SpellOut"/>,
+        /// <see cref="UNumberFormatInfo.Ordinal"/>, <see cref="UNumberFormatInfo.Duration"/> or
+        /// <see cref="UNumberFormatInfo.NumberingSystem"/> or <c>null</c> to use the formatter's default rule set.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information for this operation.
+        /// Supported providers are <see cref="CultureInfo"/>, <see cref="UCultureInfo"/> and
+        /// <see cref="UNumberFormatInfo"/>.</param>
+        /// <returns>The string representation of the <paramref name="value"/> as specified by <paramref name="presentation"/>,
+        /// <paramref name="ruleSetName"/> and <paramref name="provider"/> </returns>
+        /// <remarks>
+        /// This number formatter is typically used for spelling out numeric values in words (e.g., 25,3476 as
+        /// "twenty-five thousand three hundred seventy-six" or "vingt-cinq mille trois cents soixante-seize"
+        /// or "funfundzwanzigtausenddreihundertsechsundsiebzig"), but can also be used for other complicated
+        /// formatting tasks, such as formatting a number of seconds as hours, minutes and seconds
+        /// (e.g., 3,730 as "1:02:10").
+        /// <para/>
+        /// The resources contain four predefined formatters for each locale: spellout, which
+        /// spells out a value in words (123 is "one hundred twenty-three"); ordinal, which
+        /// appends an ordinal suffix to the end of a numeral (123 is "123rd");
+        /// duration, which shows a duration in seconds as hours, minutes, and seconds (123 is
+        /// "2:03"), and numbering system, which contain algorithmic numbering systems such as
+        /// <c>%hebrew</c> for Hebrew numbers or <c>%roman-upper</c>
+        /// for upper-case Roman numerals.
+        /// <para/>
+        /// Each value in <see cref="NumberPresentation"/> corresponds to a <see cref="NumberFormatRules"/>
+        /// instance that is available in the <see cref="UNumberFormatInfo"/> instance returned from the
+        /// <see cref="IFormatProvider.GetFormat(Type?)"/> method of the specified <paramref name="provider"/>.
+        /// The instances can be inspected using the <see cref="UNumberFormatInfo.SpellOut"/>,
+        /// <see cref="UNumberFormatInfo.Ordinal"/>, <see cref="UNumberFormatInfo.Duration"/> or
+        /// <see cref="UNumberFormatInfo.NumberingSystem"/> properties of that instance.
+        /// <para/>
+        /// A <see cref="NumberFormatRules"/> instance may have more than one rule set. There is a
+        /// default rule set, which is available from <see cref="NumberFormatRules.DefaultRuleSetName"/>.
+        /// This is the rule set that is applied if the <paramref name="ruleSetName"/> is <c>null</c>.
+        /// Additionally, <see cref="NumberFormatRules.RuleSetNames"/> property can be used to see a list of all
+        /// of the publically available rule set names which can be supplied as the <paramref name="ruleSetName"/> argument.
+        /// </remarks>
+        /// <exception cref="ArgumentException"><paramref name="ruleSetName"/> is not a public rule set for the formatter
+        /// specified by <paramref name="presentation"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="presentation"/> is not one of the values in the
+        /// <see cref="NumberPresentation"/> enum.</exception>
+        /// <exception cref="NotSupportedException"><paramref name="provider"/> is of type <see cref="NumberFormatInfo"/>.</exception>
+        /// <draft>ICU 60.1</draft>
+        [CLSCompliant(false)]
+        public static string ToString(this UInt128 value, NumberPresentation presentation, string? ruleSetName = default, IFormatProvider? provider = default)
+        {
+            return IcuNumber.FormatUInt128RuleBased(value, presentation, ruleSetName, UNumberFormatInfo.GetInstance(provider));
+        }
+
+        /// <summary>
+        /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/> and
+        /// <paramref name="provider"/> using the formatter's default rule set.
+        /// </summary>
+        /// <param name="value">The numeric value to format.</param>
+        /// <param name="presentation">A <see cref="NumberPresentation"/> to select the appropriate rule-based formatter.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information for this operation.
+        /// Supported providers are <see cref="CultureInfo"/>, <see cref="UCultureInfo"/> and
+        /// <see cref="UNumberFormatInfo"/>.</param>
+        /// <returns>The string representation of the <paramref name="value"/> as specified by <paramref name="presentation"/>
+        /// and <paramref name="provider"/>.</returns>
+        /// <remarks>
+        /// This number formatter is typically used for spelling out numeric values in words (e.g., 25,3476 as
+        /// "twenty-five thousand three hundred seventy-six" or "vingt-cinq mille trois cents soixante-seize"
+        /// or "funfundzwanzigtausenddreihundertsechsundsiebzig"), but can also be used for other complicated
+        /// formatting tasks, such as formatting a number of seconds as hours, minutes and seconds
+        /// (e.g., 3,730 as "1:02:10").
+        /// <para/>
+        /// The resources contain four predefined formatters for each locale: spellout, which
+        /// spells out a value in words (123 is "one hundred twenty-three"); ordinal, which
+        /// appends an ordinal suffix to the end of a numeral (123 is "123rd");
+        /// duration, which shows a duration in seconds as hours, minutes, and seconds (123 is
+        /// "2:03"), and numbering system, which contain algorithmic numbering systems such as
+        /// <c>%hebrew</c> for Hebrew numbers or <c>%roman-upper</c>
+        /// for upper-case Roman numerals.
+        /// <para/>
+        /// Each value in <see cref="NumberPresentation"/> corresponds to a <see cref="NumberFormatRules"/>
+        /// instance that is available in the <see cref="UNumberFormatInfo"/> instance returned from the
+        /// <see cref="IFormatProvider.GetFormat(Type?)"/> method of the specified <paramref name="provider"/>.
+        /// The instances can be inspected using the <see cref="UNumberFormatInfo.SpellOut"/>,
+        /// <see cref="UNumberFormatInfo.Ordinal"/>, <see cref="UNumberFormatInfo.Duration"/> or
+        /// <see cref="UNumberFormatInfo.NumberingSystem"/> properties of that instance.
+        /// <para/>
+        /// A <see cref="NumberFormatRules"/> instance may have more than one rule set. There is a
+        /// default rule set, which is available from <see cref="NumberFormatRules.DefaultRuleSetName"/>
+        /// which is the set that is used when calling this overload.
+        /// Additionally, <see cref="NumberFormatRules.RuleSetNames"/> property can be used to see a list of all
+        /// of the publically available rule set names which can be supplied to an overload that accepts a
+        /// <c>ruleSetName</c> argument.
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="presentation"/> is not one of the values in the
+        /// <see cref="NumberPresentation"/> enum.</exception>
+        /// <exception cref="NotSupportedException"><paramref name="provider"/> is of type <see cref="NumberFormatInfo"/>.</exception>
+        /// <draft>ICU 60.1</draft>
+        [CLSCompliant(false)]
+        public static string ToString(this UInt128 value, NumberPresentation presentation, IFormatProvider? provider)
+        {
+            return IcuNumber.FormatUInt128RuleBased(value, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
+        }
+#endif 
+
         // nuint
 
         /// <summary>
@@ -2949,6 +3059,120 @@ namespace ICU4N
         {
             return IcuNumber.TryFormatUInt64RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
+
+        // UInt128
+
+#if FEATURE_INT128
+        /// <summary>
+        /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
+        /// <paramref name="presentation"/>, <paramref name="ruleSetName"/> and <paramref name="provider"/>.
+        /// </summary>
+        /// <param name="value">The numeric value to format.</param>
+        /// <param name="destination">The span in which to write the <paramref name="value"/> formatted as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in
+        /// <paramref name="destination"/>.</param>
+        /// <param name="presentation">A <see cref="NumberPresentation"/> to select the appropriate rule-based formatter.</param>
+        /// <param name="ruleSetName">The name of the rule set to format the number with.
+        /// This must be the name of a valid public rule set for the selected formatter, which can be found using
+        /// the <see cref="NumberFormatRules.RuleSetNames"/> property of <see cref="UNumberFormatInfo.SpellOut"/>,
+        /// <see cref="UNumberFormatInfo.Ordinal"/>, <see cref="UNumberFormatInfo.Duration"/> or
+        /// <see cref="UNumberFormatInfo.NumberingSystem"/> or <c>null</c> to use the formatter's default rule set.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information for this operation.
+        /// Supported providers are <see cref="CultureInfo"/>, <see cref="UCultureInfo"/> and
+        /// <see cref="UNumberFormatInfo"/>.</param>
+        /// <returns><c>true</c> if the formatting was successful; otherwise, <c>false</c>.</returns>
+        /// <remarks>
+        /// This number formatter is typically used for spelling out numeric values in words (e.g., 25,3476 as
+        /// "twenty-five thousand three hundred seventy-six" or "vingt-cinq mille trois cents soixante-seize"
+        /// or "funfundzwanzigtausenddreihundertsechsundsiebzig"), but can also be used for other complicated
+        /// formatting tasks, such as formatting a number of seconds as hours, minutes and seconds
+        /// (e.g., 3,730 as "1:02:10").
+        /// <para/>
+        /// The resources contain four predefined formatters for each locale: spellout, which
+        /// spells out a value in words (123 is "one hundred twenty-three"); ordinal, which
+        /// appends an ordinal suffix to the end of a numeral (123 is "123rd");
+        /// duration, which shows a duration in seconds as hours, minutes, and seconds (123 is
+        /// "2:03"), and numbering system, which contain algorithmic numbering systems such as
+        /// <c>%hebrew</c> for Hebrew numbers or <c>%roman-upper</c>
+        /// for upper-case Roman numerals.
+        /// <para/>
+        /// Each value in <see cref="NumberPresentation"/> corresponds to a <see cref="NumberFormatRules"/>
+        /// instance that is available in the <see cref="UNumberFormatInfo"/> instance returned from the
+        /// <see cref="IFormatProvider.GetFormat(Type?)"/> method of the specified <paramref name="provider"/>.
+        /// The instances can be inspected using the <see cref="UNumberFormatInfo.SpellOut"/>,
+        /// <see cref="UNumberFormatInfo.Ordinal"/>, <see cref="UNumberFormatInfo.Duration"/> or
+        /// <see cref="UNumberFormatInfo.NumberingSystem"/> properties of that instance.
+        /// <para/>
+        /// A <see cref="NumberFormatRules"/> instance may have more than one rule set. There is a
+        /// default rule set, which is available from <see cref="NumberFormatRules.DefaultRuleSetName"/>.
+        /// This is the rule set that is applied if the <paramref name="ruleSetName"/> is <c>null</c>.
+        /// Additionally, <see cref="NumberFormatRules.RuleSetNames"/> property can be used to see a list of all
+        /// of the publically available rule set names which can be supplied as the <paramref name="ruleSetName"/> argument.
+        /// </remarks>
+        /// <exception cref="ArgumentException"><paramref name="ruleSetName"/> is not a public rule set for the formatter
+        /// specified by <paramref name="presentation"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="presentation"/> is not one of the values in the
+        /// <see cref="NumberPresentation"/> enum.</exception>
+        /// <exception cref="NotSupportedException"><paramref name="provider"/> is of type <see cref="NumberFormatInfo"/>.</exception>
+        /// <draft>ICU 60.1</draft>
+        [CLSCompliant(false)]
+        public static bool TryFormat(this UInt128 value, Span<char> destination, out int charsWritten, NumberPresentation presentation, string? ruleSetName = default, IFormatProvider? provider = default)
+        {
+            return IcuNumber.TryFormatUInt128RuleBased(value, destination, out charsWritten, presentation, ruleSetName, UNumberFormatInfo.GetInstance(provider));
+        }
+
+        /// <summary>
+        /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
+        /// <paramref name="presentation"/> and <paramref name="provider"/>.
+        /// </summary>
+        /// <param name="value">The numeric value to format.</param>
+        /// <param name="destination">The span in which to write the <paramref name="value"/> formatted as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in
+        /// <paramref name="destination"/>.</param>
+        /// <param name="presentation">A <see cref="NumberPresentation"/> to select the appropriate rule-based formatter.</param>
+        /// <param name="provider">An object that supplies culture-specific formatting information for this operation.
+        /// Supported providers are <see cref="CultureInfo"/>, <see cref="UCultureInfo"/> and
+        /// <see cref="UNumberFormatInfo"/>.</param>
+        /// <returns><c>true</c> if the formatting was successful; otherwise, <c>false</c>.</returns>
+        /// <remarks>
+        /// This number formatter is typically used for spelling out numeric values in words (e.g., 25,3476 as
+        /// "twenty-five thousand three hundred seventy-six" or "vingt-cinq mille trois cents soixante-seize"
+        /// or "funfundzwanzigtausenddreihundertsechsundsiebzig"), but can also be used for other complicated
+        /// formatting tasks, such as formatting a number of seconds as hours, minutes and seconds
+        /// (e.g., 3,730 as "1:02:10").
+        /// <para/>
+        /// The resources contain four predefined formatters for each locale: spellout, which
+        /// spells out a value in words (123 is "one hundred twenty-three"); ordinal, which
+        /// appends an ordinal suffix to the end of a numeral (123 is "123rd");
+        /// duration, which shows a duration in seconds as hours, minutes, and seconds (123 is
+        /// "2:03"), and numbering system, which contain algorithmic numbering systems such as
+        /// <c>%hebrew</c> for Hebrew numbers or <c>%roman-upper</c>
+        /// for upper-case Roman numerals.
+        /// <para/>
+        /// Each value in <see cref="NumberPresentation"/> corresponds to a <see cref="NumberFormatRules"/>
+        /// instance that is available in the <see cref="UNumberFormatInfo"/> instance returned from the
+        /// <see cref="IFormatProvider.GetFormat(Type?)"/> method of the specified <paramref name="provider"/>.
+        /// The instances can be inspected using the <see cref="UNumberFormatInfo.SpellOut"/>,
+        /// <see cref="UNumberFormatInfo.Ordinal"/>, <see cref="UNumberFormatInfo.Duration"/> or
+        /// <see cref="UNumberFormatInfo.NumberingSystem"/> properties of that instance.
+        /// <para/>
+        /// A <see cref="NumberFormatRules"/> instance may have more than one rule set. There is a
+        /// default rule set, which is available from <see cref="NumberFormatRules.DefaultRuleSetName"/>
+        /// which is the set that is used when calling this overload.
+        /// Additionally, <see cref="NumberFormatRules.RuleSetNames"/> property can be used to see a list of all
+        /// of the publically available rule set names which can be supplied to an overload that accepts a
+        /// <c>ruleSetName</c> argument.
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="presentation"/> is not one of the values in the
+        /// <see cref="NumberPresentation"/> enum.</exception>
+        /// <exception cref="NotSupportedException"><paramref name="provider"/> is of type <see cref="NumberFormatInfo"/>.</exception>
+        /// <draft>ICU 60.1</draft>
+        [CLSCompliant(false)]
+        public static bool TryFormat(this UInt128 value, Span<char> destination, out int charsWritten, NumberPresentation presentation, IFormatProvider? provider)
+        {
+            return IcuNumber.TryFormatUInt128RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
+        }
+#endif 
 
         // nuint
 

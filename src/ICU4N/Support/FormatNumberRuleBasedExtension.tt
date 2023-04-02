@@ -85,6 +85,7 @@ namespace ICU4N
             break;
         case "BigInteger":
         case "Int128":
+        case "UInt128":
             methodType = name;
             break;
         default:
@@ -228,6 +229,7 @@ namespace ICU4N
             break;
         case "BigInteger":
         case "Int128":
+        case "UInt128":
             methodType = name;
             break;
         default:

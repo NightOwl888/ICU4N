@@ -121,6 +121,33 @@ namespace ICU4N
                 AppendConvertedDigits(ref sb, temp, info);
             }
         }
+
+        /// <summary>Formats the specified value according to the specified format and info.</summary>
+        /// <returns>
+        /// Non-null if an existing string can be returned, in which case the builder will be unmodified.
+        /// Null if no existing string was returned, in which case the formatted output is in the builder.
+        /// </returns>
+        private static unsafe void FormatUInt128(ref ValueStringBuilder sb, UInt128 value, ReadOnlySpan<char> format, UNumberFormatInfo info, int[]? numberGroupSizesOverride)
+        {
+            Debug.Assert(info != null);
+
+            char* pTempFormatted = stackalloc char[CharStackBufferSize];
+            Span<char> tempFormatted = new Span<char>(pTempFormatted, CharStackBufferSize);
+            var nfi = ToNumberFormatInfo(info, numberGroupSizesOverride);
+            if (value.TryFormat(tempFormatted, out int charsWrittenTemp, format, nfi))
+            {
+                AppendConvertedDigits(ref sb, new ReadOnlySpan<char>(pTempFormatted, charsWrittenTemp), info);
+            }
+            else
+            {
+                // NOTE: TryFormat above should have already thrown if any of the parameters are invalid,
+                // so we don't try/catch here.
+
+                // We didn't have enough buffer on the stack. Do it the slow way.
+                string temp = value.ToString(new string(format), nfi);
+                AppendConvertedDigits(ref sb, temp, info);
+            }
+        }
 #endif
 
 
@@ -463,6 +490,60 @@ namespace ICU4N
 
             var sb = new ValueStringBuilder(stackalloc char[RuleBasedCharStackBufferSize]);
             FormatInt128RuleBased(ref sb, value, rules, ruleSetName, info);
+            return sb.TryCopyTo(destination, out charsWritten);
+        }
+
+
+
+        public static string FormatUInt128RuleBased(UInt128 value, NumberPresentation presentation, string? ruleSetName, UNumberFormatInfo info)
+        {
+            Debug.Assert(info != null);
+
+            return FormatUInt128RuleBased(value, rules: presentation.ToNumberFormatRules(info), ruleSetName, info);
+        }
+
+        public static string FormatUInt128RuleBased(UInt128 value, NumberFormatRules rules, string? ruleSetName, UNumberFormatInfo info)
+        {
+            Debug.Assert(rules != null);
+            Debug.Assert(info != null);
+
+            var sb = new ValueStringBuilder(stackalloc char[RuleBasedCharStackBufferSize]);
+            FormatUInt128RuleBased(ref sb, value, rules, ruleSetName, info);
+            return sb.ToString();
+        }
+
+        public static void FormatUInt128RuleBased(ref ValueStringBuilder sb, UInt128 value, NumberFormatRules rules, string? ruleSetName, UNumberFormatInfo info)
+        {
+            Debug.Assert(rules != null);
+            Debug.Assert(info != null);
+
+            if (value <= long.MaxValue)
+            {
+                FormatInt64RuleBased(ref sb, (long)value, rules, ruleSetName, info);
+            }
+            else
+            {
+                // We're outside of our normal range that this framework can handle.
+                // The DecimalFormat will provide more accurate results.
+                FormatUInt128(ref sb, value, info.NumberPattern, info, info.decimalPatternProperties.GroupingSizes);
+            }
+        }
+
+        public static bool TryFormatUInt128RuleBased(UInt128 value, Span<char> destination, out int charsWritten, NumberPresentation presentation, string? ruleSetName, UNumberFormatInfo info)
+        {
+            Debug.Assert(info != null);
+
+            NumberFormatRules rules = presentation.ToNumberFormatRules(info);
+            return TryFormatUInt128RuleBased(value, destination, out charsWritten, rules, ruleSetName, info);
+        }
+
+        public static bool TryFormatUInt128RuleBased(UInt128 value, Span<char> destination, out int charsWritten, NumberFormatRules rules, string? ruleSetName, UNumberFormatInfo info)
+        {
+            Debug.Assert(rules != null);
+            Debug.Assert(info != null);
+
+            var sb = new ValueStringBuilder(stackalloc char[RuleBasedCharStackBufferSize]);
+            FormatUInt128RuleBased(ref sb, value, rules, ruleSetName, info);
             return sb.TryCopyTo(destination, out charsWritten);
         }
 #endif
