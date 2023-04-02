@@ -124,7 +124,7 @@ namespace ICU4N.Text
         /// <returns></returns>
         /// <exception cref="NotSupportedException">Always.</exception>
         /// <stable>ICU 49</stable>
-#if FEATURE_CURRENCYFORMATTING
+#if FEATURE_FIELDPOSITION && FEATURE_CURRENCYFORMATTING
         public
 #else
         internal

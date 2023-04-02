@@ -2143,7 +2143,7 @@ namespace ICU4N.Dev.Test.Format
         }
     }
 
-    public class RbnfFormattterSettings
+    internal class RbnfFormattterSettings
     {
         public readonly UCultureInfo locale = null;
         public readonly NumberPresentation format = default;
