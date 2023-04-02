@@ -204,7 +204,7 @@ namespace ICU4N.Globalization
             });
         }
 
-        public static bool IsDefaultCandidateRule(ReadOnlySpan<char> ruleText)
+        private static bool IsDefaultCandidateRule(ReadOnlySpan<char> ruleText)
             => IsNamedRule(ruleText, SpelloutNumberingRuleName) ||
             IsNamedRule(ruleText, DigitsOrdinalRuleName) ||
             IsNamedRule(ruleText, DurationRuleName);
