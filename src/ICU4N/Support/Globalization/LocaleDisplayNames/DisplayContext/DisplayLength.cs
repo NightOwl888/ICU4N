@@ -14,12 +14,12 @@ namespace ICU4N.Globalization
         /// This is the default behavior.
         /// </summary>
         /// <draft>ICU 60</draft>
-        Full,
+        Full = 0,
         /// <summary>
         /// Use short names when generating a locale name,
         /// e.g. "U.S." for US.
         /// </summary>
         /// <draft>ICU 60</draft>
-        Short,
+        Short = 1,
     }
 }

@@ -15,7 +15,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Gets or sets the capitalization display context for number formatting,
-        /// such as <see cref="Capitalization.Standalone"/>.
+        /// such as <see cref="Capitalization.ForStandalone"/>.
         /// </summary>
         /// <draft>ICU 60.1</draft>
         public Capitalization Capitalization

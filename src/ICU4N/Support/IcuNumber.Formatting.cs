@@ -776,9 +776,9 @@ namespace ICU4N
                 return;
             }
 
-            if (info.Capitalization == Capitalization.BeginningOfSentence ||
-                (info.Capitalization == Capitalization.UIListOrMenu && info.capitalizationForListOrMenu) ||
-                (info.Capitalization == Capitalization.Standalone && info.capitalizationForStandAlone))
+            if (info.Capitalization == Capitalization.ForBeginningOfSentence ||
+                (info.Capitalization == Capitalization.ForUIListOrMenu && info.capitalizationForListOrMenu) ||
+                (info.Capitalization == Capitalization.ForStandalone && info.capitalizationForStandAlone))
             {
                 // ICU4N TODO: We could save heap allocations if we pass through the Span<char> or ValueStringBuilder to accomplish the capitalization in place.
 

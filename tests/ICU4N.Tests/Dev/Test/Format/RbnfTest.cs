@@ -1899,14 +1899,14 @@ namespace ICU4N.Dev.Test.Format
         public void TestContext_IcuNumber()
         {
             TextCapiltaizationItem[] items = new TextCapiltaizationItem[] {
-                new TextCapiltaizationItem( "sv", NumberPresentation.SpellOut, Capitalization.MiddleOfSentence,     123.45, "ett\u00ADhundra\u00ADtjugo\u00ADtre komma fyra fem" ),
-                new TextCapiltaizationItem( "sv", NumberPresentation.SpellOut, Capitalization.BeginningOfSentence,  123.45, "Ett\u00ADhundra\u00ADtjugo\u00ADtre komma fyra fem" ),
-                new TextCapiltaizationItem( "sv", NumberPresentation.SpellOut, Capitalization.UIListOrMenu,         123.45, "ett\u00ADhundra\u00ADtjugo\u00ADtre komma fyra fem" ),
-                new TextCapiltaizationItem( "sv", NumberPresentation.SpellOut, Capitalization.Standalone,           123.45, "ett\u00ADhundra\u00ADtjugo\u00ADtre komma fyra fem" ),
-                new TextCapiltaizationItem( "en", NumberPresentation.SpellOut, Capitalization.MiddleOfSentence,     123.45, "one hundred twenty-three point four five" ),
-                new TextCapiltaizationItem( "en", NumberPresentation.SpellOut, Capitalization.BeginningOfSentence,  123.45, "One hundred twenty-three point four five" ),
-                new TextCapiltaizationItem( "en", NumberPresentation.SpellOut, Capitalization.UIListOrMenu,         123.45, "One hundred twenty-three point four five" ),
-                new TextCapiltaizationItem( "en", NumberPresentation.SpellOut, Capitalization.Standalone,           123.45, "One hundred twenty-three point four five" ),
+                new TextCapiltaizationItem( "sv", NumberPresentation.SpellOut, Capitalization.ForMiddleOfSentence,     123.45, "ett\u00ADhundra\u00ADtjugo\u00ADtre komma fyra fem" ),
+                new TextCapiltaizationItem( "sv", NumberPresentation.SpellOut, Capitalization.ForBeginningOfSentence,  123.45, "Ett\u00ADhundra\u00ADtjugo\u00ADtre komma fyra fem" ),
+                new TextCapiltaizationItem( "sv", NumberPresentation.SpellOut, Capitalization.ForUIListOrMenu,         123.45, "ett\u00ADhundra\u00ADtjugo\u00ADtre komma fyra fem" ),
+                new TextCapiltaizationItem( "sv", NumberPresentation.SpellOut, Capitalization.ForStandalone,           123.45, "ett\u00ADhundra\u00ADtjugo\u00ADtre komma fyra fem" ),
+                new TextCapiltaizationItem( "en", NumberPresentation.SpellOut, Capitalization.ForMiddleOfSentence,     123.45, "one hundred twenty-three point four five" ),
+                new TextCapiltaizationItem( "en", NumberPresentation.SpellOut, Capitalization.ForBeginningOfSentence,  123.45, "One hundred twenty-three point four five" ),
+                new TextCapiltaizationItem( "en", NumberPresentation.SpellOut, Capitalization.ForUIListOrMenu,         123.45, "One hundred twenty-three point four five" ),
+                new TextCapiltaizationItem( "en", NumberPresentation.SpellOut, Capitalization.ForStandalone,           123.45, "One hundred twenty-three point four five" ),
             };
             foreach (TextCapiltaizationItem item in items)
             {
