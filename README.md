@@ -24,6 +24,7 @@ Here are some of the major features that have been ported:
 7. [RuleBasedCollator](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/RuleBasedCollator.html)
 8. [Transliterator](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/Transliterator.html)
 9. [RuleBasedTransliterator](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/RuleBasedTransliterator.html)
+10. [RuleBasedNumberFormat](https://unicode-org.github.io/icu-docs/apidoc/released/icu4j/index.html?com/ibm/icu/text/RuleBasedNumberFormat.html) - only formatting from number > string is supported by calling members of the `ICU4N.Text.FormatNumberRuleBased` class or by using them as extension methods from [System.Byte](https://learn.microsoft.com/en-us/dotnet/api/system.byte), [System.Int16](https://learn.microsoft.com/en-us/dotnet/api/system.int16), [System.Int32](https://learn.microsoft.com/en-us/dotnet/api/system.int32), [System.Int64](https://learn.microsoft.com/en-us/dotnet/api/system.int64), [System.Int128](https://learn.microsoft.com/en-us/dotnet/api/system.int128), [System.Numerics.BigInteger](https://learn.microsoft.com/en-us/dotnet/api/system.numerics.biginteger), [System.SByte](https://learn.microsoft.com/en-us/dotnet/api/system.sbyte), [System.IntPtr](https://learn.microsoft.com/en-us/dotnet/api/system.intptr), [System.UInt16](https://learn.microsoft.com/en-us/dotnet/api/system.uint16), [System.UInt32](https://learn.microsoft.com/en-us/dotnet/api/system.uint32), [System.UInt64](https://learn.microsoft.com/en-us/dotnet/api/system.uint64), [System.UInt128](https://learn.microsoft.com/en-us/dotnet/api/system.uint128), [System.Half](https://learn.microsoft.com/en-us/dotnet/api/system.half), [System.Single](https://learn.microsoft.com/en-us/dotnet/api/system.single), [System.Double](https://learn.microsoft.com/en-us/dotnet/api/system.Double), or [System.Decimal](https://learn.microsoft.com/en-us/dotnet/api/system.decimal).
 
 
 There are several other features too numerous to mention, but APIs are currently in flux between releases. We have over 4200 passing tests, most failures are just due to missing dependencies.
@@ -63,11 +64,11 @@ There are 2 ways to deploy resources with ICU4N.
 
 ### Default Satellite Assemblies
 
-By default, ICU4N includes a transient dependency on [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/), which includes satellite assemblies for all features and languages. For most projects, this should suffice.
+By default, ICU4N includes a transitive dependency on [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/), which includes satellite assemblies for all features and languages. For most projects, this should suffice.
 
 It is recommended to use the default set of data for class libraries that are deployed via NuGet to be shared, and to only consider using custom subsets of data for executable projects. This gives every consumer of a shared library a chance to customize the ICU resource data.
 
-> **NOTE:** For SDK-Style projects that target `net40` or `net403`, the transient dependency is on [ICU4N.Resources.NETFramework4.0](https://www.nuget.org/packages/ICU4N.Resources.NETFramework4.0/). This package contains exactly the same files as [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/) and only exists to work around the fact that NuGet doesn't support a single target framework to deploy satellite assemblies to targets below `net45` as well as targets that support `netstandard1.0` (which supports `net45` and higher).
+> **NOTE:** For SDK-Style projects that target `net40` or `net403`, the transitive dependency is on [ICU4N.Resources.NETFramework4.0](https://www.nuget.org/packages/ICU4N.Resources.NETFramework4.0/). This package contains exactly the same files as [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/) and only exists to work around the fact that NuGet doesn't support a single target framework to deploy satellite assemblies to targets below `net45` as well as targets that support `netstandard1.0` (which supports `net45` and higher).
 
 ### Custom Satellite Assemblies
 
@@ -84,7 +85,7 @@ The satellite assemblies are located in folders named like `<culture name>/ICU4N
 
 > **IMPORTANT:** There is a common satellite assembly named `ICU4N.resources.dll` that sits in the assembly directory. This file must always be included for ICU4N to function when using satellite assemblies.
 
-When including custom resource data with ICU4N, be sure to exclude the transitive dependencies from ICU4N as described in [Removing the default Transient Dependency on ICU4N.Resources](removing-the-default-transient-dependency-on-ICU4N.Resources).
+When including custom resource data with ICU4N, be sure to exclude the transitive dependencies from ICU4N as described in [Removing the default Transitive Dependency on ICU4N.Resources](removing-the-default-transitive-dependency-on-ICU4N.Resources).
 
 ### Custom Resource Files
 
@@ -94,11 +95,11 @@ Reducing resource data is an advanced topic. See the [ICU Data](https://unicode-
 
 Resources will be detected automatically if they are in the `/data/` directory. Note that including the versioned subdirectory (such as `icudt60b`) is required.
 
-When including custom resource data with ICU4N, be sure to exclude the transitive dependencies from ICU4N as described in [Removing the default Transient Dependency on ICU4N.Resources](removing-the-default-transient-dependency-on-ICU4N.Resources).
+When including custom resource data with ICU4N, be sure to exclude the transitive dependencies from ICU4N as described in [Removing the default Transitive Dependency on ICU4N.Resources](removing-the-default-transitive-dependency-on-ICU4N.Resources).
 
-### Removing the default Transient Dependency on ICU4N.Resources
+### Removing the default Transitive Dependency on ICU4N.Resources
 
-To deploy custom resources via NuGet with your project, you must remove the transient dependency on the [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/) package so the full set of resources isn't accidentally deployed to projects that consume yours. This can be done using the [ExcludeAssets](https://learn.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#controlling-dependency-assets) flag called `buildTransitive`.
+To deploy custom resources via NuGet with your project, you must remove the transitive dependency on the [ICU4N.Resources](https://www.nuget.org/packages/ICU4N.Resources/) package so the full set of resources isn't accidentally deployed to projects that consume yours. This can be done using the [ExcludeAssets](https://learn.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#controlling-dependency-assets) flag called `buildTransitive`.
 
 ```xml
 <ItemGroup>
