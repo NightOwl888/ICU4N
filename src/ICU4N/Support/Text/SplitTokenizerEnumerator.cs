@@ -7,6 +7,163 @@ namespace ICU4N.Text
     /// </summary>
     internal static class SplitTokenizerExtensions
     {
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+        /// <summary>
+        /// Creates an enumerator that splits this <see cref="ReadOnlySpan{T}"/> based on the <paramref name="delimiter"/>. This is
+        /// intended for use within a foreach loop.
+        /// </summary>
+        /// <param name="text">This <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <param name="delimiter">The sequence to consider delimiters between tokens.</param>
+        /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
+        public static SplitTokenizerEnumerator AsTokens(this ReadOnlySpan<char> text, string delimiter)
+        {
+            return new SplitTokenizerEnumerator(text, delimiter.AsSpan(), delimiter.Length, ReadOnlySpan<char>.Empty, TrimBehavior.StartAndEnd);
+        }
+
+        /// <summary>
+        /// Creates an enumerator that splits this <see cref="ReadOnlySpan{T}"/> based on the <paramref name="delimiter"/>. This is
+        /// intended for use within a foreach loop.
+        /// </summary>
+        /// <param name="text">This <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <param name="delimiter">The sequence to consider delimiters between tokens.</param>
+        /// <param name="delimiterLength">The actual length of the delimiter. This is the value used when determining the strings to return.
+        /// This can be used to adjust the beginning of the text in the output, for example, matching on the string ';%' the actual length is 2,
+        /// but including the '%' character as part of the (next) output string, this can be specified as 1 here.</param>
+        /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="delimiterLength"/> is less than zero.</exception>
+        public static SplitTokenizerEnumerator AsTokens(this ReadOnlySpan<char> text, string delimiter, int delimiterLength)
+        {
+            return new SplitTokenizerEnumerator(text, delimiter.AsSpan(), delimiterLength, ReadOnlySpan<char>.Empty, TrimBehavior.StartAndEnd);
+        }
+
+        /// <summary>
+        /// Creates an enumerator that splits this <see cref="ReadOnlySpan{T}"/> based on the <paramref name="delimiter"/>.
+        /// Trims the <paramref name="trimChars"/> from each token. This is intended for use within a foreach loop.
+        /// </summary>
+        /// <param name="text">This <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <param name="delimiter">The sequence to consider delimiters between tokens.</param>
+        /// <param name="trimChars">The span which contains the set of characters to remove.</param>
+        /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
+        public static SplitTokenizerEnumerator AsTokens(this ReadOnlySpan<char> text, string delimiter, string trimChars)
+        {
+            return new SplitTokenizerEnumerator(text, delimiter.AsSpan(), delimiter.Length, trimChars.AsSpan(), TrimBehavior.StartAndEnd);
+        }
+
+        /// <summary>
+        /// Creates an enumerator that splits this <see cref="ReadOnlySpan{T}"/> based on the <paramref name="delimiter"/>.
+        /// Trims the <paramref name="trimChars"/> from each token. This is intended for use within a foreach loop.
+        /// </summary>
+        /// <param name="text">This <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <param name="delimiter">The sequence to consider delimiters between tokens.</param>
+        /// <param name="trimChars">The span which contains the set of characters to remove.</param>
+        /// <param name="trimBehavior">Bitwise flags to determine whether to trim the beginning of the string, the end of the string, or both.</param>
+        /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
+        public static SplitTokenizerEnumerator AsTokens(this ReadOnlySpan<char> text, string delimiter, string trimChars, TrimBehavior trimBehavior)
+        {
+            return new SplitTokenizerEnumerator(text, delimiter.AsSpan(), delimiter.Length, trimChars.AsSpan(), trimBehavior);
+        }
+
+        /// <summary>
+        /// Creates an enumerator that splits this <see cref="ReadOnlySpan{T}"/> based on the <paramref name="delimiter"/>.
+        /// Trims the <paramref name="trimChars"/> from each token. This is intended for use within a foreach loop.
+        /// </summary>
+        /// <param name="text">This <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <param name="delimiter">The sequence to consider delimiters between tokens.</param>
+        /// <param name="delimiterLength">The actual length of the delimiter. This is the value used when determining the strings to return.
+        /// This can be used to adjust the beginning of the text in the output, for example, matching on the string ';%' the actual length is 2,
+        /// but including the '%' character as part of the (next) output string, this can be specified as 1 here.</param>
+        /// <param name="trimChars">The span which contains the set of characters to remove.</param>
+        /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="delimiterLength"/> is less than zero.</exception>
+        public static SplitTokenizerEnumerator AsTokens(this ReadOnlySpan<char> text, string delimiter, int delimiterLength, string trimChars)
+        {
+            return new SplitTokenizerEnumerator(text, delimiter.AsSpan(), delimiterLength, trimChars.AsSpan(), TrimBehavior.StartAndEnd);
+        }
+
+        /// <summary>
+        /// Creates an enumerator that splits this <see cref="ReadOnlySpan{T}"/> based on the <paramref name="delimiter"/>.
+        /// Trims the <paramref name="trimChars"/> from each token. This is intended for use within a foreach loop.
+        /// </summary>
+        /// <param name="text">This <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <param name="delimiter">The sequence to consider delimiters between tokens.</param>
+        /// <param name="delimiterLength">The actual length of the delimiter. This is the value used when determining the strings to return.
+        /// This can be used to adjust the beginning of the text in the output, for example, matching on the string ';%' the actual length is 2,
+        /// but including the '%' character as part of the (next) output string, this can be specified as 1 here.</param>
+        /// <param name="trimChars">The span which contains the set of characters to remove.</param>
+        /// <param name="trimBehavior">Bitwise flags to determine whether to trim the beginning of the string, the end of the string, or both.</param>
+        /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="delimiterLength"/> is less than zero.</exception>
+        public static SplitTokenizerEnumerator AsTokens(this ReadOnlySpan<char> text, string delimiter, int delimiterLength, string trimChars, TrimBehavior trimBehavior)
+        {
+            return new SplitTokenizerEnumerator(text, delimiter.AsSpan(), delimiterLength, trimChars.AsSpan(), trimBehavior);
+        }
+
+        // string, ReadOnlySpan<char>
+
+        /// <summary>
+        /// Creates an enumerator that splits this <see cref="ReadOnlySpan{T}"/> based on the <paramref name="delimiter"/>.
+        /// Trims the <paramref name="trimChars"/> from each token. This is intended for use within a foreach loop.
+        /// </summary>
+        /// <param name="text">This <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <param name="delimiter">The sequence to consider delimiters between tokens.</param>
+        /// <param name="trimChars">The span which contains the set of characters to remove.</param>
+        /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
+        public static SplitTokenizerEnumerator AsTokens(this ReadOnlySpan<char> text, string delimiter, ReadOnlySpan<char> trimChars)
+        {
+            return new SplitTokenizerEnumerator(text, delimiter.AsSpan(), delimiter.Length, trimChars, TrimBehavior.StartAndEnd);
+        }
+
+        /// <summary>
+        /// Creates an enumerator that splits this <see cref="ReadOnlySpan{T}"/> based on the <paramref name="delimiter"/>.
+        /// Trims the <paramref name="trimChars"/> from each token. This is intended for use within a foreach loop.
+        /// </summary>
+        /// <param name="text">This <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <param name="delimiter">The sequence to consider delimiters between tokens.</param>
+        /// <param name="trimChars">The span which contains the set of characters to remove.</param>
+        /// <param name="trimBehavior">Bitwise flags to determine whether to trim the beginning of the string, the end of the string, or both.</param>
+        /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
+        public static SplitTokenizerEnumerator AsTokens(this ReadOnlySpan<char> text, string delimiter, ReadOnlySpan<char> trimChars, TrimBehavior trimBehavior)
+        {
+            return new SplitTokenizerEnumerator(text, delimiter.AsSpan(), delimiter.Length, trimChars, trimBehavior);
+        }
+
+        /// <summary>
+        /// Creates an enumerator that splits this <see cref="ReadOnlySpan{T}"/> based on the <paramref name="delimiter"/>.
+        /// Trims the <paramref name="trimChars"/> from each token. This is intended for use within a foreach loop.
+        /// </summary>
+        /// <param name="text">This <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <param name="delimiter">The sequence to consider delimiters between tokens.</param>
+        /// <param name="delimiterLength">The actual length of the delimiter. This is the value used when determining the strings to return.
+        /// This can be used to adjust the beginning of the text in the output, for example, matching on the string ';%' the actual length is 2,
+        /// but including the '%' character as part of the (next) output string, this can be specified as 1 here.</param>
+        /// <param name="trimChars">The span which contains the set of characters to remove.</param>
+        /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="delimiterLength"/> is less than zero.</exception>
+        public static SplitTokenizerEnumerator AsTokens(this ReadOnlySpan<char> text, string delimiter, int delimiterLength, ReadOnlySpan<char> trimChars)
+        {
+            return new SplitTokenizerEnumerator(text, delimiter.AsSpan(), delimiterLength, trimChars, TrimBehavior.StartAndEnd);
+        }
+
+        /// <summary>
+        /// Creates an enumerator that splits this <see cref="ReadOnlySpan{T}"/> based on the <paramref name="delimiter"/>.
+        /// Trims the <paramref name="trimChars"/> from each token. This is intended for use within a foreach loop.
+        /// </summary>
+        /// <param name="text">This <see cref="ReadOnlySpan{T}"/>.</param>
+        /// <param name="delimiter">The sequence to consider delimiters between tokens.</param>
+        /// <param name="delimiterLength">The actual length of the delimiter. This is the value used when determining the strings to return.
+        /// This can be used to adjust the beginning of the text in the output, for example, matching on the string ';%' the actual length is 2,
+        /// but including the '%' character as part of the (next) output string, this can be specified as 1 here.</param>
+        /// <param name="trimChars">The span which contains the set of characters to remove.</param>
+        /// <param name="trimBehavior">Bitwise flags to determine whether to trim the beginning of the string, the end of the string, or both.</param>
+        /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="delimiterLength"/> is less than zero.</exception>
+        public static SplitTokenizerEnumerator AsTokens(this ReadOnlySpan<char> text, string delimiter, int delimiterLength, ReadOnlySpan<char> trimChars, TrimBehavior trimBehavior)
+        {
+            return new SplitTokenizerEnumerator(text, delimiter.AsSpan(), delimiterLength, trimChars, trimBehavior);
+        }
+#endif
+
+
         /// <summary>
         /// Creates an enumerator that splits this <see cref="ReadOnlySpan{T}"/> based on the <paramref name="delimiter"/>. This is
         /// intended for use within a foreach loop.
@@ -147,7 +304,11 @@ namespace ICU4N.Text
         /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
         public static SplitTokenizerEnumerator AsTokens(this string text, ReadOnlySpan<char> delimiter)
         {
+#if FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
             return new SplitTokenizerEnumerator(text, delimiter, delimiter.Length, ReadOnlySpan<char>.Empty, TrimBehavior.StartAndEnd);
+#else
+            return new SplitTokenizerEnumerator(text.AsSpan(), delimiter, delimiter.Length, ReadOnlySpan<char>.Empty, TrimBehavior.StartAndEnd);
+#endif
         }
 
         /// <summary>
@@ -163,7 +324,11 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="delimiterLength"/> is less than zero.</exception>
         public static SplitTokenizerEnumerator AsTokens(this string text, ReadOnlySpan<char> delimiter, int delimiterLength)
         {
+#if FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
             return new SplitTokenizerEnumerator(text, delimiter, delimiterLength, ReadOnlySpan<char>.Empty, TrimBehavior.StartAndEnd);
+#else
+            return new SplitTokenizerEnumerator(text.AsSpan(), delimiter, delimiterLength, ReadOnlySpan<char>.Empty, TrimBehavior.StartAndEnd);
+#endif
         }
 
         /// <summary>
@@ -176,7 +341,11 @@ namespace ICU4N.Text
         /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
         public static SplitTokenizerEnumerator AsTokens(this string text, ReadOnlySpan<char> delimiter, ReadOnlySpan<char> trimChars)
         {
+#if FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
             return new SplitTokenizerEnumerator(text, delimiter, delimiter.Length, trimChars, TrimBehavior.StartAndEnd);
+#else
+            return new SplitTokenizerEnumerator(text.AsSpan(), delimiter, delimiter.Length, trimChars, TrimBehavior.StartAndEnd);
+#endif
         }
 
         /// <summary>
@@ -190,7 +359,11 @@ namespace ICU4N.Text
         /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
         public static SplitTokenizerEnumerator AsTokens(this string text, ReadOnlySpan<char> delimiter, ReadOnlySpan<char> trimChars, TrimBehavior trimBehavior)
         {
+#if FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
             return new SplitTokenizerEnumerator(text, delimiter, delimiter.Length, trimChars, trimBehavior);
+#else
+            return new SplitTokenizerEnumerator(text.AsSpan(), delimiter, delimiter.Length, trimChars, trimBehavior);
+#endif
         }
 
         /// <summary>
@@ -207,7 +380,11 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="delimiterLength"/> is less than zero.</exception>
         public static SplitTokenizerEnumerator AsTokens(this string text, ReadOnlySpan<char> delimiter, int delimiterLength, ReadOnlySpan<char> trimChars)
         {
+#if FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
             return new SplitTokenizerEnumerator(text, delimiter, delimiterLength, trimChars, TrimBehavior.StartAndEnd);
+#else
+            return new SplitTokenizerEnumerator(text.AsSpan(), delimiter, delimiterLength, trimChars, TrimBehavior.StartAndEnd);
+#endif
         }
 
         /// <summary>
@@ -225,7 +402,11 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="delimiterLength"/> is less than zero.</exception>
         public static SplitTokenizerEnumerator AsTokens(this string text, ReadOnlySpan<char> delimiter, int delimiterLength, ReadOnlySpan<char> trimChars, TrimBehavior trimBehavior)
         {
+#if FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
             return new SplitTokenizerEnumerator(text, delimiter, delimiterLength, trimChars, trimBehavior);
+#else
+            return new SplitTokenizerEnumerator(text.AsSpan(), delimiter, delimiterLength, trimChars, trimBehavior);
+#endif
         }
 
         /// <summary>
@@ -237,7 +418,11 @@ namespace ICU4N.Text
         /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
         public static SplitTokenizerEnumerator AsTokens(this string text, char delimiter)
         {
+#if FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
             return new SplitTokenizerEnumerator(text, delimiter, ReadOnlySpan<char>.Empty, TrimBehavior.StartAndEnd);
+#else
+            return new SplitTokenizerEnumerator(text.AsSpan(), delimiter, ReadOnlySpan<char>.Empty, TrimBehavior.StartAndEnd);
+#endif
         }
 
         /// <summary>
@@ -250,7 +435,11 @@ namespace ICU4N.Text
         /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
         public static SplitTokenizerEnumerator AsTokens(this string text, char delimiter, ReadOnlySpan<char> trimChars)
         {
+#if FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
             return new SplitTokenizerEnumerator(text, delimiter, trimChars, TrimBehavior.StartAndEnd);
+#else
+            return new SplitTokenizerEnumerator(text.AsSpan(), delimiter, trimChars, TrimBehavior.StartAndEnd);
+#endif
         }
 
         /// <summary>
@@ -264,7 +453,11 @@ namespace ICU4N.Text
         /// <returns>A <see cref="SplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
         public static SplitTokenizerEnumerator AsTokens(this string text, char delimiter, ReadOnlySpan<char> trimChars, TrimBehavior trimBehavior)
         {
+#if FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
             return new SplitTokenizerEnumerator(text, delimiter, trimChars, trimBehavior);
+#else
+            return new SplitTokenizerEnumerator(text.AsSpan(), delimiter, trimChars, trimBehavior);
+#endif
         }
 
         /// <summary>
@@ -465,7 +658,11 @@ namespace ICU4N.Text
         /// <returns>A <see cref="MultiDelimiterSplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
         public static MultiDelimiterSplitTokenizerEnumerator AsTokens(this string text, char[] delimiters)
         {
+#if FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
             return new MultiDelimiterSplitTokenizerEnumerator(text, delimiters, ReadOnlySpan<char>.Empty, TrimBehavior.StartAndEnd);
+#else
+            return new MultiDelimiterSplitTokenizerEnumerator(text.AsSpan(), delimiters, ReadOnlySpan<char>.Empty, TrimBehavior.StartAndEnd);
+#endif
         }
 
         /// <summary>
@@ -478,7 +675,11 @@ namespace ICU4N.Text
         /// <returns>A <see cref="MultiDelimiterSplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
         public static MultiDelimiterSplitTokenizerEnumerator AsTokens(this string text, char[] delimiters, ReadOnlySpan<char> trimChars)
         {
+#if FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
             return new MultiDelimiterSplitTokenizerEnumerator(text, delimiters, trimChars, TrimBehavior.StartAndEnd);
+#else
+            return new MultiDelimiterSplitTokenizerEnumerator(text.AsSpan(), delimiters, trimChars, TrimBehavior.StartAndEnd);
+#endif
         }
 
         /// <summary>
@@ -492,7 +693,11 @@ namespace ICU4N.Text
         /// <returns>A <see cref="MultiDelimiterSplitTokenizerEnumerator"/> that can be used to enumerate the tokens.</returns>
         public static MultiDelimiterSplitTokenizerEnumerator AsTokens(this string text, char[] delimiters, ReadOnlySpan<char> trimChars, TrimBehavior trimBehavior)
         {
+#if FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
             return new MultiDelimiterSplitTokenizerEnumerator(text, delimiters, trimChars, trimBehavior);
+#else
+            return new MultiDelimiterSplitTokenizerEnumerator(text.AsSpan(), delimiters, trimChars, trimBehavior);
+#endif
         }
 
         /// <summary>

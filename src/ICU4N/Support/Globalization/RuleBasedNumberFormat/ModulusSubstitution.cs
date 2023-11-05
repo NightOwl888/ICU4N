@@ -1,6 +1,8 @@
 ﻿using ICU4N.Support.Text;
+using ICU4N.Text;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 #nullable enable
 
 namespace ICU4N.Globalization
@@ -80,8 +82,8 @@ namespace ICU4N.Globalization
 
             if (divisor == 0)
             { // this will cause recursion
-                throw new InvalidOperationException(string.Concat("Substitution with bad divisor (" + divisor + ") ", description.Slice(0, pos), // ICU4N: Checked 2nd parameter
-                        " | ", description.Slice(pos)));
+                throw new InvalidOperationException(StringHelper.Concat(("Substitution with bad divisor (" + divisor.ToString(CultureInfo.InvariantCulture) + ") ").AsSpan(), description.Slice(0, pos), // ICU4N: Checked 2nd parameter
+                        " | ".AsSpan(), description.Slice(pos)));
             }
 
             // the >>> token doesn't alter how this substitution calculates the
@@ -168,7 +170,7 @@ namespace ICU4N.Globalization
             // to format its substitution value)
             if (ruleToUse is null)
             {
-                base.DoSubstitution(number, ref toInsertInto, position, info, recursionCount);
+                base.DoSubstitution(number, ref toInsertInto, position, info!, recursionCount);
 
             }
             else
@@ -176,7 +178,7 @@ namespace ICU4N.Globalization
                 // a >>> substitution goes straight to a particular rule to
                 // format the substitution value
                 long numberToFormat = TransformNumber(number);
-                ruleToUse.DoFormat(numberToFormat, ref toInsertInto, position + pos, info, recursionCount);
+                ruleToUse.DoFormat(numberToFormat, ref toInsertInto, position + pos, info!, recursionCount);
             }
         }
 
@@ -199,7 +201,7 @@ namespace ICU4N.Globalization
             // to format its substitution value)
             if (ruleToUse is null)
             {
-                base.DoSubstitution(number, ref toInsertInto, position, info, recursionCount);
+                base.DoSubstitution(number, ref toInsertInto, position, info!, recursionCount);
 
             }
             else
@@ -207,7 +209,7 @@ namespace ICU4N.Globalization
                 // a >>> substitution goes straight to a particular rule to
                 // format the substitution value
                 double numberToFormat = TransformNumber(number);
-                ruleToUse.DoFormat(numberToFormat, ref toInsertInto, position + pos, info, recursionCount);
+                ruleToUse.DoFormat(numberToFormat, ref toInsertInto, position + pos, info!, recursionCount);
             }
         }
 

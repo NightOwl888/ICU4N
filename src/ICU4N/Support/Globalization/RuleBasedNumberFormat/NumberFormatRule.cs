@@ -1,4 +1,5 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using J2N.Text;
 using System;
@@ -20,6 +21,8 @@ namespace ICU4N.Globalization
         //-----------------------------------------------------------------------
         // constants
         //-----------------------------------------------------------------------
+
+        private const int CharStackBufferSize = 128;
 
         /// <summary>
         /// Special base value used to identify a negative-number rule
@@ -220,73 +223,83 @@ namespace ICU4N.Globalization
                 // if the description does contain a matched pair of brackets,
                 // then it's really shorthand for two rules (with one exception)
                 NumberFormatRule? rule2 = null;
-                StringBuilder sbuf = new StringBuilder();
-
-                // we'll actually only split the rule into two rules if its
-                // base value is an even multiple of its divisor (or it's one
-                // of the special rules)
-                if ((rule1.baseValue > 0
-                     && rule1.baseValue % (Power(rule1.radix, rule1.exponent)) == 0)
-                    || rule1.baseValue == ImproperFractionRule
-                    || rule1.baseValue == MasterRule)
+                int bufferLength = brack2 - brack1;
+                ValueStringBuilder sbuf = bufferLength <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                    : new ValueStringBuilder(bufferLength);
+                try
                 {
-
-                    // if it passes that test, new up the second rule.  If the
-                    // rule set both rules will belong to is a fraction rule
-                    // set, they both have the same base value; otherwise,
-                    // increment the original rule's base value ("rule1" actually
-                    // goes SECOND in the rule set's rule list)
-                    rule2 = new NumberFormatRule(ownersOwner);
-                    if (rule1.baseValue >= 0)
+                    // we'll actually only split the rule into two rules if its
+                    // base value is an even multiple of its divisor (or it's one
+                    // of the special rules)
+                    if ((rule1.baseValue > 0
+                         && rule1.baseValue % (Power(rule1.radix, rule1.exponent)) == 0)
+                        || rule1.baseValue == ImproperFractionRule
+                        || rule1.baseValue == MasterRule)
                     {
-                        rule2.baseValue = rule1.baseValue;
-                        if (!owner.IsFractionSet)
+
+                        // if it passes that test, new up the second rule.  If the
+                        // rule set both rules will belong to is a fraction rule
+                        // set, they both have the same base value; otherwise,
+                        // increment the original rule's base value ("rule1" actually
+                        // goes SECOND in the rule set's rule list)
+                        rule2 = new NumberFormatRule(ownersOwner);
+                        if (rule1.baseValue >= 0)
                         {
-                            ++rule1.baseValue;
+                            rule2.baseValue = rule1.baseValue;
+                            if (!owner.IsFractionSet)
+                            {
+                                ++rule1.baseValue;
+                            }
                         }
-                    }
-                    else if (rule1.baseValue == ImproperFractionRule)
-                    {
-                        // if the description began with "x.x" and contains bracketed
-                        // text, it describes both the improper fraction rule and
-                        // the proper fraction rule
-                        rule2.baseValue = ProperFractionRule;
-                    }
-                    else if (rule1.baseValue == MasterRule)
-                    {
-                        // if the description began with "x.0" and contains bracketed
-                        // text, it describes both the master rule and the
-                        // improper fraction rule
-                        rule2.baseValue = rule1.baseValue;
-                        rule1.baseValue = ImproperFractionRule;
+                        else if (rule1.baseValue == ImproperFractionRule)
+                        {
+                            // if the description began with "x.x" and contains bracketed
+                            // text, it describes both the improper fraction rule and
+                            // the proper fraction rule
+                            rule2.baseValue = ProperFractionRule;
+                        }
+                        else if (rule1.baseValue == MasterRule)
+                        {
+                            // if the description began with "x.0" and contains bracketed
+                            // text, it describes both the master rule and the
+                            // improper fraction rule
+                            rule2.baseValue = rule1.baseValue;
+                            rule1.baseValue = ImproperFractionRule;
+                        }
+
+                        // both rules have the same radix and exponent (i.e., the
+                        // same divisor)
+                        rule2.radix = rule1.radix;
+                        rule2.exponent = rule1.exponent;
+
+                        // rule2's rule text omits the stuff in brackets: initialize
+                        // its rule text and substitutions accordingly
+                        sbuf.Append(description.Slice(0, brack1)); // ICU4N: Checked 2nd parameter
+                        if (brack2 + 1 < description.Length)
+                        {
+                            sbuf.Append(description.Slice(brack2 + 1));
+                        }
+                        rule2.ExtractSubstitutions(owner, sbuf.AsSpan(), predecessor);
                     }
 
-                    // both rules have the same radix and exponent (i.e., the
-                    // same divisor)
-                    rule2.radix = rule1.radix;
-                    rule2.exponent = rule1.exponent;
-
-                    // rule2's rule text omits the stuff in brackets: initialize
-                    // its rule text and substitutions accordingly
+                    // rule1's text includes the text in the brackets but omits
+                    // the brackets themselves: initialize _its_ rule text and
+                    // substitutions accordingly
+                    sbuf.Length = 0;
                     sbuf.Append(description.Slice(0, brack1)); // ICU4N: Checked 2nd parameter
+                    sbuf.Append(description.Slice(brack1 + 1, brack2 - (brack1 + 1))); // ICU4N: Corrected 2nd parameter
                     if (brack2 + 1 < description.Length)
                     {
                         sbuf.Append(description.Slice(brack2 + 1));
                     }
-                    rule2.ExtractSubstitutions(owner, sbuf.ToString(), predecessor);
-                }
+                    rule1.ExtractSubstitutions(owner, sbuf.AsSpan(), predecessor);
 
-                // rule1's text includes the text in the brackets but omits
-                // the brackets themselves: initialize _its_ rule text and
-                // substitutions accordingly
-                sbuf.Length = 0;
-                sbuf.Append(description.Slice(0, brack1)); // ICU4N: Checked 2nd parameter
-                sbuf.Append(description.Slice(brack1 + 1, brack2 - (brack1 + 1))); // ICU4N: Corrected 2nd parameter
-                if (brack2 + 1 < description.Length)
-                {
-                    sbuf.Append(description.Slice(brack2 + 1));
                 }
-                rule1.ExtractSubstitutions(owner, sbuf.ToString(), predecessor);
+                finally
+                {
+                    sbuf.Dispose();
+                }
 
                 // if we only have one rule, return it; if we have two, return
                 // a two-element array containing them (notice that rule2 goes
@@ -338,7 +351,20 @@ namespace ICU4N.Globalization
         public NumberFormatRule(INumberFormatRules owner, ReadOnlySpan<char> descriptor, ReadOnlySpan<char> description)
         {
             this.numberFormatRules = owner ?? throw new ArgumentNullException(nameof(owner));
-            this.ruleText = new string(ParseRuleDescriptor(descriptor, description));
+            this.ruleText = ParseRuleDescriptor(descriptor, description).ToString();
+        }
+
+        /// <summary>
+        /// Intializes a new instance of <see cref="NumberFormatRule"/> for simple cases where we don't have any substitutions,
+        /// such as <c>"Inf", decimalFormatSymbols.Infinity</c> or <c>"NaN", decimalFormatSymbols.NaN</c>.
+        /// </summary>
+        /// <param name="owner">The <see cref="RuleBasedNumberFormat"/> that owns this rule.</param>
+        /// <param name="descriptor">The rule's descriptor (such as "Inf" or "NaN").</param>
+        /// <param name="description">The rule's description, minus the descriptor.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="owner"/> is <c>null</c>.</exception>
+        public NumberFormatRule(INumberFormatRules owner, string descriptor, string description)
+            : this(owner, descriptor.AsSpan(), description.AsSpan())
+        {
         }
 
         private static ReadOnlySpan<char> RemoveLeadingApostrophe(ReadOnlySpan<char> description)
@@ -594,20 +620,20 @@ namespace ICU4N.Globalization
                 if (sub2 is not null)
                 {
                     // We have a 3 parts to concatenate to a string
-                    this.ruleText = string.Concat(prefix1, prefix2, suffix2);
+                    this.ruleText = StringHelper.Concat(prefix1, prefix2, suffix2);
                 }
                 else
                 {
                     // We have 2 parts to concatenate to a string
-                    this.ruleText = string.Concat(prefix1, suffix1);
+                    this.ruleText = StringHelper.Concat(prefix1, suffix1);
                 }
             }
             else
             {
                 // Use the string as is - there were no substitutions to remove
-                this.ruleText = new string(ruleText);
+                this.ruleText = ruleText.ToString();
             }
-            ExtractPluralRules(this.ruleText);
+            ExtractPluralRules(this.ruleText.AsSpan());
         }
 
         /// <summary>
@@ -632,7 +658,7 @@ namespace ICU4N.Globalization
                 int endType = ruleText.Slice(pluralRuleStart).IndexOf(',') + pluralRuleStart;
                 if (endType < 0)
                 {
-                    throw new ArgumentException(string.Concat("Rule \"", ruleText, "\" does not have a defined type"));
+                    throw new ArgumentException(string.Concat("Rule \"", ruleText.ToString(), "\" does not have a defined type"));
                 }
                 ReadOnlySpan<char> type = ruleText.Slice(pluralRuleStart + 2, endType - (pluralRuleStart + 2)); // ICU4N: Corrected 2nd parameter
                 if (type.Equals("cardinal", StringComparison.Ordinal))
@@ -645,11 +671,11 @@ namespace ICU4N.Globalization
                 }
                 else
                 {
-                    throw new ArgumentException(string.Concat(type, " is an unknown type"));
+                    throw new ArgumentException(string.Concat(type.ToString(), " is an unknown type"));
                 }
                 ReadOnlySpan<char> pluralRuleText = ruleText.Slice(endType + 1, pluralRuleEnd - (endType + 1)); // ICU4N: Corrected 2nd parameter
                 //this.pluralRules = PluralRules.ParseDescription(pluralRuleText);
-                this.pluralRulesText = new string(pluralRuleText);
+                this.pluralRulesText = pluralRuleText.ToString();
                 this.pluralMessagePattern = new MessagePattern().ParsePluralStyle(pluralRulesText);
 
                 //rulePatternFormat = formatter.CreatePluralFormat(pluralType,

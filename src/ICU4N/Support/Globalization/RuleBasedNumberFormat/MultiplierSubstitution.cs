@@ -57,8 +57,8 @@ namespace ICU4N.Globalization
 
             if (divisor == 0)
             { // this will cause recursion
-                throw new InvalidOperationException(string.Concat("Substitution with divisor 0 ", description.Slice(0, pos), // ICU4N: Checked 2nd parameter
-                             " | ", description.Slice(pos)));
+                throw new InvalidOperationException(StringHelper.Concat("Substitution with divisor 0 ".AsSpan(), description.Slice(0, pos), // ICU4N: Checked 2nd parameter
+                             " | ".AsSpan(), description.Slice(pos)));
             }
         }
 

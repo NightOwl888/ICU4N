@@ -176,7 +176,7 @@ namespace ICU4N.Support.Text
                 vsb.Append(s);
             }
 
-            var resultString = new string(vsb.AsSpan());
+            var resultString = vsb.AsSpan().ToString();
             Assert.AreEqual(sb.ToString(), resultString);
 
             Assert.AreNotEqual(0, sb.Length);
@@ -232,7 +232,7 @@ namespace ICU4N.Support.Text
             Span<char> dst = new char[Text1.Length];
             Assert.True(vsb.TryCopyTo(dst, out int charsWritten));
             Assert.AreEqual(Text1.Length, charsWritten);
-            Assert.AreEqual(Text1, new string(dst));
+            Assert.AreEqual(Text1, dst.ToString());
 
             Assert.AreEqual(0, vsb.Length);
             Assert.AreEqual(string.Empty, vsb.ToString());

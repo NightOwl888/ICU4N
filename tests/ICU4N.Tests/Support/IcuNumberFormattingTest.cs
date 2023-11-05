@@ -48,7 +48,7 @@ namespace ICU4N
             string expected = decimalFormat.Format(number);
 
             assertTrue($"TryFormatInt64 returned false for {locale}",
-                IcuNumber.TryFormatInt64(number, locale.NumberFormat.NumberPattern,
+                IcuNumber.TryFormatInt64(number, locale.NumberFormat.NumberPattern.AsSpan(),
                     locale.NumberFormat, destination, out int charsWritten));
 
             string actual = destination.Slice(0, charsWritten).ToString();

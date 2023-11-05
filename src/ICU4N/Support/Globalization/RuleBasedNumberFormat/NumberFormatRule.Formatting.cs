@@ -50,19 +50,7 @@ namespace ICU4N.Globalization
                 }
                 double pluralVal = (double)number / Power(radix, exponent);
 #if FEATURE_SPAN
-                unsafe
-                {
-                    var sb = new ValueStringBuilder(stackalloc char[IcuNumber.PluralCharStackBufferSize]);
-                    try
-                    {
-                        IcuNumber.FormatPlural(ref sb, pluralVal, null, pluralMessagePattern, pluralType, info);
-                        toInsertInto.Insert(pos, new ReadOnlySpan<char>(sb.GetCharsPointer(), sb.Length));
-                    }
-                    finally
-                    {
-                        sb.Dispose();
-                    }
-                }
+                toInsertInto.InsertFormatPlural(pos, pluralVal, null, pluralMessagePattern, pluralType, info!);
 #else
                 toInsertInto.Insert(pos, IcuNumber.FormatPlural(pluralVal, null, pluralMessagePattern, pluralType, info));
 #endif
@@ -76,8 +64,8 @@ namespace ICU4N.Globalization
                 }
                 lengthOffset = ruleText.Length - (toInsertInto.Length - initialLength);
             }
-            sub2?.DoSubstitution(number, ref toInsertInto, pos - (sub2.Pos > pluralRuleStart ? lengthOffset : 0), info, recursionCount);
-            sub1?.DoSubstitution(number, ref toInsertInto, pos - (sub1.Pos > pluralRuleStart ? lengthOffset : 0), info, recursionCount);
+            sub2?.DoSubstitution(number, ref toInsertInto, pos - (sub2.Pos > pluralRuleStart ? lengthOffset : 0), info!, recursionCount);
+            sub1?.DoSubstitution(number, ref toInsertInto, pos - (sub1.Pos > pluralRuleStart ? lengthOffset : 0), info!, recursionCount);
         }
 
         /// <summary>
@@ -129,19 +117,7 @@ namespace ICU4N.Globalization
                     pluralVal = pluralVal / Power(radix, exponent);
                 }
 #if FEATURE_SPAN
-                unsafe
-                {
-                    var sb = new ValueStringBuilder(stackalloc char[IcuNumber.PluralCharStackBufferSize]);
-                    try
-                    {
-                        IcuNumber.FormatPlural(ref sb, (long)pluralVal, null, pluralMessagePattern, pluralType, info);
-                        toInsertInto.Insert(pos, new ReadOnlySpan<char>(sb.GetCharsPointer(), sb.Length));
-                    }
-                    finally
-                    {
-                        sb.Dispose();
-                    }
-                }
+                toInsertInto.InsertFormatPlural(pos, (long)pluralVal, null, pluralMessagePattern, pluralType, info!);
 #else
                 toInsertInto.Insert(pos, IcuNumber.FormatPlural((long)pluralVal, null, pluralMessagePattern, pluralType, info));
 #endif
@@ -155,8 +131,8 @@ namespace ICU4N.Globalization
                 }
                 lengthOffset = ruleText.Length - (toInsertInto.Length - initialLength);
             }
-            sub2?.DoSubstitution(number, ref toInsertInto, pos - (sub2.Pos > pluralRuleStart ? lengthOffset : 0), info, recursionCount);
-            sub1?.DoSubstitution(number, ref toInsertInto, pos - (sub1.Pos > pluralRuleStart ? lengthOffset : 0), info, recursionCount);
+            sub2?.DoSubstitution(number, ref toInsertInto, pos - (sub2.Pos > pluralRuleStart ? lengthOffset : 0), info!, recursionCount);
+            sub1?.DoSubstitution(number, ref toInsertInto, pos - (sub1.Pos > pluralRuleStart ? lengthOffset : 0), info!, recursionCount);
         }
 
         /// <summary>
