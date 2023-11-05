@@ -4,6 +4,7 @@ using ICU4N.Numerics;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using J2N;
+using J2N.Globalization;
 using J2N.Numerics;
 using System;
 using System.Diagnostics;
@@ -174,15 +175,13 @@ namespace ICU4N
             }
 
             var nfi = ToNumberFormatInfo(info!, numberGroupSizesOverride);
-#if FEATURE_SPANFORMATTABLE
             char* pTempFormatted = stackalloc char[CharStackBufferSize];
             Span<char> tempFormatted = new Span<char>(pTempFormatted, CharStackBufferSize);
-            if (value.TryFormat(tempFormatted, out int charsWrittenTemp, format, nfi))
+            if (J2N.Numerics.Double.TryFormat(value, tempFormatted, out int charsWrittenTemp, format, nfi))
             {
                 AppendConvertedDigits(ref sb, new ReadOnlySpan<char>(pTempFormatted, charsWrittenTemp), info!);
             }
             else
-#endif
             {
                 // NOTE: TryFormat above should have already thrown if any of the parameters are invalid,
                 // so we don't try/catch here.
@@ -204,15 +203,13 @@ namespace ICU4N
             Debug.Assert(info != null);
 
             var nfi = ToNumberFormatInfo(info!, numberGroupSizesOverride);
-#if FEATURE_SPANFORMATTABLE
             char* pTempFormatted = stackalloc char[CharStackBufferSize];
             Span<char> tempFormatted = new Span<char>(pTempFormatted, CharStackBufferSize);
-            if (value.TryFormat(tempFormatted, out int charsWrittenTemp, format, nfi))
+            if (J2N.Numerics.Int64.TryFormat(value, tempFormatted, out int charsWrittenTemp, format, nfi))
             {
                 AppendConvertedDigits(ref sb, new ReadOnlySpan<char>(pTempFormatted, charsWrittenTemp), info!);
             }
             else
-#endif
             {
                 // NOTE: TryFormat above should have already thrown if any of the parameters are invalid,
                 // so we don't try/catch here.
@@ -401,14 +398,9 @@ namespace ICU4N
             long f = 0;
             if (dotIndex != -1)
             {
-#if FEATURE_SPANFORMATTABLE
                 ReadOnlySpan<char> fractionSpan = decimalString.AsSpan(dotIndex + 1, decimalString.Length - dotIndex - 1);
                 v = fractionSpan.Length;
-                f = long.Parse(fractionSpan, NumberStyles.None, CultureInfo.InvariantCulture);
-#else
-                v = decimalString.Length - dotIndex - 1;
-                f = J2N.Numerics.Int64.Parse(decimalString, startIndex: dotIndex + 1, length: v, radix: 10);
-#endif
+                f = J2N.Numerics.Int64.Parse(fractionSpan, NumberStyle.None, CultureInfo.InvariantCulture);
             }
             IFixedDecimal dec = new FixedDecimal(numberMinusOffset, v, f);
 #pragma warning restore 612, 618
