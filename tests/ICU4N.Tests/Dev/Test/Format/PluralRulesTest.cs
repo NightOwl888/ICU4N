@@ -170,9 +170,9 @@ namespace ICU4N.Dev.Test.Format
             ParseRuleStatus expectedStatus = (ParseRuleStatus)expectedStatusObj;
             ParseRuleStatus status;
 #if FEATURE_SPAN
-            status = PluralRules.TryParseDescription(rules, out PluralRules _, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
-            assertEquals("source incorrect for " + rules, expectedSource ?? string.Empty, new string(source));
-            assertEquals("context incorrect for " + rules, expectedContext ?? string.Empty, new string(context));
+            status = PluralRules.TryParseDescription(rules.AsSpan(), out PluralRules _, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
+            assertEquals("source incorrect for " + rules, expectedSource ?? string.Empty, source.ToString());
+            assertEquals("context incorrect for " + rules, expectedContext ?? string.Empty, context.ToString());
 #else
             status = PluralRules.TryParseDescription(rules, out PluralRules _, out string source, out string context);
             assertEquals("source incorrect for " + rules, expectedSource, source);
@@ -632,7 +632,7 @@ namespace ICU4N.Dev.Test.Format
         {
             try
             {
-                if (PluralRules.CreateRules(null) != null)
+                if (PluralRules.CreateRules((string)null) != null)
                 {
                     Errln("PluralRules.createRules(String) was suppose to "
                             + "return null for an invalid String descrtiption.");
@@ -1388,13 +1388,13 @@ namespace ICU4N.Dev.Test.Format
             {
                 assertTrue("missing token", iter.MoveNext());
 
-                string actualToken = new string(iter.Current);
+                string actualToken = iter.Current.ToString();
                 string expectedToken = expectedTokens[i];
                 assertEquals("mismatched token", actualToken, expectedToken);
 
                 if (iter.MoveNext())
                 {
-                    string actualDelimiter = new string(iter.Current);
+                    string actualDelimiter = iter.Current.ToString();
                     string expectedDelimiter = expectedDelimiters[i];
                     assertEquals("mismatched delimiter", actualDelimiter, expectedDelimiter);
                 }
@@ -1415,7 +1415,7 @@ namespace ICU4N.Dev.Test.Format
                 assertTrue("mising token on HasNext", iter.HasNext);
                 assertTrue("mising token on MoveNext()", iter.MoveNext());
 
-                string actualToken = new string(iter.Current);
+                string actualToken = iter.Current.ToString();
                 string expectedToken = expectedTokens[i];
 
                 assertEquals("mismatched token", actualToken, expectedToken);
