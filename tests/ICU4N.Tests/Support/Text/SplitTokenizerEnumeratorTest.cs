@@ -19,8 +19,8 @@ namespace ICU4N.Text
         [Test]
         public void TestBasicSplitAndTrim()
         {
-            ReadOnlySpan<char> text = " A test ; to split ";
-            var target = text.AsTokens(";", " ");
+            ReadOnlySpan<char> text = " A test ; to split ".AsSpan();
+            var target = text.AsTokens(";", " ".AsSpan());
 
             assertTrue("Expected token not found", target.MoveNext());
             assertTrue("'A test' not found", "A test".AsSpan().SequenceEqual(target.Current));
@@ -34,8 +34,8 @@ namespace ICU4N.Text
         [Test]
         public void TestBasicSplitAndTrimStart()
         {
-            ReadOnlySpan<char> text = " A test ; to split ";
-            var target = text.AsTokens(";", " ", TrimBehavior.Start);
+            ReadOnlySpan<char> text = " A test ; to split ".AsSpan();
+            var target = text.AsTokens(";", " ".AsSpan(), TrimBehavior.Start);
 
             assertTrue("Expected token not found", target.MoveNext());
             assertTrue("'A test' not found", "A test ".AsSpan().SequenceEqual(target.Current));
@@ -49,8 +49,8 @@ namespace ICU4N.Text
         [Test]
         public void TestBasicSplitAndTrimEnd()
         {
-            ReadOnlySpan<char> text = " A test ; to split ";
-            var target = text.AsTokens(";", " ", TrimBehavior.End);
+            ReadOnlySpan<char> text = " A test ; to split ".AsSpan();
+            var target = text.AsTokens(";", " ".AsSpan(), TrimBehavior.End);
 
             assertTrue("Expected token not found", target.MoveNext());
             assertTrue("'A test' not found", " A test".AsSpan().SequenceEqual(target.Current));
@@ -93,9 +93,9 @@ namespace ICU4N.Text
                     string name, value;
                     var iter = rule2.Text.AsTokens(':', SplitTokenizerEnumerator.PatternWhiteSpace);
                     assertTrue("missing name", iter.MoveNext());
-                    name = new string(iter.Current);
+                    name = iter.Current.Text.ToString();
                     assertTrue("missing value", iter.MoveNext());
-                    value = new string(iter.Current);
+                    value = iter.Current.Text.ToString();
 
 
                     if (ruleNumber == 1)
@@ -126,11 +126,11 @@ namespace ICU4N.Text
             int index = 0;
             foreach (var token in text.AsTokens(new char[] { '=', ',', '!', '%' }, SplitTokenizerEnumerator.PatternWhiteSpace))
             {
-                string actualToken = new string(token.Text);
+                string actualToken = token.Text.ToString();
                 string expectedToken = expectedTokens[index];
                 assertEquals("mismatched token", actualToken, expectedToken);
 
-                string actualDelimiter = new string(token.Delimiter);
+                string actualDelimiter = token.Delimiter.ToString();
                 string expectedDelimiter = expectedDelimiters[index];
                 assertEquals("mismatched delimiter", actualDelimiter, expectedDelimiter);
                 index++;

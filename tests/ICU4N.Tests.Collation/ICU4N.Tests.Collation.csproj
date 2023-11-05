@@ -9,7 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj" />
+    <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj">
+      <SetTargetFramework>$(SetTargetFramework)</SetTargetFramework>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

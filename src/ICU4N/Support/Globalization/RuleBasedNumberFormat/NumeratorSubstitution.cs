@@ -173,7 +173,7 @@ namespace ICU4N.Globalization
                 {
                     //toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
                     // ICU4N TODO: Fix this format to return on the stack, when possible
-                    toInsertInto.Insert(position + pos, IcuNumber.FormatDouble(numberToFormat, numberFormatPattern, info, numberPatternProperties.GroupingSizes));
+                    toInsertInto.Insert(position + pos, IcuNumber.FormatDouble(numberToFormat, numberFormatPattern.AsSpan(), info, numberPatternProperties.GroupingSizes));
                 }
             }
         }

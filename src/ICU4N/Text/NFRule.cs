@@ -890,7 +890,7 @@ namespace ICU4N.Text
                 int initialLength = toInsertInto.Length;
                 if (pluralRuleEnd < ruleText.Length - 1)
                 {
-#if FEATURE_SPAN
+#if FEATURE_SPAN && FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
                     toInsertInto.Insert(pos, ruleText.AsSpan(pluralRuleEnd + 2));
 #else
                     toInsertInto.Insert(pos, ruleText.Substring(pluralRuleEnd + 2));
@@ -899,7 +899,7 @@ namespace ICU4N.Text
                 toInsertInto.Insert(pos, rulePatternFormat.Format(number / Power(radix, exponent)));
                 if (pluralRuleStart > 0)
                 {
-#if FEATURE_SPAN
+#if FEATURE_SPAN && FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
                     toInsertInto.Insert(pos, ruleText.AsSpan(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
 #else
                     toInsertInto.Insert(pos, ruleText.Substring(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
@@ -939,7 +939,7 @@ namespace ICU4N.Text
                 int initialLength = toInsertInto.Length;
                 if (pluralRuleEnd < ruleText.Length - 1)
                 {
-#if FEATURE_SPAN
+#if FEATURE_SPAN && FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
                     toInsertInto.Insert(pos, ruleText.AsSpan(pluralRuleEnd + 2));
 #else
                     toInsertInto.Insert(pos, ruleText.Substring(pluralRuleEnd + 2));
@@ -959,7 +959,7 @@ namespace ICU4N.Text
                 toInsertInto.Insert(pos, rulePatternFormat.Format((long)(pluralVal)));
                 if (pluralRuleStart > 0)
                 {
-#if FEATURE_SPAN
+#if FEATURE_SPAN && FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
                     toInsertInto.Insert(pos, ruleText.AsSpan(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter
 #else
                     toInsertInto.Insert(pos, ruleText.Substring(0, pluralRuleStart)); // ICU4N: Checked 2nd parameter

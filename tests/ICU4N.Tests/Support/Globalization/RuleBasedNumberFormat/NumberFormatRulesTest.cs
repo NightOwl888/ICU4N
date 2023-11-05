@@ -68,7 +68,7 @@ namespace ICU4N.Globalization
 
             string rules = GetRulesForCulture(culture, numberPresentation, out string[][] localizations);
 
-            var actual = new NumberFormatRules(rules);
+            var actual = new NumberFormatRules(rules.AsSpan());
 
             AssertEquivalentRulesEngines(culture, expected, actual);
         }
@@ -86,12 +86,12 @@ namespace ICU4N.Globalization
 
             foreach (var culture in UCultureInfo.GetCultures(UCultureTypes.AllCultures))
             {
-                foreach (NumberPresentation numberPresentation in Enum.GetValues<NumberPresentation>())
+                foreach (NumberPresentation numberPresentation in Enum.GetValues(typeof(NumberPresentation)))
                 {
                     RuleBasedNumberFormat expected = new RuleBasedNumberFormat(culture, numberPresentation);
 
                     string rules = GetRulesForCulture(culture, numberPresentation, out string[][] localizations);
-                    NumberFormatRules actual = new NumberFormatRules(rules);
+                    NumberFormatRules actual = new NumberFormatRules(rules.AsSpan());
 
                     AssertEquivalentRulesEngines(culture, expected, actual);
                 }

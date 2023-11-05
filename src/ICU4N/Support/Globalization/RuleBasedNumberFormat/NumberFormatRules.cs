@@ -200,11 +200,16 @@ namespace ICU4N.Globalization
             return rulesCache.GetOrCreate(cacheKey, (key) =>
             {
                 string rules = GetRulesForCulture(bundle, key.Name, format, out string[][]? localizations);
-                return new NumberFormatRules(rules, stripWhiteSpace: false); // ICU4N TODO: localizations
+                return new NumberFormatRules(
+                    rules
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+                        .AsSpan()
+#endif
+                    , stripWhiteSpace: false); // ICU4N TODO: localizations
             });
         }
 
-        private static bool IsDefaultCandidateRule(ReadOnlySpan<char> ruleText)
+        private static bool IsDefaultCandidateRule(string ruleText)
             => IsNamedRule(ruleText, SpelloutNumberingRuleName) ||
             IsNamedRule(ruleText, DigitsOrdinalRuleName) ||
             IsNamedRule(ruleText, DurationRuleName);
@@ -215,7 +220,7 @@ namespace ICU4N.Globalization
         private static bool IsSpecialRule(ReadOnlySpan<char> ruleText, string ruleName)
             => ruleText.StartsWith(ruleName, StringComparison.Ordinal);
 
-        private static bool IsNamedRule(ReadOnlySpan<char> ruleText, string ruleName)
+        private static bool IsNamedRule(string ruleText, string ruleName)
             => ruleText.Equals(ruleName, StringComparison.Ordinal);
 
         /// <summary>
@@ -259,12 +264,12 @@ namespace ICU4N.Globalization
                 ReadOnlySpan<char> ruleToken = ruleTokens.Current.Text;
                 if (IsSpecialRule(ruleToken, LenientParseRuleName))
                 {
-                    lenientParseRules = new string(ExtractSpecialRule(ruleToken, LenientParseRuleName));
+                    lenientParseRules = ExtractSpecialRule(ruleToken, LenientParseRuleName).ToString();
                     continue; // Don't count this rule
                 }
                 if (IsSpecialRule(ruleToken, PostProcessRuleName))
                 {
-                    postProcessRules = new string(ExtractSpecialRule(ruleToken, PostProcessRuleName));
+                    postProcessRules = ExtractSpecialRule(ruleToken, PostProcessRuleName).ToString();
                     continue; // Don't count this rule
                 }
 
@@ -407,7 +412,7 @@ namespace ICU4N.Globalization
 
             // since we don't have a method that deletes characters
             // create a new StringBuffer to copy the text into
-            ValueStringBuilder result = descriptionLength <= RuleStringMaxStackBufferSize
+            using ValueStringBuilder result = descriptionLength <= RuleStringMaxStackBufferSize
                 ? new ValueStringBuilder(stackalloc char[RuleStringMaxStackBufferSize])
                 : new ValueStringBuilder(descriptionLength);
 
@@ -455,7 +460,11 @@ namespace ICU4N.Globalization
             }
             // ICU4N: We must heap allocate here because the ValueStringBuilder may return from the
             // stack, which is out of scope after this point.
-            return result.ToString();
+            return result.ToString()
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+                .AsSpan()
+#endif
+                ;
         }
 
         //-----------------------------------------------------------------------

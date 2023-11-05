@@ -248,7 +248,11 @@ namespace ICU4N.Impl
                 for (int i = 0; i < setb.Length; ++i)
                 {
                     UResourceBundle b = setb.Get(i);
+#if !FEATURE_SPAN || (FEATURE_SPAN && FEATURE_STRING_IMPLCIT_TO_READONLYSPAN)
                     if (PluralRules.TryParseRule(b.Key, b.GetString(), out PluralRules.Rule rule))
+#else
+                    if (PluralRules.TryParseRule(b.Key.AsSpan(), b.GetString().AsSpan(), out PluralRules.Rule rule))
+#endif
                     {
                         ruleList.AddRule(rule);
                     }

@@ -1,6 +1,7 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
 using ICU4N.Support.Collections;
+using J2N;
 using J2N.Collections.Generic.Extensions;
 using J2N.Text;
 using System;
@@ -417,7 +418,7 @@ namespace ICU4N.Text
         {
             ParseRuleStatus status = TryParseDescription(description, out PluralRules result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
             if (status != ParseRuleStatus.OK)
-                ThrowParseException(status, new string(source), new string(context));
+                ThrowParseException(status, source.ToString(), context.ToString());
             return result;
         }
 #endif
@@ -435,9 +436,9 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(description));
 
 #if FEATURE_SPAN
-            ParseRuleStatus status = TryParseDescription(description, out PluralRules result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
+            ParseRuleStatus status = TryParseDescription(description.AsSpan(), out PluralRules result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
             if (status != ParseRuleStatus.OK)
-                ThrowParseException(status, new string(source), new string(context));
+                ThrowParseException(status, source.ToString(), context.ToString());
 #else
             ParseRuleStatus status = TryParseDescription(description, out PluralRules result, out string source, out string context);
             if (status != ParseRuleStatus.OK)
@@ -491,7 +492,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(description));
 
 #if FEATURE_SPAN
-            ParseRuleStatus status = TryParseDescription(description, out result, out ReadOnlySpan<char> _, out ReadOnlySpan<char> _);
+            ParseRuleStatus status = TryParseDescription(description.AsSpan(), out result, out ReadOnlySpan<char> _, out ReadOnlySpan<char> _);
 #else
             ParseRuleStatus status = TryParseDescription(description, out result, out string _, out string _);
 #endif
@@ -1124,6 +1125,19 @@ namespace ICU4N.Text
                 return (int)(decimalDigits + 37 * (visibleDecimalDigitCount + (int)(37 * source)));
             }
 
+#if FEATURE_SPAN
+            /// <internal/>
+            [Obsolete("This API is ICU internal only.")]
+            public virtual ReadOnlySpan<char> AsSpan() // ICU4N: Added to patch platforms that don't implicitly convert string to ReadOnlySpan<char>
+            {
+                return ToString()
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+                    .AsSpan()
+#endif
+                    ;
+            }
+#endif
+
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
 #pragma warning disable 809
@@ -1333,7 +1347,7 @@ namespace ICU4N.Text
                         }
                         if (!TryCheckDecimal(sampleType2, sample)) // ICU4N TODO: This can never fail - it should be an assert rather than an error.
                         {
-                            source = sample.ToString();
+                            source = sample.AsSpan();
                             return ParseRuleStatus.IllformedNumberRange;
                         }
                         samples2.Add(new FixedDecimalRange(sample, sample));
@@ -1352,12 +1366,12 @@ namespace ICU4N.Text
                         }
                         if (!TryCheckDecimal(sampleType2, start)) // ICU4N TODO: This can never fail - it should be an assert rather than an error.
                         {
-                            source = start.ToString();
+                            source = start.AsSpan();
                             return ParseRuleStatus.IllformedNumberRange;
                         }
                         if (!TryCheckDecimal(sampleType2, end)) // ICU4N TODO: This can never fail - it should be an assert rather than an error.
                         {
-                            source = end.ToString();
+                            source = end.AsSpan();
                             return ParseRuleStatus.IllformedNumberRange;
                         }
                         samples2.Add(new FixedDecimalRange(start, end));
@@ -1609,6 +1623,11 @@ namespace ICU4N.Text
                 Current = default;
             }
 
+            public SimpleTokenizerEnumerator(string source)
+                : this(source.AsSpan())
+            {
+            }
+
             // Needed to be compatible with the foreach operator
             public SimpleTokenizerEnumerator GetEnumerator() => this;
 
@@ -1743,7 +1762,7 @@ namespace ICU4N.Text
                         if ((token.Equals("mod", StringComparison.Ordinal) || token.Equals("%", StringComparison.Ordinal)) && TryGetNextToken(ref enumerator, out token))
                         {
                             // ICU4N NOTE: This overload allows non-ASCII digits
-                            if (!Integer.TryParse(token, startIndex: 0, length: token.Length, radix: 10, out mod))
+                            if (!Integer.TryParse(token, radix: 10, out mod))
                             {
                                 return ParseRuleStatus.ConstraintModulusMustBeDigits;
                             }
@@ -1819,7 +1838,7 @@ namespace ICU4N.Text
                         while (true)
                         {
                             // ICU4N NOTE: This overload allows non-ASCII digits
-                            if (!Long.TryParse(token, startIndex: 0, length: token.Length, radix: 10, out long low))
+                            if (!Long.TryParse(token, radix: 10, out long low))
                             {
                                 return ParseRuleStatus.ConstraintValueMustBeDigits;
                             }
@@ -1842,7 +1861,7 @@ namespace ICU4N.Text
                                         return ParseRuleStatus.ConstraintMissingToken;
                                     }
                                     // ICU4N NOTE: This overload allows non-ASCII digits
-                                    if (!Long.TryParse(token, startIndex: 0, length: token.Length, radix: 10, out high))
+                                    if (!Long.TryParse(token, radix: 10, out high))
                                     {
                                         return ParseRuleStatus.ConstraintValueMustBeDigits;
                                     }
@@ -1867,12 +1886,12 @@ namespace ICU4N.Text
                             // at this point, either we are out of tokens, or t is ','
                             if (low > high)
                             {
-                                token = low + "~" + high;
+                                token = StringHelper.Concat(low.ToString(CultureInfo.InvariantCulture), "~", high.ToString(CultureInfo.InvariantCulture));
                                 return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                             else if (mod != 0 && high >= mod)
                             {
-                                token = high + ">mod=" + mod;
+                                token = StringHelper.Concat(low.ToString(CultureInfo.InvariantCulture), ">mod=", mod.ToString(CultureInfo.InvariantCulture));
                                 return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                             valueList.Add(low);
@@ -1903,7 +1922,11 @@ namespace ICU4N.Text
                         // Hack to exclude "is not 1,2"
                         if (lowBound != highBound && hackForCompatibility && !inRange)
                         {
-                            token = "is not <range>";
+                            token = "is not <range>"
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+                                .AsSpan()
+#endif
+                                ;
                             return ParseRuleStatus.ConstraintUnexpectedToken;
                         }
 
@@ -1936,30 +1959,30 @@ namespace ICU4N.Text
 #else
 
         /*
-         * syntax:
-         * condition :       or_condition
-         *                   and_condition
-         * or_condition :    and_condition 'or' condition
-         * and_condition :   relation
-         *                   relation 'and' relation
-         * relation :        in_relation
-         *                   within_relation
-         * in_relation :     not? expr not? in not? range
-         * within_relation : not? expr not? 'within' not? range
-         * not :             'not'
-         *                   '!'
-         * expr :            'n'
-         *                   'n' mod value
-         * mod :             'mod'
-         *                   '%'
-         * in :              'in'
-         *                   'is'
-         *                   '='
-         *                   '≠'
-         * value :           digit+
-         * digit :           0|1|2|3|4|5|6|7|8|9
-         * range :           value'..'value
-         */
+        * syntax:
+        * condition :       or_condition
+        *                   and_condition
+        * or_condition :    and_condition 'or' condition
+        * and_condition :   relation
+        *                   relation 'and' relation
+        * relation :        in_relation
+        *                   within_relation
+        * in_relation :     not? expr not? in not? range
+        * within_relation : not? expr not? 'within' not? range
+        * not :             'not'
+        *                   '!'
+        * expr :            'n'
+        *                   'n' mod value
+        * mod :             'mod'
+        *                   '%'
+        * in :              'in'
+        *                   'is'
+        *                   '='
+        *                   '≠'
+        * value :           digit+
+        * digit :           0|1|2|3|4|5|6|7|8|9
+        * range :           value'..'value
+        */
         private static ParseRuleStatus TryParseConstraint(string description, out IConstraint result, out string token, out string condition)
         {
             result = default;
@@ -2369,41 +2392,50 @@ namespace ICU4N.Text
                 if ((status = TryParseConstraint(constraintOrSamples0, out constraint, out source, out context)) != ParseRuleStatus.OK)
                     return status;
             }
-            result = new Rule(new string(keyword), constraint, integerSamples, decimalSamples);
+            result = new Rule(keyword.ToString(), constraint, integerSamples, decimalSamples);
             return ParseRuleStatus.OK;
         }
 
         private static ReadOnlySpan<char> ToLowerInvariant(ReadOnlySpan<char> value)
         {
-#if FEATURE_RUNE
             // ICU4N: This is definitely slower, but will prevent an allocation of the
             // whole span if there are no uppercase chars.
             bool hasUpper = false;
+#if FEATURE_RUNE
             foreach (var rune in value.EnumerateRunes())
             {
-                if (J2N.Character.IsUpper(rune.Value))
+                if (Character.IsUpper(rune.Value))
                 {
                     hasUpper = true;
                     break;
                 }
             }
-
-            if (!hasUpper) return value;
+#else
+            for (int i = 0; i < value.Length;)
+            {
+                int codePoint = value.CodePointAt(i);
+                if (Character.IsUpper(codePoint))
+                {
+                    hasUpper = true;
+                    break;
+                }
+                i += Character.CharCount(codePoint);
+            }
 #endif
+            if (!hasUpper) return value;
 
             int bufferLength = value.Length;
-            char[] tempArray = ArrayPool<char>.Shared.Rent(bufferLength);
+            // NOTE: We cannot use array pool. We must allocate here so when we return we are referencing the same chunk of memory.
+            char[] tempArray = new char[bufferLength];
             int actualLength = value.ToLowerInvariant(tempArray);
-            // If the string contains non-ASCII chars, we might end up with an overflow.
+            // If the string contains supplemental chars, we might end up with an overflow.
             // Re-allocate the array with 2x the length (which is the maximum if all are surrogates).
             if (actualLength == -1)
             {
-                ArrayPool<char>.Shared.Return(tempArray);
-                tempArray = ArrayPool<char>.Shared.Rent(bufferLength * 2);
+                tempArray = new char[bufferLength * 2];
                 actualLength = value.ToLowerInvariant(tempArray);
             }
             var result = new ReadOnlySpan<char>(tempArray, 0, actualLength);
-            ArrayPool<char>.Shared.Return(tempArray);
             return result;
         }
 #else
@@ -3034,12 +3066,14 @@ namespace ICU4N.Text
                 if (otherRule is null)
                 {
                     // ICU4N: Hard-coded rule will always succeed unless TryParseRule has a bug. So, we don't need a try version of this method.
+
+                    // make sure we have always have an 'other' a rule
 #if FEATURE_SPAN
-                    ParseRuleStatus status = TryParseRule("other:", out otherRule, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context); // make sure we have always have an 'other' a rule
+                    ParseRuleStatus status = TryParseRule("other:".AsSpan(), out otherRule, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
                     if (status != ParseRuleStatus.OK)
-                        ThrowParseException(status, new string(source), new string(context));
+                        ThrowParseException(status, source.ToString(), context.ToString());
 #else
-                    ParseRuleStatus status = TryParseRule("other:", out otherRule, out string source, out string context); // make sure we have always have an 'other' a rule
+                    ParseRuleStatus status = TryParseRule("other:", out otherRule, out string source, out string context);
                     if (status != ParseRuleStatus.OK)
                         ThrowParseException(status, source, context);
 #endif

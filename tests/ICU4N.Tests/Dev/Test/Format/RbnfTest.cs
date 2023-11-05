@@ -1233,8 +1233,8 @@ namespace ICU4N.Dev.Test.Format
                         netNumberFormat = sb.ToString();
                     }
 
-                    if (icuNumberFormat != netNumberFormat)
-                        diff.TryAdd(loc, string.Concat(icuNumberFormat, "|", netNumberFormat));
+                    if (icuNumberFormat != netNumberFormat && !diff.ContainsKey(loc))
+                        diff.Add(loc, string.Concat(icuNumberFormat, "|", netNumberFormat));
                 }
             }
 
@@ -2208,7 +2208,7 @@ namespace ICU4N.Dev.Test.Format
             switch (createOption)
             {
                 case CreateOption.DescriptionAndLocale:
-                    return new NumberFormatRules(description);
+                    return new NumberFormatRules(description.AsSpan());
                 case CreateOption.LocaleAndFormat:
                     return NumberFormatRules.GetInstance(locale, format);
                 default:
