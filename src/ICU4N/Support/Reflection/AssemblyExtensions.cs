@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Reflection;
 
 namespace ICU4N.Reflection
@@ -9,7 +10,7 @@ namespace ICU4N.Reflection
 #if NET40
         public static T GetCustomAttribute<T>(this Assembly assembly)
         {
-            return (T)assembly.GetCustomAttributes(inherit: true).FirstOrDefault(a => a.GetType() is T);
+            return (T)assembly.GetCustomAttributes(inherit: true).FirstOrDefault(x => x is T);
         }
 #endif
     }
