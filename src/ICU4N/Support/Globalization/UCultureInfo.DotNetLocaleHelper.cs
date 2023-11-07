@@ -133,7 +133,12 @@ namespace ICU4N.Globalization
                 }
 
                 var collationName = culture.CompareInfo?.Name;
-                LocaleIDParser parser = null;
+#if FEATURE_SPAN
+                using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], string.Empty);
+#else
+                using var parser = new LocaleIDParser(string.Empty);
+#endif
+                bool collationFound = false;
 
                 if (!string.IsNullOrEmpty(collationName))
                 {
@@ -143,7 +148,8 @@ namespace ICU4N.Globalization
                     {
                         if (collation[0].Equals(collationName, StringComparison.Ordinal))
                         {
-                            parser = new LocaleIDParser(collation[1]);
+                            collationFound = true;
+                            parser.Reset(collation[1]);
                             if (collation[2] != null)
                                 parser.SetKeywordValue(collation[2], collation[3]);
                             break;
@@ -155,10 +161,10 @@ namespace ICU4N.Globalization
 
                 // If collation wasn't found, use the culture name (base name) to get a new parser.
                 // Map any unsupported names from .NET to their nearest equivalent in ICU.
-                if (parser == null)
+                if (!collationFound)
                 {
                     var name = UnsupportedDotNetNames.TryGetValue(culture.Name, out string baseName) ? baseName : culture.Name;
-                    parser = new LocaleIDParser(name);
+                    parser.Reset(name);
                 }
 
                 // ***********************************************************************************************************************************
@@ -354,7 +360,12 @@ namespace ICU4N.Globalization
 
             private static string ICUBaseNameToCultureInfoName(string baseName)
             {
-                return new LocaleIDParser(baseName).GetName();
+#if FEATURE_SPAN
+                using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], baseName);
+#else
+                using var parser = new LocaleIDParser(baseName);
+#endif
+                return parser.GetName();
             }
         }
     }

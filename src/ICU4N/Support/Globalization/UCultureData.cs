@@ -121,11 +121,11 @@ namespace ICU4N.Globalization
 
         // Do NOT call this in the constructor of UCultureInfo
         public PluralRules OrdinalPluralRules
-            => LazyInitializer.EnsureInitialized(ref ordinalPluralRules, () => PluralRules.GetInstance(name, PluralType.Ordinal));
+            => LazyInitializer.EnsureInitialized(ref ordinalPluralRules, () => PluralRules.GetInstance(name, PluralType.Ordinal))!;
 
         // Do NOT call this in the constructor of UCultureInfo
         public PluralRules CardinalPluralRules
-            => LazyInitializer.EnsureInitialized(ref cardinalPluralRules, () => PluralRules.GetInstance(name, PluralType.Cardinal));
+            => LazyInitializer.EnsureInitialized(ref cardinalPluralRules, () => PluralRules.GetInstance(name, PluralType.Cardinal))!;
 
 
         internal object? nonNullIfNFIInitialized; // Marker to tell us we are "done" loading NFI data if not null.
@@ -199,7 +199,7 @@ namespace ICU4N.Globalization
 
             // ICU4N: We cannot use the invariant culture if there are keywords to parse,
             // so we must use localeID here.
-            if (string.IsNullOrEmpty(cultureInfo.FullName))
+            if (string.IsNullOrEmpty(cultureInfo!.FullName))
             {
                 return Invariant;
             }
@@ -257,7 +257,7 @@ namespace ICU4N.Globalization
         internal UCultureData(UCultureInfo cultureInfo, bool skipKeywords = false)
         {
             Debug.Assert(cultureInfo != null);
-            this.localeID = cultureInfo.localeID;
+            this.localeID = cultureInfo!.localeID;
             this.isInvariantCulture = cultureInfo.isInvariantCulture;
             this.isNeutralCulture = cultureInfo.isNeutralCulture;
             this.name = cultureInfo.Name; // base name from ICU
@@ -274,6 +274,8 @@ namespace ICU4N.Globalization
 
         private UCultureData()
         {
+            localeID = string.Empty;
+            name = string.Empty;
         }
 
         internal void GetNFIValues(UNumberFormatInfo nfi)
@@ -459,7 +461,7 @@ namespace ICU4N.Globalization
             public NumberElementSymbolLoader(UCultureData cultureData)
             {
                 Debug.Assert(cultureData is not null);
-                this.cultureData = cultureData;
+                this.cultureData = cultureData!;
             }
 
             public bool IsFullyPopulated => cultureData.decimalSeparator is not null &&
@@ -549,7 +551,7 @@ namespace ICU4N.Globalization
             public NumberElementPatternLoader(UCultureData cultureData)
             {
                 Debug.Assert(cultureData is not null);
-                this.cultureData = cultureData;
+                this.cultureData = cultureData!;
             }
 
             public bool IsFullyPopulated => cultureData.decimalFormat is not null &&
@@ -622,13 +624,13 @@ namespace ICU4N.Globalization
 
         internal sealed class CultureDataSink : ResourceSink
         {
-            private IResourceTableLoader loader;
+            private IResourceTableLoader? loader;
 
             [MemberNotNull(nameof(loader))]
             public void SetLoader(IResourceTableLoader loader)
             {
                 Debug.Assert(loader is not null);
-                this.loader = loader;
+                this.loader = loader!;
             }
 
             public override void Put(ResourceKey key, ResourceValue value, bool noFallback)
@@ -637,7 +639,7 @@ namespace ICU4N.Globalization
                 IResourceTable symbolsTable = value.GetTable();
                 for (int j = 0; symbolsTable.GetKeyAndValue(j, key, value); ++j)
                 {
-                    loader.Put(j, symbolsTable, key, value, noFallback);
+                    loader!.Put(j, symbolsTable, key, value, noFallback);
                 }
             }
         }

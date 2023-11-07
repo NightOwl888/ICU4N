@@ -1,10 +1,14 @@
-﻿using J2N.Text;
+﻿using ICU4N.Support.Text;
+using J2N.Text;
+using System;
 using System.Text;
 
 namespace ICU4N.Impl.Locale
 {
     public sealed class AsciiUtil
     {
+        private const int CharStackBufferSize = 128;
+
         public static bool CaseIgnoreMatch(string s1, string s2)
         {
             //if (Utility.SameObjects(s1, s2))
@@ -75,7 +79,12 @@ namespace ICU4N.Impl.Locale
             {
                 return s;
             }
+#if FEATURE_SPAN
+            ValueStringBuilder buf = s.Length <= CharStackBufferSize ? new ValueStringBuilder(stackalloc char[s.Length]) : new ValueStringBuilder(s.Length);
+            buf.Append(s.AsSpan(0, idx - 0)); // ICU4N: Checked 2nd parameter
+#else
             StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0)); // ICU4N: Checked 2nd parameter
+#endif
             for (; idx < s.Length; idx++)
             {
                 buf.Append(ToLower(s[idx]));
@@ -98,7 +107,12 @@ namespace ICU4N.Impl.Locale
             {
                 return s;
             }
+#if FEATURE_SPAN
+            ValueStringBuilder buf = s.Length <= CharStackBufferSize ? new ValueStringBuilder(stackalloc char[s.Length]) : new ValueStringBuilder(s.Length);
+            buf.Append(s.AsSpan(0, idx - 0)); // ICU4N: Checked 2nd parameter
+#else
             StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0)); // ICU4N: Checked 2nd parameter
+#endif
             for (; idx < s.Length; idx++)
             {
                 buf.Append(ToUpper(s[idx]));
@@ -128,7 +142,12 @@ namespace ICU4N.Impl.Locale
             {
                 return s;
             }
+#if FEATURE_SPAN
+            ValueStringBuilder buf = s.Length <= CharStackBufferSize ? new ValueStringBuilder(stackalloc char[s.Length]) : new ValueStringBuilder(s.Length);
+            buf.Append(s.AsSpan(0, idx - 0)); // ICU4N: Checked 2nd parameter
+#else
             StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0)); // ICU4N: Checked 2nd parameter
+#endif
             if (idx == 0)
             {
                 buf.Append(ToUpper(s[idx]));

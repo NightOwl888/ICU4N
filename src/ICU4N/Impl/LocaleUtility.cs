@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ICU4N.Text;
+using System;
 using System.Globalization;
 using System.Linq;
 
@@ -10,6 +11,8 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
      // ICU4N TODO: Move to Globalization namespace ?
     public class LocaleUtility // ICU4N TODO: Evaluate the need for this class, or whether UCultureInfo can serve as an all-inclusive culture object
     {
+        private const int CharStackBufferSize = 32;
+
         /**
          * A helper function to convert a string of the form
          * aa_BB_CC to a locale object.  Why isn't this in Locale?
@@ -198,6 +201,8 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         //            return new CultureInfo(culture);
         //        }
 
+#nullable enable
+
         /**
          * Fallback from the given locale name by removing the rightmost _-delimited
          * element. If there is none, return the root locale ("", "", ""). If this
@@ -206,15 +211,10 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
          * 
          * @return a new Locale that is a fallback from the given locale, or null.
          */
-        public static CultureInfo Fallback(CultureInfo loc) // ICU4N TODO: API - remove
+        public static CultureInfo? Fallback(CultureInfo loc) // ICU4N TODO: API - remove
         {
             if (CultureInfo.InvariantCulture.Equals(loc))
                 return null;
-
-            //if (CultureInfo.InvariantCulture.Equals(loc.Parent))
-            //    return null;
-
-            //return loc.Parent;
 
 #if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
             // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
@@ -227,60 +227,8 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 #endif
             // ICU4N: We use the original ICU fallback scheme rather than
             // simply using loc.Parent.
-
-            var parser = new LocaleIDParser(loc.Name);
-
-            // Split the locale into parts and remove the rightmost part
-            const int language = 0;
-            const int country = 1;
-            const int variant = 2;
-
-            string[] parts = new string[] { parser.GetLanguage(), parser.GetCountry(), parser.GetVariant() };
-            int i;
-            for (i = 2; i >= 0; --i)
-            {
-                if (parts[i].Length != 0)
-                {
-                    parts[i] = "";
-                    break;
-                }
-            }
-            if (i < 0)
-            {
-                return null; // All parts were empty
-            }
-            return new CultureInfo(
-                parts[language] +
-                (parts[country].Length > 0 ? '-' + parts[country] : "") +
-                (parts[variant].Length > 0 ? '-' + parts[variant] : ""));
-
-
-            //if (parts.Length == 1)
-            //{
-            //    return null; // All parts were empty
-            //}
-            //string culture = parts[0];
-            //for (int i = 1; i < parts.Length - 1; i++)
-            //{
-            //    culture += '-' + parts[i];
-            //}
-            //return new CultureInfo(culture);
-
-
-
-
-            //            // Split the locale into parts and remove the rightmost part
-            //            string[] parts = loc.Name.Split('-');
-            //            if (parts.Length == 1)
-            //            {
-            //                return null; // All parts were empty
-            //            }
-            //            string culture = parts[0];
-            //            for (int i = 1; i < parts.Length - 1; i++)
-            //            {
-            //                culture += '-' + parts[i];
-            //            }
-            //            return new CultureInfo(culture);
+            string? fallbackLocaleID = FallbackAsString(loc.Name, separator: '-');
+            return string.IsNullOrEmpty(fallbackLocaleID) ? null : new CultureInfo(fallbackLocaleID);
         }
 
         /// <summary>
@@ -294,29 +242,69 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         /// <returns>A new <see cref="UCultureInfo"/> that is a fallback from <paramref name="loc"/>,
         /// <see cref="UCultureInfo.InvariantCulture"/> if <paramref name="loc"/> is a neutral culture,
         /// or <c>null</c> if <paramref name="loc"/> is the <see cref="UCultureInfo.InvariantCulture"/>.</returns>
-        public static UCultureInfo Fallback(UCultureInfo loc)
+        public static UCultureInfo? Fallback(UCultureInfo loc)
         {
             if (UCultureInfo.InvariantCulture.Equals(loc))
                 return null;
 
-            //if (CultureInfo.InvariantCulture.Equals(loc.Parent))
-            //    return null;
+#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
+            // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
+            // to be created, but will be "unknown" languages. We need to manually
+            // ignore these.
+            if (loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
+            {
+                return null;
+            }
+#endif
 
-            //return loc.Parent;
+            string? fallbackLocaleID = FallbackAsString(loc.Name);
+            return string.IsNullOrEmpty(fallbackLocaleID) ? null : new UCultureInfo(fallbackLocaleID!);
+        }
 
-//#if FEATURE_CULTUREINFO_UNKNOWNLANGUAGE
-//            // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
-//            // to be created, but will be "unknown" languages. We need to manually
-//            // ignore these.
-//            if (loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
-//            {
-//                return null;
-//            }
-//#endif
-            // ICU4N: We use the original ICU fallback scheme rather than
-            // simply using loc.Parent.
 
-            var parser = new LocaleIDParser(loc.Name);
+        private static string? FallbackAsString(string name, char separator = '_')
+        {
+            // ICU4N: Using LocaleIDParser for more accurate results
+#if FEATURE_SPAN
+            var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], name);
+            int bufferLength = name.Length + 5;
+            Span<char> result = bufferLength <= CharStackBufferSize ? stackalloc char[bufferLength] : new char[bufferLength];
+            int totalLength = 0, lastLength = 0;
+
+            parser.GetLanguage(result, out int languageLength);
+            if (languageLength > 0)
+            {
+                totalLength += languageLength;
+                lastLength = languageLength;
+            }
+            //parser.GetScript(result.Slice(totalLength + 1), out int scriptLength);
+            //if (scriptLength > 0)
+            //{
+            //    result[totalLength] = separator;
+            //    totalLength += scriptLength + 1;
+            //    lastLength = scriptLength + 1;
+            //}
+            parser.GetCountry(result.Slice(totalLength + 1), out int countryLength);
+            if (countryLength > 0)
+            {
+                result[totalLength] = separator;
+                totalLength += countryLength + 1;
+                lastLength = countryLength + 1;
+            }
+            parser.GetVariant(result.Slice(totalLength + 1), out int variantLength);
+            if (variantLength > 0)
+            {
+                result[totalLength] = separator;
+                totalLength += variantLength + 1;
+                lastLength = variantLength + 1;
+            }
+
+            totalLength -= lastLength; // Remove the last segment
+            if (totalLength == 0) return null;
+
+            return result.Slice(0, totalLength).ToString();
+#else
+            using var parser = new LocaleIDParser(name);
 
             // Split the locale into parts and remove the rightmost part
             const int language = 0;
@@ -329,19 +317,21 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             {
                 if (parts[i].Length != 0)
                 {
-                    parts[i] = "";
+                    parts[i] = string.Empty;
                     break;
                 }
             }
             if (i < 0)
             {
-                return UCultureInfo.InvariantCulture; // All parts were empty
+                return null; // All parts were empty
             }
-            return new UCultureInfo(
-                parts[language] +
-                (parts[country].Length > 0 ? '-' + parts[country] : "") +
-                (parts[variant].Length > 0 ? '-' + parts[variant] : ""));
+            return string.Concat(parts[language],
+                (parts[country].Length > 0 ? separator + parts[country] : string.Empty),
+                (parts[variant].Length > 0 ? separator + parts[variant] : string.Empty));
+#endif
         }
+
+#nullable restore
 
         /// <summary>
         /// Fallback from the given ICU locale name 
