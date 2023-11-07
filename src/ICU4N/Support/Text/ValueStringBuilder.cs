@@ -315,6 +315,22 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             return _chars.Slice(origPos, length);
         }
 
+        public void Remove(int startIndex, int length)
+        {
+            if (_pos == length && startIndex == 0)
+            {
+                _pos = 0;
+                return;
+            }
+
+            if (length > 0)
+            {
+                int endIndex = startIndex + length;
+                _chars.Slice(endIndex).CopyTo(_chars.Slice(startIndex));
+                _pos -= length;
+            }
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void GrowAndAppend(char c)
         {

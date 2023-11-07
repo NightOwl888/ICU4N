@@ -311,6 +311,22 @@ namespace ICU4N.Support.Text
 
             Assert.AreEqual(64, builder.Capacity);
         }
+
+
+        [Test]
+        [TestCase("", 0, 0, "")]
+        [TestCase("Hello", 0, 5, "")]
+        [TestCase("Hello", 1, 3, "Ho")]
+        [TestCase("Hello", 1, 4, "H")]
+        [TestCase("Hello", 1, 0, "Hello")]
+        [TestCase("Hello", 5, 0, "Hello")]
+        public static void Remove(string value, int startIndex, int length, string expected)
+        {
+            var builder = new ValueStringBuilder(stackalloc char[64]);
+            builder.Append(value);
+            builder.Remove(startIndex, length);
+            Assert.AreEqual(expected, builder.ToString());
+        }
     }
 }
 
