@@ -1929,11 +1929,19 @@ namespace ICU4N.Text
                 publicRuleSetNames = (string[])localizations[0].Clone();
 
                 IDictionary<string, string[]> m = new Dictionary<string, string[]>();
+#if FEATURE_SPAN
+                using var parser = new LocaleIDParser(stackalloc char[32], ReadOnlySpan<char>.Empty);
+#else
+                using var parser = new LocaleIDParser(string.Empty);
+#endif
+
                 for (int i = 1; i < localizations.Length; ++i)
                 {
                     string[] data = localizations[i];
                     // ICU4N: Convert any culture names to use underscore instead of dash
-                    string loc = new LocaleIDParser(data[0]).GetBaseName();
+                    parser.Reset(data[0]);
+
+                    string loc = parser.GetBaseName();
                     string[] names = new string[data.Length - 1];
                     if (names.Length != publicRuleSetNames.Length)
                     {
