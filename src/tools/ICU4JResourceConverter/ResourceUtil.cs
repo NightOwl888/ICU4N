@@ -152,7 +152,14 @@ namespace JavaResourceConverter
 
         public static string GetDotNetLocaleName(string baseName)
         {
-            return baseName == "root" ? "" : new LocaleIDParser(baseName).GetName();
+            if (baseName == "root") return string.Empty;
+
+            using var parser = new LocaleIDParser(
+#if FEATURE_SPAN
+                stackalloc char[32],
+#endif
+                baseName);
+            return parser.GetName();
         }
 
         /// <summary>

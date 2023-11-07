@@ -1933,7 +1933,13 @@ namespace ICU4N.Text
                 {
                     string[] data = localizations[i];
                     // ICU4N: Convert any culture names to use underscore instead of dash
-                    string loc = new LocaleIDParser(data[0]).GetBaseName();
+                    using var parser = new LocaleIDParser(
+#if FEATURE_SPAN
+                        stackalloc char[32],
+#endif
+                        data[0]);
+
+                    string loc = parser.GetBaseName();
                     string[] names = new string[data.Length - 1];
                     if (names.Length != publicRuleSetNames.Length)
                     {

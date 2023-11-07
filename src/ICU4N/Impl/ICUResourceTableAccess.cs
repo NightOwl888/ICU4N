@@ -60,11 +60,19 @@ namespace ICU4N.Impl
                         string currentName = null;
                         if (tableName.Equals("Countries"))
                         {
-                            currentName = LocaleIDs.GetCurrentCountryID(item);
+                            currentName = LocaleIDs.GetCurrentCountryID(item
+#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+                                .AsSpan()
+#endif
+                                );
                         }
                         else if (tableName.Equals("Languages"))
                         {
-                            currentName = LocaleIDs.GetCurrentLanguageID(item);
+                            currentName = LocaleIDs.GetCurrentLanguageID(item
+#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+                                .AsSpan()
+#endif
+                                );
                         }
                         if (currentName != null)
                         {

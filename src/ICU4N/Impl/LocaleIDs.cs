@@ -1,4 +1,7 @@
-﻿namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
+﻿using System;
+using System.ComponentModel;
+
+namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
 {
     /// <summary>
     /// Utilities for mapping between old and new language, country, and other
@@ -41,7 +44,13 @@
         /// <exception cref="System.Resources.MissingManifestResourceException">Throws <see cref="System.Resources.MissingManifestResourceException"/> if the
         /// three-letter country abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
-        public static string GetThreeLetterISOCountryName(string country) // Renamed from GetISO3Country
+        public static string GetThreeLetterISOCountryName(
+#if FEATURE_SPAN
+            ReadOnlySpan<char> country
+#else
+            string country
+#endif
+            ) // Renamed from GetISO3Country
         {
             int offset = FindIndex(_countries, country);
             if (offset >= 0)
@@ -70,7 +79,13 @@
         /// <exception cref="System.Resources.MissingManifestResourceException">Throws <see cref="System.Resources.MissingManifestResourceException"/> if the
         /// three-letter language abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
-        public static string GetThreeLetterISOLanguageName(string language) // ICU4N: Renamed from GetISO3Language
+        public static string GetThreeLetterISOLanguageName(
+#if FEATURE_SPAN
+            ReadOnlySpan<char> language
+#else
+            string language
+#endif
+            ) // ICU4N: Renamed from GetISO3Language
         {
             int offset = FindIndex(_languages, language);
             if (offset >= 0)
@@ -88,7 +103,13 @@
             return "";
         }
 
-        public static string ThreeToTwoLetterLanguage(string lang)
+        public static string ThreeToTwoLetterLanguage(
+#if FEATURE_SPAN
+            ReadOnlySpan<char> lang
+#else
+            string lang
+#endif
+            )
         {
             /* convert 3 character code to 2 character code if possible *CWB*/
             int offset = FindIndex(_languages3, lang);
@@ -106,7 +127,13 @@
             return null;
         }
 
-        public static string ThreeToTwoLetterRegion(string region)
+        public static string ThreeToTwoLetterRegion(
+#if FEATURE_SPAN
+            ReadOnlySpan<char> region
+#else
+            string region
+#endif
+            )
         {
             /* convert 3 character code to 2 character code if possible *CWB*/
             int offset = FindIndex(_countries3, region);
@@ -128,11 +155,21 @@
         /// Linear search of the string array. The arrays are unfortunately ordered by the
         /// two-letter target code, not the three-letter search code, which seems backwards.
         /// </summary>
-        private static int FindIndex(string[] array, string target)
+        private static int FindIndex(string[] array,
+#if FEATURE_SPAN
+            ReadOnlySpan<char> target
+#else
+            string target
+#endif
+            )
         {
             for (int i = 0; i < array.Length; i++)
             {
+#if FEATURE_SPAN
+                if (target.Equals(array[i], StringComparison.Ordinal))
+#else
                 if (target.Equals(array[i]))
+#endif
                 {
                     return i;
                 }
@@ -460,24 +497,36 @@
         };
 
 
-        public static string GetCurrentCountryID(string oldID)
+        public static string GetCurrentCountryID(
+#if FEATURE_SPAN
+            ReadOnlySpan<char> oldID
+#else
+            string oldID
+#endif
+            )
         {
             int offset = FindIndex(_deprecatedCountries, oldID);
             if (offset >= 0)
             {
                 return _replacementCountries[offset];
             }
-            return oldID;
+            return oldID.ToString();
         }
 
-        public static string GetCurrentLanguageID(string oldID)
+        public static string GetCurrentLanguageID(
+#if FEATURE_SPAN
+            ReadOnlySpan<char> oldID
+#else
+            string oldID
+#endif
+            )
         {
             int offset = FindIndex(_obsoleteLanguages, oldID);
             if (offset >= 0)
             {
                 return _replacementLanguages[offset];
             }
-            return oldID;
+            return oldID.ToString();
         }
     }
 }

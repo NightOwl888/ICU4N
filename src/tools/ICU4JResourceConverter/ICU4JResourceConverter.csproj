@@ -3,7 +3,9 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
-  
+
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   
@@ -13,6 +15,7 @@
     <Compile Include="..\..\ICU4N\Impl\Locale\AsciiUtil.cs" Link="Shared\AsciiUtil.cs" />
     <Compile Include="..\..\ICU4N\Support\Collections\DictionaryExtensions.cs" Link="Shared\DictionaryExtensions.cs" />
     <Compile Include="..\..\ICU4N\Support\Globalization\LocaleID.cs" Link="Shared\LocaleID.cs" />
+    <Compile Include="..\..\ICU4N\Support\Text\ValueStringBuilder.cs" Link="Shared\ValueStringBuilder.cs" />
   </ItemGroup>
 
   <ItemGroup>

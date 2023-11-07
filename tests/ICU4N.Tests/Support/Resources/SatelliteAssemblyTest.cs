@@ -36,7 +36,14 @@ namespace ICU4N.Support.Resources
         // ICU4N TODO: Move special case converter to common location
         public static string GetDotNetLocaleName(string baseName)
         {
-            return baseName == "root" ? "" : new LocaleIDParser(baseName).GetName();
+            if (baseName == "root") return string.Empty;
+
+            using var parser = new LocaleIDParser(
+#if FEATURE_SPAN
+                stackalloc char[32],
+#endif
+                baseName);
+            return parser.GetName();
         }
 
         public static void LoadManifest(Assembly assembly, string manifestName, IList<string> result)

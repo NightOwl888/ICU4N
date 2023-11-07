@@ -228,7 +228,11 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             // ICU4N: We use the original ICU fallback scheme rather than
             // simply using loc.Parent.
 
-            var parser = new LocaleIDParser(loc.Name);
+            using var parser = new LocaleIDParser(
+#if FEATURE_SPAN
+                stackalloc char[16],
+#endif
+                loc.Name);
 
             // Split the locale into parts and remove the rightmost part
             const int language = 0;
@@ -316,7 +320,11 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             // ICU4N: We use the original ICU fallback scheme rather than
             // simply using loc.Parent.
 
-            var parser = new LocaleIDParser(loc.Name);
+            using var parser = new LocaleIDParser(
+#if FEATURE_SPAN
+                stackalloc char[16],
+#endif
+                loc.Name);
 
             // Split the locale into parts and remove the rightmost part
             const int language = 0;
