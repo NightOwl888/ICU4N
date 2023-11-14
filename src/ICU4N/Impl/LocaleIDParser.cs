@@ -1,7 +1,6 @@
 ﻿using ICU4N.Impl.Locale;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
-using J2N.Collections.Generic.Extensions;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
@@ -47,7 +46,11 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 
         // used when canonicalizing
         private IDictionary<string, string> keywords;
+#if FEATURE_SPAN
+        private ReadOnlySpan<char> baseName;
+#else
         private string baseName;
+#endif
 
         /// <summary>
         /// Parsing constants.
@@ -60,6 +63,25 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         private const char DOT = '.';
         private const char UNDERSCORE = '_';
 
+#if FEATURE_SPAN
+
+        public LocaleIDParser(Span<char> initialBuffer, ReadOnlySpan<char> localeID)
+            : this(initialBuffer, localeID, false)
+        {
+        }
+
+        public LocaleIDParser(Span<char> initialBuffer, ReadOnlySpan<char> localeID, bool canonicalize)
+        {
+            id = localeID;
+            index = 0;
+            buffer = new ValueStringBuilder(initialBuffer);
+            this.canonicalize = canonicalize;
+            this.hadCountry = false;
+            this.keywords = null;
+            this.baseName = ReadOnlySpan<char>.Empty;
+        }
+#else
+
         public LocaleIDParser(string localeID)
             : this(localeID, false)
         {
@@ -67,37 +89,25 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 
         public LocaleIDParser(string localeID, bool canonicalize)
         {
-#if FEATURE_SPAN
-            id = localeID.AsSpan();
-            index = 0;
-            buffer = new ValueStringBuilder(id.Length + 5);
-            this.canonicalize = canonicalize;
-            this.hadCountry = false;
-            this.keywords = null;
-            this.baseName = null;
-#else
             Reset(localeID, canonicalize);
-#endif
         }
+#endif
 
 #if FEATURE_SPAN
-
-        public LocaleIDParser(Span<char> initialBuffer, string localeID)
-            : this(initialBuffer, localeID, false)
+        public void Reset(ReadOnlySpan<char> localeID)
         {
+            Reset(localeID, false);
         }
 
-        public LocaleIDParser(Span<char> initialBuffer, string localeID, bool canonicalize)
+        public void Reset(ReadOnlySpan<char> localeID, bool canonicalize)
         {
-            id = localeID.AsSpan();
+            id = localeID;
             index = 0;
-            buffer = new ValueStringBuilder(initialBuffer);
+            buffer.Length = 0;
             this.canonicalize = canonicalize;
             this.hadCountry = false;
-            this.keywords = null;
-            this.baseName = null;
         }
-#endif
+#else
 
         public void Reset(string localeID)
         {
@@ -106,20 +116,13 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 
         public void Reset(string localeID, bool canonicalize)
         {
-#if FEATURE_SPAN
-            id = localeID.AsSpan();
-#else
             id = localeID.ToCharArray();
-#endif
             index = 0;
-#if FEATURE_SPAN
-            buffer.Length = 0;
-#else
             buffer = new StringBuilder(id.Length + 5);
-#endif
             this.canonicalize = canonicalize;
             this.hadCountry = false;
         }
+#endif
 
         private void Reset()
         {
@@ -168,15 +171,19 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         /// <summary>
         /// Set the length of the buffer to pos, then append the string.
         /// </summary>
-        private void Set(int pos, string s)
-        {
 #if FEATURE_SPAN
+        private void Set(int pos, ReadOnlySpan<char> s)
+        {
             buffer.Length = pos;
-#else
-            buffer.Delete(pos, buffer.Length - pos); // ICU4N: Corrected 2nd parameter
-#endif
             buffer.Insert(pos, s);
         }
+#else
+        private void Set(int pos, string s)
+        {
+            buffer.Delete(pos, buffer.Length - pos); // ICU4N: Corrected 2nd parameter
+            buffer.Insert(pos, s);
+        }
+#endif
 
         /// <summary>
         /// Append the string to the buffer.
@@ -185,6 +192,18 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         {
             buffer.Append(s);
         }
+
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Append the span to the buffer.
+        /// </summary>
+        private void Append(ReadOnlySpan<char> s)
+        {
+            buffer.Append(s);
+        }
+
+#endif
 
         // utilities for parsing text out of the id
 
@@ -306,13 +325,17 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             {
 #if FEATURE_SPAN
                 string lang = LocaleIDs.ThreeToTwoLetterLanguage(AsSpan(0));
+                if (lang != null)
+                {
+                    Set(0, lang.AsSpan());
+                }
 #else
                 string lang = LocaleIDs.ThreeToTwoLetterLanguage(GetString(0));
-#endif
                 if (lang != null)
                 {
                     Set(0, lang);
                 }
+#endif
             }
 
             return 0;
@@ -456,14 +479,18 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
                 {
 #if FEATURE_SPAN
                     string region = LocaleIDs.ThreeToTwoLetterRegion(AsSpan(oldBlen));
+                    if (region != null)
+                    {
+                        Set(oldBlen, region.AsSpan());
+                    }
 #else
                     string region = LocaleIDs.ThreeToTwoLetterRegion(GetString(oldBlen));
-
-#endif
                     if (region != null)
                     {
                         Set(oldBlen, region);
                     }
+#endif
+
                 }
 
                 return oldBlen;
@@ -597,6 +624,37 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         // no need for skipvariant, to get the keywords we'll just scan directly for
         // the keyword separator
 
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Copies the normalized language id into <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's language id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <returns><c>false</c> if <paramref name="destination"/> is not long enough; otherwise, <c>true</c>.</returns>
+        public bool TryGetLanguage(Span<char> destination, out int charsWritten)
+        {
+            Reset();
+            ReadOnlySpan<char> result = AsSpan(ParseLanguage());
+            bool success = result.TryCopyTo(destination);
+            charsWritten = success ? result.Length : 0;
+            return success;
+        }
+
+        /// <summary>
+        /// Copies the normalized language id into <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's language id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <exception cref="ArgumentException"><paramref name="destination"/> is too short.</exception>
+        public void GetLanguage(Span<char> destination, out int charsWritten)
+        {
+            Reset();
+            ReadOnlySpan<char> result = AsSpan(ParseLanguage());
+            result.CopyTo(destination);
+            charsWritten = result.Length;
+        }
+#endif
         /// <summary>
         /// Returns the normalized language id, or the empty string.
         /// </summary>
@@ -605,6 +663,40 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             Reset();
             return GetString(ParseLanguage());
         }
+
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Copies the normalized script id into <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's script id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <returns><c>false</c> if <paramref name="destination"/> is not long enough; otherwise, <c>true</c>.</returns>
+        public bool TryGetScript(Span<char> destination, out int charsWritten)
+        {
+            Reset();
+            SkipLanguage();
+            ReadOnlySpan<char> result = AsSpan(ParseScript());
+            bool success = result.TryCopyTo(destination);
+            charsWritten = success ? result.Length : 0;
+            return success;
+        }
+
+        /// <summary>
+        /// Copies the normalized script id into <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's script id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <exception cref="ArgumentException"><paramref name="destination"/> is too short.</exception>
+        public void GetScript(Span<char> destination, out int charsWritten)
+        {
+            Reset();
+            SkipLanguage();
+            ReadOnlySpan<char> result = AsSpan(ParseScript());
+            result.CopyTo(destination);
+            charsWritten = result.Length;
+        }
+#endif
 
         /// <summary>
         /// Returns the normalized script id, or the empty string.
@@ -616,6 +708,43 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             return GetString(ParseScript());
         }
 
+
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Copies the normalized country id into <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's country id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <returns><c>false</c> if <paramref name="destination"/> is not long enough; otherwise, <c>true</c>.</returns>
+        public bool TryGetCountry(Span<char> destination, out int charsWritten)
+        {
+            Reset();
+            SkipLanguage();
+            SkipScript();
+            ReadOnlySpan<char> result = AsSpan(ParseCountry());
+            bool success = result.TryCopyTo(destination);
+            charsWritten = success ? result.Length : 0;
+            return success;
+        }
+
+        /// <summary>
+        /// Copies the normalized country id into <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's country id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <exception cref="ArgumentException"><paramref name="destination"/> is too short.</exception>
+        public void GetCountry(Span<char> destination, out int charsWritten)
+        {
+            Reset();
+            SkipLanguage();
+            SkipScript();
+            ReadOnlySpan<char> result = AsSpan(ParseCountry());
+            result.CopyTo(destination);
+            charsWritten = result.Length;
+        }
+#endif
+
         /// <summary>
         /// Returns the normalized country id, or the empty string.
         /// </summary>
@@ -626,6 +755,45 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             SkipScript();
             return GetString(ParseCountry());
         }
+
+
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Copies the normalized variant id into <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's variant id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <returns><c>false</c> if <paramref name="destination"/> is not long enough; otherwise, <c>true</c>.</returns>
+        public bool TryGetVariant(Span<char> destination, out int charsWritten)
+        {
+            Reset();
+            SkipLanguage();
+            SkipScript();
+            SkipCountry();
+            ReadOnlySpan<char> result = AsSpan(ParseVariant());
+            bool success = result.TryCopyTo(destination);
+            charsWritten = success ? result.Length : 0;
+            return success;
+        }
+
+        /// <summary>
+        /// Copies the normalized variant id into <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's variant id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <exception cref="ArgumentException"><paramref name="destination"/> is too short.</exception>
+        public void GetVariant(Span<char> destination, out int charsWritten)
+        {
+            Reset();
+            SkipLanguage();
+            SkipScript();
+            SkipCountry();
+            ReadOnlySpan<char> result = AsSpan(ParseVariant());
+            result.CopyTo(destination);
+            charsWritten = result.Length;
+        }
+#endif
 
         /// <summary>
         /// Returns the normalized variant id, or the empty string.
@@ -640,7 +808,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         }
 
         /// <summary>
-        /// Returns the language, script, country, and variant as separate strings
+        /// Returns the language id, script id, country id, and variant id as separate strings
         /// in a <see cref="LocaleID"/> structure.
         /// </summary>
         public LocaleID GetLocaleID()
@@ -654,14 +822,22 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             );
         }
 
+#if FEATURE_SPAN
+        public void SetBaseName(ReadOnlySpan<char> baseName)
+#else
         public void SetBaseName(string baseName)
+#endif
         {
             this.baseName = baseName;
         }
 
         public void ParseBaseName(char separator = UNDERSCORE)
         {
+#if FEATURE_SPAN
+            if (!baseName.IsEmpty)
+#else
             if (baseName != null)
+#endif
             {
                 Set(0, baseName);
             }
@@ -692,20 +868,138 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             }
         }
 
+#if FEATURE_SPAN
         /// <summary>
-        /// Returns the normalized base form of the locale id.  The base
-        /// form does not include keywords.
+        /// Copies the normalized base form of the locale id to <paramref name="destination"/>.
+        /// The base form does not include keywords.
+        /// <para/>
+        /// Usage Note: The destination may be longer than the locale id. It is recommended to use a buffer
+        /// at least <c>localeID.Length + 10</c>.
         /// </summary>
-        public string GetBaseName() // ICU4N TODO: API - Rename GetName() to match .NET?
+        /// <param name="destination">The span in which to write this instance's locale id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <returns><c>false</c> if <paramref name="destination"/> is not long enough; otherwise, <c>true</c>.</returns>
+        public bool TryGetBaseName(Span<char> destination, out int charsWritten)
         {
-            if (baseName != null)
+            ReadOnlySpan<char> result;
+            if (!baseName.IsEmpty)
+            {
+                result = baseName;
+            }
+            else
+            {
+                ParseBaseName();
+                result = AsSpan(0);
+            }
+            bool success = result.TryCopyTo(destination);
+            charsWritten = success ? result.Length : 0;
+            return success;
+        }
+
+        /// <summary>
+        /// Copies the normalized base form of the locale id to <paramref name="destination"/>.
+        /// The base form does not include keywords.
+        /// <para/>
+        /// Usage Note: The destination may be longer than the locale id. It is recommended to use a buffer
+        /// at least <c>localeID.Length + 10</c>.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's locale id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <exception cref="ArgumentException"><paramref name="destination"/> is too short.</exception>
+        public void GetBaseName(Span<char> destination, out int charsWritten)
+        {
+            ReadOnlySpan<char> result;
+            if (!baseName.IsEmpty)
+            {
+                result = baseName;
+            }
+            else
+            {
+                ParseBaseName();
+                result = AsSpan(0);
+            }
+            result.CopyTo(destination);
+            charsWritten = result.Length;
+        }
+
+        /// <summary>
+        /// Returns the base name as a <see cref="ReadOnlySpan{T}"/>.
+        /// Note this value may be overwritten if another Get or TryGet
+        /// method is called, so it may only be used prior to those operations.
+        /// <para/>
+        /// Despite this limitation, this method allows the use of the base name
+        /// without having to allocate memory first.
+        /// </summary>
+        /// <returns>The base name as a <see cref="ReadOnlySpan{T}"/>.</returns>
+        internal ReadOnlySpan<char> GetBaseNameAsSpan()
+        {
+            if (!baseName.IsEmpty)
             {
                 return baseName;
             }
             ParseBaseName();
+            return AsSpan(0);
+        }
+#endif
+
+        /// <summary>
+        /// Returns the normalized base form of the locale id.  The base
+        /// form does not include keywords.
+        /// </summary>
+        public string GetBaseName()
+        {
+#if FEATURE_SPAN
+            if (!baseName.IsEmpty)
+            {
+                return baseName.ToString();
+            }
+#else
+            if (baseName != null)
+            {
+                return baseName;
+            }
+#endif
+            ParseBaseName();
             return GetString(0);
         }
 
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Copies the normalized base form of the locale id using hyphen as the
+        /// separator to <paramref name="destination"/>. This is for compatibility with <see cref="System.Globalization.CultureInfo.Name"/>.
+        /// Does not include keywords.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's locale id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <returns><c>false</c> if <paramref name="destination"/> is not long enough; otherwise, <c>true</c>.</returns>
+        public bool TryGetName(Span<char> destination, out int charsWritten)
+        {
+            ParseBaseName(HYPHEN);
+            RemoveLeadingSeparator(HYPHEN);
+            ReadOnlySpan<char> result = AsSpan(0);
+            bool success = result.TryCopyTo(destination);
+            charsWritten = success ? result.Length : 0;
+            return success;
+        }
+
+        /// <summary>
+        /// Copies the normalized base form of the locale id using hyphen as the
+        /// separator to <paramref name="destination"/>. This is for compatibility with <see cref="System.Globalization.CultureInfo.Name"/>.
+        /// Does not include keywords.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's locale id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <exception cref="ArgumentException"><paramref name="destination"/> is too short.</exception>
+        public void GetName(Span<char> destination, out int charsWritten)
+        {
+            ParseBaseName(HYPHEN);
+            RemoveLeadingSeparator(HYPHEN);
+            ReadOnlySpan<char> result = AsSpan(0);
+            result.CopyTo(destination);
+            charsWritten = result.Length;
+        }
+#endif
         /// <summary>
         /// Returns the normalized base form of the locale id using hyphen as the
         /// separator, for compatibility with <see cref="System.Globalization.CultureInfo.Name"/>.
@@ -713,14 +1007,45 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         /// </summary>
         public string GetName()
         {
-            if (baseName != null)
-            {
-                return baseName;
-            }
             ParseBaseName(HYPHEN);
             RemoveLeadingSeparator(HYPHEN);
             return GetString(0);
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Copies the normalized full form of the locale id to <paramref name="destination"/>.
+        /// The full form includes keywords if they are present.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's normalized full form of the locale id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <returns><c>false</c> if <paramref name="destination"/> is not long enough; otherwise, <c>true</c>.</returns>
+        public bool TryGetFullName(Span<char> destination, out int charsWritten)
+        {
+            ParseBaseName();
+            ParseKeywords();
+            ReadOnlySpan<char> result = AsSpan(0);
+            bool success = result.TryCopyTo(destination);
+            charsWritten = success ? result.Length : 0;
+            return success;
+        }
+
+        /// <summary>
+        /// Copies the normalized full form of the locale id to <paramref name="destination"/>.
+        /// The full form includes keywords if they are present.
+        /// </summary>
+        /// <param name="destination">The span in which to write this instance's normalized full form of the locale id as a span of characters.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in <paramref name="destination"/>.</param>
+        /// <exception cref="ArgumentException"><paramref name="destination"/> is too short.</exception>
+        public void GetFullName(Span<char> destination, out int charsWritten)
+        {
+            ParseBaseName();
+            ParseKeywords();
+            ReadOnlySpan<char> result = AsSpan(0);
+            result.CopyTo(destination);
+            charsWritten = result.Length;
+        }
+#endif
 
         /// <summary>
         /// Returns the normalized full form of the locale id.  The full

@@ -1,11 +1,15 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Impl.Locale;
 using ICU4N.Support.Text;
+using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Collections.Generic.Extensions;
 using J2N.Globalization;
 using J2N.Text;
 using System;
+#if FEATURE_SPAN
+using System.Buffers;
+#endif
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -209,11 +213,12 @@ namespace ICU4N.Globalization
             this.culture = culture!; // ICU4N: The constructor that calls us with null populates this value
             this.isReadOnly = false;
 
-            using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
+            using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID.AsSpan());
+#else
+            using var parser = new LocaleIDParser(localeID);
 #endif
-                localeID);
+
             this.localeIdentifier = parser.GetLocaleID();
 
             // NOTE: Invariant culture is not neutral
@@ -284,11 +289,11 @@ namespace ICU4N.Globalization
 
             this.isReadOnly = isReadOnly;
 
-            using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
+            using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID.AsSpan());
+#else
+            using var parser = new LocaleIDParser(localeID);
 #endif
-                localeID);
             this.localeIdentifier = parser.GetLocaleID();
 
             // NOTE: Invariant culture is not neutral
@@ -531,11 +536,11 @@ namespace ICU4N.Globalization
         /// <stable>ICU4N 60</stable>
         public static string GetLanguage(string localeID)
         {
-            using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
+            using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID.AsSpan());
+#else
+            using var parser = new LocaleIDParser(localeID);
 #endif
-                localeID);
             return parser.GetLanguage();
         }
 
@@ -558,11 +563,11 @@ namespace ICU4N.Globalization
         /// <stable>ICU4N 60</stable>
         public static string GetScript(string localeID)
         {
-            using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
+            using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID.AsSpan());
+#else
+            using var parser = new LocaleIDParser(localeID);
 #endif
-                localeID);
             return parser.GetScript();
         }
 
@@ -586,11 +591,11 @@ namespace ICU4N.Globalization
         /// <stable>ICU4N 60</stable>
         public static string GetCountry(string localeID)
         {
-            using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
+            using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID.AsSpan());
+#else
+            using var parser = new LocaleIDParser(localeID);
 #endif
-                localeID);
             return parser.GetCountry();
         }
 
@@ -654,11 +659,11 @@ namespace ICU4N.Globalization
         /// <stable>ICU4N 60</stable>
         public static string GetVariant(string localeID)
         {
-            using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
+            using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID.AsSpan());
+#else
+            using var parser = new LocaleIDParser(localeID);
 #endif
-                localeID);
             return parser.GetVariant();
         }
 
@@ -689,6 +694,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Returns the given (canonical) locale id minus the last part before the tags.
         /// </summary>
+        // ICU4N TODO: Should we be using - instead of _ here?
         private static string GetParentString(string fallback) // ICU4N - Renamed from GetFallbackString
         {
             int extStart = fallback.IndexOf('@');
@@ -698,33 +704,98 @@ namespace ICU4N.Globalization
             }
 
             // ICU4N: Using LocaleIDParser for more accurate results
-            using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
-#endif
-                fallback);
-
-            // Split the locale into parts and remove the rightmost part
-            const int language = 0;
-            const int script = 1;
-            const int country = 2;
-            const int variant = 3;
-
-            string[] parts = new string[] { parser.GetLanguage(), parser.GetScript(), parser.GetCountry(), parser.GetVariant() };
-            int i;
-            for (i = 3; i >= 0; --i)
+            using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], fallback.AsSpan());
+            int bufferLength = fallback.Length + 5;
+            bool usePool = bufferLength > CharStackBufferSize;
+            char[]? arrayToReturnToPool = usePool ? ArrayPool<char>.Shared.Rent(bufferLength) : null;
+            try
             {
-                if (parts[i].Length != 0)
+                Span<char> result = usePool ? arrayToReturnToPool : stackalloc char[bufferLength];
+                int totalLength = 0, lastLength = 0;
+
+                parser.GetLanguage(result, out int languageLength);
+                if (languageLength > 0)
                 {
-                    parts[i] = "";
-                    break;
+                    totalLength += languageLength;
+                    lastLength = languageLength;
+                }
+                parser.GetScript(result.Slice(totalLength + 1), out int scriptLength);
+                if (scriptLength > 0)
+                {
+                    result[totalLength] = '_';
+                    totalLength += scriptLength + 1;
+                    lastLength = scriptLength + 1;
+                }
+                parser.GetCountry(result.Slice(totalLength + 1), out int countryLength);
+                if (countryLength > 0)
+                {
+                    result[totalLength] = '_';
+                    totalLength += countryLength + 1;
+                    lastLength = countryLength + 1;
+                }
+                parser.GetVariant(result.Slice(totalLength + 1), out int variantLength);
+                if (variantLength > 0)
+                {
+                    result[totalLength] = '_';
+                    totalLength += variantLength + 1;
+                    lastLength = variantLength + 1;
+                }
+
+                totalLength -= lastLength; // Remove the last segment
+
+                // Append the ext chars, if any
+                ReadOnlySpan<char> ext = fallback.AsSpan(extStart);
+                if (ext.Length > 0)
+                {
+                    ext.CopyTo(result.Slice(totalLength));
+                    totalLength += ext.Length;
+                }
+
+                return result.Slice(0, totalLength).ToString();
+            }
+            finally
+            {
+                if (arrayToReturnToPool is not null)
+                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+            }
+#else
+            using var parser = new LocaleIDParser(fallback);
+            string language = parser.GetLanguage();
+            string script = parser.GetScript();
+            string country = parser.GetCountry();
+            string variant = parser.GetVariant();
+
+            if (variant == string.Empty)
+            {
+                if (country == string.Empty)
+                {
+                    if (script == string.Empty)
+                    {
+                        if (language != string.Empty)
+                            language = string.Empty;
+                    }
+                    else
+                    {
+                        script = string.Empty;
+                    }
+                }
+                else
+                {
+                    country = string.Empty;
                 }
             }
-            return parts[language] +
-                (parts[script].Length > 0 ? '_' + parts[script] : "") +
-                (parts[country].Length > 0 ? '_' + parts[country] : "") +
-                (parts[variant].Length > 0 ? '_' + parts[variant] : "") + 
+            else
+            {
+                variant = string.Empty;
+            }
+
+            return language +
+                (script.Length > 0 ? '_' + script : "") +
+                (country.Length > 0 ? '_' + country : "") +
+                (variant.Length > 0 ? '_' + variant : "") + 
                 fallback.Substring(extStart);
+#endif
         }
 
         /// <summary>
@@ -740,11 +811,11 @@ namespace ICU4N.Globalization
             {
                 return localeID;
             }
-            using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
+            using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID.AsSpan());
+#else
+            using var parser = new LocaleIDParser(localeID);
 #endif
-                localeID);
             return parser.GetBaseName();
         }
 
@@ -817,12 +888,12 @@ namespace ICU4N.Globalization
 
             static string GetFullName(string key)
             {
-                using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
+                using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], key.AsSpan());
+#else
+                using var parser = new LocaleIDParser(key);
 #endif
-                key);
-                return parser.GetFullName()!;
+                return parser.GetFullName();
             }
         }
 
@@ -856,11 +927,11 @@ namespace ICU4N.Globalization
         public static IDictionary<string, string> GetKeywords(string localeID)
 #endif
         {
-            using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
+            using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID.AsSpan());
+#else
+            using var parser = new LocaleIDParser(localeID);
 #endif
-                localeID);
             return parser.Keywords;
         }
 
@@ -881,23 +952,97 @@ namespace ICU4N.Globalization
             if (localeID is null)
                 throw new ArgumentNullException(nameof(localeID));
 
+#if FEATURE_SPAN
+            return Canonicalize(localeID.AsSpan());
+        }
+
+        /// <summary>
+        /// <icu/> Returns the canonical name for the specified locale ID.  This is used to
+        /// convert POSIX and other grandfathered IDs to standard ICU form.
+        /// </summary>
+        /// <param name="localeID">The locale ID.</param>
+        /// <returns>The canonicalized ID.</returns>
+        /// <stable>ICU 60.1</stable>
+        private static string Canonicalize(ReadOnlySpan<char> localeID)
+        {
+            int bufferLength = localeID.Length + 10;
+            bool usePool = bufferLength > CharStackBufferSize;
+            char[]? arrayToReturnToPool = usePool ? ArrayPool<char>.Shared.Rent(bufferLength) : null;
+            try
+            {
+                Span<char> buffer = usePool ? arrayToReturnToPool : stackalloc char[bufferLength];
+
+                if (TryCanonicalize(localeID, buffer, out int charsWritten))
+                {
+                    return buffer.Slice(0, charsWritten).ToString();
+                }
+                else // rare
+                {
+                    while (true)
+                    {
+                        usePool = true;
+                        bufferLength += 1024;
+                        buffer = arrayToReturnToPool = ArrayPool<char>.Shared.Rent(bufferLength);
+                        if (TryCanonicalize(localeID, buffer, out charsWritten))
+                            return buffer.Slice(0, charsWritten).ToString();
+                    }
+                }
+            }
+            finally
+            {
+                if (arrayToReturnToPool is not null)
+                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+            }
+        }
+
+        /// <summary>
+        /// <icu/> Copies the canonical name for the specified locale ID to <paramref name="destination"/>.
+        /// This is used to convert POSIX and other grandfathered IDs to standard ICU form.
+        /// </summary>
+        /// <param name="localeID">The locale ID.</param>
+        /// <param name="destination">The span in which to write the canonical name as a span of characters. Using a span
+        /// of at least 10 more characters than <paramref name="localeID"/> is recommended.</param>
+        /// <param name="charsWritten">When this method returns, contains the number of characters that were written in
+        /// <paramref name="destination"/>.</param>
+        /// <returns><c>false</c> if <paramref name="destination"/> is not long enough; otherwise, <c>true</c>.</returns>
+        /// <stable>ICU 60.1</stable>
+        public static bool TryCanonicalize(ReadOnlySpan<char> localeID, Span<char> destination, out int charsWritten)
+        {
+#endif
             using LocaleIDParser parser = new LocaleIDParser(
 #if FEATURE_SPAN
                 stackalloc char[CharStackBufferSize],
 #endif
-                localeID, true);
+                localeID, canonicalize: true);
+#if FEATURE_SPAN
+            ReadOnlySpan<char> baseName = parser.GetBaseNameAsSpan();
+#else
             string baseName = parser.GetBaseName();
+#endif
             bool foundVariant = false;
 
             // formerly, we always set to en_US_POSIX if the basename was empty, but
             // now we require that the entire id be empty, so that "@foo=bar"
             // will pass through unchanged.
             // {dlf} I'd rather keep "" unchanged.
-            if (localeID.Equals(""))
+#if FEATURE_SPAN
+            if (localeID.IsEmpty)
+            {
+                bool success = ReadOnlySpan<char>.Empty.TryCopyTo(destination);
+                charsWritten = 0;
+                return success;
+            }
+#else
+            if (localeID == "")
             {
                 return "";
                 //              return "en_US_POSIX";
             }
+#endif
+
+#if FEATURE_SPAN
+            Span<char> buffer = stackalloc char[CharStackBufferSize];
+#endif
 
             // we have an ID in the form xx_Yyyy_ZZ_KKKKK
 
@@ -905,15 +1050,29 @@ namespace ICU4N.Globalization
             for (int i = 0; i < variantsToKeywords.Length; i++)
             {
                 string[] vals = variantsToKeywords[i];
+#if FEATURE_SPAN
+                buffer[0] = '_';
+                vals[0].CopyTo(buffer.Slice(1));
+                int idx = baseName.LastIndexOf(buffer.Slice(0, vals[0].Length + 1)); // ICU4N: Defaults to ordinal (overload missing in .NET Framework)
+#else
                 int idx = baseName.LastIndexOf("_" + vals[0], StringComparison.Ordinal);
+#endif
                 if (idx > -1)
                 {
                     foundVariant = true;
 
+#if FEATURE_SPAN
+                    baseName = baseName.Slice(0, idx - 0); // ICU4N: Checked 2nd parameter
+#else
                     baseName = baseName.Substring(0, idx - 0); // ICU4N: Checked 2nd parameter
+#endif
                     if (baseName.EndsWith("_", StringComparison.Ordinal))
                     {
+#if FEATURE_SPAN
+                        baseName = baseName.Slice(0, (--idx - 0)); // ICU4N: Checked 2nd parameter
+#else
                         baseName = baseName.Substring(0, (--idx - 0)); // ICU4N: Checked 2nd parameter
+#endif
                     }
                     parser.SetBaseName(baseName);
                     parser.DefaultKeywordValue(vals[1], vals[2]);
@@ -924,12 +1083,16 @@ namespace ICU4N.Globalization
             /* See if this is an already known locale */
             for (int i = 0; i < CANONICALIZE_MAP.Length; i++)
             {
-                if (baseName.Equals(CANONICALIZE_MAP[i][0]))
+                if (baseName.Equals(CANONICALIZE_MAP[i][0]!, StringComparison.Ordinal))
                 {
                     foundVariant = true;
 
                     string?[] vals = CANONICALIZE_MAP[i];
-                    parser.SetBaseName(vals[1]);
+                    parser.SetBaseName(vals[1]
+#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+                        .AsSpan()
+#endif
+                        );
                     if (vals[2] != null)
                     {
                         parser.DefaultKeywordValue(vals[2], vals[3]);
@@ -941,13 +1104,25 @@ namespace ICU4N.Globalization
             /* total mondo hack for Norwegian, fortunately the main NY case is handled earlier */
             if (!foundVariant)
             {
+#if FEATURE_SPAN
+                if (parser.TryGetLanguage(buffer, out int languageLength) && buffer.Slice(0, languageLength) == "nb".AsSpan()
+                    && parser.TryGetVariant(buffer, out int variantLength) && buffer.Slice(0, variantLength) == "NY".AsSpan())
+#else
                 if (parser.GetLanguage().Equals("nb") && parser.GetVariant().Equals("NY"))
+#endif
                 {
-                    parser.SetBaseName(LscvToID("nn", parser.GetScript(), parser.GetCountry(), null));
+                    parser.SetBaseName(LscvToID("nn", parser.GetScript(), parser.GetCountry(), null)
+#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+                        .AsSpan()
+#endif
+                        );
                 }
             }
-
+#if FEATURE_SPAN
+            return parser.TryGetFullName(destination, out charsWritten);
+#else
             return parser.GetFullName();
+#endif
         }
 
         /// <summary>
@@ -991,11 +1166,11 @@ namespace ICU4N.Globalization
         /// <stable>ICU 3.2</stable>
         public static string SetKeywordValue(string localeID, string keyword, string value)
         {
-            using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
+            using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID.AsSpan());
+#else
+            using var parser = new LocaleIDParser(localeID);
 #endif
-                localeID);
             parser.SetKeywordValue(keyword, value);
             return parser.GetFullName();
         }
@@ -1838,7 +2013,7 @@ namespace ICU4N.Globalization
                     // ICU4N: In .NET we don't have fallback behavior for Accept-Language, so use the
                     // LocaleUtility to simply rewrite the string to the correct culture.
                     // This differs from UCultureInfo.GetParentString() in that it skips the script tag.
-                    UCultureInfo parent = LocaleUtility.Fallback(aLocale);
+                    UCultureInfo? parent = LocaleUtility.Fallback(aLocale);
                     
                     if (parent != null)
                     {
@@ -2246,7 +2421,12 @@ namespace ICU4N.Globalization
                             int serial = map.Count;
                             CultureAcceptLanguageQ entry = new CultureAcceptLanguageQ(q, serial);
                             // sort in reverse order..   1.0, 0.9, 0.8 .. etc
-                            map[entry] = new UCultureInfo(Canonicalize(languageRangeBuf.ToString()));
+#if FEATURE_SPAN
+                            string canonicalizedLocaleID = Canonicalize(languageRangeBuf.AsSpan());
+#else
+                            string canonicalizedLocaleID = Canonicalize(languageRangeBuf.ToString());
+#endif
+                            map[entry] = new UCultureInfo(canonicalizedLocaleID);
                         }
 
                         // reset buffer and parse state
@@ -2610,7 +2790,7 @@ namespace ICU4N.Globalization
 #if FEATURE_SPAN
             ValueStringBuilder tag = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             using LocaleIDParser parser = !string.IsNullOrEmpty(alternateTags)
-                ? new LocaleIDParser(stackalloc char[CharStackBufferSize], alternateTags)
+                ? new LocaleIDParser(stackalloc char[CharStackBufferSize], alternateTags.AsSpan())
                 : default;
 #else
             LocaleIDParser? parser = null;
@@ -2827,11 +3007,11 @@ namespace ICU4N.Globalization
         /// <returns>The number of chars of the localeID parameter consumed.</returns>
         private static int ParseTagString(string localeID, string[] tags)
         {
-            using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[CharStackBufferSize],
+            using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID.AsSpan());
+#else
+            using var parser = new LocaleIDParser(localeID);
 #endif
-                localeID);
 
             string lang = parser.GetLanguage();
             string script = parser.GetScript();
@@ -3586,20 +3766,20 @@ namespace ICU4N.Globalization
 #else
                     StringBuilder buf = new StringBuilder(id);
 #endif
-                    buf.Append("@");
+                    buf.Append('@');
                     bool insertSep = false;
                     foreach (var kwd in kwds)
                     {
                         if (insertSep)
                         {
-                            buf.Append(";");
+                            buf.Append(';');
                         }
                         else
                         {
                             insertSep = true;
                         }
                         buf.Append(kwd.Key);
-                        buf.Append("=");
+                        buf.Append('=');
                         buf.Append(kwd.Value);
                     }
 
@@ -3619,11 +3799,11 @@ namespace ICU4N.Globalization
                     language = script = region = variant = string.Empty;
                     if (localeID.Length > 0) // Invariant culture
                     {
-                        using var lp = new LocaleIDParser(
 #if FEATURE_SPAN
-                            stackalloc char[CharStackBufferSize],
+                        using var lp = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID.AsSpan());
+#else
+                        using var lp = new LocaleIDParser(localeID);
 #endif
-                            localeID);
                         language = lp.GetLanguage();
                         script = lp.GetScript();
                         region = lp.GetCountry();

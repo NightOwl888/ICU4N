@@ -194,15 +194,19 @@ namespace ICU4N.Impl
             else
             {
                 List<T> locales = new List<T>(visIDs.Count);
-                using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                    stackalloc char[16],
+                using var parser = new LocaleIDParser(stackalloc char[16], default);
+#else
+                using var parser = new LocaleIDParser(string.Empty);
 #endif
-                    string.Empty);
                 foreach (string id in visIDs)
                 {
                     // Filter the culture type before allocating the object
-                    parser.Reset(id);
+                    parser.Reset(id
+#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+                        .AsSpan()
+#endif
+                        );
                     bool isNeutralCulture = parser.GetLocaleID().IsNeutralCulture;
                     if (isNeutralCulture && types.HasFlag(UCultureTypes.NeutralCultures)
                         || (!isNeutralCulture && types.HasFlag(UCultureTypes.SpecificCultures)))

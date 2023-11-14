@@ -133,12 +133,11 @@ namespace ICU4N.Globalization
                 }
 
                 var collationName = culture.CompareInfo?.Name;
-                using LocaleIDParser parser = new LocaleIDParser(
-
 #if FEATURE_SPAN
-                    stackalloc char[CharStackBufferSize],
+                using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], string.Empty.AsSpan());
+#else
+                using var parser = new LocaleIDParser(string.Empty);
 #endif
-                    string.Empty);
                 bool collationFound = false;
 
                 if (!string.IsNullOrEmpty(collationName))
@@ -150,7 +149,11 @@ namespace ICU4N.Globalization
                         if (collation[0].Equals(collationName, StringComparison.Ordinal))
                         {
                             collationFound = true;
-                            parser.Reset(collation[1]);
+                            parser.Reset(collation[1]
+#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+                                .AsSpan()
+#endif
+                                );
                             if (collation[2] != null)
                                 parser.SetKeywordValue(collation[2], collation[3]);
                             break;
@@ -165,7 +168,11 @@ namespace ICU4N.Globalization
                 if (!collationFound)
                 {
                     var name = UnsupportedDotNetNames.TryGetValue(culture.Name, out string baseName) ? baseName : culture.Name;
-                    parser.Reset(name);
+                    parser.Reset(name
+#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+                        .AsSpan()
+#endif
+                        );
                 }
 
                 // ***********************************************************************************************************************************
@@ -361,11 +368,11 @@ namespace ICU4N.Globalization
 
             private static string ICUBaseNameToCultureInfoName(string baseName)
             {
-                using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                    stackalloc char[CharStackBufferSize],
+                using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], baseName.AsSpan());
+#else
+                using var parser = new LocaleIDParser(baseName);
 #endif
-                    baseName);
                 return parser.GetName();
             }
         }

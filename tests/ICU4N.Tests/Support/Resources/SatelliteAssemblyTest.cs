@@ -38,11 +38,11 @@ namespace ICU4N.Support.Resources
         {
             if (baseName == "root") return string.Empty;
 
-            using var parser = new LocaleIDParser(
 #if FEATURE_SPAN
-                stackalloc char[32],
+            using var parser = new LocaleIDParser(stackalloc char[32], baseName.AsSpan());
+#else
+            using var parser = new LocaleIDParser(baseName);
 #endif
-                baseName);
             return parser.GetName();
         }
 
