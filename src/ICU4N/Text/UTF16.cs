@@ -201,6 +201,72 @@ namespace ICU4N.Text
         // - _charAt(ICharSequence source, int offset16, char single)
         // - CharAt(StringBuilder source, int offset16)
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
+        /// <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
+        /// required, use <see cref="UChar.IsLegal(int)"/>
+        /// on the return value. If the char retrieved is part of a surrogate pair, its supplementary
+        /// character will be returned. If a complete supplementary character is not found the incomplete
+        /// character will be returned.
+        /// </summary>
+        /// <param name="source">Array of UTF-16 chars</param>
+        /// <param name="offset16">UTF-16 offset to the start of the character.</param>
+        /// <returns>
+        /// UTF-32 value for the UTF-32 value that contains the char at <paramref name="offset16"/>. The boundaries
+        /// of that codepoint are the same as in <c>Bounds32()</c>.
+        /// </returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is out of bounds.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
+        /// <stable>ICU 2.1</stable>
+        public static int CharAt(ReadOnlySpan<char> source, int offset16) // ICU4N TODO: Move to UTF16Extension.tt
+        {
+            //if (source == null)
+            //    throw new ArgumentNullException(nameof(source));
+
+            if (offset16 < 0 || offset16 >= source.Length)
+                throw new IndexOutOfRangeException(nameof(offset16));
+
+
+            char single = source[offset16];
+            if (!IsSurrogate(single))
+            {
+                return single;
+            }
+
+            // Convert the UTF-16 surrogate pair if necessary.
+            // For simplicity in usage, and because the frequency of pairs is
+            // low, look both directions.
+
+            if (single <= LeadSurrogateMaxValue)
+            {
+                ++offset16;
+                if (source.Length != offset16)
+                {
+                    char trail = source[offset16];
+                    if (IsTrailSurrogate(trail))
+                        return Character.ToCodePoint(single, trail);
+                }
+            }
+            else
+            {
+                --offset16;
+                if (offset16 >= 0)
+                {
+                    // single is a trail surrogate so
+                    char lead = source[offset16];
+                    if (IsLeadSurrogate(lead))
+                    {
+                        return Character.ToCodePoint(lead, single);
+                    }
+                }
+            }
+            return single; // return unmatched surrogate
+        }
+
+#endif
+
         /// <summary>
         /// Extract a single UTF-32 value from a substring. Used when iterating forwards or backwards
         /// (with <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
