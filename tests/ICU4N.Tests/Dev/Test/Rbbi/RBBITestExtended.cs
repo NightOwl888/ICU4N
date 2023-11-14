@@ -383,14 +383,13 @@ namespace ICU4N.Dev.Test.Rbbi
                             }
 
                             // Let unescape handle the back slash.
-                            int[] charIdxAr = new int[1];
-                            charIdxAr[0] = charIdx;
-                            cp = Utility.UnescapeAt(testString, charIdxAr);
+                            int charIdxAr = charIdx;
+                            cp = Utility.UnescapeAt(testString, ref charIdxAr); // ICU4N: Changed array to ref parameter
                             if (cp != -1)
                             {
                                 // Escape sequence was recognized.  Insert the char
                                 //   into the test data.
-                                charIdx = charIdxAr[0];
+                                charIdx = charIdxAr;
                                 tp.dataToBreak.AppendCodePoint(cp);
                                 for (i = tp.dataToBreak.Length - 1; i >= 0 && tp.srcLine[i] == 0; i--)
                                 {
