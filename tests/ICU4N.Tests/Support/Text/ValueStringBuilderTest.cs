@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using J2N.Text;
+using NUnit.Framework;
 using System;
 using System.Text;
 
@@ -326,6 +327,82 @@ namespace ICU4N.Support.Text
             builder.Append(value);
             builder.Remove(startIndex, length);
             Assert.AreEqual(expected, builder.ToString());
+        }
+
+
+        [Test]
+        public virtual void TestAppendCodePointBmp()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[16]);
+            sb.Append("foo bar");
+
+            int codePoint = 97; // a
+
+            sb.AppendCodePoint(codePoint);
+
+            Assert.AreEqual("foo bara", sb.ToString());
+        }
+
+        [Test]
+        public virtual void TestAppendCodePointUnicode()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[16]);
+            sb.Append("foo bar");
+
+            int codePoint = 3594; // ช
+
+            sb.AppendCodePoint(codePoint);
+
+            Assert.AreEqual("foo barช", sb.ToString());
+        }
+
+        [Test]
+        public virtual void TestAppendCodePointUTF16Surrogates()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[16]);
+            sb.Append("foo bar");
+
+            int codePoint = 176129; // '\uD86C', '\uDC01' (𫀁)
+
+            sb.AppendCodePoint(codePoint);
+
+            Assert.AreEqual("foo bar𫀁", sb.ToString());
+        }
+
+        [Test]
+        public virtual void TestAppendCodePointTooHigh()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[16]);
+            sb.Append("foo bar");
+
+            int codePoint = J2N.Character.MaxCodePoint + 1;
+
+            try
+            {
+                sb.AppendCodePoint(codePoint);
+                Assert.Fail("Expected ArgumentException");
+            }
+            catch (ArgumentException)
+            {
+            }
+        }
+
+        [Test]
+        public virtual void TestAppendCodePointTooLow()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[16]);
+            sb.Append("foo bar");
+
+            int codePoint = J2N.Character.MinCodePoint - 1;
+
+            try
+            {
+                sb.AppendCodePoint(codePoint);
+                Assert.Fail("Expected ArgumentException");
+            }
+            catch (ArgumentException)
+            {
+            }
         }
     }
 }
