@@ -1886,12 +1886,12 @@ namespace ICU4N.Text
                             // at this point, either we are out of tokens, or t is ','
                             if (low > high)
                             {
-                                token = StringHelper.Concat(low.ToString(CultureInfo.InvariantCulture), "~", high.ToString(CultureInfo.InvariantCulture));
+                                token = string.Concat(low.ToString(CultureInfo.InvariantCulture), "~", high.ToString(CultureInfo.InvariantCulture)).AsSpan();
                                 return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                             else if (mod != 0 && high >= mod)
                             {
-                                token = StringHelper.Concat(low.ToString(CultureInfo.InvariantCulture), ">mod=", mod.ToString(CultureInfo.InvariantCulture));
+                                token = string.Concat(low.ToString(CultureInfo.InvariantCulture), ">mod=", mod.ToString(CultureInfo.InvariantCulture)).AsSpan();
                                 return ParseRuleStatus.ConstraintUnexpectedToken;
                             }
                             valueList.Add(low);
