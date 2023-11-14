@@ -1,6 +1,7 @@
 ﻿using System;
 #if FEATURE_SPAN
 using System.Buffers;
+using System.Linq;
 #endif
 #nullable enable
 
@@ -16,49 +17,34 @@ namespace ICU4N.Text
 
         private const int CharStackBufferSize = 64;
 
-#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-        public static ReadOnlySpan<char> Concat(string str0, string str1)
-            => string.Concat(str0, str1).AsSpan();
-
-        public static ReadOnlySpan<char> Concat(string str0, string str1, string str2)
-            => string.Concat(str0, str1, str2).AsSpan();
-
-        public static ReadOnlySpan<char> Concat(string str0, string str1, string str2, string str3)
-            => string.Concat(str0, str1, str2, str3).AsSpan();
-#endif
-
-
         public unsafe static string Concat(ReadOnlySpan<char> str0, ReadOnlySpan<char> str1)
         {
 #if FEATURE_STRING_CONCAT_READONLYSPAN
             return string.Concat(str0, str1);
 #else
             int length = str0.Length + str1.Length;
-            char[]? arrayToReturnToPool = null;
-            Span<char> buffer;
-            if (length <= CharStackBufferSize)
+            if (length == 0)
             {
-#pragma warning disable CS9081 // The result of this expression may be exposed outside of the containing method
-                buffer = stackalloc char[length];
-#pragma warning restore CS9081 // The result of this expression may be exposed outside of the containing method
-            }
-            else
-            {
-                arrayToReturnToPool = ArrayPool<char>.Shared.Rent(length);
-                buffer = arrayToReturnToPool;
+                return string.Empty;
             }
 
-            str0.CopyTo(buffer.Slice(0, str0.Length));
-            str1.CopyTo(buffer.Slice(str0.Length));
+            bool usePool = length > CharStackBufferSize;
+            char[]? arrayToReturnToPool = usePool ? ArrayPool<char>.Shared.Rent(length) : null;
+            try
+            {
+                Span<char> buffer = usePool ? arrayToReturnToPool : stackalloc char[length];
 
-            string result;
-            fixed (char* pBuffer = buffer)
-                result = new string(pBuffer, startIndex: 0, length);
+                str0.CopyTo(buffer.Slice(0, str0.Length));
+                str1.CopyTo(buffer.Slice(str0.Length));
 
-            if (arrayToReturnToPool is not null)
-                ArrayPool<char>.Shared.Return(arrayToReturnToPool);
-
-            return result;
+                fixed (char* pBuffer = buffer)
+                    return new string(pBuffer, startIndex: 0, length);
+            }
+            finally
+            {
+                if (arrayToReturnToPool is not null)
+                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+            }
 #endif
         }
 
@@ -68,69 +54,129 @@ namespace ICU4N.Text
             return string.Concat(str0, str1, str2);
 #else
             int length = str0.Length + str1.Length + str2.Length;
-            char[]? arrayToReturnToPool = null;
-            Span<char> buffer;
-            if (length <= CharStackBufferSize)
+            if (length == 0)
             {
-#pragma warning disable CS9081 // The result of this expression may be exposed outside of the containing method
-                buffer = stackalloc char[length];
-#pragma warning restore CS9081 // The result of this expression may be exposed outside of the containing method
-            }
-            else
-            {
-                arrayToReturnToPool = ArrayPool<char>.Shared.Rent(length);
-                buffer = arrayToReturnToPool;
+                return string.Empty;
             }
 
-            str0.CopyTo(buffer.Slice(0, str0.Length));
-            str1.CopyTo(buffer.Slice(str0.Length, str1.Length));
-            str2.CopyTo(buffer.Slice(str0.Length + str1.Length));
+            bool usePool = length > CharStackBufferSize;
+            char[]? arrayToReturnToPool = usePool ? ArrayPool<char>.Shared.Rent(length) : null;
+            try
+            {
+                Span<char> buffer = usePool ? arrayToReturnToPool : stackalloc char[length];
 
-            string result;
-            fixed (char* pBuffer = buffer)
-                result = new string(pBuffer, startIndex: 0, length);
+                str0.CopyTo(buffer.Slice(0, str0.Length));
+                str1.CopyTo(buffer.Slice(str0.Length, str1.Length));
+                str2.CopyTo(buffer.Slice(str0.Length + str1.Length));
 
-            if (arrayToReturnToPool is not null)
-                ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                fixed (char* pBuffer = buffer)
+                    return new string(pBuffer, startIndex: 0, length);
 
-            return result;
+            }
+            finally
+            {
+                if (arrayToReturnToPool is not null)
+                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+            }
 #endif
         }
 
         public unsafe static string Concat(ReadOnlySpan<char> str0, ReadOnlySpan<char> str1, ReadOnlySpan<char> str2, ReadOnlySpan<char> str3)
         {
 #if FEATURE_STRING_CONCAT_READONLYSPAN
-            return string.Concat(str0, str1, str2);
+            return string.Concat(str0, str1, str2, str3);
 #else
             int length = str0.Length + str1.Length + str2.Length + str3.Length;
-            char[]? arrayToReturnToPool = null;
-            Span<char> buffer;
-            if (length <= CharStackBufferSize)
+            if (length == 0)
             {
-#pragma warning disable CS9081 // The result of this expression may be exposed outside of the containing method
-                buffer = stackalloc char[length];
-#pragma warning restore CS9081 // The result of this expression may be exposed outside of the containing method
-            }
-            else
-            {
-                arrayToReturnToPool = ArrayPool<char>.Shared.Rent(length);
-                buffer = arrayToReturnToPool;
+                return string.Empty;
             }
 
-            str0.CopyTo(buffer.Slice(0, str0.Length));
-            str1.CopyTo(buffer.Slice(str0.Length, str1.Length));
-            str2.CopyTo(buffer.Slice(str0.Length + str1.Length, str2.Length));
-            str3.CopyTo(buffer.Slice(str0.Length + str1.Length + str2.Length));
+            bool usePool = length > CharStackBufferSize;
+            char[]? arrayToReturnToPool = usePool ? ArrayPool<char>.Shared.Rent(length) : null;
+            try
+            {
+                Span<char> buffer = usePool ? arrayToReturnToPool : stackalloc char[length];
 
-            string result;
-            fixed (char* pBuffer = buffer)
-                result = new string(pBuffer, startIndex: 0, length);
+                str0.CopyTo(buffer.Slice(0, str0.Length));
+                str1.CopyTo(buffer.Slice(str0.Length, str1.Length));
+                str2.CopyTo(buffer.Slice(str0.Length + str1.Length, str2.Length));
+                str3.CopyTo(buffer.Slice(str0.Length + str1.Length + str2.Length));
 
-            if (arrayToReturnToPool is not null)
-                ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                fixed (char* pBuffer = buffer)
+                    return new string(pBuffer, startIndex: 0, length);
 
-            return result;
+            }
+            finally
+            {
+                if (arrayToReturnToPool is not null)
+                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+            }
+
 #endif
+        }
+
+        public unsafe static string Concat(ReadOnlySpan<char> str0, ReadOnlySpan<char> str1, ReadOnlySpan<char> str2, ReadOnlySpan<char> str3, ReadOnlySpan<char> str4)
+        {
+            int length = str0.Length + str1.Length + str2.Length + str3.Length + str4.Length;
+            if (length == 0)
+            {
+                return string.Empty;
+            }
+
+            bool usePool = length > CharStackBufferSize;
+            char[]? arrayToReturnToPool = usePool ? ArrayPool<char>.Shared.Rent(length) : null;
+            try
+            {
+                Span<char> buffer = usePool ? arrayToReturnToPool : stackalloc char[length];
+
+                str0.CopyTo(buffer.Slice(0, str0.Length));
+                str1.CopyTo(buffer.Slice(str0.Length, str1.Length));
+                str2.CopyTo(buffer.Slice(str0.Length + str1.Length, str2.Length));
+                str3.CopyTo(buffer.Slice(str0.Length + str1.Length + str2.Length, str3.Length));
+                str4.CopyTo(buffer.Slice(str0.Length + str1.Length + str2.Length + str3.Length));
+
+                fixed (char* pBuffer = buffer)
+                    return new string(pBuffer, startIndex: 0, length);
+            }
+            finally
+            {
+                if (arrayToReturnToPool is not null)
+                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+            }
+
+
+        }
+
+        public unsafe static string Concat(ReadOnlySpan<char> str0, ReadOnlySpan<char> str1, ReadOnlySpan<char> str2, ReadOnlySpan<char> str3, ReadOnlySpan<char> str4, ReadOnlySpan<char> str5)
+        {
+            int length = str0.Length + str1.Length + str2.Length + str3.Length + str4.Length + str5.Length;
+            if (length == 0)
+            {
+                return string.Empty;
+            }
+
+            bool usePool = length > CharStackBufferSize;
+            char[]? arrayToReturnToPool = usePool ? ArrayPool<char>.Shared.Rent(length) : null;
+            try
+            {
+                Span<char> buffer = usePool ? arrayToReturnToPool : stackalloc char[length];
+
+                str0.CopyTo(buffer.Slice(0, str0.Length));
+                str1.CopyTo(buffer.Slice(str0.Length, str1.Length));
+                str2.CopyTo(buffer.Slice(str0.Length + str1.Length, str2.Length));
+                str3.CopyTo(buffer.Slice(str0.Length + str1.Length + str2.Length, str3.Length));
+                str4.CopyTo(buffer.Slice(str0.Length + str1.Length + str2.Length + str3.Length, str4.Length));
+                str5.CopyTo(buffer.Slice(str0.Length + str1.Length + str2.Length + str3.Length + str4.Length));
+
+                fixed (char* pBuffer = buffer)
+                    return new string(pBuffer, startIndex: 0, length);
+            }
+            finally
+            {
+                if (arrayToReturnToPool is not null)
+                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+            }
         }
     }
 #endif
