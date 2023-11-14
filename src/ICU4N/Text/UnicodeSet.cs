@@ -4004,7 +4004,7 @@ namespace ICU4N.Text
         private void ApplyPropertyPattern(RuleCharacterIterator chars,
             IAppendable rebuiltPat, ISymbolTable symbols)
         {
-            string patStr = chars.Lookahead();
+            string patStr = chars.Lookahead().ToString();
             ParsePosition pos = new ParsePosition(0);
             ApplyPropertyPattern(patStr, pos, symbols);
             if (pos.Index == 0)
