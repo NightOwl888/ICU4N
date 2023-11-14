@@ -168,7 +168,23 @@ namespace ICU4N.Impl
                 if (c == '\\' && (options & RuleCharacterIteratorOptions.ParseEscapes) != 0)
                 {
                     int offset = 0;
+#if FEATURE_SPAN
                     c = Utility.UnescapeAt(Lookahead(), ref offset); // ICU4N: Changed array to ref parameter
+#else
+                    // ICU4N: Refactored so we don't call Lookahead and allocate a string just for this operation
+                    int originalOffset;
+                    if (buf != null)
+                    {
+                        originalOffset = offset = buf.Length - bufPos;
+                        c = Utility.UnescapeAt(buf, ref offset); // ICU4N: Changed array to ref parameter
+                    }
+                    else
+                    {
+                        originalOffset = offset = pos.Index;
+                        c = Utility.UnescapeAt(text, ref offset); // ICU4N: Changed array to ref parameter
+                    }
+                    offset -= originalOffset;
+#endif
                     Jumpahead(offset);
                     isEscaped = true;
                     if (c < 0)

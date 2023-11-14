@@ -906,6 +906,156 @@ namespace ICU4N.Impl
             return c;
         }
 
+#if !FEATURE_SPAN
+        /// <summary>
+        /// Convert an escape to a 32-bit code point value.  We attempt
+        /// to parallel the icu4c unescapeAt() function.
+        /// </summary>
+        /// <param name="s">The character sequence to escape.</param>
+        /// <param name="offset16">An offset to the character
+        /// <em>after</em> the backslash.  Upon return offset16 will
+        /// be updated to point after the escape sequence.</param>
+        /// <returns>Character value from 0 to 10FFFF, or -1 on error.</returns>
+        public static int UnescapeAt(char[] s, ref int offset16) // ICU4N: Changed array to ref parameter
+        {
+            int c;
+            int result = 0;
+            int n = 0;
+            int minDig = 0;
+            int maxDig = 0;
+            int bitsPerDigit = 4;
+            int dig;
+            int i;
+            bool braces = false;
+
+            /* Check that offset is in range */
+            int offset = offset16;
+            int length = s.Length;
+            if (offset < 0 || offset >= length)
+            {
+                return -1;
+            }
+
+            /* Fetch first UChar after '\\' */
+            c = Character.CodePointAt(s, offset);
+            offset += UTF16.GetCharCount(c);
+
+            /* Convert hexadecimal and octal escapes */
+            switch (c)
+            {
+                case 'u':
+                    minDig = maxDig = 4;
+                    break;
+                case 'U':
+                    minDig = maxDig = 8;
+                    break;
+                case 'x':
+                    minDig = 1;
+                    if (offset < length && UTF16.CharAt(s, offset) == 0x7B /*{*/)
+                    {
+                        ++offset;
+                        braces = true;
+                        maxDig = 8;
+                    }
+                    else
+                    {
+                        maxDig = 2;
+                    }
+                    break;
+                default:
+                    dig = UChar.Digit(c, 8);
+                    if (dig >= 0)
+                    {
+                        minDig = 1;
+                        maxDig = 3;
+                        n = 1; /* Already have first octal digit */
+                        bitsPerDigit = 3;
+                        result = dig;
+                    }
+                    break;
+            }
+            if (minDig != 0)
+            {
+                while (offset < length && n < maxDig)
+                {
+                    c = UTF16.CharAt(s, offset);
+                    dig = UChar.Digit(c, (bitsPerDigit == 3) ? 8 : 16);
+                    if (dig < 0)
+                    {
+                        break;
+                    }
+                    result = (result << bitsPerDigit) | dig;
+                    offset += UTF16.GetCharCount(c);
+                    ++n;
+                }
+                if (n < minDig)
+                {
+                    return -1;
+                }
+                if (braces)
+                {
+                    if (c != 0x7D /*}*/)
+                    {
+                        return -1;
+                    }
+                    ++offset;
+                }
+                if (result < 0 || result >= 0x110000)
+                {
+                    return -1;
+                }
+                // If an escape sequence specifies a lead surrogate, see
+                // if there is a trail surrogate after it, either as an
+                // escape or as a literal.  If so, join them up into a
+                // supplementary.
+                if (offset < length &&
+                        UTF16.IsLeadSurrogate((char)result))
+                {
+                    int ahead = offset + 1;
+                    c = s[offset]; // [sic] get 16-bit code unit
+                    if (c == '\\' && ahead < length)
+                    {
+                        c = UnescapeAt(s, ref ahead); // ICU4N: Changed array to ref parameter
+                    }
+                    if (UTF16.IsTrailSurrogate((char)c))
+                    {
+                        offset = ahead;
+                        result = Character.ToCodePoint((char)result, (char)c);
+                    }
+                }
+                offset16 = offset;
+                return result;
+            }
+
+            /* Convert C-style escapes in table */
+            for (i = 0; i < UNESCAPE_MAP.Length; i += 2)
+            {
+                if (c == UNESCAPE_MAP[i])
+                {
+                    offset16 = offset;
+                    return UNESCAPE_MAP[i + 1];
+                }
+                else if (c < UNESCAPE_MAP[i])
+                {
+                    break;
+                }
+            }
+
+            /* Map \cX to control-X: X & 0x1F */
+            if (c == 'c' && offset < length)
+            {
+                c = UTF16.CharAt(s, offset);
+                offset16 = offset + UTF16.GetCharCount(c);
+                return 0x1F & c;
+            }
+
+            /* If no special forms are recognized, then consider
+             * the backslash to generically escape the next character. */
+            offset16 = offset;
+            return c;
+        }
+
+#endif
 
 
 #if FEATURE_SPAN
