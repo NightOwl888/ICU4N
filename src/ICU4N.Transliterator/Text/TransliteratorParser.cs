@@ -532,9 +532,7 @@ namespace ICU4N.Text
                         {
                             SyntaxError("Trailing backslash", rule, start);
                         }
-                        iref[0] = pos;
-                        int escaped = Utility.UnescapeAt(rule, iref);
-                        pos = iref[0];
+                        int escaped = Utility.UnescapeAt(rule, ref pos); // ICU4N: Changed array to ref parameter
                         if (escaped == -1)
                         {
                             SyntaxError("Malformed escape", rule, start);

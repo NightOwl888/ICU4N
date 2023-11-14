@@ -167,9 +167,9 @@ namespace ICU4N.Impl
 
                 if (c == '\\' && (options & RuleCharacterIteratorOptions.ParseEscapes) != 0)
                 {
-                    int[] offset = new int[] { 0 };
-                    c = Utility.UnescapeAt(Lookahead(), offset);
-                    Jumpahead(offset[0]);
+                    int offset = 0;
+                    c = Utility.UnescapeAt(Lookahead(), ref offset); // ICU4N: Changed array to ref parameter
+                    Jumpahead(offset);
                     isEscaped = true;
                     if (c < 0)
                     {
@@ -283,6 +283,20 @@ namespace ICU4N.Impl
         /// </remarks>
         /// <returns>A string containing the characters to be returned by future
         /// calls to <see cref="Next(RuleCharacterIteratorOptions)"/>.</returns>
+
+#if FEATURE_SPAN
+        public virtual ReadOnlySpan<char> Lookahead()
+        {
+            if (buf != null)
+            {
+                return buf.AsSpan(bufPos, buf.Length - bufPos);
+            }
+            else
+            {
+                return text.AsSpan(pos.Index);
+            }
+        }
+#else
         public virtual string Lookahead()
         {
             if (buf != null)
@@ -294,6 +308,7 @@ namespace ICU4N.Impl
                 return text.Substring(pos.Index);
             }
         }
+#endif
 
         /// <summary>
         /// Advances the position by the given number of 16-bit code units.
