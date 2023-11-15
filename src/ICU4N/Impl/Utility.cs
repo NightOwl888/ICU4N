@@ -1201,23 +1201,29 @@ namespace ICU4N.Impl
             }
             //string result = Long.toString(i, 16).toUpperCase(Locale.ENGLISH);
 #if FEATURE_SPAN
-            int length = places + (negative ? 1 : 0);
+            int length = places + (negative ? 1 : 0) + 16;
             bool usePool = length > CharStackBufferSize;
             char[]? arrayToReturnToPool = usePool ? ArrayPool<char>.Shared.Rent(length) : null;
             try
             {
                 Span<char> buffer = usePool ? arrayToReturnToPool : stackalloc char[length];
+                buffer[0] = '-';
 
-                bool success = J2N.Numerics.Int64.TryFormat(i, buffer, out int charsWritten, format: "X".AsSpan(), CultureInfo.InvariantCulture);
-                // Move the chars to the end of the buffer
-                int startIndex = buffer.Length - charsWritten;
-                buffer.Slice(0, charsWritten).CopyTo(buffer.Slice(startIndex, charsWritten));
-                for (int j = 0; j < startIndex; j++)
+                Span<char> format = stackalloc char[16]; // ICU4N: This is more than enough for the longest positive integer
+                format[0] = 'X';
+                J2N.Numerics.Int32.TryFormat(places, format.Slice(1), out int intLength, provider: CultureInfo.InvariantCulture);
+
+                bool success = J2N.Numerics.Int64.TryFormat(i, buffer.Slice(1), out int charsWritten, format.Slice(0, intLength + 1), CultureInfo.InvariantCulture);
+                if (!success)
+                    throw new ArgumentException("Not enough characters in buffer.");
+
+                int start = 1, totalLength = charsWritten;
+                if (negative)
                 {
-                    buffer[j] = '0';
+                    start -= 1;
+                    totalLength += 1;
                 }
-                if (negative) buffer[0] = '-';
-                return buffer.ToString();
+                return buffer.Slice(start, totalLength).ToString();
             }
             finally
             {
@@ -1226,11 +1232,8 @@ namespace ICU4N.Impl
             }
             
 #else
-            string result = i.ToString("X", CultureInfo.InvariantCulture);
-            if (result.Length < places)
-            {
-                result = "0000000000000000".Substring(result.Length, places - result.Length) + result; // ICU4N: Corrected 2nd parameter
-            }
+            // ICU4N: Use built-in precision specifier instead of substring
+            string result = i.ToString("X" + places.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
             if (negative)
             {
                 return '-' + result;
