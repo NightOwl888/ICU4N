@@ -161,13 +161,12 @@ namespace ICU4N.Impl
             return s;
         }
 
-        private unsafe string InternalSubString(int start, int length)
+        private string InternalSubString(int start, int length)
         {
             int end = length - start;
 #if FEATURE_SPAN
             const int CharStackBufferSize = 32;
-            char* stackPtr = stackalloc char[CharStackBufferSize];
-            ValueStringBuilder sb = new ValueStringBuilder(new Span<char>(stackPtr, CharStackBufferSize));
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
 #else
             StringBuilder sb = new StringBuilder(length);
 #endif
