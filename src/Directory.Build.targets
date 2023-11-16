@@ -6,4 +6,9 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup Label="Disabled Warnings">
+    <!-- We get this meaningless warning because we have the same files shared in multiple projects -->
+    <NoWarn Label="Type conflicts with imported type">$(NoWarn);CS0436</NoWarn>
+  </PropertyGroup>
+
 </Project>
