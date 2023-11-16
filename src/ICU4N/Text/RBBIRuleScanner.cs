@@ -889,16 +889,15 @@ namespace ICU4N.Text
                 if (c.fChar == '\\')
                 {
                     c.fEscaped = true;
-                    int[] unescapeIndex = new int[1];
-                    unescapeIndex[0] = fNextIndex;
-                    c.fChar = Utility.UnescapeAt(fRB.fRules, unescapeIndex);
-                    if (unescapeIndex[0] == fNextIndex)
+                    int unescapeIndex = fNextIndex;
+                    c.fChar = Utility.UnescapeAt(fRB.fRules, ref unescapeIndex); // ICU4N: Changed array to ref parameter
+                    if (unescapeIndex == fNextIndex)
                     {
                         Error(RBBIRuleBuilder.U_BRK_HEX_DIGITS_EXPECTED);
                     }
 
-                    fCharNum += unescapeIndex[0] - fNextIndex;
-                    fNextIndex = unescapeIndex[0];
+                    fCharNum += unescapeIndex - fNextIndex;
+                    fNextIndex = unescapeIndex;
                 }
             }
             // putc(c.fChar, stdout);
