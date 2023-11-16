@@ -1233,8 +1233,8 @@ namespace ICU4N.Dev.Test.Format
                         netNumberFormat = sb.ToString();
                     }
 
-                    if (icuNumberFormat != netNumberFormat)
-                        diff.TryAdd(loc, string.Concat(icuNumberFormat, "|", netNumberFormat));
+                    if (icuNumberFormat != netNumberFormat && !diff.ContainsKey(loc))
+                        diff.Add(loc, string.Concat(icuNumberFormat, "|", netNumberFormat));
                 }
             }
 

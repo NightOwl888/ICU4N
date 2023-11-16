@@ -238,7 +238,7 @@ namespace ICU4N.Globalization
                 // if the description contains a rule set name, that's the rule
                 // set we use to format the result: get a reference to the
                 // names rule set
-                this.ruleSet = ruleSet.owner.FindRuleSet(new string(description));
+                this.ruleSet = ruleSet.owner.FindRuleSet(description.ToString());
                 this.numberFormatPattern = null;
             }
             else if (description[0] == '#' || description[0] == '0')
@@ -250,7 +250,7 @@ namespace ICU4N.Globalization
                 this.ruleSet = null;
                 //this.numberFormat = (DecimalFormat)ruleSet.owner.DecimalFormat.Clone();
                 //this.numberFormat.ApplyPattern(description);
-                this.numberFormatPattern = new string(description);
+                this.numberFormatPattern = description.ToString();
                 this.numberPatternProperties = PatternStringParser.ParseToPatternStringProperties(this.numberFormatPattern, PatternStringParser.IGNORE_ROUNDING_NEVER);
             }
             else if (description[0] == '>')
@@ -398,7 +398,7 @@ namespace ICU4N.Globalization
                     }
 
                     //toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
-                    toInsertInto.Insert(position + pos, IcuNumber.FormatDouble(numberToFormat, numberFormatPattern, info, numberPatternProperties.GroupingSizes));
+                    toInsertInto.InsertFormat(position + pos, numberToFormat, numberFormatPattern, info!, numberPatternProperties.GroupingSizes);
                 }
                 else
                 {
@@ -411,7 +411,7 @@ namespace ICU4N.Globalization
                     // rule set's format() method to format the result
                     long numberToFormat = TransformNumber(number);
                     //toInsertInto.Insert(position + pos, numberFormat.Format(numberToFormat));
-                    toInsertInto.Insert(position + pos, IcuNumber.FormatInt64(numberToFormat, numberFormatPattern, info, numberPatternProperties.GroupingSizes));
+                    toInsertInto.InsertFormat(position + pos, numberToFormat, numberFormatPattern, info!, numberPatternProperties.GroupingSizes);
                 }
             }
         }
@@ -440,7 +440,7 @@ namespace ICU4N.Globalization
             {
                 // This is probably a minus rule. Combine it with an infinite rule.
                 NumberFormatRule infiniteRule = ruleSet!.FindRule(double.PositiveInfinity, info);
-                infiniteRule.DoFormat(numberToFormat, ref toInsertInto, position + pos, info, recursionCount);
+                infiniteRule.DoFormat(numberToFormat, ref toInsertInto, position + pos, info!, recursionCount);
                 return;
             }
 
@@ -463,8 +463,7 @@ namespace ICU4N.Globalization
                 else
                 {
                     //toInsertInto.Insert(position + this.pos, numberFormat.Format(numberToFormat));
-                    // ICU4N TODO: Add a pos parameter to the FormatDouble method so we can do this in one step.
-                    toInsertInto.Insert(position + pos, IcuNumber.FormatDouble(numberToFormat, numberFormatPattern, info, numberPatternProperties.GroupingSizes));
+                    toInsertInto.InsertFormat(position + pos, numberToFormat, numberFormatPattern, info!, numberPatternProperties.GroupingSizes);
                 }
             }
         }

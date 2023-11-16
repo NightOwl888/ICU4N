@@ -86,7 +86,7 @@ namespace ICU4N.Globalization
 
             foreach (var culture in UCultureInfo.GetCultures(UCultureTypes.AllCultures))
             {
-                foreach (NumberPresentation numberPresentation in Enum.GetValues<NumberPresentation>())
+                foreach (NumberPresentation numberPresentation in Enum.GetValues(typeof(NumberPresentation)))
                 {
                     RuleBasedNumberFormat expected = new RuleBasedNumberFormat(culture, numberPresentation);
 

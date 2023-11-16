@@ -100,8 +100,8 @@ namespace ICU4N.Globalization
         public NumberFormatRuleSet(INumberFormatRules owner, ReadOnlySpan<char> description)
         {
             this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
-            ExtractRuleSetName(description, out ReadOnlySpan<char> name, out isParseable);
-            this.name = new string(name);
+            ExtractRuleSetName(description, out ReadOnlySpan<char> ruleSetName, out isParseable);
+            this.name = ruleSetName.ToString();
 
             // all of the other members of NumberFormatRuleSet are initialized
             // by ParseRules()
@@ -159,7 +159,11 @@ namespace ICU4N.Globalization
             {
                 // if the description doesn't begin with a rule set name, its
                 // name is "%default"
-                name = "%default";
+                name = "%default"
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+                    .AsSpan()
+#endif
+                    ;
                 isParseable = true;
                 return description;
             }
