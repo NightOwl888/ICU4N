@@ -179,7 +179,7 @@ namespace ICU4N
             Span<char> tempFormatted = new Span<char>(pTempFormatted, CharStackBufferSize);
             if (J2N.Numerics.Double.TryFormat(value, tempFormatted, out int charsWrittenTemp, format, nfi))
             {
-                AppendConvertedDigits(ref sb, new ReadOnlySpan<char>(pTempFormatted, charsWrittenTemp), info);
+                AppendConvertedDigits(ref sb, new ReadOnlySpan<char>(pTempFormatted, charsWrittenTemp), info!);
             }
             else
             {
@@ -207,7 +207,7 @@ namespace ICU4N
             Span<char> tempFormatted = new Span<char>(pTempFormatted, CharStackBufferSize);
             if (J2N.Numerics.Int64.TryFormat(value, tempFormatted, out int charsWrittenTemp, format, nfi))
             {
-                AppendConvertedDigits(ref sb, new ReadOnlySpan<char>(pTempFormatted, charsWrittenTemp), info);
+                AppendConvertedDigits(ref sb, new ReadOnlySpan<char>(pTempFormatted, charsWrittenTemp), info!);
             }
             else
             {
@@ -225,7 +225,7 @@ namespace ICU4N
         {
             Debug.Assert(info != null);
 
-            if (info.DigitSubstitution == UDigitShapes.None)
+            if (info!.DigitSubstitution == UDigitShapes.None)
             {
                 sb.Append(formatted);
                 return;
@@ -274,10 +274,10 @@ namespace ICU4N
             return nfi;
         }
 
-        public static string FormatInt64(long value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
+        public static string FormatInt64(long value, ReadOnlySpan<char> format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
         {
             var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            return FormatInt64(ref sb, value, format.AsSpan(), info, numberGroupSizesOverride) ?? sb.ToString();
+            return FormatInt64(ref sb, value, format, info, numberGroupSizesOverride) ?? sb.ToString();
         }
 
         public static bool TryFormatInt64(long value, ReadOnlySpan<char> format, UNumberFormatInfo info, Span<char> destination, out int charsWritten, int[]? numberGroupSizesOverride = null)
@@ -304,12 +304,11 @@ namespace ICU4N
                 sb.TryCopyTo(destination, out charsWritten);
         }
 
-
         public static string FormatPlural(double value, string? format, MessagePattern? messagePattern, UNumberFormatInfo info)
         {
             Debug.Assert(info != null);
 
-            PluralRules pluralRules = info.CardinalPluralRules;
+            PluralRules pluralRules = info!.CardinalPluralRules;
             ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[PluralCharStackBufferSize]);
             FormatPlural(ref sb, value, format, messagePattern, pluralRules, info);
             return sb.ToString();
@@ -319,7 +318,7 @@ namespace ICU4N
         {
             Debug.Assert(info != null);
 
-            PluralRules pluralRules = pluralType == PluralType.Ordinal ? info.OrdinalPluralRules : info.CardinalPluralRules;
+            PluralRules pluralRules = pluralType == PluralType.Ordinal ? info!.OrdinalPluralRules : info!.CardinalPluralRules;
             ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[PluralCharStackBufferSize]);
             FormatPlural(ref sb, value, format, messagePattern, pluralRules, info);
             return sb.ToString();
@@ -329,7 +328,7 @@ namespace ICU4N
         {
             Debug.Assert(info != null);
 
-            PluralRules pluralRules = pluralType == PluralType.Ordinal ? info.OrdinalPluralRules : info.CardinalPluralRules;
+            PluralRules pluralRules = pluralType == PluralType.Ordinal ? info!.OrdinalPluralRules : info!.CardinalPluralRules;
             FormatPlural(ref sb, value, format, messagePattern, pluralRules, info);
         }
 
@@ -555,7 +554,7 @@ namespace ICU4N
         {
             Debug.Assert(info != null);
 
-            return FormatUInt64RuleBased(value, rules: presentation.ToNumberFormatRules(info), ruleSetName, info);
+            return FormatUInt64RuleBased(value, rules: presentation.ToNumberFormatRules(info), ruleSetName, info!);
         }
 
         public static string FormatUInt64RuleBased(ulong value, NumberFormatRules rules, string? ruleSetName, UNumberFormatInfo info)
@@ -564,7 +563,7 @@ namespace ICU4N
             Debug.Assert(info != null);
 
             var sb = new ValueStringBuilder(stackalloc char[RuleBasedCharStackBufferSize]);
-            FormatUInt64RuleBased(ref sb, value, rules, ruleSetName, info);
+            FormatUInt64RuleBased(ref sb, value, rules!, ruleSetName, info!);
             return sb.ToString();
         }
 
@@ -647,7 +646,7 @@ namespace ICU4N
             Debug.Assert(info != null);
 
             NumberFormatRules rules = presentation.ToNumberFormatRules(info);
-            return TryFormatBigIntegerRuleBased(value, destination, out charsWritten, rules, ruleSetName, info);
+            return TryFormatBigIntegerRuleBased(value, destination, out charsWritten, rules, ruleSetName, info!);
         }
 
         public static bool TryFormatBigIntegerRuleBased(System.Numerics.BigInteger value, Span<char> destination, out int charsWritten, NumberFormatRules rules, string? ruleSetName, UNumberFormatInfo info)
@@ -656,7 +655,7 @@ namespace ICU4N
             Debug.Assert(info != null);
 
             var sb = new ValueStringBuilder(stackalloc char[RuleBasedCharStackBufferSize]);
-            FormatBigIntegerRuleBased(ref sb, value, rules, ruleSetName, info);
+            FormatBigIntegerRuleBased(ref sb, value, rules!, ruleSetName, info!);
             return sb.TryCopyTo(destination, out charsWritten);
         }
 
@@ -665,7 +664,7 @@ namespace ICU4N
         {
             Debug.Assert(info != null);
 
-            return FormatDoubleRuleBased(value, rules: presentation.ToNumberFormatRules(info), ruleSetName, info);
+            return FormatDoubleRuleBased(value, rules: presentation.ToNumberFormatRules(info), ruleSetName, info!);
         }
 
         public static string FormatDoubleRuleBased(double value, NumberFormatRules rules, string? ruleSetName, UNumberFormatInfo info)
@@ -674,7 +673,7 @@ namespace ICU4N
             Debug.Assert(info != null);
 
             var sb = new ValueStringBuilder(stackalloc char[RuleBasedCharStackBufferSize]);
-            FormatDoubleRuleBased(ref sb, value, rules, ruleSetName, info);
+            FormatDoubleRuleBased(ref sb, value, rules!, ruleSetName, info!);
             return sb.ToString();
         }
 
@@ -683,8 +682,8 @@ namespace ICU4N
             Debug.Assert(rules != null);
             Debug.Assert(info != null);
 
-            NumberFormatRuleSet ruleSet = ruleSetName is null ? rules.DefaultRuleSet : rules.FindRuleSet(ruleSetName);
-            FormatDoubleRuleBased(ref sb, value, rules, ruleSet, info);
+            NumberFormatRuleSet ruleSet = ruleSetName is null ? rules!.DefaultRuleSet : rules!.FindRuleSet(ruleSetName);
+            FormatDoubleRuleBased(ref sb, value, rules, ruleSet, info!);
         }
 
         public static void FormatDoubleRuleBased(ref ValueStringBuilder sb, double value, NumberFormatRules rules, NumberFormatRuleSet ruleSet, UNumberFormatInfo info)
@@ -693,8 +692,8 @@ namespace ICU4N
             Debug.Assert(info != null);
             Debug.Assert(ruleSet != null);
 
-            rules.Format(ref sb, value, ruleSet, info);
-            AdjustForContext(ref sb, info);
+            rules!.Format(ref sb, value, ruleSet, info);
+            AdjustForContext(ref sb, info!);
         }
 
         public static bool TryFormatDoubleRuleBased(double value, Span<char> destination, out int charsWritten, NumberPresentation presentation, string? ruleSetName, UNumberFormatInfo info)
@@ -702,7 +701,7 @@ namespace ICU4N
             Debug.Assert(info != null);
 
             NumberFormatRules rules = presentation.ToNumberFormatRules(info);
-            return TryFormatDoubleRuleBased(value, destination, out charsWritten, rules, ruleSetName, info);
+            return TryFormatDoubleRuleBased(value, destination, out charsWritten, rules, ruleSetName, info!);
         }
 
         public static bool TryFormatDoubleRuleBased(double value, Span<char> destination, out int charsWritten, NumberFormatRules rules, string? ruleSetName, UNumberFormatInfo info)
@@ -710,9 +709,9 @@ namespace ICU4N
             Debug.Assert(rules != null);
             Debug.Assert(info != null);
 
-            NumberFormatRuleSet ruleSet = ruleSetName is null ? rules.DefaultRuleSet : rules.FindRuleSet(ruleSetName);
+            NumberFormatRuleSet ruleSet = ruleSetName is null ? rules!.DefaultRuleSet : rules!.FindRuleSet(ruleSetName);
             var sb = new ValueStringBuilder(stackalloc char[RuleBasedCharStackBufferSize]);
-            FormatDoubleRuleBased(ref sb, value, rules, ruleSet, info);
+            FormatDoubleRuleBased(ref sb, value, rules, ruleSet, info!);
             return sb.TryCopyTo(destination, out charsWritten);
         }
 
@@ -722,7 +721,7 @@ namespace ICU4N
         {
             Debug.Assert(info != null);
 
-            return FormatInt64RuleBased(value, rules: presentation.ToNumberFormatRules(info), ruleSetName, info);
+            return FormatInt64RuleBased(value, rules: presentation.ToNumberFormatRules(info), ruleSetName, info!);
         }
 
         public static string FormatInt64RuleBased(long value, NumberFormatRules rules, string? ruleSetName, UNumberFormatInfo info)
@@ -731,7 +730,7 @@ namespace ICU4N
             Debug.Assert(info != null);
 
             var sb = new ValueStringBuilder(stackalloc char[RuleBasedCharStackBufferSize]);
-            FormatInt64RuleBased(ref sb, value, rules, ruleSetName, info);
+            FormatInt64RuleBased(ref sb, value, rules!, ruleSetName, info!);
             return sb.ToString();
         }
 
@@ -740,8 +739,8 @@ namespace ICU4N
             Debug.Assert(rules != null);
             Debug.Assert(info != null);
 
-            NumberFormatRuleSet ruleSet = ruleSetName is null ? rules.DefaultRuleSet : rules.FindRuleSet(ruleSetName);
-            FormatInt64RuleBased(ref sb, value, rules, ruleSet, info);
+            NumberFormatRuleSet ruleSet = ruleSetName is null ? rules!.DefaultRuleSet : rules!.FindRuleSet(ruleSetName);
+            FormatInt64RuleBased(ref sb, value, rules, ruleSet, info!);
         }
 
         public static void FormatInt64RuleBased(ref ValueStringBuilder sb, long value, NumberFormatRules rules, NumberFormatRuleSet ruleSet, UNumberFormatInfo info)
@@ -750,8 +749,8 @@ namespace ICU4N
             Debug.Assert(info != null);
             Debug.Assert(ruleSet != null);
 
-            rules.Format(ref sb, value, ruleSet, info);
-            AdjustForContext(ref sb, info);
+            rules!.Format(ref sb, value, ruleSet, info);
+            AdjustForContext(ref sb, info!);
         }
 
         public static bool TryFormatInt64RuleBased(long value, Span<char> destination, out int charsWritten, NumberPresentation presentation, string? ruleSetName, UNumberFormatInfo info)
@@ -759,7 +758,7 @@ namespace ICU4N
             Debug.Assert(info != null);
 
             NumberFormatRules rules = presentation.ToNumberFormatRules(info);
-            return TryFormatInt64RuleBased(value, destination, out charsWritten, rules, ruleSetName, info);
+            return TryFormatInt64RuleBased(value, destination, out charsWritten, rules, ruleSetName, info!);
         }
 
         public static bool TryFormatInt64RuleBased(long value, Span<char> destination, out int charsWritten, NumberFormatRules rules, string? ruleSetName, UNumberFormatInfo info)
@@ -767,9 +766,9 @@ namespace ICU4N
             Debug.Assert(rules != null);
             Debug.Assert(info != null);
 
-            NumberFormatRuleSet ruleSet = ruleSetName is null ? rules.DefaultRuleSet : rules.FindRuleSet(ruleSetName);
+            NumberFormatRuleSet ruleSet = ruleSetName is null ? rules!.DefaultRuleSet : rules!.FindRuleSet(ruleSetName);
             var sb = new ValueStringBuilder(stackalloc char[RuleBasedCharStackBufferSize]);
-            FormatInt64RuleBased(ref sb, value, rules, ruleSet, info);
+            FormatInt64RuleBased(ref sb, value, rules, ruleSet, info!);
             return sb.TryCopyTo(destination, out charsWritten);
         }
 
@@ -816,7 +815,7 @@ namespace ICU4N
 
             if (source.AsSpan().TryCopyTo(destination))
             {
-                charsWritten = source.Length;
+                charsWritten = source!.Length;
                 return true;
             }
 

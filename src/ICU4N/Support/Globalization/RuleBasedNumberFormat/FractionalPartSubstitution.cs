@@ -99,7 +99,7 @@ namespace ICU4N.Globalization
             {
                 // if we're not in "byDigits" mode, just use the inherited
                 // doSubstitution() routine
-                base.DoSubstitution(number, ref toInsertInto, position, info, recursionCount);
+                base.DoSubstitution(number, ref toInsertInto, position, info!, recursionCount);
             }
             else
             {

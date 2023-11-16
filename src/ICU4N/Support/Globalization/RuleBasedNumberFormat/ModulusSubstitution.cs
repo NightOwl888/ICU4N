@@ -170,7 +170,7 @@ namespace ICU4N.Globalization
             // to format its substitution value)
             if (ruleToUse is null)
             {
-                base.DoSubstitution(number, ref toInsertInto, position, info, recursionCount);
+                base.DoSubstitution(number, ref toInsertInto, position, info!, recursionCount);
 
             }
             else
@@ -178,7 +178,7 @@ namespace ICU4N.Globalization
                 // a >>> substitution goes straight to a particular rule to
                 // format the substitution value
                 long numberToFormat = TransformNumber(number);
-                ruleToUse.DoFormat(numberToFormat, ref toInsertInto, position + pos, info, recursionCount);
+                ruleToUse.DoFormat(numberToFormat, ref toInsertInto, position + pos, info!, recursionCount);
             }
         }
 
@@ -201,7 +201,7 @@ namespace ICU4N.Globalization
             // to format its substitution value)
             if (ruleToUse is null)
             {
-                base.DoSubstitution(number, ref toInsertInto, position, info, recursionCount);
+                base.DoSubstitution(number, ref toInsertInto, position, info!, recursionCount);
 
             }
             else
@@ -209,7 +209,7 @@ namespace ICU4N.Globalization
                 // a >>> substitution goes straight to a particular rule to
                 // format the substitution value
                 double numberToFormat = TransformNumber(number);
-                ruleToUse.DoFormat(numberToFormat, ref toInsertInto, position + pos, info, recursionCount);
+                ruleToUse.DoFormat(numberToFormat, ref toInsertInto, position + pos, info!, recursionCount);
             }
         }
 

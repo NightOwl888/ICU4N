@@ -39,7 +39,7 @@ namespace ICU4N.Globalization
             {
                 // We can't handle this value right now. Provide an accurate default value.
                 //result.Append(DecimalFormat.Format(long.MinValue));
-                result.Append(IcuNumber.FormatInt64(long.MinValue, info.NumberPattern, info));
+                result.AppendFormat(long.MinValue, info.NumberPattern, info);
             }
             else
             {

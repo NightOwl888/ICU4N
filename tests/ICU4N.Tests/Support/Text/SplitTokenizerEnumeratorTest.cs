@@ -20,7 +20,7 @@ namespace ICU4N.Text
         public void TestBasicSplitAndTrim()
         {
             ReadOnlySpan<char> text = " A test ; to split ".AsSpan();
-            var target = text.AsTokens(";", " ".AsSpan());
+            var target = text.AsTokens(";", " ");
 
             assertTrue("Expected token not found", target.MoveNext());
             assertTrue("'A test' not found", "A test".AsSpan().SequenceEqual(target.Current));
@@ -35,7 +35,7 @@ namespace ICU4N.Text
         public void TestBasicSplitAndTrimStart()
         {
             ReadOnlySpan<char> text = " A test ; to split ".AsSpan();
-            var target = text.AsTokens(";", " ".AsSpan(), TrimBehavior.Start);
+            var target = text.AsTokens(";", " ", TrimBehavior.Start);
 
             assertTrue("Expected token not found", target.MoveNext());
             assertTrue("'A test' not found", "A test ".AsSpan().SequenceEqual(target.Current));
@@ -50,7 +50,7 @@ namespace ICU4N.Text
         public void TestBasicSplitAndTrimEnd()
         {
             ReadOnlySpan<char> text = " A test ; to split ".AsSpan();
-            var target = text.AsTokens(";", " ".AsSpan(), TrimBehavior.End);
+            var target = text.AsTokens(";", " ", TrimBehavior.End);
 
             assertTrue("Expected token not found", target.MoveNext());
             assertTrue("'A test' not found", " A test".AsSpan().SequenceEqual(target.Current));

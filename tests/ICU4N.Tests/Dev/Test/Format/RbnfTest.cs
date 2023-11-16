@@ -2208,7 +2208,7 @@ namespace ICU4N.Dev.Test.Format
             switch (createOption)
             {
                 case CreateOption.DescriptionAndLocale:
-                    return new NumberFormatRules(description.AsSpan());
+                    return new NumberFormatRules(description);
                 case CreateOption.LocaleAndFormat:
                     return NumberFormatRules.GetInstance(locale, format);
                 default:

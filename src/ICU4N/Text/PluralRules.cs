@@ -2295,6 +2295,11 @@ namespace ICU4N.Text
             return TryParseRule(description.Slice(0, x).Trim(), description.Slice(x + 1).Trim(), out result, out source, out context);
         }
 
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+        internal static bool TryParseRule(string keyword, string description, out Rule result)
+            => TryParseRule(keyword.AsSpan(), description.AsSpan(), out result);
+#endif
+
         // ICU4N: Added overload for use by PluralRulesLoader so it doesn't have to use StringBuilder
         internal static bool TryParseRule(ReadOnlySpan<char> keyword, ReadOnlySpan<char> description, out Rule result)
         {
