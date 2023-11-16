@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using J2N.Text;
+using NUnit.Framework;
 using System;
 using System.Text;
 
@@ -310,6 +311,98 @@ namespace ICU4N.Support.Text
             builder.EnsureCapacity(16);
 
             Assert.AreEqual(64, builder.Capacity);
+        }
+
+
+        [Test]
+        [TestCase("", 0, 0, "")]
+        [TestCase("Hello", 0, 5, "")]
+        [TestCase("Hello", 1, 3, "Ho")]
+        [TestCase("Hello", 1, 4, "H")]
+        [TestCase("Hello", 1, 0, "Hello")]
+        [TestCase("Hello", 5, 0, "Hello")]
+        public static void Remove(string value, int startIndex, int length, string expected)
+        {
+            var builder = new ValueStringBuilder(stackalloc char[64]);
+            builder.Append(value);
+            builder.Remove(startIndex, length);
+            Assert.AreEqual(expected, builder.ToString());
+        }
+
+
+        [Test]
+        public virtual void TestAppendCodePointBmp()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[16]);
+            sb.Append("foo bar");
+
+            int codePoint = 97; // a
+
+            sb.AppendCodePoint(codePoint);
+
+            Assert.AreEqual("foo bara", sb.ToString());
+        }
+
+        [Test]
+        public virtual void TestAppendCodePointUnicode()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[16]);
+            sb.Append("foo bar");
+
+            int codePoint = 3594; // ช
+
+            sb.AppendCodePoint(codePoint);
+
+            Assert.AreEqual("foo barช", sb.ToString());
+        }
+
+        [Test]
+        public virtual void TestAppendCodePointUTF16Surrogates()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[16]);
+            sb.Append("foo bar");
+
+            int codePoint = 176129; // '\uD86C', '\uDC01' (𫀁)
+
+            sb.AppendCodePoint(codePoint);
+
+            Assert.AreEqual("foo bar𫀁", sb.ToString());
+        }
+
+        [Test]
+        public virtual void TestAppendCodePointTooHigh()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[16]);
+            sb.Append("foo bar");
+
+            int codePoint = J2N.Character.MaxCodePoint + 1;
+
+            try
+            {
+                sb.AppendCodePoint(codePoint);
+                Assert.Fail("Expected ArgumentException");
+            }
+            catch (ArgumentException)
+            {
+            }
+        }
+
+        [Test]
+        public virtual void TestAppendCodePointTooLow()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[16]);
+            sb.Append("foo bar");
+
+            int codePoint = J2N.Character.MinCodePoint - 1;
+
+            try
+            {
+                sb.AppendCodePoint(codePoint);
+                Assert.Fail("Expected ArgumentException");
+            }
+            catch (ArgumentException)
+            {
+            }
         }
     }
 }
