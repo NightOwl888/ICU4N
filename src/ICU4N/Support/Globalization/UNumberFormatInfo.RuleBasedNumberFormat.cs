@@ -43,7 +43,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <draft>ICU 60.1</draft>
         public NumberFormatRules SpellOut
-            => LazyInitializer.EnsureInitialized(ref spellOut, () => NumberFormatRules.GetInstance(CultureData.name, NumberPresentation.SpellOut));
+            => LazyInitializer.EnsureInitialized(ref spellOut, () => NumberFormatRules.GetInstance(CultureData.name, NumberPresentation.SpellOut))!;
 
         /// <summary>
         /// Gets the ordinal <see cref="NumberFormatRules"/> instance for the rule-based number formatter
@@ -51,7 +51,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <draft>ICU 60.1</draft>
         public NumberFormatRules Ordinal
-            => LazyInitializer.EnsureInitialized(ref ordinal, () => NumberFormatRules.GetInstance(CultureData.name, NumberPresentation.Ordinal));
+            => LazyInitializer.EnsureInitialized(ref ordinal, () => NumberFormatRules.GetInstance(CultureData.name, NumberPresentation.Ordinal))!;
 
         /// <summary>
         /// Gets the duration <see cref="NumberFormatRules"/> instance for the rule-based number formatter
@@ -61,7 +61,7 @@ namespace ICU4N.Globalization
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)] // ICU4N TODO: Do we need this? We have TimeSpan.ToString() which seems to cover. Need research.
         public NumberFormatRules Duration
-            => LazyInitializer.EnsureInitialized(ref duration, () => NumberFormatRules.GetInstance(CultureData.name, NumberPresentation.Duration));
+            => LazyInitializer.EnsureInitialized(ref duration, () => NumberFormatRules.GetInstance(CultureData.name, NumberPresentation.Duration))!;
 
         /// <summary>
         /// Gets the numbering system <see cref="NumberFormatRules"/> instance for the rule-based number formatter
@@ -70,7 +70,7 @@ namespace ICU4N.Globalization
         /// </summary>
         /// <draft>ICU 60.1</draft>
         public NumberFormatRules NumberingSystem
-            => LazyInitializer.EnsureInitialized(ref numberingSystem, () => NumberFormatRules.GetInstance(CultureData.name, NumberPresentation.NumberingSystem));
+            => LazyInitializer.EnsureInitialized(ref numberingSystem, () => NumberFormatRules.GetInstance(CultureData.name, NumberPresentation.NumberingSystem))!;
 #endif
 
     }

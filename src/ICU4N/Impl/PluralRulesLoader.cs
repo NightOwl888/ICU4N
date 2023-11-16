@@ -80,13 +80,13 @@ namespace ICU4N.Impl
         public override UCultureInfo GetFunctionalEquivalent(UCultureInfo locale) // ICU4N specific: Added overload so we don't need to pass a null parameter
 #pragma warning restore CS0672 // Type or member is obsolete
         {
-            string rulesId = GetRulesIdForLocale(locale, PluralType.Cardinal);
+            string? rulesId = GetRulesIdForLocale(locale, PluralType.Cardinal);
             if (rulesId is null || rulesId.Trim().Length == 0)
             {
                 return UCultureInfo.InvariantCulture; // ultimate fallback
             }
 
-            if (!RulesIdToEquivalentULocaleMap.TryGetValue(rulesId, out UCultureInfo result) || result is null)
+            if (!RulesIdToEquivalentULocaleMap.TryGetValue(rulesId, out UCultureInfo? result) || result is null)
             {
                 return UCultureInfo.InvariantCulture; // ultimate fallback
             }
@@ -100,7 +100,7 @@ namespace ICU4N.Impl
         private IDictionary<string, string> GetLocaleIdToRulesIdMap(PluralType type)
         {
             CheckBuildRulesIdMaps();
-            return (type == PluralType.Cardinal) ? localeIdToCardinalRulesId : localeIdToOrdinalRulesId;
+            return (type == PluralType.Cardinal) ? localeIdToCardinalRulesId! : localeIdToOrdinalRulesId!;
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace ICU4N.Impl
             get
             {
                 CheckBuildRulesIdMaps();
-                return rulesIdToEquivalentULocale;
+                return rulesIdToEquivalentULocale!;
             }
         }
 
@@ -551,8 +551,8 @@ namespace ICU4N.Impl
                 new string[] {"other", "other", "other"},
             };
 #pragma warning disable 612, 618
-            PluralRanges pr = null;
-            string[] locales = null;
+            PluralRanges? pr = null;
+            string[]? locales = null;
             IDictionary<string, PluralRanges> tempLocaleIdToPluralRanges = new Dictionary<string, PluralRanges>();
 #pragma warning restore 612, 618
             foreach (string[] row in pluralRangeData)
@@ -580,14 +580,14 @@ namespace ICU4N.Impl
                     StandardPluralUtil.TryFromString(row[1], out StandardPlural end);
                     StandardPluralUtil.TryFromString(row[2], out StandardPlural result);
 #pragma warning disable 612, 618
-                    pr.Add(start, end, result);
+                    pr!.Add(start, end, result);
 #pragma warning restore 612, 618
                 }
             }
             // do last one
             foreach (string locale in locales!)
             {
-                tempLocaleIdToPluralRanges[locale] = pr;
+                tempLocaleIdToPluralRanges[locale] = pr!;
             }
             // now make whole thing immutable
 #if FEATURE_IDICTIONARY_ASREADONLY
