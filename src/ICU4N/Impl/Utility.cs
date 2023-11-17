@@ -1632,23 +1632,24 @@ namespace ICU4N.Impl
         /// <see cref="UChar.Digit(int, int)"/> to parse individual characters into digits.
         /// </summary>
         /// <param name="text">The text to be parsed.</param>
-        /// <param name="pos">INPUT-OUTPUT parameter.  On entry, pos[0] is the
+        /// <param name="pos">INPUT-OUTPUT parameter.  On entry, <paramref name="pos"/> is the
         /// offset within text at which to start parsing; it should point
-        /// to a valid digit.  On exit, pos[0] is the offset after the last
+        /// to a valid digit.  On exit, <paramref name="pos"/> is the offset after the last
         /// parsed character.  If the parse failed, it will be unchanged on
         /// exit.  Must be >= 0 on entry.</param>
         /// <param name="radix">The radix in which to parse; must be >= 2 and &lt;= 36.</param>
         /// <returns>A non-negative parsed number, or -1 upon parse failure.
-        /// Parse fails if there are no digits, that is, if pos[0] does not
+        /// Parse fails if there are no digits, that is, if <paramref name="pos"/> does not
         /// point to a valid digit on entry, or if the number to be parsed
         /// does not fit into a 31-bit unsigned integer.</returns>
-        public static int ParseNumber(string text, int[] pos, int radix)
+        // ICU4N: Converted pos from int[] to ref int
+        public static int ParseNumber(string text, ref int pos, int radix)
         {
             // assert(pos[0] >= 0);
             // assert(radix >= 2);
             // assert(radix <= 36);
             int n = 0;
-            int p = pos[0];
+            int p = pos;
             while (p < text.Length)
             {
                 int ch = Character.CodePointAt(text, p);
@@ -1666,11 +1667,11 @@ namespace ICU4N.Impl
                 }
                 ++p;
             }
-            if (p == pos[0])
+            if (p == pos)
             {
                 return -1;
             }
-            pos[0] = p;
+            pos = p;
             return n;
         }
 

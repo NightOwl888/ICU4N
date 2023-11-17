@@ -696,7 +696,7 @@ namespace ICU4N.Text
                                 if (r >= 1 && r <= 9)
                                 {
                                     iref[0] = pos;
-                                    r = Utility.ParseNumber(rule, iref, 10);
+                                    r = Utility.ParseNumber(rule, ref iref[0], 10);
                                     if (r < 0)
                                     {
                                         SyntaxError("Undefined segment reference",
