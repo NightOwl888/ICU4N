@@ -647,7 +647,7 @@ namespace ICU4N.Text
                                 TransliteratorIDParser.SingleID single = TransliteratorIDParser.ParseFilterID(rule, iref);
                                 // The next character MUST be a segment open
                                 if (single == null ||
-                                    !Utility.ParseChar(rule, iref, SEGMENT_OPEN))
+                                    !Utility.ParseChar(rule, ref iref[0], SEGMENT_OPEN))
                                 {
                                     SyntaxError("Invalid function", rule, start);
                                 }
@@ -1101,7 +1101,7 @@ namespace ICU4N.Text
                             TransliteratorIDParser.SingleID id =
                                 TransliteratorIDParser.ParseSingleID(
                                               rule, p, direction);
-                            if (p[0] != pos && Utility.ParseChar(rule, p, END_OF_RULE))
+                            if (p[0] != pos && Utility.ParseChar(rule, ref p[0], END_OF_RULE))
                             {
                                 // Successful ::ID parse.
 
@@ -1120,7 +1120,7 @@ namespace ICU4N.Text
                                 // Couldn't parse an ID.  Try to parse a global filter
                                 int[] withParens = new int[] { -1 };
                                 UnicodeSet f = TransliteratorIDParser.ParseGlobalFilter(rule, p, direction, withParens, null);
-                                if (f != null && Utility.ParseChar(rule, p, END_OF_RULE))
+                                if (f != null && Utility.ParseChar(rule, ref p[0], END_OF_RULE))
                                 {
                                     if ((direction == Transliterator.Forward) ==
                                         (withParens[0] == 0))

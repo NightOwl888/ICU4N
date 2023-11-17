@@ -1332,24 +1332,24 @@ namespace ICU4N.Impl
         /// preceded by whitespace.
         /// </summary>
         /// <param name="id">The string to be parsed.</param>
-        /// <param name="pos">INPUT-OUTPUT parameter.  On input, pos[0] is the
-        /// offset of the first character to be parsed.  On output, pos[0]
+        /// <param name="pos">INPUT-OUTPUT parameter.  On input, <paramref name="pos"/> is the
+        /// offset of the first character to be parsed.  On output, <paramref name="pos"/>
         /// is the index after the last parsed character.  If the parse
-        /// fails, pos[0] will be unchanged.</param>
+        /// fails, <paramref name="pos"/> will be unchanged.</param>
         /// <param name="ch">The non-whitespace character to be parsed.</param>
         /// <returns>true if '<paramref name="ch"/>' is seen preceded by zero or more
         /// whitespace characters.</returns>
-        public static bool ParseChar(string id, int[] pos, char ch)
+        public static bool ParseChar(string id, ref int pos, char ch) // ICU4N: Changed pos from int[] to ref int
         {
-            int start = pos[0];
-            pos[0] = PatternProps.SkipWhiteSpace(id, pos[0]);
-            if (pos[0] == id.Length ||
-                    id[pos[0]] != ch)
+            int start = pos;
+            pos = PatternProps.SkipWhiteSpace(id, pos);
+            if (pos == id.Length ||
+                    id[pos] != ch)
             {
-                pos[0] = start;
+                pos = start;
                 return false;
             }
-            ++pos[0];
+            ++pos;
             return true;
         }
 

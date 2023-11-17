@@ -197,14 +197,14 @@ namespace ICU4N.Text
                         return null;
                     }
                 }
-                if (Utility.ParseChar(id, pos, OPEN_REV))
+                if (Utility.ParseChar(id, ref pos[0], OPEN_REV))
                 {
                     sawParen = true;
-                    if (!Utility.ParseChar(id, pos, CLOSE_REV))
+                    if (!Utility.ParseChar(id, ref pos[0], CLOSE_REV))
                     {
                         specsB = ParseFilterID(id, pos, true);
                         // Must close with a ')'
-                        if (specsB == null || !Utility.ParseChar(id, pos, CLOSE_REV))
+                        if (specsB == null || !Utility.ParseChar(id, ref pos[0], CLOSE_REV))
                         {
                             pos[0] = start;
                             return null;
@@ -291,11 +291,11 @@ namespace ICU4N.Text
 
             if (withParens[0] == -1)
             {
-                withParens[0] = Utility.ParseChar(id, pos, OPEN_REV) ? 1 : 0;
+                withParens[0] = Utility.ParseChar(id, ref pos[0], OPEN_REV) ? 1 : 0;
             }
             else if (withParens[0] == 1)
             {
-                if (!Utility.ParseChar(id, pos, OPEN_REV))
+                if (!Utility.ParseChar(id, ref pos[0], OPEN_REV))
                 {
                     pos[0] = start;
                     return null;
@@ -320,7 +320,7 @@ namespace ICU4N.Text
                 string pattern = id.Substring(pos[0], ppos.Index - pos[0]); // ICU4N: Corrected 2nd parameter
                 pos[0] = ppos.Index;
 
-                if (withParens[0] == 1 && !Utility.ParseChar(id, pos, CLOSE_REV))
+                if (withParens[0] == 1 && !Utility.ParseChar(id, ref pos[0], CLOSE_REV))
                 {
                     pos[0] = start;
                     return null;
@@ -392,7 +392,7 @@ namespace ICU4N.Text
             filter = ParseGlobalFilter(id, pos, dir, withParens, canonID);
             if (filter != null)
             {
-                if (!Utility.ParseChar(id, pos, ID_DELIM))
+                if (!Utility.ParseChar(id, ref pos[0], ID_DELIM))
                 {
                     // Not a global filter; backup and resume
                     canonID.Length = 0;
@@ -420,7 +420,7 @@ namespace ICU4N.Text
                 {
                     list.Insert(0, single);
                 }
-                if (!Utility.ParseChar(id, pos, ID_DELIM))
+                if (!Utility.ParseChar(id, ref pos[0], ID_DELIM))
                 {
                     sawDelimiter = false;
                     break;
@@ -452,7 +452,7 @@ namespace ICU4N.Text
                 if (filter != null)
                 {
                     // Don't require trailing ';', but parse it if present
-                    Utility.ParseChar(id, pos, ID_DELIM);
+                    Utility.ParseChar(id, ref pos[0], ID_DELIM);
 
                     if (dir == Reverse)
                     {
