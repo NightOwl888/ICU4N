@@ -94,9 +94,8 @@ namespace ICU4N.Impl
         /// <returns>The day of week.</returns>
         public static int DayOfWeek(long day)
         {
-            long[] remainder = new long[1];
-            FloorDivide(day + 5 /* Calendar.THURSDAY */, 7, remainder);
-            int dayOfWeek = (int)remainder[0];
+            FloorDivide(day + 5 /* Calendar.THURSDAY */, 7, out long remainder);
+            int dayOfWeek = (int)remainder;
             dayOfWeek = (dayOfWeek == 0) ? 7 : dayOfWeek;
             return dayOfWeek;
         }
@@ -110,14 +109,13 @@ namespace ICU4N.Impl
             // Convert from 1970 CE epoch to 1 CE epoch (Gregorian calendar)
             day += JULIAN_1970_CE - JULIAN_1_CE;
 
-            long[] rem = new long[1];
-            long n400 = FloorDivide(day, 146097, rem);
-            long n100 = FloorDivide(rem[0], 36524, rem);
-            long n4 = FloorDivide(rem[0], 1461, rem);
-            long n1 = FloorDivide(rem[0], 365, rem);
+            long n400 = FloorDivide(day, 146097, out long rem);
+            long n100 = FloorDivide(rem, 36524, out rem);
+            long n4 = FloorDivide(rem, 1461, out rem);
+            long n1 = FloorDivide(rem, 365, out rem);
 
             int year = (int)(400 * n400 + 100 * n100 + 4 * n4 + n1);
-            int dayOfYear = (int)rem[0];
+            int dayOfYear = (int)rem;
             if (n100 == 4 || n1 == 4)
             {
                 dayOfYear = 365;    // Dec 31 at end of 4- or 400-yr cycle
@@ -168,10 +166,9 @@ namespace ICU4N.Impl
             {
                 fields = new int[6];
             }
-            long[] remainder = new long[1];
-            long day = FloorDivide(time, 24 * 60 * 60 * 1000 /* milliseconds per day */, remainder);
+            long day = FloorDivide(time, 24 * 60 * 60 * 1000 /* milliseconds per day */, out long remainder);
             DayToFields(day, fields);
-            fields[5] = (int)remainder[0];
+            fields[5] = (int)remainder;
             return fields;
         }
 
@@ -184,15 +181,16 @@ namespace ICU4N.Impl
                 ((numerator + 1) / denominator) - 1;
         }
 
-        private static long FloorDivide(long numerator, long denominator, long[] remainder)
+        // ICU4N: Changed remainder from long[] to out long
+        private static long FloorDivide(long numerator, long denominator, out long remainder)
         {
             if (numerator >= 0)
             {
-                remainder[0] = numerator % denominator;
+                remainder = numerator % denominator;
                 return numerator / denominator;
             }
             long quotient = ((numerator + 1) / denominator) - 1;
-            remainder[0] = numerator - (quotient * denominator);
+            remainder = numerator - (quotient * denominator);
             return quotient;
         }
 
