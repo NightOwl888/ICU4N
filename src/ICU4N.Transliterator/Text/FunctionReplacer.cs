@@ -40,11 +40,11 @@ namespace ICU4N.Text
         public virtual int Replace(IReplaceable text,
                            int start,
                            int limit,
-                           int[] cursor)
+                           out int cursor) // ICU4N: Changed cursor parameter from int[] to out int
         {
 
             // First delegate to subordinate replacer
-            int len = replacer.Replace(text, start, limit, cursor);
+            int len = replacer.Replace(text, start, limit, out cursor);
             limit = start + len;
 
             // Now transliterate

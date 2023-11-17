@@ -272,8 +272,9 @@ namespace ICU4N.Text
         public virtual int Replace(IReplaceable text,
                            int start,
                            int limit,
-                           int[] cursor)
+                           out int cursor) // ICU4N: Changed cursor parameter from int[] to out int
         {
+            cursor = 0;
             int outLen = 0;
 
             // Copy segment with out-of-band data

@@ -11,7 +11,7 @@
     {
         /// <summary>
         /// Replace characters in '<paramref name="text"/>' from '<paramref name="start"/>' to '<paramref name="limit"/>' with the
-        /// output text of this object.  Update the '<paramref name="cursor"/>' parameter to
+        /// output text of this object.  Return the '<paramref name="cursor"/>' parameter to
         /// give the cursor position and return the length of the
         /// replacement text.
         /// </summary>
@@ -20,16 +20,16 @@
         /// <param name="limit">Exclusive end index of <paramref name="text"/> to be replaced;
         /// must be greater than or equal to start.</param>
         /// <param name="cursor">Output parameter for the cursor position.
-        /// Not all replacer objects will update this, but in a complete
+        /// Not all replacer objects will provide this, but in a complete
         /// tree of replacer objects, representing the entire output side
-        /// of a transliteration rule, at least one must update it.
+        /// of a transliteration rule, at least one must return it.
         /// </param>
         /// <returns>The number of 16-bit code units in the text replacing
         /// the characters at offsets start..(limit-1) in text.</returns>
         int Replace(IReplaceable text,
                                     int start,
                                     int limit,
-                                    int[] cursor); // ICU4N TODO: API Make cursor into out paramter (it is a single int value)
+                                    out int cursor); // ICU4N: Changed cursor from int[] to out int
 
         /// <summary>
         /// Returns a string representation of this replacer.  If the
