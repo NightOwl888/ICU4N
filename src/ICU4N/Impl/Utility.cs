@@ -314,23 +314,23 @@ namespace ICU4N.Impl
             buffer.Append((char)a.Length);
             byte runValue = a[0];
             int runLength = 1;
-            byte[] state = new byte[2];
+            byte state0 = 0, state1 = 0;
             for (int i = 1; i < a.Length; ++i)
             {
                 byte b = a[i];
                 if (b == runValue && runLength < 0xFF) ++runLength;
                 else
                 {
-                    EncodeRun(buffer, runValue, runLength, state);
+                    EncodeRun(buffer, runValue, runLength, ref state0, ref state1);
                     runValue = b;
                     runLength = 1;
                 }
             }
-            EncodeRun(buffer, runValue, runLength, state);
+            EncodeRun(buffer, runValue, runLength, ref state0, ref state1);
 
             // We must save the final byte, if there is one, by padding
             // an extra zero.
-            if (state[0] != 0) AppendEncodedByte(buffer, (byte)0, state);
+            if (state0 != 0) AppendEncodedByte(buffer, (byte)0, ref state0, ref state1);
 
             return buffer.ToString();
         }

@@ -211,29 +211,31 @@ namespace ICU4N.Impl
         /// <param name="buffer"></param>
         /// <param name="value"></param>
         /// <param name="length">The length of the run; must be > 0 &amp;&amp; &lt;= 0xFF.</param>
-        /// <param name="state"></param>
+        /// <param name="state0"></param>
+        /// <param name="state1"></param>
+        // ICU4N: Changed state parameter from byte[] to ref byte state0 and refbyte state1
         private static void EncodeRun(StringBuilder buffer, byte value, int length,
-            byte[] state)
+            ref byte state0, ref byte state1)
         {
             if (length < 4)
             {
                 for (int j = 0; j < length; ++j)
                 {
-                    if (value == ESCAPE_BYTE) AppendEncodedByte(buffer, ESCAPE_BYTE, state);
-                    AppendEncodedByte(buffer, value, state);
+                    if (value == ESCAPE_BYTE) AppendEncodedByte(buffer, ESCAPE_BYTE, ref state0, ref state1);
+                    AppendEncodedByte(buffer, value, ref state0, ref state1);
                 }
             }
             else
             {
                 if ((byte)length == ESCAPE_BYTE)
                 {
-                    if (value == ESCAPE_BYTE) AppendEncodedByte(buffer, ESCAPE_BYTE, state);
-                    AppendEncodedByte(buffer, value, state);
+                    if (value == ESCAPE_BYTE) AppendEncodedByte(buffer, ESCAPE_BYTE, ref state0, ref state1);
+                    AppendEncodedByte(buffer, value, ref state0, ref state1);
                     --length;
                 }
-                AppendEncodedByte(buffer, ESCAPE_BYTE, state);
-                AppendEncodedByte(buffer, (byte)length, state);
-                AppendEncodedByte(buffer, value, state); // Don't need to escape this value
+                AppendEncodedByte(buffer, ESCAPE_BYTE, ref state0, ref state1);
+                AppendEncodedByte(buffer, (byte)length, ref state0, ref state1);
+                AppendEncodedByte(buffer, value, ref state0, ref state1); // Don't need to escape this value
             }
         }
 
@@ -243,57 +245,61 @@ namespace ICU4N.Impl
         /// <param name="buffer"></param>
         /// <param name="value"></param>
         /// <param name="length">The length of the run; must be > 0 &amp;&amp; &lt;= 0xFF.</param>
-        /// <param name="state"></param>
+        /// <param name="state0"></param>
+        /// <param name="state1"></param>
+        // ICU4N: Changed state parameter from byte[] to ref byte state0 and refbyte state1
         private static void EncodeRun(IAppendable buffer, byte value, int length,
-            byte[] state)
+            ref byte state0, ref byte state1)
         {
             if (length < 4)
             {
                 for (int j = 0; j < length; ++j)
                 {
-                    if (value == ESCAPE_BYTE) AppendEncodedByte(buffer, ESCAPE_BYTE, state);
-                    AppendEncodedByte(buffer, value, state);
+                    if (value == ESCAPE_BYTE) AppendEncodedByte(buffer, ESCAPE_BYTE, ref state0, ref state1);
+                    AppendEncodedByte(buffer, value, ref state0, ref state1);
                 }
             }
             else
             {
                 if ((byte)length == ESCAPE_BYTE)
                 {
-                    if (value == ESCAPE_BYTE) AppendEncodedByte(buffer, ESCAPE_BYTE, state);
-                    AppendEncodedByte(buffer, value, state);
+                    if (value == ESCAPE_BYTE) AppendEncodedByte(buffer, ESCAPE_BYTE, ref state0, ref state1);
+                    AppendEncodedByte(buffer, value, ref state0, ref state1);
                     --length;
                 }
-                AppendEncodedByte(buffer, ESCAPE_BYTE, state);
-                AppendEncodedByte(buffer, (byte)length, state);
-                AppendEncodedByte(buffer, value, state); // Don't need to escape this value
+                AppendEncodedByte(buffer, ESCAPE_BYTE, ref state0, ref state1);
+                AppendEncodedByte(buffer, (byte)length, ref state0, ref state1);
+                AppendEncodedByte(buffer, value, ref state0, ref state1); // Don't need to escape this value
             }
         }
 
         /// <summary>
         /// Append a byte to the given <see cref="StringBuilder"/>, packing two bytes into each
-        /// character.  The state parameter maintains intermediary data between
-        /// calls.
+        /// character.  The <paramref name="state0"/> and <paramref name="state1"/> parameters
+        /// maintain intermediary data between calls.
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="value"></param>
-        /// <param name="state">A two-element array, with state[0] == 0 if this is the
-        /// first byte of a pair, or state[0] != 0 if this is the second byte
-        /// of a pair, in which case state[1] is the first byte.</param>
+        /// <param name="state0">state0 == 0 if this is the first byte of a pair or
+        /// state0 != 0 if this is the second byte of a pair,
+        /// in which case <paramref name="state1"/> is the first byte.</param>
+        /// <param name="state1"></param>
+        // ICU4N: Changed state parameter from byte[] to ref byte state0 and refbyte state1
         private static void AppendEncodedByte(StringBuilder buffer, byte value,
-            byte[] state)
+            ref byte state0, ref byte state1)
         {
             try
             {
-                if (state[0] != 0)
+                if (state0 != 0)
                 {
-                    char c = (char)((state[1] << 8) | ((value) & 0xFF));
+                    char c = (char)((state1 << 8) | ((value) & 0xFF));
                     buffer.Append(c);
-                    state[0] = 0;
+                    state0 = 0;
                 }
                 else
                 {
-                    state[0] = 1;
-                    state[1] = value;
+                    state0 = 1;
+                    state1 = value;
                 }
             }
             catch (IOException e)
@@ -304,29 +310,31 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Append a byte to the given <see cref="IAppendable"/>, packing two bytes into each
-        /// character.  The state parameter maintains intermediary data between
-        /// calls.
+        /// character.  The <paramref name="state0"/> and <paramref name="state1"/> parameters
+        /// maintain intermediary data between calls.
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="value"></param>
-        /// <param name="state">A two-element array, with state[0] == 0 if this is the
-        /// first byte of a pair, or state[0] != 0 if this is the second byte
-        /// of a pair, in which case state[1] is the first byte.</param>
+        /// <param name="state0">state0 == 0 if this is the first byte of a pair or
+        /// state0 != 0 if this is the second byte of a pair,
+        /// in which case <paramref name="state1"/> is the first byte.</param>
+        /// <param name="state1"></param>
+        // ICU4N: Changed state parameter from byte[] to ref byte state0 and refbyte state1
         private static void AppendEncodedByte(IAppendable buffer, byte value,
-            byte[] state)
+            ref byte state0, ref byte state1)
         {
             try
             {
-                if (state[0] != 0)
+                if (state0 != 0)
                 {
-                    char c = (char)((state[1] << 8) | ((value) & 0xFF));
+                    char c = (char)((state1 << 8) | ((value) & 0xFF));
                     buffer.Append(c);
-                    state[0] = 0;
+                    state0 = 0;
                 }
                 else
                 {
-                    state[0] = 1;
-                    state[1] = value;
+                    state0 = 1;
+                    state1 = value;
                 }
             }
             catch (IOException e)
