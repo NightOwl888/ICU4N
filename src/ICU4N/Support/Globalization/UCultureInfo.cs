@@ -2458,12 +2458,13 @@ namespace ICU4N.Globalization
         /// <stable>ICU 4.0</stable>
         public static UCultureInfo AddLikelySubtags(UCultureInfo culture)
         {
-            string[] tags = new string[3];
             string? trailing = null;
 
             int trailingIndex = ParseTagString(
                     culture.localeID,
-                    tags);
+                    out string language,
+                    out string script,
+                    out string region);
 
             if (trailingIndex < culture.localeID.Length)
             {
@@ -2472,9 +2473,9 @@ namespace ICU4N.Globalization
 
             string? newLocaleID =
                     CreateLikelySubtagsString(
-                            tags[0],
-                            tags[1],
-                            tags[2],
+                            language,
+                            script,
+                            region,
                             trailing);
 
             return newLocaleID == null ? culture : new UCultureInfo(newLocaleID);
@@ -2562,15 +2563,12 @@ namespace ICU4N.Globalization
         [Obsolete("This API is ICU internal only.")]
         internal static UCultureInfo MinimizeSubtags(UCultureInfo loc, Minimize fieldToFavor) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
-            string[] tags = new string[3];
-
             int trailingIndex = ParseTagString(
                     loc.localeID,
-                    tags);
+                    out string originalLang,
+                    out string originalScript,
+                    out string originalRegion);
 
-            string originalLang = tags[0];
-            string originalScript = tags[1];
-            string originalRegion = tags[2];
             string? originalTrailing = null;
 
             if (trailingIndex < loc.localeID.Length)
@@ -2979,9 +2977,11 @@ namespace ICU4N.Globalization
         /// <para/>This function does not return the canonical strings for the unknown script and region.
         /// </summary>
         /// <param name="localeID">The locale ID to parse.</param>
-        /// <param name="tags">An array of three string references to return the subtag strings.</param>
+        /// <param name="language">The returned language id.</param>
+        /// <param name="script">The returned script id.</param>
+        /// <param name="region">The returned region (country id).</param>
         /// <returns>The number of chars of the localeID parameter consumed.</returns>
-        private static int ParseTagString(string localeID, string[] tags)
+        private static int ParseTagString(string localeID, out string language, out string script, out string region)
         {
 #if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], localeID);
@@ -2990,34 +2990,34 @@ namespace ICU4N.Globalization
 #endif
 
             string lang = parser.GetLanguage();
-            string script = parser.GetScript();
-            string region = parser.GetCountry();
+            string scr = parser.GetScript();
+            string reg = parser.GetCountry();
 
             if (string.IsNullOrEmpty(lang))
             {
-                tags[0] = UndefinedLanguage;
+                language = UndefinedLanguage;
             }
             else
             {
-                tags[0] = lang;
+                language = lang;
             }
 
-            if (script.Equals(UndefinedScript))
+            if (scr.Equals(UndefinedScript))
             {
-                tags[1] = "";
+                script = "";
             }
             else
             {
-                tags[1] = script;
+                script = scr;
             }
 
-            if (region.Equals(UndefinedRegion))
+            if (reg.Equals(UndefinedRegion))
             {
-                tags[2] = "";
+                region = "";
             }
             else
             {
-                tags[2] = region;
+                region = reg;
             }
 
             /*
