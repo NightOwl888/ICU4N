@@ -1379,7 +1379,7 @@ namespace ICU4N.Impl
                 string pattern, int[] parsedInts)
         {
             // TODO Update this to handle surrogates
-            int[] p = new int[1];
+            int p; // ICU4N: Converted from array to int
             int intCount = 0; // number of integers parsed
             for (int i = 0; i < pattern.Length; ++i)
             {
@@ -1404,14 +1404,14 @@ namespace ICU4N.Impl
                         pos = PatternProps.SkipWhiteSpace(rule, pos);
                         break;
                     case '#':
-                        p[0] = pos;
-                        parsedInts[intCount++] = ParseInteger(rule, p, limit);
-                        if (p[0] == pos)
+                        p = pos;
+                        parsedInts[intCount++] = ParseInteger(rule, ref p, limit);
+                        if (p == pos)
                         {
                             // Syntax error; failed to parse integer
                             return -1;
                         }
-                        pos = p[0];
+                        pos = p;
                         break;
                     default:
                         if (pos >= limit)
@@ -1517,11 +1517,12 @@ namespace ICU4N.Impl
         /// character to parse.  On output, the character after the last
         /// parsed character.</param>
         /// <param name="limit"></param>
-        public static int ParseInteger(string rule, int[] pos, int limit) // ICU4N TODO: API Make limit into length, like in .NET ?
+        // ICU4N: Converted pos from array to ref int
+        public static int ParseInteger(string rule, ref int pos, int limit) // ICU4N TODO: API Make limit into length, like in .NET ?
         {
             int count = 0;
             int value = 0;
-            int p = pos[0];
+            int p = pos;
             int radix = 10;
 
             if (rule.RegionMatches(/*true,*/ p, "0x", 0, 2, StringComparison.Ordinal))
@@ -1558,7 +1559,7 @@ namespace ICU4N.Impl
             }
             if (count > 0)
             {
-                pos[0] = p;
+                pos = p;
             }
             return value;
         }
