@@ -919,7 +919,7 @@ namespace ICU4N.Dev.Test.Util
             try
             {
                 ICUResourceBundle.GetFunctionalEquivalent(ICUData.IcuBreakIteratorBaseName, assembly, "calendar",
-                              "calendar", new UCultureInfo("ar_EG@calendar=islamic"), new bool[1], true);
+                              "calendar", new UCultureInfo("ar_EG@calendar=islamic"), out bool isAvailable, true);
                 Errln("Err: expected MissingManifestResourceException");
             }
             catch (MissingManifestResourceException t)
@@ -933,7 +933,6 @@ namespace ICU4N.Dev.Test.Util
         {
             //string F_STR = "f";
             string T_STR = "t";
-            bool[] isAvail = new bool[1];
 
             Logln("Testing functional equivalents...");
             for (int i = 0; i < testCases.Length; i += 3)
@@ -945,8 +944,7 @@ namespace ICU4N.Dev.Test.Util
                 Logln(((int)(i / 3)).ToString(CultureInfo.InvariantCulture) + ": " + expectAvail.ToString() + "\t\t" +
                         inLocale.ToString() + "\t\t" + expectLocale.ToString());
 
-                UCultureInfo equivLocale = ICUResourceBundle.GetFunctionalEquivalent(path, cl, resName, keyword, inLocale, isAvail, truncate);
-                bool gotAvail = isAvail[0];
+                UCultureInfo equivLocale = ICUResourceBundle.GetFunctionalEquivalent(path, cl, resName, keyword, inLocale, out bool gotAvail, truncate);
 
                 if ((gotAvail != expectAvail) || !equivLocale.Equals(expectLocale))
                 {

@@ -403,26 +403,25 @@ namespace ICU4N.Dev.Test.Collate
             if (!assertTrue("getKeywordValues != null", kwval != null)) return;
             CheckArray("getKeywordValues", kwval, KWVAL);
 
-            bool[] isAvailable = new bool[1];
             UCultureInfo equiv = Collator.GetFunctionalEquivalent(KW[0],
                                                              new UCultureInfo("de"),
-                                                             isAvailable);
+                                                             out bool isAvailable);
             if (assertTrue("getFunctionalEquivalent(de)!=null", equiv != null))
             {
                 assertEquals("getFunctionalEquivalent(de)", "root", equiv.ToString());
             }
             assertTrue("getFunctionalEquivalent(de).isAvailable==true",
-                       isAvailable[0] == true);
+                       isAvailable == true);
 
             equiv = Collator.GetFunctionalEquivalent(KW[0],
                                                      new UCultureInfo("de_DE"),
-                                                     isAvailable);
+                                                     out isAvailable);
             if (assertTrue("getFunctionalEquivalent(de_DE)!=null", equiv != null))
             {
                 assertEquals("getFunctionalEquivalent(de_DE)", "root", equiv.ToString());
             }
             assertTrue("getFunctionalEquivalent(de_DE).isAvailable==false",
-                       isAvailable[0] == false);
+                       isAvailable == false);
 
             equiv = Collator.GetFunctionalEquivalent(KW[0], new UCultureInfo("zh_Hans"));
             if (assertTrue("getFunctionalEquivalent(zh_Hans)!=null", equiv != null))
@@ -470,19 +469,18 @@ namespace ICU4N.Dev.Test.Collate
 
             for (int i = 0; i < DATA_COUNT; i++)
             {
-                bool[] isAvailable = new bool[1];
                 UCultureInfo input = new UCultureInfo(DATA[(i * 3) + 0]);
                 UCultureInfo expect = new UCultureInfo(DATA[(i * 3) + 1]);
                 bool expectAvailable = DATA[(i * 3) + 2].Equals("t");
-                UCultureInfo actual = Collator.GetFunctionalEquivalent(kw[0], input, isAvailable);
-                if (!actual.Equals(expect) || (expectAvailable != isAvailable[0]))
+                UCultureInfo actual = Collator.GetFunctionalEquivalent(kw[0], input, out bool isAvailable);
+                if (!actual.Equals(expect) || (expectAvailable != isAvailable))
                 {
-                    Errln("#" + i + ": Collator.getFunctionalEquivalent(" + input + ")=" + actual + ", avail " + isAvailable[0] + ", " +
+                    Errln("#" + i + ": Collator.getFunctionalEquivalent(" + input + ")=" + actual + ", avail " + isAvailable + ", " +
                             "expected " + expect + " avail " + expectAvailable);
                 }
                 else
                 {
-                    Logln("#" + i + ": Collator.getFunctionalEquivalent(" + input + ")=" + actual + ", avail " + isAvailable[0]);
+                    Logln("#" + i + ": Collator.getFunctionalEquivalent(" + input + ")=" + actual + ", avail " + isAvailable);
                 }
             }
         }
