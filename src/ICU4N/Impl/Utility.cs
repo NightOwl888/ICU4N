@@ -1570,18 +1570,19 @@ namespace ICU4N.Impl
         /// identifier.
         /// </summary>
         /// <param name="str">The string to parse.</param>
-        /// <param name="pos">INPUT-OUPUT parameter.  On INPUT, pos[0] is the
+        /// <param name="pos">INPUT-OUPUT parameter.  On INPUT, <paramref name="pos"/> is the
         /// first character to examine.  It must be less than str.Length,
         /// and it must not point to a whitespace character.  That is, must
-        /// have pos[0] &lt; str.Length.  On
+        /// have <paramref name="pos"/> &lt; str.Length.  On
         /// OUTPUT, the position after the last parsed character.</param>
         /// <returns>The Unicode identifier, or null if there is no valid
-        /// identifier at pos[0].</returns>
-        public static string ParseUnicodeIdentifier(string str, int[] pos)
+        /// identifier at <paramref name="pos"/>.</returns>
+        // ICU4N: Converted pos from int[] to ref int
+        public static string ParseUnicodeIdentifier(string str, ref int pos)
         {
             // assert(pos[0] < str.length());
             StringBuilder buf = new StringBuilder();
-            int p = pos[0];
+            int p = pos;
             while (p < str.Length)
             {
                 int ch = Character.CodePointAt(str, p);
@@ -1609,7 +1610,7 @@ namespace ICU4N.Impl
                 }
                 p += UTF16.GetCharCount(ch);
             }
-            pos[0] = p;
+            pos = p;
             return buf.ToString();
         }
 

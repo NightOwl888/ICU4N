@@ -719,7 +719,7 @@ namespace ICU4N.Text
                     break;
                 }
 
-                string spec = Utility.ParseUnicodeIdentifier(id, pos);
+                string spec = Utility.ParseUnicodeIdentifier(id, ref pos[0]);
                 if (spec == null)
                 {
                     // Note that if there was a trailing delimiter, we
