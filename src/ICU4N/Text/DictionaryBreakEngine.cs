@@ -19,7 +19,7 @@ namespace ICU4N.Text
             private const int POSSIBLE_WORD_LIST_MAX = 20;
             //list of word candidate lengths, in increasing length order
             private readonly int[] lengths;
-            private readonly int[] count;    // Count of candidates
+            private int count;      // Count of candidates // ICU4N: Converted from int[] to int since it is an out parameter. We still need it declared here, though.
             private int prefix;     // The longest match with a dictionary word
             private int offset;     // Offset in the text of these candidates
             private int mark;       // The preferred candidate's offset
@@ -29,7 +29,6 @@ namespace ICU4N.Text
             public PossibleWord()
             {
                 lengths = new int[POSSIBLE_WORD_LIST_MAX];
-                count = new int[1]; // count needs to be an array of 1 so that it can be pass as reference
                 offset = -1;
             }
 
@@ -40,20 +39,20 @@ namespace ICU4N.Text
                 if (start != offset)
                 {
                     offset = start;
-                    prefix = dict.Matches(fIter, rangeEnd - start, lengths, count, lengths.Length);
+                    prefix = dict.Matches(fIter, rangeEnd - start, lengths, out count, lengths.Length);
                     // Dictionary leaves text after longest prefix, not longest word. Back up.
-                    if (count[0] <= 0)
+                    if (count <= 0)
                     {
                         fIter.SetIndex(start);
                     }
                 }
-                if (count[0] > 0)
+                if (count > 0)
                 {
-                    fIter.SetIndex(start + lengths[count[0] - 1]);
+                    fIter.SetIndex(start + lengths[count - 1]);
                 }
-                current = count[0] - 1;
+                current = count - 1;
                 mark = current;
-                return count[0];
+                return count;
             }
 
             // Select the currently marked candidate, point after it in the text, and invalidate self

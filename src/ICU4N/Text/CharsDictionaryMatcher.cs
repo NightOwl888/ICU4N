@@ -29,8 +29,10 @@ namespace ICU4N.Text
             characters = chars;
         }
 
-        public override int Matches(CharacterIterator text_, int maxLength, int[] lengths, int[] count_, int limit, int[] values)
+        // ICU4N: Changed count parameter from int[] to out int
+        public override int Matches(CharacterIterator text_, int maxLength, int[] lengths, out int count, int limit, int[] values)
         {
+            count = 0;
             UCharacterIterator text = UCharacterIterator.GetInstance(text_);
             CharsTrie uct = new CharsTrie(characters, 0);
             int c = text.NextCodePoint();
@@ -41,7 +43,6 @@ namespace ICU4N.Text
             Result result = uct.FirstForCodePoint(c);
             // TODO: should numChars count Character.charCount?
             int numChars = 1;
-            int count = 0;
             for (; ; )
             {
                 if (result.HasValue())
@@ -78,7 +79,6 @@ namespace ICU4N.Text
                 ++numChars;
                 result = uct.NextForCodePoint(c);
             }
-            count_[0] = count;
             return numChars;
         }
 

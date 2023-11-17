@@ -15,17 +15,19 @@ namespace ICU4N.Text
         /// left after the longest prefix match in the dictionary.</param>
         /// <param name="maxLength">The maximum number of code units to match.</param>
         /// <param name="lengths">An array that is filled with the lengths of words that matched.</param>
-        /// <param name="count">Filled with the number of elements output in lengths.</param>
+        /// <param name="count">The number of elements output in lengths.</param>
         /// <param name="limit">The maximum amount of words to output. Must be less than or equal to lengths.Length.</param>
         /// <param name="values">Filled with the weight values associated with the various words.</param>
         /// <returns>The number of characters in text that were matched.</returns>
+        // ICU4N: Changed count parameter from int[] to out int
         public abstract int Matches(CharacterIterator text, int maxLength, int[] lengths,
-                int[] count, int limit, int[] values);
+                out int count, int limit, int[] values);
 
+        // ICU4N: Changed count parameter from int[] to out int
         public int Matches(CharacterIterator text, int maxLength, int[] lengths,
-                int[] count, int limit)
+                out int count, int limit)
         {
-            return Matches(text, maxLength, lengths, count, limit, null);
+            return Matches(text, maxLength, lengths, out count, limit, null);
         }
 
         /// <summary>
