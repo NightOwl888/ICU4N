@@ -1524,7 +1524,8 @@ namespace ICU4N.Impl
             int p = pos[0];
             int radix = 10;
 
-            if (rule.RegionMatches(/*true,*/ p, "0x", 0, 2, StringComparison.Ordinal))
+            //if (rule.RegionMatches(/*true,*/ p, "0x", 0, 2, StringComparison.OrdinalIgnoreCase))
+            if (rule.Length >= p + 1 && rule[p] == '0' && (rule[p + 1] == 'x' || rule[p + 1] == 'X'))
             {
                 p += 2;
                 radix = 16;
