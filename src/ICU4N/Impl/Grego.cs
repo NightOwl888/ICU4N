@@ -100,12 +100,9 @@ namespace ICU4N.Impl
             return dayOfWeek;
         }
 
-        public static int[] DayToFields(long day, int[] fields)
+        // ICU4N: Changed from int[] fields parameter to individual out parameters
+        public static void DayToFields(long day, out int year, out int month, out int dayOfMonth, out int dayOfWeek, out int dayOfYear)
         {
-            if (fields == null || fields.Length < 5)
-            {
-                fields = new int[5];
-            }
             // Convert from 1970 CE epoch to 1 CE epoch (Gregorian calendar)
             day += JULIAN_1970_CE - JULIAN_1_CE;
 
@@ -114,8 +111,8 @@ namespace ICU4N.Impl
             long n4 = FloorDivide(rem, 1461, out rem);
             long n1 = FloorDivide(rem, 365, out rem);
 
-            int year = (int)(400 * n400 + 100 * n100 + 4 * n4 + n1);
-            int dayOfYear = (int)rem;
+            year = (int)(400 * n400 + 100 * n100 + 4 * n4 + n1);
+            dayOfYear = (int)rem;
             if (n100 == 4 || n1 == 4)
             {
                 dayOfYear = 365;    // Dec 31 at end of 4- or 400-yr cycle
@@ -132,44 +129,33 @@ namespace ICU4N.Impl
             {
                 correction = isLeap ? 1 : 2;
             }
-            int month = (12 * (dayOfYear + correction) + 6) / 367;  // zero-based month
-            int dayOfMonth = dayOfYear - DAYS_BEFORE[isLeap ? month + 12 : month] + 1; // one-based DOM
-            int dayOfWeek = (int)((day + 2) % 7);  // day 0 is Monday(2)
+            month = (12 * (dayOfYear + correction) + 6) / 367;  // zero-based month
+            dayOfMonth = dayOfYear - DAYS_BEFORE[isLeap ? month + 12 : month] + 1; // one-based DOM
+            dayOfWeek = (int)((day + 2) % 7);  // day 0 is Monday(2)
             if (dayOfWeek < 1 /* Sunday */)
             {
                 dayOfWeek += 7;
             }
             dayOfYear++; // 1-based day of year
-
-            fields[0] = year;
-            fields[1] = month;
-            fields[2] = dayOfMonth;
-            fields[3] = dayOfWeek;
-            fields[4] = dayOfYear;
-
-            return fields;
         }
 
         /// <summary>
         /// Convert long time to date/time fields.
-        /// <para/>
-        /// result[0] : year
-        /// result[1] : month
-        /// result[2] : dayOfMonth
-        /// result[3] : dayOfWeek
-        /// result[4] : dayOfYear
-        /// result[5] : millisecond in day
         /// </summary>
-        public static int[] TimeToFields(long time, int[] fields)
+
+        // ICU4N NOTE: This is how it was arranged previously (may need this as a guide to convert callers)
+        // result[0] : year
+        // result[1] : month
+        // result[2] : dayOfMonth
+        // result[3] : dayOfWeek
+        // result[4] : dayOfYear
+        // result[5] : millisecond in day
+        // ICU4N: Changed from int[] fields parameter to individual out parameters
+        public static void TimeToFields(long time, out int year, out int month, out int dayOfMonth, out int dayOfWeek, out int dayOfYear, out int millisecondOfDay)
         {
-            if (fields == null || fields.Length < 6)
-            {
-                fields = new int[6];
-            }
             long day = FloorDivide(time, 24 * 60 * 60 * 1000 /* milliseconds per day */, out long remainder);
-            DayToFields(day, fields);
-            fields[5] = (int)remainder;
-            return fields;
+            DayToFields(day, out year, out month, out dayOfMonth, out dayOfWeek, out dayOfYear);
+            millisecondOfDay = (int)remainder;
         }
 
         public static long FloorDivide(long numerator, long denominator)
@@ -223,8 +209,7 @@ namespace ICU4N.Impl
         /// <returns>ISO-8601 date string.</returns>
         public static string TimeToString(long time)
         {
-            int[] fields = TimeToFields(time, null);
-            int millis = fields[5];
+            TimeToFields(time, out int year, out int month, out int dayOfMonth, out int _, out int _, out int millis);
             int hour = millis / MillisecondsPerHour;
             millis = millis % MillisecondsPerHour;
             int min = millis / MillisecondsPerMinute;
@@ -233,7 +218,7 @@ namespace ICU4N.Impl
             millis = millis % MillisecondsPerSecond;
 
             return string.Format(CultureInfo.InvariantCulture, "{0:0000}-{1:00}-{2:00}T{3:00}:{4:00}:{5:00}.{6:000}Z",
-                    fields[0], fields[1] + 1, fields[2], hour, min, sec, millis);
+                    year, month + 1, dayOfMonth, hour, min, sec, millis);
         }
     }
 }
