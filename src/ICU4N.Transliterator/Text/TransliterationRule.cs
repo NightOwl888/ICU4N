@@ -430,7 +430,7 @@ namespace ICU4N.Text
 
             if (anteContext != null)
             {
-                match = anteContext.Matches(text, intRef, anteLimit, false);
+                match = anteContext.Matches(text, ref intRef[0], anteLimit, false);
                 if (match != MatchDegree.Match)
                 {
                     return MatchDegree.Mismatch;
@@ -454,7 +454,7 @@ namespace ICU4N.Text
 
             if (key != null)
             {
-                match = key.Matches(text, intRef, position.Limit, incremental);
+                match = key.Matches(text, ref intRef[0], position.Limit, incremental);
                 if (match != MatchDegree.Match)
                 {
                     return match;
@@ -474,7 +474,7 @@ namespace ICU4N.Text
                     return MatchDegree.PartialMatch;
                 }
 
-                match = postContext.Matches(text, intRef, position.ContextLimit, incremental);
+                match = postContext.Matches(text, ref intRef[0], position.ContextLimit, incremental);
                 if (match != MatchDegree.Match)
                 {
                     return match;

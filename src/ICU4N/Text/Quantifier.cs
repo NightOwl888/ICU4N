@@ -33,20 +33,20 @@ namespace ICU4N.Text
         /// Implement <see cref="IUnicodeMatcher"/> API.
         /// </summary>
         public virtual MatchDegree Matches(IReplaceable text,
-                           int[] offset,
+                           ref int offset,
                            int limit,
                            bool incremental)
         {
-            int start = offset[0];
+            int start = offset;
             int count = 0;
             while (count < maxCount)
             {
-                int pos = offset[0];
-                MatchDegree m = matcher.Matches(text, offset, limit, incremental);
+                int pos = offset;
+                MatchDegree m = matcher.Matches(text, ref offset, limit, incremental);
                 if (m == MatchDegree.Match)
                 {
                     ++count;
-                    if (pos == offset[0])
+                    if (pos == offset)
                     {
                         // If offset has not moved we have a zero-width match.
                         // Don't keep matching it infinitely.
@@ -62,7 +62,7 @@ namespace ICU4N.Text
                     break;
                 }
             }
-            if (incremental && offset[0] == limit)
+            if (incremental && offset == limit)
             {
                 return MatchDegree.PartialMatch;
             }
@@ -70,7 +70,7 @@ namespace ICU4N.Text
             {
                 return MatchDegree.Match;
             }
-            offset[0] = start;
+            offset = start;
             return MatchDegree.Mismatch;
         }
 

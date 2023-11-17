@@ -97,8 +97,9 @@ namespace ICU4N.Text
         /// <summary>
         /// Implement <see cref="IUnicodeMatcher"/>
         /// </summary>
+        // ICU4N: Converted offset from int[] to ref int
         public virtual MatchDegree Matches(IReplaceable text,
-                           int[] offset,
+                           ref int offset,
                            int limit,
                            bool incremental)
         {
@@ -107,8 +108,8 @@ namespace ICU4N.Text
             // always in the BMP and because we are doing a literal match
             // operation, which can be done 16-bits at a time.
             int i;
-            int[] cursor = new int[] { offset[0] };
-            if (limit < cursor[0])
+            int cursor = offset;
+            if (limit < cursor)
             {
                 // Match in the reverse direction
                 for (i = pattern.Length - 1; i >= 0; --i)
@@ -117,10 +118,10 @@ namespace ICU4N.Text
                     IUnicodeMatcher subm = data.LookupMatcher(keyChar);
                     if (subm == null)
                     {
-                        if (cursor[0] > limit &&
-                            keyChar == text[cursor[0]])
+                        if (cursor > limit &&
+                            keyChar == text[cursor])
                         { // OK; see note (1) above
-                            --cursor[0];
+                            --cursor;
                         }
                         else
                         {
@@ -130,7 +131,7 @@ namespace ICU4N.Text
                     else
                     {
                         MatchDegree m =
-                            subm.Matches(text, cursor, limit, incremental);
+                            subm.Matches(text, ref cursor, limit, incremental);
                         if (m != MatchDegree.Match)
                         {
                             return m;
@@ -142,15 +143,15 @@ namespace ICU4N.Text
                 // exist -- we want the rightmost match.
                 if (matchStart < 0)
                 {
-                    matchStart = cursor[0] + 1;
-                    matchLimit = offset[0] + 1;
+                    matchStart = cursor + 1;
+                    matchLimit = offset + 1;
                 }
             }
             else
             {
                 for (i = 0; i < pattern.Length; ++i)
                 {
-                    if (incremental && cursor[0] == limit)
+                    if (incremental && cursor == limit)
                     {
                         // We've reached the context limit without a mismatch and
                         // without completing our match.
@@ -163,10 +164,10 @@ namespace ICU4N.Text
                         // Don't need the cursor < limit check if
                         // incremental is true (because it's done above); do need
                         // it otherwise.
-                        if (cursor[0] < limit &&
-                            keyChar == text[cursor[0]])
+                        if (cursor < limit &&
+                            keyChar == text[cursor])
                         { // OK; see note (1) above
-                            ++cursor[0];
+                            ++cursor;
                         }
                         else
                         {
@@ -176,7 +177,7 @@ namespace ICU4N.Text
                     else
                     {
                         MatchDegree m =
-                            subm.Matches(text, cursor, limit, incremental);
+                            subm.Matches(text, ref cursor, limit, incremental);
                         if (m != MatchDegree.Match)
                         {
                             return m;
@@ -184,11 +185,11 @@ namespace ICU4N.Text
                     }
                 }
                 // Record the match position
-                matchStart = offset[0];
-                matchLimit = cursor[0];
+                matchStart = offset;
+                matchLimit = cursor;
             }
 
-            offset[0] = cursor[0];
+            offset = cursor;
             return MatchDegree.Match;
         }
 
