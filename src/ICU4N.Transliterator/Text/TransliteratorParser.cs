@@ -1118,12 +1118,12 @@ namespace ICU4N.Text
                             else
                             {
                                 // Couldn't parse an ID.  Try to parse a global filter
-                                int[] withParens = new int[] { -1 };
-                                UnicodeSet f = TransliteratorIDParser.ParseGlobalFilter(rule, ref p, direction, withParens, null);
+                                int withParens = -1;
+                                UnicodeSet f = TransliteratorIDParser.ParseGlobalFilter(rule, ref p, direction, ref withParens, null);
                                 if (f != null && Utility.ParseChar(rule, ref p, END_OF_RULE))
                                 {
                                     if ((direction == Transliterator.Forward) ==
-                                        (withParens[0] == 0))
+                                        (withParens == 0))
                                     {
                                         if (CompoundFilter != null)
                                         {

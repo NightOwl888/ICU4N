@@ -272,8 +272,8 @@ namespace ICU4N.Text
         /// the last character parsed.</param>
         /// <param name="dir">The direction.</param>
         /// <param name="withParens">INPUT-OUTPUT parameter.  On entry, if
-        /// withParens[0] is 0, then parens are disallowed.  If it is 1,
-        /// then parens are requires.  If it is -1, then parens are
+        /// withParens is 0, then parens are disallowed.  If it is 1,
+        /// then parens are required.  If it is -1, then parens are
         /// optional, and the return result will be set to 0 or 1.</param>
         /// <param name="canonID">OUTPUT parameter.  The pattern for the filter
         /// added to the canonID, either at the end, if dir is <see cref="TransliterationDirection.Forward"/>, or
@@ -284,19 +284,19 @@ namespace ICU4N.Text
         /// indicates a successful parse, regardless of whether the filter
         /// applies to the given direction.  The caller should discard it
         /// if withParens != (dir == <see cref="TransliterationDirection.Reverse"/>).</returns>
-        // ICU4N: Converted pos parameter from int[] to ref int
+        // ICU4N: Converted pos and withParens parameters from int[] to ref int
         public static UnicodeSet ParseGlobalFilter(string id, ref int pos, TransliterationDirection dir,
-                                                   int[] withParens,
+                                                   ref int withParens,
                                                    StringBuffer canonID)
         {
             UnicodeSet filter = null;
             int start = pos;
 
-            if (withParens[0] == -1)
+            if (withParens == -1)
             {
-                withParens[0] = Utility.ParseChar(id, ref pos, OPEN_REV) ? 1 : 0;
+                withParens = Utility.ParseChar(id, ref pos, OPEN_REV) ? 1 : 0;
             }
-            else if (withParens[0] == 1)
+            else if (withParens == 1)
             {
                 if (!Utility.ParseChar(id, ref pos, OPEN_REV))
                 {
@@ -323,7 +323,7 @@ namespace ICU4N.Text
                 string pattern = id.Substring(pos, ppos.Index - pos); // ICU4N: Corrected 2nd parameter
                 pos = ppos.Index;
 
-                if (withParens[0] == 1 && !Utility.ParseChar(id, ref pos, CLOSE_REV))
+                if (withParens == 1 && !Utility.ParseChar(id, ref pos, CLOSE_REV))
                 {
                     pos = start;
                     return null;
@@ -336,7 +336,7 @@ namespace ICU4N.Text
                 {
                     if (dir == Forward)
                     {
-                        if (withParens[0] == 1)
+                        if (withParens == 1)
                         {
                             pattern = OPEN_REV + pattern + CLOSE_REV;
                         }
@@ -344,7 +344,7 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        if (withParens[0] == 0)
+                        if (withParens == 0)
                         {
                             pattern = OPEN_REV + pattern + CLOSE_REV;
                         }
@@ -384,15 +384,15 @@ namespace ICU4N.Text
                                               UnicodeSet[] globalFilter)
         {
             int pos = 0;
-            int[] withParens = new int[1];
+            int withParens;
             list.Clear();
             UnicodeSet filter;
             globalFilter[0] = null;
             canonID.Length = 0;
 
             // Parse leading global filter, if any
-            withParens[0] = 0; // parens disallowed
-            filter = ParseGlobalFilter(id, ref pos, dir, withParens, canonID);
+            withParens = 0; // parens disallowed
+            filter = ParseGlobalFilter(id, ref pos, dir, ref withParens, canonID);
             if (filter != null)
             {
                 if (!Utility.ParseChar(id, ref pos, ID_DELIM))
@@ -450,8 +450,8 @@ namespace ICU4N.Text
             // a trailing delimiter after the IDs.
             if (sawDelimiter)
             {
-                withParens[0] = 1; // parens required
-                filter = ParseGlobalFilter(id, ref pos, dir, withParens, canonID);
+                withParens = 1; // parens required
+                filter = ParseGlobalFilter(id, ref pos, dir, ref withParens, canonID);
                 if (filter != null)
                 {
                     // Don't require trailing ';', but parse it if present
