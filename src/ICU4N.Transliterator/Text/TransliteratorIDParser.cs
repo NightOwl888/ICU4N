@@ -356,6 +356,8 @@ namespace ICU4N.Text
             return filter;
         }
 
+#nullable enable
+
         /// <summary>
         /// Parse a compound <paramref name="id"/>, consisting of an optional forward global
         /// filter, a separator, one or more single IDs delimited by
@@ -381,13 +383,13 @@ namespace ICU4N.Text
         public static bool ParseCompoundID(string id, TransliterationDirection dir,
                                               StringBuffer canonID,
                                               IList<SingleID> list,
-                                              UnicodeSet[] globalFilter)
+                                              out UnicodeSet? globalFilter) // ICU4N: Changed globalFilter from UnicodeSet[] to out UnicodeSet
         {
             int pos = 0;
             int withParens;
             list.Clear();
             UnicodeSet filter;
-            globalFilter[0] = null;
+            globalFilter = null;
             canonID.Length = 0;
 
             // Parse leading global filter, if any
@@ -403,7 +405,7 @@ namespace ICU4N.Text
                 }
                 if (dir == Forward)
                 {
-                    globalFilter[0] = filter;
+                    globalFilter = filter;
                 }
             }
 
@@ -459,7 +461,7 @@ namespace ICU4N.Text
 
                     if (dir == Reverse)
                     {
-                        globalFilter[0] = filter;
+                        globalFilter = filter;
                     }
                 }
             }
@@ -473,6 +475,8 @@ namespace ICU4N.Text
 
             return true;
         }
+
+#nullable restore
 
         /// <summary>
         /// Returns the list of <see cref="Transliterator"/> objects for the

@@ -1429,8 +1429,7 @@ namespace ICU4N.Text
         {
             StringBuffer canonID = new StringBuffer();
             IList<SingleID> list = new List<SingleID>();
-            UnicodeSet[] globalFilter = new UnicodeSet[1];
-            if (!TransliteratorIDParser.ParseCompoundID(id, dir, canonID, list, globalFilter))
+            if (!TransliteratorIDParser.ParseCompoundID(id, dir, canonID, list, out UnicodeSet globalFilter)) // ICU4N: Changed globalFilter from UnicodeSet[] to out UnicodeSet
             {
                 throw new ArgumentException("Invalid ID " + id);
             }
@@ -1454,9 +1453,9 @@ namespace ICU4N.Text
             }
 
             t.ID = canonID.ToString();
-            if (globalFilter[0] != null)
+            if (globalFilter != null)
             {
-                t.Filter = globalFilter[0];
+                t.Filter = globalFilter;
             }
             return t;
         }
