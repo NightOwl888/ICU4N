@@ -16,11 +16,19 @@ namespace ICU4N.Impl
         /// its value.  Variables are parsed using the <see cref="SymbolTable"/> API.
         /// </summary>
         ParseVariables = 1,
+#if FEATURE_SPAN
         /// <summary>
         /// Bitmask option to enable parsing of escape sequences.  If (options &amp;
         /// <see cref="ParseEscapes"/> != 0, then an embedded escape sequence will be expanded
-        /// to its value.  Escapes are parsed using <see cref="Utility.UnescapeAt(string, int[])"/>.
+        /// to its value.  Escapes are parsed using <see cref="Utility.UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
         /// </summary>
+#else
+        /// <summary>
+        /// Bitmask option to enable parsing of escape sequences.  If (options &amp;
+        /// <see cref="ParseEscapes"/> != 0, then an embedded escape sequence will be expanded
+        /// to its value.  Escapes are parsed using <see cref="Utility.UnescapeAt(string, ref int)"/>.
+        /// </summary>
+#endif
         ParseEscapes = 2,
         /// <summary>
         /// Bitmask option to enable skipping of whitespace.  If (options &amp;

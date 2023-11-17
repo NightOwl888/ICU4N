@@ -41,7 +41,7 @@ namespace ICU4N.Globalization
         internal UNumberFormatInfo(UCultureData cultureData)
         {
             Debug.Assert(cultureData != null);
-            cultureData.GetNFIValues(this);
+            cultureData!.GetNFIValues(this);
             this.cultureData = cultureData;
         }
 

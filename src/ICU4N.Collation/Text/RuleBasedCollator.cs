@@ -28,7 +28,7 @@ namespace ICU4N.Text
     /// <remarks>
     /// Create a <see cref="RuleBasedCollator"/> from a locale by calling the <see cref="Collator.GetInstance(System.Globalization.CultureInfo)"/> factory method in the base class
     /// <see cref="Collator"/>. <see cref="Collator.GetInstance(System.Globalization.CultureInfo)"/> creates a <see cref="RuleBasedCollator"/> object based on the collation rules defined by the
-    /// argument locale. If a customized collation ordering or attributes is required, use the <see cref="RuleBasedCollator(string)"/>
+    /// argument locale. If a customized collation ordering or attributes is required, use the <see cref="RuleBasedCollator.RuleBasedCollator(string)"/>
     /// constructor with the appropriate rules. The customized <see cref="RuleBasedCollator"/> will base its ordering on the CLDR root collation, while
     /// re-adjusting the attributes and orders of the characters in the specified rule accordingly.
     /// <para/>
