@@ -522,16 +522,17 @@ namespace ICU4N.Text
         /// ANY.
         /// </summary>
         /// <param name="id">The id string, in any of several forms.</param>
-        /// <returns>An array of 4 strings: source, target, variant, and
-        /// isSourcePresent.  If the source is not present, ANY will be
-        /// given as the source, and isSourcePresent will be null.  Otherwise
-        /// isSourcePresent will be non-null.  The target may be empty if the
-        /// id is not well-formed.  The variant may be empty.</returns>
-        public static string[] IDtoSTV(string id)
+        /// <param name="source">When this method returns, provides the source from the <paramref name="id"/>.</param>
+        /// <param name="target">When this method returns, provides the target from the <paramref name="id"/>.
+        /// The target may be empty if the id is not well-formed.</param>
+        /// <param name="variant">When this method returns, provides the variant from the <paramref name="id"/>.
+        /// The variant may be empty.</param>
+        /// <param name="isSourcePresent">When this method returns, provides a boolean value indicating whether source is present.</param>
+        public static void IDtoSTV(string id, out string source, out string target, out string variant, out bool isSourcePresent)
         {
-            string source = ANY;
-            string target = null;
-            string variant = "";
+            source = ANY;
+            target = null;
+            variant = "";
 
             int sep = id.IndexOf(TARGET_SEP);
             int var = id.IndexOf(VARIANT_SEP);
@@ -539,7 +540,7 @@ namespace ICU4N.Text
             {
                 var = id.Length;
             }
-            bool isSourcePresent = false;
+            isSourcePresent = false;
 
             if (sep < 0)
             {
@@ -574,9 +575,6 @@ namespace ICU4N.Text
             {
                 variant = variant.Substring(1);
             }
-
-            return new string[] { source, target, variant,
-                              isSourcePresent ? "" : null };
         }
 
         /// <summary>

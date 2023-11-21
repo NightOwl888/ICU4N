@@ -406,11 +406,11 @@ namespace ICU4N.Text
         /// </summary>
         public virtual void Remove(string id)
         {
-            string[] stv = TransliteratorIDParser.IDtoSTV(id);
+            TransliteratorIDParser.IDtoSTV(id, out string stv0, out string stv1, out string stv2, out bool _);
             // Only need to do this if ID.indexOf('-') < 0
-            string id2 = TransliteratorIDParser.STVtoID(stv[0], stv[1], stv[2]);
+            string id2 = TransliteratorIDParser.STVtoID(stv0, stv1, stv2);
             registry.Remove(new CaseInsensitiveString(id2));
-            RemoveSTV(stv[0], stv[1], stv[2]);
+            RemoveSTV(stv0, stv1, stv2);
             availableIDs.Remove(new CaseInsensitiveString(id2));
         }
 
@@ -540,10 +540,10 @@ namespace ICU4N.Text
                                    object entry,
                                    bool visible)
         {
-            string[] stv = TransliteratorIDParser.IDtoSTV(ID);
+            TransliteratorIDParser.IDtoSTV(ID, out string stv0, out string stv1, out string stv2, out bool _);
             // Only need to do this if ID.indexOf('-') < 0
-            string id = TransliteratorIDParser.STVtoID(stv[0], stv[1], stv[2]);
-            RegisterEntry(id, stv[0], stv[1], stv[2], entry, visible);
+            string id = TransliteratorIDParser.STVtoID(stv0, stv1, stv2);
+            RegisterEntry(id, stv0, stv1, stv2, entry, visible);
         }
 
         /// <summary>
@@ -822,8 +822,8 @@ namespace ICU4N.Text
         /// <returns></returns>
         private object[] Find(string ID)
         {
-            string[] stv = TransliteratorIDParser.IDtoSTV(ID);
-            return Find(stv[0], stv[1], stv[2]);
+            TransliteratorIDParser.IDtoSTV(ID, out string stv0, out string stv1, out string stv2, out bool _);
+            return Find(stv0, stv1, stv2);
         }
 
         /// <summary>
