@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using System;
 using System.Text;
 using System.Threading;
 
@@ -25,12 +26,17 @@ namespace ICU4N.Text
         /// </summary>
         internal static void Register()
         {
-            Transliterator.RegisterFactory(_ID, new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new LowercaseTransliterator(new UCultureInfo("en_US"));
-            }));
-
+            LowercaseTransliteratorFactory.Register();
             Transliterator.RegisterSpecialInverse("Lower", "Upper", true);
+        }
+
+        private sealed class LowercaseTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory(_ID, new LowercaseTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new LowercaseTransliterator(new UCultureInfo("en_US"));
         }
 
         private readonly UCultureInfo locale;
@@ -133,14 +139,23 @@ namespace ICU4N.Text
             {
                 LazyInitializer.EnsureInitialized(ref sourceTargetUtility, () =>
                 {
-                    return new SourceTargetUtility(new StringTransform(transform: (source) =>
-                    {
-                        return UChar.ToLower(locale, source);
-                    }));
+                    return new SourceTargetUtility(new ToLowerTransform(locale));
                 });
             }
 
             sourceTargetUtility.AddSourceTargetSet(this, inputFilter, sourceSet, targetSet);
+        }
+
+        private sealed class ToLowerTransform : IStringTransform
+        {
+            private readonly UCultureInfo locale;
+            public ToLowerTransform(UCultureInfo locale)
+            {
+                this.locale = locale ?? throw new ArgumentNullException(nameof(locale));
+            }
+
+            public string Transform(string source)
+                => UChar.ToLower(locale, source);
         }
     }
 }

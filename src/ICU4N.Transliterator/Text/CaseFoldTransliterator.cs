@@ -24,12 +24,15 @@ namespace ICU4N.Text
         /// </summary>
         internal static void Register()
         {
-            Transliterator.RegisterFactory(_ID, new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new CaseFoldTransliterator();
-            }));
+            Transliterator.RegisterFactory(_ID, new CaseFoldTransliteratorFactory());
 
             Transliterator.RegisterSpecialInverse("CaseFold", "Upper", false);
+        }
+
+        private sealed class CaseFoldTransliteratorFactory : ITransliteratorFactory
+        {
+            public Transliterator GetInstance(string id)
+                => new CaseFoldTransliterator();
         }
 
         private readonly UCaseProperties csp;
@@ -126,14 +129,17 @@ namespace ICU4N.Text
             {
                 LazyInitializer.EnsureInitialized(ref sourceTargetUtility, () =>
                 {
-                    return new SourceTargetUtility(new StringTransform(transform: (source) =>
-                    {
-                        return UChar.FoldCase(source, true);
-                    }));
+                    return new SourceTargetUtility(new CaseFoldTransform());
                 });
             }
 
             sourceTargetUtility.AddSourceTargetSet(this, inputFilter, sourceSet, targetSet);
+        }
+
+        private sealed class CaseFoldTransform : IStringTransform
+        {
+            public string Transform(string source)
+                => UChar.FoldCase(source, true);
         }
     }
 }

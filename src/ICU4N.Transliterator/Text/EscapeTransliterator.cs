@@ -73,63 +73,126 @@ namespace ICU4N.Text
         /// </summary>
         internal static void Register()
         {
-            // Unicode: "U+10FFFF" hex, min=4, max=6
-            Transliterator.RegisterFactory("Any-Hex/Unicode", new Factory(getInstance: (id) =>
-            {
-                return new EscapeTransliterator("Any-Hex/Unicode",
-                                                "U+", "", 16, 4, true, null);
-            }));
+            UnicodeTransliteratorFactory.Register();
+            JavaTransliteratorFactory.Register();
+            DotNetTransliteratorFactory.Register();
+            CTransliteratorFactory.Register();
+            XmlTransliteratorFactory.Register();
+            Xml10TransliteratorFactory.Register();
+            PerlTransliteratorFactory.Register();
+            PlainTransliteratorFactory.Register();
+            GenericTransliteratorFactory.Register();
+        }
 
-            // Java: "\\uFFFF" hex, min=4, max=4
-            Transliterator.RegisterFactory("Any-Hex/DotNet", new Factory(getInstance: (id) =>
-            {
-                return new EscapeTransliterator("Any-Hex/DotNet",
-                                                "\\u", "", 16, 4, false, null);
-            }));
+        #region Factories
+        // ICU4N: These were anonymous classes in Java. The closest equivalent in .NET
+        // (a generic Factory class that accepts a Func<T>) performs poorly.
+        // So, we use explicitly delcared classes instead. Moving the Register()
+        // part into the class so it is all in context.
 
-            // C: "\\uFFFF" hex, min=4, max=4; \\U0010FFFF hex, min=8, max=8
-            Transliterator.RegisterFactory("Any-Hex/C", new Factory(getInstance: (id) =>
+        // Unicode: "U+10FFFF" hex, min=4, max=6
+        private sealed class UnicodeTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-Hex/Unicode", new UnicodeTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new EscapeTransliterator("Any-Hex/Unicode",
+                                            "U+", "", 16, 4, true, null);
+        }
+
+        // Java: "\\uFFFF" hex, min=4, max=4
+        private sealed class JavaTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-Hex/Java", new JavaTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new EscapeTransliterator("Any-Hex/Java",
+                                            "\\u", "", 16, 4, false, null);
+        }
+
+        // .NET: "\\uFFFF" hex, min=4, max=4
+        private sealed class DotNetTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-Hex/DotNet", new DotNetTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new EscapeTransliterator("Any-Hex/DotNet",
+                                            "\\u", "", 16, 4, false, null);
+        }
+
+        // C: "\\uFFFF" hex, min=4, max=4; \\U0010FFFF hex, min=8, max=8
+        private sealed class CTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-Hex/C", new CTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
             {
                 return new EscapeTransliterator("Any-Hex/C",
                                             "\\u", "", 16, 4, true,
                    new EscapeTransliterator("", "\\U", "", 16, 8, true, null));
-            }));
-
-            // XML: "&#x10FFFF;" hex, min=1, max=6
-            Transliterator.RegisterFactory("Any-Hex/XML", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new EscapeTransliterator("Any-Hex/XML",
-                                        "&#x", ";", 16, 1, true, null);
-            }));
-
-            // XML10: "&1114111;" dec, min=1, max=7 (not really "Any-Hex")
-            Transliterator.RegisterFactory("Any-Hex/XML10", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new EscapeTransliterator("Any-Hex/XML10",
-                                        "&#", ";", 10, 1, true, null);
-            }));
-
-            // Perl: "\\x{263A}" hex, min=1, max=6
-            Transliterator.RegisterFactory("Any-Hex/Perl", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new EscapeTransliterator("Any-Hex/Perl",
-                                        "\\x{", "}", 16, 1, true, null);
-            }));
-
-            // Plain: "FFFF" hex, min=4, max=6
-            Transliterator.RegisterFactory("Any-Hex/Plain", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new EscapeTransliterator("Any-Hex/Plain",
-                                        "", "", 16, 4, true, null);
-            }));
-
-            // Generic
-            Transliterator.RegisterFactory("Any-Hex", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new EscapeTransliterator("Any-Hex",
-                                        "\\u", "", 16, 4, false, null);
-            }));
+            }
         }
+
+        // XML: "&#x10FFFF;" hex, min=1, max=6
+        private sealed class XmlTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-Hex/XML", new XmlTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new EscapeTransliterator("Any-Hex/XML",
+                                            "&#x", ";", 16, 1, true, null);
+        }
+
+        // XML10: "&1114111;" dec, min=1, max=7 (not really "Any-Hex")
+        private sealed class Xml10TransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-Hex/XML10", new Xml10TransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new EscapeTransliterator("Any-Hex/XML10",
+                                            "&#", ";", 10, 1, true, null);
+        }
+
+        // Perl: "\\x{263A}" hex, min=1, max=6
+        private sealed class PerlTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-Hex/Perl", new PerlTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new EscapeTransliterator("Any-Hex/Perl",
+                                            "\\x{", "}", 16, 1, true, null);
+        }
+
+        // Plain: "FFFF" hex, min=4, max=6
+        private sealed class PlainTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-Hex/Plain", new PlainTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new EscapeTransliterator("Any-Hex/Plain",
+                                            "", "", 16, 4, true, null);
+        }
+
+        // Generic
+        private sealed class GenericTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-Hex", new GenericTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new EscapeTransliterator("Any-Hex",
+                                            "\\u", "", 16, 4, false, null);
+        }
+
+        #endregion Factories
 
         /// <summary>
         /// Constructs an escape transliterator with the given <paramref name="id"/> and

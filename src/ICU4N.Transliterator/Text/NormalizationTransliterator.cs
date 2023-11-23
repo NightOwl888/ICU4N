@@ -16,35 +16,80 @@ namespace ICU4N.Text
         /// </summary>
         internal static void Register()
         {
-            Transliterator.RegisterFactory("Any-NFC", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new NormalizationTransliterator("NFC", Normalizer2.GetNFCInstance());
-            }));
-            Transliterator.RegisterFactory("Any-NFD", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new NormalizationTransliterator("NFD", Normalizer2.GetNFDInstance());
-            }));
-            Transliterator.RegisterFactory("Any-NFKC", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new NormalizationTransliterator("NFKC", Normalizer2.GetNFKCInstance());
-            }));
-            Transliterator.RegisterFactory("Any-NFKD", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new NormalizationTransliterator("NFKD", Normalizer2.GetNFKDInstance());
-            }));
-            Transliterator.RegisterFactory("Any-FCD", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new NormalizationTransliterator("FCD", Norm2AllModes.GetFCDNormalizer2());
-            }));
-            Transliterator.RegisterFactory("Any-FCC", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new NormalizationTransliterator("FCC", Norm2AllModes.GetNFCInstance().Fcc);
-            }));
+            NfcTransliteratorFactory.Register();
+            NfdTransliteratorFactory.Register();
+            NfkcTransliteratorFactory.Register();
+            NfkdTransliteratorFactory.Register();
+            FcdTransliteratorFactory.Register();
+            FccTransliteratorFactory.Register();
+
             Transliterator.RegisterSpecialInverse("NFC", "NFD", true);
             Transliterator.RegisterSpecialInverse("NFKC", "NFKD", true);
             Transliterator.RegisterSpecialInverse("FCC", "NFD", false);
             Transliterator.RegisterSpecialInverse("FCD", "FCD", false);
         }
+
+        #region Factories
+        // ICU4N: These were anonymous classes in Java. The closest equivalent in .NET
+        // (a generic Factory class that accepts a Func<T>) performs poorly.
+        // So, we use explicitly delcared classes instead. Moving the Register()
+        // part into the class so it is all in context.
+
+        private sealed class NfcTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-NFC", new NfcTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new NormalizationTransliterator("NFC", Normalizer2.GetNFCInstance());
+        }
+
+        private sealed class NfdTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-NFD", new NfdTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new NormalizationTransliterator("NFD", Normalizer2.GetNFDInstance());
+        }
+
+        private sealed class NfkcTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-NFKC", new NfkcTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new NormalizationTransliterator("NFKC", Normalizer2.GetNFKCInstance());
+        }
+
+        private sealed class NfkdTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-NFKD", new NfkdTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new NormalizationTransliterator("NFKD", Normalizer2.GetNFKDInstance());
+        }
+
+        private sealed class FcdTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-FCD", new FcdTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new NormalizationTransliterator("FCD", Norm2AllModes.GetFCDNormalizer2());
+        }
+
+        private sealed class FccTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Any-FCC", new FccTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new NormalizationTransliterator("FCC", Norm2AllModes.GetNFCInstance().Fcc);
+        }
+
+        #endregion Factories
 
         /**
          * Constructs a transliterator.

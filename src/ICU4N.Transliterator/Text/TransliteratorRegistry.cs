@@ -31,7 +31,7 @@ namespace ICU4N.Text
         /// <para/>
         /// Keys are <see cref="CaseInsensitiveString"/> objects.
         /// Values are objects of class Class (subclass of <see cref="Transliterator"/>),
-        /// <see cref="RuleBasedTransliterator.Data"/>, <see cref="Transliterator.Factory"/>, or one
+        /// <see cref="RuleBasedTransliterator.Data"/>, <see cref="ITransliteratorFactory"/>, or one
         /// of the entry classes defined here (<see cref="AliasEntry"/> or <see cref="ResourceEntry"/>).
         /// </summary>
         private IDictionary<CaseInsensitiveString, object[]> registry;
