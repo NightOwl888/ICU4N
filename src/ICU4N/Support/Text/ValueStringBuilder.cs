@@ -181,7 +181,7 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             int remaining = _pos - index;
             _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
             s
-#if !NETCOREAPP
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
                 .AsSpan()
 #endif
                 .CopyTo(_chars.Slice(index));
@@ -252,7 +252,7 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
             }
 
             s
-#if !NETCOREAPP
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
                 .AsSpan()
 #endif
                 .CopyTo(_chars.Slice(pos));
