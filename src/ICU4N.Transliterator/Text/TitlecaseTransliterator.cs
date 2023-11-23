@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using System;
 using System.Text;
 using System.Threading;
 
@@ -23,12 +24,17 @@ namespace ICU4N.Text
         /// </summary>
         internal static void Register()
         {
-            Transliterator.RegisterFactory(_ID, new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new TitlecaseTransliterator(new UCultureInfo("en_US"));
-            }));
-
+            TitlecaseTransliteratorFactory.Register();
             RegisterSpecialInverse("Title", "Lower", false);
+        }
+
+        private sealed class TitlecaseTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory(_ID, new TitlecaseTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new TitlecaseTransliterator(new UCultureInfo("en_US"));
         }
 
         private readonly UCultureInfo locale;
@@ -183,13 +189,22 @@ namespace ICU4N.Text
             {
                 LazyInitializer.EnsureInitialized(ref sourceTargetUtility, () =>
                 {
-                    return new SourceTargetUtility(new StringTransform(transform: (source) =>
-                    {
-                        return UChar.ToTitleCase(locale, source, null);
-                    }));
+                    return new SourceTargetUtility(new ToTitleCaseTransform(locale));
                 });
             }
             sourceTargetUtility.AddSourceTargetSet(this, inputFilter, sourceSet, targetSet);
+        }
+
+        private sealed class ToTitleCaseTransform : IStringTransform
+        {
+            private readonly UCultureInfo locale;
+            public ToTitleCaseTransform(UCultureInfo locale)
+            {
+                this.locale = locale ?? throw new ArgumentNullException(nameof(locale));
+            }
+
+            public string Transform(string source)
+                => UChar.ToTitleCase(locale, source, null);
         }
     }
 }

@@ -40,81 +40,139 @@ namespace ICU4N.Text
         /// </summary>
         internal static void Register()
         {
-            // Unicode: "U+10FFFF" hex, min=4, max=6
-            Transliterator.RegisterFactory("Hex-Any/Unicode", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new UnescapeTransliterator("Hex-Any/Unicode", new char[] {
+            UnicodeTransliteratorFactory.Register();
+            JavaTransliteratorFactory.Register();
+            DotNetTransliteratorFactory.Register();
+            CTransliteratorFactory.Register();
+            XmlTransliteratorFactory.Register();
+            Xml10TransliteratorFactory.Register();
+            AllTransliteratorFactory.Register();
+        }
+
+        #region Factories
+        // ICU4N: These were anonymous classes in Java. The closest equivalent in .NET
+        // (a generic Factory class that accepts a Func<T>) performs poorly.
+        // So, we use explicitly delcared classes instead. Moving the Register()
+        // part into the class so it is all in context.
+
+        // Unicode: "U+10FFFF" hex, min=4, max=6
+        private sealed class UnicodeTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Hex-Any/Unicode", new UnicodeTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new UnescapeTransliterator("Hex-Any/Unicode", new char[] {
                     (char)2, (char)0, (char)16, (char)4, (char)6, 'U', '+',
                     END
                 });
-            }));
 
-            // Java: "\\uFFFF" hex, min=4, max=4
-            Transliterator.RegisterFactory("Hex-Any/DotNet", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new UnescapeTransliterator("Hex-Any/DotNet", new char[] {
+        }
+
+        // Java: "\\uFFFF" hex, min=4, max=4
+        private sealed class JavaTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Hex-Any/Java", new JavaTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new UnescapeTransliterator("Hex-Any/Java", new char[] {
                     (char)2, (char)0, (char)16, (char)4, (char)4, '\\', 'u',
                     END
                 });
-            }));
+        }
 
-            // C: "\\uFFFF" hex, min=4, max=4; \\U0010FFFF hex, min=8, max=8
-            Transliterator.RegisterFactory("Hex-Any/C", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new UnescapeTransliterator("Hex-Any/C", new char[] {
+        // .NET: "\\uFFFF" hex, min=4, max=4
+        private sealed class DotNetTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Hex-Any/DotNet", new DotNetTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new UnescapeTransliterator("Hex-Any/DotNet", new char[] {
+                    (char)2, (char)0, (char)16, (char)4, (char)4, '\\', 'u',
+                    END
+                });
+        }
+
+        // C: "\\uFFFF" hex, min=4, max=4; \\U0010FFFF hex, min=8, max=8
+        private sealed class CTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Hex-Any/C", new CTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new UnescapeTransliterator("Hex-Any/C", new char[] {
                     (char)2, (char)0, (char)16, (char)4, (char)4, '\\', 'u',
                     (char)2, (char)0, (char)16, (char)8, (char)8, '\\', 'U',
                     END
                 });
-            }));
+        }
 
-            // XML: "&#x10FFFF;" hex, min=1, max=6
-            Transliterator.RegisterFactory("Hex-Any/XML", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new UnescapeTransliterator("Hex-Any/XML", new char[] {
+        // XML: "&#x10FFFF;" hex, min=1, max=6
+        private sealed class XmlTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Hex-Any/XML", new XmlTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new UnescapeTransliterator("Hex-Any/XML", new char[] {
                     (char)3, (char)1, (char)16, (char)1, (char)6, '&', '#', 'x', ';',
                     END
                 });
-            }));
+        }
 
-            // XML10: "&1114111;" dec, min=1, max=7 (not really "Hex-Any")
-            Transliterator.RegisterFactory("Hex-Any/XML10", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new UnescapeTransliterator("Hex-Any/XML10", new char[] {
+        // XML10: "&1114111;" dec, min=1, max=7 (not really "Hex-Any")
+        private sealed class Xml10TransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Hex-Any/XML10", new Xml10TransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new UnescapeTransliterator("Hex-Any/XML10", new char[] {
                     (char)2, (char)1, (char)10, (char)1, (char)7, '&', '#', ';',
                     END
                 });
-            }));
+        }
 
-            // Perl: "\\x{263A}" hex, min=1, max=6
-            Transliterator.RegisterFactory("Hex-Any/Perl", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new UnescapeTransliterator("Hex-Any/Perl", new char[] {
+        // Perl: "\\x{263A}" hex, min=1, max=6
+        private sealed class PerlTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Hex-Any/Perl", new PerlTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new UnescapeTransliterator("Hex-Any/Perl", new char[] {
                     (char)3, (char)1, (char)16, (char)1, (char)6, '\\', 'x', '{', '}',
                     END
                 });
-            }));
+        }
 
-            // All: Java, C, Perl, XML, XML10, Unicode
-            Transliterator.RegisterFactory("Hex-Any", new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new UnescapeTransliterator("Hex-Any", new char[] {
+        // All: Java/DotNet, C, Perl, XML, XML10, Unicode
+        private sealed class AllTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory("Hex-Any", new AllTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new UnescapeTransliterator("Hex-Any", new char[] {
                     (char)2,(char) 0, (char)16, (char)4, (char)6, 'U', '+',            // Unicode
-                    (char)2, (char)0, (char)16, (char)4, (char)4, '\\', 'u',           // Java
+                    (char)2, (char)0, (char)16, (char)4, (char)4, '\\', 'u',           // Java/DotNet
                     (char)2, (char)0, (char)16, (char)8, (char)8, '\\', 'U',           // C (surrogates)
                     (char)3, (char)1, (char)16, (char)1, (char)6, '&', '#', 'x', ';',  // XML
                     (char)2, (char)1, (char)10, (char)1, (char)7, '&', '#', ';',       // XML10
                     (char)3, (char)1, (char)16, (char)1, (char)6, '\\', 'x', '{', '}', // Perl
                     END
                 });
-            }));
         }
+
+        #endregion Factories
 
         /// <summary>
         /// Internal constructor.  Takes the encoded spec array.
         /// </summary>
         internal UnescapeTransliterator(string id, char[] spec)
-                : base(id, null)
+            : base(id, null)
         {
             this.spec = spec;
         }

@@ -16,11 +16,17 @@
         /// </summary>
         internal static void Register()
         {
-            Transliterator.RegisterFactory(_ID, new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new RemoveTransliterator();
-            }));
+            RemoveTransliteratorFactory.Register();
             Transliterator.RegisterSpecialInverse("Remove", "Null", false);
+        }
+
+        private sealed class RemoveTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory(_ID, new RemoveTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new RemoveTransliterator();
         }
 
         /// <summary>

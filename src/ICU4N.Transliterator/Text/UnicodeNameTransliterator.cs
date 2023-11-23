@@ -21,10 +21,16 @@ namespace ICU4N.Text
         /// </summary>
         internal static void Register()
         {
-            Transliterator.RegisterFactory(_ID, new Transliterator.Factory(getInstance: (id) =>
-            {
-                return new UnicodeNameTransliterator(null);
-            }));
+            UnicodeNameTransliteratorFactory.Register();
+        }
+
+        private sealed class UnicodeNameTransliteratorFactory : ITransliteratorFactory
+        {
+            public static void Register()
+                => RegisterFactory(_ID, new UnicodeNameTransliteratorFactory());
+
+            public Transliterator GetInstance(string id)
+                => new UnicodeNameTransliterator(null);
         }
 
         /// <summary>

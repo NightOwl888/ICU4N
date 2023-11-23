@@ -2142,42 +2142,6 @@ namespace ICU4N.Text
             AnyTransliterator.Register();
         }
 
-        // ICU4N specific class to make anonymous transforms
-        internal class StringTransform : IStringTransform
-        {
-            private readonly Func<string, string> transform;
-
-            public StringTransform(Func<string, string> transform)
-            {
-                if (transform == null)
-                    throw new ArgumentNullException(nameof(transform));
-                this.transform = transform;
-            }
-
-            public string Transform(string source)
-            {
-                return transform(source);
-            }
-        }
-
-        // ICU4N specific class to make anonymous factories 
-        internal class Factory : ITransliteratorFactory
-        {
-            private readonly Func<string, Transliterator> getInstance;
-
-            public Factory(Func<string, Transliterator> getInstance)
-            {
-                if (getInstance == null)
-                    throw new ArgumentNullException(nameof(getInstance));
-                this.getInstance = getInstance;
-            }
-
-            public Transliterator GetInstance(string id)
-            {
-                return this.getInstance(id);
-            }
-        }
-
         /// <summary>
         /// Implements StringTransform via this method.
         /// </summary>
