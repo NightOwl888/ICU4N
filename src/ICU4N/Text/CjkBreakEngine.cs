@@ -152,9 +152,7 @@ namespace ICU4N.Text
                 }
 
                 int maxSearchLength = (i + maxWordSize < numChars) ? maxWordSize : (numChars - i);
-                int[] count_ = new int[1];
-                fDictionary.Matches(text, maxSearchLength, lengths, count_, maxSearchLength, values);
-                int count = count_[0];
+                fDictionary.Matches(text, maxSearchLength, lengths, out int count, maxSearchLength, values);
 
                 // if there are no single character matches found in the dictionary
                 // starting with this character, treat character as a 1-character word

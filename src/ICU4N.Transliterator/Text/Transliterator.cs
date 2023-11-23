@@ -1301,16 +1301,18 @@ namespace ICU4N.Text
                 GetBundleInstance(ICUData.IcuTransliteratorBaseName, inLocale, ICUResourceBundle.IcuDataAssembly);
 
             // Normalize the ID
-            string[] stv = TransliteratorIDParser.IDtoSTV(id);
-            if (stv == null)
+            TransliteratorIDParser.IDtoSTV(id, out string source, out string target, out string variant, out bool _);
+            // ICU4N specific - since we are not returning an array, it cannot be null (and it was never null anyway)
+
+            // ICU4N specific - use Concat
+            string ID;
+            if (!string.IsNullOrEmpty(variant))
             {
-                // No target; malformed id
-                return "";
+                ID = string.Concat(source, "-", target, "/", variant);
             }
-            string ID = stv[0] + '-' + stv[1];
-            if (stv[2] != null && stv[2].Length > 0)
+            else
             {
-                ID = ID + '/' + stv[2];
+                ID = string.Concat(source, "-", target);
             }
 
             // Use the registered display name, if any
@@ -1335,7 +1337,7 @@ namespace ICU4N.Text
                         bundle.GetString(RB_DISPLAY_NAME_PATTERN));
 
                 // Construct the argument array
-                object[] args = new object[] { 2, stv[0], stv[1] };
+                object[] args = new object[] { 2, source, target };
 
                 // Use display names for the scripts, if they exist
                 for (int j = 1; j <= 2; ++j)
@@ -1349,8 +1351,8 @@ namespace ICU4N.Text
                 }
 
                 // Format it using the pattern in the resource
-                return (stv[2].Length > 0) ?
-                    (format.Format(args) + '/' + stv[2]) :
+                return (variant.Length > 0) ?
+                    (format.Format(args) + '/' + variant) :
                     format.Format(args);
             }
             catch (MissingManifestResourceException) { }
@@ -1429,8 +1431,7 @@ namespace ICU4N.Text
         {
             StringBuffer canonID = new StringBuffer();
             IList<SingleID> list = new List<SingleID>();
-            UnicodeSet[] globalFilter = new UnicodeSet[1];
-            if (!TransliteratorIDParser.ParseCompoundID(id, dir, canonID, list, globalFilter))
+            if (!TransliteratorIDParser.ParseCompoundID(id, dir, canonID, list, out UnicodeSet globalFilter)) // ICU4N: Changed globalFilter from UnicodeSet[] to out UnicodeSet
             {
                 throw new ArgumentException("Invalid ID " + id);
             }
@@ -1454,9 +1455,9 @@ namespace ICU4N.Text
             }
 
             t.ID = canonID.ToString();
-            if (globalFilter[0] != null)
+            if (globalFilter != null)
             {
-                t.Filter = globalFilter[0];
+                t.Filter = globalFilter;
             }
             return t;
         }

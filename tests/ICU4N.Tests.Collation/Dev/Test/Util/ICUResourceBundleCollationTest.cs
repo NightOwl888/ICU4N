@@ -174,7 +174,6 @@ namespace ICU4N.Dev.Test.Util
         {
             //String F_STR = "f";
             String T_STR = "t";
-            bool[] isAvail = new bool[1];
 
             Logln("Testing functional equivalents...");
             for (int i = 0; i < testCases.Length; i += 3)
@@ -186,8 +185,7 @@ namespace ICU4N.Dev.Test.Util
                 Logln(((int)(i / 3)).ToString(CultureInfo.InvariantCulture) + ": " + expectAvail.ToString() + "\t\t" +
                         inLocale.ToString() + "\t\t" + expectLocale.ToString());
 
-                UCultureInfo equivLocale = ICUResourceBundle.GetFunctionalEquivalent(path, cl, resName, keyword, inLocale, isAvail, truncate);
-                bool gotAvail = isAvail[0];
+                UCultureInfo equivLocale = ICUResourceBundle.GetFunctionalEquivalent(path, cl, resName, keyword, inLocale, out bool gotAvail, truncate);
 
                 if ((gotAvail != expectAvail) || !equivLocale.Equals(expectLocale))
                 {

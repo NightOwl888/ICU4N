@@ -484,7 +484,7 @@ namespace ICU4N.Text
                 int quoteLimit = -1;
                 int varStart = -1; // Most recent $variableReference
                 int varLimit = -1;
-                int[] iref = new int[1];
+                int iref = 0;
                 int bufStart = buf.Length;
 
                 //main:
@@ -643,11 +643,11 @@ namespace ICU4N.Text
                         case FUNCTION:
                         case ALT_FUNCTION:
                             {
-                                iref[0] = pos;
-                                TransliteratorIDParser.SingleID single = TransliteratorIDParser.ParseFilterID(rule, iref);
+                                iref = pos;
+                                TransliteratorIDParser.SingleID single = TransliteratorIDParser.ParseFilterID(rule, ref iref);
                                 // The next character MUST be a segment open
                                 if (single == null ||
-                                    !Utility.ParseChar(rule, iref, SEGMENT_OPEN))
+                                    !Utility.ParseChar(rule, ref iref, SEGMENT_OPEN))
                                 {
                                     SyntaxError("Invalid function", rule, start);
                                 }
@@ -663,7 +663,7 @@ namespace ICU4N.Text
                                 int bufSegStart = buf.Length;
 
                                 // Parse the segment
-                                pos = ParseSection(rule, iref[0], limit, parser, buf, ILLEGAL_FUNC, true);
+                                pos = ParseSection(rule, iref, limit, parser, buf, ILLEGAL_FUNC, true);
 
                                 // After parsing a segment, the relevant characters are
                                 // in buf, starting at offset bufSegStart.
@@ -695,14 +695,14 @@ namespace ICU4N.Text
                                 int r = UChar.Digit(c, 10);
                                 if (r >= 1 && r <= 9)
                                 {
-                                    iref[0] = pos;
-                                    r = Utility.ParseNumber(rule, iref, 10);
+                                    iref = pos;
+                                    r = Utility.ParseNumber(rule, ref iref, 10);
                                     if (r < 0)
                                     {
                                         SyntaxError("Undefined segment reference",
                                             rule, start);
                                     }
-                                    pos = iref[0];
+                                    pos = iref;
                                     buf.Append(parser.GetSegmentStandin(r));
                                 }
                                 else
@@ -1083,7 +1083,7 @@ namespace ICU4N.Text
                                 ++pos;
                                 c = rule[pos];
                             }
-                            int[] p = new int[] { pos };
+                            int p = pos;
 
                             if (!parsingIDs)
                             {
@@ -1100,8 +1100,8 @@ namespace ICU4N.Text
 
                             TransliteratorIDParser.SingleID id =
                                 TransliteratorIDParser.ParseSingleID(
-                                              rule, p, direction);
-                            if (p[0] != pos && Utility.ParseChar(rule, p, END_OF_RULE))
+                                              rule, ref p, direction);
+                            if (p != pos && Utility.ParseChar(rule, ref p, END_OF_RULE))
                             {
                                 // Successful ::ID parse.
 
@@ -1118,12 +1118,12 @@ namespace ICU4N.Text
                             else
                             {
                                 // Couldn't parse an ID.  Try to parse a global filter
-                                int[] withParens = new int[] { -1 };
-                                UnicodeSet f = TransliteratorIDParser.ParseGlobalFilter(rule, p, direction, withParens, null);
-                                if (f != null && Utility.ParseChar(rule, p, END_OF_RULE))
+                                int withParens = -1;
+                                UnicodeSet f = TransliteratorIDParser.ParseGlobalFilter(rule, ref p, direction, ref withParens, null);
+                                if (f != null && Utility.ParseChar(rule, ref p, END_OF_RULE))
                                 {
                                     if ((direction == Transliterator.Forward) ==
-                                        (withParens[0] == 0))
+                                        (withParens == 0))
                                     {
                                         if (CompoundFilter != null)
                                         {
@@ -1142,7 +1142,7 @@ namespace ICU4N.Text
                                 }
                             }
 
-                            pos = p[0];
+                            pos = p;
                         }
                         else
                         {

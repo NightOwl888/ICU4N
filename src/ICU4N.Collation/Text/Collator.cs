@@ -1306,18 +1306,17 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="keyword">A particular keyword as enumerated by <see cref="Keywords"/>.</param>
         /// <param name="locID">The requested locale</param>
-        /// <param name="isAvailable">If non-null, <paramref name="isAvailable"/>[0] will receive and
+        /// <param name="isAvailable">OUTPUT parameter that will
         /// output boolean that indicates whether the requested locale was
-        /// 'available' to the collation service. If non-null, <paramref name="isAvailable"/>
-        /// must have length &gt;= 1.</param>
+        /// 'available' to the collation service.</param>
         /// <returns>the locale</returns>
         /// <stable>ICU 3.0</stable>
         public static UCultureInfo GetFunctionalEquivalent(string keyword,
                                                             UCultureInfo locID,
-                                                            bool[] isAvailable)
+                                                            out bool isAvailable) // ICU4N: Changed isAvalable from bool[] to out bool
         {
             return ICUResourceBundle.GetFunctionalEquivalent(BASE, ICUResourceBundle.IcuDataAssembly, RESOURCE,
-                                                             keyword, locID, isAvailable, true);
+                                                             keyword, locID, out isAvailable, true);
         }
 
         /// <summary>
@@ -1328,12 +1327,13 @@ namespace ICU4N.Text
         /// <param name="keyword">a particular keyword as enumerated by <see cref="Keywords"/>.</param>
         /// <param name="locID">The requested locale</param>
         /// <returns>the locale</returns>
-        /// <seealso cref="GetFunctionalEquivalent(string, UCultureInfo, bool[])"/>
+        /// <seealso cref="GetFunctionalEquivalent(string, UCultureInfo, out bool)"/>
         /// <stable>ICU 3.0</stable>
         public static UCultureInfo GetFunctionalEquivalent(string keyword,
                                                             UCultureInfo locID)
         {
-            return GetFunctionalEquivalent(keyword, locID, null);
+            return ICUResourceBundle.GetFunctionalEquivalent(BASE, ICUResourceBundle.IcuDataAssembly, RESOURCE,
+                                                             keyword, locID, true);
         }
 
         /// <summary>

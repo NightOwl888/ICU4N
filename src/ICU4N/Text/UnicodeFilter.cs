@@ -22,35 +22,35 @@ namespace ICU4N.Text
         public abstract bool Contains(int c);
 
         /// <summary>
-        /// Default implementation of <see cref="IUnicodeMatcher.Matches(IReplaceable, int[], int, bool)"/> for Unicode
+        /// Default implementation of <see cref="IUnicodeMatcher.Matches(IReplaceable, ref int, int, bool)"/> for Unicode
         /// filters.  Matches a single 16-bit code unit at offset.
         /// </summary>
         /// <stable>ICU 2.0</stable>
         public virtual MatchDegree Matches(IReplaceable text,
-                       int[] offset,
+                       ref int offset,
                        int limit,
-                       bool incremental)
+                       bool incremental) // ICU4N: Changed offset parameter from int[] to ref int
         {
             int c;
-            if (offset[0] < limit &&
-                Contains(c = text.Char32At(offset[0])))
+            if (offset < limit &&
+                Contains(c = text.Char32At(offset)))
             {
-                offset[0] += UTF16.GetCharCount(c);
+                offset += UTF16.GetCharCount(c);
                 return MatchDegree.Match;
             }
-            if (offset[0] > limit && Contains(text.Char32At(offset[0])))
+            if (offset > limit && Contains(text.Char32At(offset)))
             {
                 // Backup offset by 1, unless the preceding character is a
                 // surrogate pair -- then backup by 2 (keep offset pointing at
                 // the lead surrogate).
-                --offset[0];
-                if (offset[0] >= 0)
+                --offset;
+                if (offset >= 0)
                 {
-                    offset[0] -= UTF16.GetCharCount(text.Char32At(offset[0])) - 1;
+                    offset -= UTF16.GetCharCount(text.Char32At(offset)) - 1;
                 }
                 return MatchDegree.Match;
             }
-            if (incremental && offset[0] == limit)
+            if (incremental && offset == limit)
             {
                 return MatchDegree.PartialMatch;
             }

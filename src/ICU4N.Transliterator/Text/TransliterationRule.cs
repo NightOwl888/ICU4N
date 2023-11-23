@@ -406,7 +406,7 @@ namespace ICU4N.Text
             }
 
             int keyLimit;
-            int[] intRef = new int[1];
+            int intRef;
 
             // ------------------------ Ante Context ------------------------
 
@@ -426,18 +426,18 @@ namespace ICU4N.Text
             MatchDegree match;
 
             // Start reverse match at char before pos.start
-            intRef[0] = PosBefore(text, position.Start);
+            intRef = PosBefore(text, position.Start);
 
             if (anteContext != null)
             {
-                match = anteContext.Matches(text, intRef, anteLimit, false);
+                match = anteContext.Matches(text, ref intRef, anteLimit, false);
                 if (match != MatchDegree.Match)
                 {
                     return MatchDegree.Mismatch;
                 }
             }
 
-            oText = intRef[0];
+            oText = intRef;
 
             minOText = PosAfter(text, oText);
 
@@ -450,18 +450,18 @@ namespace ICU4N.Text
 
             // -------------------- Key and Post Context --------------------
 
-            intRef[0] = position.Start;
+            intRef = position.Start;
 
             if (key != null)
             {
-                match = key.Matches(text, intRef, position.Limit, incremental);
+                match = key.Matches(text, ref intRef, position.Limit, incremental);
                 if (match != MatchDegree.Match)
                 {
                     return match;
                 }
             }
 
-            keyLimit = intRef[0];
+            keyLimit = intRef;
 
             if (postContext != null)
             {
@@ -474,14 +474,14 @@ namespace ICU4N.Text
                     return MatchDegree.PartialMatch;
                 }
 
-                match = postContext.Matches(text, intRef, position.ContextLimit, incremental);
+                match = postContext.Matches(text, ref intRef, position.ContextLimit, incremental);
                 if (match != MatchDegree.Match)
                 {
                     return match;
                 }
             }
 
-            oText = intRef[0];
+            oText = intRef;
 
             // ------------------------- Stop Anchor ------------------------
 
@@ -502,9 +502,8 @@ namespace ICU4N.Text
             // We have a full match.  The key is between pos.start and
             // keyLimit.
 
-            int newLength = output.Replace(text, position.Start, keyLimit, intRef);
+            int newLength = output.Replace(text, position.Start, keyLimit, out int newStart);
             int lenDelta = newLength - (keyLimit - position.Start);
-            int newStart = intRef[0];
 
             oText += lenDelta;
             position.Limit += lenDelta;

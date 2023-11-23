@@ -1172,10 +1172,7 @@ namespace ICU4N.Impl
         /// Utility <see cref="StringBuffer"/>
         /// </summary>
         private StringBuffer m_utilStringBuffer_ = new StringBuffer();
-        /// <summary>
-        /// Utility <see cref="int"/> buffer
-        /// </summary>
-        private int[] m_utilIntBuffer_ = new int[2];
+        // ICU4N: Eliminated the need for m_utilIntBuffer_ utility buffer by using out params
         /// <summary>
         /// Maximum ISO comment length
         /// </summary>
@@ -1602,10 +1599,11 @@ namespace ICU4N.Impl
         /// <param name="length">Length of the group name string.</param>
         /// <param name="tokenlength">Array to store the length of each token.</param>
         /// <param name="set">Set to add to.</param>
-        /// <returns>The length of the name string and the length of the group
-        /// string parsed.</returns>
-        private int[] AddGroupName(int offset, int length, byte[] tokenlength,
-                                   int[] set)
+        /// <param name="nameLength">The length of the name string parsed.</param>
+        /// <param name="groupLength">The length of the group string parsed.</param>
+        // ICU4N: Changed return value from int[] to out parameters
+        private void AddGroupName(int offset, int length, byte[] tokenlength,
+                                   int[] set, out int nameLength, out int groupLength)
         {
             int resultnlength = 0;
             int resultplength = 0;
@@ -1660,9 +1658,8 @@ namespace ICU4N.Impl
                     }
                 }
             }
-            m_utilIntBuffer_[0] = resultnlength;
-            m_utilIntBuffer_[1] = resultplength;
-            return m_utilIntBuffer_;
+            nameLength = resultnlength;
+            groupLength = resultplength;
         }
 
         /// <summary>
@@ -1698,39 +1695,39 @@ namespace ICU4N.Impl
                     }
 
                     // read regular name
-                    int[] parsed = AddGroupName(lineoffset, length, tokenlengths,
-                                                m_nameSet_);
-                    if (parsed[0] > maxlength)
+                    AddGroupName(lineoffset, length, tokenlengths,
+                                                m_nameSet_, out int parsed0, out int parsed1);
+                    if (parsed0 > maxlength)
                     {
                         // 0 for name length
-                        maxlength = parsed[0];
+                        maxlength = parsed0;
                     }
-                    lineoffset += parsed[1];
-                    if (parsed[1] >= length)
+                    lineoffset += parsed1;
+                    if (parsed1 >= length)
                     {
                         // 1 for parsed group string length
                         continue;
                     }
-                    length -= parsed[1];
+                    length -= parsed1;
                     // read Unicode 1.0 name
-                    parsed = AddGroupName(lineoffset, length, tokenlengths,
-                                          m_nameSet_);
-                    if (parsed[0] > maxlength)
+                    AddGroupName(lineoffset, length, tokenlengths,
+                                          m_nameSet_, out parsed0, out parsed1);
+                    if (parsed0 > maxlength)
                     {
                         // 0 for name length
-                        maxlength = parsed[0];
+                        maxlength = parsed0;
                     }
-                    lineoffset += parsed[1];
-                    if (parsed[1] >= length)
+                    lineoffset += parsed1;
+                    if (parsed1 >= length)
                     {
                         // 1 for parsed group string length
                         continue;
                     }
-                    length -= parsed[1];
+                    length -= parsed1;
                     // read ISO comment
-                    parsed = AddGroupName(lineoffset, length, tokenlengths,
-                                          m_ISOCommentSet_);
-                    if (parsed[1] > maxisolength)
+                    AddGroupName(lineoffset, length, tokenlengths,
+                                          m_ISOCommentSet_, out _, out parsed1);
+                    if (parsed1 > maxisolength)
                     {
                         maxisolength = length;
                     }

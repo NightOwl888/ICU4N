@@ -314,23 +314,23 @@ namespace ICU4N.Impl
             buffer.Append((char)a.Length);
             byte runValue = a[0];
             int runLength = 1;
-            byte[] state = new byte[2];
+            byte state0 = 0, state1 = 0;
             for (int i = 1; i < a.Length; ++i)
             {
                 byte b = a[i];
                 if (b == runValue && runLength < 0xFF) ++runLength;
                 else
                 {
-                    EncodeRun(buffer, runValue, runLength, state);
+                    EncodeRun(buffer, runValue, runLength, ref state0, ref state1);
                     runValue = b;
                     runLength = 1;
                 }
             }
-            EncodeRun(buffer, runValue, runLength, state);
+            EncodeRun(buffer, runValue, runLength, ref state0, ref state1);
 
             // We must save the final byte, if there is one, by padding
             // an extra zero.
-            if (state[0] != 0) AppendEncodedByte(buffer, (byte)0, state);
+            if (state0 != 0) AppendEncodedByte(buffer, (byte)0, ref state0, ref state1);
 
             return buffer.ToString();
         }
@@ -1332,24 +1332,24 @@ namespace ICU4N.Impl
         /// preceded by whitespace.
         /// </summary>
         /// <param name="id">The string to be parsed.</param>
-        /// <param name="pos">INPUT-OUTPUT parameter.  On input, pos[0] is the
-        /// offset of the first character to be parsed.  On output, pos[0]
+        /// <param name="pos">INPUT-OUTPUT parameter.  On input, <paramref name="pos"/> is the
+        /// offset of the first character to be parsed.  On output, <paramref name="pos"/>
         /// is the index after the last parsed character.  If the parse
-        /// fails, pos[0] will be unchanged.</param>
+        /// fails, <paramref name="pos"/> will be unchanged.</param>
         /// <param name="ch">The non-whitespace character to be parsed.</param>
         /// <returns>true if '<paramref name="ch"/>' is seen preceded by zero or more
         /// whitespace characters.</returns>
-        public static bool ParseChar(string id, int[] pos, char ch)
+        public static bool ParseChar(string id, ref int pos, char ch) // ICU4N: Changed pos from int[] to ref int
         {
-            int start = pos[0];
-            pos[0] = PatternProps.SkipWhiteSpace(id, pos[0]);
-            if (pos[0] == id.Length ||
-                    id[pos[0]] != ch)
+            int start = pos;
+            pos = PatternProps.SkipWhiteSpace(id, pos);
+            if (pos == id.Length ||
+                    id[pos] != ch)
             {
-                pos[0] = start;
+                pos = start;
                 return false;
             }
-            ++pos[0];
+            ++pos;
             return true;
         }
 
@@ -1379,7 +1379,7 @@ namespace ICU4N.Impl
                 string pattern, int[] parsedInts)
         {
             // TODO Update this to handle surrogates
-            int[] p = new int[1];
+            int p; // ICU4N: Converted from array to int
             int intCount = 0; // number of integers parsed
             for (int i = 0; i < pattern.Length; ++i)
             {
@@ -1404,14 +1404,14 @@ namespace ICU4N.Impl
                         pos = PatternProps.SkipWhiteSpace(rule, pos);
                         break;
                     case '#':
-                        p[0] = pos;
-                        parsedInts[intCount++] = ParseInteger(rule, p, limit);
-                        if (p[0] == pos)
+                        p = pos;
+                        parsedInts[intCount++] = ParseInteger(rule, ref p, limit);
+                        if (p == pos)
                         {
                             // Syntax error; failed to parse integer
                             return -1;
                         }
-                        pos = p[0];
+                        pos = p;
                         break;
                     default:
                         if (pos >= limit)
@@ -1517,11 +1517,12 @@ namespace ICU4N.Impl
         /// character to parse.  On output, the character after the last
         /// parsed character.</param>
         /// <param name="limit"></param>
-        public static int ParseInteger(string rule, int[] pos, int limit) // ICU4N TODO: API Make limit into length, like in .NET ?
+        // ICU4N: Converted pos from array to ref int
+        public static int ParseInteger(string rule, ref int pos, int limit) // ICU4N TODO: API Make limit into length, like in .NET ?
         {
             int count = 0;
             int value = 0;
-            int p = pos[0];
+            int p = pos;
             int radix = 10;
 
             //if (rule.RegionMatches(/*true,*/ p, "0x", 0, 2, StringComparison.OrdinalIgnoreCase))
@@ -1559,7 +1560,7 @@ namespace ICU4N.Impl
             }
             if (count > 0)
             {
-                pos[0] = p;
+                pos = p;
             }
             return value;
         }
@@ -1570,18 +1571,19 @@ namespace ICU4N.Impl
         /// identifier.
         /// </summary>
         /// <param name="str">The string to parse.</param>
-        /// <param name="pos">INPUT-OUPUT parameter.  On INPUT, pos[0] is the
+        /// <param name="pos">INPUT-OUPUT parameter.  On INPUT, <paramref name="pos"/> is the
         /// first character to examine.  It must be less than str.Length,
         /// and it must not point to a whitespace character.  That is, must
-        /// have pos[0] &lt; str.Length.  On
+        /// have <paramref name="pos"/> &lt; str.Length.  On
         /// OUTPUT, the position after the last parsed character.</param>
         /// <returns>The Unicode identifier, or null if there is no valid
-        /// identifier at pos[0].</returns>
-        public static string ParseUnicodeIdentifier(string str, int[] pos)
+        /// identifier at <paramref name="pos"/>.</returns>
+        // ICU4N: Converted pos from int[] to ref int
+        public static string ParseUnicodeIdentifier(string str, ref int pos)
         {
             // assert(pos[0] < str.length());
             StringBuilder buf = new StringBuilder();
-            int p = pos[0];
+            int p = pos;
             while (p < str.Length)
             {
                 int ch = Character.CodePointAt(str, p);
@@ -1609,7 +1611,7 @@ namespace ICU4N.Impl
                 }
                 p += UTF16.GetCharCount(ch);
             }
-            pos[0] = p;
+            pos = p;
             return buf.ToString();
         }
 
@@ -1631,23 +1633,24 @@ namespace ICU4N.Impl
         /// <see cref="UChar.Digit(int, int)"/> to parse individual characters into digits.
         /// </summary>
         /// <param name="text">The text to be parsed.</param>
-        /// <param name="pos">INPUT-OUTPUT parameter.  On entry, pos[0] is the
+        /// <param name="pos">INPUT-OUTPUT parameter.  On entry, <paramref name="pos"/> is the
         /// offset within text at which to start parsing; it should point
-        /// to a valid digit.  On exit, pos[0] is the offset after the last
+        /// to a valid digit.  On exit, <paramref name="pos"/> is the offset after the last
         /// parsed character.  If the parse failed, it will be unchanged on
         /// exit.  Must be >= 0 on entry.</param>
         /// <param name="radix">The radix in which to parse; must be >= 2 and &lt;= 36.</param>
         /// <returns>A non-negative parsed number, or -1 upon parse failure.
-        /// Parse fails if there are no digits, that is, if pos[0] does not
+        /// Parse fails if there are no digits, that is, if <paramref name="pos"/> does not
         /// point to a valid digit on entry, or if the number to be parsed
         /// does not fit into a 31-bit unsigned integer.</returns>
-        public static int ParseNumber(string text, int[] pos, int radix)
+        // ICU4N: Converted pos from int[] to ref int
+        public static int ParseNumber(string text, ref int pos, int radix)
         {
             // assert(pos[0] >= 0);
             // assert(radix >= 2);
             // assert(radix <= 36);
             int n = 0;
-            int p = pos[0];
+            int p = pos;
             while (p < text.Length)
             {
                 int ch = Character.CodePointAt(text, p);
@@ -1665,11 +1668,11 @@ namespace ICU4N.Impl
                 }
                 ++p;
             }
-            if (p == pos[0])
+            if (p == pos)
             {
                 return -1;
             }
-            pos[0] = p;
+            pos = p;
             return n;
         }
 

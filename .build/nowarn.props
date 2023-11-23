@@ -2,5 +2,9 @@
   <PropertyGroup Label="Warnings to be Disabled in All Projects">
     <!-- This warning seems to be a false warning and a duplicate of CS8618, except it is not being affected by the MemberNotNullAttribute -->
     <NoWarn Label="Member must have a non-null value when exiting.">$(NoWarn);CS8774</NoWarn>
+
+    <!-- These have been reviewed, but if more of ICU is ported from Java we may need to review again -->
+    <NoWarn Label="Method parameters that accept array types should be analyzed">$(NoWarn);LuceneDev1003</NoWarn>
+    <NoWarn Label="Method parameters that return array types should be analyzed">$(NoWarn);LuceneDev1004</NoWarn>
   </PropertyGroup>
 </Project>

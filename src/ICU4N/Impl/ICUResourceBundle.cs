@@ -97,7 +97,7 @@ namespace ICU4N.Impl
         /// <param name="resName">Top level resource to consider (such as "collations").</param>
         /// <param name="keyword">A particular keyword to consider (such as "collation" ).</param>
         /// <param name="locID">The requested locale.</param>
-        /// <param name="isAvailable">If non-null, 1-element array of fillin parameter that indicates whether the
+        /// <param name="isAvailable">OUTPUT parameter that indicates whether the
         /// requested locale was available. The locale is defined as 'available' if it physically
         /// exists within the specified tree and included in 'InstalledLocales'.</param>
         /// <param name="omitDefault">If true, omit keyword and value if default.
@@ -106,12 +106,53 @@ namespace ICU4N.Impl
         /// <internal>ICU 3.0</internal>
         public static UCultureInfo GetFunctionalEquivalent(string baseName, Assembly assembly,
             string resName, string keyword, UCultureInfo locID,
-            bool[] isAvailable, bool omitDefault) // ICU4N TODO: API - Break into 2 overloads, one with an out isAvailable param and one without
+            out bool isAvailable, bool omitDefault) // ICU4N specific - instead of passing a null bool[] for isAvailable, we have a separate overload with no out value.
+        {
+            string baseLoc = locID.Name;
+            UCultureInfo parent = new UCultureInfo(baseLoc);
+            isAvailable = false;
+            UCultureInfo[] availableUCultures = GetAvailEntry(baseName, assembly).GetUCultureList(UCultureTypes.AllCultures);
+            for (int i = 0; i < availableUCultures.Length; i++)
+            {
+                if (parent.Equals(availableUCultures[i]))
+                {
+                    isAvailable = true;
+                    break;
+                }
+            }
+            return GetFunctionalEquivalent(baseName, assembly, resName, keyword, locID, omitDefault, parent);
+        }
+
+        /// <summary>
+        /// Returns a functionally equivalent locale, considering keywords as well, for the specified keyword.
+        /// </summary>
+        /// <param name="baseName">Resource specifier.</param>
+        /// <param name="assembly"></param>
+        /// <param name="resName">Top level resource to consider (such as "collations").</param>
+        /// <param name="keyword">A particular keyword to consider (such as "collation" ).</param>
+        /// <param name="locID">The requested locale.</param>
+        /// <param name="omitDefault">If true, omit keyword and value if default.
+        /// 'de_DE\@collation=standard' -> 'de_DE'</param>
+        /// <returns>The locale.</returns>
+        /// <internal>ICU 3.0</internal>
+        public static UCultureInfo GetFunctionalEquivalent(string baseName, Assembly assembly,
+            string resName, string keyword, UCultureInfo locID,
+            bool omitDefault) // ICU4N specific - instead of passing a null bool[] for isAvailable, we have a separate overload with no out value.
+        {
+            string baseLoc = locID.Name;
+            UCultureInfo parent = new UCultureInfo(baseLoc);
+            return GetFunctionalEquivalent(baseName, assembly, resName, keyword, locID, omitDefault, parent);
+        }
+
+        private static UCultureInfo GetFunctionalEquivalent(string baseName, Assembly assembly,
+            string resName, string keyword, UCultureInfo locID,
+            bool omitDefault, UCultureInfo parent)
+
         {
             locID.Keywords.TryGetValue(keyword, out string kwVal);
             string baseLoc = locID.Name;
             string defStr = null;
-            UCultureInfo parent = new UCultureInfo(baseLoc);
+            
             UCultureInfo defLoc = null; // locale where default (found) resource is
             bool lookForDefault = false; // true if kwVal needs to be set
             UCultureInfo fullBase = null; // base locale of found (target) resource
@@ -126,22 +167,7 @@ namespace ICU4N.Impl
             }
 
             // Check top level locale first
-            ICUResourceBundle r = null;
-
-            r = (ICUResourceBundle)UResourceBundle.GetBundleInstance(baseName, parent);
-            if (isAvailable != null)
-            {
-                isAvailable[0] = false;
-                UCultureInfo[] availableUCultures = GetAvailEntry(baseName, assembly).GetUCultureList(UCultureTypes.AllCultures);
-                for (int i = 0; i < availableUCultures.Length; i++)
-                {
-                    if (parent.Equals(availableUCultures[i]))
-                    {
-                        isAvailable[0] = true;
-                        break;
-                    }
-                }
-            }
+            ICUResourceBundle r = (ICUResourceBundle)UResourceBundle.GetBundleInstance(baseName, parent);
             // determine in which locale (if any) the currently relevant 'default' is
             do
             {

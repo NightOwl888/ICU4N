@@ -972,17 +972,17 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Implementation of <see cref="IUnicodeMatcher.Matches(IReplaceable, int[], int, bool)"/>.  Always matches the
+        /// Implementation of <see cref="IUnicodeMatcher.Matches(IReplaceable, ref int, int, bool)"/>.  Always matches the
         /// longest possible multichar string.
         /// </summary>
         /// <stable>ICU 2.0</stable>
         public override MatchDegree Matches(IReplaceable text,
-                int[] offset,
+                ref int offset,
                 int limit,
-                bool incremental)
+                bool incremental) // ICU4N: Changed offset parameter from int[] to ref int
         {
 
-            if (offset[0] == limit)
+            if (offset == limit)
             {
                 // Strings, if any, have length != 0, so we don't worry
                 // about them here.  If we ever allow zero-length strings
@@ -1008,12 +1008,12 @@ namespace ICU4N.Text
                     // direction, if not in both.  In the forward direction we
                     // can assume the strings are sorted.
 
-                    bool forward = offset[0] < limit;
+                    bool forward = offset < limit;
 
                     // firstChar is the leftmost char to match in the
                     // forward direction or the rightmost char to match in
                     // the reverse direction.
-                    char firstChar = text[offset[0]];
+                    char firstChar = text[offset];
 
                     // If there are multiple strings that can match we
                     // return the longest match.
@@ -1033,11 +1033,11 @@ namespace ICU4N.Text
                         if (forward && c > firstChar) break;
                         if (c != firstChar) continue;
 
-                        int length = MatchRest(text, offset[0], limit, trial);
+                        int length = MatchRest(text, offset, limit, trial);
 
                         if (incremental)
                         {
-                            int maxLen = forward ? limit - offset[0] : offset[0] - limit;
+                            int maxLen = forward ? limit - offset : offset - limit;
                             if (length == maxLen)
                             {
                                 // We have successfully matched but only up to limit.
@@ -1066,11 +1066,11 @@ namespace ICU4N.Text
                     // If we have full matches, return the longest one.
                     if (highWaterLength != 0)
                     {
-                        offset[0] += forward ? highWaterLength : -highWaterLength;
+                        offset += forward ? highWaterLength : -highWaterLength;
                         return MatchDegree.Match;
                     }
                 }
-                return base.Matches(text, offset, limit, incremental);
+                return base.Matches(text, ref offset, limit, incremental);
             }
         }
 

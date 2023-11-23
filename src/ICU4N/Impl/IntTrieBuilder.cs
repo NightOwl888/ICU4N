@@ -183,26 +183,21 @@ namespace ICU4N.Impl
         /// Get a 32 bit data from the table data.
         /// </summary>
         /// <param name="ch">Code point for which data is to be retrieved.</param>
-        /// <param name="inBlockZero">Output parameter, inBlockZero[0] returns true if the
-        /// char maps into block zero, otherwise false.</param>
+        /// <param name="inBlockZero">Output parameter, <paramref name="inBlockZero"/>
+        /// returns <c>true</c> if the
+        /// char maps into block zero, otherwise <c>false</c>.</param>
         /// <returns>The 32 bit data value.</returns>
-        public virtual int GetValue(int ch, bool[] inBlockZero)
+        public virtual int GetValue(int ch, out bool inBlockZero) // ICU4N: Changed inBlockZero from bool[] to out bool
         {
             // valid, uncompacted trie and valid c?
             if (m_isCompacted_ || ch > UChar.MaxValue || ch < 0)
             {
-                if (inBlockZero != null)
-                {
-                    inBlockZero[0] = true;
-                }
+                inBlockZero = true;
                 return 0;
             }
 
             int block = m_index_[ch >> Shift];
-            if (inBlockZero != null)
-            {
-                inBlockZero[0] = (block == 0);
-            }
+            inBlockZero = (block == 0);
             return m_data_[Math.Abs(block) + (ch & Mask)];
         }
 

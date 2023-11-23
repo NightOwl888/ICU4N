@@ -144,14 +144,15 @@ namespace ICU4N.Text
         /// the first character to parse.  On output, the position after
         /// the last character parsed.</param>
         /// <returns>A <see cref="SingleID"/> object or null if the parse fails.</returns>
-        public static SingleID ParseFilterID(string id, int[] pos)
+        // ICU4N: Converted pos parameter from int[] to ref int
+        public static SingleID ParseFilterID(string id, ref int pos)
         {
 
-            int start = pos[0];
-            Specs specs = ParseFilterID(id, pos, true);
+            int start = pos;
+            Specs specs = ParseFilterID(id, ref pos, true);
             if (specs == null)
             {
-                pos[0] = start;
+                pos = start;
                 return null;
             }
 
@@ -173,10 +174,11 @@ namespace ICU4N.Text
         /// <param name="dir">The direction.  If the direction is <see cref="TransliterationDirection.Reverse"/> then the
         /// <see cref="SingleID"/> is constructed for the reverse direction.</param>
         /// <returns>A <see cref="SingleID"/> object or null.</returns>
-        public static SingleID ParseSingleID(string id, int[] pos, TransliterationDirection dir)
+        // ICU4N: Converted pos parameter from int[] to ref int
+        public static SingleID ParseSingleID(string id, ref int pos, TransliterationDirection dir)
         {
 
-            int start = pos[0];
+            int start = pos;
 
             // The ID will be of the form A, A(), A(B), or (B), where
             // A and B are filter IDs.
@@ -190,23 +192,23 @@ namespace ICU4N.Text
             {
                 if (pass == 2)
                 {
-                    specsA = ParseFilterID(id, pos, true);
+                    specsA = ParseFilterID(id, ref pos, true);
                     if (specsA == null)
                     {
-                        pos[0] = start;
+                        pos = start;
                         return null;
                     }
                 }
-                if (Utility.ParseChar(id, pos, OPEN_REV))
+                if (Utility.ParseChar(id, ref pos, OPEN_REV))
                 {
                     sawParen = true;
-                    if (!Utility.ParseChar(id, pos, CLOSE_REV))
+                    if (!Utility.ParseChar(id, ref pos, CLOSE_REV))
                     {
-                        specsB = ParseFilterID(id, pos, true);
+                        specsB = ParseFilterID(id, ref pos, true);
                         // Must close with a ')'
-                        if (specsB == null || !Utility.ParseChar(id, pos, CLOSE_REV))
+                        if (specsB == null || !Utility.ParseChar(id, ref pos, CLOSE_REV))
                         {
-                            pos[0] = start;
+                            pos = start;
                             return null;
                         }
                     }
@@ -270,8 +272,8 @@ namespace ICU4N.Text
         /// the last character parsed.</param>
         /// <param name="dir">The direction.</param>
         /// <param name="withParens">INPUT-OUTPUT parameter.  On entry, if
-        /// withParens[0] is 0, then parens are disallowed.  If it is 1,
-        /// then parens are requires.  If it is -1, then parens are
+        /// withParens is 0, then parens are disallowed.  If it is 1,
+        /// then parens are required.  If it is -1, then parens are
         /// optional, and the return result will be set to 0 or 1.</param>
         /// <param name="canonID">OUTPUT parameter.  The pattern for the filter
         /// added to the canonID, either at the end, if dir is <see cref="TransliterationDirection.Forward"/>, or
@@ -282,47 +284,48 @@ namespace ICU4N.Text
         /// indicates a successful parse, regardless of whether the filter
         /// applies to the given direction.  The caller should discard it
         /// if withParens != (dir == <see cref="TransliterationDirection.Reverse"/>).</returns>
-        public static UnicodeSet ParseGlobalFilter(string id, int[] pos, TransliterationDirection dir,
-                                                   int[] withParens,
+        // ICU4N: Converted pos and withParens parameters from int[] to ref int
+        public static UnicodeSet ParseGlobalFilter(string id, ref int pos, TransliterationDirection dir,
+                                                   ref int withParens,
                                                    StringBuffer canonID)
         {
             UnicodeSet filter = null;
-            int start = pos[0];
+            int start = pos;
 
-            if (withParens[0] == -1)
+            if (withParens == -1)
             {
-                withParens[0] = Utility.ParseChar(id, pos, OPEN_REV) ? 1 : 0;
+                withParens = Utility.ParseChar(id, ref pos, OPEN_REV) ? 1 : 0;
             }
-            else if (withParens[0] == 1)
+            else if (withParens == 1)
             {
-                if (!Utility.ParseChar(id, pos, OPEN_REV))
+                if (!Utility.ParseChar(id, ref pos, OPEN_REV))
                 {
-                    pos[0] = start;
+                    pos = start;
                     return null;
                 }
             }
 
-            pos[0] = PatternProps.SkipWhiteSpace(id, pos[0]);
+            pos = PatternProps.SkipWhiteSpace(id, pos);
 
-            if (UnicodeSet.ResemblesPattern(id, pos[0]))
+            if (UnicodeSet.ResemblesPattern(id, pos))
             {
-                ParsePosition ppos = new ParsePosition(pos[0]);
+                ParsePosition ppos = new ParsePosition(pos);
                 try
                 {
                     filter = new UnicodeSet(id, ppos, null);
                 }
                 catch (ArgumentException)
                 {
-                    pos[0] = start;
+                    pos = start;
                     return null;
                 }
 
-                string pattern = id.Substring(pos[0], ppos.Index - pos[0]); // ICU4N: Corrected 2nd parameter
-                pos[0] = ppos.Index;
+                string pattern = id.Substring(pos, ppos.Index - pos); // ICU4N: Corrected 2nd parameter
+                pos = ppos.Index;
 
-                if (withParens[0] == 1 && !Utility.ParseChar(id, pos, CLOSE_REV))
+                if (withParens == 1 && !Utility.ParseChar(id, ref pos, CLOSE_REV))
                 {
-                    pos[0] = start;
+                    pos = start;
                     return null;
                 }
 
@@ -333,7 +336,7 @@ namespace ICU4N.Text
                 {
                     if (dir == Forward)
                     {
-                        if (withParens[0] == 1)
+                        if (withParens == 1)
                         {
                             pattern = OPEN_REV + pattern + CLOSE_REV;
                         }
@@ -341,7 +344,7 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        if (withParens[0] == 0)
+                        if (withParens == 0)
                         {
                             pattern = OPEN_REV + pattern + CLOSE_REV;
                         }
@@ -352,6 +355,8 @@ namespace ICU4N.Text
 
             return filter;
         }
+
+#nullable enable
 
         /// <summary>
         /// Parse a compound <paramref name="id"/>, consisting of an optional forward global
@@ -365,7 +370,7 @@ namespace ICU4N.Text
         /// <param name="dir">The direction.</param>
         /// <param name="canonID">OUTPUT parameter that receives the canonical ID,
         /// consisting of canonical IDs for all elements, as returned by
-        /// <see cref="ParseSingleID(string, int[], TransliterationDirection)"/></param>, separated by semicolons.  Previous contents
+        /// <see cref="ParseSingleID(string, ref int, TransliterationDirection)"/></param>, separated by semicolons.  Previous contents
         /// are discarded.
         /// <param name="list">OUTPUT parameter that receives a list of <see cref="SingleID"/>
         /// objects representing the parsed IDs.  Previous contents are
@@ -378,36 +383,36 @@ namespace ICU4N.Text
         public static bool ParseCompoundID(string id, TransliterationDirection dir,
                                               StringBuffer canonID,
                                               IList<SingleID> list,
-                                              UnicodeSet[] globalFilter)
+                                              out UnicodeSet? globalFilter) // ICU4N: Changed globalFilter from UnicodeSet[] to out UnicodeSet
         {
-            int[] pos = new int[] { 0 };
-            int[] withParens = new int[1];
+            int pos = 0;
+            int withParens;
             list.Clear();
             UnicodeSet filter;
-            globalFilter[0] = null;
+            globalFilter = null;
             canonID.Length = 0;
 
             // Parse leading global filter, if any
-            withParens[0] = 0; // parens disallowed
-            filter = ParseGlobalFilter(id, pos, dir, withParens, canonID);
+            withParens = 0; // parens disallowed
+            filter = ParseGlobalFilter(id, ref pos, dir, ref withParens, canonID);
             if (filter != null)
             {
-                if (!Utility.ParseChar(id, pos, ID_DELIM))
+                if (!Utility.ParseChar(id, ref pos, ID_DELIM))
                 {
                     // Not a global filter; backup and resume
                     canonID.Length = 0;
-                    pos[0] = 0;
+                    pos = 0;
                 }
                 if (dir == Forward)
                 {
-                    globalFilter[0] = filter;
+                    globalFilter = filter;
                 }
             }
 
             bool sawDelimiter = true;
             for (; ; )
             {
-                SingleID single = ParseSingleID(id, pos, dir);
+                SingleID single = ParseSingleID(id, ref pos, dir);
                 if (single == null)
                 {
                     break;
@@ -420,7 +425,7 @@ namespace ICU4N.Text
                 {
                     list.Insert(0, single);
                 }
-                if (!Utility.ParseChar(id, pos, ID_DELIM))
+                if (!Utility.ParseChar(id, ref pos, ID_DELIM))
                 {
                     sawDelimiter = false;
                     break;
@@ -447,29 +452,31 @@ namespace ICU4N.Text
             // a trailing delimiter after the IDs.
             if (sawDelimiter)
             {
-                withParens[0] = 1; // parens required
-                filter = ParseGlobalFilter(id, pos, dir, withParens, canonID);
+                withParens = 1; // parens required
+                filter = ParseGlobalFilter(id, ref pos, dir, ref withParens, canonID);
                 if (filter != null)
                 {
                     // Don't require trailing ';', but parse it if present
-                    Utility.ParseChar(id, pos, ID_DELIM);
+                    Utility.ParseChar(id, ref pos, ID_DELIM);
 
                     if (dir == Reverse)
                     {
-                        globalFilter[0] = filter;
+                        globalFilter = filter;
                     }
                 }
             }
 
             // Trailing unparsed text is a syntax error
-            pos[0] = PatternProps.SkipWhiteSpace(id, pos[0]);
-            if (pos[0] != id.Length)
+            pos = PatternProps.SkipWhiteSpace(id, pos);
+            if (pos != id.Length)
             {
                 return false;
             }
 
             return true;
         }
+
+#nullable restore
 
         /// <summary>
         /// Returns the list of <see cref="Transliterator"/> objects for the
@@ -515,16 +522,17 @@ namespace ICU4N.Text
         /// ANY.
         /// </summary>
         /// <param name="id">The id string, in any of several forms.</param>
-        /// <returns>An array of 4 strings: source, target, variant, and
-        /// isSourcePresent.  If the source is not present, ANY will be
-        /// given as the source, and isSourcePresent will be null.  Otherwise
-        /// isSourcePresent will be non-null.  The target may be empty if the
-        /// id is not well-formed.  The variant may be empty.</returns>
-        public static string[] IDtoSTV(string id)
+        /// <param name="source">When this method returns, provides the source from the <paramref name="id"/>.</param>
+        /// <param name="target">When this method returns, provides the target from the <paramref name="id"/>.
+        /// The target may be empty if the id is not well-formed.</param>
+        /// <param name="variant">When this method returns, provides the variant from the <paramref name="id"/>.
+        /// The variant may be empty.</param>
+        /// <param name="isSourcePresent">When this method returns, provides a boolean value indicating whether source is present.</param>
+        public static void IDtoSTV(string id, out string source, out string target, out string variant, out bool isSourcePresent)
         {
-            string source = ANY;
-            string target = null;
-            string variant = "";
+            source = ANY;
+            target = null;
+            variant = "";
 
             int sep = id.IndexOf(TARGET_SEP);
             int var = id.IndexOf(VARIANT_SEP);
@@ -532,7 +540,7 @@ namespace ICU4N.Text
             {
                 var = id.Length;
             }
-            bool isSourcePresent = false;
+            isSourcePresent = false;
 
             if (sep < 0)
             {
@@ -567,9 +575,6 @@ namespace ICU4N.Text
             {
                 variant = variant.Substring(1);
             }
-
-            return new string[] { source, target, variant,
-                              isSourcePresent ? "" : null };
         }
 
         /// <summary>
@@ -650,10 +655,10 @@ namespace ICU4N.Text
         /// source of ANY.
         /// </summary>
         /// <param name="id">The id string, in any of several forms.</param>
-        /// <param name="pos">INPUT-OUTPUT parameter.  On input, pos[0] is the
+        /// <param name="pos">INPUT-OUTPUT parameter.  On input, <paramref name="pos"/> is the
         /// offset of the first character to parse in id.  On output,
-        /// pos[0] is the offset after the last parsed character.  If the
-        /// parse failed, pos[0] will be unchanged.</param>
+        /// <paramref name="pos"/> is the offset after the last parsed character.  If the
+        /// parse failed, <paramref name="pos"/> will be unchanged.</param>
         /// <param name="allowFilter">If true, a <see cref="UnicodeSet"/> pattern is allowed
         /// at any location between specs or delimiters, and is returned
         /// as the fifth string in the array.</param>
@@ -663,7 +668,8 @@ namespace ICU4N.Text
         /// pattern is returned in the <see cref="Specs"/> object, otherwise the returned
         /// filter reference is null.  If the parse fails for any reason
         /// null is returned.</returns>
-        private static Specs ParseFilterID(string id, int[] pos,
+        // ICU4N: Converted pos parameter from int[] to ref int
+        private static Specs ParseFilterID(string id, ref int pos,
                                            bool allowFilter)
         {
             string first = null;
@@ -673,40 +679,40 @@ namespace ICU4N.Text
             string filter = null;
             char delimiter = (char)0;
             int specCount = 0;
-            int start = pos[0];
+            int start = pos;
 
             // This loop parses one of the following things with each
             // pass: a filter, a delimiter character (either '-' or '/'),
             // or a spec (source, target, or variant).
             for (; ; )
             {
-                pos[0] = PatternProps.SkipWhiteSpace(id, pos[0]);
-                if (pos[0] == id.Length)
+                pos = PatternProps.SkipWhiteSpace(id, pos);
+                if (pos == id.Length)
                 {
                     break;
                 }
 
                 // Parse filters
                 if (allowFilter && filter == null &&
-                    UnicodeSet.ResemblesPattern(id, pos[0]))
+                    UnicodeSet.ResemblesPattern(id, pos))
                 {
 
-                    ParsePosition ppos = new ParsePosition(pos[0]);
+                    ParsePosition ppos = new ParsePosition(pos);
                     // Parse the set to get the position.
                     new UnicodeSet(id, ppos, null);
-                    filter = id.Substring(pos[0], ppos.Index - pos[0]); // ICU4N: Corrected 2nd parameter
-                    pos[0] = ppos.Index;
+                    filter = id.Substring(pos, ppos.Index - pos); // ICU4N: Corrected 2nd parameter
+                    pos = ppos.Index;
                     continue;
                 }
 
                 if (delimiter == 0)
                 {
-                    char c = id[pos[0]];
+                    char c = id[pos];
                     if ((c == TARGET_SEP && target == null) ||
                         (c == VARIANT_SEP && variant == null))
                     {
                         delimiter = c;
-                        ++pos[0];
+                        ++pos;
                         continue;
                     }
                 }
@@ -719,7 +725,7 @@ namespace ICU4N.Text
                     break;
                 }
 
-                string spec = Utility.ParseUnicodeIdentifier(id, pos);
+                string spec = Utility.ParseUnicodeIdentifier(id, ref pos);
                 if (spec == null)
                 {
                     // Note that if there was a trailing delimiter, we
@@ -761,7 +767,7 @@ namespace ICU4N.Text
             // Must have either source or target
             if (source == null && target == null)
             {
-                pos[0] = start;
+                pos = start;
                 return null;
             }
 

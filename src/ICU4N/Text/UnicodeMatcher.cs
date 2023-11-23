@@ -54,8 +54,8 @@
         /// <see cref="MatchDegree.PartialMatch"/> should never be returned.</returns>
         /// <stable>ICU 2.0</stable>
         MatchDegree Matches(IReplaceable text,
-                                    int[] offset,
-                                    int limit,
+                                    ref int offset,
+                                    int limit, // ICU4N TODO: API - convert limit to length? Note that offset returns a limit also.
                                     bool incremental);
 
         /// <summary>
@@ -110,7 +110,7 @@
     }
 
     /// <summary>
-    /// Constants returned by <see cref="IUnicodeMatcher.Matches(IReplaceable, int[], int, bool)"/>
+    /// Constants returned by <see cref="IUnicodeMatcher.Matches(IReplaceable, ref int, int, bool)"/>
     /// indicating the degree of match.
     /// </summary>
     /// <remarks>
