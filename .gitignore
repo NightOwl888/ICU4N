@@ -314,3 +314,6 @@ OpenCover/
 
 # Build artifacts
 _artifacts/
+
+# Local .NET Tools
+.tools/
