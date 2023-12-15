@@ -1,0 +1,67 @@
+<Project>
+  
+  <PropertyGroup Label="T4 Template Generation (Microsoft)">
+    <!-- First Target Framework - for executing T4 templates only once during build.
+      Use DispatchToInnerBuilds property for other cases, which will ensure they are run before the build starts for any TargetFramework. -->
+    <FirstTargetFramework Condition=" '$(TargetFrameworks)' == '' ">$(TargetFramework)</FirstTargetFramework>
+    <FirstTargetFramework Condition=" '$(FirstTargetFramework)' == '' ">$(TargetFrameworks.Split(';')[0])</FirstTargetFramework>
+  
+    <TransformOnBuild>false</TransformOnBuild>
+    <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
+    <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
+    <TransformTargetsFilePath>$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TextTemplating\Microsoft.TextTemplating.targets</TransformTargetsFilePath>
+  </PropertyGroup>
+
+  <PropertyGroup Label="T4 Template Generation (Mono/T4)">
+    <DotNetT4ToolPath>$(RepositoryRoot).tools/dotnet-t4</DotNetT4ToolPath>
+    <DotNetT4ToolVersionInstallPath>$(DotNetT4ToolPath)/.store/dotnet-t4/$(DotNetT4PackageVersion)</DotNetT4ToolVersionInstallPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SkipT4Transform Condition=" '$(SkipT4Transform)' == '' ">false</SkipT4Transform>
+    <!-- Unless on the CI server, use Microsoft's T4 build functionality  -->
+    <UseMicrosoftT4>false</UseMicrosoftT4>
+    <UseMicrosoftT4 Condition=" '$(BUILD_REPOSITORY_PROVIDER)' != 'TfsGit' And '$(BUILD_REPOSITORY_PROVIDER)' != 'GitHub' ">true</UseMicrosoftT4>
+  </PropertyGroup>
+  
+  <Target Name="ShowProperties" BeforeTargets="DispatchToInnerBuilds" >
+    <Message Importance="high" Text="SkipT4Transform: $(SkipT4Transform)" />
+    <Message Importance="high" Text="UseMicrosoftT4: $(UseMicrosoftT4)" />
+  </Target>
+  
+  <!--
+  
+      Mono/T4
+  
+    -->
+  
+  <Target Name="UpdateT4Tool" BeforeTargets="TextTemplateTransform;DispatchToInnerBuilds" Condition=" !Exists('$(DotNetT4ToolVersionInstallPath)') And '$(UseMicrosoftT4)' != 'true' And '$(SkipT4Transform)' != 'true' ">
+    <Message Importance="high" Text="Updating T4 Tool..." />
+    <Exec Command="dotnet tool update dotnet-t4 --tool-path $(DotNetT4ToolPath) --version $(DotNetT4PackageVersion)" />
+  </Target>
+
+  <Target Name="TextTemplateTransform" BeforeTargets="DispatchToInnerBuilds" Condition=" '$(UseMicrosoftT4)' != 'true' And '$(SkipT4Transform)' != 'true' ">
+    <ItemGroup>
+      <TextTemplate Include="**\*.tt" />
+    </ItemGroup>
+    <Message Importance="high" Text="Transforming %(TextTemplate.Identity)..." />
+    <Exec Command="$(DotNetT4ToolPath)/t4 %(TextTemplate.Identity)" />
+  </Target>
+  
+  <!--
+  
+      Microsoft T4
+  
+    -->
+  
+  <!-- NOTE: This is just a spot check to ensure we get a build error if there is a problem with the T4 templates. This
+        error will only be generated on $(FirstTargetFramework) during local build if the Microsoft.TextTemplating.targets file
+        exists on the build machine. If not, we skip this check and rely on CI to catch any errors in the T4 templates. -->
+  <Target Name="TransformT4TemplatesOnce" BeforeTargets="BeforeBuild" Condition=" '$(UseMicrosoftT4)' == 'true' And '$(SkipT4Transform)' != 'true' And '$(TargetFramework)' == '$(FirstTargetFramework)' And Exists('$(TransformTargetsFilePath)') ">
+    <Message Text="Calling Transform..." Importance="high" />
+    <CallTarget Targets="TransformAll"/>
+  </Target>
+
+  <Import Project="$(TransformTargetsFilePath)" Condition="Exists('$(TransformTargetsFilePath)')" />
+
+</Project>

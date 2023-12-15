@@ -15,6 +15,9 @@
     <NUnit3TestAdapterPackageReferenceVersion>3.13.0</NUnit3TestAdapterPackageReferenceVersion>
     <SystemMemoryPackageReferenceVersion>4.5.5</SystemMemoryPackageReferenceVersion>
   </PropertyGroup>
+  <PropertyGroup Label=".NET Tool Package Versions">
+    <DotNetT4PackageVersion>3.0.0-preview-0027-g2711105671</DotNetT4PackageVersion>
+  </PropertyGroup>
   <PropertyGroup Label="Maven Package Reference Versions">
     <ICU4JMavenPackageReferenceVersion>60.1</ICU4JMavenPackageReferenceVersion>
   </PropertyGroup>
