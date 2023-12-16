@@ -16,6 +16,7 @@ namespace ICU4N.Impl
 {
     public sealed partial class UPropertyAliases
     {
+
         private bool ContainsName(BytesTrie trie, string name)
         {
             Result result = Result.NoValue;
@@ -36,6 +37,7 @@ namespace ICU4N.Impl
             }
             return result.HasValue();
         }
+
 
         private bool ContainsName(BytesTrie trie, StringBuilder name)
         {
@@ -58,6 +60,7 @@ namespace ICU4N.Impl
             return result.HasValue();
         }
 
+
         private bool ContainsName(BytesTrie trie, char[] name)
         {
             Result result = Result.NoValue;
@@ -78,6 +81,7 @@ namespace ICU4N.Impl
             }
             return result.HasValue();
         }
+
 
         private bool ContainsName(BytesTrie trie, ICharSequence name)
         {
@@ -100,6 +104,31 @@ namespace ICU4N.Impl
             return result.HasValue();
         }
 
+#if FEATURE_SPAN
+
+        private bool ContainsName(BytesTrie trie, ReadOnlySpan<char> name)
+        {
+            Result result = Result.NoValue;
+            for (int i = 0; i < name.Length; ++i)
+            {
+                int c = name[i];
+                // Ignore delimiters '-', '_', and ASCII White_Space.
+                if (c == '-' || c == '_' || c == ' ' || (0x09 <= c && c <= 0x0d))
+                {
+                    continue;
+                }
+                if (!result.HasNext())
+                {
+                    return false;
+                }
+                c = AsciiToLowercase(c);
+                result = trie.Next(c);
+            }
+            return result.HasValue();
+        }
+#endif 
+
+
         private int GetPropertyOrValueEnum(int bytesTrieOffset, string alias)
         {
             BytesTrie trie = new BytesTrie(bytesTries, bytesTrieOffset);
@@ -114,6 +143,7 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
             }
         }
+
 
         private int GetPropertyOrValueEnum(int bytesTrieOffset, StringBuilder alias)
         {
@@ -130,6 +160,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         private int GetPropertyOrValueEnum(int bytesTrieOffset, char[] alias)
         {
             BytesTrie trie = new BytesTrie(bytesTries, bytesTrieOffset);
@@ -144,6 +175,7 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
             }
         }
+
 
         private int GetPropertyOrValueEnum(int bytesTrieOffset, ICharSequence alias)
         {
@@ -160,6 +192,24 @@ namespace ICU4N.Impl
             }
         }
 
+#if FEATURE_SPAN
+
+        private int GetPropertyOrValueEnum(int bytesTrieOffset, ReadOnlySpan<char> alias)
+        {
+            BytesTrie trie = new BytesTrie(bytesTries, bytesTrieOffset);
+            if (ContainsName(trie, alias))
+            {
+                return trie.GetValue();
+            }
+            else
+            {
+#pragma warning disable 612, 618
+                return (int)UPropertyConstants.Undefined;
+#pragma warning restore 612, 618
+            }
+        }
+#endif 
+
 
         //----------------------------------------------------------------
         // Public API
@@ -174,6 +224,7 @@ namespace ICU4N.Impl
             return GetPropertyOrValueEnum(0, alias);
         }
 
+
         /// <summary>
         /// Returns a property enum given one of its property names.
         /// If the property name is not known, this method returns
@@ -183,6 +234,7 @@ namespace ICU4N.Impl
         {
             return GetPropertyOrValueEnum(0, alias);
         }
+
 
         /// <summary>
         /// Returns a property enum given one of its property names.
@@ -194,6 +246,7 @@ namespace ICU4N.Impl
             return GetPropertyOrValueEnum(0, alias);
         }
 
+
         /// <summary>
         /// Returns a property enum given one of its property names.
         /// If the property name is not known, this method returns
@@ -203,6 +256,20 @@ namespace ICU4N.Impl
         {
             return GetPropertyOrValueEnum(0, alias);
         }
+
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Returns a property enum given one of its property names.
+        /// If the property name is not known, this method returns
+        /// <see cref="UPropertyConstants.Undefined"/>.
+        /// </summary>
+        public int GetPropertyEnum(ReadOnlySpan<char> alias)
+        {
+            return GetPropertyOrValueEnum(0, alias);
+        }
+
+#endif 
 
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
@@ -228,6 +295,7 @@ namespace ICU4N.Impl
             return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
         }
 
+
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
@@ -251,6 +319,7 @@ namespace ICU4N.Impl
             // where the first word is the BytesTrie offset.
             return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
         }
+
 
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
@@ -276,6 +345,7 @@ namespace ICU4N.Impl
             return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
         }
 
+
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
@@ -299,6 +369,34 @@ namespace ICU4N.Impl
             // where the first word is the BytesTrie offset.
             return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
         }
+
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Returns a value enum given a property enum and one of its value names.
+        /// </summary>
+        /// <seealso cref="TryGetPropertyValueEnum(UProperty, ReadOnlySpan{char}, out int)"/>
+        public int GetPropertyValueEnum(UProperty property, ReadOnlySpan<char> alias)
+        {
+            int valueMapIndex = FindProperty((int)property);
+            if (valueMapIndex == 0)
+            {
+                throw new ArgumentException(
+                        "Invalid property enum " + property + " (0x" + string.Format("{0:x2}", (int)property) + ")");
+            }
+            valueMapIndex = valueMaps[valueMapIndex + 1];
+            if (valueMapIndex == 0)
+            {
+                throw new ArgumentException(
+                        "Property " + property + " (0x" + string.Format("{0:x2}", (int)property) +
+                        ") does not have named values");
+            }
+            // valueMapIndex is the start of the property's valueMap,
+            // where the first word is the BytesTrie offset.
+            return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
+        }
+
+#endif 
 
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
@@ -327,6 +425,7 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
         }
 
+
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
@@ -353,6 +452,7 @@ namespace ICU4N.Impl
             return result != (int)UPropertyConstants.Undefined;
 #pragma warning restore 612, 618
         }
+
 
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
@@ -381,6 +481,7 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
         }
 
+
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
@@ -407,5 +508,37 @@ namespace ICU4N.Impl
             return result != (int)UPropertyConstants.Undefined;
 #pragma warning restore 612, 618
         }
+
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Returns a value enum given a property enum and one of its value names.
+        /// </summary>
+        /// <seealso cref="GetPropertyValueEnum(UProperty, ReadOnlySpan{char})"/>
+        public bool TryGetPropertyValueEnum(UProperty property, ReadOnlySpan<char> alias, out int result)
+        {
+#pragma warning disable 612, 618
+            result = (int)UPropertyConstants.Undefined;
+#pragma warning restore 612, 618
+            int valueMapIndex = FindProperty((int)property);
+            if (valueMapIndex == 0)
+            {
+                return false;
+            }
+            valueMapIndex = valueMaps[valueMapIndex + 1];
+            if (valueMapIndex == 0)
+            {
+                return false;
+            }
+            // valueMapIndex is the start of the property's valueMap,
+            // where the first word is the BytesTrie offset.
+            result = GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
+#pragma warning disable 612, 618
+            return result != (int)UPropertyConstants.Undefined;
+#pragma warning restore 612, 618
+        }
+
+#endif 
+
     }
 }
