@@ -6,8 +6,8 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using ICU4N.Support.Text;
 using J2N.Text;
+using System;
 using System.Text;
 using Field = ICU4N.Text.NumberFormatField;
 
@@ -15,7 +15,6 @@ namespace ICU4N.Numerics
 {
     internal partial class NumberStringBuilder
     {
-
         /// <summary>
         /// Appends the specified <see cref="string"/> to the end of the string.
         /// </summary>
@@ -59,6 +58,19 @@ namespace ICU4N.Numerics
         {
             return Insert(length, sequence, field);
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Appends the specified <see cref="ReadOnlySpan{Char}"/> to the end of the string.
+        /// </summary>
+        /// <param name="sequence"></param>
+        /// <param name="field"></param>
+        /// <returns>The number of chars added, which is the length of <see cref="ReadOnlySpan{Char}"/>.</returns>
+        public virtual int Append(ReadOnlySpan<char> sequence, Field field)
+        {
+            return Insert(length, sequence, field);
+        }
+#endif 
 
         /// <summary>
         /// Inserts the specified <see cref="string"/> at the specified index in the string.
@@ -164,6 +176,34 @@ namespace ICU4N.Numerics
             }
         }
 
+#if FEATURE_SPAN
+        /// <summary>
+        /// Inserts the specified <see cref="ReadOnlySpan{Char}"/> at the specified index in the string.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="sequence"></param>
+        /// <param name="field"></param>
+        /// <returns>The number of chars added, which is the length of <see cref="ReadOnlySpan{Char}"/>.</returns>
+        public virtual int Insert(int index, ReadOnlySpan<char> sequence, Field field)
+        {
+            if (sequence.Length == 0)
+            {
+                // Nothing to insert.
+                return 0;
+            }
+            else if (sequence.Length == 1)
+            {
+                // Fast path: on a single-char string, using insertCodePoint below is 70% faster than the
+                // CharSequence method: 12.2 ns versus 41.9 ns for five operations on my Linux x86-64.
+                return InsertCodePoint(index, sequence[0], field);
+            }
+            else
+            {
+                return Insert(index, sequence, 0, sequence.Length, field);
+            }
+        }
+#endif 
+
         /// <summary>
         /// Inserts the specified <see cref="string"/> at the specified index in the string, reading from the
         /// <see cref="string"/> from <paramref name="startIndex"/> and including <paramref name="length"/> characters.
@@ -247,5 +287,29 @@ namespace ICU4N.Numerics
             }
             return length;
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Inserts the specified <see cref="ReadOnlySpan{Char}"/> at the specified index in the string, reading from the
+        /// <see cref="ReadOnlySpan{Char}"/> from <paramref name="startIndex"/> and including <paramref name="length"/> characters.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="sequence"></param>
+        /// <param name="startIndex"></param>
+        /// <param name="length"></param>
+        /// <param name="field"></param>
+        /// <returns>The number of chars added, which is the length of <see cref="ReadOnlySpan{Char}"/>.</returns>
+        public virtual int Insert(int index, ReadOnlySpan<char> sequence, int startIndex, int length, Field field)
+        {
+            int position = PrepareForInsert(index, length);
+            for (int i = 0; i < length; i++)
+            {
+                chars[position + i] = sequence[startIndex + i];
+                fields[position + i] = field;
+            }
+            return length;
+        }
+#endif 
+
     }
 }
