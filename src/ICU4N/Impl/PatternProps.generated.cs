@@ -7,13 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using J2N.Text;
+using System;
 using System.Text;
 
 namespace ICU4N.Impl
 {
     public sealed partial class PatternProps
-	{
-
+    {
         /// <summary>
         /// Skips over Pattern_White_Space starting at index i of the string.
         /// </summary>
@@ -65,6 +65,21 @@ namespace ICU4N.Impl
             }
             return i;
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Skips over Pattern_White_Space starting at index i of the string.
+        /// </summary>
+        /// <returns>The smallest index at or after i with a non-white space character.</returns>
+        public static int SkipWhiteSpace(ReadOnlySpan<char> s, int i)
+        {
+            while (i < s.Length && IsWhiteSpace(s[i]))
+            {
+                ++i;
+            }
+            return i;
+        }
+#endif 
 
         /// <summary>
         /// Tests whether the string contains a "pattern identifier", that is,
@@ -162,6 +177,32 @@ namespace ICU4N.Impl
             return true;
         }
 
+#if FEATURE_SPAN
+        /// <summary>
+        /// Tests whether the string contains a "pattern identifier", that is,
+        /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns>true if there are no Pattern_White_Space or Pattern_Syntax characters in s.</returns>
+        public static bool IsIdentifier(ReadOnlySpan<char> s)
+        {
+            int limit = s.Length;
+            if (limit == 0)
+            {
+                return false;
+            }
+            int start = 0;
+            do
+            {
+                if (IsSyntaxOrWhiteSpace(s[start++]))
+                {
+                    return false;
+                }
+            } while (start < limit);
+            return true;
+        }
+#endif 
+
         /// <summary>
         /// Tests whether the string contains a "pattern identifier", that is,
         /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
@@ -170,7 +211,7 @@ namespace ICU4N.Impl
         /// true if there are no Pattern_White_Space or Pattern_Syntax characters
         /// in <paramref name="s"/> between <paramref name="start"/> and (exclusive) <paramref name="limit"/>.
         /// </returns>
-        public static bool IsIdentifier(string s, int start, int limit)
+        public static bool IsIdentifier(string s, int start, int limit) // ICU4N TODO: API - Convert limit to length (.NET Convention)
         {
             if (start >= limit)
             {
@@ -194,7 +235,7 @@ namespace ICU4N.Impl
         /// true if there are no Pattern_White_Space or Pattern_Syntax characters
         /// in <paramref name="s"/> between <paramref name="start"/> and (exclusive) <paramref name="limit"/>.
         /// </returns>
-        public static bool IsIdentifier(StringBuilder s, int start, int limit)
+        public static bool IsIdentifier(StringBuilder s, int start, int limit) // ICU4N TODO: API - Convert limit to length (.NET Convention)
         {
             if (start >= limit)
             {
@@ -218,7 +259,7 @@ namespace ICU4N.Impl
         /// true if there are no Pattern_White_Space or Pattern_Syntax characters
         /// in <paramref name="s"/> between <paramref name="start"/> and (exclusive) <paramref name="limit"/>.
         /// </returns>
-        public static bool IsIdentifier(char[] s, int start, int limit)
+        public static bool IsIdentifier(char[] s, int start, int limit) // ICU4N TODO: API - Convert limit to length (.NET Convention)
         {
             if (start >= limit)
             {
@@ -242,7 +283,7 @@ namespace ICU4N.Impl
         /// true if there are no Pattern_White_Space or Pattern_Syntax characters
         /// in <paramref name="s"/> between <paramref name="start"/> and (exclusive) <paramref name="limit"/>.
         /// </returns>
-        public static bool IsIdentifier(ICharSequence s, int start, int limit)
+        public static bool IsIdentifier(ICharSequence s, int start, int limit) // ICU4N TODO: API - Convert limit to length (.NET Convention)
         {
             if (start >= limit)
             {
@@ -257,6 +298,32 @@ namespace ICU4N.Impl
             } while (start < limit);
             return true;
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Tests whether the string contains a "pattern identifier", that is,
+        /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
+        /// </summary>
+        /// <returns>
+        /// true if there are no Pattern_White_Space or Pattern_Syntax characters
+        /// in <paramref name="s"/> between <paramref name="start"/> and (exclusive) <paramref name="limit"/>.
+        /// </returns>
+        public static bool IsIdentifier(ReadOnlySpan<char> s, int start, int limit) // ICU4N TODO: API - Convert limit to length (.NET Convention)
+        {
+            if (start >= limit)
+            {
+                return false;
+            }
+            do
+            {
+                if (IsSyntaxOrWhiteSpace(s[start++]))
+                {
+                    return false;
+                }
+            } while (start < limit);
+            return true;
+        }
+#endif 
 
         /// <summary>
         /// Skips over a "pattern identifier" starting at index <paramref name="i"/> of the string.
@@ -321,5 +388,24 @@ namespace ICU4N.Impl
             }
             return i;
         }
-	}
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Skips over a "pattern identifier" starting at index <paramref name="i"/> of the string.
+        /// </summary>
+        /// <returns>
+        /// The smallest index at or after <paramref name="i"/> with
+        /// a Pattern_White_Space or Pattern_Syntax character.
+        /// </returns>
+        public static int SkipIdentifier(ReadOnlySpan<char> s, int i)
+        {
+            while (i < s.Length && !IsSyntaxOrWhiteSpace(s[i]))
+            {
+                ++i;
+            }
+            return i;
+        }
+#endif 
+
+    }
 }
