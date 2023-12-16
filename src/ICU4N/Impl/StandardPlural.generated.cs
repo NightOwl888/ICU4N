@@ -8,11 +8,12 @@
 //------------------------------------------------------------------------------
 using ICU4N.Support.Text;
 using J2N.Text;
+using System;
 using System.Text;
 
 namespace ICU4N.Impl
 {
-    // ICU4N TODO: Refactor this so it is a more sensible API
+    // ICU4N TODO: API: Refactor this so it is a more sensible API
     public static partial class StandardPluralUtil
     {
 
@@ -61,6 +62,7 @@ namespace ICU4N.Impl
             return null;
         }
 
+
         /// <summary>
         /// Returns the plural form corresponding to the keyword, or <c>null</c>.
         /// </summary>
@@ -105,6 +107,7 @@ namespace ICU4N.Impl
             }
             return null;
         }
+
 
         /// <summary>
         /// Returns the plural form corresponding to the keyword, or <c>null</c>.
@@ -151,6 +154,7 @@ namespace ICU4N.Impl
             return null;
         }
 
+
         /// <summary>
         /// Returns the plural form corresponding to the keyword, or <c>null</c>.
         /// </summary>
@@ -196,6 +200,55 @@ namespace ICU4N.Impl
             return null;
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns the plural form corresponding to the keyword, or <c>null</c>.
+        /// </summary>
+        /// <param name="keyword">Keyword for example "few" or "other".</param>
+        /// <returns>The plural form corresponding to the keyword, or null.</returns>
+        public static StandardPlural? OrNullFromString(ReadOnlySpan<char> keyword)
+        {
+            switch (keyword.Length)
+            {
+                case 3:
+                    if ("one".ContentEquals(keyword))
+                    {
+                        return StandardPlural.One;
+                    }
+                    else if ("two".ContentEquals(keyword))
+                    {
+                        return StandardPlural.Two;
+                    }
+                    else if ("few".ContentEquals(keyword))
+                    {
+                        return StandardPlural.Few;
+                    }
+                    break;
+                case 4:
+                    if ("many".ContentEquals(keyword))
+                    {
+                        return StandardPlural.Many;
+                    }
+                    else if ("zero".ContentEquals(keyword))
+                    {
+                        return StandardPlural.Zero;
+                    }
+                    break;
+                case 5:
+                    if ("other".ContentEquals(keyword))
+                    {
+                        return StandardPlural.Other;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return null;
+        }
+#endif 
+
+
         /// <summary>
         /// Returns the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
         /// </summary>
@@ -206,6 +259,7 @@ namespace ICU4N.Impl
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? p.Value : StandardPlural.Other;
         }
+
 
         /// <summary>
         /// Returns the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
@@ -218,6 +272,7 @@ namespace ICU4N.Impl
             return p != null ? p.Value : StandardPlural.Other;
         }
 
+
         /// <summary>
         /// Returns the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
         /// </summary>
@@ -229,6 +284,7 @@ namespace ICU4N.Impl
             return p != null ? p.Value : StandardPlural.Other;
         }
 
+
         /// <summary>
         /// Returns the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
         /// </summary>
@@ -239,6 +295,21 @@ namespace ICU4N.Impl
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? p.Value : StandardPlural.Other;
         }
+
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
+        /// </summary>
+        /// <param name="keyword">Keyword for example "few" or "other".</param>
+        /// <returns>The plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.</returns>
+        public static StandardPlural OrOtherFromString(ReadOnlySpan<char> keyword)
+        {
+            StandardPlural? p = OrNullFromString(keyword);
+            return p != null ? p.Value : StandardPlural.Other;
+        }
+#endif 
+
 
         /// <summary>
         /// Returns the plural form corresponding to the keyword.
@@ -262,6 +333,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         /// <summary>
         /// Returns the plural form corresponding to the keyword.
         /// </summary>
@@ -283,6 +355,7 @@ namespace ICU4N.Impl
                 return false;
             }
         }
+
 
         /// <summary>
         /// Returns the plural form corresponding to the keyword.
@@ -306,6 +379,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         /// <summary>
         /// Returns the plural form corresponding to the keyword.
         /// </summary>
@@ -328,6 +402,32 @@ namespace ICU4N.Impl
             }
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns the plural form corresponding to the keyword.
+        /// </summary>
+        /// <param name="keyword">Keyword for example "few" or "other".</param>
+        /// <param name="result">>When this method returns, contains the index of the plural form corresponding to the keyword, otherwise
+        /// <see cref="T:default(StandardPlural)"/>. This parameter is passed uninitialized.</param>
+        /// <returns><c>true</c> if the <paramref name="keyword"/> is valid; otherwise <c>false</c>.</returns>
+        public static bool TryFromString(ReadOnlySpan<char> keyword, out StandardPlural result)
+        {
+            StandardPlural? p = OrNullFromString(keyword);
+            if (p != null)
+            {
+                result = p.Value;
+                return true;
+            }
+            else
+            {
+                result = default(StandardPlural);
+                return false;
+            }
+        }
+#endif 
+
+
         /// <summary>
         /// Returns the index of the plural form corresponding to the keyword, or a negative value.
         /// </summary>
@@ -338,6 +438,7 @@ namespace ICU4N.Impl
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? (int)p.Value : -1;
         }
+
 
         /// <summary>
         /// Returns the index of the plural form corresponding to the keyword, or a negative value.
@@ -350,6 +451,7 @@ namespace ICU4N.Impl
             return p != null ? (int)p.Value : -1;
         }
 
+
         /// <summary>
         /// Returns the index of the plural form corresponding to the keyword, or a negative value.
         /// </summary>
@@ -360,6 +462,7 @@ namespace ICU4N.Impl
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? (int)p.Value : -1;
         }
+
 
         /// <summary>
         /// Returns the index of the plural form corresponding to the keyword, or a negative value.
@@ -372,6 +475,21 @@ namespace ICU4N.Impl
             return p != null ? (int)p.Value : -1;
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns the index of the plural form corresponding to the keyword, or a negative value.
+        /// </summary>
+        /// <param name="keyword">Keyword for example "few" or "other".</param>
+        /// <returns>The index of the plural form corresponding to the keyword, or a negative value.</returns>
+        public static int IndexOrNegativeFromString(ReadOnlySpan<char> keyword)
+        {
+            StandardPlural? p = OrNullFromString(keyword);
+            return p != null ? (int)p.Value : -1;
+        }
+#endif 
+
+
         /// <summary>
         /// Returns the index of the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
         /// </summary>
@@ -382,6 +500,7 @@ namespace ICU4N.Impl
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? (int)p.Value : (int)StandardPlural.Other;
         }
+
 
         /// <summary>
         /// Returns the index of the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
@@ -394,6 +513,7 @@ namespace ICU4N.Impl
             return p != null ? (int)p.Value : (int)StandardPlural.Other;
         }
 
+
         /// <summary>
         /// Returns the index of the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
         /// </summary>
@@ -405,6 +525,7 @@ namespace ICU4N.Impl
             return p != null ? (int)p.Value : (int)StandardPlural.Other;
         }
 
+
         /// <summary>
         /// Returns the index of the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
         /// </summary>
@@ -415,6 +536,21 @@ namespace ICU4N.Impl
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? (int)p.Value : (int)StandardPlural.Other;
         }
+
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns the index of the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
+        /// </summary>
+        /// <param name="keyword">Keyword for example "few" or "other".</param>
+        /// <returns>The index of the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.</returns>
+        public static int IndexOrOtherIndexFromString(ReadOnlySpan<char> keyword)
+        {
+            StandardPlural? p = OrNullFromString(keyword);
+            return p != null ? (int)p.Value : (int)StandardPlural.Other;
+        }
+#endif 
+
 
         /// <summary>
         /// Gets the index of the plural form corresponding to the keyword.
@@ -438,6 +574,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         /// <summary>
         /// Gets the index of the plural form corresponding to the keyword.
         /// </summary>
@@ -459,6 +596,7 @@ namespace ICU4N.Impl
                 return false;
             }
         }
+
 
         /// <summary>
         /// Gets the index of the plural form corresponding to the keyword.
@@ -482,6 +620,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         /// <summary>
         /// Gets the index of the plural form corresponding to the keyword.
         /// </summary>
@@ -503,5 +642,31 @@ namespace ICU4N.Impl
                 return false;
             }
         }
-	}
+
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Gets the index of the plural form corresponding to the keyword.
+        /// </summary>
+        /// <param name="keyword">Keyword for example "few" or "other".</param>
+        /// <param name="result">When this method returns, contains the index of the plural form corresponding to the keyword, otherwise
+        /// <see cref="T:default(int)"/>. This parameter is passed uninitialized.</param>
+        /// <returns><c>true</c> if the <paramref name="keyword"/> is valid; otherwise <c>false</c>.</returns>
+        public static bool TryIndexFromString(ReadOnlySpan<char> keyword, out int result)
+        {
+            StandardPlural? p = OrNullFromString(keyword);
+            if (p != null)
+            {
+                result = (int)p;
+                return true;
+            }
+            else
+            {
+                result = default(int);
+                return false;
+            }
+        }
+#endif 
+
+    }
 }
