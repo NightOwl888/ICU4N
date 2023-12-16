@@ -9,6 +9,7 @@
 using ICU4N.Text;
 using J2N;
 using J2N.Text;
+using System;
 using System.Text;
 
 namespace ICU4N.Impl
@@ -156,6 +157,7 @@ namespace ICU4N.Impl
             return i;
         }
 
+
         /// <summary>
         /// Span the initial substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
         /// It must be <paramref name="spanCondition"/>==0 or 1.
@@ -295,6 +297,7 @@ namespace ICU4N.Impl
             outCount = spanLength - numSupplementary;  // number of code points
             return i;
         }
+
 
         /// <summary>
         /// Span the initial substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
@@ -436,6 +439,7 @@ namespace ICU4N.Impl
             return i;
         }
 
+
         /// <summary>
         /// Span the initial substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
         /// It must be <paramref name="spanCondition"/>==0 or 1.
@@ -576,6 +580,150 @@ namespace ICU4N.Impl
             return i;
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Span the initial substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
+        /// It must be <paramref name="spanCondition"/>==0 or 1.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="start">The start index.</param>
+        /// <param name="spanCondition"></param>
+        /// <param name="outCount">If not null: Receives the number of code points in the span.</param>
+        /// <returns>The limit (exclusive end) of the span.</returns>
+        /// <remarks>
+        /// NOTE: to reduce the overhead of function call to Contains(c), it is manually inlined here. Check for
+        /// sufficient length for trail unit for each surrogate pair. Handle single surrogates as surrogate code points
+        /// as usual in ICU.
+        /// </remarks>
+        public int Span(ReadOnlySpan<char> s, int start, SpanCondition spanCondition,
+            out int outCount)
+        {
+            char c, c2;
+            int i = start;
+            int limit = s.Length;
+            int numSupplementary = 0;
+            if (SpanCondition.NotContained != spanCondition)
+            {
+                // span
+                while (i < limit)
+                {
+                    c = s[i];
+                    if (c <= 0xff)
+                    {
+                        if (!latin1Contains[c])
+                        {
+                            break;
+                        }
+                    }
+                    else if (c <= 0x7ff)
+                    {
+                        if ((table7FF[c & 0x3f] & (1 << (c >> 6))) == 0)
+                        {
+                            break;
+                        }
+                    }
+                    else if (c < 0xd800 ||
+                             c >= 0xdc00 || (i + 1) == limit || (c2 = s[i + 1]) < 0xdc00 || c2 >= 0xe000)
+                    {
+                        int lead = c >> 12;
+                        int twoBits = (bmpBlockBits[(c >> 6) & 0x3f] >> lead) & 0x10001;
+                        if (twoBits <= 1)
+                        {
+                            // All 64 code points with the same bits 15..6
+                            // are either in the set or not.
+                            if (twoBits == 0)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            // Look up the code point in its 4k block of code points.
+                            if (!ContainsSlow(c, list4kStarts[lead], list4kStarts[lead + 1]))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // surrogate pair
+                        int supplementary = Character.ToCodePoint(c, c2);
+                        if (!ContainsSlow(supplementary, list4kStarts[0x10], list4kStarts[0x11]))
+                        {
+                            break;
+                        }
+                        ++numSupplementary;
+                        ++i;
+                    }
+                    ++i;
+                }
+            }
+            else
+            {
+                // span not
+                while (i < limit)
+                {
+                    c = s[i];
+                    if (c <= 0xff)
+                    {
+                        if (latin1Contains[c])
+                        {
+                            break;
+                        }
+                    }
+                    else if (c <= 0x7ff)
+                    {
+                        if ((table7FF[c & 0x3f] & (1 << (c >> 6))) != 0)
+                        {
+                            break;
+                        }
+                    }
+                    else if (c < 0xd800 ||
+                             c >= 0xdc00 || (i + 1) == limit || (c2 = s[i + 1]) < 0xdc00 || c2 >= 0xe000)
+                    {
+                        int lead = c >> 12;
+                        int twoBits = (bmpBlockBits[(c >> 6) & 0x3f] >> lead) & 0x10001;
+                        if (twoBits <= 1)
+                        {
+                            // All 64 code points with the same bits 15..6
+                            // are either in the set or not.
+                            if (twoBits != 0)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            // Look up the code point in its 4k block of code points.
+                            if (ContainsSlow(c, list4kStarts[lead], list4kStarts[lead + 1]))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // surrogate pair
+                        int supplementary = Character.ToCodePoint(c, c2);
+                        if (ContainsSlow(supplementary, list4kStarts[0x10], list4kStarts[0x11]))
+                        {
+                            break;
+                        }
+                        ++numSupplementary;
+                        ++i;
+                    }
+                    ++i;
+                }
+            }
+            int spanLength = i - start;
+            outCount = spanLength - numSupplementary;  // number of code points
+            return i;
+        }
+#endif 
+
+
         /// <summary>
         /// Symmetrical with <see cref="Span(string, int, SpanCondition, out int)"/>.
         /// Span the trailing substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
@@ -706,6 +854,7 @@ namespace ICU4N.Impl
             }
             return limit + 1;
         }
+
 
         /// <summary>
         /// Symmetrical with <see cref="Span(StringBuilder, int, SpanCondition, out int)"/>.
@@ -838,6 +987,7 @@ namespace ICU4N.Impl
             return limit + 1;
         }
 
+
         /// <summary>
         /// Symmetrical with <see cref="Span(char[], int, SpanCondition, out int)"/>.
         /// Span the trailing substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
@@ -969,6 +1119,7 @@ namespace ICU4N.Impl
             return limit + 1;
         }
 
+
         /// <summary>
         /// Symmetrical with <see cref="Span(ICharSequence, int, SpanCondition, out int)"/>.
         /// Span the trailing substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
@@ -1099,5 +1250,140 @@ namespace ICU4N.Impl
             }
             return limit + 1;
         }
+
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Symmetrical with <see cref="Span(ReadOnlySpan{char}, int, SpanCondition, out int)"/>.
+        /// Span the trailing substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
+        /// It must be <paramref name="s"/>.Length >= limit and <paramref name="spanCondition"/>==0 or 1.
+        /// </summary>
+        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
+        public int SpanBack(ReadOnlySpan<char> s, int limit, SpanCondition spanCondition)
+        {
+            char c, c2;
+
+            if (SpanCondition.NotContained != spanCondition)
+            {
+                // span
+                for (; ; )
+                {
+                    c = s[--limit];
+                    if (c <= 0xff)
+                    {
+                        if (!latin1Contains[c])
+                        {
+                            break;
+                        }
+                    }
+                    else if (c <= 0x7ff)
+                    {
+                        if ((table7FF[c & 0x3f] & (1 << (c >> 6))) == 0)
+                        {
+                            break;
+                        }
+                    }
+                    else if (c < 0xd800 ||
+                             c < 0xdc00 || 0 == limit || (c2 = s[limit - 1]) < 0xd800 || c2 >= 0xdc00)
+                    {
+                        int lead = c >> 12;
+                        int twoBits = (bmpBlockBits[(c >> 6) & 0x3f] >> lead) & 0x10001;
+                        if (twoBits <= 1)
+                        {
+                            // All 64 code points with the same bits 15..6
+                            // are either in the set or not.
+                            if (twoBits == 0)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            // Look up the code point in its 4k block of code points.
+                            if (!ContainsSlow(c, list4kStarts[lead], list4kStarts[lead + 1]))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // surrogate pair
+                        int supplementary = Character.ToCodePoint(c2, c);
+                        if (!ContainsSlow(supplementary, list4kStarts[0x10], list4kStarts[0x11]))
+                        {
+                            break;
+                        }
+                        --limit;
+                    }
+                    if (0 == limit)
+                    {
+                        return 0;
+                    }
+                }
+            }
+            else
+            {
+                // span not
+                for (; ; )
+                {
+                    c = s[--limit];
+                    if (c <= 0xff)
+                    {
+                        if (latin1Contains[c])
+                        {
+                            break;
+                        }
+                    }
+                    else if (c <= 0x7ff)
+                    {
+                        if ((table7FF[c & 0x3f] & (1 << (c >> 6))) != 0)
+                        {
+                            break;
+                        }
+                    }
+                    else if (c < 0xd800 ||
+                             c < 0xdc00 || 0 == limit || (c2 = s[limit - 1]) < 0xd800 || c2 >= 0xdc00)
+                    {
+                        int lead = c >> 12;
+                        int twoBits = (bmpBlockBits[(c >> 6) & 0x3f] >> lead) & 0x10001;
+                        if (twoBits <= 1)
+                        {
+                            // All 64 code points with the same bits 15..6
+                            // are either in the set or not.
+                            if (twoBits != 0)
+                            {
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            // Look up the code point in its 4k block of code points.
+                            if (ContainsSlow(c, list4kStarts[lead], list4kStarts[lead + 1]))
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // surrogate pair
+                        int supplementary = Character.ToCodePoint(c2, c);
+                        if (ContainsSlow(supplementary, list4kStarts[0x10], list4kStarts[0x11]))
+                        {
+                            break;
+                        }
+                        --limit;
+                    }
+                    if (0 == limit)
+                    {
+                        return 0;
+                    }
+                }
+            }
+            return limit + 1;
+        }
+#endif 
+
     }
 }
