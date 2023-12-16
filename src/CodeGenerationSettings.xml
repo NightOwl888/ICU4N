@@ -5,6 +5,7 @@
     <charSequence>StringBuilder</charSequence>
     <charSequence>char[]</charSequence>
     <charSequence>ICharSequence</charSequence>
+    <charSequence feature="FEATURE_SPAN">ReadOnlySpan&lt;char&gt;</charSequence>
   </charSequences>
   <!-- Accessibility of ICharSequence interface -->
   <charSequenceAccessibility>public</charSequenceAccessibility>
