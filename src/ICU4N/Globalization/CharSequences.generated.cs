@@ -43,6 +43,7 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
     
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -70,6 +71,7 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
     
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -97,6 +99,7 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
     
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -124,6 +127,37 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int MatchAfter(string a, ReadOnlySpan<char> b, int aIndex, int bIndex)
+        {
+            int i = aIndex, j = bIndex;
+            int alen = a.Length;
+            int blen = b.Length;
+            for (; i < alen && j < blen; ++i, ++j)
+            {
+                char ca = a[i];
+                char cb = b[j];
+                if (ca != cb)
+                {
+                    break;
+                }
+            }
+            // if we failed a match make sure that we didn't match half a character
+            int result = i - aIndex;
+            if (result != 0 && !OnCharacterBoundary(a, i) && !OnCharacterBoundary(b, j))
+            {
+                --result; // backup
+            }
+            return result;
+        }
+#endif 
+
         
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -151,6 +185,7 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
     
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -178,6 +213,7 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
     
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -205,6 +241,7 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
     
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -232,6 +269,37 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int MatchAfter(StringBuilder a, ReadOnlySpan<char> b, int aIndex, int bIndex)
+        {
+            int i = aIndex, j = bIndex;
+            int alen = a.Length;
+            int blen = b.Length;
+            for (; i < alen && j < blen; ++i, ++j)
+            {
+                char ca = a[i];
+                char cb = b[j];
+                if (ca != cb)
+                {
+                    break;
+                }
+            }
+            // if we failed a match make sure that we didn't match half a character
+            int result = i - aIndex;
+            if (result != 0 && !OnCharacterBoundary(a, i) && !OnCharacterBoundary(b, j))
+            {
+                --result; // backup
+            }
+            return result;
+        }
+#endif 
+
         
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -259,6 +327,7 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
     
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -286,6 +355,7 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
     
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -313,6 +383,7 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
     
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -340,6 +411,37 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int MatchAfter(char[] a, ReadOnlySpan<char> b, int aIndex, int bIndex)
+        {
+            int i = aIndex, j = bIndex;
+            int alen = a.Length;
+            int blen = b.Length;
+            for (; i < alen && j < blen; ++i, ++j)
+            {
+                char ca = a[i];
+                char cb = b[j];
+                if (ca != cb)
+                {
+                    break;
+                }
+            }
+            // if we failed a match make sure that we didn't match half a character
+            int result = i - aIndex;
+            if (result != 0 && !OnCharacterBoundary(a, i) && !OnCharacterBoundary(b, j))
+            {
+                --result; // backup
+            }
+            return result;
+        }
+#endif 
+
         
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -367,6 +469,7 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
     
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -394,6 +497,7 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
     
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -421,6 +525,7 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
     
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
@@ -448,6 +553,187 @@ namespace ICU4N.Globalization
             }
             return result;
         }
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int MatchAfter(ICharSequence a, ReadOnlySpan<char> b, int aIndex, int bIndex)
+        {
+            int i = aIndex, j = bIndex;
+            int alen = a.Length;
+            int blen = b.Length;
+            for (; i < alen && j < blen; ++i, ++j)
+            {
+                char ca = a[i];
+                char cb = b[j];
+                if (ca != cb)
+                {
+                    break;
+                }
+            }
+            // if we failed a match make sure that we didn't match half a character
+            int result = i - aIndex;
+            if (result != 0 && !OnCharacterBoundary(a, i) && !OnCharacterBoundary(b, j))
+            {
+                --result; // backup
+            }
+            return result;
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+        /// <summary>
+        /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int MatchAfter(ReadOnlySpan<char> a, string b, int aIndex, int bIndex)
+        {
+            int i = aIndex, j = bIndex;
+            int alen = a.Length;
+            int blen = b.Length;
+            for (; i < alen && j < blen; ++i, ++j)
+            {
+                char ca = a[i];
+                char cb = b[j];
+                if (ca != cb)
+                {
+                    break;
+                }
+            }
+            // if we failed a match make sure that we didn't match half a character
+            int result = i - aIndex;
+            if (result != 0 && !OnCharacterBoundary(a, i) && !OnCharacterBoundary(b, j))
+            {
+                --result; // backup
+            }
+            return result;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int MatchAfter(ReadOnlySpan<char> a, StringBuilder b, int aIndex, int bIndex)
+        {
+            int i = aIndex, j = bIndex;
+            int alen = a.Length;
+            int blen = b.Length;
+            for (; i < alen && j < blen; ++i, ++j)
+            {
+                char ca = a[i];
+                char cb = b[j];
+                if (ca != cb)
+                {
+                    break;
+                }
+            }
+            // if we failed a match make sure that we didn't match half a character
+            int result = i - aIndex;
+            if (result != 0 && !OnCharacterBoundary(a, i) && !OnCharacterBoundary(b, j))
+            {
+                --result; // backup
+            }
+            return result;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int MatchAfter(ReadOnlySpan<char> a, char[] b, int aIndex, int bIndex)
+        {
+            int i = aIndex, j = bIndex;
+            int alen = a.Length;
+            int blen = b.Length;
+            for (; i < alen && j < blen; ++i, ++j)
+            {
+                char ca = a[i];
+                char cb = b[j];
+                if (ca != cb)
+                {
+                    break;
+                }
+            }
+            // if we failed a match make sure that we didn't match half a character
+            int result = i - aIndex;
+            if (result != 0 && !OnCharacterBoundary(a, i) && !OnCharacterBoundary(b, j))
+            {
+                --result; // backup
+            }
+            return result;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int MatchAfter(ReadOnlySpan<char> a, ICharSequence b, int aIndex, int bIndex)
+        {
+            int i = aIndex, j = bIndex;
+            int alen = a.Length;
+            int blen = b.Length;
+            for (; i < alen && j < blen; ++i, ++j)
+            {
+                char ca = a[i];
+                char cb = b[j];
+                if (ca != cb)
+                {
+                    break;
+                }
+            }
+            // if we failed a match make sure that we didn't match half a character
+            int result = i - aIndex;
+            if (result != 0 && !OnCharacterBoundary(a, i) && !OnCharacterBoundary(b, j))
+            {
+                --result; // backup
+            }
+            return result;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int MatchAfter(ReadOnlySpan<char> a, ReadOnlySpan<char> b, int aIndex, int bIndex)
+        {
+            int i = aIndex, j = bIndex;
+            int alen = a.Length;
+            int blen = b.Length;
+            for (; i < alen && j < blen; ++i, ++j)
+            {
+                char ca = a[i];
+                char cb = b[j];
+                if (ca != cb)
+                {
+                    break;
+                }
+            }
+            // if we failed a match make sure that we didn't match half a character
+            int result = i - aIndex;
+            if (result != 0 && !OnCharacterBoundary(a, i) && !OnCharacterBoundary(b, j))
+            {
+                --result; // backup
+            }
+            return result;
+        }
+#endif 
+
     
         /// <summary>
         /// Count the code point length. Unpaired surrogates count as 1.
@@ -469,6 +755,7 @@ namespace ICU4N.Globalization
             //        }
         }
 
+
         /// <summary>
         /// Count the code point length. Unpaired surrogates count as 1.
         /// </summary>
@@ -488,6 +775,7 @@ namespace ICU4N.Globalization
             //            }
             //        }
         }
+
 
         /// <summary>
         /// Count the code point length. Unpaired surrogates count as 1.
@@ -509,6 +797,7 @@ namespace ICU4N.Globalization
             //        }
         }
 
+
         /// <summary>
         /// Count the code point length. Unpaired surrogates count as 1.
         /// </summary>
@@ -528,6 +817,29 @@ namespace ICU4N.Globalization
             //            }
             //        }
         }
+
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Count the code point length. Unpaired surrogates count as 1.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public int CodePointLength(ReadOnlySpan<char> s)
+        {
+            return Character.CodePointCount(s);
+            //        int length = s.length();
+            //        int result = length;
+            //        for (int i = 1; i < length; ++i) {
+            //            char ch = s.charAt(i);
+            //            if (0xDC00 <= ch && ch <= 0xDFFF) {
+            //                char ch0 = s.charAt(i-1);
+            //                if (0xD800 <= ch && ch <= 0xDbFF) {
+            //                    --result;
+            //                }
+            //            }
+            //        }
+        }
+#endif 
 
         /// <summary>
         /// Utility function for comparing codepoint to string without generating new
@@ -605,6 +917,27 @@ namespace ICU4N.Globalization
             }
         }
 
+#if FEATURE_SPAN
+        /// <summary>
+        /// Utility function for comparing codepoint to string without generating new
+        /// string.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static bool Equals(int codepoint, ReadOnlySpan<char> other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+            switch (other.Length)
+            {
+                case 1: return codepoint == other[0];
+                case 2: return codepoint > 0xFFFF && codepoint == Character.CodePointAt(other, 0);
+                default: return false;
+            }
+        }
+#endif 
+
         [Obsolete("This API is ICU internal only.")]
         public static bool Equals(string other, int codepoint)
         {
@@ -628,6 +961,14 @@ namespace ICU4N.Globalization
         {
             return Equals(codepoint, other);
         }
+
+#if FEATURE_SPAN
+        [Obsolete("This API is ICU internal only.")]
+        public static bool Equals(ReadOnlySpan<char> other, int codepoint)
+        {
+            return Equals(codepoint, other);
+        }
+#endif 
 
         /// <summary>
         /// Utility to compare a string to a code point.
@@ -829,6 +1170,58 @@ namespace ICU4N.Globalization
             return stringLength - 2;
         }
 
+#if FEATURE_SPAN
+        /// <summary>
+        /// Utility to compare a string to a code point.
+        /// Same results as turning the code point into a string (with the [ugly] new StringBuilder().AppendCodePoint(codepoint).ToString())
+        /// and comparing, but much faster (no object creation).
+        /// Actually, there is one difference; a null compares as less.
+        /// Note that this (=String) order is UTF-16 order -- *not* code point order.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int Compare(ReadOnlySpan<char> str, int codePoint)
+        {
+            if (codePoint < Character.MinCodePoint || codePoint > Character.MaxCodePoint)
+            {
+                throw new ArgumentException();
+            }
+            int stringLength = str.Length;
+            if (stringLength == 0)
+            {
+                return -1;
+            }
+            char firstChar = str[0];
+            int offset = codePoint - Character.MinSupplementaryCodePoint;
+
+            if (offset < 0)
+            { // BMP codePoint
+                int result2 = firstChar - codePoint;
+                if (result2 != 0)
+                {
+                    return result2;
+                }
+                return stringLength - 1;
+            }
+            // non BMP
+            char lead = (char)((offset.TripleShift(10)) + Character.MinHighSurrogate);
+            int result = firstChar - lead;
+            if (result != 0)
+            {
+                return result;
+            }
+            if (stringLength > 1)
+            {
+                char trail = (char)((offset & 0x3ff) + Character.MinLowSurrogate);
+                result = str[1] - trail;
+                if (result != 0)
+                {
+                    return result;
+                }
+            }
+            return stringLength - 2;
+        }
+#endif 
+
         /// <summary>
         /// Utility to compare a string to a code point.
         /// Same results as turning the code point into a string and comparing, but much faster (no object creation).
@@ -880,6 +1273,21 @@ namespace ICU4N.Globalization
             int result = Compare(a, codepoint);
             return result > 0 ? -1 : result < 0 ? 1 : 0; // Reverse the order.
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Utility to compare a string to a code point.
+        /// Same results as turning the code point into a string and comparing, but much faster (no object creation).
+        /// Actually, there is one difference; a null compares as less.
+        /// Note that this (=String) order is UTF-16 order -- *not* code point order.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int Compare(int codepoint, ReadOnlySpan<char> a)
+        {
+            int result = Compare(a, codepoint);
+            return result > 0 ? -1 : result < 0 ? 1 : 0; // Reverse the order.
+        }
+#endif 
 
         /// <summary>
         /// Return the value of the first code point, if the string is exactly one code point. Otherwise return <see cref="int.MaxValue"/>.
@@ -940,6 +1348,24 @@ namespace ICU4N.Globalization
             int result = Character.CodePointAt(s, 0);
             return (result < 0x10000) == (length == 1) ? result : int.MaxValue;
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Return the value of the first code point, if the string is exactly one code point. Otherwise return <see cref="int.MaxValue"/>.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int GetSingleCodePoint(ReadOnlySpan<char> s)
+        {
+            int length = s.Length;
+            if (length < 1 || length > 2)
+            {
+                return int.MaxValue;
+            }
+            int result = Character.CodePointAt(s, 0);
+            return (result < 0x10000) == (length == 1) ? result : int.MaxValue;
+        }
+#endif 
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -960,6 +1386,7 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -980,6 +1407,7 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1000,6 +1428,7 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1020,6 +1449,30 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int Compare(string a, ReadOnlySpan<char> b)
+        {
+            int alength = a.Length;
+            int blength = b.Length;
+            int min = alength <= blength ? alength : blength;
+            for (int i = 0; i < min; ++i)
+            {
+                int diff = a[i] - b[i];
+                if (diff != 0)
+                {
+                    return diff;
+                }
+            }
+            return alength - blength;
+        }
+#endif 
+
         
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1040,6 +1493,7 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1060,6 +1514,7 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1080,6 +1535,7 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1100,6 +1556,30 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int Compare(StringBuilder a, ReadOnlySpan<char> b)
+        {
+            int alength = a.Length;
+            int blength = b.Length;
+            int min = alength <= blength ? alength : blength;
+            for (int i = 0; i < min; ++i)
+            {
+                int diff = a[i] - b[i];
+                if (diff != 0)
+                {
+                    return diff;
+                }
+            }
+            return alength - blength;
+        }
+#endif 
+
         
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1120,6 +1600,7 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1140,6 +1621,7 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1160,6 +1642,7 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1180,6 +1663,30 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int Compare(char[] a, ReadOnlySpan<char> b)
+        {
+            int alength = a.Length;
+            int blength = b.Length;
+            int min = alength <= blength ? alength : blength;
+            for (int i = 0; i < min; ++i)
+            {
+                int diff = a[i] - b[i];
+                if (diff != 0)
+                {
+                    return diff;
+                }
+            }
+            return alength - blength;
+        }
+#endif 
+
         
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1200,6 +1707,7 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1220,6 +1728,7 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1240,6 +1749,7 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
+
     
         /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1260,8 +1770,146 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
-        
+
+    #if FEATURE_SPAN
+
         /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int Compare(ICharSequence a, ReadOnlySpan<char> b)
+        {
+            int alength = a.Length;
+            int blength = b.Length;
+            int min = alength <= blength ? alength : blength;
+            for (int i = 0; i < min; ++i)
+            {
+                int diff = a[i] - b[i];
+                if (diff != 0)
+                {
+                    return diff;
+                }
+            }
+            return alength - blength;
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int Compare(ReadOnlySpan<char> a, string b)
+        {
+            int alength = a.Length;
+            int blength = b.Length;
+            int min = alength <= blength ? alength : blength;
+            for (int i = 0; i < min; ++i)
+            {
+                int diff = a[i] - b[i];
+                if (diff != 0)
+                {
+                    return diff;
+                }
+            }
+            return alength - blength;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int Compare(ReadOnlySpan<char> a, StringBuilder b)
+        {
+            int alength = a.Length;
+            int blength = b.Length;
+            int min = alength <= blength ? alength : blength;
+            for (int i = 0; i < min; ++i)
+            {
+                int diff = a[i] - b[i];
+                if (diff != 0)
+                {
+                    return diff;
+                }
+            }
+            return alength - blength;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int Compare(ReadOnlySpan<char> a, char[] b)
+        {
+            int alength = a.Length;
+            int blength = b.Length;
+            int min = alength <= blength ? alength : blength;
+            for (int i = 0; i < min; ++i)
+            {
+                int diff = a[i] - b[i];
+                if (diff != 0)
+                {
+                    return diff;
+                }
+            }
+            return alength - blength;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int Compare(ReadOnlySpan<char> a, ICharSequence b)
+        {
+            int alength = a.Length;
+            int blength = b.Length;
+            int min = alength <= blength ? alength : blength;
+            for (int i = 0; i < min; ++i)
+            {
+                int diff = a[i] - b[i];
+                if (diff != 0)
+                {
+                    return diff;
+                }
+            }
+            return alength - blength;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int Compare(ReadOnlySpan<char> a, ReadOnlySpan<char> b)
+        {
+            int alength = a.Length;
+            int blength = b.Length;
+            int min = alength <= blength ? alength : blength;
+            for (int i = 0; i < min; ++i)
+            {
+                int diff = a[i] - b[i];
+                if (diff != 0)
+                {
+                    return diff;
+                }
+            }
+            return alength - blength;
+        }
+#endif 
+
+                /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1270,8 +1918,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
-        /// <summary>
+
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1280,8 +1928,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
-        /// <summary>
+
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1290,8 +1938,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
-        /// <summary>
+
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1300,8 +1948,20 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-        
+
+    #if FEATURE_SPAN
         /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static bool EqualsChars(string a, ReadOnlySpan<char> b)
+        {
+            // do length test first for fast path
+            return a.Length == b.Length && Compare(a, b) == 0;
+        }
+#endif 
+
+                /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1310,8 +1970,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
-        /// <summary>
+
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1320,8 +1980,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
-        /// <summary>
+
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1330,8 +1990,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
-        /// <summary>
+
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1340,8 +2000,20 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-        
+
+    #if FEATURE_SPAN
         /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static bool EqualsChars(StringBuilder a, ReadOnlySpan<char> b)
+        {
+            // do length test first for fast path
+            return a.Length == b.Length && Compare(a, b) == 0;
+        }
+#endif 
+
+                /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1350,8 +2022,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
-        /// <summary>
+
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1360,8 +2032,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
-        /// <summary>
+
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1370,8 +2042,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
-        /// <summary>
+
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1380,8 +2052,20 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-        
+
+    #if FEATURE_SPAN
         /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static bool EqualsChars(char[] a, ReadOnlySpan<char> b)
+        {
+            // do length test first for fast path
+            return a.Length == b.Length && Compare(a, b) == 0;
+        }
+#endif 
+
+                /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1390,8 +2074,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
-        /// <summary>
+
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1400,8 +2084,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
-        /// <summary>
+
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1410,8 +2094,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
-        /// <summary>
+
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1420,8 +2104,80 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-    
+
+    #if FEATURE_SPAN
         /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static bool EqualsChars(ICharSequence a, ReadOnlySpan<char> b)
+        {
+            // do length test first for fast path
+            return a.Length == b.Length && Compare(a, b) == 0;
+        }
+#endif 
+
+        #if FEATURE_SPAN
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static bool EqualsChars(ReadOnlySpan<char> a, string b)
+        {
+            // do length test first for fast path
+            return a.Length == b.Length && Compare(a, b) == 0;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static bool EqualsChars(ReadOnlySpan<char> a, StringBuilder b)
+        {
+            // do length test first for fast path
+            return a.Length == b.Length && Compare(a, b) == 0;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static bool EqualsChars(ReadOnlySpan<char> a, char[] b)
+        {
+            // do length test first for fast path
+            return a.Length == b.Length && Compare(a, b) == 0;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static bool EqualsChars(ReadOnlySpan<char> a, ICharSequence b)
+        {
+            // do length test first for fast path
+            return a.Length == b.Length && Compare(a, b) == 0;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+        /// <summary>
+        /// Utility for comparing the contents of character sequences.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static bool EqualsChars(ReadOnlySpan<char> a, ReadOnlySpan<char> b)
+        {
+            // do length test first for fast path
+            return a.Length == b.Length && Compare(a, b) == 0;
+        }
+#endif 
+
+            /// <summary>
         /// Are we on a character boundary?
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1468,6 +2224,20 @@ namespace ICU4N.Globalization
             || !char.IsHighSurrogate(s[i - 1])
             || !char.IsLowSurrogate(s[i]);
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Are we on a character boundary?
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static bool OnCharacterBoundary(ReadOnlySpan<char> s, int i)
+        {
+            return i <= 0
+            || i >= s.Length
+            || !char.IsHighSurrogate(s[i - 1])
+            || !char.IsLowSurrogate(s[i]);
+        }
+#endif 
 
         /// <summary>
         /// Find code point in string.
@@ -1540,6 +2310,26 @@ namespace ICU4N.Globalization
             }
             return -1;
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Find code point in string.
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int IndexOf(ReadOnlySpan<char> s, int codePoint)
+        {
+            int cp;
+            for (int i = 0; i < s.Length; i += Character.CharCount(cp))
+            {
+                cp = Character.CodePointAt(s, i);
+                if (cp == codePoint)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+#endif 
 
         /// <summary>
         /// Utility function for simplified, more robust loops, such as:
@@ -1692,6 +2482,47 @@ namespace ICU4N.Globalization
             System.Array.Copy(result, 0, shortResult, 0, j);
             return shortResult;
         }
+
+#if FEATURE_SPAN
+        /// <summary>
+        /// Utility function for simplified, more robust loops, such as:
+        /// <code>
+        ///     foreach (int codePoint in CharSequences.CodePoints(string)) 
+        ///     {
+        ///         DoSomethingWith(codePoint);
+        ///     }
+        /// </code>
+        /// </summary>
+        [Obsolete("This API is ICU internal only.")]
+        public static int[] CodePoints(ReadOnlySpan<char> s)
+        {
+            int[] result = new int[s.Length]; // in the vast majority of cases, the length is the same
+            int j = 0;
+            for (int i = 0; i < s.Length; ++i)
+            {
+                char cp = s[i];
+                if (cp >= 0xDC00 && cp <= 0xDFFF && i != 0)
+                { // hand-code for speed
+                    char last = (char)result[j - 1];
+                    if (last >= 0xD800 && last <= 0xDBFF)
+                    {
+                        // Note: j-1 is safe, because j can only be zero if i is zero. But i!=0 in this block.
+                        result[j - 1] = Character.ToCodePoint(last, cp);
+                        continue;
+                    }
+                }
+                result[j++] = cp;
+            }
+            if (j == result.Length)
+            {
+                return result;
+            }
+            int[] shortResult = new int[j];
+            System.Array.Copy(result, 0, shortResult, 0, j);
+            return shortResult;
+        }
+#endif 
+
 
     }
 }
