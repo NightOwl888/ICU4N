@@ -403,226 +403,190 @@
   </UsingTask>
 
   <ItemGroup>
-    <None Include="Impl\Norm2AllModesExtension.cs">
+    <Compile Update="Globalization\CharSequences.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Norm2AllModesExtension.tt</DependentUpon>
-    </None>
-    <None Include="Impl\Number\AffixUtilsExtension.cs">
+      <DependentUpon>CharSequences.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Globalization\UCharacter.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>AffixUtilsExtension.tt</DependentUpon>
-    </None>
-    <None Include="Impl\Number\NumberStringBuilderExtension.cs">
+      <DependentUpon>UCharacter.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\BMPSet.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>NumberStringBuilderExtension.tt</DependentUpon>
-    </None>
-    <None Include="Impl\TextTrieMapExtension.cs">
+      <DependentUpon>BMPSet.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\CaseMapImpl.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>TextTrieMapExtension.tt</DependentUpon>
-    </None>
-    <None Include="Text\FilteredBreakIteratorBuilderExtension.cs">
+      <DependentUpon>CaseMapImpl.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\Norm2AllModes.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>FilteredBreakIteratorBuilderExtension.tt</DependentUpon>
-    </None>
-    <None Include="Text\Normalizer2Extension.cs">
+      <DependentUpon>Norm2AllModes.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\Normalizer2Impl.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Normalizer2Extension.tt</DependentUpon>
-    </None>
-    <None Include="Util\CharsTrieBuilderExtension.cs">
+      <DependentUpon>Normalizer2Impl.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\Number\AffixUtils.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>CharsTrieBuilderExtension.tt</DependentUpon>
-    </None>
+      <DependentUpon>AffixUtils.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\Number\NumberStringBuilder.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>NumberStringBuilder.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\PatternProps.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PatternProps.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\Punycode.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Punycode.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\SimpleFormatterImpl.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SimpleFormatterImpl.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\StandardPlural.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StandardPlural.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\TextTrieMap.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>TextTrieMap.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\UCaseProps.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UCaseProps.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\UnicodeSetStringSpan.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UnicodeSetStringSpan.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\UPropertyAliases.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UPropertyAliases.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\UResource.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UResource.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\Utility.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Utility.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\UTS46.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UTS46.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Support\FormatNumberRuleBased.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FormatNumberRuleBased.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Support\Text\UnicodeSetExtensions.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UnicodeSetExtensions.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Support\Text\UnicodeSetPartial.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UnicodeSetPartial.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\CaseMap.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CaseMap.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\FilteredBreakIteratorBuilder.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FilteredBreakIteratorBuilder.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\FilteredNormalizer2.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FilteredNormalizer2.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\IDNA.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>IDNA.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\Normalizer2.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Normalizer2.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\Normalizer.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Normalizer.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\SimpleFormatter.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SimpleFormatter.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\UnicodeSet.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UnicodeSet.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\UnicodeSetSpanner.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UnicodeSetSpanner.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\UTF16.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UTF16.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Util\CharsTrieBuilder.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CharsTrieBuilder.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Util\CharsTrie.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CharsTrie.generated.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Globalization\CharSequencesExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CharSequencesExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Globalization\UCharacterExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UCharacterExtension.tt</DependentUpon>
-    </Compile>
     <Compile Update="ICUConfig.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ICUConfig.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\BMPSetExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>BMPSetExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\CaseMapImplExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CaseMapImplExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\Norm2AllModesExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Norm2AllModesExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\Normalizer2ImplExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Normalizer2ImplExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\Number\AffixUtilsExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>AffixUtilsExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\Number\NumberStringBuilderExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>NumberStringBuilderExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\PatternPropsExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>PatternPropsExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\PunycodeExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>PunycodeExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\SimpleFormatterImplExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>SimpleFormatterImplExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\StandardPluralExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>StandardPluralExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\TextTrieMapExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>TextTrieMapExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\UCasePropsExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UCasePropsExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\UnicodeSetStringSpanExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UnicodeSetStringSpanExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\UPropertyAliasesExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UPropertyAliasesExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\UResourceExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UResourceExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\UtilityExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UtilityExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\UTS46Extension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UTS46Extension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Support\FormatNumberRuleBasedExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>FormatNumberRuleBasedExtension.tt</DependentUpon>
     </Compile>
     <Compile Update="Support\Numerics\BigMath\Messages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Support\Text\UnicodeSetExtensionsExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UnicodeSetExtensionsExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Support\Text\UnicodeSetPartialExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UnicodeSetPartialExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Text\CaseMapExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CaseMapExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Text\FilteredBreakIteratorBuilderExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>FilteredBreakIteratorBuilderExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Text\FilteredNormalizer2Extension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>FilteredNormalizer2Extension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Text\IDNAExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>IDNAExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Text\Normalizer2Extension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Normalizer2Extension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Text\NormalizerExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>NormalizerExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Text\SimpleFormatterExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>SimpleFormatterExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Text\UnicodeSetExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UnicodeSetExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Text\UnicodeSetSpannerExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UnicodeSetSpannerExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Text\UTF16Extension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UTF16Extension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Util\CharsTrieBuilderExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CharsTrieBuilderExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Util\CharsTrieExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CharsTrieExtension.tt</DependentUpon>
-    </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="ICUConfig.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -635,141 +599,141 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Impl\BMPSetExtension.tt">
+    <None Update="Globalization\CharSequences.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BMPSetExtension.cs</LastGenOutput>
+      <LastGenOutput>CharSequences.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\CaseMapImplExtension.tt">
+    <None Update="Globalization\UCharacter.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CaseMapImplExtension.cs</LastGenOutput>
+      <LastGenOutput>UCharacter.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\Norm2AllModesExtension.tt">
+    <None Update="Impl\BMPSet.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Norm2AllModesExtension.cs</LastGenOutput>
+      <LastGenOutput>BMPSet.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\Normalizer2ImplExtension.tt">
+    <None Update="Impl\CaseMapImpl.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Normalizer2ImplExtension.cs</LastGenOutput>
+      <LastGenOutput>CaseMapImpl.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\Number\AffixUtilsExtension.tt">
+    <None Update="Impl\Norm2AllModes.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>AffixUtilsExtension.cs</LastGenOutput>
+      <LastGenOutput>Norm2AllModes.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\Number\NumberStringBuilderExtension.tt">
+    <None Update="Impl\Normalizer2Impl.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>NumberStringBuilderExtension.cs</LastGenOutput>
+      <LastGenOutput>Normalizer2Impl.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\PatternPropsExtension.tt">
+    <None Update="Impl\Number\AffixUtils.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>PatternPropsExtension.cs</LastGenOutput>
+      <LastGenOutput>AffixUtils.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\PunycodeExtension.tt">
+    <None Update="Impl\Number\NumberStringBuilder.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>PunycodeExtension.cs</LastGenOutput>
+      <LastGenOutput>NumberStringBuilder.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\SimpleFormatterImplExtension.tt">
+    <None Update="Impl\PatternProps.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>SimpleFormatterImplExtension.cs</LastGenOutput>
+      <LastGenOutput>PatternProps.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\StandardPluralExtension.tt">
+    <None Update="Impl\Punycode.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>StandardPluralExtension.cs</LastGenOutput>
+      <LastGenOutput>Punycode.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\TextTrieMapExtension.tt">
+    <None Update="Impl\SimpleFormatterImpl.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TextTrieMapExtension.cs</LastGenOutput>
+      <LastGenOutput>SimpleFormatterImpl.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\UCasePropsExtension.tt">
+    <None Update="Impl\StandardPlural.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UCasePropsExtension.cs</LastGenOutput>
+      <LastGenOutput>StandardPlural.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\UnicodeSetStringSpanExtension.tt">
+    <None Update="Impl\TextTrieMap.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UnicodeSetStringSpanExtension.cs</LastGenOutput>
+      <LastGenOutput>TextTrieMap.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\UPropertyAliasesExtension.tt">
+    <None Update="Impl\UCaseProps.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UPropertyAliasesExtension.cs</LastGenOutput>
+      <LastGenOutput>UCaseProps.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\UResourceExtension.tt">
+    <None Update="Impl\UnicodeSetStringSpan.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UResourceExtension.cs</LastGenOutput>
+      <LastGenOutput>UnicodeSetStringSpan.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\UtilityExtension.tt">
+    <None Update="Impl\UPropertyAliases.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UtilityExtension.cs</LastGenOutput>
+      <LastGenOutput>UPropertyAliases.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\UTS46Extension.tt">
+    <None Update="Impl\UResource.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UTS46Extension.cs</LastGenOutput>
+      <LastGenOutput>UResource.generated.cs</LastGenOutput>
     </None>
-    <None Update="Globalization\CharSequencesExtension.tt">
+    <None Update="Impl\Utility.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CharSequencesExtension.cs</LastGenOutput>
+      <LastGenOutput>Utility.generated.cs</LastGenOutput>
     </None>
-    <None Update="Globalization\UCharacterExtension.tt">
+    <None Update="Impl\UTS46.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UCharacterExtension.cs</LastGenOutput>
+      <LastGenOutput>UTS46.generated.cs</LastGenOutput>
     </None>
-    <None Update="Support\FormatNumberRuleBasedExtension.tt">
+    <None Update="Support\FormatNumberRuleBased.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>FormatNumberRuleBasedExtension.cs</LastGenOutput>
+      <LastGenOutput>FormatNumberRuleBased.generated.cs</LastGenOutput>
     </None>
-    <None Update="Support\Text\UnicodeSetExtensionsExtension.tt">
+    <None Update="Support\Text\UnicodeSetExtensions.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UnicodeSetExtensionsExtension.cs</LastGenOutput>
+      <LastGenOutput>UnicodeSetExtensions.generated.cs</LastGenOutput>
     </None>
-    <None Update="Support\Text\UnicodeSetPartialExtension.tt">
+    <None Update="Support\Text\UnicodeSetPartial.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UnicodeSetPartialExtension.cs</LastGenOutput>
+      <LastGenOutput>UnicodeSetPartial.generated.cs</LastGenOutput>
     </None>
-    <None Update="Text\CaseMapExtension.tt">
+    <None Update="Text\CaseMap.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CaseMapExtension.cs</LastGenOutput>
+      <LastGenOutput>CaseMap.generated.cs</LastGenOutput>
     </None>
-    <None Update="Text\FilteredBreakIteratorBuilderExtension.tt">
+    <None Update="Text\FilteredBreakIteratorBuilder.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>FilteredBreakIteratorBuilderExtension.cs</LastGenOutput>
+      <LastGenOutput>FilteredBreakIteratorBuilder.generated.cs</LastGenOutput>
     </None>
-    <None Update="Text\FilteredNormalizer2Extension.tt">
+    <None Update="Text\FilteredNormalizer2.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>FilteredNormalizer2Extension.cs</LastGenOutput>
+      <LastGenOutput>FilteredNormalizer2.generated.cs</LastGenOutput>
     </None>
-    <None Update="Text\IDNAExtension.tt">
+    <None Update="Text\IDNA.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IDNAExtension.cs</LastGenOutput>
+      <LastGenOutput>IDNA.generated.cs</LastGenOutput>
     </None>
-    <None Update="Text\Normalizer2Extension.tt">
+    <None Update="Text\Normalizer2.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Normalizer2Extension.cs</LastGenOutput>
+      <LastGenOutput>Normalizer2.generated.cs</LastGenOutput>
     </None>
-    <None Update="Text\NormalizerExtension.tt">
+    <None Update="Text\Normalizer.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>NormalizerExtension.cs</LastGenOutput>
+      <LastGenOutput>Normalizer.generated.cs</LastGenOutput>
     </None>
-    <None Update="Text\SimpleFormatterExtension.tt">
+    <None Update="Text\SimpleFormatter.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>SimpleFormatterExtension.cs</LastGenOutput>
+      <LastGenOutput>SimpleFormatter.generated.cs</LastGenOutput>
     </None>
-    <None Update="Text\UnicodeSetExtension.tt">
+    <None Update="Text\UnicodeSet.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UnicodeSetExtension.cs</LastGenOutput>
+      <LastGenOutput>UnicodeSet.generated.cs</LastGenOutput>
     </None>
-    <None Update="Text\UnicodeSetSpannerExtension.tt">
+    <None Update="Text\UnicodeSetSpanner.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UnicodeSetSpannerExtension.cs</LastGenOutput>
+      <LastGenOutput>UnicodeSetSpanner.generated.cs</LastGenOutput>
     </None>
-    <None Update="Text\UTF16Extension.tt">
+    <None Update="Text\UTF16.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UTF16Extension.cs</LastGenOutput>
+      <LastGenOutput>UTF16.generated.cs</LastGenOutput>
     </None>
-    <None Update="Util\CharsTrieBuilderExtension.tt">
+    <None Update="Util\CharsTrieBuilder.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CharsTrieBuilderExtension.cs</LastGenOutput>
+      <LastGenOutput>CharsTrieBuilder.generated.cs</LastGenOutput>
     </None>
-    <None Update="Util\CharsTrieExtension.tt">
+    <None Update="Util\CharsTrie.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CharsTrieExtension.cs</LastGenOutput>
+      <LastGenOutput>CharsTrie.generated.cs</LastGenOutput>
     </None>
   </ItemGroup>
 
@@ -779,6 +743,6 @@
 
   <!-- Explicitly importing SDK to allow for T4 template generation. See: https://developercommunity.visualstudio.com/t/upgrading-to-sdk-style-project-disables-t4-transfo/1394852 -->
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="$(RepositoryRoot).build/t4-transform.targets"/>
+  <Import Project="$(RepositoryRoot).build/t4-transform.targets" />
 
 </Project>
