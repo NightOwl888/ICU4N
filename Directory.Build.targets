@@ -42,6 +42,7 @@
     <DefineConstants>$(DefineConstants);FEATURE_ASYNCLOCAL</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER</DefineConstants>
     <DefineConstants Condition=" '$(TargetFramework)' != 'netstandard1.0' ">$(DefineConstants);FEATURE_RUNTIMEINFORMATION_ISOSPLATFORM</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_STRINGBUILDER_APPEND_CHARPTR</DefineConstants>
 
     <DebugType>portable</DebugType>
   </PropertyGroup>
