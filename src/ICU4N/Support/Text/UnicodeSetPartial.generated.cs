@@ -16,7 +16,7 @@ namespace ICU4N.Text
 {
     public partial class UnicodeSet
     {
-
+    
         /// <seealso cref="UnionWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -29,6 +29,7 @@ namespace ICU4N.Text
             return AddAll(collection);
         }
 
+        
         /// <seealso cref="UnionWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -41,6 +42,7 @@ namespace ICU4N.Text
             return AddAll(collection);
         }
 
+        
         /// <seealso cref="UnionWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -53,6 +55,7 @@ namespace ICU4N.Text
             return AddAll(collection);
         }
 
+        
         /// <seealso cref="UnionWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -65,6 +68,7 @@ namespace ICU4N.Text
             return AddAll(collection);
         }
 
+        
         /// <summary>
         /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -79,6 +83,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return AddAll(s);
         }
+
 
         /// <summary>
         /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
@@ -95,6 +100,7 @@ namespace ICU4N.Text
             return AddAll(s);
         }
 
+
         /// <summary>
         /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -110,6 +116,7 @@ namespace ICU4N.Text
             return AddAll(s);
         }
 
+
         /// <summary>
         /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -124,6 +131,25 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return AddAll(s);
         }
+
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>this object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UnicodeSet UnionWithChars(ReadOnlySpan<char> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return AddAll(s);
+        }
+#endif 
+
 
         /// <summary>
         /// Complement the specified string in this set.
@@ -143,6 +169,7 @@ namespace ICU4N.Text
             return Complement(s);
         }
 
+
         /// <summary>
         /// Complement the specified string in this set.
         /// The set will not contain the specified string once the call
@@ -160,6 +187,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return Complement(s);
         }
+
 
         /// <summary>
         /// Complement the specified string in this set.
@@ -179,6 +207,7 @@ namespace ICU4N.Text
             return Complement(s);
         }
 
+
         /// <summary>
         /// Complement the specified string in this set.
         /// The set will not contain the specified string once the call
@@ -197,6 +226,28 @@ namespace ICU4N.Text
             return Complement(s);
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Complement the specified string in this set.
+        /// The set will not contain the specified string once the call
+        /// returns.
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The string to complement.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UnicodeSet SymmetricExceptWith(ReadOnlySpan<char> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return Complement(s);
+        }
+#endif 
+
+
         /// <summary>
         /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -211,6 +262,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return ComplementAll(s);
         }
+
 
         /// <summary>
         /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
@@ -227,6 +279,7 @@ namespace ICU4N.Text
             return ComplementAll(s);
         }
 
+
         /// <summary>
         /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -241,6 +294,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return ComplementAll(s);
         }
+
 
         /// <summary>
         /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
@@ -257,6 +311,25 @@ namespace ICU4N.Text
             return ComplementAll(s);
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UnicodeSet SymmetricExceptWithChars(ReadOnlySpan<char> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return ComplementAll(s);
+        }
+#endif 
+
+    
         /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -267,6 +340,7 @@ namespace ICU4N.Text
             return ContainsAll(collection);
         }
 
+        
         /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -277,6 +351,7 @@ namespace ICU4N.Text
             return ContainsAll(collection);
         }
 
+        
         /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -287,6 +362,7 @@ namespace ICU4N.Text
             return ContainsAll(collection);
         }
 
+        
         /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -297,6 +373,7 @@ namespace ICU4N.Text
             return ContainsAll(collection);
         }
 
+        
         /// <summary>
         /// Returns true if this set contains one or more of the characters
         /// of the given string.
@@ -311,6 +388,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return ContainsSome(s);
         }
+
 
         /// <summary>
         /// Returns true if this set contains one or more of the characters
@@ -327,6 +405,7 @@ namespace ICU4N.Text
             return ContainsSome(s);
         }
 
+
         /// <summary>
         /// Returns true if this set contains one or more of the characters
         /// of the given string.
@@ -341,6 +420,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return ContainsSome(s);
         }
+
 
         /// <summary>
         /// Returns true if this set contains one or more of the characters
@@ -357,6 +437,25 @@ namespace ICU4N.Text
             return ContainsSome(s);
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns true if this set contains one or more of the characters
+        /// of the given string.
+        /// </summary>
+        /// <param name="s">String containing characters to be checked for containment.</param>
+        /// <returns>true if the condition is met.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool Overlaps(ReadOnlySpan<char> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return ContainsSome(s);
+        }
+#endif 
+
+    
         /// <seealso cref="Overlaps(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -367,6 +466,7 @@ namespace ICU4N.Text
             return ContainsSome(collection);
         }
 
+        
         /// <seealso cref="Overlaps(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -377,6 +477,7 @@ namespace ICU4N.Text
             return ContainsSome(collection);
         }
 
+        
         /// <seealso cref="Overlaps(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -387,6 +488,7 @@ namespace ICU4N.Text
             return ContainsSome(collection);
         }
 
+        
         /// <seealso cref="Overlaps(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -397,6 +499,7 @@ namespace ICU4N.Text
             return ContainsSome(collection);
         }
 
+            
         /// <seealso cref="ExceptWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -407,6 +510,7 @@ namespace ICU4N.Text
             return RemoveAll(collection);
         }
 
+        
         /// <seealso cref="ExceptWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -417,6 +521,7 @@ namespace ICU4N.Text
             return RemoveAll(collection);
         }
 
+        
         /// <seealso cref="ExceptWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -427,6 +532,7 @@ namespace ICU4N.Text
             return RemoveAll(collection);
         }
 
+        
         /// <seealso cref="ExceptWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -437,6 +543,7 @@ namespace ICU4N.Text
             return RemoveAll(collection);
         }
 
+        
         /// <summary>
         /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -451,6 +558,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return RemoveAll(s);
         }
+
 
         /// <summary>
         /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
@@ -467,6 +575,7 @@ namespace ICU4N.Text
             return RemoveAll(s);
         }
 
+
         /// <summary>
         /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -482,6 +591,7 @@ namespace ICU4N.Text
             return RemoveAll(s);
         }
 
+
         /// <summary>
         /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -496,6 +606,25 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return RemoveAll(s);
         }
+
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UnicodeSet ExceptWithChars(ReadOnlySpan<char> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return RemoveAll(s);
+        }
+#endif 
+
 
         /// <summary>
         /// Retain the specified string in this set if it is present.
@@ -513,6 +642,7 @@ namespace ICU4N.Text
             return Retain(cs);
         }
 
+
         /// <summary>
         /// Retain the specified string in this set if it is present.
         /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
@@ -528,6 +658,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(cs));
             return Retain(cs);
         }
+
 
         /// <summary>
         /// Retain the specified string in this set if it is present.
@@ -545,6 +676,7 @@ namespace ICU4N.Text
             return Retain(cs);
         }
 
+
         /// <summary>
         /// Retain the specified string in this set if it is present.
         /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
@@ -561,6 +693,26 @@ namespace ICU4N.Text
             return Retain(cs);
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Retain the specified string in this set if it is present.
+        /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
+        /// will only contain <paramref name="cs"/> if it did contain <paramref name="cs"/>.
+        /// </summary>
+        /// <param name="cs">The string to be retained.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UnicodeSet IntersectWith(ReadOnlySpan<char> cs)
+        {
+            if (cs == null)
+                throw new ArgumentNullException(nameof(cs));
+            return Retain(cs);
+        }
+#endif 
+
+    
         /// <seealso cref="IntersectWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -571,6 +723,7 @@ namespace ICU4N.Text
             return RetainAll(collection);
         }
 
+        
         /// <seealso cref="IntersectWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -581,6 +734,7 @@ namespace ICU4N.Text
             return RetainAll(collection);
         }
 
+        
         /// <seealso cref="IntersectWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -591,6 +745,7 @@ namespace ICU4N.Text
             return RetainAll(collection);
         }
 
+        
         /// <seealso cref="IntersectWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -601,6 +756,7 @@ namespace ICU4N.Text
             return RetainAll(collection);
         }
 
+        
         /// <summary>
         /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -615,6 +771,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return RetainAll(s);
         }
+
 
         /// <summary>
         /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
@@ -631,6 +788,7 @@ namespace ICU4N.Text
             return RetainAll(s);
         }
 
+
         /// <summary>
         /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -645,6 +803,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return RetainAll(s);
         }
+
 
         /// <summary>
         /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
@@ -661,14 +820,36 @@ namespace ICU4N.Text
             return RetainAll(s);
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UnicodeSet IntersectWithChars(ReadOnlySpan<char> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return RetainAll(s);
+        }
+#endif 
+
+
 // ***** .NET ISet<T> overloads that are missing from ICU4J *****
 
-        
+
+    
+
+    
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given StringBuilder.
+        /// of the given <see cref="StringBuilder"/>.
         /// </summary>
-        /// <param name="s">StringBuilder containing characters to be checked for a superset.</param>
+        /// <param name="s"><see cref="StringBuilder"/> containing characters to be checked for a superset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a superset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -679,12 +860,14 @@ namespace ICU4N.Text
 
             return Span(s, SpanCondition.Contained) == s.Length;
         }
-        
+    
+
+    
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given char[].
+        /// of the given <see cref="T:char[]"/>.
         /// </summary>
-        /// <param name="s">char[] containing characters to be checked for a superset.</param>
+        /// <param name="s"><see cref="T:char[]"/> containing characters to be checked for a superset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a superset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -695,12 +878,14 @@ namespace ICU4N.Text
 
             return Span(s, SpanCondition.Contained) == s.Length;
         }
-        
+    
+
+    
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given ICharSequence.
+        /// of the given <see cref="ICharSequence"/>.
         /// </summary>
-        /// <param name="s">ICharSequence containing characters to be checked for a superset.</param>
+        /// <param name="s"><see cref="ICharSequence"/> containing characters to be checked for a superset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a superset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -712,12 +897,33 @@ namespace ICU4N.Text
             return Span(s, SpanCondition.Contained) == s.Length;
         }
     
+#if FEATURE_SPAN
+
+    
+        /// <summary>
+        /// Returns true if this set contains all of the characters
+        /// of the given <see cref="ReadOnlySpan{Char}"/>.
+        /// </summary>
+        /// <param name="s"><see cref="ReadOnlySpan{Char}"/> containing characters to be checked for a superset.</param>
+        /// <returns>true if the <see cref="UnicodeSet"/> object is a superset of <paramref name="s"/>; otherwise, false.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool IsSupersetOf(ReadOnlySpan<char> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+
+            return Span(s, SpanCondition.Contained) == s.Length;
+        }
+    #endif 
+
+
 
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given string plus at least one additional character.
+        /// of the given <see cref="string"/> plus at least one additional character.
         /// </summary>
-        /// <param name="s">string containing characters to be checked for a proper superset.</param>
+        /// <param name="s"><see cref="string"/> containing characters to be checked for a proper superset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper superset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -730,11 +936,12 @@ namespace ICU4N.Text
             return contained == s.Length && contained < this.Count;
         }
 
+
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given StringBuilder plus at least one additional character.
+        /// of the given <see cref="StringBuilder"/> plus at least one additional character.
         /// </summary>
-        /// <param name="s">StringBuilder containing characters to be checked for a proper superset.</param>
+        /// <param name="s"><see cref="StringBuilder"/> containing characters to be checked for a proper superset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper superset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -747,11 +954,12 @@ namespace ICU4N.Text
             return contained == s.Length && contained < this.Count;
         }
 
+
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given char[] plus at least one additional character.
+        /// of the given <see cref="T:char[]"/> plus at least one additional character.
         /// </summary>
-        /// <param name="s">char[] containing characters to be checked for a proper superset.</param>
+        /// <param name="s"><see cref="T:char[]"/> containing characters to be checked for a proper superset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper superset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -764,11 +972,12 @@ namespace ICU4N.Text
             return contained == s.Length && contained < this.Count;
         }
 
+
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given ICharSequence plus at least one additional character.
+        /// of the given <see cref="ICharSequence"/> plus at least one additional character.
         /// </summary>
-        /// <param name="s">ICharSequence containing characters to be checked for a proper superset.</param>
+        /// <param name="s"><see cref="ICharSequence"/> containing characters to be checked for a proper superset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper superset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -781,6 +990,27 @@ namespace ICU4N.Text
             return contained == s.Length && contained < this.Count;
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns true if this set contains all of the characters
+        /// of the given <see cref="ReadOnlySpan{Char}"/> plus at least one additional character.
+        /// </summary>
+        /// <param name="s"><see cref="ReadOnlySpan{Char}"/> containing characters to be checked for a proper superset.</param>
+        /// <returns>true if the <see cref="UnicodeSet"/> object is a proper superset of <paramref name="s"/>; otherwise, false.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool IsProperSupersetOf(ReadOnlySpan<char> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+
+            int contained = Span(s, SpanCondition.Contained);
+            return contained == s.Length && contained < this.Count;
+        }
+#endif 
+
+    
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a proper superset of the specified collection.
         /// </summary>
@@ -812,6 +1042,7 @@ namespace ICU4N.Text
             return contained < count;
         }
 
+        
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a proper superset of the specified collection.
         /// </summary>
@@ -843,6 +1074,7 @@ namespace ICU4N.Text
             return contained < count;
         }
 
+        
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a proper superset of the specified collection.
         /// </summary>
@@ -874,6 +1106,7 @@ namespace ICU4N.Text
             return contained < count;
         }
 
+        
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a proper superset of the specified collection.
         /// </summary>
@@ -905,12 +1138,13 @@ namespace ICU4N.Text
             return contained < count;
         }
 
+        
 
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given string plus at least one additional character.
+        /// of the given <see cref="string"/> plus at least one additional character.
         /// </summary>
-        /// <param name="s">string containing characters to be checked for a subset.</param>
+        /// <param name="s"><see cref="string"/> containing characters to be checked for a subset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -922,11 +1156,12 @@ namespace ICU4N.Text
             return Span(s, SpanCondition.Contained) == this.Count;
         }
 
+
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given StringBuilder plus at least one additional character.
+        /// of the given <see cref="StringBuilder"/> plus at least one additional character.
         /// </summary>
-        /// <param name="s">StringBuilder containing characters to be checked for a subset.</param>
+        /// <param name="s"><see cref="StringBuilder"/> containing characters to be checked for a subset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -938,11 +1173,12 @@ namespace ICU4N.Text
             return Span(s, SpanCondition.Contained) == this.Count;
         }
 
+
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given char[] plus at least one additional character.
+        /// of the given <see cref="T:char[]"/> plus at least one additional character.
         /// </summary>
-        /// <param name="s">char[] containing characters to be checked for a subset.</param>
+        /// <param name="s"><see cref="T:char[]"/> containing characters to be checked for a subset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -954,11 +1190,12 @@ namespace ICU4N.Text
             return Span(s, SpanCondition.Contained) == this.Count;
         }
 
+
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given ICharSequence plus at least one additional character.
+        /// of the given <see cref="ICharSequence"/> plus at least one additional character.
         /// </summary>
-        /// <param name="s">ICharSequence containing characters to be checked for a subset.</param>
+        /// <param name="s"><see cref="ICharSequence"/> containing characters to be checked for a subset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -970,6 +1207,26 @@ namespace ICU4N.Text
             return Span(s, SpanCondition.Contained) == this.Count;
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns true if this set contains all of the characters
+        /// of the given <see cref="ReadOnlySpan{Char}"/> plus at least one additional character.
+        /// </summary>
+        /// <param name="s"><see cref="ReadOnlySpan{Char}"/> containing characters to be checked for a subset.</param>
+        /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool IsSubsetOf(ReadOnlySpan<char> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+
+            return Span(s, SpanCondition.Contained) == this.Count;
+        }
+#endif 
+
+    
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a subset of the specified collection.
         /// </summary>
@@ -1015,6 +1272,7 @@ namespace ICU4N.Text
             return unfoundCount >= 0 && found.Count == this.Count;
         }
 
+        
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a subset of the specified collection.
         /// </summary>
@@ -1060,6 +1318,7 @@ namespace ICU4N.Text
             return unfoundCount >= 0 && found.Count == this.Count;
         }
 
+        
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a subset of the specified collection.
         /// </summary>
@@ -1105,6 +1364,7 @@ namespace ICU4N.Text
             return unfoundCount >= 0 && found.Count == this.Count;
         }
 
+        
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a subset of the specified collection.
         /// </summary>
@@ -1150,12 +1410,13 @@ namespace ICU4N.Text
             return unfoundCount >= 0 && found.Count == this.Count;
         }
 
+        
 
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given string plus at least one additional character.
+        /// of the given <see cref="string"/> plus at least one additional character.
         /// </summary>
-        /// <param name="s">string containing characters to be checked for a proper subset.</param>
+        /// <param name="s"><see cref="string"/> containing characters to be checked for a proper subset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -1168,11 +1429,12 @@ namespace ICU4N.Text
             return count < s.Length && Span(s, SpanCondition.Contained) == count;
         }
 
+
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given StringBuilder plus at least one additional character.
+        /// of the given <see cref="StringBuilder"/> plus at least one additional character.
         /// </summary>
-        /// <param name="s">StringBuilder containing characters to be checked for a proper subset.</param>
+        /// <param name="s"><see cref="StringBuilder"/> containing characters to be checked for a proper subset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -1185,11 +1447,12 @@ namespace ICU4N.Text
             return count < s.Length && Span(s, SpanCondition.Contained) == count;
         }
 
+
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given char[] plus at least one additional character.
+        /// of the given <see cref="T:char[]"/> plus at least one additional character.
         /// </summary>
-        /// <param name="s">char[] containing characters to be checked for a proper subset.</param>
+        /// <param name="s"><see cref="T:char[]"/> containing characters to be checked for a proper subset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -1202,11 +1465,12 @@ namespace ICU4N.Text
             return count < s.Length && Span(s, SpanCondition.Contained) == count;
         }
 
+
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given ICharSequence plus at least one additional character.
+        /// of the given <see cref="ICharSequence"/> plus at least one additional character.
         /// </summary>
-        /// <param name="s">ICharSequence containing characters to be checked for a proper subset.</param>
+        /// <param name="s"><see cref="ICharSequence"/> containing characters to be checked for a proper subset.</param>
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
@@ -1219,6 +1483,27 @@ namespace ICU4N.Text
             return count < s.Length && Span(s, SpanCondition.Contained) == count;
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns true if this set contains all of the characters
+        /// of the given <see cref="ReadOnlySpan{Char}"/> plus at least one additional character.
+        /// </summary>
+        /// <param name="s"><see cref="ReadOnlySpan{Char}"/> containing characters to be checked for a proper subset.</param>
+        /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool IsProperSubsetOf(ReadOnlySpan<char> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+
+            int count = this.Count;
+            return count < s.Length && Span(s, SpanCondition.Contained) == count;
+        }
+#endif 
+
+    
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a proper subset of the specified collection.
         /// </summary>
@@ -1263,6 +1548,7 @@ namespace ICU4N.Text
             return unfoundCount > 0 && found.Count == this.Count;
         }
 
+        
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a proper subset of the specified collection.
         /// </summary>
@@ -1307,6 +1593,7 @@ namespace ICU4N.Text
             return unfoundCount > 0 && found.Count == this.Count;
         }
 
+        
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a proper subset of the specified collection.
         /// </summary>
@@ -1351,6 +1638,7 @@ namespace ICU4N.Text
             return unfoundCount > 0 && found.Count == this.Count;
         }
 
+        
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a proper subset of the specified collection.
         /// </summary>
@@ -1395,6 +1683,7 @@ namespace ICU4N.Text
             return unfoundCount > 0 && found.Count == this.Count;
         }
 
+        
 
         /// <summary>
         /// Returns true if this set contains all of the characters
@@ -1412,6 +1701,7 @@ namespace ICU4N.Text
             return s.Length == this.Count && Span(s, SpanCondition.Contained) == s.Length;
         }
 
+
         /// <summary>
         /// Returns true if this set contains all of the characters
         /// of the given <see cref="StringBuilder"/> and contains no aditional characters.
@@ -1427,6 +1717,7 @@ namespace ICU4N.Text
 
             return s.Length == this.Count && Span(s, SpanCondition.Contained) == s.Length;
         }
+
 
         /// <summary>
         /// Returns true if this set contains all of the characters
@@ -1444,6 +1735,7 @@ namespace ICU4N.Text
             return s.Length == this.Count && Span(s, SpanCondition.Contained) == s.Length;
         }
 
+
         /// <summary>
         /// Returns true if this set contains all of the characters
         /// of the given <see cref="ICharSequence"/> and contains no aditional characters.
@@ -1460,6 +1752,26 @@ namespace ICU4N.Text
             return s.Length == this.Count && Span(s, SpanCondition.Contained) == s.Length;
         }
 
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns true if this set contains all of the characters
+        /// of the given <see cref="ReadOnlySpan{Char}"/> and contains no aditional characters.
+        /// </summary>
+        /// <param name="s"><see cref="ReadOnlySpan{Char}"/> containing characters to be checked for set equality.</param>
+        /// <returns>true if the <see cref="UnicodeSet"/> object contains the same characters as <paramref name="s"/>; otherwise, false.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool SetEquals(ReadOnlySpan<char> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+
+            return s.Length == this.Count && Span(s, SpanCondition.Contained) == s.Length;
+        }
+#endif 
+
+    
         /// <summary>
         /// Checks if this and other contain the same elements. This is set equality: 
         /// duplicates and order are ignored
@@ -1503,6 +1815,7 @@ namespace ICU4N.Text
             }
         }
 
+        
         /// <summary>
         /// Checks if this and other contain the same elements. This is set equality: 
         /// duplicates and order are ignored
@@ -1546,6 +1859,7 @@ namespace ICU4N.Text
             }
         }
 
+        
         /// <summary>
         /// Checks if this and other contain the same elements. This is set equality: 
         /// duplicates and order are ignored
@@ -1589,6 +1903,7 @@ namespace ICU4N.Text
             }
         }
 
+        
         /// <summary>
         /// Checks if this and other contain the same elements. This is set equality: 
         /// duplicates and order are ignored
@@ -1632,7 +1947,8 @@ namespace ICU4N.Text
             }
         }
 
-
+        
+    
         /// <summary>
         /// Complement the specified <paramref name="collection"/> with this set.
         /// The set will not contain the specified set once the call
@@ -1666,6 +1982,7 @@ namespace ICU4N.Text
             return this.UnionWith(temp);
         }
 
+        
         /// <summary>
         /// Complement the specified <paramref name="collection"/> with this set.
         /// The set will not contain the specified set once the call
@@ -1699,6 +2016,7 @@ namespace ICU4N.Text
             return this.UnionWith(temp);
         }
 
+        
         /// <summary>
         /// Complement the specified <paramref name="collection"/> with this set.
         /// The set will not contain the specified set once the call
@@ -1732,6 +2050,7 @@ namespace ICU4N.Text
             return this.UnionWith(temp);
         }
 
+        
         /// <summary>
         /// Complement the specified <paramref name="collection"/> with this set.
         /// The set will not contain the specified set once the call
@@ -1765,5 +2084,6 @@ namespace ICU4N.Text
             return this.UnionWith(temp);
         }
 
+        
     }
 }
