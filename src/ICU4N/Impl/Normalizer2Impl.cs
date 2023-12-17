@@ -118,7 +118,7 @@ namespace ICU4N.Impl
             else
             {
                 appIsStringBuilder = false;
-                str = new StringBuilder();
+                str = new StringBuilder(destCapacity);
                 reorderStart = 0;
                 lastCC = 0;
             }
