@@ -6,6 +6,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using J2N;
 using J2N.Numerics;
@@ -352,6 +353,7 @@ namespace ICU4N.Impl
             return Hex(s, 4, ",", true, new StringBuilder()).ToString();
         }
 
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -360,6 +362,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, 4, ",", true, new StringBuilder()).ToString();
         }
+
 
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
@@ -370,6 +373,7 @@ namespace ICU4N.Impl
             return Hex(s, 4, ",", true, new StringBuilder()).ToString();
         }
 
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -378,7 +382,21 @@ namespace ICU4N.Impl
         {
             return Hex(s, 4, ",", true, new StringBuilder()).ToString();
         }
+
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(ReadOnlySpan<char> s)
+        {
+            return Hex(s, 4, ",", true, new StringBuilder()).ToString();
+        }
+#endif 
+
             
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -419,7 +437,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -460,7 +480,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -501,7 +523,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -542,7 +566,54 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        public static StringBuilder Hex(string s, int width, ReadOnlySpan<char> separator, bool useCodePoints, StringBuilder result)
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
                     
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -583,7 +654,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -624,7 +697,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -665,7 +740,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -706,7 +783,54 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        public static StringBuilder Hex(StringBuilder s, int width, ReadOnlySpan<char> separator, bool useCodePoints, StringBuilder result)
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
                     
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -747,7 +871,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -788,7 +914,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -829,7 +957,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -870,7 +1000,54 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        public static StringBuilder Hex(char[] s, int width, ReadOnlySpan<char> separator, bool useCodePoints, StringBuilder result)
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
                     
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -911,7 +1088,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -952,7 +1131,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -993,7 +1174,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1034,7 +1217,279 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        public static StringBuilder Hex(ICharSequence s, int width, ReadOnlySpan<char> separator, bool useCodePoints, StringBuilder result)
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
+                    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        public static StringBuilder Hex(ReadOnlySpan<char> s, int width, string separator, bool useCodePoints, StringBuilder result)
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        public static StringBuilder Hex(ReadOnlySpan<char> s, int width, StringBuilder separator, bool useCodePoints, StringBuilder result)
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        public static StringBuilder Hex(ReadOnlySpan<char> s, int width, char[] separator, bool useCodePoints, StringBuilder result)
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        public static StringBuilder Hex(ReadOnlySpan<char> s, int width, ICharSequence separator, bool useCodePoints, StringBuilder result)
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        public static StringBuilder Hex(ReadOnlySpan<char> s, int width, ReadOnlySpan<char> separator, bool useCodePoints, StringBuilder result)
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
                         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1075,7 +1530,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1116,7 +1573,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1157,7 +1616,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1198,7 +1659,54 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static T Hex<T>(string s, int width, ReadOnlySpan<char> separator, bool useCodePoints, T result) where T : IAppendable
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
                     
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1239,7 +1747,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1280,7 +1790,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1321,7 +1833,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1362,7 +1876,54 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static T Hex<T>(StringBuilder s, int width, ReadOnlySpan<char> separator, bool useCodePoints, T result) where T : IAppendable
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
                     
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1403,7 +1964,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1444,7 +2007,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1485,7 +2050,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1526,7 +2093,54 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static T Hex<T>(char[] s, int width, ReadOnlySpan<char> separator, bool useCodePoints, T result) where T : IAppendable
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
                     
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1567,7 +2181,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1608,7 +2224,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1649,7 +2267,9 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
         
+
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1690,7 +2310,279 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static T Hex<T>(ICharSequence s, int width, ReadOnlySpan<char> separator, bool useCodePoints, T result) where T : IAppendable
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
+                    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static T Hex<T>(ReadOnlySpan<char> s, int width, string separator, bool useCodePoints, T result) where T : IAppendable
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static T Hex<T>(ReadOnlySpan<char> s, int width, StringBuilder separator, bool useCodePoints, T result) where T : IAppendable
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static T Hex<T>(ReadOnlySpan<char> s, int width, char[] separator, bool useCodePoints, T result) where T : IAppendable
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static T Hex<T>(ReadOnlySpan<char> s, int width, ICharSequence separator, bool useCodePoints, T result) where T : IAppendable
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static T Hex<T>(ReadOnlySpan<char> s, int width, ReadOnlySpan<char> separator, bool useCodePoints, T result) where T : IAppendable
+        {
+            try
+            {
+                if (useCodePoints)
+                {
+                    int cp;
+                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                    {
+                        cp = Character.CodePointAt(s, i);
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(cp, width));
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < s.Length; ++i)
+                    {
+                        if (i != 0)
+                        {
+                            result.Append(separator);
+                        }
+                        result.Append(Hex(s[i], width));
+                    }
+                }
+                return result;
+            }
+            catch (IOException e)
+            {
+                throw new IcuArgumentException(e);
+            }
+        }
+#endif 
+
                 
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1699,7 +2591,9 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
     
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1708,7 +2602,9 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
     
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1717,7 +2613,9 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
     
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1726,7 +2624,22 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(string s, int width, ReadOnlySpan<char> separator)
+        {
+            return Hex(s, width, separator, true, new StringBuilder()).ToString();
+        }
+#endif 
+
         
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1735,7 +2648,9 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
     
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1744,7 +2659,9 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
     
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1753,7 +2670,9 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
     
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1762,7 +2681,22 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(StringBuilder s, int width, ReadOnlySpan<char> separator)
+        {
+            return Hex(s, width, separator, true, new StringBuilder()).ToString();
+        }
+#endif 
+
         
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1771,7 +2705,9 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
     
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1780,7 +2716,9 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
     
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1789,7 +2727,9 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
     
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1798,7 +2738,22 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(char[] s, int width, ReadOnlySpan<char> separator)
+        {
+            return Hex(s, width, separator, true, new StringBuilder()).ToString();
+        }
+#endif 
+
         
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1807,7 +2762,9 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
     
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1816,7 +2773,9 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
     
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1825,7 +2784,9 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
     
+
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1834,6 +2795,85 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(ICharSequence s, int width, ReadOnlySpan<char> separator)
+        {
+            return Hex(s, width, separator, true, new StringBuilder()).ToString();
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(ReadOnlySpan<char> s, int width, string separator)
+        {
+            return Hex(s, width, separator, true, new StringBuilder()).ToString();
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(ReadOnlySpan<char> s, int width, StringBuilder separator)
+        {
+            return Hex(s, width, separator, true, new StringBuilder()).ToString();
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(ReadOnlySpan<char> s, int width, char[] separator)
+        {
+            return Hex(s, width, separator, true, new StringBuilder()).ToString();
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(ReadOnlySpan<char> s, int width, ICharSequence separator)
+        {
+            return Hex(s, width, separator, true, new StringBuilder()).ToString();
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(ReadOnlySpan<char> s, int width, ReadOnlySpan<char> separator)
+        {
+            return Hex(s, width, separator, true, new StringBuilder()).ToString();
+        }
+#endif 
+
     
         /// <summary>
         /// Append the digits of a positive integer to the given
