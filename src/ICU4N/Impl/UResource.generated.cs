@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using J2N.Text;
+using System;
 using System.Text;
 
 namespace ICU4N.Impl
@@ -26,6 +27,7 @@ namespace ICU4N.Impl
             return true;
         }
 
+
         private bool RegionMatches(int start, StringBuilder cs, int n)
         {
             for (int i = 0; i < n; ++i)
@@ -37,6 +39,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
 
         private bool RegionMatches(int start, char[] cs, int n)
         {
@@ -50,6 +53,7 @@ namespace ICU4N.Impl
             return true;
         }
 
+
         private bool RegionMatches(int start, ICharSequence cs, int n)
         {
             for (int i = 0; i < n; ++i)
@@ -62,6 +66,22 @@ namespace ICU4N.Impl
             return true;
         }
 
+#if FEATURE_SPAN
+
+        private bool RegionMatches(int start, ReadOnlySpan<char> cs, int n)
+        {
+            for (int i = 0; i < n; ++i)
+            {
+                if (bytes[offset + start + i] != cs[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
+
         public bool ContentEquals(string cs)
         {
             if (cs == null)
@@ -70,6 +90,7 @@ namespace ICU4N.Impl
             }
             return (cs.Length == length && RegionMatches(0, cs, length));
         }
+
 
         public bool ContentEquals(StringBuilder cs)
         {
@@ -80,6 +101,7 @@ namespace ICU4N.Impl
             return (cs.Length == length && RegionMatches(0, cs, length));
         }
 
+
         public bool ContentEquals(char[] cs)
         {
             if (cs == null)
@@ -88,6 +110,7 @@ namespace ICU4N.Impl
             }
             return (cs.Length == length && RegionMatches(0, cs, length));
         }
+
 
         public bool ContentEquals(ICharSequence cs)
         {
@@ -102,11 +125,25 @@ namespace ICU4N.Impl
             return (cs.Length == length && RegionMatches(0, cs, length));
         }
 
+#if FEATURE_SPAN
+
+        public bool ContentEquals(ReadOnlySpan<char> cs)
+        {
+            if (cs == null)
+            {
+                return false;
+            }
+            return (cs.Length == length && RegionMatches(0, cs, length));
+        }
+#endif 
+
+
         public bool StartsWith(string cs)
         {
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(0, cs, csLength);
         }
+
 
         public bool StartsWith(StringBuilder cs)
         {
@@ -114,11 +151,13 @@ namespace ICU4N.Impl
             return csLength <= length && RegionMatches(0, cs, csLength);
         }
 
+
         public bool StartsWith(char[] cs)
         {
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(0, cs, csLength);
         }
+
 
         public bool StartsWith(ICharSequence cs)
         {
@@ -126,11 +165,22 @@ namespace ICU4N.Impl
             return csLength <= length && RegionMatches(0, cs, csLength);
         }
 
+#if FEATURE_SPAN
+
+        public bool StartsWith(ReadOnlySpan<char> cs)
+        {
+            int csLength = cs.Length;
+            return csLength <= length && RegionMatches(0, cs, csLength);
+        }
+#endif 
+
+
         public bool EndsWith(string cs)
         {
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(length - csLength, cs, csLength);
         }
+
 
         public bool EndsWith(StringBuilder cs)
         {
@@ -138,17 +188,29 @@ namespace ICU4N.Impl
             return csLength <= length && RegionMatches(length - csLength, cs, csLength);
         }
 
+
         public bool EndsWith(char[] cs)
         {
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(length - csLength, cs, csLength);
         }
 
+
         public bool EndsWith(ICharSequence cs)
         {
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(length - csLength, cs, csLength);
         }
+
+#if FEATURE_SPAN
+
+        public bool EndsWith(ReadOnlySpan<char> cs)
+        {
+            int csLength = cs.Length;
+            return csLength <= length && RegionMatches(length - csLength, cs, csLength);
+        }
+#endif 
+
 
         /// <returns>true if the substring of this key starting from the offset
         /// contains the same characters as the other sequence.</returns>
@@ -158,6 +220,7 @@ namespace ICU4N.Impl
             return csLength == (length - start) && RegionMatches(start, cs, csLength);
         }
 
+
         /// <returns>true if the substring of this key starting from the offset
         /// contains the same characters as the other sequence.</returns>
         public bool RegionMatches(int start, StringBuilder cs)
@@ -165,6 +228,7 @@ namespace ICU4N.Impl
             int csLength = cs.Length;
             return csLength == (length - start) && RegionMatches(start, cs, csLength);
         }
+
 
         /// <returns>true if the substring of this key starting from the offset
         /// contains the same characters as the other sequence.</returns>
@@ -174,6 +238,7 @@ namespace ICU4N.Impl
             return csLength == (length - start) && RegionMatches(start, cs, csLength);
         }
 
+
         /// <returns>true if the substring of this key starting from the offset
         /// contains the same characters as the other sequence.</returns>
         public bool RegionMatches(int start, ICharSequence cs)
@@ -181,6 +246,18 @@ namespace ICU4N.Impl
             int csLength = cs.Length;
             return csLength == (length - start) && RegionMatches(start, cs, csLength);
         }
+
+#if FEATURE_SPAN
+
+        /// <returns>true if the substring of this key starting from the offset
+        /// contains the same characters as the other sequence.</returns>
+        public bool RegionMatches(int start, ReadOnlySpan<char> cs)
+        {
+            int csLength = cs.Length;
+            return csLength == (length - start) && RegionMatches(start, cs, csLength);
+        }
+#endif 
+
 
         public int CompareTo(string cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
         {
@@ -197,6 +274,7 @@ namespace ICU4N.Impl
             return length - csLength;
         }
 
+
         public int CompareTo(StringBuilder cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
         {
             int csLength = cs.Length;
@@ -211,6 +289,7 @@ namespace ICU4N.Impl
             }
             return length - csLength;
         }
+
 
         public int CompareTo(char[] cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
         {
@@ -227,6 +306,7 @@ namespace ICU4N.Impl
             return length - csLength;
         }
 
+
         public int CompareTo(ICharSequence cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
         {
             int csLength = cs.Length;
@@ -241,6 +321,25 @@ namespace ICU4N.Impl
             }
             return length - csLength;
         }
+
+#if FEATURE_SPAN
+
+        public int CompareTo(ReadOnlySpan<char> cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
+        {
+            int csLength = cs.Length;
+            int minLength = length <= csLength ? length : csLength;
+            for (int i = 0; i < minLength; ++i)
+            {
+                int diff = this[i] - cs[i];
+                if (diff != 0)
+                {
+                    return diff;
+                }
+            }
+            return length - csLength;
+        }
+#endif 
+
 
     }
 }
