@@ -282,18 +282,9 @@ namespace ICU4N.Impl
         public int CompareTo(StringBuilder cs)
         {
             if (cs is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
-
-            int csLength = cs.Length;
-            int minLength = length <= csLength ? length : csLength;
-            for (int i = 0; i < minLength; ++i)
-            {
-                int diff = this[i] - cs[i];
-                if (diff != 0)
-                {
-                    return diff;
-                }
-            }
-            return length - csLength;
+            // ICU4N: Indexing StringBuilder is really slow,
+            // so we cascade the call.
+            return CompareTo(cs.ToString());
         }
 
 
@@ -319,6 +310,10 @@ namespace ICU4N.Impl
         {
             if (cs is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
             if (!cs.HasValue) return 1;
+            if (cs is StringBuilderCharSequence stringBuilder)
+            {
+                return CompareTo(stringBuilder.Value);
+            }
 
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;
