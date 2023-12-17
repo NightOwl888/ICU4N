@@ -986,20 +986,20 @@ namespace ICU4N.Impl
                 iDotAcute = "i\u0307\u0301",
                 iDotTilde = "i\u0307\u0303";
 
-        // ICU4N specific - ToFullLower(int c, IContextIterator iter, IAppendable output, int caseLocale) moved to UCasePropsExtension.tt
+        // ICU4N specific - ToFullLower(int c, IContextIterator iter, IAppendable output, int caseLocale) moved to UCaseProps.generated.tt
 
         // ICU4N specific - ToUpperOrTitle(int c, IContextIterator iter,
         //    IAppendable output,
         //    int loc,
-        //    bool upperNotTitle) moved to UCasePropsExtension.tt
+        //    bool upperNotTitle) moved to UCaseProps.generated.tt
 
         // ICU4N specific - ToFullUpper(int c, IContextIterator iter,
         //    IAppendable output,
-        //    int caseLocale) moved to UCasePropsExtension.tt
+        //    int caseLocale) moved to UCaseProps.generated.tt
 
         // ICU4N specific - ToFullTitle(int c, IContextIterator iter,
         //    IAppendable output,
-        //    int caseLocale) moved to UCasePropsExtension.tt
+        //    int caseLocale) moved to UCaseProps.generated.tt
 
 
 
@@ -1123,7 +1123,7 @@ namespace ICU4N.Impl
             return c;
         }
 
-        // ICU4N specific - ToFullFolding(int c, IAppendable output, int options) moved to UCasePropsExtension.tt
+        // ICU4N specific - ToFullFolding(int c, IAppendable output, int options) moved to UCaseProps.generated.tt
 
 
 

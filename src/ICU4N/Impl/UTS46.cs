@@ -93,13 +93,13 @@ namespace ICU4N.Impl
             this.options = options;
         }
 
-        // ICU4N specific - LabelToASCII(ICharSequence label, StringBuilder dest, Info info) moved to UTS46Extension.tt
+        // ICU4N specific - LabelToASCII(ICharSequence label, StringBuilder dest, Info info) moved to UTS46.generated.tt
 
-        // ICU4N specific - LabelToUnicode(ICharSequence label, StringBuilder dest, Info info) moved to UTS46Extension.tt
+        // ICU4N specific - LabelToUnicode(ICharSequence label, StringBuilder dest, Info info) moved to UTS46.generated.tt
 
-        // ICU4N specific - NameToASCII(ICharSequence name, StringBuilder dest, Info info) moved to UTS46Extension.tt
+        // ICU4N specific - NameToASCII(ICharSequence name, StringBuilder dest, Info info) moved to UTS46.generated.tt
 
-        // ICU4N specific - NameToUnicode(ICharSequence name, StringBuilder dest, Info info) moved to UTS46Extension.tt
+        // ICU4N specific - NameToUnicode(ICharSequence name, StringBuilder dest, Info info) moved to UTS46.generated.tt
 
 
 
@@ -118,7 +118,7 @@ namespace ICU4N.Impl
             IDNAError.InvalidAceLabel
         };
 
-        // ICU4N specific - NIsASCIIString(ICharSequence dest) moved to UTS46Extension.tt
+        // ICU4N specific - NIsASCIIString(ICharSequence dest) moved to UTS46.generated.tt
 
         // UTS #46 data for ASCII characters.
         // The normalizer (using uts46.nrm) maps uppercase ASCII letters to lowercase
@@ -145,13 +145,13 @@ namespace ICU4N.Impl
         // ICU4N specific - Process(ICharSequence src,
         //    bool isLabel, bool toASCII,
         //    StringBuilder dest,
-        //    Info info) moved to UTS46Extension.tt
+        //    Info info) moved to UTS46.generated.tt
 
         // ICU4N specific - ProcessUnicode(ICharSequence src,
         //    int labelStart, int mappingStart,
         //    bool isLabel, bool toASCII,
         //    StringBuilder dest,
-        //    Info info) moved to UTS46Extension.tt
+        //    Info info) moved to UTS46.generated.tt
 
 
 
@@ -207,7 +207,7 @@ namespace ICU4N.Impl
         }
 
         // ICU4N specific - ReplaceLabel(StringBuilder dest, int destLabelStart, int destLabelLength,
-        //    ICharSequence label, int labelLength) moved to UTS46Extension.tt
+        //    ICharSequence label, int labelLength) moved to UTS46.generated.tt
 
         // returns the new label length
         private int ProcessLabel(StringBuilder dest,
@@ -525,13 +525,13 @@ namespace ICU4N.Impl
         private static readonly int L_EN_ES_CS_ET_ON_BN_NSM_MASK = L_EN_MASK | ES_CS_ET_ON_BN_NSM_MASK;
         private static readonly int R_AL_AN_EN_ES_CS_ET_ON_BN_NSM_MASK = R_AL_MASK | EN_AN_MASK | ES_CS_ET_ON_BN_NSM_MASK;
 
-        // ICU4N specific - CheckLabelBiDi(ICharSequence label, int labelStart, int labelLength, Info info) moved to UTS46Extension.tt
+        // ICU4N specific - CheckLabelBiDi(ICharSequence label, int labelStart, int labelLength, Info info) moved to UTS46.generated.tt
 
-        // ICU4N specific - IsASCIIOkBiDi(ICharSequence s, int length) moved to UTS46Extension.tt
+        // ICU4N specific - IsASCIIOkBiDi(ICharSequence s, int length) moved to UTS46.generated.tt
 
-        // ICU4N specific - IsLabelOkContextJ(ICharSequence label, int labelStart, int labelLength) moved to UTS46Extension.tt
+        // ICU4N specific - IsLabelOkContextJ(ICharSequence label, int labelStart, int labelLength) moved to UTS46.generated.tt
 
-        // ICU4N specific - CheckLabelContextO(ICharSequence label, int labelStart, int labelLength, Info info) moved to UTS46Extension.tt
+        // ICU4N specific - CheckLabelContextO(ICharSequence label, int labelStart, int labelLength, Info info) moved to UTS46.generated.tt
 
         // TODO: make public(?) -- in C, these are public in uchar.h
         private static int U_MASK(int x)

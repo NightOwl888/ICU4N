@@ -57,7 +57,7 @@ namespace ICU4N.Impl
         };
 
         // ICU4N specific - CompileToStringMinMaxArguments(
-        //    ICharSequence pattern, StringBuilder sb, int min, int max) moved to SimpleFormatterImplExtension.tt
+        //    ICharSequence pattern, StringBuilder sb, int min, int max) moved to SimpleFormatterImpl.generated.tt
 
 
         /// <param name="compiledPattern">Compiled form of a pattern string.</param>
@@ -68,16 +68,16 @@ namespace ICU4N.Impl
         }
 
         // ICU4N specific - FormatCompiledPattern(string compiledPattern, 
-        //    params ICharSequence[] values) moved to SimpleFormatterImplExtension.tt
+        //    params ICharSequence[] values) moved to SimpleFormatterImpl.generated.tt
 
         // ICU4N specific - FormatRawPattern(string pattern, int min, 
-        //    int max, params ICharSequence[] values) moved to SimpleFormatterImplExtension.tt
+        //    int max, params ICharSequence[] values) moved to SimpleFormatterImpl.generated.tt
 
         // ICU4N specific - FormatAndAppend(string compiledPattern, StringBuilder appendTo, 
-        //    int[] offsets, params ICharSequence[] values) moved to SimpleFormatterImplExtension.tt
+        //    int[] offsets, params ICharSequence[] values) moved to SimpleFormatterImpl.generated.tt
 
         // ICU4N specific - FormatAndReplace(string compiledPattern, StringBuilder result, 
-        //    int[] offsets, params ICharSequence[] values) moved to SimpleFormatterImplExtension.tt
+        //    int[] offsets, params ICharSequence[] values) moved to SimpleFormatterImpl.generated.tt
 
 
         /// <summary>
@@ -105,6 +105,6 @@ namespace ICU4N.Impl
         // ICU4N specific - Format(
         //    string compiledPattern, ICharSequence[] values,
         //    StringBuilder result, string resultCopy, bool forbidResultAsValue,
-        //    int[] offsets) moved to SimpleFormatterImplExtension.tt
+        //    int[] offsets) moved to SimpleFormatterImpl.generated.tt
     }
 }

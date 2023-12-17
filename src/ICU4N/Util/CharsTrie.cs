@@ -348,7 +348,7 @@ namespace ICU4N.Util
         , ICloneable
 #endif
     {
-        // ICU4N specific - constructor moved to CharsTrieExtension.tt
+        // ICU4N specific - constructor moved to CharsTrie.generated.tt
 
         /// <summary>
         /// Clones this trie reader object and its state,
@@ -519,7 +519,7 @@ namespace ICU4N.Util
                     Result.NoMatch);
         }
 
-        // ICU4N specific - Next(ICharSequence s, int sIndex, int sLimit) moved to CharsTrieExtension.tt
+        // ICU4N specific - Next(ICharSequence s, int sIndex, int sLimit) moved to CharsTrie.generated.tt
 
         /// <summary>
         /// Returns a matching string's value if called immediately after

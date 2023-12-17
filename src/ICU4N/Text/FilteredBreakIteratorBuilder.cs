@@ -83,7 +83,7 @@ namespace ICU4N.Text
             return new SimpleFilteredSentenceBreakIteratorBuilder();
         }
 
-        // ICU4N specific - moved SuppressBreakAfter and UnsuppressBreakAfter methods to FilteredBreakIteratorBuilderExtension.tt
+        // ICU4N specific - moved SuppressBreakAfter and UnsuppressBreakAfter methods to FilteredBreakIteratorBuilder.generated.tt
 
         /// <summary>
         /// Wrap (adopt) an existing break iterator in a new filtered instance.

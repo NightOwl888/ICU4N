@@ -3454,9 +3454,9 @@ namespace ICU4N.Text
                 return this;
             }
 
-            // ICU4N specific - Append(ICharSequence s) moved to NormalizerExtension.tt
+            // ICU4N specific - Append(ICharSequence s) moved to Normalizer.generated.tt
 
-            // ICU4N specific - Append(ICharSequence s, int sStart, int sLimit) moved to NormalizerExtension.tt
+            // ICU4N specific - Append(ICharSequence s, int sStart, int sLimit) moved to Normalizer.generated.tt
 
             private readonly char[] chars;
             private readonly int start, limit;

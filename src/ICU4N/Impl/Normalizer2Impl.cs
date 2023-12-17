@@ -65,9 +65,9 @@ namespace ICU4N.Impl
                 (c <= JamoLEnd || (JamoVBase <= c && c <= JamoVEnd) || JamoTBase < c);
         }
 
-        // ICU4N specific - Decompose(int c, IAppendable buffer) moved to Normalizer2ImplExtension.tt
+        // ICU4N specific - Decompose(int c, IAppendable buffer) moved to Normalizer2Impl.generated.tt
 
-        // ICU4N specific - GetRawDecomposition(int c, IAppendable buffer) moved to Normalizer2ImplExtension.tt
+        // ICU4N specific - GetRawDecomposition(int c, IAppendable buffer) moved to Normalizer2Impl.generated.tt
     }
 
     /// <summary>
@@ -130,7 +130,7 @@ namespace ICU4N.Impl
 
         public StringBuilder StringBuilder => str;
 
-        // ICU4N specific - Equals(ICharSequence s, int start, int limit) moved to Normalizer2ImplExtension.tt
+        // ICU4N specific - Equals(ICharSequence s, int start, int limit) moved to Normalizer2Impl.generated.tt
 
         public void Append(int c, int cc)
         {
@@ -170,7 +170,7 @@ namespace ICU4N.Impl
             reorderStart = str.Length;
         }
 
-        // ICU4N specific - Append(ICharSequence s) moved to Normalizer2ImplExtension.tt
+        // ICU4N specific - Append(ICharSequence s) moved to Normalizer2Impl.generated.tt
 
         // ICU4N specific - Append(ICharSequence s, int start, int limit)
 
@@ -349,10 +349,10 @@ namespace ICU4N.Impl
         /// <returns>true or false</returns>
         public static bool IsSurrogateLead(int c) { return (c & 0x400) == 0; }
 
-        // ICU4N specific -  Equal(ICharSequence s1, ICharSequence s2) moved to Normalizer2ImplExtension.tt
+        // ICU4N specific -  Equal(ICharSequence s1, ICharSequence s2) moved to Normalizer2Impl.generated.tt
 
         // ICU4N specific -  Equal(ICharSequence s1, int start1, int limit1,
-        //    ICharSequence s2, int start2, int limit2) moved to Normalizer2ImplExtension.tt
+        //    ICharSequence s2, int start2, int limit2) moved to Normalizer2Impl.generated.tt
     }
 
     /// <summary>
@@ -1012,28 +1012,28 @@ namespace ICU4N.Impl
 
         // higher-level functionality ------------------------------------------ ***
 
-        // ICU4N specific - Decompose(ICharSequence s, StringBuilder dest) moved to Normalizer2ImplExtension.tt
+        // ICU4N specific - Decompose(ICharSequence s, StringBuilder dest) moved to Normalizer2Impl.generated.tt
 
         // ICU4N specific - Decompose(ICharSequence s, int src, int limit, StringBuilder dest,
-        //    int destLengthEstimate) moved to Normalizer2ImplExtension.tt
+        //    int destLengthEstimate) moved to Normalizer2Impl.generated.tt
 
         // ICU4N specific - Decompose(ICharSequence s, int src, int limit,
-        //    ReorderingBuffer buffer) moved to Normalizer2ImplExtension.tt
+        //    ReorderingBuffer buffer) moved to Normalizer2Impl.generated.tt
 
-        // ICU4N specific - DecomposeAndAppend(ICharSequence s, bool doDecompose, ReorderingBuffer buffer) moved to Normalizer2ImplExtension.tt
+        // ICU4N specific - DecomposeAndAppend(ICharSequence s, bool doDecompose, ReorderingBuffer buffer) moved to Normalizer2Impl.generated.tt
 
         // ICU4N specific - Compose(ICharSequence s, int src, int limit,
-        //    bool onlyContiguous, bool doCompose, ReorderingBuffer buffer) moved to Normalizer2ImplExtension.tt
+        //    bool onlyContiguous, bool doCompose, ReorderingBuffer buffer) moved to Normalizer2Impl.generated.tt
 
         // ICU4N specific - ComposeQuickCheck(ICharSequence s, int src, int limit,
-        //    bool onlyContiguous, bool doSpan) moved to Normalizer2ImplExtension.tt
+        //    bool onlyContiguous, bool doSpan) moved to Normalizer2Impl.generated.tt
 
         // ICU4N specific - ComposeAndAppend(ICharSequence s, bool doCompose,
-        //    bool onlyContiguous, ReorderingBuffer buffer) moved to Normalizer2ImplExtension.tt
+        //    bool onlyContiguous, ReorderingBuffer buffer) moved to Normalizer2Impl.generated.tt
 
-        // ICU4N specific - MakeFCD(ICharSequence s, int src, int limit, ReorderingBuffer buffer) moved to Normalizer2ImplExtension.tt
+        // ICU4N specific - MakeFCD(ICharSequence s, int src, int limit, ReorderingBuffer buffer) moved to Normalizer2Impl.generated.tt
 
-        // ICU4N specific - MakeFCDAndAppend(ICharSequence s, bool doMakeFCD, ReorderingBuffer buffer) moved to Normalizer2ImplExtension.tt
+        // ICU4N specific - MakeFCDAndAppend(ICharSequence s, bool doMakeFCD, ReorderingBuffer buffer) moved to Normalizer2Impl.generated.tt
 
 
         public bool HasDecompBoundaryBefore(int c)
@@ -1245,7 +1245,7 @@ namespace ICU4N.Impl
         }
 
         // ICU4N specific - DecomposeShort(ICharSequence s, int src, int limit,
-        //    bool stopAtCompBoundary, bool onlyContiguous, ReorderingBuffer buffer) moved to Normalizer2ImplExtention.tt
+        //    bool stopAtCompBoundary, bool onlyContiguous, ReorderingBuffer buffer) moved to Normalizer2Impl.generated.tt
 
 
         private void Decompose(int c, int norm16, ReorderingBuffer buffer)
@@ -1683,7 +1683,7 @@ namespace ICU4N.Impl
             return norm16 < minNoNoCompNoMaybeCC || IsAlgorithmicNoNo(norm16);
         }
 
-        // ICU4N specific - HasCompBoundaryBefore(ICharSequence s, int src, int limit) moved to Normalizer2ImplExtention.tt
+        // ICU4N specific - HasCompBoundaryBefore(ICharSequence s, int src, int limit) moved to Normalizer2Impl.generated.tt
 
         private bool Norm16HasCompBoundaryAfter(int norm16, bool onlyContiguous)
         {
@@ -1691,7 +1691,7 @@ namespace ICU4N.Impl
                 (!onlyContiguous || IsTrailCC01ForCompBoundaryAfter(norm16));
         }
 
-        // ICU4N specific - HasCompBoundaryAfter(ICharSequence s, int start, int p, bool onlyContiguous) moved to Normalizer2ImplExtention.tt
+        // ICU4N specific - HasCompBoundaryAfter(ICharSequence s, int start, int p, bool onlyContiguous) moved to Normalizer2Impl.generated.tt
 
         /// <summary>For FCC: Given norm16 HAS_COMP_BOUNDARY_AFTER, does it have tccc&lt;=1?</summary>
         private bool IsTrailCC01ForCompBoundaryAfter(int norm16)
@@ -1700,15 +1700,15 @@ namespace ICU4N.Impl
                 (norm16 & DELTA_TCCC_MASK) <= DELTA_TCCC_1 : extraData[norm16 >> OFFSET_SHIFT] <= 0x1ff);
         }
 
-        // ICU4N specific - FindPreviousCompBoundary(ICharSequence s, int p, bool onlyContiguous) moved to Normalizer2ImplExtention.tt
+        // ICU4N specific - FindPreviousCompBoundary(ICharSequence s, int p, bool onlyContiguous) moved to Normalizer2Impl.generated.tt
 
-        // ICU4N specific - FindNextCompBoundary(ICharSequence s, int p, int limit, bool onlyContiguous) moved to Normalizer2ImplExtention.tt
+        // ICU4N specific - FindNextCompBoundary(ICharSequence s, int p, int limit, bool onlyContiguous) moved to Normalizer2Impl.generated.tt
 
-        // ICU4N specific - FindPreviousFCDBoundary(ICharSequence s, int p) moved to Normalizer2ImplExtention.tt
+        // ICU4N specific - FindPreviousFCDBoundary(ICharSequence s, int p) moved to Normalizer2Impl.generated.tt
 
-        // ICU4N specific - FindNextFCDBoundary(ICharSequence s, int p, int limit) moved to Normalizer2ImplExtention.tt
+        // ICU4N specific - FindNextFCDBoundary(ICharSequence s, int p, int limit) moved to Normalizer2Impl.generated.tt
 
-        // ICU4N specific - GetPreviousTrailCC(ICharSequence s, int start, int p) moved to Normalizer2ImplExtention.tt
+        // ICU4N specific - GetPreviousTrailCC(ICharSequence s, int start, int p) moved to Normalizer2Impl.generated.tt
 
 
         private void AddToStartSet(Trie2Writable newData, int origin, int decompLead)

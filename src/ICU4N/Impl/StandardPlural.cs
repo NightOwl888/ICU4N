@@ -82,18 +82,18 @@ namespace ICU4N.Impl
             }
         }
 
-        // ICU4N specific: OrNullFromString(ICharSequence keyword) moved to StandardPluralExtension.tt
+        // ICU4N specific: OrNullFromString(ICharSequence keyword) moved to StandardPlural.generated.tt
 
-        // ICU4N specific: OrOtherFromString(ICharSequence keyword) moved to StandardPluralExtension.tt
+        // ICU4N specific: OrOtherFromString(ICharSequence keyword) moved to StandardPlural.generated.tt
 
-        // ICU4N specific: FromString(ICharSequence keyword) moved to StandardPluralExtension.tt and
+        // ICU4N specific: FromString(ICharSequence keyword) moved to StandardPlural.generated.tt and
         // made into TryFromString
 
-        // ICU4N specific: IndexOrNegativeFromString(ICharSequence keyword) moved to StandardPluralExtension.tt
+        // ICU4N specific: IndexOrNegativeFromString(ICharSequence keyword) moved to StandardPlural.generated.tt
 
-        // ICU4N specific: IndexOrOtherIndexFromString(ICharSequence keyword) moved to StandardPluralExtension.tt
+        // ICU4N specific: IndexOrOtherIndexFromString(ICharSequence keyword) moved to StandardPlural.generated.tt
 
-        // ICU4N specific: IndexFromString(ICharSequence keyword) moved to StandardPluralExtension.tt
+        // ICU4N specific: IndexFromString(ICharSequence keyword) moved to StandardPlural.generated.tt
         // and made into TryIndexFromString
     }
 }

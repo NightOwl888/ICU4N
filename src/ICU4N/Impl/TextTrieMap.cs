@@ -45,7 +45,7 @@ namespace ICU4N.Impl
             this.ignoreCase = ignoreCase;
         }
 
-        // ICU4N specific: Put(ICharSequence text, TValue val) moved to TextTrieMapExtension.tt
+        // ICU4N specific: Put(ICharSequence text, TValue val) moved to TextTrieMap.generated.tt
 
         /// <summary>
         /// Gets an enumerator of the objects associated with the
@@ -62,13 +62,13 @@ namespace ICU4N.Impl
             return Get(text, 0);
         }
 
-        // ICU4N specific: Get(ICharSequence text, int start) moved to TextTrieMapExtension.tt
+        // ICU4N specific: Get(ICharSequence text, int start) moved to TextTrieMap.generated.tt
 
-        // ICU4N specific: Get(ICharSequence text, int start, int[] matchLen) moved to TextTrieMapExtension.tt
+        // ICU4N specific: Get(ICharSequence text, int start, int[] matchLen) moved to TextTrieMap.generated.tt
 
-        // ICU4N specific: Find(ICharSequence text, IResultHandler<TValue> handler) moved to TextTrieMapExtension.tt
+        // ICU4N specific: Find(ICharSequence text, IResultHandler<TValue> handler) moved to TextTrieMap.generated.tt
 
-        // ICU4N specific: Find(ICharSequence text, int offset, IResultHandler<TValue> handler) moved to TextTrieMapExtension.tt
+        // ICU4N specific: Find(ICharSequence text, int offset, IResultHandler<TValue> handler) moved to TextTrieMap.generated.tt
 
         private void Find(Node node, CharEnumerator chitr, IResultHandler<TValue> handler)
         {

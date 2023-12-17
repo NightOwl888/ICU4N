@@ -33,16 +33,16 @@ namespace ICU4N.Text
         }
 
         // ICU4N specific - Normalize(
-        //    ICharSequence src, StringBuilder dest) moved to FilteredNormalizerExtension.tt
+        //    ICharSequence src, StringBuilder dest) moved to FilteredNormalizer.generated.tt
 
         // ICU4N specific - Normalize(
-        //    ICharSequence src, IAppendable dest) moved to FilteredNormalizerExtension.tt
+        //    ICharSequence src, IAppendable dest) moved to FilteredNormalizer.generated.tt
 
         // ICU4N specific - NormalizeSecondAndAppend(
-        //    StringBuilder first, ICharSequence second) moved to FilteredNormalizerExtension.tt
+        //    StringBuilder first, ICharSequence second) moved to FilteredNormalizer.generated.tt
 
         // ICU4N specific - Append(
-        //    StringBuilder first, ICharSequence second) moved to FilteredNormalizerExtension.tt
+        //    StringBuilder first, ICharSequence second) moved to FilteredNormalizer.generated.tt
 
 
         /// <summary>
@@ -122,11 +122,11 @@ namespace ICU4N.Text
             return set.Contains(codePoint) ? norm2.GetCombiningClass(codePoint) : 0;
         }
 
-        // ICU4N specific - IsNormalized(ICharSequence s) moved to FilteredNormalizerExtension.tt
+        // ICU4N specific - IsNormalized(ICharSequence s) moved to FilteredNormalizer.generated.tt
 
-        // ICU4N specific - QuickCheck(ICharSequence s) moved to FilteredNormalizerExtension.tt
+        // ICU4N specific - QuickCheck(ICharSequence s) moved to FilteredNormalizer.generated.tt
 
-        // ICU4N specific - SpanQuickCheckYes(ICharSequence s) moved to FilteredNormalizerExtension.tt
+        // ICU4N specific - SpanQuickCheckYes(ICharSequence s) moved to FilteredNormalizer.generated.tt
 
         /// <summary>
         /// Tests if the <paramref name="character"/> always has a normalization boundary before it,
@@ -186,10 +186,10 @@ namespace ICU4N.Text
         }
 
         // ICU4N specific - Normalize(ICharSequence src, IAppendable dest,
-        //    SpanCondition spanCondition) moved to FilteredNormalizerExtension.tt
+        //    SpanCondition spanCondition) moved to FilteredNormalizer.generated.tt
 
         // ICU4N specific - NormalizeSecondAndAppend(StringBuilder first, ICharSequence second,
-        //    bool doNormalize) moved to FilteredNormalizerExtension.tt
+        //    bool doNormalize) moved to FilteredNormalizer.generated.tt
 
         private Normalizer2 norm2;
         private UnicodeSet set;

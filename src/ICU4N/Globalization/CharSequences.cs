@@ -22,7 +22,7 @@ namespace ICU4N.Globalization
         // s.trim() => UnicodeSet.trim(CharSequence s); return a subsequence starting with the first character not in the set to the last character not in the set.
         // add UnicodeSet.split(CharSequence s);
 
-        // ICU4N specfic - moved all methods to CharSequencesExtension.tt
+        // ICU4N specfic - moved all methods to CharSequences.generated.tt
 
         /// <summary>
         /// Utility function for comparing objects that may be null

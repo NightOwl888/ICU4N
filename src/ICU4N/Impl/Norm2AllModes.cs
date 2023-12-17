@@ -7,19 +7,19 @@ namespace ICU4N.Impl
     // Normalizer2 implementation for the old UNORM_NONE.
     public sealed partial class NoopNormalizer2 : Normalizer2
     {
-        // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved QuickCheck(ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved QuickCheck(ICharSequence) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
 
         public override string GetDecomposition(int c)
         {
@@ -45,21 +45,21 @@ namespace ICU4N.Impl
 
         // normalize
 
-        // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModes.generated.tt
 
         // normalize and append
 
-        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModes.generated.tt
 
 
         public override string GetDecomposition(int c)
@@ -85,9 +85,9 @@ namespace ICU4N.Impl
 
         // quick checks
 
-        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved QuickCheck(ICharSequence s) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved QuickCheck(ICharSequence s) to Norm2AllModes.generated.tt
 
 
         public abstract int GetQuickCheck(int c);
@@ -102,11 +102,11 @@ namespace ICU4N.Impl
         {
         }
 
-        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
 
         public override int GetQuickCheck(int c)
         {
@@ -128,15 +128,15 @@ namespace ICU4N.Impl
             onlyContiguous = fcc;
         }
 
-        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved QuickCheck(ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved QuickCheck(ICharSequence) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
 
         public override int GetQuickCheck(int c)
         {
@@ -165,11 +165,11 @@ namespace ICU4N.Impl
         {
         }
 
-        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModes.generated.tt
 
-        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModesExtension.tt
+        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
 
 
         public override int GetQuickCheck(int c)

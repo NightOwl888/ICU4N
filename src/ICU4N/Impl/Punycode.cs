@@ -127,7 +127,7 @@
             }
         }
 
-        // ICU4N specific - Encode(ICharSequence src, bool[] caseFlags) moved to PunycodeExtension.tt
+        // ICU4N specific - Encode(ICharSequence src, bool[] caseFlags) moved to Punycode.generated.tt
 
         private static bool IsBasic(int ch)
         {
@@ -144,6 +144,6 @@
             return (((ch) & 0xfffff800) == 0xd800);
         }
 
-        // ICU4N specific - Decode(ICharSequence src, bool[] caseFlags) moved to PunycodeExtension.tt
+        // ICU4N specific - Decode(ICharSequence src, bool[] caseFlags) moved to Punycode.generated.tt
     }
 }

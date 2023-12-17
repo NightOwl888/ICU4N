@@ -58,9 +58,9 @@ namespace ICU4N.Text
             this.compiledPattern = compiledPattern;
         }
 
-        // ICU4N specific - Compile(ICharSequence pattern) moved to SimpleFormatterExtension.tt
+        // ICU4N specific - Compile(ICharSequence pattern) moved to SimpleFormatter.generated.tt
 
-        // ICU4N specific - CompileMinMaxArguments(ICharSequence pattern, int min, int max) moved to SimpleFormatterExtension.tt
+        // ICU4N specific - CompileMinMaxArguments(ICharSequence pattern, int min, int max) moved to SimpleFormatter.generated.tt
 
         /// <summary>
         /// The max argument number + 1.
@@ -68,10 +68,10 @@ namespace ICU4N.Text
         /// <stable>ICU 57</stable>
         public int ArgumentLimit => SimpleFormatterImpl.GetArgumentLimit(compiledPattern);
 
-        // ICU4N specific - Format(params ICharSequence[] values) moved to SimpleFormatterExtension.tt
+        // ICU4N specific - Format(params ICharSequence[] values) moved to SimpleFormatter.generated.tt
 
         // ICU4N specific - FormatAndAppend(
-        //    StringBuilder appendTo, int[] offsets, params ICharSequence[] values) moved to SimpleFormatterExtension.tt
+        //    StringBuilder appendTo, int[] offsets, params ICharSequence[] values) moved to SimpleFormatter.generated.tt
 
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
@@ -92,7 +92,7 @@ namespace ICU4N.Text
         }
 
         // ICU4N specific - FormatAndReplace(
-        //    StringBuilder result, int[] offsets, params ICharSequence[] values) moved to SimpleFormatterExtension.tt
+        //    StringBuilder result, int[] offsets, params ICharSequence[] values) moved to SimpleFormatter.generated.tt
 
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.

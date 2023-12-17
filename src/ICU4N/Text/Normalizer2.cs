@@ -289,13 +289,13 @@ namespace ICU4N.Text
             return Normalize(src, new StringBuilder(src.Length)).ToString();
         }
 
-        // ICU4N specific - Moved Normalize(ICharSequence src, StringBuilder dest) to Normalizer2Extension.tt
+        // ICU4N specific - Moved Normalize(ICharSequence src, StringBuilder dest) to Normalizer2.generated.tt
 
-        // ICU4N specific - Moved Normalize(ICharSequence src, IAppendable dest) to Normalizer2Extension.tt
+        // ICU4N specific - Moved Normalize(ICharSequence src, IAppendable dest) to Normalizer2.generated.tt
 
-        // ICU4N specific - Moved NormalizeSecondAndAppend(StringBuilder first, ICharSequence second) to Normalizer2Extension.tt
+        // ICU4N specific - Moved NormalizeSecondAndAppend(StringBuilder first, ICharSequence second) to Normalizer2.generated.tt
 
-        // ICU4N specific - Moved Append(StringBuilder first, ICharSequence second) to Normalizer2Extension.tt
+        // ICU4N specific - Moved Append(StringBuilder first, ICharSequence second) to Normalizer2.generated.tt
 
         /// <summary>
         /// Gets the decomposition mapping of <paramref name="codePoint"/>.
@@ -362,11 +362,11 @@ namespace ICU4N.Text
         /// <stable>ICU 49</stable>
         public virtual int GetCombiningClass(int codePoint) { return 0; }
 
-        // ICU4N specific - Moved IsNormalized(ICharSequence s) to Normalizer2Extension.tt
+        // ICU4N specific - Moved IsNormalized(ICharSequence s) to Normalizer2.generated.tt
 
-        // ICU4N specific - Moved QuickCheck(ICharSequence s) to Normalizer2Extension.tt
+        // ICU4N specific - Moved QuickCheck(ICharSequence s) to Normalizer2.generated.tt
 
-        // ICU4N specific - Moved SpanQuickCheckYes(ICharSequence s) to Normalizer2Extension.tt
+        // ICU4N specific - Moved SpanQuickCheckYes(ICharSequence s) to Normalizer2.generated.tt
 
 
         /// <summary>

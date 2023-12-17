@@ -148,11 +148,11 @@ namespace ICU4N.Numerics
             return count;
         }
 
-        // ICU4N specific - moved Append(ICharSequence sequence, Field field) to NumberStringBuilderExtension.tt
+        // ICU4N specific - moved Append(ICharSequence sequence, Field field) to NumberStringBuilder.generated.tt
 
-        // ICU4N specific - moved Insert(int index, ICharSequence sequence, Field field) to NumberStringBuilderExtension.tt
+        // ICU4N specific - moved Insert(int index, ICharSequence sequence, Field field) to NumberStringBuilder.generated.tt
 
-        // ICU4N specific - moved Append(ICharSequence sequence, Field field) to NumberStringBuilderExtension.tt
+        // ICU4N specific - moved Append(ICharSequence sequence, Field field) to NumberStringBuilder.generated.tt
 
         /// <summary>
         /// Appends the chars in the specified char array to the end of the string, and associates them with the fields in

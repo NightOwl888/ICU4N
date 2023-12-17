@@ -215,7 +215,7 @@ namespace ICU4N.Impl
             return true;
         }
 
-        // ICU4N specific - RegionMatches(int start, ICharSequence cs, int n) moved to UResourceExtension.tt
+        // ICU4N specific - RegionMatches(int start, ICharSequence cs, int n) moved to UResource.generated.tt
 
         public override bool Equals(object other)
         {
@@ -239,13 +239,13 @@ namespace ICU4N.Impl
             }
         }
 
-        // ICU4N specific - ContentEquals(ICharSequence cs) moved to UResourceExtension.tt
+        // ICU4N specific - ContentEquals(ICharSequence cs) moved to UResource.generated.tt
 
-        // ICU4N specific - StartsWith(ICharSequence cs) moved to UResourceExtension.tt
+        // ICU4N specific - StartsWith(ICharSequence cs) moved to UResource.generated.tt
 
-        // ICU4N specific - EndsWith(ICharSequence cs) moved to UResourceExtension.tt
+        // ICU4N specific - EndsWith(ICharSequence cs) moved to UResource.generated.tt
 
-        // ICU4N specific - RegionMatches(int start, ICharSequence cs) moved to UResourceExtension.tt
+        // ICU4N specific - RegionMatches(int start, ICharSequence cs) moved to UResource.generated.tt
 
         public override int GetHashCode()
         {
@@ -269,7 +269,7 @@ namespace ICU4N.Impl
             return CompareTo((ICharSequence)other);
         }
 
-        // ICU4N specific - CompareTo(ICharSequence cs) moved to UResourceExtension.tt
+        // ICU4N specific - CompareTo(ICharSequence cs) moved to UResource.generated.tt
     }
 
     /// <summary>
