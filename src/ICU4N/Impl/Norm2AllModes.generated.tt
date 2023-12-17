@@ -13,7 +13,7 @@
     // Load common settings from the XML file using relative path
     string settingsPath = System.IO.Path.GetFullPath(System.IO.Path.Combine(Host.ResolvePath(string.Empty), @"../../../src/CodeGenerationSettings.xml"));
     XDocument document = XDocument.Load(settingsPath);
-    string[] charSequences = document.XPathSelectElements(@"//codeGen/charSequences/charSequence").Select(x => x.Value).ToArray();
+    string[] charSequences = document.XPathSelectElements(@"//codeGen/charSequences/charSequence").Where(x => x.Value != "ReadOnlySpan<char>").Select(x => x.Value).ToArray(); // ICU4N TODO: API - ReadOnlySpan<char>
     string charSequenceAccessibility = document.XPathSelectElement(@"//codeGen/charSequenceAccessibility").Value;
     string[] appendables = document.XPathSelectElements(@"//codeGen/appendables/appendable").Select(x => x.Value).ToArray();
     string appendableAccessibility = document.XPathSelectElement(@"//codeGen/appendableAccessibility").Value;
