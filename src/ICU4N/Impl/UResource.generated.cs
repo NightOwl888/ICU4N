@@ -142,6 +142,10 @@ namespace ICU4N.Impl
 
         public bool StartsWith(string cs)
         {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(0, cs, csLength);
         }
@@ -149,6 +153,10 @@ namespace ICU4N.Impl
 
         public bool StartsWith(StringBuilder cs)
         {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(0, cs, csLength);
         }
@@ -156,6 +164,10 @@ namespace ICU4N.Impl
 
         public bool StartsWith(char[] cs)
         {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(0, cs, csLength);
         }
@@ -163,6 +175,10 @@ namespace ICU4N.Impl
 
         public bool StartsWith(ICharSequence cs)
         {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(0, cs, csLength);
         }
@@ -179,6 +195,10 @@ namespace ICU4N.Impl
 
         public bool EndsWith(string cs)
         {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(length - csLength, cs, csLength);
         }
@@ -186,6 +206,10 @@ namespace ICU4N.Impl
 
         public bool EndsWith(StringBuilder cs)
         {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(length - csLength, cs, csLength);
         }
@@ -193,6 +217,10 @@ namespace ICU4N.Impl
 
         public bool EndsWith(char[] cs)
         {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(length - csLength, cs, csLength);
         }
@@ -200,6 +228,10 @@ namespace ICU4N.Impl
 
         public bool EndsWith(ICharSequence cs)
         {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(length - csLength, cs, csLength);
         }
@@ -218,6 +250,10 @@ namespace ICU4N.Impl
         /// contains the same characters as the other sequence.</returns>
         public bool RegionMatches(int start, string cs)
         {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
             int csLength = cs.Length;
             return csLength == (length - start) && RegionMatches(start, cs, csLength);
         }
@@ -227,6 +263,10 @@ namespace ICU4N.Impl
         /// contains the same characters as the other sequence.</returns>
         public bool RegionMatches(int start, StringBuilder cs)
         {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
             int csLength = cs.Length;
             return csLength == (length - start) && RegionMatches(start, cs, csLength);
         }
@@ -236,6 +276,10 @@ namespace ICU4N.Impl
         /// contains the same characters as the other sequence.</returns>
         public bool RegionMatches(int start, char[] cs)
         {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
             int csLength = cs.Length;
             return csLength == (length - start) && RegionMatches(start, cs, csLength);
         }
@@ -245,6 +289,10 @@ namespace ICU4N.Impl
         /// contains the same characters as the other sequence.</returns>
         public bool RegionMatches(int start, ICharSequence cs)
         {
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
             int csLength = cs.Length;
             return csLength == (length - start) && RegionMatches(start, cs, csLength);
         }
