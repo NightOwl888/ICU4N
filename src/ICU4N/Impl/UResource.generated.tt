@@ -106,6 +106,12 @@ namespace ICU4N.Impl
 <#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
         public bool StartsWith(<#=charSequence#> cs)
         {
+<# if (charSequence != "ReadOnlySpan<char>") { #>
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
+<# } #>
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(0, cs, csLength);
         }
@@ -118,6 +124,12 @@ namespace ICU4N.Impl
 <#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
         public bool EndsWith(<#=charSequence#> cs)
         {
+<# if (charSequence != "ReadOnlySpan<char>") { #>
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
+<# } #>
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(length - csLength, cs, csLength);
         }
@@ -132,6 +144,12 @@ namespace ICU4N.Impl
         /// contains the same characters as the other sequence.</returns>
         public bool RegionMatches(int start, <#=charSequence#> cs)
         {
+<# if (charSequence != "ReadOnlySpan<char>") { #>
+            // ICU4N: Added guard clause
+            if (cs is null)
+                throw new ArgumentNullException(nameof(cs));
+
+<# } #>
             int csLength = cs.Length;
             return csLength == (length - start) && RegionMatches(start, cs, csLength);
         }
