@@ -837,13 +837,13 @@ namespace ICU4N.Text
                     ResemblesPropertyPattern(pattern, pos);
         }
 
-        // ICU4N specific - AppendCodePoint(IAppendable app, int c) moved to UnicodeSetExtension.tt
+        // ICU4N specific - AppendCodePoint(IAppendable app, int c) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - Append(IAppendable app, ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - Append(IAppendable app, ICharSequence s) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - AppendToPat(IAppendable buf, string s, bool escapeUnprintable) moved to UnicodeSetExtension.tt
+        // ICU4N specific - AppendToPat(IAppendable buf, string s, bool escapeUnprintable) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - AppendToPat(IAppendable buf, int c, bool escapeUnprintable) moved to UnicodeSetExtension.tt
+        // ICU4N specific - AppendToPat(IAppendable buf, int c, bool escapeUnprintable) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Returns a string representation of this set.  If the result of
@@ -861,7 +861,7 @@ namespace ICU4N.Text
             return ToPattern(result, escapeUnprintable).ToString();
         }
 
-        // ICU4N specific - ToPattern(IAppendable result, bool escapeUnprintable) moved to UnicodeSetExtension.tt
+        // ICU4N specific - ToPattern(IAppendable result, bool escapeUnprintable) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Generate and append a string representation of this set to result.
@@ -891,7 +891,7 @@ namespace ICU4N.Text
             return AppendNewPattern(result, escapeUnprintable, includeStrings);
         }
 
-        // ICU4N specific - AppendNewPattern(IAppendable result, bool escapeUnprintable, bool includeStrings) moved to UnicodeSetExtension.tt
+        // ICU4N specific - AppendNewPattern(IAppendable result, bool escapeUnprintable, bool includeStrings) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Returns the number of elements in this set (its cardinality)
@@ -1125,9 +1125,9 @@ namespace ICU4N.Text
             return maxLen;
         }
 
-        // ICU4N specific - MatchesAt(ICharSequence text, int offset) moved to UnicodeSetExtension.tt
+        // ICU4N specific - MatchesAt(ICharSequence text, int offset) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - MatchesAt(ICharSequence text, int offsetInText, ICharSequence substring) moved to UnicodeSetExtension.tt
+        // ICU4N specific - MatchesAt(ICharSequence text, int offsetInText, ICharSequence substring) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Implementation of <see cref="IUnicodeMatcher"/> API.  Union the set of all
@@ -1394,17 +1394,17 @@ namespace ICU4N.Text
             return this;
         }
 
-        // ICU4N specific - Add(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - Add(ICharSequence s) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - GetSingleCP(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - GetSingleCP(ICharSequence s) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - AddAll(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - AddAll(ICharSequence s) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - RetainAll(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - RetainAll(ICharSequence s) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - ComplementAll(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - ComplementAll(ICharSequence s) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - RemoveAll(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - RemoveAll(ICharSequence s) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Remove all strings from this <see cref="UnicodeSet"/>
@@ -1422,9 +1422,9 @@ namespace ICU4N.Text
             return this;
         }
 
-        // ICU4N specific - From(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - From(ICharSequence s) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - FromAll(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - FromAll(ICharSequence s) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Retain only the elements in this set that are contained in the
@@ -1471,7 +1471,7 @@ namespace ICU4N.Text
             return Retain(c, c);
         }
 
-        // ICU4N specific - Retain(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - Retain(ICharSequence s) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Removes the specified range from this set if it is present.
@@ -1515,7 +1515,7 @@ namespace ICU4N.Text
             return Remove(c, c);
         }
 
-        // ICU4N specific - Remove(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - Remove(ICharSequence s) moved to UnicodeSet.generated.tt
 
 
         /// <summary>
@@ -1581,7 +1581,7 @@ namespace ICU4N.Text
             return this;
         }
 
-        // ICU4N specific - Complement(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - Complement(ICharSequence s) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Returns true if this set contains the given character.
@@ -1804,7 +1804,7 @@ namespace ICU4N.Text
             return ((i & 1) != 0 && end < list[i]);
         }
 
-        // ICU4N specific - Contains(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - Contains(ICharSequence s) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Returns true if this set contains all the characters and strings
@@ -2093,7 +2093,7 @@ namespace ICU4N.Text
         //        return true;
         //    }
 
-        // ICU4N specific - ContainsNone(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - ContainsNone(ICharSequence s) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Returns true if this set contains one or more of the characters
@@ -2120,7 +2120,7 @@ namespace ICU4N.Text
             return !ContainsNone(s);
         }
 
-        // ICU4N specific - ContainsSome(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - ContainsSome(ICharSequence s) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Adds all of the elements in the specified set to this set if
@@ -4277,18 +4277,18 @@ namespace ICU4N.Text
             return this;
         }
 
-        // ICU4N specific - Span(ICharSequence s, SpanCondition spanCondition) moved to UnicodeSetExtension.tt
+        // ICU4N specific - Span(ICharSequence s, SpanCondition spanCondition) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - Span(ICharSequence s, int start, SpanCondition spanCondition) moved to UnicodeSetExtension.tt
+        // ICU4N specific - Span(ICharSequence s, int start, SpanCondition spanCondition) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - SpanAndCount(ICharSequence s, int start, SpanCondition spanCondition, out int outCount) moved to UnicodeSetExtension.tt
+        // ICU4N specific - SpanAndCount(ICharSequence s, int start, SpanCondition spanCondition, out int outCount) moved to UnicodeSet.generated.tt
 
         // ICU4N specific - SpanCodePointsAndCount(ICharSequence s, int start,
-        //    SpanCondition spanCondition, out int outCount) moved to UnicodeSetExtension.tt
+        //    SpanCondition spanCondition, out int outCount) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - SpanBack(ICharSequence s, SpanCondition spanCondition) moved to UnicodeSetExtension.tt
+        // ICU4N specific - SpanBack(ICharSequence s, SpanCondition spanCondition) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - SpanBack(ICharSequence s, int fromIndex, SpanCondition spanCondition) moved to UnicodeSetExtension.tt
+        // ICU4N specific - SpanBack(ICharSequence s, int fromIndex, SpanCondition spanCondition) moved to UnicodeSet.generated.tt
 
 
         /// <summary>
@@ -4530,17 +4530,17 @@ namespace ICU4N.Text
             // ICU4N NOTE: Remove() not supported in .NET
         }
 
-        // ICU4N specific - ContainsAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
+        // ICU4N specific - ContainsAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - ContainsNone<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
+        // ICU4N specific - ContainsNone<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - ContainsSome<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
+        // ICU4N specific - ContainsSome<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - AddAll(params ICharSequence[] collection) moved to UnicodeSetExtension.tt
+        // ICU4N specific - AddAll(params ICharSequence[] collection) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - RemoveAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
+        // ICU4N specific - RemoveAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - RetainAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
+        // ICU4N specific - RetainAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSet.generated.tt
 
         // ICU4N specific - De-nested ComparisonStyle enum
 
@@ -4606,9 +4606,9 @@ namespace ICU4N.Text
             return Compare(this, other);
         }
 
-        // ICU4N specific - Compare(ICharSequence str, int codePoint) moved to UnicodeSetExtension.tt
+        // ICU4N specific - Compare(ICharSequence str, int codePoint) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - Compare(int codePoint, ICharSequence str) moved to UnicodeSetExtension.tt
+        // ICU4N specific - Compare(int codePoint, ICharSequence str) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Utility to compare two enumerators. Warning: the ordering in enumerables is important. For Collections that are ordered,
@@ -4718,7 +4718,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public virtual ICollection<string> Strings => strings.AsReadOnly();
 
-        // ICU4N specific - GetSingleCodePoint(ICharSequence s) moved to UnicodeSetExtension.tt
+        // ICU4N specific - GetSingleCodePoint(ICharSequence s) moved to UnicodeSet.generated.tt
 
         /// <summary>
         /// Simplify the ranges in a Unicode set by merging any ranges that are only separated by characters in the <paramref name="dontCare"/> set.
@@ -4742,11 +4742,11 @@ namespace ICU4N.Text
             return this;
         }
 
-        // ICU4N specific - FindIn(ICharSequence value, int fromIndex, bool findNot) moved to UnicodeSetExtension.tt
+        // ICU4N specific - FindIn(ICharSequence value, int fromIndex, bool findNot) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - FindLastIn(ICharSequence value, int fromIndex, bool findNot) moved to UnicodeSetExtension.tt
+        // ICU4N specific - FindLastIn(ICharSequence value, int fromIndex, bool findNot) moved to UnicodeSet.generated.tt
 
-        // ICU4N specific - StripFrom(ICharSequence source, bool matches) moved to UnicodeSetExtension.tt
+        // ICU4N specific - StripFrom(ICharSequence source, bool matches) moved to UnicodeSet.generated.tt
 
         // ICU4N specific - De-nested SpanCondition
 

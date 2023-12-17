@@ -98,10 +98,10 @@ namespace ICU4N.Text
             return OMIT_UNCHANGED;
         }
 
-        // ICU4N specific - Apply(CultureInfo locale, ICharSequence src) moved to CaseMapExtension.tt
+        // ICU4N specific - Apply(CultureInfo locale, ICharSequence src) moved to CaseMap.generated.tt
 
         // ICU4N specific - Apply(
-        //    CultureInfo locale, string src, StringBuilder dest, Edits edits) moved to CaseMapExtension.tt
+        //    CultureInfo locale, string src, StringBuilder dest, Edits edits) moved to CaseMap.generated.tt
     }
 
     /// <summary>
@@ -131,10 +131,10 @@ namespace ICU4N.Text
             return OMIT_UNCHANGED;
         }
 
-        // ICU4N specific - Apply(CultureInfo locale, ICharSequence src) moved to CaseMapExtension.tt
+        // ICU4N specific - Apply(CultureInfo locale, ICharSequence src) moved to CaseMap.generated.tt
 
         // ICU4N specific - Apply<T>(
-        //    CultureInfo locale, string src, T dest, Edits edits) where T : IAppendable moved to CaseMapExtension.tt
+        //    CultureInfo locale, string src, T dest, Edits edits) where T : IAppendable moved to CaseMap.generated.tt
     }
 
     /// <summary>
@@ -270,10 +270,10 @@ namespace ICU4N.Text
                 internalOptions, CaseMapImpl.TitleCaseAdjustToCased));
         }
 
-        // ICU4N specific - Apply(CultureInfo locale, BreakIterator iter, ICharSequence src) moved to CaseMapExtension.tt
+        // ICU4N specific - Apply(CultureInfo locale, BreakIterator iter, ICharSequence src) moved to CaseMap.generated.tt
 
         // ICU4N specific - Apply<T>(
-        //    CultureInfo locale, BreakIterator iter, ICharSequence src, T dest, Edits edits) where dest : IAppendable moved to CaseMapExtension.tt
+        //    CultureInfo locale, BreakIterator iter, ICharSequence src, T dest, Edits edits) where dest : IAppendable moved to CaseMap.generated.tt
     }
 
     /// <summary>
@@ -325,9 +325,9 @@ namespace ICU4N.Text
                 TURKIC : TURKIC_OMIT_UNCHANGED;
         }
 
-        // ICU4N specific - Apply(ICharSequence src) moved to CaseMapExtension.tt
+        // ICU4N specific - Apply(ICharSequence src) moved to CaseMap.generated.tt
 
         // ICU4N specific - Apply(
-        //    string src, StringBuilder dest, Edits edits) moved to CaseMapExtension.tt
+        //    string src, StringBuilder dest, Edits edits) moved to CaseMap.generated.tt
     }
 }

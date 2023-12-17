@@ -336,19 +336,19 @@ namespace ICU4N.Impl
         }
 
         // ICU4N specific - EncodeRun(IAppendable buffer, int value, int length)
-        //    moved to UtilityExtension.tt
+        //    moved to Utility.generated.tt
 
         // ICU4N specific - AppendInt32(IAppendable buffer, int value)
-        //    moved to UtilityExtension.tt
+        //    moved to Utility.generated.tt
 
         // ICU4N specific - EncodeRun(IAppendable buffer, short value, int length)
-        //    moved to UtilityExtension.tt
+        //    moved to Utility.generated.tt
 
         // ICU4N specific - EncodeRun(IAppendable buffer, byte value, int length,
-        //    byte[] state) moved to UtilityExtension.tt
+        //    byte[] state) moved to Utility.generated.tt
 
         // ICU4N specific - AppendEncodedByte(IAppendable buffer, byte value,
-        //    byte[] state) moved to UtilityExtension.tt
+        //    byte[] state) moved to Utility.generated.tt
 
         /// <summary>
         /// Construct an array of <see cref="int"/>s from a run-length encoded <see cref="string"/>.
@@ -1250,12 +1250,12 @@ namespace ICU4N.Impl
 
 #nullable restore
 
-        // ICU4N specific - Hex(ICharSequence s) moved to UtilityExtension.tt
+        // ICU4N specific - Hex(ICharSequence s) moved to Utility.generated.tt
 
         // ICU4N specific - Hex(ICharSequence s, int width, ICharSequence separator, bool useCodePoints, 
-        //      StringBuilder result) moved to UtilityExtension.tt
+        //      StringBuilder result) moved to Utility.generated.tt
 
-        // ICU4N specific - Hex(ICharSequence s, int width, ICharSequence separator) moved to UtilityExtension.tt
+        // ICU4N specific - Hex(ICharSequence s, int width, ICharSequence separator) moved to Utility.generated.tt
 
         /// <summary>
         /// Split a string into pieces based on the given <paramref name="divider"/> character
@@ -1629,10 +1629,10 @@ namespace ICU4N.Impl
         };
 
         // ICU4N specific - RecursiveAppendNumber(IAppendable result, int n,
-        //    int radix, int minDigits) moved to UtilityExtension.tt
+        //    int radix, int minDigits) moved to Utility.generated.tt
 
         // ICU4N specific - AppendNumber(T result, int n,
-        //    int radix, int minDigits) where T : IAppendable moved to UtilityExtension.tt
+        //    int radix, int minDigits) where T : IAppendable moved to Utility.generated.tt
 
         /// <summary>
         /// Parse an unsigned 31-bit integer at the given offset.  Use
@@ -1693,7 +1693,7 @@ namespace ICU4N.Impl
         }
 
         // ICU4N specific - EscapeUnprintable(IAppendable result, int c)
-        //    moved to UtilityExtension.tt
+        //    moved to Utility.generated.tt
 
         /// <summary>
         /// Returns the index of the first character in a set, ignoring quoted text.

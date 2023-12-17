@@ -229,7 +229,7 @@ namespace ICU4N.Impl
             return 'A' <= c && c <= 'Z' ? c + 0x20 : c;
         }
 
-        // ICU4N specific - ContainsName(BytesTrie trie, ICharSequence name) moved to UPropertyAliasesExtension.tt
+        // ICU4N specific - ContainsName(BytesTrie trie, ICharSequence name) moved to UPropertyAliases.generated.tt
 
         //----------------------------------------------------------------
         // Public API
@@ -339,11 +339,11 @@ namespace ICU4N.Impl
             return TryGetName(nameGroupOffset, (int)nameChoice, out result);
         }
 
-        // ICU4N specific - GetPropertyOrValueEnum(int bytesTrieOffset, ICharSequence alias) moved to UPropertyAliasesExtension.tt
+        // ICU4N specific - GetPropertyOrValueEnum(int bytesTrieOffset, ICharSequence alias) moved to UPropertyAliases.generated.tt
 
-        // ICU4N specific - GetPropertyEnum(ICharSequence alias) moved to UPropertyAliasesExtension.tt
+        // ICU4N specific - GetPropertyEnum(ICharSequence alias) moved to UPropertyAliases.generated.tt
 
-        // ICU4N specific - GetPropertyValueEnum(UProperty property, ICharSequence alias) moved to UPropertyAliasesExtension.tt
+        // ICU4N specific - GetPropertyValueEnum(UProperty property, ICharSequence alias) moved to UPropertyAliases.generated.tt
 
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names. Does not throw.

@@ -79,7 +79,7 @@ namespace ICU4N.Text
 
         // ICU4N specific - de-nested CountMethod enum
 
-        // ICU4N specific - moved all methods to UnicodeSetSpannerExtension.tt
+        // ICU4N specific - moved all methods to UnicodeSetSpanner.generated.tt
         // so overloads for each of the charcter sequence types can be automatically
         // generated.
 

@@ -245,13 +245,13 @@ namespace ICU4N.Text
             return new UTS46(options);
         }
 
-        // ICU4N specific - LabelToASCII(ICharSequence label, StringBuilder dest, Info info) moved to IDNAExtension.tt
+        // ICU4N specific - LabelToASCII(ICharSequence label, StringBuilder dest, Info info) moved to IDNA.generated.tt
 
-        // ICU4N specific - LabelToUnicode(ICharSequence label, StringBuilder dest, Info info) moved to IDNAExtension.tt
+        // ICU4N specific - LabelToUnicode(ICharSequence label, StringBuilder dest, Info info) moved to IDNA.generated.tt
 
-        // ICU4N specific - NameToASCII(ICharSequence name, StringBuilder dest, Info info) moved to IDNAExtension.tt
+        // ICU4N specific - NameToASCII(ICharSequence name, StringBuilder dest, Info info) moved to IDNA.generated.tt
 
-        // ICU4N specific - NameToUnicode(ICharSequence name, StringBuilder dest, Info info) moved to IDNAExtension.tt
+        // ICU4N specific - NameToUnicode(ICharSequence name, StringBuilder dest, Info info) moved to IDNA.generated.tt
 
         // ICU4N specific - De-nested Info class and renamed IDNAInfo
 

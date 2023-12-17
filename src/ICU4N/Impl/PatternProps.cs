@@ -110,7 +110,7 @@ namespace ICU4N.Impl
             }
         }
 
-        // ICU4N specific - SkipWhiteSpace(ICharSequence s, int i) moved to PatternPropsExtension.tt
+        // ICU4N specific - SkipWhiteSpace(ICharSequence s, int i) moved to PatternProps.generated.tt
 
         /// <returns><paramref name="s"/> except with leading and trailing Pattern_White_Space removed.</returns>
         public static string TrimWhiteSpace(string s)
@@ -138,11 +138,11 @@ namespace ICU4N.Impl
         }
 
 
-        // ICU4N specific - IsIdentifier(ICharSequence s) moved to PatternPropsExtension.tt
+        // ICU4N specific - IsIdentifier(ICharSequence s) moved to PatternProps.generated.tt
 
-        // ICU4N specific - IsIdentifier(ICharSequence s, int start, int limit) moved to PatternPropsExtension.tt
+        // ICU4N specific - IsIdentifier(ICharSequence s, int start, int limit) moved to PatternProps.generated.tt
 
-        // ICU4N specific - SkipIdentifier(ICharSequence s, int i) moved to PatternPropsExtension.tt
+        // ICU4N specific - SkipIdentifier(ICharSequence s, int i) moved to PatternProps.generated.tt
 
 
         /// <summary>

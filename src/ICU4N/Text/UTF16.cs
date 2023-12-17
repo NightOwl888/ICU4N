@@ -192,7 +192,7 @@ namespace ICU4N.Text
         // /CLOVER:ON
         // public method ------------------------------------------------------
 
-        // ICU4N specific - These methods were combined into one and moved to UTF16Extension.tt
+        // ICU4N specific - These methods were combined into one and moved to UTF16.generated.tt
         // - CharAt(string source, int offset16)
         // - _charAt(string source, int offset16, char single)
         // - CharAt(char[] source, int offset16)
@@ -2924,9 +2924,9 @@ namespace ICU4N.Text
             }
         }
 
-        // ICU4N specific - GetSingleCodePoint(ICharSequence s) moved to UTF16Extension.tt
+        // ICU4N specific - GetSingleCodePoint(ICharSequence s) moved to UTF16.generated.tt
 
-        // ICU4N specific - CompareCodePoint(int codePoint, ICharSequence s) moved to UTF16Extension.tt
+        // ICU4N specific - CompareCodePoint(int codePoint, ICharSequence s) moved to UTF16.generated.tt
 
 
         // private data members -------------------------------------------------

@@ -382,21 +382,21 @@ namespace ICU4N.Impl
          *     Stop if spanLength==0, otherwise continue the loop.
          */
 
-        // ICU4N specific - Span(ICharSequence s, int start, SpanCondition spanCondition) moved to UnicodeSetStringSpanExtension.tt
+        // ICU4N specific - Span(ICharSequence s, int start, SpanCondition spanCondition) moved to UnicodeSetStringSpan.generated.tt
 
         // ICU4N specific - SpanWithStrings(ICharSequence s, int start, int spanLimit, 
-        //    SpanCondition spanCondition) moved to UnicodeSetStringSpanExtension.tt
+        //    SpanCondition spanCondition) moved to UnicodeSetStringSpan.generated.tt
 
         // ICU4N specific - SpanAndCount(ICharSequence s, int start, SpanCondition spanCondition,
-        //    out int outCount) moved to UnicodeSetStringSpanExtension.tt
+        //    out int outCount) moved to UnicodeSetStringSpan.generated.tt
 
-        // ICU4N specific - SpanContainedAndCount(ICharSequence s, int start, out int outCount) moved to UnicodeSetStringSpanExtension.tt
+        // ICU4N specific - SpanContainedAndCount(ICharSequence s, int start, out int outCount) moved to UnicodeSetStringSpan.generated.tt
 
-        // ICU4N specific - SpanBack(ICharSequence s, int length, SpanCondition spanCondition) moved to UnicodeSetStringSpanExtension.tt
+        // ICU4N specific - SpanBack(ICharSequence s, int length, SpanCondition spanCondition) moved to UnicodeSetStringSpan.generated.tt
 
-        // ICU4N specific - SpanNot(ICharSequence s, int start, bool includeCount, out int outCount) moved to UnicodeSetStringSpanExtension.tt
+        // ICU4N specific - SpanNot(ICharSequence s, int start, bool includeCount, out int outCount) moved to UnicodeSetStringSpan.generated.tt
 
-        // ICU4N specific - SpanNotBack(ICharSequence s, int length) moved to UnicodeSetStringSpanExtension.tt
+        // ICU4N specific - SpanNotBack(ICharSequence s, int length) moved to UnicodeSetStringSpan.generated.tt
 
 
 
@@ -406,13 +406,13 @@ namespace ICU4N.Impl
             return spanLength < LONG_SPAN ? (byte)spanLength : LONG_SPAN;
         }
 
-        // ICU4N specific - Matches16(ICharSequence s, int start, string t, int length) moved to UnicodeSetStringSpanExtension.tt
+        // ICU4N specific - Matches16(ICharSequence s, int start, string t, int length) moved to UnicodeSetStringSpan.generated.tt
 
-        // ICU4N specific - Matches16CPB(ICharSequence s, int start, int limit, string t, int tlength) moved to UnicodeSetStringSpanExtension.tt
+        // ICU4N specific - Matches16CPB(ICharSequence s, int start, int limit, string t, int tlength) moved to UnicodeSetStringSpan.generated.tt
 
-        // ICU4N specific - SpanOne(UnicodeSet set, ICharSequence s, int start, int length) moved to UnicodeSetStringSpanExtension.tt
+        // ICU4N specific - SpanOne(UnicodeSet set, ICharSequence s, int start, int length) moved to UnicodeSetStringSpan.generated.tt
 
-        // ICU4N specific - SpanOneBack(UnicodeSet set, ICharSequence s, int length) moved to UnicodeSetStringSpanExtension.tt
+        // ICU4N specific - SpanOneBack(UnicodeSet set, ICharSequence s, int length) moved to UnicodeSetStringSpan.generated.tt
 
 
         /// <summary>

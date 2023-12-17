@@ -2208,7 +2208,7 @@ namespace ICU4N
             return UPropertyAliases.Instance.TryGetPropertyName(property, nameChoice, out result);
         }
 
-        // ICU4N specific - GetPropertyEnum(ICharSequence propertyAlias) moved to UCharacterExtension.tt
+        // ICU4N specific - GetPropertyEnum(ICharSequence propertyAlias) moved to UCharacter.generated.tt
 
         /// <summary>
         /// Return the Unicode name for a given property value, as given in
@@ -2392,7 +2392,7 @@ namespace ICU4N
             return UPropertyAliases.Instance.TryGetPropertyValueName(property, value, nameChoice, out result);
         }
 
-        // ICU4N specific - GetPropertyValueEnum(UProperty property, ICharSequence valueAlias) moved to UCharacterExtension.tt
+        // ICU4N specific - GetPropertyValueEnum(UProperty property, ICharSequence valueAlias) moved to UCharacter.generated.tt
 
         /// <summary>
         /// Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>, except doesn't throw exception. Instead, returns <see cref="UPropertyConstants.Undefined"/>.
@@ -3829,9 +3829,9 @@ namespace ICU4N
         }
 
 
-        // ICU4N specific - CodePointAt(ICharSequence seq, int index) moved to UCharacterExtension.tt
+        // ICU4N specific - CodePointAt(ICharSequence seq, int index) moved to UCharacter.generated.tt
 
-        // ICU4N specific - CodePointAt(char[] seq, int index) moved to UCharacterExtension.tt
+        // ICU4N specific - CodePointAt(char[] seq, int index) moved to UCharacter.generated.tt
 
         /// <summary>
         /// Returns the code point at index.
@@ -3863,9 +3863,9 @@ namespace ICU4N
             return c1;
         }
 
-        // ICU4N specific - CodePointBefore(ICharSequence seq, int index) moved to UCharacterExtension.tt
+        // ICU4N specific - CodePointBefore(ICharSequence seq, int index) moved to UCharacter.generated.tt
 
-        // ICU4N specific - CodePointBefore(char[] seq, int index) moved to UCharacterExtension.tt
+        // ICU4N specific - CodePointBefore(char[] seq, int index) moved to UCharacter.generated.tt
 
         /// <summary>
         /// Return the code point before index.
@@ -3937,11 +3937,11 @@ namespace ICU4N
             return (byte)GetDirection(cp);
         }
 
-        // ICU4N specific - CodePointCount(ICharSequence text, int start, int limit) moved to UCharacterExtension.tt
+        // ICU4N specific - CodePointCount(ICharSequence text, int start, int limit) moved to UCharacter.generated.tt
 
-        // ICU4N specific - CodePointCount(char[] text, int start, int limit) moved to UCharacterExtension.tt
+        // ICU4N specific - CodePointCount(char[] text, int start, int limit) moved to UCharacter.generated.tt
 
-        // ICU4N specific - OffsetByCodePoints(ICharSequence text, int index, int codePointOffset) moved to UCharacterExtension.tt
+        // ICU4N specific - OffsetByCodePoints(ICharSequence text, int index, int codePointOffset) moved to UCharacter.generated.tt
 
         /// <summary>
         /// Adjusts the char index by a code point offset.

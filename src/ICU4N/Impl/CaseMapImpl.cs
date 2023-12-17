@@ -392,40 +392,40 @@ namespace ICU4N.Impl
             }
         }
 
-        // ICU4N specific - AppendCodePoint(IAppendable a, int c) moved to CaseMapImplExtension.tt
+        // ICU4N specific - AppendCodePoint(IAppendable a, int c) moved to CaseMapImpl.generated.tt
 
         // ICU4N specific - AppendResult(int result, IAppendable dest,
-        //    int cpLength, int options, Edits edits) moved to CaseMapImplExtension.tt
+        //    int cpLength, int options, Edits edits) moved to CaseMapImpl.generated.tt
 
         // ICU4N specific - AppendUnchanged(ICharSequence src, int start, int length,
-        //    IAppendable dest, int options, Edits edits) moved to CaseMapImplExtension.tt
+        //    IAppendable dest, int options, Edits edits) moved to CaseMapImpl.generated.tt
 
         // ICU4N specific - ApplyEdits(ICharSequence src, StringBuilder replacementChars, Edits edits) 
-        // moved to CaseMapImplExtension.tt
+        // moved to CaseMapImpl.generated.tt
 
         // ICU4N specific - InternalToLower(int caseLocale, int options, StringContextIterator iter,
-        //    IAppendable dest, Edits edits) moved to CaseMapImplExtension.tt
+        //    IAppendable dest, Edits edits) moved to CaseMapImpl.generated.tt
 
-        // ICU4N specific - ToLower(int caseLocale, int options, ICharSequence src) moved to CaseMapImplExtension.tt
+        // ICU4N specific - ToLower(int caseLocale, int options, ICharSequence src) moved to CaseMapImpl.generated.tt
 
         // ICU4N specific - ToLower<T>(int caseLocale, int options,
-        //    ICharSequence src, T dest, Edits edits) where T: IAppendable moved to CaseMapImplExtension.tt
+        //    ICharSequence src, T dest, Edits edits) where T: IAppendable moved to CaseMapImpl.generated.tt
 
-        // ICU4N specific - ToUpper(int caseLocale, int options, ICharSequence src) moved to CaseMapImplExtension.tt
+        // ICU4N specific - ToUpper(int caseLocale, int options, ICharSequence src) moved to CaseMapImpl.generated.tt
 
         // ICU4N specific - ToUpper(int caseLocale, int options,
-        //    ICharSequence src, IAppendable dest, Edits edits) moved to CaseMapImplExtension.tt
+        //    ICharSequence src, IAppendable dest, Edits edits) moved to CaseMapImpl.generated.tt
 
-        // ICU4N specific - ToTitle(int caseLocale, int options, BreakIterator iter, ICharSequence src) moved to CaseMapImplExtension.tt
+        // ICU4N specific - ToTitle(int caseLocale, int options, BreakIterator iter, ICharSequence src) moved to CaseMapImpl.generated.tt
 
         // ICU4N specific - ToTitle(
         //    int caseLocale, int options, BreakIterator titleIter,
-        //    ICharSequence src, IAppendable dest, Edits edits) moved to CaseMapImplExtension.tt
+        //    ICharSequence src, IAppendable dest, Edits edits) moved to CaseMapImpl.generated.tt
 
-        // ICU4N specific - Fold(int options, ICharSequence src) moved to CaseMapImplExtension.tt
+        // ICU4N specific - Fold(int options, ICharSequence src) moved to CaseMapImpl.generated.tt
 
         // ICU4N specific - Fold<T>(int options,
-        //    ICharSequence src, T dest, Edits edits) where T : IAppendable moved to CaseMapImplExtension.tt
+        //    ICharSequence src, T dest, Edits edits) where T : IAppendable moved to CaseMapImpl.generated.tt
 
 
         private sealed partial class GreekUpper
@@ -920,10 +920,10 @@ namespace ICU4N.Impl
                 }
             }
 
-            // ICU4N specific - IsFollowedByCasedLetter(ICharSequence s, int i) moved to CaseMapImplExtension.tt
+            // ICU4N specific - IsFollowedByCasedLetter(ICharSequence s, int i) moved to CaseMapImpl.generated.tt
 
             // ICU4N specific - ToUpper<T>(int options,
-            //    ICharSequence src, T dest, Edits edits) where T : IAppendable moved to CaseMapImplExtension.tt
+            //    ICharSequence src, T dest, Edits edits) where T : IAppendable moved to CaseMapImpl.generated.tt
 
         }
     }
