@@ -52,6 +52,20 @@ namespace ICU4N.Impl
 <#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
         private bool RegionMatches(int start, <#=charSequence#> cs, int n)
         {
+<# if (charSequence == "StringBuilder") { #>
+            // ICU4N: Indexing StringBuilder is really slow,
+            // so we convert to a substring and cascade the call.
+            return RegionMatches(0, cs.ToString(start, n), n);
+<# } else { #>
+<# if (charSequence == "ICharSequence") { #>
+            if (cs is StringBuilderCharSequence stringBuilder)
+            {
+                if (!stringBuilder.HasValue) return false;
+                // ICU4N: Indexing StringBuilder is really slow,
+                // so we cascade the call.
+                return RegionMatches(start, stringBuilder.Value, n);
+            }
+<# } #>
             for (int i = 0; i < n; ++i)
             {
                 if (bytes[offset + start + i] != cs[i])
@@ -60,6 +74,7 @@ namespace ICU4N.Impl
                 }
             }
             return true;
+<# } #>
         }
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>

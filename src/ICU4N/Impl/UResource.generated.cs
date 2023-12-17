@@ -30,14 +30,9 @@ namespace ICU4N.Impl
 
         private bool RegionMatches(int start, StringBuilder cs, int n)
         {
-            for (int i = 0; i < n; ++i)
-            {
-                if (bytes[offset + start + i] != cs[i])
-                {
-                    return false;
-                }
-            }
-            return true;
+            // ICU4N: Indexing StringBuilder is really slow,
+            // so we convert to a substring and cascade the call.
+            return RegionMatches(0, cs.ToString(start, n), n);
         }
 
 
@@ -56,6 +51,13 @@ namespace ICU4N.Impl
 
         private bool RegionMatches(int start, ICharSequence cs, int n)
         {
+            if (cs is StringBuilderCharSequence stringBuilder)
+            {
+                if (!stringBuilder.HasValue) return false;
+                // ICU4N: Indexing StringBuilder is really slow,
+                // so we cascade the call.
+                return RegionMatches(start, stringBuilder.Value, n);
+            }
             for (int i = 0; i < n; ++i)
             {
                 if (bytes[offset + start + i] != cs[i])
