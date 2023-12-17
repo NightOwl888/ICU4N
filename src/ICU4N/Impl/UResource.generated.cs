@@ -261,8 +261,10 @@ namespace ICU4N.Impl
 #endif 
 
 
-        public int CompareTo(string cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
+        public int CompareTo(string cs)
         {
+            if (cs is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
+
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;
             for (int i = 0; i < minLength; ++i)
@@ -277,8 +279,10 @@ namespace ICU4N.Impl
         }
 
 
-        public int CompareTo(StringBuilder cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
+        public int CompareTo(StringBuilder cs)
         {
+            if (cs is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
+
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;
             for (int i = 0; i < minLength; ++i)
@@ -293,8 +297,10 @@ namespace ICU4N.Impl
         }
 
 
-        public int CompareTo(char[] cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
+        public int CompareTo(char[] cs)
         {
+            if (cs is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
+
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;
             for (int i = 0; i < minLength; ++i)
@@ -309,8 +315,11 @@ namespace ICU4N.Impl
         }
 
 
-        public int CompareTo(ICharSequence cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
+        public int CompareTo(ICharSequence cs)
         {
+            if (cs is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
+            if (!cs.HasValue) return 1;
+
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;
             for (int i = 0; i < minLength; ++i)
@@ -326,8 +335,9 @@ namespace ICU4N.Impl
 
 #if FEATURE_SPAN
 
-        public int CompareTo(ReadOnlySpan<char> cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
+        public int CompareTo(ReadOnlySpan<char> cs)
         {
+
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;
             for (int i = 0; i < minLength; ++i)

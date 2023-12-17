@@ -142,8 +142,15 @@ namespace ICU4N.Impl
     string charSequenceForDoc = charSequenceForDocs[i];
     string feature = charSequenceFeatures[i]; #>
 <#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
-        public int CompareTo(<#=charSequence#> cs) // ICU4N TODO: Null reference check (should never throw in .NET here)
+        public int CompareTo(<#=charSequence#> cs)
         {
+<# if (charSequence != "ReadOnlySpan<char>") { #>
+            if (cs is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
+<# } #>
+<# if (charSequence == "ICharSequence") { #>
+            if (!cs.HasValue) return 1;
+<# } #>
+
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;
             for (int i = 0; i < minLength; ++i)
