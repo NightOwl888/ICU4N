@@ -11,6 +11,7 @@ using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Text;
+using System;
 using System.IO;
 using System.Text;
 
@@ -140,28 +141,135 @@ namespace ICU4N.Impl
         }
     }
 
-    public sealed partial class ReorderingBuffer
+#nullable enable
+#if FEATURE_SPAN
+
+
+    /// <summary>
+    /// Writable buffer that takes care of canonical ordering.
+    /// Its Append methods behave like the C++ implementation's
+    /// appendZeroCC() methods.
+    /// <para/>
+    /// The buffer maintains a ValueStringBuilder for intermediate text segments
+    /// until no further changes are necessary and whole segments are appended.
+    /// When done editing, the value can be obtained by calling
+    /// <see cref="TryCopyTo(Span{char}, out int)"/>, <see cref="AsSpan()"/>, or
+    /// <see cref="ToString()"/>. The user is responsible for calling <see cref="Dispose()"/>
+    /// if the value is not obtained through <see cref="ToString()"/>.
+    /// </summary>
+    public ref struct ValueReorderingBuffer
     {
+        public ValueReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, Span<char> initialBuffer)
+        {
+            impl = ni ?? throw new ArgumentNullException(nameof(ni));
+            str = new ValueStringBuilder(initialBuffer);
+            if (!initialValue.IsEmpty)
+            {
+                str.Append(initialValue);
+            }
+            reorderStart = 0;
+            codePointStart = 0;
+            codePointLimit = 0;
+            lastCC = 0;
+            if (str.Length == 0)
+            {
+                lastCC = 0;
+            }
+            else
+            {
+                SetIterator();
+                lastCC = PreviousCC();
+                // Set reorderStart after the last code point with cc<=1 if there is one.
+                if (lastCC > 1)
+                {
+                    while (PreviousCC() > 1) { }
+                }
+                reorderStart = codePointLimit;
+            }
+        }
+
+        public ValueReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, int initialCapacity)
+        {
+            impl = ni ?? throw new ArgumentNullException(nameof(ni));
+            str = new ValueStringBuilder(initialCapacity);
+            if (!initialValue.IsEmpty)
+            {
+                str.Append(initialValue);
+            }
+            reorderStart = 0;
+            codePointStart = 0;
+            codePointLimit = 0;
+            lastCC = 0;
+            if (str.Length == 0)
+            {
+                lastCC = 0;
+            }
+            else
+            {
+                SetIterator();
+                lastCC = PreviousCC();
+                // Set reorderStart after the last code point with cc<=1 if there is one.
+                if (lastCC > 1)
+                {
+                    while (PreviousCC() > 1) { }
+                }
+                reorderStart = codePointLimit;
+            }
+        }
+
+        public bool IsEmpty => str.Length == 0;
+        public int Length => str.Length;
+        public int LastCC => lastCC;
+
+        internal ValueStringBuilder StringBuilder => str;
+
+        public ReadOnlySpan<char> AsSpan() => str.AsSpan();
+        public ReadOnlySpan<char> AsSpan(int start) => str.AsSpan(start);
+        public ReadOnlySpan<char> AsSpan(int start, int length) => str.AsSpan(start, length);
+
+        public bool TryCopyTo(Span<char> destination, out int charsWritten) => str.TryCopyTo(destination, out charsWritten);
+
+        public override string ToString() => str.ToString();
+        public void Dispose() => str.Dispose();
+
 
         public bool Equals(string s, int start, int length) // ICU4N specific: changed limit to length
         {
-            return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
+            return UTF16Plus.Equal(str.AsSpan(), 0, str.Length, s, start, length);
         }
 
         public bool Equals(StringBuilder s, int start, int length) // ICU4N specific: changed limit to length
         {
-            return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
+            return UTF16Plus.Equal(str.AsSpan(), 0, str.Length, s, start, length);
         }
 
         public bool Equals(char[] s, int start, int length) // ICU4N specific: changed limit to length
         {
-            return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
+            return UTF16Plus.Equal(str.AsSpan(), 0, str.Length, s, start, length);
         }
 
         public bool Equals(ICharSequence s, int start, int length) // ICU4N specific: changed limit to length
         {
-            return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
+            return UTF16Plus.Equal(str.AsSpan(), 0, str.Length, s, start, length);
         }
+
+        public void Append(int c, int cc)
+        {
+            if (lastCC <= cc || cc == 0)
+            {
+                str.AppendCodePoint(c);
+                lastCC = cc;
+                if (cc <= 1)
+                {
+                    reorderStart = str.Length;
+                }
+            }
+            else
+            {
+                Insert(c, cc);
+            }
+        }
+
 
         // s must be in NFD, otherwise change the implementation.
         public void Append(string s, int start, int length,
@@ -343,9 +451,501 @@ namespace ICU4N.Impl
             }
         }
 
-        public ReorderingBuffer Append(string s)
+        // The following append() methods work like C++ appendZeroCC().
+        // They assume that the cc or trailCC of their input is 0.
+        // Most of them implement Appendable interface methods.
+        public void Append(char c)
         {
-            if (s.Length != 0)
+            str.Append(c);
+            lastCC = 0;
+            reorderStart = str.Length;
+        }
+
+        public void AppendZeroCC(int c)
+        {
+            str.AppendCodePoint(c);
+            lastCC = 0;
+            reorderStart = str.Length;
+        }
+
+
+        public void Append(string? s)
+        {
+            if (s != null && s.Length != 0)
+            {
+                str.Append(s);
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
+
+        public void Append(StringBuilder? s)
+        {
+            if (s != null && s.Length != 0)
+            {
+                str.Append(s);
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
+
+        public void Append(char[]? s)
+        {
+            if (s != null && s.Length != 0)
+            {
+                str.Append(s);
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
+
+        public void Append(ICharSequence? s)
+        {
+            if (s != null && s.Length != 0)
+            {
+                str.Append(s);
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
+
+        public void Append(string? s, int start, int length) // ICU4N specific: changed limit to length
+        {
+            if (length != 0)
+            {
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
+
+        public void Append(StringBuilder? s, int start, int length) // ICU4N specific: changed limit to length
+        {
+            if (length != 0)
+            {
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
+
+        public void Append(char[]? s, int start, int length) // ICU4N specific: changed limit to length
+        {
+            if (length != 0)
+            {
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
+
+        public void Append(ICharSequence? s, int start, int length) // ICU4N specific: changed limit to length
+        {
+            if (length != 0)
+            {
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+        }
+
+        // ICU4N NOTE: No need to flush because we don't accept an IAppendable
+
+        public void Remove()
+        {
+            str.Length = 0;
+            lastCC = 0;
+            reorderStart = 0;
+        }
+        public void RemoveSuffix(int suffixLength)
+        {
+            int oldLength = str.Length;
+            str.Delete(oldLength - suffixLength, suffixLength); // ICU4N: Corrected 2nd parameter
+            lastCC = 0;
+            reorderStart = str.Length;
+        }
+
+        // ICU4N NOTE: Instead of FlushAndAppendZeroCC(string, int, int), call Append(string, int, int)
+
+        // ICU4N NOTE: Instead of FlushAndAppendZeroCC(StringBuilder, int, int), call Append(StringBuilder, int, int)
+
+        // ICU4N NOTE: Instead of FlushAndAppendZeroCC(char[], int, int), call Append(char[], int, int)
+
+        // ICU4N NOTE: Instead of FlushAndAppendZeroCC(ICharSequence, int, int), call Append(ICharSequence, int, int)
+
+
+        /*
+         * TODO: Revisit whether it makes sense to track reorderStart.
+         * It is set to after the last known character with cc<=1,
+         * which stops previousCC() before it reads that character and looks up its cc.
+         * previousCC() is normally only called from insert().
+         * In other words, reorderStart speeds up the insertion of a combining mark
+         * into a multi-combining mark sequence where it does not belong at the end.
+         * This might not be worth the trouble.
+         * On the other hand, it's not a huge amount of trouble.
+         *
+         * We probably need it for UNORM_SIMPLE_APPEND.
+         */
+
+        // Inserts c somewhere before the last character.
+        // Requires 0<cc<lastCC which implies reorderStart<limit.
+        private void Insert(int c, int cc)
+        {
+            for (SetIterator(), SkipPrevious(); PreviousCC() > cc;) { }
+            // insert c at codePointLimit, after the character with prevCC<=cc
+            if (c <= 0xffff)
+            {
+                str.Insert(codePointLimit, (char)c);
+                if (cc <= 1)
+                {
+                    reorderStart = codePointLimit + 1;
+                }
+            }
+            else
+            {
+                str.InsertCodePoint(codePointLimit, c);
+                if (cc <= 1)
+                {
+                    reorderStart = codePointLimit + 2;
+                }
+            }
+        }
+
+        private /*readonly*/ Normalizer2Impl impl;
+        private /*readonly*/ ValueStringBuilder str;
+        private int reorderStart;
+        private int lastCC;
+
+        // private backward iterator
+        private void SetIterator() { codePointStart = str.Length; }
+        private void SkipPrevious()
+        {  // Requires 0<codePointStart.
+            codePointLimit = codePointStart;
+            codePointStart = str.OffsetByCodePoints(codePointStart, -1);
+        }
+        private int PreviousCC()
+        {  // Returns 0 if there is no previous character.
+            codePointLimit = codePointStart;
+            if (reorderStart >= codePointStart)
+            {
+                return 0;
+            }
+            int c = str.CodePointBefore(codePointStart);
+            codePointStart -= Character.CharCount(c);
+            return impl.GetCCFromYesOrMaybeCP(c);
+        }
+
+
+        private int codePointStart, codePointLimit;
+    }
+
+
+#endif 
+
+
+
+    /// <summary>
+    /// Writable buffer that takes care of canonical ordering.
+    /// Its <see cref="IAppendable"/> methods behave like the C++ implementation's
+    /// appendZeroCC() methods.
+    /// <para/>
+    /// If dest is a <see cref="System.Text.StringBuilder"/>, then the buffer writes directly to it.
+    /// Otherwise, the buffer maintains a <see cref="System.Text.StringBuilder"/> for intermediate text segments
+    /// until no further changes are necessary and whole segments are appended.
+    /// Append() methods that take combining-class values always write to the <see cref="System.Text.StringBuilder"/>.
+    /// Other Append() methods flush and append to the <see cref="IAppendable"/>.
+    /// </summary>
+    public sealed class ReorderingBuffer : IAppendable
+    {
+        public ReorderingBuffer(Normalizer2Impl ni, StringBuilder dest, int destCapacity)
+            : this(ni, dest.AsAppendable(), destCapacity)
+        {
+        }
+
+        internal ReorderingBuffer(Normalizer2Impl ni, IAppendable dest, int destCapacity)
+        {
+            impl = ni;
+            app = dest;
+            if (app is StringBuilderCharSequence sb && sb.HasValue)
+            {
+                appIsStringBuilder = true;
+                str = sb.Value!;
+                // In Java, the constructor subsumes public void init(int destCapacity) {
+                str.EnsureCapacity(destCapacity);
+                reorderStart = 0;
+                if (str.Length == 0)
+                {
+                    lastCC = 0;
+                }
+                else
+                {
+                    SetIterator();
+                    lastCC = PreviousCC();
+                    // Set reorderStart after the last code point with cc<=1 if there is one.
+                    if (lastCC > 1)
+                    {
+                        while (PreviousCC() > 1) { }
+                    }
+                    reorderStart = codePointLimit;
+                }
+            }
+            else
+            {
+                appIsStringBuilder = false;
+                str = new StringBuilder(destCapacity);
+                reorderStart = 0;
+                lastCC = 0;
+            }
+        }
+
+        public bool IsEmpty => str.Length == 0;
+        public int Length => str.Length;
+        public int LastCC => lastCC;
+
+        public StringBuilder StringBuilder => str;
+
+
+
+        public bool Equals(string s, int start, int length) // ICU4N specific: changed limit to length
+        {
+            return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
+        }
+
+        public bool Equals(StringBuilder s, int start, int length) // ICU4N specific: changed limit to length
+        {
+            return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
+        }
+
+        public bool Equals(char[] s, int start, int length) // ICU4N specific: changed limit to length
+        {
+            return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
+        }
+
+        public bool Equals(ICharSequence s, int start, int length) // ICU4N specific: changed limit to length
+        {
+            return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
+        }
+
+        public void Append(int c, int cc)
+        {
+            if (lastCC <= cc || cc == 0)
+            {
+                str.AppendCodePoint(c);
+                lastCC = cc;
+                if (cc <= 1)
+                {
+                    reorderStart = str.Length;
+                }
+            }
+            else
+            {
+                Insert(c, cc);
+            }
+        }
+
+
+        // s must be in NFD, otherwise change the implementation.
+        public void Append(string s, int start, int length,
+            int leadCC, int trailCC) // ICU4N specific: changed limit to length
+        {
+            if (length == 0)
+            {
+                return;
+            }
+            if (lastCC <= leadCC || leadCC == 0)
+            {
+                if (trailCC <= 1)
+                {
+                    reorderStart = str.Length + length;
+                }
+                else if (leadCC <= 1)
+                {
+                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
+                }
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
+                lastCC = trailCC;
+            }
+            else
+            {
+                int limit = start + length;
+                int c = Character.CodePointAt(s, start);
+                start += Character.CharCount(c);
+                Insert(c, leadCC);  // insert first code point
+                while (start < limit)
+                {
+                    c = Character.CodePointAt(s, start);
+                    start += Character.CharCount(c);
+                    if (start < limit)
+                    {
+                        // s must be in NFD, otherwise we need to use getCC().
+                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
+                    }
+                    else
+                    {
+                        leadCC = trailCC;
+                    }
+                    Append(c, leadCC);
+                }
+            }
+        }
+
+        // s must be in NFD, otherwise change the implementation.
+        public void Append(StringBuilder s, int start, int length,
+            int leadCC, int trailCC) // ICU4N specific: changed limit to length
+        {
+            if (length == 0)
+            {
+                return;
+            }
+            if (lastCC <= leadCC || leadCC == 0)
+            {
+                if (trailCC <= 1)
+                {
+                    reorderStart = str.Length + length;
+                }
+                else if (leadCC <= 1)
+                {
+                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
+                }
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
+                lastCC = trailCC;
+            }
+            else
+            {
+                int limit = start + length;
+                int c = Character.CodePointAt(s, start);
+                start += Character.CharCount(c);
+                Insert(c, leadCC);  // insert first code point
+                while (start < limit)
+                {
+                    c = Character.CodePointAt(s, start);
+                    start += Character.CharCount(c);
+                    if (start < limit)
+                    {
+                        // s must be in NFD, otherwise we need to use getCC().
+                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
+                    }
+                    else
+                    {
+                        leadCC = trailCC;
+                    }
+                    Append(c, leadCC);
+                }
+            }
+        }
+
+        // s must be in NFD, otherwise change the implementation.
+        public void Append(char[] s, int start, int length,
+            int leadCC, int trailCC) // ICU4N specific: changed limit to length
+        {
+            if (length == 0)
+            {
+                return;
+            }
+            if (lastCC <= leadCC || leadCC == 0)
+            {
+                if (trailCC <= 1)
+                {
+                    reorderStart = str.Length + length;
+                }
+                else if (leadCC <= 1)
+                {
+                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
+                }
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
+                lastCC = trailCC;
+            }
+            else
+            {
+                int limit = start + length;
+                int c = Character.CodePointAt(s, start);
+                start += Character.CharCount(c);
+                Insert(c, leadCC);  // insert first code point
+                while (start < limit)
+                {
+                    c = Character.CodePointAt(s, start);
+                    start += Character.CharCount(c);
+                    if (start < limit)
+                    {
+                        // s must be in NFD, otherwise we need to use getCC().
+                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
+                    }
+                    else
+                    {
+                        leadCC = trailCC;
+                    }
+                    Append(c, leadCC);
+                }
+            }
+        }
+
+        // s must be in NFD, otherwise change the implementation.
+        public void Append(ICharSequence s, int start, int length,
+            int leadCC, int trailCC) // ICU4N specific: changed limit to length
+        {
+            if (length == 0)
+            {
+                return;
+            }
+            if (lastCC <= leadCC || leadCC == 0)
+            {
+                if (trailCC <= 1)
+                {
+                    reorderStart = str.Length + length;
+                }
+                else if (leadCC <= 1)
+                {
+                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
+                }
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
+                lastCC = trailCC;
+            }
+            else
+            {
+                int limit = start + length;
+                int c = Character.CodePointAt(s, start);
+                start += Character.CharCount(c);
+                Insert(c, leadCC);  // insert first code point
+                while (start < limit)
+                {
+                    c = Character.CodePointAt(s, start);
+                    start += Character.CharCount(c);
+                    if (start < limit)
+                    {
+                        // s must be in NFD, otherwise we need to use getCC().
+                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
+                    }
+                    else
+                    {
+                        leadCC = trailCC;
+                    }
+                    Append(c, leadCC);
+                }
+            }
+        }
+
+        // The following append() methods work like C++ appendZeroCC().
+        // They assume that the cc or trailCC of their input is 0.
+        // Most of them implement Appendable interface methods.
+        public ReorderingBuffer Append(char c)
+        {
+            str.Append(c);
+            lastCC = 0;
+            reorderStart = str.Length;
+            return this;
+        }
+
+        public void AppendZeroCC(int c)
+        {
+            str.AppendCodePoint(c);
+            lastCC = 0;
+            reorderStart = str.Length;
+        }
+
+
+        public ReorderingBuffer Append(string? s)
+        {
+            if (s != null && s.Length != 0)
             {
                 str.Append(s);
                 lastCC = 0;
@@ -354,9 +954,9 @@ namespace ICU4N.Impl
             return this;
         }
 
-        public ReorderingBuffer Append(StringBuilder s)
+        public ReorderingBuffer Append(StringBuilder? s)
         {
-            if (s.Length != 0)
+            if (s != null && s.Length != 0)
             {
                 str.Append(s);
                 lastCC = 0;
@@ -365,9 +965,9 @@ namespace ICU4N.Impl
             return this;
         }
 
-        public ReorderingBuffer Append(char[] s)
+        public ReorderingBuffer Append(char[]? s)
         {
-            if (s.Length != 0)
+            if (s != null && s.Length != 0)
             {
                 str.Append(s);
                 lastCC = 0;
@@ -376,9 +976,9 @@ namespace ICU4N.Impl
             return this;
         }
 
-        public ReorderingBuffer Append(ICharSequence s)
+        public ReorderingBuffer Append(ICharSequence? s)
         {
-            if (s.Length != 0)
+            if (s != null && s.Length != 0)
             {
                 str.Append(s);
                 lastCC = 0;
@@ -387,7 +987,7 @@ namespace ICU4N.Impl
             return this;
         }
 
-        public ReorderingBuffer Append(string s, int start, int length) // ICU4N specific: changed limit to length
+        public ReorderingBuffer Append(string? s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (length != 0)
             {
@@ -398,7 +998,7 @@ namespace ICU4N.Impl
             return this;
         }
 
-        public ReorderingBuffer Append(StringBuilder s, int start, int length) // ICU4N specific: changed limit to length
+        public ReorderingBuffer Append(StringBuilder? s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (length != 0)
             {
@@ -409,7 +1009,7 @@ namespace ICU4N.Impl
             return this;
         }
 
-        public ReorderingBuffer Append(char[] s, int start, int length) // ICU4N specific: changed limit to length
+        public ReorderingBuffer Append(char[]? s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (length != 0)
             {
@@ -420,7 +1020,7 @@ namespace ICU4N.Impl
             return this;
         }
 
-        public ReorderingBuffer Append(ICharSequence s, int start, int length) // ICU4N specific: changed limit to length
+        public ReorderingBuffer Append(ICharSequence? s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (length != 0)
             {
@@ -430,6 +1030,49 @@ namespace ICU4N.Impl
             }
             return this;
         }
+
+        /// <summary>
+        /// Flushes from the intermediate <see cref="StringBuilder"/> to the <see cref="IAppendable"/>,
+        /// if they are different objects.
+        /// Used after recomposition.
+        /// Must be called at the end when writing to a non-<see cref="StringBuilderCharSequence"/> <see cref="IAppendable"/>.
+        /// </summary>
+        public void Flush()
+        {
+            if (appIsStringBuilder)
+            {
+                reorderStart = str.Length;
+            }
+            else
+            {
+                try
+                {
+                    app.Append(str);
+                    str.Length = 0;
+                    reorderStart = 0;
+                }
+                catch (IOException e)
+                {
+                    throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
+                }
+            }
+            lastCC = 0;
+        }
+
+        public void Remove()
+        {
+            str.Length = 0;
+            lastCC = 0;
+            reorderStart = 0;
+        }
+        public void RemoveSuffix(int suffixLength)
+        {
+            int oldLength = str.Length;
+            str.Delete(oldLength - suffixLength, suffixLength); // ICU4N: Corrected 2nd parameter
+            lastCC = 0;
+            reorderStart = str.Length;
+        }
+
 
         /// <summary>
         /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
@@ -550,7 +1193,128 @@ namespace ICU4N.Impl
             lastCC = 0;
             return this;
         }
+
+        /*
+         * TODO: Revisit whether it makes sense to track reorderStart.
+         * It is set to after the last known character with cc<=1,
+         * which stops previousCC() before it reads that character and looks up its cc.
+         * previousCC() is normally only called from insert().
+         * In other words, reorderStart speeds up the insertion of a combining mark
+         * into a multi-combining mark sequence where it does not belong at the end.
+         * This might not be worth the trouble.
+         * On the other hand, it's not a huge amount of trouble.
+         *
+         * We probably need it for UNORM_SIMPLE_APPEND.
+         */
+
+        // Inserts c somewhere before the last character.
+        // Requires 0<cc<lastCC which implies reorderStart<limit.
+        private void Insert(int c, int cc)
+        {
+            for (SetIterator(), SkipPrevious(); PreviousCC() > cc;) { }
+            // insert c at codePointLimit, after the character with prevCC<=cc
+            if (c <= 0xffff)
+            {
+                str.Insert(codePointLimit, (char)c);
+                if (cc <= 1)
+                {
+                    reorderStart = codePointLimit + 1;
+                }
+            }
+            else
+            {
+                str.InsertCodePoint(codePointLimit, c);
+                if (cc <= 1)
+                {
+                    reorderStart = codePointLimit + 2;
+                }
+            }
+        }
+
+        private readonly Normalizer2Impl impl;
+        private readonly IAppendable app;
+        private readonly StringBuilder str;
+        private readonly bool appIsStringBuilder;
+        private int reorderStart;
+        private int lastCC;
+
+        // private backward iterator
+        private void SetIterator() { codePointStart = str.Length; }
+        private void SkipPrevious()
+        {  // Requires 0<codePointStart.
+            codePointLimit = codePointStart;
+            codePointStart = str.OffsetByCodePoints(codePointStart, -1);
+        }
+        private int PreviousCC()
+        {  // Returns 0 if there is no previous character.
+            codePointLimit = codePointStart;
+            if (reorderStart >= codePointStart)
+            {
+                return 0;
+            }
+            int c = str.CodePointBefore(codePointStart);
+            codePointStart -= Character.CharCount(c);
+            return impl.GetCCFromYesOrMaybeCP(c);
+        }
+
+        // ICU4N specific - implementing interface explicitly allows
+        // for us to have a concrete type above that returns itself (similar to
+        // how it was in Java).
+        #region IAppendable interface
+
+        IAppendable IAppendable.Append(char c)
+        {
+            return Append(c);
+        }
+
+        IAppendable IAppendable.Append(string? csq)
+        {
+            return Append(csq);
+        }
+
+        IAppendable IAppendable.Append(string? csq, int start, int length)
+        {
+            return Append(csq, start, length);
+        }
+
+        IAppendable IAppendable.Append(StringBuilder? csq)
+        {
+            return Append(csq);
+        }
+
+        IAppendable IAppendable.Append(StringBuilder? csq, int start, int length)
+        {
+            return Append(csq, start, length);
+        }
+
+        IAppendable IAppendable.Append(char[]? csq)
+        {
+            return Append(csq);
+        }
+
+        IAppendable IAppendable.Append(char[]? csq, int start, int length)
+        {
+            return Append(csq, start, length);
+        }
+
+        IAppendable IAppendable.Append(ICharSequence? csq)
+        {
+            return Append(csq);
+        }
+
+        IAppendable IAppendable.Append(ICharSequence? csq, int start, int length)
+        {
+            return Append(csq, start, length);
+        }
+
+        #endregion
+
+        private int codePointStart, codePointLimit;
     }
+
+
+
+#nullable restore
 
     public sealed partial class UTF16Plus
     {
@@ -581,6 +1345,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -604,6 +1369,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -627,6 +1393,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -650,6 +1417,33 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(string s1, ReadOnlySpan<char> s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
         
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -673,6 +1467,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -700,6 +1495,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -723,6 +1519,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -746,6 +1543,33 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(StringBuilder s1, ReadOnlySpan<char> s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
         
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -769,6 +1593,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -792,6 +1617,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -819,6 +1645,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -842,6 +1669,33 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(char[] s1, ReadOnlySpan<char> s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
         
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -865,6 +1719,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -888,6 +1743,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -911,6 +1767,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -938,7 +1795,169 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(ICharSequence s1, ReadOnlySpan<char> s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, string s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, StringBuilder s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, char[] s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, ICharSequence s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, ReadOnlySpan<char> s2)
+        {
+            if (s1 == s2)
+            {
+                return true;
+            }
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
         
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -970,7 +1989,9 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -998,7 +2019,9 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1026,7 +2049,9 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1054,7 +2079,41 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(string s1, int start1, int length1,
+            ReadOnlySpan<char> s2, int start2, int length2)
+        {
+            if (length1 != length2)
+            {
+                return false;
+            }
+            int limit1 = start1 + length1;
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
         
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1082,7 +2141,9 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1114,7 +2175,9 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1142,7 +2205,9 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1170,7 +2235,41 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(StringBuilder s1, int start1, int length1,
+            ReadOnlySpan<char> s2, int start2, int length2)
+        {
+            if (length1 != length2)
+            {
+                return false;
+            }
+            int limit1 = start1 + length1;
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
         
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1198,7 +2297,9 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1226,7 +2327,9 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1258,7 +2361,9 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1286,7 +2391,41 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(char[] s1, int start1, int length1,
+            ReadOnlySpan<char> s2, int start2, int length2)
+        {
+            if (length1 != length2)
+            {
+                return false;
+            }
+            int limit1 = start1 + length1;
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
         
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1314,7 +2453,9 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1342,7 +2483,9 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1370,7 +2513,9 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
     
+
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -1402,6 +2547,203 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(ICharSequence s1, int start1, int length1,
+            ReadOnlySpan<char> s2, int start2, int length2)
+        {
+            if (length1 != length2)
+            {
+                return false;
+            }
+            int limit1 = start1 + length1;
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
+        #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, int start1, int length1,
+            string s2, int start2, int length2)
+        {
+            if (length1 != length2)
+            {
+                return false;
+            }
+            int limit1 = start1 + length1;
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, int start1, int length1,
+            StringBuilder s2, int start2, int length2)
+        {
+            if (length1 != length2)
+            {
+                return false;
+            }
+            int limit1 = start1 + length1;
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, int start1, int length1,
+            char[] s2, int start2, int length2)
+        {
+            if (length1 != length2)
+            {
+                return false;
+            }
+            int limit1 = start1 + length1;
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, int start1, int length1,
+            ICharSequence s2, int start2, int length2)
+        {
+            if (length1 != length2)
+            {
+                return false;
+            }
+            int limit1 = start1 + length1;
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
+    #if FEATURE_SPAN
+
+
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(ReadOnlySpan<char> s1, int start1, int length1,
+            ReadOnlySpan<char> s2, int start2, int length2)
+        {
+            if (length1 != length2)
+            {
+                return false;
+            }
+            if (s1 == s2 && start1 == start2)
+            {
+                return true;
+            }
+            int limit1 = start1 + length1;
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+#endif 
+
         }
 
 
