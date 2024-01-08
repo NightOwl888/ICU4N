@@ -15,8 +15,10 @@
     <!-- Allow the build script to pass in the test frameworks to build for.
       This overrides the above TargetFramework setting. 
       ICU4N TODO: Due to a parsing bug, we cannot pass a string with a ; to dotnet msbuild, so passing true as a workaround -->
-    <TargetFrameworks Condition=" '$(TestAllTargetFrameworks)' == 'true' ">net7.0;net6.0;net5.0;net48;net452</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TestAllTargetFrameworks)' == 'true' And '$(VisualStudioVersion)' &gt;= '16.10'">net7.0;net6.0;</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TestAllTargetFrameworks)' == 'true'">$(TargetFrameworks)net5.0;net48;net452</TargetFrameworks>
     <TargetFramework Condition=" '$(TargetFrameworks)' != '' "></TargetFramework>
+
   </PropertyGroup>
 
   <PropertyGroup Label="Mismatched Target Framework (to override the target framework under test)">
