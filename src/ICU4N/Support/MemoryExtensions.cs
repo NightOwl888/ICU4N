@@ -230,6 +230,40 @@ namespace ICU4N
         }
 
         /// <summary>
+        /// Reports the zero-based index of the last occurrence of the specified <paramref name="value"/> in the current <paramref name="span"/>.
+        /// <param name="span">The source span.</param>
+        /// <param name="value">The value to seek within the source span.</param>
+        /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="value"/> are compared.</param>
+        /// </summary>
+        public static int LastIndexOf(this ReadOnlySpan<char> span, ReadOnlySpan<char> value, StringComparison comparisonType)
+        {
+            CheckStringComparison(comparisonType);
+
+            if (comparisonType == StringComparison.Ordinal)
+            {
+                //return SpanHelpers.IndexOf(ref MemoryMarshal.GetReference(span), span.Length, ref MemoryMarshal.GetReference(value), value.Length);
+                return span.LastIndexOf(value);
+            }
+
+            throw new NotImplementedException();
+
+            //switch (comparisonType)
+            //{
+            //    case StringComparison.CurrentCulture:
+            //    case StringComparison.CurrentCultureIgnoreCase:
+            //        return CultureInfo.CurrentCulture.CompareInfo.IndexOf(span, value, string.GetCaseCompareOfComparisonCulture(comparisonType));
+
+            //    case StringComparison.InvariantCulture:
+            //    case StringComparison.InvariantCultureIgnoreCase:
+            //        return CompareInfo.Invariant.IndexOf(span, value, string.GetCaseCompareOfComparisonCulture(comparisonType));
+
+            //    default:
+            //        Debug.Assert(comparisonType == StringComparison.OrdinalIgnoreCase);
+            //        return Ordinal.IndexOfOrdinalIgnoreCase(span, value);
+            //}
+        }
+
+        /// <summary>
         /// Determines whether this <paramref name="span"/> and the specified <paramref name="other"/> span have the same characters
         /// when compared using the specified <paramref name="comparisonType"/> option.
         /// <param name="span">The source span.</param>
