@@ -2,9 +2,11 @@
 
   <!-- Explicitly importing SDK to allow for T4 template generation. See: https://developercommunity.visualstudio.com/t/upgrading-to-sdk-style-project-disables-t4-transfo/1394852 -->
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-    
+
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net6.0;netstandard2.0;net451;net40</TargetFrameworks>
+    <TargetFrameworks Condition="$(VisualStudioVersion) &gt;= 16.10">net7.0;net6.0;</TargetFrameworks>
+    <TargetFrameworks>$(TargetFrameworks)netstandard2.0;net451;net40</TargetFrameworks>
+    
     <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard1.3' ">$(DefineConstants);LIBLOG_PORTABLE</DefineConstants>
 
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -67,7 +69,9 @@
 
   <PropertyGroup>
     <ICU4JResourceConverterDir>$(SolutionDir)src/tools/ICU4JResourceConverter</ICU4JResourceConverterDir>
-    <ICU4JResourceConverterOutputDir>$(ICU4JResourceConverterDir)/bin/$(Configuration)/net7.0</ICU4JResourceConverterOutputDir>
+    <ICU4JResourceConverterTargetFramework>net5.0</ICU4JResourceConverterTargetFramework>
+    <ICU4JResourceConverterTargetFramework Condition="'$(VisualStudioVersion)' &gt;= '16.10'">net7.0</ICU4JResourceConverterTargetFramework>
+    <ICU4JResourceConverterOutputDir>$(ICU4JResourceConverterDir)/bin/$(Configuration)/$(ICU4JResourceConverterTargetFramework)</ICU4JResourceConverterOutputDir>
 
     <ICU4JDownloadConfigFilePath>$(SolutionDir).build/icu4j-download-urls.txt</ICU4JDownloadConfigFilePath>
     <ICU4JWorkingDirectory>$(ArtifactsDir)/icu4j-temp</ICU4JWorkingDirectory>
