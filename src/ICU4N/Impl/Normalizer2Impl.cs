@@ -696,7 +696,7 @@ namespace ICU4N.Impl
                 // Hangul syllable: decompose algorithmically
 #if FEATURE_SPAN
                 ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[3]);
-                Hangul.Decompose(c, ref buffer);
+                Hangul.GetRawDecomposition(c, ref buffer);
                 return buffer.ToString();
 #else
                 StringBuilder buffer = new StringBuilder();
