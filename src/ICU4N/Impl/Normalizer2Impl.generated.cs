@@ -2855,15 +2855,15 @@ namespace ICU4N.Impl
         public int Decompose(string s, int src, int limit,
             ReorderingBuffer buffer)
         {
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+
             int minNoCP = minDecompNoCP;
 
             int prevSrc;
             int c = 0;
             int norm16 = 0;
-
-            // only for quick check
-            int prevBoundary = src;
-            int prevCC = 0;
 
             for (; ; )
             {
@@ -2911,15 +2911,8 @@ namespace ICU4N.Impl
                 // copy these code units all at once
                 if (src != prevSrc)
                 {
-                    if (buffer != null)
-                    {
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
-                    }
-                    else
-                    {
-                        prevCC = 0;
-                        prevBoundary = src;
-                    }
+                    // ICU4N TODO: For ValueReorderingBuffer, call Append()
+                    buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
                 }
                 if (src == limit)
                 {
@@ -2928,27 +2921,7 @@ namespace ICU4N.Impl
 
                 // Check one above-minimum, relevant code point.
                 src += Character.CharCount(c);
-                if (buffer != null)
-                {
-                    Decompose(c, norm16, buffer);
-                }
-                else
-                {
-                    if (IsDecompYes(norm16))
-                    {
-                        int cc = GetCCFromYesOrMaybe(norm16);
-                        if (prevCC <= cc || cc == 0)
-                        {
-                            prevCC = cc;
-                            if (cc <= 1)
-                            {
-                                prevBoundary = src;
-                            }
-                            continue;
-                        }
-                    }
-                    return prevBoundary;  // "no" or cc out of order
-                }
+                Decompose(c, norm16, buffer);
             }
             return src;
         }
@@ -2959,15 +2932,15 @@ namespace ICU4N.Impl
         public int Decompose(StringBuilder s, int src, int limit,
             ReorderingBuffer buffer)
         {
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+
             int minNoCP = minDecompNoCP;
 
             int prevSrc;
             int c = 0;
             int norm16 = 0;
-
-            // only for quick check
-            int prevBoundary = src;
-            int prevCC = 0;
 
             for (; ; )
             {
@@ -3015,15 +2988,8 @@ namespace ICU4N.Impl
                 // copy these code units all at once
                 if (src != prevSrc)
                 {
-                    if (buffer != null)
-                    {
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
-                    }
-                    else
-                    {
-                        prevCC = 0;
-                        prevBoundary = src;
-                    }
+                    // ICU4N TODO: For ValueReorderingBuffer, call Append()
+                    buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
                 }
                 if (src == limit)
                 {
@@ -3032,27 +2998,7 @@ namespace ICU4N.Impl
 
                 // Check one above-minimum, relevant code point.
                 src += Character.CharCount(c);
-                if (buffer != null)
-                {
-                    Decompose(c, norm16, buffer);
-                }
-                else
-                {
-                    if (IsDecompYes(norm16))
-                    {
-                        int cc = GetCCFromYesOrMaybe(norm16);
-                        if (prevCC <= cc || cc == 0)
-                        {
-                            prevCC = cc;
-                            if (cc <= 1)
-                            {
-                                prevBoundary = src;
-                            }
-                            continue;
-                        }
-                    }
-                    return prevBoundary;  // "no" or cc out of order
-                }
+                Decompose(c, norm16, buffer);
             }
             return src;
         }
@@ -3063,15 +3009,15 @@ namespace ICU4N.Impl
         public int Decompose(char[] s, int src, int limit,
             ReorderingBuffer buffer)
         {
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+
             int minNoCP = minDecompNoCP;
 
             int prevSrc;
             int c = 0;
             int norm16 = 0;
-
-            // only for quick check
-            int prevBoundary = src;
-            int prevCC = 0;
 
             for (; ; )
             {
@@ -3119,15 +3065,8 @@ namespace ICU4N.Impl
                 // copy these code units all at once
                 if (src != prevSrc)
                 {
-                    if (buffer != null)
-                    {
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
-                    }
-                    else
-                    {
-                        prevCC = 0;
-                        prevBoundary = src;
-                    }
+                    // ICU4N TODO: For ValueReorderingBuffer, call Append()
+                    buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
                 }
                 if (src == limit)
                 {
@@ -3136,27 +3075,7 @@ namespace ICU4N.Impl
 
                 // Check one above-minimum, relevant code point.
                 src += Character.CharCount(c);
-                if (buffer != null)
-                {
-                    Decompose(c, norm16, buffer);
-                }
-                else
-                {
-                    if (IsDecompYes(norm16))
-                    {
-                        int cc = GetCCFromYesOrMaybe(norm16);
-                        if (prevCC <= cc || cc == 0)
-                        {
-                            prevCC = cc;
-                            if (cc <= 1)
-                            {
-                                prevBoundary = src;
-                            }
-                            continue;
-                        }
-                    }
-                    return prevBoundary;  // "no" or cc out of order
-                }
+                Decompose(c, norm16, buffer);
             }
             return src;
         }
@@ -3167,6 +3086,81 @@ namespace ICU4N.Impl
         public int Decompose(ICharSequence s, int src, int limit,
             ReorderingBuffer buffer)
         {
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+
+            int minNoCP = minDecompNoCP;
+
+            int prevSrc;
+            int c = 0;
+            int norm16 = 0;
+
+            for (; ; )
+            {
+                // count code units below the minimum or with irrelevant data for the quick check
+                for (prevSrc = src; src != limit;)
+                {
+                    if ((c = s[src]) < minNoCP ||
+                        IsMostDecompYesAndZeroCC(norm16 = normTrie.GetFromU16SingleLead((char)c))
+                    )
+                    {
+                        ++src;
+                    }
+                    else if (!UTF16.IsSurrogate((char)c))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        char c2;
+                        if (UTF16Plus.IsSurrogateLead(c))
+                        {
+                            if ((src + 1) != limit && char.IsLowSurrogate(c2 = s[src + 1]))
+                            {
+                                c = Character.ToCodePoint((char)c, c2);
+                            }
+                        }
+                        else /* trail surrogate */
+                        {
+                            if (prevSrc < src && char.IsHighSurrogate(c2 = s[src - 1]))
+                            {
+                                --src;
+                                c = Character.ToCodePoint(c2, (char)c);
+                            }
+                        }
+                        if (IsMostDecompYesAndZeroCC(norm16 = GetNorm16(c)))
+                        {
+                            src += Character.CharCount(c);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                // copy these code units all at once
+                if (src != prevSrc)
+                {
+                    // ICU4N TODO: For ValueReorderingBuffer, call Append()
+                    buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
+                }
+                if (src == limit)
+                {
+                    break;
+                }
+
+                // Check one above-minimum, relevant code point.
+                src += Character.CharCount(c);
+                Decompose(c, norm16, buffer);
+            }
+            return src;
+        }
+
+        // isNormalized/quickCheck/spanQuickCheckYes
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
+        public int SpanQuickCheckYes(string s, int src, int limit) // ICU4N TODO: API - rename src to startIndex and limit to length. We also don't need to provide these for the ReadOnlySpan<char> overload.
+        {
             int minNoCP = minDecompNoCP;
 
             int prevSrc;
@@ -3223,15 +3217,8 @@ namespace ICU4N.Impl
                 // copy these code units all at once
                 if (src != prevSrc)
                 {
-                    if (buffer != null)
-                    {
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
-                    }
-                    else
-                    {
-                        prevCC = 0;
-                        prevBoundary = src;
-                    }
+                    prevCC = 0;
+                    prevBoundary = src;
                 }
                 if (src == limit)
                 {
@@ -3240,32 +3227,290 @@ namespace ICU4N.Impl
 
                 // Check one above-minimum, relevant code point.
                 src += Character.CharCount(c);
-                if (buffer != null)
+                if (IsDecompYes(norm16))
                 {
-                    Decompose(c, norm16, buffer);
-                }
-                else
-                {
-                    if (IsDecompYes(norm16))
+                    int cc = GetCCFromYesOrMaybe(norm16);
+                    if (prevCC <= cc || cc == 0)
                     {
-                        int cc = GetCCFromYesOrMaybe(norm16);
-                        if (prevCC <= cc || cc == 0)
+                        prevCC = cc;
+                        if (cc <= 1)
                         {
-                            prevCC = cc;
-                            if (cc <= 1)
-                            {
-                                prevBoundary = src;
-                            }
-                            continue;
+                            prevBoundary = src;
                         }
+                        continue;
                     }
-                    return prevBoundary;  // "no" or cc out of order
                 }
+                return prevBoundary;  // "no" or cc out of order
             }
             return src;
         }
 
-        public void DecomposeAndAppend(string s, bool doDecompose, ReorderingBuffer buffer)
+        // isNormalized/quickCheck/spanQuickCheckYes
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
+        public int SpanQuickCheckYes(StringBuilder s, int src, int limit) // ICU4N TODO: API - rename src to startIndex and limit to length. We also don't need to provide these for the ReadOnlySpan<char> overload.
+        {
+            int minNoCP = minDecompNoCP;
+
+            int prevSrc;
+            int c = 0;
+            int norm16 = 0;
+
+            // only for quick check
+            int prevBoundary = src;
+            int prevCC = 0;
+
+            for (; ; )
+            {
+                // count code units below the minimum or with irrelevant data for the quick check
+                for (prevSrc = src; src != limit;)
+                {
+                    if ((c = s[src]) < minNoCP ||
+                        IsMostDecompYesAndZeroCC(norm16 = normTrie.GetFromU16SingleLead((char)c))
+                    )
+                    {
+                        ++src;
+                    }
+                    else if (!UTF16.IsSurrogate((char)c))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        char c2;
+                        if (UTF16Plus.IsSurrogateLead(c))
+                        {
+                            if ((src + 1) != limit && char.IsLowSurrogate(c2 = s[src + 1]))
+                            {
+                                c = Character.ToCodePoint((char)c, c2);
+                            }
+                        }
+                        else /* trail surrogate */
+                        {
+                            if (prevSrc < src && char.IsHighSurrogate(c2 = s[src - 1]))
+                            {
+                                --src;
+                                c = Character.ToCodePoint(c2, (char)c);
+                            }
+                        }
+                        if (IsMostDecompYesAndZeroCC(norm16 = GetNorm16(c)))
+                        {
+                            src += Character.CharCount(c);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                // copy these code units all at once
+                if (src != prevSrc)
+                {
+                    prevCC = 0;
+                    prevBoundary = src;
+                }
+                if (src == limit)
+                {
+                    break;
+                }
+
+                // Check one above-minimum, relevant code point.
+                src += Character.CharCount(c);
+                if (IsDecompYes(norm16))
+                {
+                    int cc = GetCCFromYesOrMaybe(norm16);
+                    if (prevCC <= cc || cc == 0)
+                    {
+                        prevCC = cc;
+                        if (cc <= 1)
+                        {
+                            prevBoundary = src;
+                        }
+                        continue;
+                    }
+                }
+                return prevBoundary;  // "no" or cc out of order
+            }
+            return src;
+        }
+
+        // isNormalized/quickCheck/spanQuickCheckYes
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
+        public int SpanQuickCheckYes(char[] s, int src, int limit) // ICU4N TODO: API - rename src to startIndex and limit to length. We also don't need to provide these for the ReadOnlySpan<char> overload.
+        {
+            int minNoCP = minDecompNoCP;
+
+            int prevSrc;
+            int c = 0;
+            int norm16 = 0;
+
+            // only for quick check
+            int prevBoundary = src;
+            int prevCC = 0;
+
+            for (; ; )
+            {
+                // count code units below the minimum or with irrelevant data for the quick check
+                for (prevSrc = src; src != limit;)
+                {
+                    if ((c = s[src]) < minNoCP ||
+                        IsMostDecompYesAndZeroCC(norm16 = normTrie.GetFromU16SingleLead((char)c))
+                    )
+                    {
+                        ++src;
+                    }
+                    else if (!UTF16.IsSurrogate((char)c))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        char c2;
+                        if (UTF16Plus.IsSurrogateLead(c))
+                        {
+                            if ((src + 1) != limit && char.IsLowSurrogate(c2 = s[src + 1]))
+                            {
+                                c = Character.ToCodePoint((char)c, c2);
+                            }
+                        }
+                        else /* trail surrogate */
+                        {
+                            if (prevSrc < src && char.IsHighSurrogate(c2 = s[src - 1]))
+                            {
+                                --src;
+                                c = Character.ToCodePoint(c2, (char)c);
+                            }
+                        }
+                        if (IsMostDecompYesAndZeroCC(norm16 = GetNorm16(c)))
+                        {
+                            src += Character.CharCount(c);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                // copy these code units all at once
+                if (src != prevSrc)
+                {
+                    prevCC = 0;
+                    prevBoundary = src;
+                }
+                if (src == limit)
+                {
+                    break;
+                }
+
+                // Check one above-minimum, relevant code point.
+                src += Character.CharCount(c);
+                if (IsDecompYes(norm16))
+                {
+                    int cc = GetCCFromYesOrMaybe(norm16);
+                    if (prevCC <= cc || cc == 0)
+                    {
+                        prevCC = cc;
+                        if (cc <= 1)
+                        {
+                            prevBoundary = src;
+                        }
+                        continue;
+                    }
+                }
+                return prevBoundary;  // "no" or cc out of order
+            }
+            return src;
+        }
+
+        // isNormalized/quickCheck/spanQuickCheckYes
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
+        public int SpanQuickCheckYes(ICharSequence s, int src, int limit) // ICU4N TODO: API - rename src to startIndex and limit to length. We also don't need to provide these for the ReadOnlySpan<char> overload.
+        {
+            int minNoCP = minDecompNoCP;
+
+            int prevSrc;
+            int c = 0;
+            int norm16 = 0;
+
+            // only for quick check
+            int prevBoundary = src;
+            int prevCC = 0;
+
+            for (; ; )
+            {
+                // count code units below the minimum or with irrelevant data for the quick check
+                for (prevSrc = src; src != limit;)
+                {
+                    if ((c = s[src]) < minNoCP ||
+                        IsMostDecompYesAndZeroCC(norm16 = normTrie.GetFromU16SingleLead((char)c))
+                    )
+                    {
+                        ++src;
+                    }
+                    else if (!UTF16.IsSurrogate((char)c))
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        char c2;
+                        if (UTF16Plus.IsSurrogateLead(c))
+                        {
+                            if ((src + 1) != limit && char.IsLowSurrogate(c2 = s[src + 1]))
+                            {
+                                c = Character.ToCodePoint((char)c, c2);
+                            }
+                        }
+                        else /* trail surrogate */
+                        {
+                            if (prevSrc < src && char.IsHighSurrogate(c2 = s[src - 1]))
+                            {
+                                --src;
+                                c = Character.ToCodePoint(c2, (char)c);
+                            }
+                        }
+                        if (IsMostDecompYesAndZeroCC(norm16 = GetNorm16(c)))
+                        {
+                            src += Character.CharCount(c);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                // copy these code units all at once
+                if (src != prevSrc)
+                {
+                    prevCC = 0;
+                    prevBoundary = src;
+                }
+                if (src == limit)
+                {
+                    break;
+                }
+
+                // Check one above-minimum, relevant code point.
+                src += Character.CharCount(c);
+                if (IsDecompYes(norm16))
+                {
+                    int cc = GetCCFromYesOrMaybe(norm16);
+                    if (prevCC <= cc || cc == 0)
+                    {
+                        prevCC = cc;
+                        if (cc <= 1)
+                        {
+                            prevBoundary = src;
+                        }
+                        continue;
+                    }
+                }
+                return prevBoundary;  // "no" or cc out of order
+            }
+            return src;
+        }
+
+
+        public void DecomposeAndAppend(string s, bool doDecompose, ReorderingBuffer buffer) // ICU4N TODO: API - rename src to startIndex and limit to length. We also don't need to provide these for the ReadOnlySpan<char> overload.
         {
             int limit = s.Length;
             if (limit == 0)
@@ -3297,7 +3542,7 @@ namespace ICU4N.Impl
             buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
         }
 
-        public void DecomposeAndAppend(StringBuilder s, bool doDecompose, ReorderingBuffer buffer)
+        public void DecomposeAndAppend(StringBuilder s, bool doDecompose, ReorderingBuffer buffer) // ICU4N TODO: API - rename src to startIndex and limit to length. We also don't need to provide these for the ReadOnlySpan<char> overload.
         {
             int limit = s.Length;
             if (limit == 0)
@@ -3329,7 +3574,7 @@ namespace ICU4N.Impl
             buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
         }
 
-        public void DecomposeAndAppend(char[] s, bool doDecompose, ReorderingBuffer buffer)
+        public void DecomposeAndAppend(char[] s, bool doDecompose, ReorderingBuffer buffer) // ICU4N TODO: API - rename src to startIndex and limit to length. We also don't need to provide these for the ReadOnlySpan<char> overload.
         {
             int limit = s.Length;
             if (limit == 0)
@@ -3361,7 +3606,7 @@ namespace ICU4N.Impl
             buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
         }
 
-        public void DecomposeAndAppend(ICharSequence s, bool doDecompose, ReorderingBuffer buffer)
+        public void DecomposeAndAppend(ICharSequence s, bool doDecompose, ReorderingBuffer buffer) // ICU4N TODO: API - rename src to startIndex and limit to length. We also don't need to provide these for the ReadOnlySpan<char> overload.
         {
             int limit = s.Length;
             if (limit == 0)

@@ -252,7 +252,7 @@ namespace ICU4N.Impl
 
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> override int SpanQuickCheckYes(<#=charSequence#> s)
         {
-            return Impl.Decompose(s, 0, s.Length, null);
+            return Impl.SpanQuickCheckYes(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
         }
 <# } #>
     }
