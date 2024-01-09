@@ -6178,7 +6178,6 @@ namespace ICU4N.Impl
         }
 
 
-
         // Decompose a short piece of text which is likely to contain characters that
         // fail the quick check loop and/or where the quick check loop's overhead
         // is unlikely to be amortized.
@@ -6306,6 +6305,103 @@ namespace ICU4N.Impl
             }
             return src;
         }
+#if FEATURE_SPAN
+
+
+        private void Decompose(int c, int norm16, ref ValueReorderingBuffer buffer)
+        {
+            // get the decomposition and the lead and trail cc's
+            if (norm16 >= limitNoNo)
+            {
+                if (IsMaybeOrNonZeroCC(norm16))
+                {
+                    buffer.Append(c, GetCCFromYesOrMaybe(norm16));
+                    return;
+                }
+                // Maps to an isCompYesAndZeroCC.
+                c = MapAlgorithmic(c, norm16);
+                norm16 = GetNorm16(c);
+            }
+            if (norm16 < minYesNo)
+            {
+                // c does not decompose
+                buffer.Append(c, 0);
+            }
+            else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
+            {
+                // Hangul syllable: decompose algorithmically
+                Hangul.Decompose(c, ref buffer);
+            }
+            else
+            {
+                // c decomposes, get everything from the variable-length extra data
+                int mapping = norm16 >> OFFSET_SHIFT;
+                int firstUnit = extraData[mapping];
+                int length = firstUnit & MAPPING_LENGTH_MASK;
+                int leadCC, trailCC;
+                trailCC = firstUnit >> 8;
+                if ((firstUnit & MAPPING_HAS_CCC_LCCC_WORD) != 0)
+                {
+                    leadCC = extraData[mapping - 1] >> 8;
+                }
+                else
+                {
+                    leadCC = 0;
+                }
+                ++mapping;  // skip over the firstUnit
+                buffer.Append(extraData, mapping, length, leadCC, trailCC); // ICU4N: Corrected 3rd parameter
+            }
+        }
+
+#endif 
+
+
+
+        private void Decompose(int c, int norm16, ReorderingBuffer buffer)
+        {
+            // get the decomposition and the lead and trail cc's
+            if (norm16 >= limitNoNo)
+            {
+                if (IsMaybeOrNonZeroCC(norm16))
+                {
+                    buffer.Append(c, GetCCFromYesOrMaybe(norm16));
+                    return;
+                }
+                // Maps to an isCompYesAndZeroCC.
+                c = MapAlgorithmic(c, norm16);
+                norm16 = GetNorm16(c);
+            }
+            if (norm16 < minYesNo)
+            {
+                // c does not decompose
+                buffer.Append(c, 0);
+            }
+            else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
+            {
+                // Hangul syllable: decompose algorithmically
+                Hangul.Decompose(c, buffer);
+            }
+            else
+            {
+                // c decomposes, get everything from the variable-length extra data
+                int mapping = norm16 >> OFFSET_SHIFT;
+                int firstUnit = extraData[mapping];
+                int length = firstUnit & MAPPING_LENGTH_MASK;
+                int leadCC, trailCC;
+                trailCC = firstUnit >> 8;
+                if ((firstUnit & MAPPING_HAS_CCC_LCCC_WORD) != 0)
+                {
+                    leadCC = extraData[mapping - 1] >> 8;
+                }
+                else
+                {
+                    leadCC = 0;
+                }
+                ++mapping;  // skip over the firstUnit
+                buffer.Append(extraData, mapping, length, leadCC, trailCC); // ICU4N: Corrected 3rd parameter
+            }
+        }
+
 
 
 
