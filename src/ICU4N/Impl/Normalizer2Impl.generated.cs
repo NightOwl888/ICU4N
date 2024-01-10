@@ -6960,7 +6960,7 @@ namespace ICU4N.Impl
             return src;
         }
 
-
+    
 
         // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
@@ -7125,7 +7125,7 @@ namespace ICU4N.Impl
             return src;
         }
 
-
+    
 
         // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
@@ -7290,7 +7290,7 @@ namespace ICU4N.Impl
             return src;
         }
 
-
+    
 
         // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
@@ -7455,7 +7455,7 @@ namespace ICU4N.Impl
             return src;
         }
 
-#if FEATURE_SPAN
+    #if FEATURE_SPAN
 
 
         // normalize
@@ -7623,11 +7623,11 @@ namespace ICU4N.Impl
         }
 #endif 
 
+    
 
-
-        // isNormalized/quickCheck/spanQuickCheckYes
+        // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
-        public int MakeFCDSpanQuickCheckYes(string s, int start, int length)
+        public int MakeFCDQuickCheck(string s, int start, int length)
         {
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
@@ -7736,6 +7736,8 @@ namespace ICU4N.Impl
                             prevBoundary = p;
                         }
                     }
+                    // The last lccc==0 character is excluded from the
+                    // flush-and-append call in case it needs to be modified.
                     // The start of the current character (c).
                     prevSrc = src;
                 }
@@ -7765,11 +7767,11 @@ namespace ICU4N.Impl
             return src;
         }
 
+    
 
-
-        // isNormalized/quickCheck/spanQuickCheckYes
+        // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
-        public int MakeFCDSpanQuickCheckYes(StringBuilder s, int start, int length)
+        public int MakeFCDQuickCheck(StringBuilder s, int start, int length)
         {
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
@@ -7878,6 +7880,8 @@ namespace ICU4N.Impl
                             prevBoundary = p;
                         }
                     }
+                    // The last lccc==0 character is excluded from the
+                    // flush-and-append call in case it needs to be modified.
                     // The start of the current character (c).
                     prevSrc = src;
                 }
@@ -7907,11 +7911,11 @@ namespace ICU4N.Impl
             return src;
         }
 
+    
 
-
-        // isNormalized/quickCheck/spanQuickCheckYes
+        // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
-        public int MakeFCDSpanQuickCheckYes(char[] s, int start, int length)
+        public int MakeFCDQuickCheck(char[] s, int start, int length)
         {
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
@@ -8020,6 +8024,8 @@ namespace ICU4N.Impl
                             prevBoundary = p;
                         }
                     }
+                    // The last lccc==0 character is excluded from the
+                    // flush-and-append call in case it needs to be modified.
                     // The start of the current character (c).
                     prevSrc = src;
                 }
@@ -8049,11 +8055,11 @@ namespace ICU4N.Impl
             return src;
         }
 
+    
 
-
-        // isNormalized/quickCheck/spanQuickCheckYes
+        // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
-        public int MakeFCDSpanQuickCheckYes(ICharSequence s, int start, int length)
+        public int MakeFCDQuickCheck(ICharSequence s, int start, int length)
         {
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
@@ -8162,6 +8168,8 @@ namespace ICU4N.Impl
                             prevBoundary = p;
                         }
                     }
+                    // The last lccc==0 character is excluded from the
+                    // flush-and-append call in case it needs to be modified.
                     // The start of the current character (c).
                     prevSrc = src;
                 }
@@ -8191,12 +8199,12 @@ namespace ICU4N.Impl
             return src;
         }
 
-#if FEATURE_SPAN
+    #if FEATURE_SPAN
 
 
-        // isNormalized/quickCheck/spanQuickCheckYes
+        // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
-        public int MakeFCDSpanQuickCheckYes(ReadOnlySpan<char> s)
+        public int MakeFCDQuickCheck(ReadOnlySpan<char> s)
         {
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
@@ -8305,6 +8313,8 @@ namespace ICU4N.Impl
                             prevBoundary = p;
                         }
                     }
+                    // The last lccc==0 character is excluded from the
+                    // flush-and-append call in case it needs to be modified.
                     // The start of the current character (c).
                     prevSrc = src;
                 }
@@ -8335,7 +8345,7 @@ namespace ICU4N.Impl
         }
 #endif 
 
-
+    
 
         public void MakeFCDAndAppend(string s, bool doMakeFCD, ReorderingBuffer buffer)
         {

@@ -328,7 +328,7 @@ namespace ICU4N.Impl
 
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> override int SpanQuickCheckYes(<#=charSequence#> s)
         {
-            return Impl.MakeFCDSpanQuickCheckYes(s, 0, s.Length);
+            return Impl.MakeFCDQuickCheck(s, 0, s.Length);
         }
 <# } #>
 

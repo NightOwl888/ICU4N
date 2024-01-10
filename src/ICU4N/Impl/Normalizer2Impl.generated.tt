@@ -1593,14 +1593,22 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
         }
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# for (int i = 0; i < charSequences.Length; i++) {
-    string charSequence = charSequences[i];
-    string feature = charSequenceFeatures[i]; #>
+<#
+string[] fcdMethodNames = new string[] {"MakeFCD", "MakeFCDQuickCheck"};
+for (int m = 0; m < decomposeMethodNames.Length; m++) {
+    string methodName = fcdMethodNames[m];
+    for (int i = 0; i < charSequences.Length; i++) {
+        string charSequence = charSequences[i];
+        string feature = charSequenceFeatures[i]; #>
 <#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int MakeFCD(<#=charSequence#> s, <#=charSequence == "ReadOnlySpan<char>" ? "ref Value" : "int start, int length, "#>ReorderingBuffer buffer)
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+        public int <#=methodName#>(<#=charSequence#> s<#=methodName == "MakeFCD" ? ", ref ValueReorderingBuffer buffer" : ""#>)
+<# } else { #>
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int <#=methodName#>(<#=charSequence#> s, int start, int length<#=methodName == "MakeFCD" ? ", ReorderingBuffer buffer" : ""#>)
+<# } /* charSequence */ #>
         {
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
@@ -1612,7 +1620,7 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
             int src = 0, limit = s.Length;
 <# } else { #>
             int src = start, limit = start + length;
-<# } #>
+<# } /* charSequence */ #>
 
             // Tracks the last FCD-safe boundary, before lccc=0 or after properly-ordered tccc<=1.
             // Similar to the prevBoundary in the compose() implementation.
@@ -1674,11 +1682,13 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
                 {
                     if (src == limit)
                     {
+<# if (methodName == "MakeFCD") { #>
 <# if (charSequence == "ReadOnlySpan<char>") { #>
                         buffer.Append(s.Slice(prevSrc, src - prevSrc)); // ICU4N: Corrected 3rd parameter
 <# } else { #>
                         buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
-<# } #>
+<# } /* charSequence */ #>
+<# } /* methodName */ #>
                         break;
                     }
                     prevBoundary = src;
@@ -1720,6 +1730,7 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
                     }
                     // The last lccc==0 character is excluded from the
                     // flush-and-append call in case it needs to be modified.
+<# if (methodName == "MakeFCD") { #>
 <# if (charSequence == "ReadOnlySpan<char>") { #>
                     // ICU4N: Call Append() rather than FlushAndAppendZeroCC() on ValueReorderingBuffer
                     buffer.Append(s.Slice(prevSrc, prevBoundary - prevSrc)); // ICU4N: Corrected 3rd parameter
@@ -1727,7 +1738,8 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
 <# } else { #>
                     buffer.FlushAndAppendZeroCC(s, prevSrc, prevBoundary - prevSrc); // ICU4N: Corrected 3rd parameter
                     buffer.Append(s, prevBoundary, src - prevBoundary); // ICU4N: Corrected 3rd parameter
-<# } #>
+<# } /* charSequence */ #>
+<# } /* methodName */ #>
                     // The start of the current character (c).
                     prevSrc = src;
                 }
@@ -1746,12 +1758,15 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
                     {
                         prevBoundary = src;
                     }
+<# if (methodName == "MakeFCD") { #>
                     buffer.AppendZeroCC(c);
+<# } /* methodName */ #>
                     prevFCD16 = fcd16;
                     continue;
                 }
                 else
                 {
+<# if (methodName == "MakeFCD") { #>
                     /*
                      * Back out the part of the source that we copied or appended
                      * already but is now going to be decomposed.
@@ -1770,161 +1785,15 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
                     DecomposeShort(s, prevBoundary, src, false, false, <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
                     prevBoundary = src;
                     prevFCD16 = 0;
-                }
-            }
-            return src;
-        }
-<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
-<# } #>
-<# for (int i = 0; i < charSequences.Length; i++) {
-    string charSequence = charSequences[i];
-    string feature = charSequenceFeatures[i]; #>
-<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
-
-        // isNormalized/quickCheck/spanQuickCheckYes
-        // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int MakeFCDSpanQuickCheckYes(<#=charSequence#> s<#=charSequence != "ReadOnlySpan<char>" ? ", int start, int length" : ""#>)
-        {
-            // Note: In this function we use buffer->appendZeroCC() because we track
-            // the lead and trail combining classes here, rather than leaving it to
-            // the ReorderingBuffer.
-            // The exception is the call to decomposeShort() which uses the buffer
-            // in the normal way.
-
-<# if (charSequence == "ReadOnlySpan<char>") { #>
-            int src = 0, limit = s.Length;
 <# } else { #>
-            int src = start, limit = start + length;
-<# } #>
-
-            // Tracks the last FCD-safe boundary, before lccc=0 or after properly-ordered tccc<=1.
-            // Similar to the prevBoundary in the compose() implementation.
-            int prevBoundary = src;
-            int prevSrc;
-            int c = 0;
-            int prevFCD16 = 0;
-            int fcd16 = 0;
-
-            for (; ; )
-            {
-                // count code units with lccc==0
-                for (prevSrc = src; src != limit;)
-                {
-                    if ((c = s[src]) < minLcccCP)
-                    {
-                        prevFCD16 = ~c;
-                        ++src;
-                    }
-                    else if (!SingleLeadMightHaveNonZeroFCD16(c))
-                    {
-                        prevFCD16 = 0;
-                        ++src;
-                    }
-                    else
-                    {
-                        if (UTF16.IsSurrogate((char)c))
-                        {
-                            char c2;
-                            if (UTF16Plus.IsSurrogateLead(c))
-                            {
-                                if ((src + 1) != limit && char.IsLowSurrogate(c2 = s[src + 1]))
-                                {
-                                    c = Character.ToCodePoint((char)c, c2);
-                                }
-                            }
-                            else /* trail surrogate */
-                            {
-                                if (prevSrc < src && char.IsHighSurrogate(c2 = s[src - 1]))
-                                {
-                                    --src;
-                                    c = Character.ToCodePoint(c2, (char)c);
-                                }
-                            }
-                        }
-                        if ((fcd16 = GetFCD16FromNormData(c)) <= 0xff)
-                        {
-                            prevFCD16 = fcd16;
-                            src += Character.CharCount(c);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-                // copy these code units all at once
-                if (src != prevSrc)
-                {
-                    if (src == limit)
-                    {
-                        break;
-                    }
-                    prevBoundary = src;
-                    // We know that the previous character's lccc==0.
-                    if (prevFCD16 < 0)
-                    {
-                        // Fetching the fcd16 value was deferred for this below-minLcccCP code point.
-                        int prev = ~prevFCD16;
-                        if (prev < minDecompNoCP)
-                        {
-                            prevFCD16 = 0;
-                        }
-                        else
-                        {
-                            prevFCD16 = GetFCD16FromNormData(prev);
-                            if (prevFCD16 > 1)
-                            {
-                                --prevBoundary;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        int p = src - 1;
-                        if (char.IsLowSurrogate(s[p]) && prevSrc < p &&
-                            char.IsHighSurrogate(s[p - 1])
-                        )
-                        {
-                            --p;
-                            // Need to fetch the previous character's FCD value because
-                            // prevFCD16 was just for the trail surrogate code point.
-                            prevFCD16 = GetFCD16FromNormData(Character.ToCodePoint(s[p], s[p + 1]));
-                            // Still known to have lccc==0 because its lead surrogate unit had lccc==0.
-                        }
-                        if (prevFCD16 > 1)
-                        {
-                            prevBoundary = p;
-                        }
-                    }
-                    // The start of the current character (c).
-                    prevSrc = src;
-                }
-                else if (src == limit)
-                {
-                    break;
-                }
-
-                src += Character.CharCount(c);
-                // The current character (c) at [prevSrc..src[ has a non-zero lead combining class.
-                // Check for proper order, and decompose locally if necessary.
-                if ((prevFCD16 & 0xff) <= (fcd16 >> 8))
-                {
-                    // proper order: prev tccc <= current lccc
-                    if ((fcd16 & 0xff) <= 1)
-                    {
-                        prevBoundary = src;
-                    }
-                    prevFCD16 = fcd16;
-                    continue;
-                }
-                else
-                {
                     return prevBoundary;  // quick check "no"
+<# } /* methodName */ #>
                 }
             }
             return src;
         }
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
+    <# } #>
 <# } #>
 <# for (int i = 0; i < charSequences.Length; i++) {
     string charSequence = charSequences[i];
