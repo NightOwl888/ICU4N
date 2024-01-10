@@ -417,12 +417,27 @@ namespace ICU4N.Impl
                 new AnonymousBinaryProperty(this, UPropertySource.NFKCCaseFold, contains: (c) =>
                     {  // UCHAR_CHANGES_WHEN_NFKC_CASEFOLDED
                         Normalizer2Impl kcf = Norm2AllModes.GetNFKC_CFInstance().Impl;
+#if FEATURE_SPAN
+                        Span<char> src = stackalloc char[2];
+                        int charCount = Character.ToChars(c, src, 0);
+                        ValueReorderingBuffer buffer = new ValueReorderingBuffer(kcf, stackalloc char[5]); // Small destCapacity for NFKC_CF(c).
+                        try
+                        {
+                            kcf.Compose(src.Slice(0, charCount), false, true, ref buffer); // ICU4N: Checked 3rd parameter
+                            return !UTF16Plus.Equal(buffer.AsSpan(), src.Slice(0, charCount));
+                        }
+                        finally
+                        {
+                            buffer.Dispose(); // ICU4N: Should remain on the stack, so this doesn't really matter
+                        }
+#else
                         string src = UTF16.ValueOf(c);
                         StringBuilder dest = new StringBuilder();
                         // Small destCapacity for NFKC_CF(c).
                         ReorderingBuffer buffer = new ReorderingBuffer(kcf, dest, 5);
                         kcf.Compose(src, 0, src.Length, false, true, buffer); // ICU4N: Checked 3rd parameter
                         return !UTF16Plus.Equal(dest, src);
+#endif
                     }),
                 new BinaryProperty(this, 2, 1<<PROPS_2_EMOJI),
                 new BinaryProperty(this, 2, 1<<PROPS_2_EMOJI_PRESENTATION),
