@@ -257,15 +257,10 @@ namespace ICU4N.Impl
     /// </summary>
     public ref struct ValueReorderingBuffer
     {
-        // ICU4N TODO: Evaluate whether this approach makes sense and if not, remove
-        public ValueReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, Span<char> initialBuffer)
+        public ValueReorderingBuffer(Normalizer2Impl ni, Span<char> initialBuffer)
         {
             impl = ni ?? throw new ArgumentNullException(nameof(ni));
             str = new ValueStringBuilder(initialBuffer);
-            if (!initialValue.IsEmpty)
-            {
-                str.Append(initialValue);
-            }
             reorderStart = 0;
             codePointStart = 0;
             codePointLimit = 0;
@@ -342,6 +337,7 @@ namespace ICU4N.Impl
                 reorderStart = codePointLimit;
             }
         }
+
 
         public bool IsEmpty => str.Length == 0;
         public int Length => str.Length;
