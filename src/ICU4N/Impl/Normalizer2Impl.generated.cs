@@ -6801,6 +6801,11 @@ namespace ICU4N.Impl
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
         public int MakeFCD(string s, int start, int length, ReorderingBuffer buffer)
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
             // the ReorderingBuffer.
@@ -6966,6 +6971,11 @@ namespace ICU4N.Impl
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
         public int MakeFCD(StringBuilder s, int start, int length, ReorderingBuffer buffer)
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
             // the ReorderingBuffer.
@@ -7131,6 +7141,11 @@ namespace ICU4N.Impl
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
         public int MakeFCD(char[] s, int start, int length, ReorderingBuffer buffer)
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
             // the ReorderingBuffer.
@@ -7296,6 +7311,11 @@ namespace ICU4N.Impl
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
         public int MakeFCD(ICharSequence s, int start, int length, ReorderingBuffer buffer)
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
             // the ReorderingBuffer.
@@ -7629,6 +7649,9 @@ namespace ICU4N.Impl
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
         public int MakeFCDQuickCheck(string s, int start, int length)
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
             // the ReorderingBuffer.
@@ -7773,6 +7796,9 @@ namespace ICU4N.Impl
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
         public int MakeFCDQuickCheck(StringBuilder s, int start, int length)
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
             // the ReorderingBuffer.
@@ -7917,6 +7943,9 @@ namespace ICU4N.Impl
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
         public int MakeFCDQuickCheck(char[] s, int start, int length)
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
             // the ReorderingBuffer.
@@ -8061,6 +8090,9 @@ namespace ICU4N.Impl
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
         public int MakeFCDQuickCheck(ICharSequence s, int start, int length)
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
             // the ReorderingBuffer.
