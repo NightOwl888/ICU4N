@@ -1203,7 +1203,7 @@ namespace ICU4N.Text
         private void WriteIdenticalLevel(ICharSequence s, CollationKeyByteSink sink)
         {
             // NFD quick check
-            int nfdQCYesLimit = data.NfcImpl.Decompose(s, 0, s.Length, null);
+            int nfdQCYesLimit = data.NfcImpl.DecomposeQuickCheck(s, 0, s.Length); // ICU4N: Checked 3rd parameter
             sink.Append(Collation.LevelSeparatorByte);
             // Sync the ByteArrayWrapper size with the key length.
             sink.Key.Length = sink.NumberOfBytesAppended;
@@ -1217,7 +1217,7 @@ namespace ICU4N.Text
             {
                 int destLengthEstimate = s.Length - nfdQCYesLimit;
                 StringBuilderCharSequence nfd = new StringBuilderCharSequence(new StringBuilder());
-                data.NfcImpl.Decompose(s, nfdQCYesLimit, s.Length, nfd.Value, destLengthEstimate);
+                data.NfcImpl.Decompose(s, nfdQCYesLimit, s.Length - nfdQCYesLimit, nfd.Value, destLengthEstimate); // ICU4N: Corrected 3rd parameter
                 BOCSU.WriteIdenticalLevelRun(prev, nfd, 0, nfd.Length, sink.Key);
             }
             // Sync the key with the buffer again which got bytes appended and may have been reallocated.
@@ -1469,7 +1469,7 @@ namespace ICU4N.Text
             internal void SetText(Normalizer2Impl nfcImpl, ICharSequence seq, int start)
             {
                 Reset();
-                int spanLimit = nfcImpl.MakeFCD(seq, start, seq.Length, null);
+                int spanLimit = nfcImpl.MakeFCDQuickCheck(seq, start, seq.Length - start); // ICU4N: Corrected 3rd parameter
                 if (spanLimit == seq.Length)
                 {
                     s = seq;
@@ -1487,7 +1487,7 @@ namespace ICU4N.Text
                     }
                     str.Value.Append(seq, start, spanLimit - start); // ICU4N: Corrected 3rd parameter
                     ReorderingBuffer buffer = new ReorderingBuffer(nfcImpl, str.Value, seq.Length - start);
-                    nfcImpl.MakeFCD(seq, spanLimit, seq.Length, buffer);
+                    nfcImpl.MakeFCD(seq, spanLimit, seq.Length - spanLimit, buffer); // ICU4N: Corrected 3rd parameter
                     s = str;
                     pos = 0;
                 }

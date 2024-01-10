@@ -8395,14 +8395,14 @@ namespace ICU4N.Impl
                         middle.Append(buffer.StringBuilder, lastBoundaryInDest, buffer.Length - lastBoundaryInDest); // ICU4N : Fixed 3rd parameter
                         buffer.RemoveSuffix(buffer.Length - lastBoundaryInDest);
                         middle.Append(s, 0, firstBoundaryInSrc - 0);
-                        MakeFCD(middle, 0, middle.Length, buffer);
+                        MakeFCD(middle, 0, middle.Length, buffer); // ICU4N: Checked 3rd parameter
                         src = firstBoundaryInSrc;
                     }
                 }
             }
             if (doMakeFCD)
             {
-                MakeFCD(s, src, limit - src, buffer);
+                MakeFCD(s, src, limit - src, buffer); // ICU4N: Corrected 3rd parameter
             }
             else
             {
@@ -8428,14 +8428,14 @@ namespace ICU4N.Impl
                         middle.Append(buffer.StringBuilder, lastBoundaryInDest, buffer.Length - lastBoundaryInDest); // ICU4N : Fixed 3rd parameter
                         buffer.RemoveSuffix(buffer.Length - lastBoundaryInDest);
                         middle.Append(s, 0, firstBoundaryInSrc - 0);
-                        MakeFCD(middle, 0, middle.Length, buffer);
+                        MakeFCD(middle, 0, middle.Length, buffer); // ICU4N: Checked 3rd parameter
                         src = firstBoundaryInSrc;
                     }
                 }
             }
             if (doMakeFCD)
             {
-                MakeFCD(s, src, limit - src, buffer);
+                MakeFCD(s, src, limit - src, buffer); // ICU4N: Corrected 3rd parameter
             }
             else
             {
@@ -8461,14 +8461,14 @@ namespace ICU4N.Impl
                         middle.Append(buffer.StringBuilder, lastBoundaryInDest, buffer.Length - lastBoundaryInDest); // ICU4N : Fixed 3rd parameter
                         buffer.RemoveSuffix(buffer.Length - lastBoundaryInDest);
                         middle.Append(s, 0, firstBoundaryInSrc - 0);
-                        MakeFCD(middle, 0, middle.Length, buffer);
+                        MakeFCD(middle, 0, middle.Length, buffer); // ICU4N: Checked 3rd parameter
                         src = firstBoundaryInSrc;
                     }
                 }
             }
             if (doMakeFCD)
             {
-                MakeFCD(s, src, limit - src, buffer);
+                MakeFCD(s, src, limit - src, buffer); // ICU4N: Corrected 3rd parameter
             }
             else
             {
@@ -8494,14 +8494,14 @@ namespace ICU4N.Impl
                         middle.Append(buffer.StringBuilder, lastBoundaryInDest, buffer.Length - lastBoundaryInDest); // ICU4N : Fixed 3rd parameter
                         buffer.RemoveSuffix(buffer.Length - lastBoundaryInDest);
                         middle.Append(s, 0, firstBoundaryInSrc - 0);
-                        MakeFCD(middle, 0, middle.Length, buffer);
+                        MakeFCD(middle, 0, middle.Length, buffer); // ICU4N: Checked 3rd parameter
                         src = firstBoundaryInSrc;
                     }
                 }
             }
             if (doMakeFCD)
             {
-                MakeFCD(s, src, limit - src, buffer);
+                MakeFCD(s, src, limit - src, buffer); // ICU4N: Corrected 3rd parameter
             }
             else
             {
@@ -8545,7 +8545,7 @@ namespace ICU4N.Impl
             }
             if (doMakeFCD)
             {
-                MakeFCD(s.Slice(src, limit - src), ref buffer);
+                MakeFCD(s.Slice(src, limit - src), ref buffer); // ICU4N: Corrected 3rd parameter
             }
             else
             {

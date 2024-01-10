@@ -232,7 +232,7 @@ namespace ICU4N.Impl
 
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "protected"#> override void Normalize(<#=charSequence#> src, ReorderingBuffer buffer)
         {
-            Impl.Decompose(src, 0, src.Length, buffer);
+            Impl.Decompose(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -257,7 +257,7 @@ namespace ICU4N.Impl
 
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "protected"#> override void Normalize(<#=charSequence#> src, ReorderingBuffer buffer)
         {
-            Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
+            Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer); // ICU4N: Checked 3rd parameter
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -275,7 +275,7 @@ namespace ICU4N.Impl
             // 5: small destCapacity for substring normalization
             return Impl.Compose(s, 0, s.Length,
                                 onlyContiguous, false,
-                                new ReorderingBuffer(Impl, new StringBuilder(), 5));
+                                new ReorderingBuffer(Impl, new StringBuilder(), 5)); // ICU4N: Checked 3rd parameter
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -301,7 +301,7 @@ namespace ICU4N.Impl
 
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> override int SpanQuickCheckYes(<#=charSequence#> s)
         {
-            return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
+            return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
         }
 <# } #>
 
@@ -313,7 +313,7 @@ namespace ICU4N.Impl
 
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "protected"#> override void Normalize(<#=charSequence#> src, ReorderingBuffer buffer)
         {
-            Impl.MakeFCD(src, 0, src.Length, buffer);
+            Impl.MakeFCD(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -328,7 +328,7 @@ namespace ICU4N.Impl
 
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> override int SpanQuickCheckYes(<#=charSequence#> s)
         {
-            return Impl.MakeFCDQuickCheck(s, 0, s.Length);
+            return Impl.MakeFCDQuickCheck(s, 0, s.Length); // ICU4N: Checked 3rd parameter
         }
 <# } #>
 

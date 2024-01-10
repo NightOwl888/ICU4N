@@ -394,22 +394,22 @@ namespace ICU4N.Impl
 
         protected override void Normalize(string src, ReorderingBuffer buffer)
         {
-            Impl.Decompose(src, 0, src.Length, buffer);
+            Impl.Decompose(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 
         protected override void Normalize(StringBuilder src, ReorderingBuffer buffer)
         {
-            Impl.Decompose(src, 0, src.Length, buffer);
+            Impl.Decompose(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 
         protected override void Normalize(char[] src, ReorderingBuffer buffer)
         {
-            Impl.Decompose(src, 0, src.Length, buffer);
+            Impl.Decompose(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 
         public override void Normalize(ICharSequence src, ReorderingBuffer buffer)
         {
-            Impl.Decompose(src, 0, src.Length, buffer);
+            Impl.Decompose(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 
         protected override void NormalizeAndAppend(string src, bool doNormalize, ReorderingBuffer buffer)
@@ -458,22 +458,22 @@ namespace ICU4N.Impl
 
         protected override void Normalize(string src, ReorderingBuffer buffer)
         {
-            Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
+            Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer); // ICU4N: Checked 3rd parameter
         }
 
         protected override void Normalize(StringBuilder src, ReorderingBuffer buffer)
         {
-            Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
+            Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer); // ICU4N: Checked 3rd parameter
         }
 
         protected override void Normalize(char[] src, ReorderingBuffer buffer)
         {
-            Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
+            Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer); // ICU4N: Checked 3rd parameter
         }
 
         public override void Normalize(ICharSequence src, ReorderingBuffer buffer)
         {
-            Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
+            Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer); // ICU4N: Checked 3rd parameter
         }
 
         protected override void NormalizeAndAppend(
@@ -505,7 +505,7 @@ namespace ICU4N.Impl
             // 5: small destCapacity for substring normalization
             return Impl.Compose(s, 0, s.Length,
                                 onlyContiguous, false,
-                                new ReorderingBuffer(Impl, new StringBuilder(), 5));
+                                new ReorderingBuffer(Impl, new StringBuilder(), 5)); // ICU4N: Checked 3rd parameter
         }
 
         public override bool IsNormalized(StringBuilder s)
@@ -513,7 +513,7 @@ namespace ICU4N.Impl
             // 5: small destCapacity for substring normalization
             return Impl.Compose(s, 0, s.Length,
                                 onlyContiguous, false,
-                                new ReorderingBuffer(Impl, new StringBuilder(), 5));
+                                new ReorderingBuffer(Impl, new StringBuilder(), 5)); // ICU4N: Checked 3rd parameter
         }
 
         public override bool IsNormalized(char[] s)
@@ -521,7 +521,7 @@ namespace ICU4N.Impl
             // 5: small destCapacity for substring normalization
             return Impl.Compose(s, 0, s.Length,
                                 onlyContiguous, false,
-                                new ReorderingBuffer(Impl, new StringBuilder(), 5));
+                                new ReorderingBuffer(Impl, new StringBuilder(), 5)); // ICU4N: Checked 3rd parameter
         }
 
         public override bool IsNormalized(ICharSequence s)
@@ -529,7 +529,7 @@ namespace ICU4N.Impl
             // 5: small destCapacity for substring normalization
             return Impl.Compose(s, 0, s.Length,
                                 onlyContiguous, false,
-                                new ReorderingBuffer(Impl, new StringBuilder(), 5));
+                                new ReorderingBuffer(Impl, new StringBuilder(), 5)); // ICU4N: Checked 3rd parameter
         }
 
         public override QuickCheckResult QuickCheck(string s)
@@ -602,22 +602,22 @@ namespace ICU4N.Impl
 
         public override int SpanQuickCheckYes(string s)
         {
-            return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
+            return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
         }
 
         public override int SpanQuickCheckYes(StringBuilder s)
         {
-            return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
+            return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
         }
 
         public override int SpanQuickCheckYes(char[] s)
         {
-            return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
+            return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
         }
 
         public override int SpanQuickCheckYes(ICharSequence s)
         {
-            return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
+            return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
         }
 
     }
@@ -627,22 +627,22 @@ namespace ICU4N.Impl
 
         protected override void Normalize(string src, ReorderingBuffer buffer)
         {
-            Impl.MakeFCD(src, 0, src.Length, buffer);
+            Impl.MakeFCD(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 
         protected override void Normalize(StringBuilder src, ReorderingBuffer buffer)
         {
-            Impl.MakeFCD(src, 0, src.Length, buffer);
+            Impl.MakeFCD(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 
         protected override void Normalize(char[] src, ReorderingBuffer buffer)
         {
-            Impl.MakeFCD(src, 0, src.Length, buffer);
+            Impl.MakeFCD(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 
         public override void Normalize(ICharSequence src, ReorderingBuffer buffer)
         {
-            Impl.MakeFCD(src, 0, src.Length, buffer);
+            Impl.MakeFCD(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 
         protected override void NormalizeAndAppend(
@@ -671,22 +671,22 @@ namespace ICU4N.Impl
 
         public override int SpanQuickCheckYes(string s)
         {
-            return Impl.MakeFCDQuickCheck(s, 0, s.Length);
+            return Impl.MakeFCDQuickCheck(s, 0, s.Length); // ICU4N: Checked 3rd parameter
         }
 
         public override int SpanQuickCheckYes(StringBuilder s)
         {
-            return Impl.MakeFCDQuickCheck(s, 0, s.Length);
+            return Impl.MakeFCDQuickCheck(s, 0, s.Length); // ICU4N: Checked 3rd parameter
         }
 
         public override int SpanQuickCheckYes(char[] s)
         {
-            return Impl.MakeFCDQuickCheck(s, 0, s.Length);
+            return Impl.MakeFCDQuickCheck(s, 0, s.Length); // ICU4N: Checked 3rd parameter
         }
 
         public override int SpanQuickCheckYes(ICharSequence s)
         {
-            return Impl.MakeFCDQuickCheck(s, 0, s.Length);
+            return Impl.MakeFCDQuickCheck(s, 0, s.Length); // ICU4N: Checked 3rd parameter
         }
 
     }
