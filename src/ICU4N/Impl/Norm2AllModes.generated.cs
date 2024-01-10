@@ -55,14 +55,8 @@ namespace ICU4N.Impl
 
         public override IAppendable Normalize(string src, IAppendable dest)
         {
-            try
-            {
-                return dest.Append(src);
-            }
-            catch (IOException e)
-            {
-                throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-            }
+            // ICU4N: Removed unnecessary try/catch for IOException
+            return dest.Append(src);
         }
 
         public override IAppendable Normalize(StringBuilder src, IAppendable dest)
@@ -71,26 +65,14 @@ namespace ICU4N.Impl
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
-            try
-            {
-                return dest.Append(src);
-            }
-            catch (IOException e)
-            {
-                throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-            }
+            // ICU4N: Removed unnecessary try/catch for IOException
+            return dest.Append(src);
         }
 
         public override IAppendable Normalize(char[] src, IAppendable dest)
         {
-            try
-            {
-                return dest.Append(src);
-            }
-            catch (IOException e)
-            {
-                throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-            }
+            // ICU4N: Removed unnecessary try/catch for IOException
+            return dest.Append(src);
         }
 
         public override IAppendable Normalize(ICharSequence src, IAppendable dest)
@@ -100,14 +82,8 @@ namespace ICU4N.Impl
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
-            try
-            {
-                return dest.Append(src);
-            }
-            catch (IOException e)
-            {
-                throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-            }
+            // ICU4N: Removed unnecessary try/catch for IOException
+            return dest.Append(src);
         }
 
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second)
@@ -695,22 +671,22 @@ namespace ICU4N.Impl
 
         public override int SpanQuickCheckYes(string s)
         {
-            return Impl.MakeFCD(s, 0, s.Length, null);
+            return Impl.MakeFCDSpanQuickCheckYes(s, 0, s.Length);
         }
 
         public override int SpanQuickCheckYes(StringBuilder s)
         {
-            return Impl.MakeFCD(s, 0, s.Length, null);
+            return Impl.MakeFCDSpanQuickCheckYes(s, 0, s.Length);
         }
 
         public override int SpanQuickCheckYes(char[] s)
         {
-            return Impl.MakeFCD(s, 0, s.Length, null);
+            return Impl.MakeFCDSpanQuickCheckYes(s, 0, s.Length);
         }
 
         public override int SpanQuickCheckYes(ICharSequence s)
         {
-            return Impl.MakeFCD(s, 0, s.Length, null);
+            return Impl.MakeFCDSpanQuickCheckYes(s, 0, s.Length);
         }
 
     }
