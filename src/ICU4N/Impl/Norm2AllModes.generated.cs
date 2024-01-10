@@ -671,22 +671,22 @@ namespace ICU4N.Impl
 
         public override int SpanQuickCheckYes(string s)
         {
-            return Impl.MakeFCDSpanQuickCheckYes(s, 0, s.Length);
+            return Impl.MakeFCDQuickCheck(s, 0, s.Length);
         }
 
         public override int SpanQuickCheckYes(StringBuilder s)
         {
-            return Impl.MakeFCDSpanQuickCheckYes(s, 0, s.Length);
+            return Impl.MakeFCDQuickCheck(s, 0, s.Length);
         }
 
         public override int SpanQuickCheckYes(char[] s)
         {
-            return Impl.MakeFCDSpanQuickCheckYes(s, 0, s.Length);
+            return Impl.MakeFCDQuickCheck(s, 0, s.Length);
         }
 
         public override int SpanQuickCheckYes(ICharSequence s)
         {
-            return Impl.MakeFCDSpanQuickCheckYes(s, 0, s.Length);
+            return Impl.MakeFCDQuickCheck(s, 0, s.Length);
         }
 
     }
