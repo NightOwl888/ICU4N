@@ -263,7 +263,7 @@ namespace ICU4N.Impl.Coll
             else if (tag == Collation.HANGUL_TAG)
             {
                 StringBuilder jamos = new StringBuilder();
-                int length = Hangul.Decompose(c, jamos);
+                int length = jamos.AppendHangulDecomposition(c); // ICU4N: Renamed from Hangul.Decompose()
                 if (tailored.Contains(jamos[0]) || tailored.Contains(jamos[1])
                         || (length == 3 && tailored.Contains(jamos[2])))
                 {
