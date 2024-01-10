@@ -421,7 +421,7 @@ namespace ICU4N.Impl
                         StringBuilder dest = new StringBuilder();
                         // Small destCapacity for NFKC_CF(c).
                         ReorderingBuffer buffer = new ReorderingBuffer(kcf, dest, 5);
-                        kcf.Compose(src, 0, src.Length, false, true, buffer);
+                        kcf.Compose(src, 0, src.Length, false, true, buffer); // ICU4N: Checked 3rd parameter
                         return !UTF16Plus.Equal(dest, src);
                     }),
                 new BinaryProperty(this, 2, 1<<PROPS_2_EMOJI),

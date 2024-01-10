@@ -458,7 +458,7 @@ namespace ICU4N.Impl.Coll
                 normalized = new StringBuilder();
             }
             // NFD without argument checking.
-            nfcImpl.Decompose(rawSeq, from, to, normalized, to - from);
+            nfcImpl.Decompose(rawSeq, from, to - from, normalized, to - from); // ICU4N: Corrected 3rd parameter
             // Switch collation processing into the FCD buffer
             // with the result of normalizing [segmentStart, segmentLimit[.
             segmentStart = from;

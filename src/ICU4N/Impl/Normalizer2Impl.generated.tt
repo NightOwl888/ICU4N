@@ -1837,7 +1837,7 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
                             MakeFCD(new ReadOnlySpan<char>(middle.GetCharsPointer(), middle.Length), ref buffer);
                         }
 <# } else { #>
-                        MakeFCD(middle, 0, middle.Length, buffer);
+                        MakeFCD(middle, 0, middle.Length, buffer); // ICU4N: Checked 3rd parameter
 <# } #>
                         src = firstBoundaryInSrc;
                     }
@@ -1852,9 +1852,9 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
             if (doMakeFCD)
             {
 <#if (charSequence == "ReadOnlySpan<char>") { #>
-                MakeFCD(s.Slice(src, limit - src), <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
+                MakeFCD(s.Slice(src, limit - src), <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer); // ICU4N: Corrected 3rd parameter
 <# } else { #>
-                MakeFCD(s, src, limit - src, <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
+                MakeFCD(s, src, limit - src, <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer); // ICU4N: Corrected 3rd parameter
 <# } #>
             }
             else
