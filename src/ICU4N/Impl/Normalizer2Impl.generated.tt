@@ -13,10 +13,26 @@
     // Load common settings from the XML file using relative path
     string settingsPath = System.IO.Path.GetFullPath(System.IO.Path.Combine(Host.ResolvePath(string.Empty), @"../../../src/CodeGenerationSettings.xml"));
     XDocument document = XDocument.Load(settingsPath);
-    string[] charSequences = document.XPathSelectElements(@"//codeGen/charSequences/charSequence").Where(x => x.Value != "ReadOnlySpan<char>").Select(x => x.Value).ToArray(); // ICU4N TODO: API - ReadOnlySpan<char>
+    XElement[] charSequenceElements = document.XPathSelectElements(@"//codeGen/charSequences/charSequence").ToArray();
     string charSequenceAccessibility = document.XPathSelectElement(@"//codeGen/charSequenceAccessibility").Value;
     string[] appendables = document.XPathSelectElements(@"//codeGen/appendables/appendable").Select(x => x.Value).ToArray();
     string appendableAccessibility = document.XPathSelectElement(@"//codeGen/appendableAccessibility").Value;
+
+    string[] charSequences = new string[charSequenceElements.Length];
+    string[] charSequenceForDocs = new string[charSequenceElements.Length];
+    string[] charSequenceFeatures = new string[charSequenceElements.Length];
+    bool[] charSequenceNullables = new bool[charSequenceElements.Length];
+
+    for (int i = 0; i < charSequenceElements.Length; i++) {
+        XElement charSequenceElement = charSequenceElements[i];
+        charSequences[i] = charSequenceElement.Value;
+        charSequenceForDocs[i] = charSequenceElement.Value.Replace("<", "{").Replace(">", "}");
+
+        XAttribute[] featureAttributes = charSequenceElement.Attributes("feature").ToArray();
+        charSequenceFeatures[i] = featureAttributes == null ? "" : (featureAttributes.Length > 0 ? featureAttributes[0].Value : "");
+
+        charSequenceNullables[i] = charSequenceElement.Value != "ReadOnlySpan<char>";
+    }
 
     string[] bufferNames = new string[] { "ValueReorderingBuffer", "ReorderingBuffer" };
     string[] bufferFeatures = new string[] { "FEATURE_SPAN", "" };
@@ -31,11 +47,9 @@
 //------------------------------------------------------------------------------
 using ICU4N.Support.Text;
 using ICU4N.Text;
-using ICU4N.Util;
 using J2N;
 using J2N.Text;
 using System;
-using System.IO;
 using System.Text;
 
 namespace ICU4N.Impl
@@ -50,27 +64,20 @@ namespace ICU4N.Impl
         /// </summary>
         <#= appendable == "IAppendable" ? appendableAccessibility : "public"#> static int Decompose(int c, <#=appendable#> buffer)
         {
-            try
+            // ICU4N: Removed unnecessary try/catch for IOException
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            c /= JamoTCount;
+            buffer.Append((char)(JamoLBase + c / JamoVCount));
+            buffer.Append((char)(JamoVBase + c % JamoVCount));
+            if (c2 == 0)
             {
-                c -= HangulBase;
-                int c2 = c % JamoTCount;
-                c /= JamoTCount;
-                buffer.Append((char)(JamoLBase + c / JamoVCount));
-                buffer.Append((char)(JamoVBase + c % JamoVCount));
-                if (c2 == 0)
-                {
-                    return 2;
-                }
-                else
-                {
-                    buffer.Append((char)(JamoTBase + c2));
-                    return 3;
-                }
+                return 2;
             }
-            catch (IOException e)
+            else
             {
-                // Will not occur because we do not write to I/O.
-                throw new ICUUncheckedIOException(e);
+                buffer.Append((char)(JamoTBase + c2));
+                return 3;
             }
         }
 <# } #>
@@ -82,27 +89,20 @@ namespace ICU4N.Impl
         /// </summary>
         <#= appendable == "IAppendable" ? appendableAccessibility : "public"#> static void GetRawDecomposition(int c, <#=appendable#> buffer)
         {
-            try
+            // ICU4N: Removed unnecessary try/catch for IOException
+            int orig = c;
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            if (c2 == 0)
             {
-                int orig = c;
-                c -= HangulBase;
-                int c2 = c % JamoTCount;
-                if (c2 == 0)
-                {
-                    c /= JamoTCount;
-                    buffer.Append((char)(JamoLBase + c / JamoVCount));
-                    buffer.Append((char)(JamoVBase + c % JamoVCount));
-                }
-                else
-                {
-                    buffer.Append((char)(orig - c2));  // LV syllable
-                    buffer.Append((char)(JamoTBase + c2));
-                }
+                c /= JamoTCount;
+                buffer.Append((char)(JamoLBase + c / JamoVCount));
+                buffer.Append((char)(JamoVBase + c % JamoVCount));
             }
-            catch (IOException e)
+            else
             {
-                // Will not occur because we do not write to I/O.
-                throw new ICUUncheckedIOException(e);
+                buffer.Append((char)(orig - c2));  // LV syllable
+                buffer.Append((char)(JamoTBase + c2));
             }
         }
 <# } #>
@@ -129,6 +129,7 @@ namespace ICU4N.Impl
     /// </summary>
     public ref struct ValueReorderingBuffer
     {
+        // ICU4N TODO: Evaluate whether this approach makes sense and if not, remove
         public ValueReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, Span<char> initialBuffer)
         {
             impl = ni ?? throw new ArgumentNullException(nameof(ni));
@@ -158,6 +159,7 @@ namespace ICU4N.Impl
             }
         }
 
+        // ICU4N TODO: Evaluate whether this approach makes sense and if not, remove
         public ValueReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, int initialCapacity)
         {
             impl = ni ?? throw new ArgumentNullException(nameof(ni));
@@ -166,6 +168,32 @@ namespace ICU4N.Impl
             {
                 str.Append(initialValue);
             }
+            reorderStart = 0;
+            codePointStart = 0;
+            codePointLimit = 0;
+            lastCC = 0;
+            if (str.Length == 0)
+            {
+                lastCC = 0;
+            }
+            else
+            {
+                SetIterator();
+                lastCC = PreviousCC();
+                // Set reorderStart after the last code point with cc<=1 if there is one.
+                if (lastCC > 1)
+                {
+                    while (PreviousCC() > 1) { }
+                }
+                reorderStart = codePointLimit;
+            }
+        }
+
+        internal ValueReorderingBuffer(Normalizer2Impl ni, ref ValueStringBuilder destination, int destinationCapacity)
+        {
+            impl = ni ?? throw new ArgumentNullException(nameof(ni));
+            str = destination;
+            str.EnsureCapacity(destinationCapacity);
             reorderStart = 0;
             codePointStart = 0;
             codePointLimit = 0;
@@ -199,6 +227,9 @@ namespace ICU4N.Impl
     /// Other Append() methods flush and append to the <see cref="IAppendable"/>.
     /// </summary>
     public sealed class ReorderingBuffer : IAppendable
+#if FEATURE_SPAN
+        , ISpanAppendable
+#endif
     {
         public ReorderingBuffer(Normalizer2Impl ni, StringBuilder dest, int destCapacity)
             : this(ni, dest.AsAppendable(), destCapacity)
@@ -263,12 +294,22 @@ namespace ICU4N.Impl
         public void Dispose() => str.Dispose();
 <# } #>
 
-<# foreach (var charSequence in charSequences) { #>
-
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string charSequenceFeature = string.IsNullOrEmpty(feature) || string.IsNullOrEmpty(charSequenceFeatures[i]) || StringComparer.InvariantCulture.Equals(feature, charSequenceFeatures[i]) ? charSequenceFeatures[i] ?? "" : feature + " || " + charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(charSequenceFeature) ? "#if " + charSequenceFeature + Environment.NewLine: ""#>
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+        public  bool Equals(<#=charSequence#> s)
+        {
+            return UTF16Plus.Equal(str<#= bufferName == "ValueReorderingBuffer" ? ".AsSpan()" : "" #>, 0, str.Length, s, 0, s.Length);
+        }
+<# } else { #>
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> bool Equals(<#=charSequence#> s, int start, int length) // ICU4N specific: changed limit to length
         {
             return UTF16Plus.Equal(str<#= bufferName == "ValueReorderingBuffer" ? ".AsSpan()" : "" #>, 0, str.Length, s, start, length);
         }
+<# } #>
+<#=!string.IsNullOrEmpty(charSequenceFeature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
 
         public void Append(int c, int cc)
@@ -288,12 +329,21 @@ namespace ICU4N.Impl
             }
         }
 
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string charSequenceFeature = string.IsNullOrEmpty(feature) || string.IsNullOrEmpty(charSequenceFeatures[i]) || StringComparer.InvariantCulture.Equals(feature, charSequenceFeatures[i]) ? charSequenceFeatures[i] ?? "" : feature + " || " + charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(charSequenceFeature) ? "#if " + charSequenceFeature + Environment.NewLine: ""#>
 
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+        public void Append(<#=charSequence#> s, int leadCC, int trailCC)
+        {
+            int start = 0, length = s.Length; // ICU4N: Removed from method signature because we can slice
+<# } else { #>
         // s must be in NFD, otherwise change the implementation.
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> void Append(<#=charSequence#> s, int start, int length,
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public" #> void Append(<#=charSequence#> s, int start, int length,
             int leadCC, int trailCC) // ICU4N specific: changed limit to length
         {
+<# } #>
             if (length == 0)
             {
                 return;
@@ -308,7 +358,11 @@ namespace ICU4N.Impl
                 {
                     reorderStart = str.Length + 1;  // Ok if not a code point boundary.
                 }
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                str.Append(s); // ICU4N: removed start and length - we slice to get here
+<# } else { #>
                 str.Append(s, start, length); // ICU4N: checked 3rd parameter
+<# } #>
                 lastCC = trailCC;
             }
             else
@@ -334,6 +388,7 @@ namespace ICU4N.Impl
                 }
             }
         }
+<#=!string.IsNullOrEmpty(charSequenceFeature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
 
         // The following append() methods work like C++ appendZeroCC().
@@ -356,8 +411,11 @@ namespace ICU4N.Impl
             reorderStart = str.Length;
         }
 
-<# foreach (var charSequence in charSequences) {
-    bool nullable = true; #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    bool nullable = charSequenceNullables[i];
+    string charSequenceFeature = string.IsNullOrEmpty(feature) || string.IsNullOrEmpty(charSequenceFeatures[i]) || StringComparer.InvariantCulture.Equals(feature, charSequenceFeatures[i]) ? charSequenceFeatures[i] ?? "" : feature + " || " + charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(charSequenceFeature) ? "#if " + charSequenceFeature + Environment.NewLine: ""#>
 
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> <#=bufferName=="ValueReorderingBuffer" ? "void" : "ReorderingBuffer"#> Append(<#=charSequence#><#=nullable?"?":""#> s)
         {
@@ -371,15 +429,24 @@ namespace ICU4N.Impl
             return this;
 <# } #>
         }
+<#=!string.IsNullOrEmpty(charSequenceFeature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) {
-    bool nullable = true; #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    bool nullable = charSequenceNullables[i];
+    string charSequenceFeature = string.IsNullOrEmpty(feature) || string.IsNullOrEmpty(charSequenceFeatures[i]) || StringComparer.InvariantCulture.Equals(feature, charSequenceFeatures[i]) ? charSequenceFeatures[i] ?? "" : feature + " || " + charSequenceFeatures[i]; #>
+<# if (charSequence != "ReadOnlySpan<char>") { #>
+<#=!string.IsNullOrEmpty(charSequenceFeature) ? "#if " + charSequenceFeature + Environment.NewLine: ""#>
 
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> <#=bufferName=="ValueReorderingBuffer" ? "void" : "ReorderingBuffer"#> Append(<#=charSequence#><#=nullable?"?":""#> s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (length != 0)
             {
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                str.Append(s.Slice(start, length)); // ICU4N: checked 3rd parameter
+<# } else { #>
                 str.Append(s, start, length); // ICU4N: checked 3rd parameter
+<# } #>
                 lastCC = 0;
                 reorderStart = str.Length;
             }
@@ -387,6 +454,8 @@ namespace ICU4N.Impl
             return this;
 <# } #>
         }
+<#=!string.IsNullOrEmpty(charSequenceFeature) ? "#endif " + Environment.NewLine: ""#>
+<# } #>
 <# } #>
 
 <# if (bufferName != "ValueReorderingBuffer") { #>
@@ -404,16 +473,10 @@ namespace ICU4N.Impl
             }
             else
             {
-                try
-                {
-                    app.Append(str);
-                    str.Length = 0;
-                    reorderStart = 0;
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-                }
+                // ICU4N: Removed unnecessary try/catch for IOException
+                app.Append(str);
+                str.Length = 0;
+                reorderStart = 0;
             }
             lastCC = 0;
         }
@@ -435,7 +498,12 @@ namespace ICU4N.Impl
             reorderStart = str.Length;
         }
 
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    bool nullable = charSequenceNullables[i];
+    string charSequenceFeature = string.IsNullOrEmpty(feature) || string.IsNullOrEmpty(charSequenceFeatures[i]) || StringComparer.InvariantCulture.Equals(feature, charSequenceFeatures[i]) ? charSequenceFeatures[i] ?? "" : feature + " || " + charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(charSequenceFeature) ? "#if " + charSequenceFeature + Environment.NewLine: ""#>
+
 <# if (bufferName == "ReorderingBuffer") { #>
 
         /// <summary>
@@ -444,25 +512,28 @@ namespace ICU4N.Impl
         /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
         /// Normally used after quick check loops find a non-empty sequence.
         /// </summary>
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> ReorderingBuffer FlushAndAppendZeroCC(<#=charSequence#> s, int start, int length) // ICU4N specific: changed limit to length
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> ReorderingBuffer FlushAndAppendZeroCC(<#=charSequence#> s<#=charSequence=="ReadOnlySpan<char>" ? "" : ", int start, int length"#>) // ICU4N specific: changed limit to length
         {
             if (appIsStringBuilder)
             {
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                str.Append(charSequence: s);
+<# } else { #>
                 str.Append(s, start, length); // ICU4N: checked 3rd parameter
+<# } #>
                 reorderStart = str.Length;
             }
             else
             {
-                try
-                {
-                    app.Append(str).Append(s, start, length); // ICU4N: checked 3rd parameter
-                    str.Length = 0;
-                    reorderStart = 0;
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-                }
+                // ICU4N: Removed unnecessary try/catch for IOException
+                app.Append(str);
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                app.Append(s);
+<# } else { #>
+                app.Append(s, start, length); // ICU4N: checked 3rd parameter
+<# } #>
+                str.Length = 0;
+                reorderStart = 0;
             }
             lastCC = 0;
             return this;
@@ -471,6 +542,7 @@ namespace ICU4N.Impl
         // ICU4N NOTE: Instead of FlushAndAppendZeroCC(<#=charSequence#>, int, int), call Append(<#=charSequence#>, int, int)
 
 <# } #>
+<#=!string.IsNullOrEmpty(charSequenceFeature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
 
         /*
@@ -547,52 +619,36 @@ namespace ICU4N.Impl
         // how it was in Java).
         #region IAppendable interface
 
-        IAppendable IAppendable.Append(char c)
-        {
-            return Append(c);
-        }
+        IAppendable IAppendable.Append(char c) => Append(c);
 
-        IAppendable IAppendable.Append(string? csq)
-        {
-            return Append(csq);
-        }
+        IAppendable IAppendable.Append(string? csq) => Append(csq);
 
-        IAppendable IAppendable.Append(string? csq, int start, int length)
-        {
-            return Append(csq, start, length);
-        }
+        IAppendable IAppendable.Append(string? csq, int start, int length) => Append(csq, start, length);
 
-        IAppendable IAppendable.Append(StringBuilder? csq)
-        {
-            return Append(csq);
-        }
+        IAppendable IAppendable.Append(StringBuilder? csq) => Append(csq);
 
-        IAppendable IAppendable.Append(StringBuilder? csq, int start, int length)
-        {
-            return Append(csq, start, length);
-        }
+        IAppendable IAppendable.Append(StringBuilder? csq, int start, int length) => Append(csq, start, length);
 
-        IAppendable IAppendable.Append(char[]? csq)
-        {
-            return Append(csq);
-        }
+        IAppendable IAppendable.Append(char[]? csq) => Append(csq);
 
-        IAppendable IAppendable.Append(char[]? csq, int start, int length)
-        {
-            return Append(csq, start, length);
-        }
+        IAppendable IAppendable.Append(char[]? csq, int start, int length) => Append(csq, start, length);
 
-        IAppendable IAppendable.Append(ICharSequence? csq)
-        {
-            return Append(csq);
-        }
+        IAppendable IAppendable.Append(ICharSequence? csq) => Append(csq);
 
-        IAppendable IAppendable.Append(ICharSequence? csq, int start, int length)
-        {
-            return Append(csq, start, length);
-        }
+        IAppendable IAppendable.Append(ICharSequence? csq, int start, int length) => Append(csq, start, length);
 
-        #endregion
+        #endregion IAppendable
+
+        // ICU4N specific - implementing interface explicitly allows
+        // for us to have a concrete type above that returns itself (similar to
+        // how it was in Java).
+        #region ISpanAppendable
+
+#if FEATURE_SPAN
+        ISpanAppendable ISpanAppendable.Append(ReadOnlySpan<char> csq) => Append(csq);
+#endif
+
+        #endregion ISpanAppendable
 <# } #>
 
         private int codePointStart, codePointLimit;
@@ -605,9 +661,14 @@ namespace ICU4N.Impl
 
     public sealed partial class UTF16Plus
     {
-<# foreach (var charSequence in charSequences.Append("ReadOnlySpan<char>")) { #>
-    <# foreach (var charSequence2 in charSequences.Append("ReadOnlySpan<char>")) {
-        string feature = charSequence == "ReadOnlySpan<char>" || charSequence2 == "ReadOnlySpan<char>" ? "FEATURE_SPAN" : ""; #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+    <# for (int j = 0; j < charSequences.Length; j++) {
+        string charSequence2 = charSequences[j];
+        if (!string.IsNullOrEmpty(charSequenceFeatures[j])) {
+            feature = string.IsNullOrEmpty(feature) || StringComparer.InvariantCulture.Equals(feature, charSequenceFeatures[j]) ? charSequenceFeatures[j] : feature + " || " + charSequenceFeatures[j];
+        } #>
 <#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -640,9 +701,14 @@ namespace ICU4N.Impl
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
     <# } #>
 <# } #>
-<# foreach (var charSequence in charSequences.Append("ReadOnlySpan<char>")) { #>
-    <# foreach (var charSequence2 in charSequences.Append("ReadOnlySpan<char>")) {
-        string feature = charSequence == "ReadOnlySpan<char>" || charSequence2 == "ReadOnlySpan<char>" ? "FEATURE_SPAN" : ""; #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+    <# for (int j = 0; j < charSequences.Length; j++) {
+        string charSequence2 = charSequences[j];
+        if (!string.IsNullOrEmpty(charSequenceFeatures[j])) {
+            feature = string.IsNullOrEmpty(feature) || StringComparer.InvariantCulture.Equals(feature, charSequenceFeatures[j]) ? charSequenceFeatures[j] : feature + " || " + charSequenceFeatures[j];
+        } #>
 <#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         /// <summary>
@@ -689,46 +755,88 @@ namespace ICU4N.Impl
     {
 
 
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
 
         // NFD without an NFD Normalizer2 instance.
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
+    <# if (charSequence == "ReadOnlySpan<char>") { #>
+        // ICU4N TODO: Make public TryDecompose() method that accepts ReadOnlySpan<char>, Span<char>, out int charLength
+        internal void Decompose(<#=charSequence#> s, ref ValueStringBuilder dest) // ICU4N: internal because ValueStringBuilder is internal
+        {
+            Decompose(s, 0, s.Length, ref dest, s.Length); // ICU4N TODO: Factor out indices - they exist on the span - and create the ValueReorderingBuffer here
+        }
+    <# } else { #>
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> StringBuilder Decompose(<#=charSequence#> s, StringBuilder dest)
         {
             Decompose(s, 0, s.Length, dest, s.Length);
             return dest;
         }
+    <# } #>
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
+    <# if (charSequence == "ReadOnlySpan<char>") { #>
 
         /// <summary>
-        /// Decomposes s[src, limit[ and writes the result to <paramref name="dest"/>.
-        /// limit can be NULL if src is NUL-terminated.
+        /// Decomposes s[src, length[ and writes the result to <paramref name="dest"/>.
+        /// length can be NULL if src is NUL-terminated.
         /// <paramref name="destLengthEstimate"/> is the initial <paramref name="dest"/> buffer capacity and can be -1.
         /// </summary>
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> void Decompose(<#=charSequence#> s, int src, int limit, StringBuilder dest,
-            int destLengthEstimate)
+        internal void Decompose(<#=charSequence#> s, int start, int length, ref ValueStringBuilder dest, int destLengthEstimate)
         {
+            int src = start, limit = start + length;
+            if (destLengthEstimate < 0)
+            {
+                destLengthEstimate = limit - src;
+            }
+            dest.Length = 0;
+            ValueReorderingBuffer buffer = new ValueReorderingBuffer(this, ref dest, destLengthEstimate);
+            Decompose(s, src, length, ref buffer); // ICU4N: Changed limit to length
+        }
+    <# } else { #>
+
+        /// <summary>
+        /// Decomposes s[src, length[ and writes the result to <paramref name="dest"/>.
+        /// length can be NULL if src is NUL-terminated.
+        /// <paramref name="destLengthEstimate"/> is the initial <paramref name="dest"/> buffer capacity and can be -1.
+        /// </summary>
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> void Decompose(<#=charSequence#> s, int start, int length, StringBuilder dest, int destLengthEstimate)
+        {
+            int src = start, limit = start + length;
             if (destLengthEstimate < 0)
             {
                 destLengthEstimate = limit - src;
             }
             dest.Length = 0;
             ReorderingBuffer buffer = new ReorderingBuffer(this, dest, destLengthEstimate);
-            Decompose(s, src, limit, buffer);
+            Decompose(s, src, length, buffer); // ICU4N: Changed limit to length
         }
+    <# } #>
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
-        // Dual functionality:
-        // buffer!=NULL: normalize
-        // buffer==NULL: isNormalized/quickCheck/spanQuickCheckYes
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int Decompose(<#=charSequence#> s, int src, int limit,
-            ReorderingBuffer buffer)
+        // normalize
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
+    <# if (charSequence == "ReadOnlySpan<char>") { #>
+        internal int Decompose(<#=charSequence#> s, int start, int length, ref ValueReorderingBuffer buffer)
+        {
+    <# } else { #>
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int Decompose(<#=charSequence#> s, int start, int length, ReorderingBuffer buffer)
         {
             // ICU4N: Added guard clause
             if (buffer is null)
                 throw new ArgumentNullException(nameof(buffer));
-
+    <# } #>
+            int src = start, limit = start + length;
             int minNoCP = minDecompNoCP;
 
             int prevSrc;
@@ -781,8 +889,12 @@ namespace ICU4N.Impl
                 // copy these code units all at once
                 if (src != prevSrc)
                 {
-                    // ICU4N TODO: For ValueReorderingBuffer, call Append()
+    <# if (charSequence == "ReadOnlySpan<char>") { #>
+                    // For ValueReorderingBuffer, call Append() instead of FlushAndAppendZeroCC()
+                    buffer.Append(s.Slice(prevSrc, src - prevSrc)); // ICU4N: Corrected 3rd parameter
+    <# } else { #>
                     buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
+    <# } #>
                 }
                 if (src == limit)
                 {
@@ -791,17 +903,26 @@ namespace ICU4N.Impl
 
                 // Check one above-minimum, relevant code point.
                 src += Character.CharCount(c);
-                Decompose(c, norm16, buffer);
+                Decompose(c, norm16, <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
             }
             return src;
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         // isNormalized/quickCheck/spanQuickCheckYes
         // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int SpanQuickCheckYes(<#=charSequence#> s, int src, int limit) // ICU4N TODO: API - rename src to startIndex and limit to length. We also don't need to provide these for the ReadOnlySpan<char> overload.
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int SpanQuickCheckYes(<#=charSequence#> s<#=charSequence != "ReadOnlySpan<char>" ? ", int start, int length" : ""#>)
         {
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+            int src = 0, limit = s.Length;
+<# } else { #>
+            int src = start, limit = start + length;
+<# } #>
             int minNoCP = minDecompNoCP;
 
             int prevSrc;
@@ -885,11 +1006,19 @@ namespace ICU4N.Impl
             }
             return src;
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
 
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> void DecomposeAndAppend(<#=charSequence#> s, bool doDecompose, ReorderingBuffer buffer) // ICU4N TODO: API - rename src to startIndex and limit to length. We also don't need to provide these for the ReadOnlySpan<char> overload.
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+        public void DecomposeAndAppend(<#=charSequence#> s, bool doDecompose, ref ValueReorderingBuffer buffer)
+<# } else { #>
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> void DecomposeAndAppend(<#=charSequence#> s, bool doDecompose, ReorderingBuffer buffer)
+<# } #>
         {
             int limit = s.Length;
             if (limit == 0)
@@ -898,7 +1027,7 @@ namespace ICU4N.Impl
             }
             if (doDecompose)
             {
-                Decompose(s, 0, limit, buffer);
+                Decompose(s, 0, limit, <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
                 return;
             }
             // Just merge the strings at the boundary.
@@ -917,20 +1046,34 @@ namespace ICU4N.Impl
                 c = Character.CodePointAt(s, src);
                 cc = GetCC(GetNorm16(c));
             };
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+            buffer.Append(s.Slice(0, src - 0), firstCC, prevCC); // ICU4N: Corrected 3rd parameter
+            buffer.Append(s.Slice(src, limit - src)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
             buffer.Append(s, 0, src - 0, firstCC, prevCC); // ICU4N: Corrected 3rd parameter
             buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
-        }
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+        }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
+<# } #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         // Very similar to ComposeQuickCheck(): Make the same changes in both places if relevant.
         // doCompose: normalize
         // !doCompose: isNormalized (buffer must be empty and initialized)
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> bool Compose(<#=charSequence#> s, int src, int limit,
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> bool Compose(<#=charSequence#> s, <#=charSequence != "ReadOnlySpan<char>" ? "int start, int length," : ""#>
                            bool onlyContiguous,
                            bool doCompose,
-                           ReorderingBuffer buffer)
+                           <#=charSequence == "ReadOnlySpan<char>" ? "ref Value" : ""#>ReorderingBuffer buffer)
         {
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+            int src = 0, limit = s.Length;
+<# } else { #>
+            int src = start, limit = start + length;
+<# } #>
             int prevBoundary = src;
             int minNoMaybeCP = minCompNoMaybeCP;
 
@@ -947,7 +1090,11 @@ namespace ICU4N.Impl
                     {
                         if (prevBoundary != limit && doCompose)
                         {
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                            buffer.Append(s.Slice(prevBoundary, limit - prevBoundary)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
                             buffer.Append(s, prevBoundary, limit - prevBoundary); // ICU4N: Corrected 3rd parameter
+<# } #>
                         }
                         return true;
                     }
@@ -1014,7 +1161,11 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                                buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
                                 buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
+<# } #>
                             }
                             buffer.Append(MapAlgorithmic(c, norm16), 0);
                             prevBoundary = src;
@@ -1029,11 +1180,15 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                                buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
                                 buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
+<# } #>
                             }
                             int mapping = norm16 >> OFFSET_SHIFT;
-                            int length = extraData[mapping++] & MAPPING_LENGTH_MASK;
-                            buffer.Append(extraData, mapping, length); // ICU4N: Corrected 3rd parameter
+                            int length2 = extraData[mapping++] & MAPPING_LENGTH_MASK;
+                            buffer.Append(extraData, mapping, length2); // ICU4N: Corrected 3rd parameter
                             prevBoundary = src;
                             continue;
                         }
@@ -1048,7 +1203,11 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                                buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
                                 buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
+<# } #>
                             }
                             prevBoundary = src;
                             continue;
@@ -1096,7 +1255,11 @@ namespace ICU4N.Impl
                                 --prevSrc;  // Replace the Jamo L as well.
                                 if (prevBoundary != prevSrc)
                                 {
-                                    buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                                buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
+<# } #>
                                 }
                                 buffer.Append((char)syllable);
                                 prevBoundary = src;
@@ -1123,7 +1286,11 @@ namespace ICU4N.Impl
                         --prevSrc;  // Replace the Hangul LV as well.
                         if (prevBoundary != prevSrc)
                         {
-                            buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                                buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
+<# } #>
                         }
                         buffer.Append((char)syllable);
                         prevBoundary = src;
@@ -1157,7 +1324,11 @@ namespace ICU4N.Impl
                             {
                                 if (doCompose)
                                 {
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                                    buffer.Append(s.Slice(prevBoundary, limit - prevBoundary)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
                                     buffer.Append(s, prevBoundary, limit - prevBoundary); // ICU4N: Corrected 3rd parameter
+<# } #>
                                 }
                                 return true;
                             }
@@ -1209,19 +1380,27 @@ namespace ICU4N.Impl
                 }
                 if (doCompose && prevBoundary != prevSrc)
                 {
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                    buffer.Append(s.Slice(prevBoundary, prevSrc - prevBoundary)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
                     buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
+<# } #>
                 }
                 int recomposeStartIndex = buffer.Length;
                 // We know there is not a boundary here.
                 DecomposeShort(s, prevSrc, src, false /* !stopAtCompBoundary */, onlyContiguous,
-                               buffer);
+                               <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
                 // Decompose until the next boundary.
                 src = DecomposeShort(s, src, limit, true /* stopAtCompBoundary */, onlyContiguous,
-                                     buffer);
-                Recompose(buffer, recomposeStartIndex, onlyContiguous);
+                                     <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
+                Recompose(<#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer, recomposeStartIndex, onlyContiguous);
                 if (!doCompose)
                 {
+<#if (charSequence == "ReadOnlySpan<char>") { #>
+                    if (!buffer.Equals(s.Slice(prevSrc, src - prevSrc))) // ICU4N: Corrected 3rd parameter
+<# } else { #>
                     if (!buffer.Equals(s, prevSrc, src - prevSrc)) // ICU4N: Corrected 3rd parameter
+<# } #>
                     {
                         return false;
                     }
@@ -1230,8 +1409,12 @@ namespace ICU4N.Impl
                 prevBoundary = src;
             }
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         /// <summary>
         /// Very similar to Compose(): Make the same changes in both places if relevant.
@@ -1243,9 +1426,14 @@ namespace ICU4N.Impl
         /// bit 0: set if "maybe"; otherwise, if the span length&lt;s.Length
         /// then the quick check result is "no"
         /// </returns>
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int ComposeQuickCheck(<#=charSequence#> s, int src, int limit,
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int ComposeQuickCheck(<#=charSequence#> s, <#=charSequence != "ReadOnlySpan<char>" ? "int start, int length," : ""#>
             bool onlyContiguous, bool doSpan)
         {
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+            int src = 0, limit = s.Length;
+<# } else { #>
+            int src = start, limit = start + length;
+<# } #>
             int qcResult = 0;
             int prevBoundary = src;
             int minNoMaybeCP = minCompNoMaybeCP;
@@ -1384,13 +1572,17 @@ namespace ICU4N.Impl
                 return prevBoundary << 1;  // "no"
             }
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> void ComposeAndAppend(<#=charSequence#> s,
             bool doCompose,
             bool onlyContiguous,
-            ReorderingBuffer buffer)
+            <#=charSequence == "ReadOnlySpan<char>" ? "ref Value" : ""#>ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             if (!buffer.IsEmpty)
@@ -1398,39 +1590,78 @@ namespace ICU4N.Impl
                 int firstStarterInSrc = FindNextCompBoundary(s, 0, limit, onlyContiguous);
                 if (0 != firstStarterInSrc)
                 {
-                    int lastStarterInDest = FindPreviousCompBoundary(buffer.StringBuilder,
+                    int lastStarterInDest = FindPreviousCompBoundary(buffer<#=charSequence == "ReadOnlySpan<char>" ? ".AsSpan()" : ".StringBuilder"#>,
                                                                    buffer.Length, onlyContiguous);
-                    StringBuilder middle = new StringBuilder((buffer.Length - lastStarterInDest) +
-                                                           firstStarterInSrc + 16);
-                    middle.Append(buffer.StringBuilder, lastStarterInDest, buffer.Length - lastStarterInDest); // ICU4N : Fixed 3rd parameter
-                    buffer.RemoveSuffix(buffer.Length - lastStarterInDest);
-                    middle.Append(s, 0, firstStarterInSrc - 0);
-                    Compose(middle, 0, middle.Length, onlyContiguous, true, buffer);
+                    int middleLength = (buffer.Length - lastStarterInDest) + firstStarterInSrc + 16;
+<#if (charSequence == "ReadOnlySpan<char>") { #>
+                    ValueStringBuilder middle = middleLength <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[middleLength])
+                        : new ValueStringBuilder(middleLength);
+                    try
+<# } else { #>
+                    StringBuilder middle = new StringBuilder(middleLength);
+<# } #>
+                    {
+                        middle.Append(buffer<#=charSequence == "ReadOnlySpan<char>" ? ".AsSpan()" : ".StringBuilder"#>, lastStarterInDest, buffer.Length - lastStarterInDest); // ICU4N : Fixed 3rd parameter
+                        buffer.RemoveSuffix(buffer.Length - lastStarterInDest);
+                        middle.Append(s, 0, firstStarterInSrc - 0);
+<#if (charSequence == "ReadOnlySpan<char>") { #>
+                        unsafe
+                        {
+                            Compose(new ReadOnlySpan<char>(middle.GetCharsPointer(), middle.Length), onlyContiguous, true, ref buffer);
+                        }
+<# } else { #>
+                        Compose(middle, 0, middle.Length, onlyContiguous, true, buffer);
+<# } #>
                     src = firstStarterInSrc;
+                    }
+<#if (charSequence == "ReadOnlySpan<char>") { #>
+                    finally
+                    {
+                        middle.Dispose();
+                    }
+<# } #>
                 }
             }
             if (doCompose)
             {
-                Compose(s, src, limit, onlyContiguous, true, buffer);
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                Compose(s.Slice(src, limit - src), onlyContiguous, true, ref buffer); // ICU4N: Corrected 3rd parameter
+<# } else { #>
+                Compose(s, src, limit - src, onlyContiguous, true, buffer); // ICU4N: Corrected 3rd parameter
+<# } #>
             }
             else
             {
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                buffer.Append(s.Slice(src, limit - src)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
                 buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
+<# } #>
             }
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
-        // Dual functionality:
-        // buffer!=NULL: normalize
-        // buffer==NULL: isNormalized/quickCheck/spanQuickCheckYes
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int MakeFCD(<#=charSequence#> s, int src, int limit, ReorderingBuffer buffer)
+        // normalize
+        // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int MakeFCD(<#=charSequence#> s, <#=charSequence == "ReadOnlySpan<char>" ? "ref Value" : "int start, int length, "#>ReorderingBuffer buffer)
         {
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
             // the ReorderingBuffer.
             // The exception is the call to decomposeShort() which uses the buffer
             // in the normal way.
+
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+            int src = 0, limit = s.Length;
+<# } else { #>
+            int src = start, limit = start + length;
+<# } #>
 
             // Tracks the last FCD-safe boundary, before lccc=0 or after properly-ordered tccc<=1.
             // Similar to the prevBoundary in the compose() implementation.
@@ -1492,10 +1723,11 @@ namespace ICU4N.Impl
                 {
                     if (src == limit)
                     {
-                        if (buffer != null)
-                        {
-                            buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
-                        }
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                        buffer.Append(s.Slice(prevSrc, src - prevSrc)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
+                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
+<# } #>
                         break;
                     }
                     prevBoundary = src;
@@ -1535,12 +1767,183 @@ namespace ICU4N.Impl
                             prevBoundary = p;
                         }
                     }
-                    if (buffer != null)
+                    // The last lccc==0 character is excluded from the
+                    // flush-and-append call in case it needs to be modified.
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                    // ICU4N: Call Append() rather than FlushAndAppendZeroCC() on ValueReorderingBuffer
+                    buffer.Append(s.Slice(prevSrc, prevBoundary - prevSrc)); // ICU4N: Corrected 3rd parameter
+                    buffer.Append(s.Slice(prevBoundary, src - prevBoundary)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
+                    buffer.FlushAndAppendZeroCC(s, prevSrc, prevBoundary - prevSrc); // ICU4N: Corrected 3rd parameter
+                    buffer.Append(s, prevBoundary, src - prevBoundary); // ICU4N: Corrected 3rd parameter
+<# } #>
+                    // The start of the current character (c).
+                    prevSrc = src;
+                }
+                else if (src == limit)
+                {
+                    break;
+                }
+
+                src += Character.CharCount(c);
+                // The current character (c) at [prevSrc..src[ has a non-zero lead combining class.
+                // Check for proper order, and decompose locally if necessary.
+                if ((prevFCD16 & 0xff) <= (fcd16 >> 8))
+                {
+                    // proper order: prev tccc <= current lccc
+                    if ((fcd16 & 0xff) <= 1)
                     {
-                        // The last lccc==0 character is excluded from the
-                        // flush-and-append call in case it needs to be modified.
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, prevBoundary - prevSrc); // ICU4N: Corrected 3rd parameter
-                        buffer.Append(s, prevBoundary, src - prevBoundary); // ICU4N: Corrected 3rd parameter
+                        prevBoundary = src;
+                    }
+                    buffer.AppendZeroCC(c);
+                    prevFCD16 = fcd16;
+                    continue;
+                }
+                else
+                {
+                    /*
+                     * Back out the part of the source that we copied or appended
+                     * already but is now going to be decomposed.
+                     * prevSrc is set to after what was copied/appended.
+                     */
+                    buffer.RemoveSuffix(prevSrc - prevBoundary);
+                    /*
+                     * Find the part of the source that needs to be decomposed,
+                     * up to the next safe boundary.
+                     */
+                    src = FindNextFCDBoundary(s, src, limit);
+                    /*
+                     * The source text does not fulfill the conditions for FCD.
+                     * Decompose and reorder a limited piece of the text.
+                     */
+                    DecomposeShort(s, prevBoundary, src, false, false, <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
+                    prevBoundary = src;
+                    prevFCD16 = 0;
+                }
+            }
+            return src;
+        }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
+<# } #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
+
+        // isNormalized/quickCheck/spanQuickCheckYes
+        // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int MakeFCDSpanQuickCheckYes(<#=charSequence#> s<#=charSequence != "ReadOnlySpan<char>" ? ", int start, int length" : ""#>)
+        {
+            // Note: In this function we use buffer->appendZeroCC() because we track
+            // the lead and trail combining classes here, rather than leaving it to
+            // the ReorderingBuffer.
+            // The exception is the call to decomposeShort() which uses the buffer
+            // in the normal way.
+
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+            int src = 0, limit = s.Length;
+<# } else { #>
+            int src = start, limit = start + length;
+<# } #>
+
+            // Tracks the last FCD-safe boundary, before lccc=0 or after properly-ordered tccc<=1.
+            // Similar to the prevBoundary in the compose() implementation.
+            int prevBoundary = src;
+            int prevSrc;
+            int c = 0;
+            int prevFCD16 = 0;
+            int fcd16 = 0;
+
+            for (; ; )
+            {
+                // count code units with lccc==0
+                for (prevSrc = src; src != limit;)
+                {
+                    if ((c = s[src]) < minLcccCP)
+                    {
+                        prevFCD16 = ~c;
+                        ++src;
+                    }
+                    else if (!SingleLeadMightHaveNonZeroFCD16(c))
+                    {
+                        prevFCD16 = 0;
+                        ++src;
+                    }
+                    else
+                    {
+                        if (UTF16.IsSurrogate((char)c))
+                        {
+                            char c2;
+                            if (UTF16Plus.IsSurrogateLead(c))
+                            {
+                                if ((src + 1) != limit && char.IsLowSurrogate(c2 = s[src + 1]))
+                                {
+                                    c = Character.ToCodePoint((char)c, c2);
+                                }
+                            }
+                            else /* trail surrogate */
+                            {
+                                if (prevSrc < src && char.IsHighSurrogate(c2 = s[src - 1]))
+                                {
+                                    --src;
+                                    c = Character.ToCodePoint(c2, (char)c);
+                                }
+                            }
+                        }
+                        if ((fcd16 = GetFCD16FromNormData(c)) <= 0xff)
+                        {
+                            prevFCD16 = fcd16;
+                            src += Character.CharCount(c);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                // copy these code units all at once
+                if (src != prevSrc)
+                {
+                    if (src == limit)
+                    {
+                        break;
+                    }
+                    prevBoundary = src;
+                    // We know that the previous character's lccc==0.
+                    if (prevFCD16 < 0)
+                    {
+                        // Fetching the fcd16 value was deferred for this below-minLcccCP code point.
+                        int prev = ~prevFCD16;
+                        if (prev < minDecompNoCP)
+                        {
+                            prevFCD16 = 0;
+                        }
+                        else
+                        {
+                            prevFCD16 = GetFCD16FromNormData(prev);
+                            if (prevFCD16 > 1)
+                            {
+                                --prevBoundary;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        int p = src - 1;
+                        if (char.IsLowSurrogate(s[p]) && prevSrc < p &&
+                            char.IsHighSurrogate(s[p - 1])
+                        )
+                        {
+                            --p;
+                            // Need to fetch the previous character's FCD value because
+                            // prevFCD16 was just for the trail surrogate code point.
+                            prevFCD16 = GetFCD16FromNormData(Character.ToCodePoint(s[p], s[p + 1]));
+                            // Still known to have lccc==0 because its lead surrogate unit had lccc==0.
+                        }
+                        if (prevFCD16 > 1)
+                        {
+                            prevBoundary = p;
+                        }
                     }
                     // The start of the current character (c).
                     prevSrc = src;
@@ -1560,45 +1963,24 @@ namespace ICU4N.Impl
                     {
                         prevBoundary = src;
                     }
-                    if (buffer != null)
-                    {
-                        buffer.AppendZeroCC(c);
-                    }
                     prevFCD16 = fcd16;
                     continue;
                 }
-                else if (buffer == null)
-                {
-                    return prevBoundary;  // quick check "no"
-                }
                 else
                 {
-                    /*
-                     * Back out the part of the source that we copied or appended
-                     * already but is now going to be decomposed.
-                     * prevSrc is set to after what was copied/appended.
-                     */
-                    buffer.RemoveSuffix(prevSrc - prevBoundary);
-                    /*
-                     * Find the part of the source that needs to be decomposed,
-                     * up to the next safe boundary.
-                     */
-                    src = FindNextFCDBoundary(s, src, limit);
-                    /*
-                     * The source text does not fulfill the conditions for FCD.
-                     * Decompose and reorder a limited piece of the text.
-                     */
-                    DecomposeShort(s, prevBoundary, src, false, false, buffer);
-                    prevBoundary = src;
-                    prevFCD16 = 0;
+                    return prevBoundary;  // quick check "no"
                 }
             }
             return src;
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> void MakeFCDAndAppend(<#=charSequence#> s, bool doMakeFCD, ReorderingBuffer buffer)
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> void MakeFCDAndAppend(<#=charSequence#> s, bool doMakeFCD, <#=charSequence == "ReadOnlySpan<char>" ? "ref Value" : ""#>ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             if (!buffer.IsEmpty)
@@ -1606,29 +1988,63 @@ namespace ICU4N.Impl
                 int firstBoundaryInSrc = FindNextFCDBoundary(s, 0, limit);
                 if (0 != firstBoundaryInSrc)
                 {
-                    int lastBoundaryInDest = FindPreviousFCDBoundary(buffer.StringBuilder,
+                    int lastBoundaryInDest = FindPreviousFCDBoundary(buffer<#=charSequence == "ReadOnlySpan<char>" ? ".AsSpan()" : ".StringBuilder"#>,
                                                                    buffer.Length);
-                    StringBuilder middle = new StringBuilder((buffer.Length - lastBoundaryInDest) +
-                                                           firstBoundaryInSrc + 16);
-                    middle.Append(buffer.StringBuilder, lastBoundaryInDest, buffer.Length - lastBoundaryInDest); // ICU4N : Fixed 3rd parameter
-                    buffer.RemoveSuffix(buffer.Length - lastBoundaryInDest);
-                    middle.Append(s, 0, firstBoundaryInSrc - 0);
-                    MakeFCD(middle, 0, middle.Length, buffer);
-                    src = firstBoundaryInSrc;
+                    int middleLength = (buffer.Length - lastBoundaryInDest) + firstBoundaryInSrc + 16;
+<#if (charSequence == "ReadOnlySpan<char>") { #>
+                    ValueStringBuilder middle = middleLength <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[middleLength])
+                        : new ValueStringBuilder(middleLength);
+                    try
+<# } else { #>
+                    StringBuilder middle = new StringBuilder(middleLength);
+<# } #>
+                    {
+                        middle.Append(buffer<#=charSequence == "ReadOnlySpan<char>" ? ".AsSpan()" : ".StringBuilder"#>, lastBoundaryInDest, buffer.Length - lastBoundaryInDest); // ICU4N : Fixed 3rd parameter
+                        buffer.RemoveSuffix(buffer.Length - lastBoundaryInDest);
+                        middle.Append(s, 0, firstBoundaryInSrc - 0);
+<#if (charSequence == "ReadOnlySpan<char>") { #>
+                        unsafe
+                        {
+                            MakeFCD(new ReadOnlySpan<char>(middle.GetCharsPointer(), middle.Length), ref buffer);
+                        }
+<# } else { #>
+                        MakeFCD(middle, 0, middle.Length, buffer);
+<# } #>
+                        src = firstBoundaryInSrc;
+                    }
+<#if (charSequence == "ReadOnlySpan<char>") { #>
+                    finally
+                    {
+                        middle.Dispose();
+                    }
+<# } #>
                 }
             }
             if (doMakeFCD)
             {
-                MakeFCD(s, src, limit, buffer);
+<#if (charSequence == "ReadOnlySpan<char>") { #>
+                MakeFCD(s.Slice(src, limit - src), <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
+<# } else { #>
+                MakeFCD(s, src, limit - src, <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
+<# } #>
             }
             else
             {
+<#if (charSequence == "ReadOnlySpan<char>") { #>
+                buffer.Append(s.Slice(src, limit - src)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
                 buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
+<# } #>
             }
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
 
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         // Decompose a short piece of text which is likely to contain characters that
         // fail the quick check loop and/or where the quick check loop's overhead
@@ -1638,7 +2054,7 @@ namespace ICU4N.Impl
         private int DecomposeShort(
                 <#=charSequence#> s, int src, int limit,
                 bool stopAtCompBoundary, bool onlyContiguous,
-                ReorderingBuffer buffer)
+                <#=charSequence == "ReadOnlySpan<char>" ? "ref Value" : ""#>ReorderingBuffer buffer)
         {
             while (src < limit)
             {
@@ -1653,7 +2069,7 @@ namespace ICU4N.Impl
                     return src;
                 }
                 src += Character.CharCount(c);
-                Decompose(c, norm16, buffer);
+                Decompose(c, norm16, <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
                 if (stopAtCompBoundary && Norm16HasCompBoundaryAfter(norm16, onlyContiguous))
                 {
                     return src;
@@ -1661,6 +2077,7 @@ namespace ICU4N.Impl
             }
             return src;
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
 <# for (int r = 0; r < bufferNames.Length; r++) {
     string bufferName = bufferNames[r];
@@ -1715,22 +2132,232 @@ namespace ICU4N.Impl
 
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
+<# for (int r = 0; r < bufferNames.Length; r++) {
+    string bufferName = bufferNames[r];
+    string bufferRef = bufferRefs[r];
+    string feature = bufferFeatures[r]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
-<# foreach (var charSequence in charSequences) { #>
+        /// <summary>
+        /// Recomposes the buffer text starting at <paramref name="startIndex"/>
+        /// (which is in NFD - decomposed and canonically ordered),
+        /// and truncates the buffer contents.
+        /// </summary>
+        /// <remarks>
+        /// Note that recomposition never lengthens the text:
+        /// Any character consists of either one or two code units;
+        /// a composition may contain at most one more code unit than the original starter,
+        /// while the combining mark that is removed has at least one code unit.
+        /// </remarks>
+        private void Recompose(<#=bufferRef#><#=bufferName#> buffer, int startIndex,
+                               bool onlyContiguous)
+        {
+            <#=bufferName=="ValueReorderingBuffer"? "Value" : ""#>StringBuilder sb = buffer.StringBuilder;
+            int p = startIndex;
+            if (p == sb.Length)
+            {
+                return;
+            }
+
+            int starter, pRemove;
+            int compositionsList;
+            int c, compositeAndFwd;
+            int norm16;
+            int cc, prevCC;
+            bool starterIsSupplementary;
+
+            // Some of the following variables are not used until we have a forward-combining starter
+            // and are only initialized now to avoid compiler warnings.
+            compositionsList = -1;  // used as indicator for whether we have a forward-combining starter
+            starter = -1;
+            starterIsSupplementary = false;
+            prevCC = 0;
+
+            for (; ; )
+            {
+                c = sb.CodePointAt(p);
+                p += Character.CharCount(c);
+                norm16 = GetNorm16(c);
+                cc = GetCCFromYesOrMaybe(norm16);
+                if ( // this character combines backward and
+                    IsMaybe(norm16) &&
+                    // we have seen a starter that combines forward and
+                    compositionsList >= 0 &&
+                    // the backward-combining character is not blocked
+                    (prevCC < cc || prevCC == 0)
+                )
+                {
+                    if (IsJamoVT(norm16))
+                    {
+                        // c is a Jamo V/T, see if we can compose it with the previous character.
+                        if (c < Hangul.JamoTBase)
+                        {
+                            // c is a Jamo Vowel, compose with previous Jamo L and following Jamo T.
+                            char prev = (char)(sb[starter] - Hangul.JamoLBase);
+                            if (prev < Hangul.JamoLCount)
+                            {
+                                pRemove = p - 1;
+                                char syllable = (char)
+                                    (Hangul.HangulBase +
+                                     (prev * Hangul.JamoVCount + (c - Hangul.JamoVBase)) *
+                                     Hangul.JamoTCount);
+                                char t;
+                                if (p != sb.Length && (t = (char)(sb[p] - Hangul.JamoTBase)) < Hangul.JamoTCount)
+                                {
+                                    ++p;
+                                    syllable += t;  // The next character was a Jamo T.
+                                }
+                                //sb.setCharAt(starter, syllable);
+                                sb[starter] = syllable;
+                                // remove the Jamo V/T
+                                sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
+                                p = pRemove;
+                            }
+                        }
+                        /*
+                         * No "else" for Jamo T:
+                         * Since the input is in NFD, there are no Hangul LV syllables that
+                         * a Jamo T could combine with.
+                         * All Jamo Ts are combined above when handling Jamo Vs.
+                         */
+                        if (p == sb.Length)
+                        {
+                            break;
+                        }
+                        compositionsList = -1;
+                        continue;
+                    }
+                    else if ((compositeAndFwd = Combine(maybeYesCompositions, compositionsList, c)) >= 0)
+                    {
+                        // The starter and the combining mark (c) do combine.
+                        int composite = compositeAndFwd >> 1;
+
+                        // Remove the combining mark.
+                        pRemove = p - Character.CharCount(c);  // pRemove & p: start & limit of the combining mark
+                        sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
+                        p = pRemove;
+                        // Replace the starter with the composite.
+                        if (starterIsSupplementary)
+                        {
+                            if (composite > 0xffff)
+                            {
+                                // both are supplementary
+                                sb[starter] = UTF16.GetLeadSurrogate(composite);
+                                sb[starter + 1] = UTF16.GetTrailSurrogate(composite);
+                            }
+                            else
+                            {
+                                sb[starter] = (char)c;
+
+                                //sb.deleteCharAt(starter + 1);
+                                sb.Remove(starter + 1, 1);
+                                // The composite is shorter than the starter,
+                                // move the intermediate characters forward one.
+                                starterIsSupplementary = false;
+                                --p;
+                            }
+                        }
+                        else if (composite > 0xffff)
+                        {
+                            // The composite is longer than the starter,
+                            // move the intermediate characters back one.
+                            starterIsSupplementary = true;
+                            sb[starter] = UTF16.GetLeadSurrogate(composite);
+                            sb.Insert(starter + 1, UTF16.GetTrailSurrogate(composite));
+                            ++p;
+                        }
+                        else
+                        {
+                            // both are on the BMP
+                            sb[starter] = (char)composite;
+                        }
+
+                        // Keep prevCC because we removed the combining mark.
+
+                        if (p == sb.Length)
+                        {
+                            break;
+                        }
+                        // Is the composite a starter that combines forward?
+                        if ((compositeAndFwd & 1) != 0)
+                        {
+                            compositionsList =
+                                GetCompositionsListForComposite(GetNorm16(composite));
+                        }
+                        else
+                        {
+                            compositionsList = -1;
+                        }
+
+                        // We combined; continue with looking for compositions.
+                        continue;
+                    }
+                }
+
+                // no combination this time
+                prevCC = cc;
+                if (p == sb.Length)
+                {
+                    break;
+                }
+
+                // If c did not combine, then check if it is a starter.
+                if (cc == 0)
+                {
+                    // Found a new starter.
+                    if ((compositionsList = GetCompositionsListForDecompYes(norm16)) >= 0)
+                    {
+                        // It may combine with something, prepare for it.
+                        if (c <= 0xffff)
+                        {
+                            starterIsSupplementary = false;
+                            starter = p - 1;
+                        }
+                        else
+                        {
+                            starterIsSupplementary = true;
+                            starter = p - 2;
+                        }
+                    }
+                }
+                else if (onlyContiguous)
+                {
+                    // FCC: no discontiguous compositions; any intervening character blocks.
+                    compositionsList = -1;
+                }
+            }
+<# if (bufferName == "ReorderingBuffer") { #>
+            buffer.Flush();
+<# } #>
+        }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
+<# } #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         private bool HasCompBoundaryBefore(<#=charSequence#> s, int src, int limit)
         {
             return src == limit || HasCompBoundaryBefore(Character.CodePointAt(s, src));
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         private bool HasCompBoundaryAfter(<#=charSequence#> s, int start, int p, bool onlyContiguous)
         {
             return start == p || HasCompBoundaryAfter(Character.CodePointBefore(s, p), onlyContiguous);
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         private int FindPreviousCompBoundary(<#=charSequence#> s, int p, bool onlyContiguous)
         {
@@ -1750,8 +2377,12 @@ namespace ICU4N.Impl
             }
             return p;
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         private int FindNextCompBoundary(<#=charSequence#> s, int p, int limit, bool onlyContiguous)
         {
@@ -1771,8 +2402,12 @@ namespace ICU4N.Impl
             }
             return p;
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         private int FindPreviousFCDBoundary(<#=charSequence#> s, int p)
         {
@@ -1792,8 +2427,12 @@ namespace ICU4N.Impl
             }
             return p;
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         private int FindNextFCDBoundary(<#=charSequence#> s, int p, int limit)
         {
@@ -1813,8 +2452,12 @@ namespace ICU4N.Impl
             }
             return p;
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
+<# for (int i = 0; i < charSequences.Length; i++) {
+    string charSequence = charSequences[i];
+    string feature = charSequenceFeatures[i]; #>
+<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         private int GetPreviousTrailCC(<#=charSequence#> s, int start, int p)
         {
@@ -1824,6 +2467,7 @@ namespace ICU4N.Impl
             }
             return GetFCD16(Character.CodePointBefore(s, p));
         }
+<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
     }
 }

@@ -74,6 +74,7 @@ namespace ICU4N.Impl
         /// </summary>
         internal static int Decompose(int c, ref ValueStringBuilder buffer)
         {
+            // ICU4N: Removed unnecessary try/catch for IOException
             c -= HangulBase;
             int c2 = c % JamoTCount;
             c /= JamoTCount;
@@ -98,6 +99,7 @@ namespace ICU4N.Impl
         /// </summary>
         public static int Decompose(int c, ref ValueReorderingBuffer buffer)
         {
+            // ICU4N: Removed unnecessary try/catch for IOException
             c -= HangulBase;
             int c2 = c % JamoTCount;
             c /= JamoTCount;
@@ -125,6 +127,7 @@ namespace ICU4N.Impl
         /// </summary>
         internal static void GetRawDecomposition(int c, ref ValueStringBuilder buffer)
         {
+            // ICU4N: Removed unnecessary try/catch for IOException
             int orig = c;
             c -= HangulBase;
             int c2 = c % JamoTCount;
@@ -151,6 +154,7 @@ namespace ICU4N.Impl
         /// </summary>
         public static void GetRawDecomposition(int c, ref ValueReorderingBuffer buffer)
         {
+            // ICU4N: Removed unnecessary try/catch for IOException
             int orig = c;
             c -= HangulBase;
             int c2 = c % JamoTCount;
@@ -199,10 +203,12 @@ namespace ICU4N.Impl
     /// </summary>
     public sealed partial class Normalizer2Impl
     {
+        private const int CharStackBufferSize = 64;
+
         // ICU4N specific - de-nested Hangul class
-        
+
         // ICU4N specific - de-nested ReorderingBuffer class
-        
+
         // ICU4N specific - de-nested UTF16Plus class
 
         public Normalizer2Impl() { }
@@ -1217,196 +1223,8 @@ namespace ICU4N.Impl
                 set.Add(composite);
             } while ((firstUnit & COMP_1_LAST_TUPLE) == 0);
         }
-        /// <summary>
-        /// Recomposes the buffer text starting at <paramref name="recomposeStartIndex"/>
-        /// (which is in NFD - decomposed and canonically ordered),
-        /// and truncates the buffer contents.
-        /// </summary>
-        /// <remarks>
-        /// Note that recomposition never lengthens the text:
-        /// Any character consists of either one or two code units;
-        /// a composition may contain at most one more code unit than the original starter,
-        /// while the combining mark that is removed has at least one code unit.
-        /// </remarks>
-        private void Recompose(ReorderingBuffer buffer, int recomposeStartIndex,
-                               bool onlyContiguous)
-        {
-            StringBuilder sb = buffer.StringBuilder;
-            int p = recomposeStartIndex;
-            if (p == sb.Length)
-            {
-                return;
-            }
 
-            int starter, pRemove;
-            int compositionsList;
-            int c, compositeAndFwd;
-            int norm16;
-            int cc, prevCC;
-            bool starterIsSupplementary;
-
-            // Some of the following variables are not used until we have a forward-combining starter
-            // and are only initialized now to avoid compiler warnings.
-            compositionsList = -1;  // used as indicator for whether we have a forward-combining starter
-            starter = -1;
-            starterIsSupplementary = false;
-            prevCC = 0;
-
-            for (; ; )
-            {
-                c = sb.CodePointAt(p);
-                p += Character.CharCount(c);
-                norm16 = GetNorm16(c);
-                cc = GetCCFromYesOrMaybe(norm16);
-                if ( // this character combines backward and
-                    IsMaybe(norm16) &&
-                    // we have seen a starter that combines forward and
-                    compositionsList >= 0 &&
-                    // the backward-combining character is not blocked
-                    (prevCC < cc || prevCC == 0)
-                )
-                {
-                    if (IsJamoVT(norm16))
-                    {
-                        // c is a Jamo V/T, see if we can compose it with the previous character.
-                        if (c < Hangul.JamoTBase)
-                        {
-                            // c is a Jamo Vowel, compose with previous Jamo L and following Jamo T.
-                            char prev = (char)(sb[starter] - Hangul.JamoLBase);
-                            if (prev < Hangul.JamoLCount)
-                            {
-                                pRemove = p - 1;
-                                char syllable = (char)
-                                    (Hangul.HangulBase +
-                                     (prev * Hangul.JamoVCount + (c - Hangul.JamoVBase)) *
-                                     Hangul.JamoTCount);
-                                char t;
-                                if (p != sb.Length && (t = (char)(sb[p] - Hangul.JamoTBase)) < Hangul.JamoTCount)
-                                {
-                                    ++p;
-                                    syllable += t;  // The next character was a Jamo T.
-                                }
-                                //sb.setCharAt(starter, syllable);
-                                sb[starter] = syllable;
-                                // remove the Jamo V/T
-                                sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
-                                p = pRemove;
-                            }
-                        }
-                        /*
-                         * No "else" for Jamo T:
-                         * Since the input is in NFD, there are no Hangul LV syllables that
-                         * a Jamo T could combine with.
-                         * All Jamo Ts are combined above when handling Jamo Vs.
-                         */
-                        if (p == sb.Length)
-                        {
-                            break;
-                        }
-                        compositionsList = -1;
-                        continue;
-                    }
-                    else if ((compositeAndFwd = Combine(maybeYesCompositions, compositionsList, c)) >= 0)
-                    {
-                        // The starter and the combining mark (c) do combine.
-                        int composite = compositeAndFwd >> 1;
-
-                        // Remove the combining mark.
-                        pRemove = p - Character.CharCount(c);  // pRemove & p: start & limit of the combining mark
-                        sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
-                        p = pRemove;
-                        // Replace the starter with the composite.
-                        if (starterIsSupplementary)
-                        {
-                            if (composite > 0xffff)
-                            {
-                                // both are supplementary
-                                sb[starter] = UTF16.GetLeadSurrogate(composite);
-                                sb[starter + 1] = UTF16.GetTrailSurrogate(composite);
-                            }
-                            else
-                            {
-                                sb[starter] = (char)c;
-
-                                //sb.deleteCharAt(starter + 1);
-                                sb.Remove(starter + 1, 1);
-                                // The composite is shorter than the starter,
-                                // move the intermediate characters forward one.
-                                starterIsSupplementary = false;
-                                --p;
-                            }
-                        }
-                        else if (composite > 0xffff)
-                        {
-                            // The composite is longer than the starter,
-                            // move the intermediate characters back one.
-                            starterIsSupplementary = true;
-                            sb[starter] = UTF16.GetLeadSurrogate(composite);
-                            sb.Insert(starter + 1, UTF16.GetTrailSurrogate(composite));
-                            ++p;
-                        }
-                        else
-                        {
-                            // both are on the BMP
-                            sb[starter] = (char)composite;
-                        }
-
-                        // Keep prevCC because we removed the combining mark.
-
-                        if (p == sb.Length)
-                        {
-                            break;
-                        }
-                        // Is the composite a starter that combines forward?
-                        if ((compositeAndFwd & 1) != 0)
-                        {
-                            compositionsList =
-                                GetCompositionsListForComposite(GetNorm16(composite));
-                        }
-                        else
-                        {
-                            compositionsList = -1;
-                        }
-
-                        // We combined; continue with looking for compositions.
-                        continue;
-                    }
-                }
-
-                // no combination this time
-                prevCC = cc;
-                if (p == sb.Length)
-                {
-                    break;
-                }
-
-                // If c did not combine, then check if it is a starter.
-                if (cc == 0)
-                {
-                    // Found a new starter.
-                    if ((compositionsList = GetCompositionsListForDecompYes(norm16)) >= 0)
-                    {
-                        // It may combine with something, prepare for it.
-                        if (c <= 0xffff)
-                        {
-                            starterIsSupplementary = false;
-                            starter = p - 1;
-                        }
-                        else
-                        {
-                            starterIsSupplementary = true;
-                            starter = p - 2;
-                        }
-                    }
-                }
-                else if (onlyContiguous)
-                {
-                    // FCC: no discontiguous compositions; any intervening character blocks.
-                    compositionsList = -1;
-                }
-            }
-            buffer.Flush();
-        }
+        // ICU4N specific - moved Recompose() to Normalizer2Impl.generated.tt
 
         public int ComposePair(int a, int b)
         {

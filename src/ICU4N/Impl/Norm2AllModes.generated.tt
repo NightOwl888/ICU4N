@@ -72,14 +72,8 @@ namespace ICU4N.Impl
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
 <# } #>
-            try
-            {
-                return dest.Append(src);
-            }
-            catch (IOException e)
-            {
-                throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-            }
+            // ICU4N: Removed unnecessary try/catch for IOException
+            return dest.Append(src);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -334,7 +328,7 @@ namespace ICU4N.Impl
 
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> override int SpanQuickCheckYes(<#=charSequence#> s)
         {
-            return Impl.MakeFCD(s, 0, s.Length, null);
+            return Impl.MakeFCDSpanQuickCheckYes(s, 0, s.Length);
         }
 <# } #>
 
