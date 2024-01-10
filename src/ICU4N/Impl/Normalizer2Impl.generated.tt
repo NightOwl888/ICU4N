@@ -1606,10 +1606,18 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
 <# if (charSequence == "ReadOnlySpan<char>") { #>
         public int <#=methodName#>(<#=charSequence#> s<#=methodName == "MakeFCD" ? ", ref ValueReorderingBuffer buffer" : ""#>)
+        {
 <# } else { #>
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int <#=methodName#>(<#=charSequence#> s, int start, int length<#=methodName == "MakeFCD" ? ", ReorderingBuffer buffer" : ""#>)
-<# } /* charSequence */ #>
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+<# if (methodName == "MakeFCD") { #>
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+<# } /* methodName */ #>
+<# } /* charSequence */ #>
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
             // the ReorderingBuffer.
