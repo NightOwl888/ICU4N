@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace ICU4N.Impl
 {
-    public sealed partial class Hangul
+    public static partial class Hangul
     {
         /* Korean Hangul and Jamo constants */
         public const int JamoLBase = 0x1100;     /* "lead" jamo */
@@ -66,112 +66,10 @@ namespace ICU4N.Impl
         }
 
         // ICU4N specific - Decompose(int c, IAppendable buffer) moved to Normalizer2Impl.generated.tt
-
-#if FEATURE_SPAN // ICU4N TODO: Generate
-        /// <summary>
-        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
-        /// and returns the length of the decomposition (2 or 3).
-        /// </summary>
-        internal static int Decompose(int c, ref ValueStringBuilder buffer)
-        {
-            // ICU4N: Removed unnecessary try/catch for IOException
-            c -= HangulBase;
-            int c2 = c % JamoTCount;
-            c /= JamoTCount;
-            buffer.Append((char)(JamoLBase + c / JamoVCount));
-            buffer.Append((char)(JamoVBase + c % JamoVCount));
-            if (c2 == 0)
-            {
-                return 2;
-            }
-            else
-            {
-                buffer.Append((char)(JamoTBase + c2));
-                return 3;
-            }
-        }
-#endif
-
-#if FEATURE_SPAN // ICU4N TODO: Generate
-        /// <summary>
-        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
-        /// and returns the length of the decomposition (2 or 3).
-        /// </summary>
-        public static int Decompose(int c, ref ValueReorderingBuffer buffer)
-        {
-            // ICU4N: Removed unnecessary try/catch for IOException
-            c -= HangulBase;
-            int c2 = c % JamoTCount;
-            c /= JamoTCount;
-            buffer.Append((char)(JamoLBase + c / JamoVCount));
-            buffer.Append((char)(JamoVBase + c % JamoVCount));
-            if (c2 == 0)
-            {
-                return 2;
-            }
-            else
-            {
-                buffer.Append((char)(JamoTBase + c2));
-                return 3;
-            }
-        }
-#endif
+        // and renamed to AppendHangulDecomposition() (extension method)
 
         // ICU4N specific - GetRawDecomposition(int c, IAppendable buffer) moved to Normalizer2Impl.generated.tt
-
-#if FEATURE_SPAN // ICU4N TODO: Generate
-
-        /// <summary>
-        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
-        /// This is the raw, not recursive, decomposition. Its length is always 2.
-        /// </summary>
-        internal static void GetRawDecomposition(int c, ref ValueStringBuilder buffer)
-        {
-            // ICU4N: Removed unnecessary try/catch for IOException
-            int orig = c;
-            c -= HangulBase;
-            int c2 = c % JamoTCount;
-            if (c2 == 0)
-            {
-                c /= JamoTCount;
-                buffer.Append((char)(JamoLBase + c / JamoVCount));
-                buffer.Append((char)(JamoVBase + c % JamoVCount));
-            }
-            else
-            {
-                buffer.Append((char)(orig - c2));  // LV syllable
-                buffer.Append((char)(JamoTBase + c2));
-            }
-        }
-
-#endif
-
-#if FEATURE_SPAN // ICU4N TODO: Generate
-
-        /// <summary>
-        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
-        /// This is the raw, not recursive, decomposition. Its length is always 2.
-        /// </summary>
-        public static void GetRawDecomposition(int c, ref ValueReorderingBuffer buffer)
-        {
-            // ICU4N: Removed unnecessary try/catch for IOException
-            int orig = c;
-            c -= HangulBase;
-            int c2 = c % JamoTCount;
-            if (c2 == 0)
-            {
-                c /= JamoTCount;
-                buffer.Append((char)(JamoLBase + c / JamoVCount));
-                buffer.Append((char)(JamoVBase + c % JamoVCount));
-            }
-            else
-            {
-                buffer.Append((char)(orig - c2));  // LV syllable
-                buffer.Append((char)(JamoTBase + c2));
-            }
-        }
-
-#endif
+        // and renamed to AppendHangulRawDecomposition() (extension method)
     }
 
     // ICU4N specific - ReorderingBuffer moved to Normalizer2Impl.generated.tt
@@ -670,13 +568,11 @@ namespace ICU4N.Impl
                 // Hangul syllable: decompose algorithmically
 #if FEATURE_SPAN
                 ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[3]);
-                Hangul.Decompose(c, ref buffer);
-                return buffer.ToString();
 #else
-                StringBuilder buffer = new StringBuilder();
-                Hangul.Decompose(c, buffer);
-                return buffer.ToString();
+                StringBuilder buffer = new StringBuilder(3);
 #endif
+                buffer.AppendHangulDecomposition(c);
+                return buffer.ToString();
             }
             // c decomposes, get everything from the variable-length extra data
             int mapping = norm16 >> OFFSET_SHIFT;
@@ -702,13 +598,11 @@ namespace ICU4N.Impl
                 // Hangul syllable: decompose algorithmically
 #if FEATURE_SPAN
                 ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[3]);
-                Hangul.GetRawDecomposition(c, ref buffer);
-                return buffer.ToString();
 #else
-                StringBuilder buffer = new StringBuilder();
-                Hangul.GetRawDecomposition(c, buffer);
-                return buffer.ToString();
+                StringBuilder buffer = new StringBuilder(3);
 #endif
+                buffer.AppendHangulRawDecomposition(c);
+                return buffer.ToString();
             }
             else if (IsDecompNoAlgorithmic(norm16))
             {
