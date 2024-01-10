@@ -60,6 +60,7 @@ namespace ICU4N.Impl
 <# foreach (var appendable in appendables.Append("ValueStringBuilder").Append("ValueReorderingBuffer")) { #>
 <#     string appendableRef = appendable == "ValueStringBuilder" || appendable == "ValueReorderingBuffer" ? "ref " : ""; #>
 <#     string feature = appendable == "ValueStringBuilder" || appendable == "ValueReorderingBuffer" ? "FEATURE_SPAN" : ""; #>
+<#     bool nullable = appendable == "ValueStringBuilder" || appendable == "ValueReorderingBuffer" ? false : true; #>
 <#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         /// <summary>
@@ -68,6 +69,11 @@ namespace ICU4N.Impl
         /// </summary>
         <#= appendable == "IAppendable" ? appendableAccessibility : (appendable == "ValueStringBuilder" ? "internal" : "public")#> static int AppendHangulDecomposition(this <#=appendableRef#><#=appendable#> buffer, int c)
         {
+<# if (nullable) { #>
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+<# } #>
             // ICU4N: Removed unnecessary try/catch for IOException
             c -= HangulBase;
             int c2 = c % JamoTCount;
@@ -89,6 +95,7 @@ namespace ICU4N.Impl
 <# foreach (var appendable in appendables.Append("ValueStringBuilder").Append("ValueReorderingBuffer")) { #>
 <#     string appendableRef = appendable == "ValueStringBuilder" || appendable == "ValueReorderingBuffer" ? "ref " : ""; #>
 <#     string feature = appendable == "ValueStringBuilder" || appendable == "ValueReorderingBuffer" ? "FEATURE_SPAN" : ""; #>
+<#     bool nullable = appendable == "ValueStringBuilder" || appendable == "ValueReorderingBuffer" ? false : true; #>
 <#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         /// <summary>
@@ -97,6 +104,11 @@ namespace ICU4N.Impl
         /// </summary>
         <#= appendable == "IAppendable" ? appendableAccessibility : (appendable == "ValueStringBuilder" ? "internal" : "public")#> static void AppendHangulRawDecomposition(this <#=appendableRef#><#=appendable#> buffer, int c)
         {
+<# if (nullable) { #>
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+<# } #>
             // ICU4N: Removed unnecessary try/catch for IOException
             int orig = c;
             c -= HangulBase;
@@ -307,9 +319,9 @@ namespace ICU4N.Impl
     string charSequenceFeature = string.IsNullOrEmpty(feature) || string.IsNullOrEmpty(charSequenceFeatures[i]) || StringComparer.InvariantCulture.Equals(feature, charSequenceFeatures[i]) ? charSequenceFeatures[i] ?? "" : feature + " || " + charSequenceFeatures[i]; #>
 <#=!string.IsNullOrEmpty(charSequenceFeature) ? "#if " + charSequenceFeature + Environment.NewLine: ""#>
 <# if (charSequence == "ReadOnlySpan<char>") { #>
-        public  bool Equals(<#=charSequence#> s)
+        public bool Equals(<#=charSequence#> s)
         {
-            return UTF16Plus.Equal(str<#= bufferName == "ValueReorderingBuffer" ? ".AsSpan()" : "" #>, 0, str.Length, s, 0, s.Length);
+            return UTF16Plus.Equal(str<#= bufferName == "ValueReorderingBuffer" ? ".AsSpan()" : "" #>, s);
         }
 <# } else { #>
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> bool Equals(<#=charSequence#> s, int start, int length) // ICU4N specific: changed limit to length
@@ -336,12 +348,10 @@ namespace ICU4N.Impl
                 Insert(c, cc);
             }
         }
-
 <# for (int i = 0; i < charSequences.Length; i++) {
     string charSequence = charSequences[i];
     string charSequenceFeature = string.IsNullOrEmpty(feature) || string.IsNullOrEmpty(charSequenceFeatures[i]) || StringComparer.InvariantCulture.Equals(feature, charSequenceFeatures[i]) ? charSequenceFeatures[i] ?? "" : feature + " || " + charSequenceFeatures[i]; #>
 <#=!string.IsNullOrEmpty(charSequenceFeature) ? "#if " + charSequenceFeature + Environment.NewLine: ""#>
-
 <# if (charSequence == "ReadOnlySpan<char>") { #>
         public void Append(<#=charSequence#> s, int leadCC, int trailCC)
         {
@@ -465,7 +475,6 @@ namespace ICU4N.Impl
 <#=!string.IsNullOrEmpty(charSequenceFeature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
 <# } #>
-
 <# if (bufferName != "ValueReorderingBuffer") { #>
         /// <summary>
         /// Flushes from the intermediate <see cref="StringBuilder"/> to the <see cref="IAppendable"/>,
@@ -548,7 +557,6 @@ namespace ICU4N.Impl
         }
 <# } else { #>
         // ICU4N NOTE: Instead of FlushAndAppendZeroCC(<#=charSequence#>, int, int), call Append(<#=charSequence#>, int, int)
-
 <# } #>
 <#=!string.IsNullOrEmpty(charSequenceFeature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
@@ -662,10 +670,8 @@ namespace ICU4N.Impl
         private int codePointStart, codePointLimit;
     }
 
-
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } /* bufferNames End */ #>
-#nullable restore
 
     public sealed partial class UTF16Plus
     {
@@ -757,12 +763,8 @@ namespace ICU4N.Impl
 <# } #>
     }
 
-
-
     public sealed partial class Normalizer2Impl
     {
-
-
 <# for (int i = 0; i < charSequences.Length; i++) {
     string charSequence = charSequences[i];
     string feature = charSequenceFeatures[i]; #>

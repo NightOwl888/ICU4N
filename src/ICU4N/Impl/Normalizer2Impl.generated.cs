@@ -26,6 +26,9 @@ namespace ICU4N.Impl
         /// </summary>
         public static int AppendHangulDecomposition(this StringBuilder buffer, int c)
         {
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
             // ICU4N: Removed unnecessary try/catch for IOException
             c -= HangulBase;
             int c2 = c % JamoTCount;
@@ -51,6 +54,9 @@ namespace ICU4N.Impl
         /// </summary>
         public static int AppendHangulDecomposition(this IAppendable buffer, int c)
         {
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
             // ICU4N: Removed unnecessary try/catch for IOException
             c -= HangulBase;
             int c2 = c % JamoTCount;
@@ -130,6 +136,9 @@ namespace ICU4N.Impl
         /// </summary>
         public static void AppendHangulRawDecomposition(this StringBuilder buffer, int c)
         {
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
             // ICU4N: Removed unnecessary try/catch for IOException
             int orig = c;
             c -= HangulBase;
@@ -155,6 +164,9 @@ namespace ICU4N.Impl
         /// </summary>
         public static void AppendHangulRawDecomposition(this IAppendable buffer, int c)
         {
+            // ICU4N: Added guard clause
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
             // ICU4N: Removed unnecessary try/catch for IOException
             int orig = c;
             c -= HangulBase;
@@ -372,9 +384,9 @@ namespace ICU4N.Impl
 
 #if FEATURE_SPAN
 
-        public  bool Equals(ReadOnlySpan<char> s)
+        public bool Equals(ReadOnlySpan<char> s)
         {
-            return UTF16Plus.Equal(str.AsSpan(), 0, str.Length, s, 0, s.Length);
+            return UTF16Plus.Equal(str.AsSpan(), s);
         }
 #endif 
 
@@ -395,8 +407,6 @@ namespace ICU4N.Impl
                 Insert(c, cc);
             }
         }
-
-
 
         // s must be in NFD, otherwise change the implementation.
         public void Append(string s, int start, int length,
@@ -442,7 +452,6 @@ namespace ICU4N.Impl
                 }
             }
         }
-
 
 
         // s must be in NFD, otherwise change the implementation.
@@ -491,7 +500,6 @@ namespace ICU4N.Impl
         }
 
 
-
         // s must be in NFD, otherwise change the implementation.
         public void Append(char[] s, int start, int length,
             int leadCC, int trailCC) // ICU4N specific: changed limit to length
@@ -536,7 +544,6 @@ namespace ICU4N.Impl
                 }
             }
         }
-
 
 
         // s must be in NFD, otherwise change the implementation.
@@ -585,7 +592,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
 
         public void Append(ReadOnlySpan<char> s, int leadCC, int trailCC)
         {
@@ -760,7 +766,6 @@ namespace ICU4N.Impl
             }
         }
 
-
         // ICU4N NOTE: No need to flush because we don't accept an IAppendable
 
         public void Remove()
@@ -783,9 +788,7 @@ namespace ICU4N.Impl
 
 
 
-
         // ICU4N NOTE: Instead of FlushAndAppendZeroCC(StringBuilder, int, int), call Append(StringBuilder, int, int)
-
 
 
 
@@ -793,15 +796,12 @@ namespace ICU4N.Impl
 
 
 
-
         // ICU4N NOTE: Instead of FlushAndAppendZeroCC(ICharSequence, int, int), call Append(ICharSequence, int, int)
-
 
 #if FEATURE_SPAN
 
 
         // ICU4N NOTE: Instead of FlushAndAppendZeroCC(ReadOnlySpan<char>, int, int), call Append(ReadOnlySpan<char>, int, int)
-
 #endif 
 
 
@@ -869,7 +869,6 @@ namespace ICU4N.Impl
 
         private int codePointStart, codePointLimit;
     }
-
 
 #endif 
 
@@ -965,9 +964,9 @@ namespace ICU4N.Impl
 
 #if FEATURE_SPAN
 
-        public  bool Equals(ReadOnlySpan<char> s)
+        public bool Equals(ReadOnlySpan<char> s)
         {
-            return UTF16Plus.Equal(str, 0, str.Length, s, 0, s.Length);
+            return UTF16Plus.Equal(str, s);
         }
 #endif 
 
@@ -988,8 +987,6 @@ namespace ICU4N.Impl
                 Insert(c, cc);
             }
         }
-
-
 
         // s must be in NFD, otherwise change the implementation.
         public void Append(string s, int start, int length,
@@ -1035,7 +1032,6 @@ namespace ICU4N.Impl
                 }
             }
         }
-
 
 
         // s must be in NFD, otherwise change the implementation.
@@ -1084,7 +1080,6 @@ namespace ICU4N.Impl
         }
 
 
-
         // s must be in NFD, otherwise change the implementation.
         public void Append(char[] s, int start, int length,
             int leadCC, int trailCC) // ICU4N specific: changed limit to length
@@ -1129,7 +1124,6 @@ namespace ICU4N.Impl
                 }
             }
         }
-
 
 
         // s must be in NFD, otherwise change the implementation.
@@ -1178,7 +1172,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
 
         public void Append(ReadOnlySpan<char> s, int leadCC, int trailCC)
         {
@@ -1362,7 +1355,6 @@ namespace ICU4N.Impl
             }
             return this;
         }
-
 
         /// <summary>
         /// Flushes from the intermediate <see cref="StringBuilder"/> to the <see cref="IAppendable"/>,
@@ -1646,8 +1638,6 @@ namespace ICU4N.Impl
     }
 
 
-
-#nullable restore
 
     public sealed partial class UTF16Plus
     {
@@ -3079,12 +3069,8 @@ namespace ICU4N.Impl
 
         }
 
-
-
     public sealed partial class Normalizer2Impl
     {
-
-
 
         // NFD without an NFD Normalizer2 instance.
 
