@@ -765,7 +765,7 @@ namespace ICU4N.Impl
         // ICU4N TODO: Make public TryDecompose() method that accepts ReadOnlySpan<char>, Span<char>, out int charLength
         internal void Decompose(<#=charSequence#> s, ref ValueStringBuilder dest) // ICU4N: internal because ValueStringBuilder is internal
         {
-            Decompose(s, 0, s.Length, ref dest, s.Length); // ICU4N TODO: Factor out indices - they exist on the span - and create the ValueReorderingBuffer here
+            Decompose(s, ref dest, s.Length);
         }
     <# } else { #>
         <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> StringBuilder Decompose(<#=charSequence#> s, StringBuilder dest)
@@ -787,16 +787,16 @@ namespace ICU4N.Impl
         /// length can be NULL if src is NUL-terminated.
         /// <paramref name="destLengthEstimate"/> is the initial <paramref name="dest"/> buffer capacity and can be -1.
         /// </summary>
-        internal void Decompose(<#=charSequence#> s, int start, int length, ref ValueStringBuilder dest, int destLengthEstimate)
+        internal void Decompose(<#=charSequence#> s, ref ValueStringBuilder dest, int destLengthEstimate)
         {
-            int src = start, limit = start + length;
+            int src = 0, limit = s.Length;
             if (destLengthEstimate < 0)
             {
                 destLengthEstimate = limit - src;
             }
             dest.Length = 0;
             ValueReorderingBuffer buffer = new ValueReorderingBuffer(this, ref dest, destLengthEstimate);
-            Decompose(s, src, length, ref buffer); // ICU4N: Changed limit to length
+            Decompose(s, ref buffer);
         }
     <# } else { #>
 
@@ -819,119 +819,44 @@ namespace ICU4N.Impl
     <# } #>
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-<# for (int i = 0; i < charSequences.Length; i++) {
-    string charSequence = charSequences[i];
-    string feature = charSequenceFeatures[i]; #>
+<#
+string[] decomposeMethodNames = new string[] {"Decompose", "DecomposeQuickCheck"};
+for (int m = 0; m < decomposeMethodNames.Length; m++) {
+    string methodName = decomposeMethodNames[m];
+    for (int i = 0; i < charSequences.Length; i++) {
+        string charSequence = charSequences[i];
+        string feature = charSequenceFeatures[i]; #>
 <#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
 
         // normalize
-        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-    <# if (charSequence == "ReadOnlySpan<char>") { #>
-        internal int Decompose(<#=charSequence#> s, int start, int length, ref ValueReorderingBuffer buffer)
-        {
-    <# } else { #>
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int Decompose(<#=charSequence#> s, int start, int length, ReorderingBuffer buffer)
-        {
-            // ICU4N: Added guard clause
-            if (buffer is null)
-                throw new ArgumentNullException(nameof(buffer));
-    <# } #>
-            int src = start, limit = start + length;
-            int minNoCP = minDecompNoCP;
-
-            int prevSrc;
-            int c = 0;
-            int norm16 = 0;
-
-            for (; ; )
-            {
-                // count code units below the minimum or with irrelevant data for the quick check
-                for (prevSrc = src; src != limit;)
-                {
-                    if ((c = s[src]) < minNoCP ||
-                        IsMostDecompYesAndZeroCC(norm16 = normTrie.GetFromU16SingleLead((char)c))
-                    )
-                    {
-                        ++src;
-                    }
-                    else if (!UTF16.IsSurrogate((char)c))
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        char c2;
-                        if (UTF16Plus.IsSurrogateLead(c))
-                        {
-                            if ((src + 1) != limit && char.IsLowSurrogate(c2 = s[src + 1]))
-                            {
-                                c = Character.ToCodePoint((char)c, c2);
-                            }
-                        }
-                        else /* trail surrogate */
-                        {
-                            if (prevSrc < src && char.IsHighSurrogate(c2 = s[src - 1]))
-                            {
-                                --src;
-                                c = Character.ToCodePoint(c2, (char)c);
-                            }
-                        }
-                        if (IsMostDecompYesAndZeroCC(norm16 = GetNorm16(c)))
-                        {
-                            src += Character.CharCount(c);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-                // copy these code units all at once
-                if (src != prevSrc)
-                {
-    <# if (charSequence == "ReadOnlySpan<char>") { #>
-                    // For ValueReorderingBuffer, call Append() instead of FlushAndAppendZeroCC()
-                    buffer.Append(s.Slice(prevSrc, src - prevSrc)); // ICU4N: Corrected 3rd parameter
-    <# } else { #>
-                    buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
-    <# } #>
-                }
-                if (src == limit)
-                {
-                    break;
-                }
-
-                // Check one above-minimum, relevant code point.
-                src += Character.CharCount(c);
-                Decompose(c, norm16, <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
-            }
-            return src;
-        }
-<#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
-<# } #>
-<# for (int i = 0; i < charSequences.Length; i++) {
-    string charSequence = charSequences[i];
-    string feature = charSequenceFeatures[i]; #>
-<#=!string.IsNullOrEmpty(feature) ? "#if " + feature + Environment.NewLine: ""#>
-
-        // isNormalized/quickCheck/spanQuickCheckYes
-        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int SpanQuickCheckYes(<#=charSequence#> s<#=charSequence != "ReadOnlySpan<char>" ? ", int start, int length" : ""#>)
-        {
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
 <# if (charSequence == "ReadOnlySpan<char>") { #>
+        public int <#=methodName#>(<#=charSequence#> s<#=methodName == "Decompose" ? ", ref ValueReorderingBuffer buffer" : ""#>)
+        {
             int src = 0, limit = s.Length;
 <# } else { #>
+        <#= charSequence == "ICharSequence" ? charSequenceAccessibility : "public"#> int <#=methodName#>(<#=charSequence#> s, int start, int length<#=methodName == "Decompose" ? ", ReorderingBuffer buffer" : ""#>)
+        {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+<# if (methodName == "Decompose") { #>
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+<# } /* methodName */ #>
             int src = start, limit = start + length;
-<# } #>
+<# } /* charSequence*/ #>
             int minNoCP = minDecompNoCP;
 
             int prevSrc;
             int c = 0;
             int norm16 = 0;
 
-            // only for quick check
+<# if (methodName == "DecomposeQuickCheck") { #>
             int prevBoundary = src;
             int prevCC = 0;
+<# } /* methodName */ #>
 
             for (; ; )
             {
@@ -979,8 +904,17 @@ namespace ICU4N.Impl
                 // copy these code units all at once
                 if (src != prevSrc)
                 {
+<# if (methodName == "Decompose") { #>
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                    // For ValueReorderingBuffer, call Append() instead of FlushAndAppendZeroCC()
+                    buffer.Append(s.Slice(prevSrc, src - prevSrc)); // ICU4N: Corrected 3rd parameter
+<# } else { #>
+                    buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
+<# } /* methodName */ #>
+<# } else { #>
                     prevCC = 0;
                     prevBoundary = src;
+<# } /* charSequence*/ #>
                 }
                 if (src == limit)
                 {
@@ -989,6 +923,9 @@ namespace ICU4N.Impl
 
                 // Check one above-minimum, relevant code point.
                 src += Character.CharCount(c);
+<# if (methodName == "Decompose") { #>
+                Decompose(c, norm16, <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
+<# } else { #>
                 if (IsDecompYes(norm16))
                 {
                     int cc = GetCCFromYesOrMaybe(norm16);
@@ -1003,10 +940,12 @@ namespace ICU4N.Impl
                     }
                 }
                 return prevBoundary;  // "no" or cc out of order
+<# } /* methodName */ #>
             }
             return src;
         }
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
+    <# } #>
 <# } #>
 
 <# for (int i = 0; i < charSequences.Length; i++) {
@@ -1027,7 +966,11 @@ namespace ICU4N.Impl
             }
             if (doDecompose)
             {
-                Decompose(s, 0, limit, <#=charSequence == "ReadOnlySpan<char>" ? "ref " : ""#>buffer);
+<# if (charSequence == "ReadOnlySpan<char>") { #>
+                Decompose(s, ref buffer);
+<# } else { #>
+                Decompose(s, 0, limit, buffer);
+<# } #>
                 return;
             }
             // Just merge the strings at the boundary.

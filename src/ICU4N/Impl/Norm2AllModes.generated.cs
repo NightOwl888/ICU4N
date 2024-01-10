@@ -434,22 +434,22 @@ namespace ICU4N.Impl
 
         public override int SpanQuickCheckYes(string s)
         {
-            return Impl.SpanQuickCheckYes(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
+            return Impl.DecomposeQuickCheck(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
         }
 
         public override int SpanQuickCheckYes(StringBuilder s)
         {
-            return Impl.SpanQuickCheckYes(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
+            return Impl.DecomposeQuickCheck(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
         }
 
         public override int SpanQuickCheckYes(char[] s)
         {
-            return Impl.SpanQuickCheckYes(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
+            return Impl.DecomposeQuickCheck(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
         }
 
         public override int SpanQuickCheckYes(ICharSequence s)
         {
-            return Impl.SpanQuickCheckYes(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
+            return Impl.DecomposeQuickCheck(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
         }
     }
 

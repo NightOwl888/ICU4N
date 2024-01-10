@@ -3012,7 +3012,7 @@ namespace ICU4N.Impl
             // ICU4N TODO: Make public TryDecompose() method that accepts ReadOnlySpan<char>, Span<char>, out int charLength
         internal void Decompose(ReadOnlySpan<char> s, ref ValueStringBuilder dest) // ICU4N: internal because ValueStringBuilder is internal
         {
-            Decompose(s, 0, s.Length, ref dest, s.Length); // ICU4N TODO: Factor out indices - they exist on the span - and create the ValueReorderingBuffer here
+            Decompose(s, ref dest, s.Length);
         }
     #endif 
 
@@ -3100,34 +3100,38 @@ namespace ICU4N.Impl
         /// length can be NULL if src is NUL-terminated.
         /// <paramref name="destLengthEstimate"/> is the initial <paramref name="dest"/> buffer capacity and can be -1.
         /// </summary>
-        internal void Decompose(ReadOnlySpan<char> s, int start, int length, ref ValueStringBuilder dest, int destLengthEstimate)
+        internal void Decompose(ReadOnlySpan<char> s, ref ValueStringBuilder dest, int destLengthEstimate)
         {
-            int src = start, limit = start + length;
+            int src = 0, limit = s.Length;
             if (destLengthEstimate < 0)
             {
                 destLengthEstimate = limit - src;
             }
             dest.Length = 0;
             ValueReorderingBuffer buffer = new ValueReorderingBuffer(this, ref dest, destLengthEstimate);
-            Decompose(s, src, length, ref buffer); // ICU4N: Changed limit to length
+            Decompose(s, ref buffer);
         }
     #endif 
 
 
 
         // normalize
-        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-            public int Decompose(string s, int start, int length, ReorderingBuffer buffer)
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
+        public int Decompose(string s, int start, int length, ReorderingBuffer buffer)
         {
-            // ICU4N: Added guard clause
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             if (buffer is null)
                 throw new ArgumentNullException(nameof(buffer));
-                int src = start, limit = start + length;
+            int src = start, limit = start + length;
             int minNoCP = minDecompNoCP;
 
             int prevSrc;
             int c = 0;
             int norm16 = 0;
+
 
             for (; ; )
             {
@@ -3175,8 +3179,8 @@ namespace ICU4N.Impl
                 // copy these code units all at once
                 if (src != prevSrc)
                 {
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
-                    }
+                    buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
+                }
                 if (src == limit)
                 {
                     break;
@@ -3189,21 +3193,25 @@ namespace ICU4N.Impl
             return src;
         }
 
-
+    
 
         // normalize
-        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-            public int Decompose(StringBuilder s, int start, int length, ReorderingBuffer buffer)
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
+        public int Decompose(StringBuilder s, int start, int length, ReorderingBuffer buffer)
         {
-            // ICU4N: Added guard clause
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             if (buffer is null)
                 throw new ArgumentNullException(nameof(buffer));
-                int src = start, limit = start + length;
+            int src = start, limit = start + length;
             int minNoCP = minDecompNoCP;
 
             int prevSrc;
             int c = 0;
             int norm16 = 0;
+
 
             for (; ; )
             {
@@ -3251,8 +3259,8 @@ namespace ICU4N.Impl
                 // copy these code units all at once
                 if (src != prevSrc)
                 {
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
-                    }
+                    buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
+                }
                 if (src == limit)
                 {
                     break;
@@ -3265,21 +3273,25 @@ namespace ICU4N.Impl
             return src;
         }
 
-
+    
 
         // normalize
-        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-            public int Decompose(char[] s, int start, int length, ReorderingBuffer buffer)
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
+        public int Decompose(char[] s, int start, int length, ReorderingBuffer buffer)
         {
-            // ICU4N: Added guard clause
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             if (buffer is null)
                 throw new ArgumentNullException(nameof(buffer));
-                int src = start, limit = start + length;
+            int src = start, limit = start + length;
             int minNoCP = minDecompNoCP;
 
             int prevSrc;
             int c = 0;
             int norm16 = 0;
+
 
             for (; ; )
             {
@@ -3327,8 +3339,8 @@ namespace ICU4N.Impl
                 // copy these code units all at once
                 if (src != prevSrc)
                 {
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
-                    }
+                    buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
+                }
                 if (src == limit)
                 {
                     break;
@@ -3341,21 +3353,25 @@ namespace ICU4N.Impl
             return src;
         }
 
-
+    
 
         // normalize
-        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-            public int Decompose(ICharSequence s, int start, int length, ReorderingBuffer buffer)
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
+        public int Decompose(ICharSequence s, int start, int length, ReorderingBuffer buffer)
         {
-            // ICU4N: Added guard clause
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             if (buffer is null)
                 throw new ArgumentNullException(nameof(buffer));
-                int src = start, limit = start + length;
+            int src = start, limit = start + length;
             int minNoCP = minDecompNoCP;
 
             int prevSrc;
             int c = 0;
             int norm16 = 0;
+
 
             for (; ; )
             {
@@ -3403,8 +3419,8 @@ namespace ICU4N.Impl
                 // copy these code units all at once
                 if (src != prevSrc)
                 {
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
-                    }
+                    buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
+                }
                 if (src == limit)
                 {
                     break;
@@ -3417,19 +3433,21 @@ namespace ICU4N.Impl
             return src;
         }
 
-#if FEATURE_SPAN
+    #if FEATURE_SPAN
 
 
         // normalize
-        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-            internal int Decompose(ReadOnlySpan<char> s, int start, int length, ref ValueReorderingBuffer buffer)
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
+        public int Decompose(ReadOnlySpan<char> s, ref ValueReorderingBuffer buffer)
         {
-                int src = start, limit = start + length;
+            int src = 0, limit = s.Length;
             int minNoCP = minDecompNoCP;
 
             int prevSrc;
             int c = 0;
             int norm16 = 0;
+
 
             for (; ; )
             {
@@ -3477,9 +3495,9 @@ namespace ICU4N.Impl
                 // copy these code units all at once
                 if (src != prevSrc)
                 {
-                        // For ValueReorderingBuffer, call Append() instead of FlushAndAppendZeroCC()
+                    // For ValueReorderingBuffer, call Append() instead of FlushAndAppendZeroCC()
                     buffer.Append(s.Slice(prevSrc, src - prevSrc)); // ICU4N: Corrected 3rd parameter
-                    }
+                }
                 if (src == limit)
                 {
                     break;
@@ -3493,12 +3511,16 @@ namespace ICU4N.Impl
         }
 #endif 
 
+    
 
-
-        // isNormalized/quickCheck/spanQuickCheckYes
-        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-        public int SpanQuickCheckYes(string s, int start, int length)
+        // normalize
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
+        public int DecomposeQuickCheck(string s, int start, int length)
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             int src = start, limit = start + length;
             int minNoCP = minDecompNoCP;
 
@@ -3506,7 +3528,6 @@ namespace ICU4N.Impl
             int c = 0;
             int norm16 = 0;
 
-            // only for quick check
             int prevBoundary = src;
             int prevCC = 0;
 
@@ -3584,12 +3605,16 @@ namespace ICU4N.Impl
             return src;
         }
 
+    
 
-
-        // isNormalized/quickCheck/spanQuickCheckYes
-        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-        public int SpanQuickCheckYes(StringBuilder s, int start, int length)
+        // normalize
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
+        public int DecomposeQuickCheck(StringBuilder s, int start, int length)
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             int src = start, limit = start + length;
             int minNoCP = minDecompNoCP;
 
@@ -3597,7 +3622,6 @@ namespace ICU4N.Impl
             int c = 0;
             int norm16 = 0;
 
-            // only for quick check
             int prevBoundary = src;
             int prevCC = 0;
 
@@ -3675,12 +3699,16 @@ namespace ICU4N.Impl
             return src;
         }
 
+    
 
-
-        // isNormalized/quickCheck/spanQuickCheckYes
-        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-        public int SpanQuickCheckYes(char[] s, int start, int length)
+        // normalize
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
+        public int DecomposeQuickCheck(char[] s, int start, int length)
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             int src = start, limit = start + length;
             int minNoCP = minDecompNoCP;
 
@@ -3688,7 +3716,6 @@ namespace ICU4N.Impl
             int c = 0;
             int norm16 = 0;
 
-            // only for quick check
             int prevBoundary = src;
             int prevCC = 0;
 
@@ -3766,12 +3793,16 @@ namespace ICU4N.Impl
             return src;
         }
 
+    
 
-
-        // isNormalized/quickCheck/spanQuickCheckYes
-        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-        public int SpanQuickCheckYes(ICharSequence s, int start, int length)
+        // normalize
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
+        public int DecomposeQuickCheck(ICharSequence s, int start, int length)
         {
+            // ICU4N: Added guard clauses
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
             int src = start, limit = start + length;
             int minNoCP = minDecompNoCP;
 
@@ -3779,7 +3810,6 @@ namespace ICU4N.Impl
             int c = 0;
             int norm16 = 0;
 
-            // only for quick check
             int prevBoundary = src;
             int prevCC = 0;
 
@@ -3857,12 +3887,13 @@ namespace ICU4N.Impl
             return src;
         }
 
-#if FEATURE_SPAN
+    #if FEATURE_SPAN
 
 
-        // isNormalized/quickCheck/spanQuickCheckYes
-        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J. Separated out so we can use a ref struct for the buffer.
-        public int SpanQuickCheckYes(ReadOnlySpan<char> s)
+        // normalize
+        // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
+        // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
+        public int DecomposeQuickCheck(ReadOnlySpan<char> s)
         {
             int src = 0, limit = s.Length;
             int minNoCP = minDecompNoCP;
@@ -3871,7 +3902,6 @@ namespace ICU4N.Impl
             int c = 0;
             int norm16 = 0;
 
-            // only for quick check
             int prevBoundary = src;
             int prevCC = 0;
 
@@ -3950,7 +3980,7 @@ namespace ICU4N.Impl
         }
 #endif 
 
-
+    
 
 
         public void DecomposeAndAppend(string s, bool doDecompose, ReorderingBuffer buffer)
@@ -4099,7 +4129,7 @@ namespace ICU4N.Impl
             }
             if (doDecompose)
             {
-                Decompose(s, 0, limit, ref buffer);
+                Decompose(s, ref buffer);
                 return;
             }
             // Just merge the strings at the boundary.
