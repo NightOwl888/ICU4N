@@ -3295,10 +3295,18 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override StringBuilder Normalize(ICharSequence src, StringBuilder dest) { return null; }
 
+#if FEATURE_SPAN
+            public override StringBuffer Normalize(ReadOnlySpan<char> src, StringBuffer dest) => null;
+#endif
+
             public override IAppendable Normalize(string src, IAppendable dest) { return null; }
             public override IAppendable Normalize(StringBuffer src, IAppendable dest) { return null; }
             public override IAppendable Normalize(char[] src, IAppendable dest) { return null; }
             public override IAppendable Normalize(ICharSequence src, IAppendable dest) { return null; }
+
+#if FEATURE_SPAN
+            public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest) => null;
+#endif
 
             public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, string second) { return null; }
 
@@ -3308,6 +3316,10 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second) { return null; }
 
+#if FEATURE_SPAN
+            public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, ReadOnlySpan<char> second) => null;
+#endif
+
             public override StringBuffer Append(StringBuffer first, string second) { return null; }
 
             public override StringBuffer Append(StringBuffer first, StringBuffer second) { return null; }
@@ -3315,6 +3327,10 @@ namespace ICU4N.Dev.Test.Normalizers
             public override StringBuffer Append(StringBuffer first, char[] second) { return null; }
 
             public override StringBuilder Append(StringBuilder first, ICharSequence second) { return null; }
+
+#if FEATURE_SPAN
+            public override StringBuffer Append(StringBuffer first, ReadOnlySpan<char> second) => null;
+#endif
 
             public override string GetDecomposition(int c) { return null; }
 
@@ -3326,6 +3342,10 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override bool IsNormalized(ICharSequence s) { return false; }
 
+#if FEATURE_SPAN
+            public override bool IsNormalized(ReadOnlySpan<char> s) => false;
+#endif
+
             public override QuickCheckResult QuickCheck(string s) { return (QuickCheckResult)(-1); }
 
             public override QuickCheckResult QuickCheck(StringBuffer s) { return (QuickCheckResult)(-1); }
@@ -3333,6 +3353,10 @@ namespace ICU4N.Dev.Test.Normalizers
             public override QuickCheckResult QuickCheck(char[] s) { return (QuickCheckResult)(-1); }
 
             public override QuickCheckResult QuickCheck(ICharSequence s) { return (QuickCheckResult)(-1); }
+
+#if FEATURE_SPAN
+            public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s) => (QuickCheckResult)(-1);
+#endif
 
             public override int SpanQuickCheckYes(string s) { return 0; }
 
@@ -3342,11 +3366,35 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override int SpanQuickCheckYes(ICharSequence s) { return 0; }
 
+#if FEATURE_SPAN
+            public override int SpanQuickCheckYes(ReadOnlySpan<char> s) => 0;
+#endif
+
             public override bool HasBoundaryBefore(int c) { return false; }
 
             public override bool HasBoundaryAfter(int c) { return false; }
 
             public override bool IsInert(int c) { return false; }
+
+#if FEATURE_SPAN
+            public override bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength)
+            {
+                charsLength = 0;
+                return false;
+            }
+
+            public override bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+            {
+                charsLength = 0;
+                return false;
+            }
+
+            public override bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+            {
+                charsLength = 0;
+                return false;
+            }
+#endif
         }
 
         TestNormalizer2 tnorm2 = new TestNormalizer2();
