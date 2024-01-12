@@ -1,6 +1,10 @@
-﻿using ICU4N.Text;
+﻿using ICU4N.Support.Text;
+using ICU4N.Text;
 using J2N.IO;
 using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Xml.Serialization;
 
 namespace ICU4N.Impl
 {
@@ -32,18 +36,163 @@ namespace ICU4N.Impl
         public override bool HasBoundaryAfter(int c) { return true; }
 
         public override bool IsInert(int c) { return true; }
+
+#if FEATURE_SPAN
+        public override bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength)
+        {
+            if (Unsafe.AreSame(ref MemoryMarshal.GetReference(source), ref MemoryMarshal.GetReference(destination)))
+            {
+                throw new ArgumentException($"'{nameof(source)}' cannot be the same reference as '{nameof(destination)}'");
+            }
+            bool success = source.TryCopyTo(destination);
+            charsLength = source.Length;
+            return success;
+        }
+
+        public override bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+        {
+            bool success = true;
+            if (Unsafe.AreSame(ref MemoryMarshal.GetReference(second), ref MemoryMarshal.GetReference(destination)))
+            {
+                throw new ArgumentException($"'{nameof(second)}' cannot be the same reference as '{nameof(destination)}'");
+            }
+            if (!Unsafe.AreSame(ref MemoryMarshal.GetReference(first), ref MemoryMarshal.GetReference(destination)))
+            {
+                success = first.TryCopyTo(destination);
+            }
+            success = success && second.TryCopyTo(destination.Slice(first.Length));
+            charsLength = first.Length + second.Length;
+            return success;
+        }
+
+        public override bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+        {
+            bool success = true;
+            if (Unsafe.AreSame(ref MemoryMarshal.GetReference(second), ref MemoryMarshal.GetReference(destination)))
+            {
+                throw new ArgumentException($"'{nameof(second)}' cannot be the same reference as '{nameof(destination)}'");
+            }
+            if (!Unsafe.AreSame(ref MemoryMarshal.GetReference(first), ref MemoryMarshal.GetReference(destination)))
+            {
+                success = first.TryCopyTo(destination);
+            }
+            success = success && second.TryCopyTo(destination.Slice(first.Length));
+            charsLength = first.Length + second.Length;
+            return success;
+        }
+#endif
     }
 
     // Intermediate class:
     // Has Normalizer2Impl and does boilerplate argument checking and setup.
     public abstract partial class Normalizer2WithImpl : Normalizer2
     {
+        protected const int CharStackBufferSize = 64;
+
         public Normalizer2WithImpl(Normalizer2Impl ni)
         {
-            Impl = ni;
+            Impl = ni ?? throw new ArgumentNullException(nameof(ni)); // ICU4N: Added guard clause
         }
 
         // normalize
+
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns the normalized form of the source <see cref="ReadOnlySpan{Char}"/>.
+        /// </summary>
+        /// <param name="source">Source <see cref="ReadOnlySpan{Char}"/>.</param>
+        /// <returns>Normalized <paramref name="source"/>.</returns>
+        /// <draft>ICU 4.4</draft>
+        public override string Normalize(ReadOnlySpan<char> source)
+        {
+            int length = source.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ValueReorderingBuffer(Impl, ReadOnlySpan<char>.Empty, length);
+            try
+            {
+                Normalize(source, ref buffer);
+                return buffer.ToString();
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Normalizes the form of the source <see cref="ReadOnlySpan{Char}"/>
+        /// and places the result in <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="source">Source <see cref="ReadOnlySpan{Char}"/>.</param>
+        /// <param name="destination">The span in which to write the normalized value formatted as a span of characters.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
+        /// <returns>Normalized <paramref name="source"/>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public override bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength)
+        {
+            if (Unsafe.AreSame(ref MemoryMarshal.GetReference(source), ref MemoryMarshal.GetReference(destination)))
+            {
+                throw new ArgumentException($"'{nameof(source)}' cannot be the same reference as '{nameof(destination)}'");
+            }
+            int length = source.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ValueReorderingBuffer(Impl, ReadOnlySpan<char>.Empty, length);
+            try
+            {
+                Normalize(source, ref buffer);
+                return buffer.TryCopyTo(destination, out charsLength);
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
+        }
+#endif
+
+#if FEATURE_SPAN
+        
+
+        public override bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+        {
+            if (Unsafe.AreSame(ref MemoryMarshal.GetReference(second), ref MemoryMarshal.GetReference(destination)))
+            {
+                throw new ArgumentException($"'{nameof(second)}' cannot be the same reference as '{nameof(destination)}'");
+            }
+            bool success = true;
+            if (!Unsafe.AreSame(ref MemoryMarshal.GetReference(first), ref MemoryMarshal.GetReference(destination)))
+            {
+                success = first.TryCopyTo(destination);
+            }
+            var buffer = new ValueReorderingBuffer(Impl, destination);
+            NormalizeAndAppend(second, doNormalize: true, ref buffer);
+            success = success && buffer.Length <= destination.Length;
+            charsLength = buffer.Length;
+            return success;
+        }
+
+        public override bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+        {
+            if (Unsafe.AreSame(ref MemoryMarshal.GetReference(second), ref MemoryMarshal.GetReference(destination)))
+            {
+                throw new ArgumentException($"'{nameof(second)}' cannot be the same reference as '{nameof(destination)}'");
+            }
+            bool success = true;
+            if (!Unsafe.AreSame(ref MemoryMarshal.GetReference(first), ref MemoryMarshal.GetReference(destination)))
+            {
+                success = first.TryCopyTo(destination);
+            }
+            var buffer = new ValueReorderingBuffer(Impl, destination);
+            NormalizeAndAppend(second, doNormalize: false, ref buffer);
+            success = success && buffer.Length <= destination.Length;
+            charsLength = buffer.Length;
+            return success;
+        }
+#endif
+
 
         // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModes.generated.tt
 

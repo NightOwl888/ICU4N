@@ -191,6 +191,24 @@ namespace ICU4N.Text
         // ICU4N specific - NormalizeSecondAndAppend(StringBuilder first, ICharSequence second,
         //    bool doNormalize) moved to FilteredNormalizer.generated.tt
 
+#if FEATURE_SPAN
+        public override bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength)
+        {
+            throw new NotImplementedException(); // ICU4N TODO: Implement
+        }
+
+        public override bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+        {
+            throw new NotImplementedException(); // ICU4N TODO: Implement
+        }
+
+        public override bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+        {
+            throw new NotImplementedException(); // ICU4N TODO: Implement
+        }
+
+#endif
+
         private Normalizer2 norm2;
         private UnicodeSet set;
     }

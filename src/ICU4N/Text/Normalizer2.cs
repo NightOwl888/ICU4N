@@ -280,14 +280,83 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public virtual string Normalize(ICharSequence src)
         {
-            if (src is StringCharSequence)
+            if (src is StringCharSequence stringCharSequence)
             {
                 // Fastpath: Do not construct a new string if the src is a string
                 // and is already normalized.
-                return Normalize(((StringCharSequence)src).Value);
+                return Normalize(stringCharSequence.Value);
             }
             return Normalize(src, new StringBuilder(src.Length)).ToString();
         }
+
+#if FEATURE_SPAN
+
+        /// <summary>
+        /// Returns the normalized form of the source <see cref="ReadOnlySpan{Char}"/>.
+        /// </summary>
+        /// <param name="src">Source <see cref="ReadOnlySpan{Char}"/>.</param>
+        /// <returns>Normalized <paramref name="src"/>.</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual string Normalize(ReadOnlySpan<char> src)
+        {
+            return Normalize(src, new StringBuilder(src.Length)).ToString();
+        }
+
+        /// <summary>
+        /// Normalizes the form of the source <see cref="ReadOnlySpan{Char}"/>
+        /// and places the result in <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="source">Source <see cref="ReadOnlySpan{Char}"/>.</param>
+        /// <param name="destination">The span in which to write the normalized value formatted as a span of characters.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
+        /// <returns>Normalized <paramref name="source"/>.</returns>
+        /// <stable>ICU 60.1</stable>
+        public abstract bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength);
+
+
+        /// <summary>
+        /// Appends the normalized form of the <paramref name="second"/> string to the <paramref name="first"/> string
+        /// (merging them at the boundary) and returns the <paramref name="first"/> string.
+        /// The result is normalized if the <paramref name="first"/> string was normalized.
+        /// The <paramref name="first"/> and <paramref name="second"/> strings must be different objects.
+        /// </summary>
+        /// <param name="first">First string, should be normalized.</param>
+        /// <param name="second">Second string, will be normalized.</param>
+        /// <param name="destination"></param>
+        /// <param name="charsLength"></param>
+        /// <returns><c>false</c> if <paramref name="destination"/> was not long enough to perform the
+        /// concatenation; otherwise, <c>true</c>.</returns>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="second"/> and <paramref name="destination"/> refer to the same memory location.
+        /// </exception>
+        /// <draft>ICU 60.1</draft>
+        public abstract bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength);
+
+        /// <summary>
+        /// Appends the <paramref name="second"/> string to the <paramref name="first"/> string
+        /// (merging them at the boundary) and puts the result into <paramref name="destination"/>.
+        /// The result is normalized if both the strings were normalized.
+        /// The <paramref name="second"/> and <paramref name="destination"/> strings must be different references.
+        /// </summary>
+        /// <param name="first">First string, should be normalized. This string may be a slice of
+        /// <paramref name="destination"/>, which allows this method to be called recursively.</param>
+        /// <param name="second">Second string, should be normalized.</param>
+        /// <param name="destination">The span in which to write the normalized value formatted as a span of characters.</param>
+        /// <param name="charsLength">Upon return, will contain the length of <paramref name="destination"/> after
+        /// the operation. If the return value is <c>false</c>,
+        /// this will contain the length of <paramref name="destination"/> that would need to be provided to make the
+        /// operation succeed.</param>
+        /// <returns><c>false</c> if <paramref name="destination"/> was not long enough to perform the
+        /// concatenation; otherwise, <c>true</c>.</returns>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="second"/> and <paramref name="destination"/> refer to the same memory location.
+        /// </exception>
+        /// <draft>ICU 60.1</draft>
+        public abstract bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength);
+#endif
+
+        // ICU4N specific - Moved Normalize(ICharSequence src) to Normalizer2.generated.tt
 
         // ICU4N specific - Moved Normalize(ICharSequence src, StringBuilder dest) to Normalizer2.generated.tt
 
