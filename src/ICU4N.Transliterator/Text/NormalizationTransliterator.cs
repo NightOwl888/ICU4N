@@ -41,7 +41,7 @@ namespace ICU4N.Text
                 => RegisterFactory("Any-NFC", new NfcTransliteratorFactory());
 
             public Transliterator GetInstance(string id)
-                => new NormalizationTransliterator("NFC", Normalizer2.GetNFCInstance());
+                => new NormalizationTransliterator("NFC", Normalizer2.NFCInstance);
         }
 
         private sealed class NfdTransliteratorFactory : ITransliteratorFactory
@@ -50,7 +50,7 @@ namespace ICU4N.Text
                 => RegisterFactory("Any-NFD", new NfdTransliteratorFactory());
 
             public Transliterator GetInstance(string id)
-                => new NormalizationTransliterator("NFD", Normalizer2.GetNFDInstance());
+                => new NormalizationTransliterator("NFD", Normalizer2.NFDInstance);
         }
 
         private sealed class NfkcTransliteratorFactory : ITransliteratorFactory
@@ -59,7 +59,7 @@ namespace ICU4N.Text
                 => RegisterFactory("Any-NFKC", new NfkcTransliteratorFactory());
 
             public Transliterator GetInstance(string id)
-                => new NormalizationTransliterator("NFKC", Normalizer2.GetNFKCInstance());
+                => new NormalizationTransliterator("NFKC", Normalizer2.NFKCInstance);
         }
 
         private sealed class NfkdTransliteratorFactory : ITransliteratorFactory
@@ -68,7 +68,7 @@ namespace ICU4N.Text
                 => RegisterFactory("Any-NFKD", new NfkdTransliteratorFactory());
 
             public Transliterator GetInstance(string id)
-                => new NormalizationTransliterator("NFKD", Normalizer2.GetNFKDInstance());
+                => new NormalizationTransliterator("NFKD", Normalizer2.NFKDInstance);
         }
 
         private sealed class FcdTransliteratorFactory : ITransliteratorFactory
@@ -77,7 +77,7 @@ namespace ICU4N.Text
                 => RegisterFactory("Any-FCD", new FcdTransliteratorFactory());
 
             public Transliterator GetInstance(string id)
-                => new NormalizationTransliterator("FCD", Norm2AllModes.GetFCDNormalizer2());
+                => new NormalizationTransliterator("FCD", Norm2AllModes.FCDNormalizer2);
         }
 
         private sealed class FccTransliteratorFactory : ITransliteratorFactory
@@ -86,7 +86,7 @@ namespace ICU4N.Text
                 => RegisterFactory("Any-FCC", new FccTransliteratorFactory());
 
             public Transliterator GetInstance(string id)
-                => new NormalizationTransliterator("FCC", Norm2AllModes.GetNFCInstance().Fcc);
+                => new NormalizationTransliterator("FCC", Norm2AllModes.NFCInstance.Fcc);
         }
 
         #endregion Factories

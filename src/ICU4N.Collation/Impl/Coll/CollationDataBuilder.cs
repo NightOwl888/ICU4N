@@ -40,7 +40,7 @@ namespace ICU4N.Impl.Coll
 
         internal CollationDataBuilder()
         {
-            nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
+            nfcImpl = Norm2AllModes.NFCInstance.Impl;
             base_ = null;
             //baseSettings = null; // ICU4N specific - not used
             trie = null;

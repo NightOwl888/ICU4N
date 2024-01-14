@@ -44,7 +44,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.4</stable>
         public CanonicalEnumerator(string source)
         {
-            Norm2AllModes allModes = Norm2AllModes.GetNFCInstance();
+            Norm2AllModes allModes = Norm2AllModes.NFCInstance;
             nfd = allModes.Decomp;
             nfcImpl = allModes.Impl.EnsureCanonIterData();
             SetSource(source);

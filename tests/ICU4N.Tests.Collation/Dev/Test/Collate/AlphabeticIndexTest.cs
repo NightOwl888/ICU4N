@@ -793,7 +793,7 @@ namespace ICU4N.Dev.Test.Collate
                 extras.AddAll(expansions).RemoveAll(TO_TRY);
                 if (extras.Count != 0)
                 {
-                    Normalizer2 normalizer = Normalizer2.GetNFKCInstance();
+                    Normalizer2 normalizer = Normalizer2.NFKCInstance;
                     foreach (String current in extras)
                     {
                         if (!normalizer.IsNormalized(current) || ruleBasedCollator.Compare(current, "9") <= 0)

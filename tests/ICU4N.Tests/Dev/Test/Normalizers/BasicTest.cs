@@ -2298,7 +2298,7 @@ namespace ICU4N.Dev.Test.Normalizers
             // test cases with i and I to make sure Turkic works
             char[] iI = { (char)0x49, (char)0x69, (char)0x130, (char)0x131 };
             UnicodeSet set = new UnicodeSet(), iSet = new UnicodeSet();
-            Normalizer2Impl nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
+            Normalizer2Impl nfcImpl = Norm2AllModes.NFCInstance.Impl;
             nfcImpl.EnsureCanonIterData();
 
             string s1, s2;
@@ -2313,7 +2313,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
 
             // test all of these precomposed characters
-            Normalizer2 nfcNorm2 = Normalizer2.GetNFCInstance();
+            Normalizer2 nfcNorm2 = Normalizer2.NFCInstance;
             UnicodeSetIterator it = new UnicodeSetIterator(set);
             int c;
             while (it.Next() && (c = it.Codepoint) != UnicodeSetIterator.IsString)
@@ -2667,7 +2667,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
             // For each character about which we are unsure, see if it changes when we add
             // one of the back-combining characters.
-            Normalizer2 norm2 = Normalizer2.GetNFCInstance();
+            Normalizer2 norm2 = Normalizer2.NFCInstance;
             StringBuilder s = new StringBuilder();
             iter.Reset(unsure);
             while (iter.Next())
@@ -2913,7 +2913,7 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void TestGetRawDecomposition()
         {
-            Normalizer2 n2 = Normalizer2.GetNFKCInstance();
+            Normalizer2 n2 = Normalizer2.NFKCInstance;
             /*
              * Raw decompositions from NFKC data are the Unicode Decomposition_Mapping values,
              * without recursive decomposition.
@@ -3018,7 +3018,7 @@ namespace ICU4N.Dev.Test.Normalizers
         public void TestCanonIterData()
         {
             // For now, just a regression test.
-            Normalizer2Impl impl = Norm2AllModes.GetNFCInstance().Impl.EnsureCanonIterData();
+            Normalizer2Impl impl = Norm2AllModes.NFCInstance.Impl.EnsureCanonIterData();
             // U+0FB5 TIBETAN SUBJOINED LETTER SSA is the trailing character
             // in some decomposition mappings where there is a composition exclusion.
             // In fact, U+0FB5 is normalization-inert (NFC_QC=Yes, NFD_QC=Yes, ccc=0)
@@ -3052,7 +3052,7 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void TestFilteredNormalizer2()
         {
-            Normalizer2 nfcNorm2 = Normalizer2.GetNFCInstance();
+            Normalizer2 nfcNorm2 = Normalizer2.NFCInstance;
             UnicodeSet filter = new UnicodeSet("[^\u00a0-\u00ff\u0310-\u031f]");
             FilteredNormalizer2 fn2 = new FilteredNormalizer2(nfcNorm2, filter);
             int c;
@@ -3077,7 +3077,7 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void TestFilteredAppend()
         {
-            Normalizer2 nfcNorm2 = Normalizer2.GetNFCInstance();
+            Normalizer2 nfcNorm2 = Normalizer2.NFCInstance;
             UnicodeSet filter = new UnicodeSet("[^\u00a0-\u00ff\u0310-\u031f]");
             FilteredNormalizer2 fn2 = new FilteredNormalizer2(nfcNorm2, filter);
 
@@ -3103,35 +3103,35 @@ namespace ICU4N.Dev.Test.Normalizers
             // U+00A0 -> <noBreak> 0020
             // U+00C7 0301 = 1E08 = 0043 0327 0301
             string @in = "\u00A0\u00C7\u0301";
-            Normalizer2 n2 = Normalizer2.GetNFCInstance();
+            Normalizer2 n2 = Normalizer2.NFCInstance;
             string @out = n2.Normalize(@in);
             assertEquals(
                     "getNFCInstance() did not return an NFC instance " +
                     "(normalizes to " + Prettify(@out) + ')',
                     "\u00A0\u1E08", @out);
 
-            n2 = Normalizer2.GetNFDInstance();
+            n2 = Normalizer2.NFDInstance;
             @out = n2.Normalize(@in);
             assertEquals(
                     "getNFDInstance() did not return an NFD instance " +
                     "(normalizes to " + Prettify(@out) + ')',
                     "\u00A0C\u0327\u0301", @out);
 
-            n2 = Normalizer2.GetNFKCInstance();
+            n2 = Normalizer2.NFKCInstance;
             @out = n2.Normalize(@in);
             assertEquals(
                     "getNFKCInstance() did not return an NFKC instance " +
                     "(normalizes to " + Prettify(@out) + ')',
                     " \u1E08", @out);
 
-            n2 = Normalizer2.GetNFKDInstance();
+            n2 = Normalizer2.NFKDInstance;
             @out = n2.Normalize(@in);
             assertEquals(
                     "getNFKDInstance() did not return an NFKD instance " +
                     "(normalizes to " + Prettify(@out) + ')',
                     " C\u0327\u0301", @out);
 
-            n2 = Normalizer2.GetNFKCCasefoldInstance();
+            n2 = Normalizer2.NFKCCaseFoldInstance;
             @out = n2.Normalize(@in);
             assertEquals(
                     "getNFKCCasefoldInstance() did not return an NFKC_Casefold instance " +
@@ -3184,7 +3184,7 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void TestNormalizeIllFormedText()
         {
-            Normalizer2 nfkc_cf = Normalizer2.GetNFKCCasefoldInstance();
+            Normalizer2 nfkc_cf = Normalizer2.NFKCCaseFoldInstance;
             // Normalization behavior for ill-formed text is not defined.
             // ICU currently treats ill-formed sequences as normalization-inert
             // and copies them unchanged.
@@ -3200,7 +3200,7 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             // Algorithmic composition of Hangul syllables must not combine with JAMO_T_BASE = U+11A7
             // which is not a conjoining Jamo Trailing consonant.
-            Normalizer2 nfkc = Normalizer2.GetNFKCInstance();
+            Normalizer2 nfkc = Normalizer2.NFKCInstance;
             string s = "\u1100\u1161\u11A7\u1100\u314F\u11A7가\u11A7";
             string expected = "가\u11A7가\u11A7가\u11A7";
             string result = nfkc.Normalize(s);
@@ -3212,7 +3212,7 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void TestComposeBoundaryAfter()
         {
-            Normalizer2 nfkc = Normalizer2.GetNFKCInstance();
+            Normalizer2 nfkc = Normalizer2.NFKCInstance;
             // U+02DA and U+FB2C do not have compose-boundaries-after.
             string s = "\u02DA\u0339 \uFB2C\u05B6";
             string expected = " \u0339\u030A \u05E9\u05B6\u05BC\u05C1";
@@ -3226,7 +3226,7 @@ namespace ICU4N.Dev.Test.Normalizers
         public void TestNFC()
         {
             // Coverage tests.
-            Normalizer2 nfc = Normalizer2.GetNFCInstance();
+            Normalizer2 nfc = Normalizer2.NFCInstance;
             assertTrue("nfc.hasBoundaryAfter(space)", nfc.HasBoundaryAfter(' '));
             assertFalse("nfc.hasBoundaryAfter(ä)", nfc.HasBoundaryAfter('ä'));
         }
@@ -3235,7 +3235,7 @@ namespace ICU4N.Dev.Test.Normalizers
         public void TestNFD()
         {
             // Coverage tests.
-            Normalizer2 nfd = Normalizer2.GetNFDInstance();
+            Normalizer2 nfd = Normalizer2.NFDInstance;
             assertTrue("nfd.hasBoundaryAfter(space)", nfd.HasBoundaryAfter(' '));
             assertFalse("nfd.hasBoundaryAfter(ä)", nfd.HasBoundaryAfter('ä'));
         }

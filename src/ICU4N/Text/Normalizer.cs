@@ -279,7 +279,7 @@ namespace ICU4N.Text
         }
         private sealed class NFDModeImpl
         {
-            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.GetNFDInstance());
+            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.NFDInstance);
             /// <summary>
             /// public singleton instance
             /// </summary>
@@ -287,7 +287,7 @@ namespace ICU4N.Text
         }
         private sealed class NFKDModeImpl
         {
-            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.GetNFKDInstance());
+            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.NFKDInstance);
             /// <summary>
             /// public singleton instance
             /// </summary>
@@ -295,7 +295,7 @@ namespace ICU4N.Text
         }
         private sealed class NFCModeImpl
         {
-            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.GetNFCInstance());
+            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.NFCInstance);
             /// <summary>
             /// public singleton instance
             /// </summary>
@@ -303,7 +303,7 @@ namespace ICU4N.Text
         }
         private sealed class NFKCModeImpl
         {
-            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.GetNFKCInstance());
+            private static readonly ModeImpl instance = new ModeImpl(Normalizer2.NFKCInstance);
             /// <summary>
             /// public singleton instance
             /// </summary>
@@ -311,7 +311,7 @@ namespace ICU4N.Text
         }
         private sealed class FCDModeImpl
         {
-            private static readonly ModeImpl instance = new ModeImpl(Norm2AllModes.GetFCDNormalizer2());
+            private static readonly ModeImpl instance = new ModeImpl(Norm2AllModes.FCDNormalizer2);
             /// <summary>
             /// public singleton instance
             /// </summary>
@@ -329,7 +329,7 @@ namespace ICU4N.Text
         private sealed class NFD32ModeImpl
         {
             private static readonly ModeImpl instance =
-                new ModeImpl(new FilteredNormalizer2(Normalizer2.GetNFDInstance(),
+                new ModeImpl(new FilteredNormalizer2(Normalizer2.NFDInstance,
                                                  Unicode32.Instance));
             /// <summary>
             /// public singleton instance
@@ -339,7 +339,7 @@ namespace ICU4N.Text
         private sealed class NFKD32ModeImpl
         {
             private static readonly ModeImpl instance =
-                new ModeImpl(new FilteredNormalizer2(Normalizer2.GetNFKDInstance(),
+                new ModeImpl(new FilteredNormalizer2(Normalizer2.NFKDInstance,
                                                  Unicode32.Instance));
             /// <summary>
             /// public singleton instance
@@ -349,7 +349,7 @@ namespace ICU4N.Text
         private sealed class NFC32ModeImpl
         {
             private static readonly ModeImpl instance =
-                new ModeImpl(new FilteredNormalizer2(Normalizer2.GetNFCInstance(),
+                new ModeImpl(new FilteredNormalizer2(Normalizer2.NFDInstance,
                                                  Unicode32.Instance));
             /// <summary>
             /// public singleton instance
@@ -359,7 +359,7 @@ namespace ICU4N.Text
         private sealed class NFKC32ModeImpl
         {
             private static readonly ModeImpl instance =
-                new ModeImpl(new FilteredNormalizer2(Normalizer2.GetNFKCInstance(),
+                new ModeImpl(new FilteredNormalizer2(Normalizer2.NFKCInstance,
                                                  Unicode32.Instance));
             /// <summary>
             /// public singleton instance
@@ -369,7 +369,7 @@ namespace ICU4N.Text
         private sealed class FCD32ModeImpl
         {
             private static readonly ModeImpl instance =
-                new ModeImpl(new FilteredNormalizer2(Norm2AllModes.GetFCDNormalizer2(),
+                new ModeImpl(new FilteredNormalizer2(Norm2AllModes.FCDNormalizer2,
                                                  Unicode32.Instance));
             /// <summary>
             /// public singleton instance
@@ -1159,7 +1159,7 @@ namespace ICU4N.Text
         {
             if (mode == NormalizerMode.NFD && unicodeVersion == 0)
             {
-                string decomposition = Normalizer2.GetNFCInstance().GetDecomposition(char32);
+                string decomposition = Normalizer2.NFCInstance.GetDecomposition(char32);
                 if (decomposition == null)
                 {
                     decomposition = UTF16.ValueOf(char32);
@@ -2978,7 +2978,7 @@ namespace ICU4N.Text
             /* normalization/properties data loaded? */
             if ((options & COMPARE_EQUIV) != 0)
             {
-                nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
+                nfcImpl = Norm2AllModes.NFCInstance.Impl;
             }
             else
             {
