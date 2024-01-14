@@ -41,6 +41,14 @@
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesSingleValue.32.tri2" />
     <EmbeddedResource Include="Dev\Test\Rbbi\break_rules\*" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Dev\Test\Normalizers\BasicTest.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BasicTest.generated.tt</DependentUpon>
+    </None>
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj">
@@ -54,6 +62,10 @@
   </ItemGroup>
   
   <ItemGroup>
+    <None Update="Dev\Test\Normalizers\BasicTest.generated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BasicTest.generated.cs</LastGenOutput>
+    </None>
     <None Update="Support\Text\UnicodeSetPartialTest.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UnicodeSetPartialTest.generated.cs</LastGenOutput>
@@ -65,6 +77,11 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Compile Update="Dev\Test\Normalizers\BasicTest.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>BasicTest.generated.tt</DependentUpon>
+    </Compile>
     <Compile Update="Support\Text\UnicodeSetPartialTest.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
