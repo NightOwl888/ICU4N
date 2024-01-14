@@ -15,7 +15,7 @@ using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test.Normalizers
 {
-    public class BasicTest : TestFmwk
+    public partial class BasicTest : TestFmwk
     {
         string[][] canonTests = {
             // Input                Decomposed              Composed
@@ -2936,83 +2936,10 @@ namespace ICU4N.Dev.Test.Normalizers
             assertEquals("nfkc.getRawDecomposition(Hangul syllable U+AC01) failed", "\uac00\u11a8", decomp);
         }
 
-        [Test]
-        public void TestCustomComp()
-        {
-            string[][] pairs ={
-            new string[] { "\\uD801\\uE000\\uDFFE", "" },
-            new string[] { "\\uD800\\uD801\\uE000\\uDFFE\\uDFFF", "\\uD7FF\\uFFFF" },
-            new string[] { "\\uD800\\uD801\\uDFFE\\uDFFF", "\\uD7FF\\U000107FE\\uFFFF" },
-            new string[] { "\\uE001\\U000110B9\\u0345\\u0308\\u0327", "\\uE002\\U000110B9\\u0327\\u0345" },
-            new string[] { "\\uE010\\U000F0011\\uE012", "\\uE011\\uE012" },
-            new string[] { "\\uE010\\U000F0011\\U000F0011\\uE012", "\\uE011\\U000F0010" },
-            new string[] { "\\uE111\\u1161\\uE112\\u1162", "\\uAE4C\\u1102\\u0062\\u1162" },
-            new string[] { "\\uFFF3\\uFFF7\\U00010036\\U00010077", "\\U00010037\\U00010037\\uFFF6\\U00010037" }
-        };
-            Normalizer2 customNorm2;
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            Assembly assembly = typeof(BasicTest).GetTypeInfo().Assembly;
-#else
-            Assembly assembly = typeof(BasicTest).Assembly;
-#endif
-            customNorm2 =
-                Normalizer2.GetInstance(
-                    //BasicTest.class.getResourceAsStream("/com/ibm/icu/dev/data/testdata/testnorm.nrm"),
-                    assembly.GetManifestResourceStream("ICU4N.Dev.Data.TestData.testnorm.nrm"),
-                        "testnorm",
-                        Normalizer2Mode.Compose);
-            for (int i = 0; i < pairs.Length; ++i)
-            {
-                string[] pair = pairs[i];
-                string input = Utility.Unescape(pair[0]);
-                string expected = Utility.Unescape(pair[1]);
-                string result = customNorm2.Normalize(input);
-                if (!result.Equals(expected))
-                {
-                    Errln("custom compose Normalizer2 did not normalize input " + i + " as expected");
-                }
-            }
-        }
+        // ICU4N: Moved TestCustomComp() to BasicTest.generated.tt
 
-        [Test]
-        public void TestCustomFCC()
-        {
-            string[][] pairs ={
-                new string[] { "\\uD801\\uE000\\uDFFE", "" },
-                new string[] { "\\uD800\\uD801\\uE000\\uDFFE\\uDFFF", "\\uD7FF\\uFFFF" },
-                new string[] { "\\uD800\\uD801\\uDFFE\\uDFFF", "\\uD7FF\\U000107FE\\uFFFF" },
-                // The following expected result is different from CustomComp
-                // because of only-contiguous composition.
-                new string[] { "\\uE001\\U000110B9\\u0345\\u0308\\u0327", "\\uE001\\U000110B9\\u0327\\u0308\\u0345" },
-                new string[] { "\\uE010\\U000F0011\\uE012", "\\uE011\\uE012" },
-                new string[] { "\\uE010\\U000F0011\\U000F0011\\uE012", "\\uE011\\U000F0010" },
-                new string[] { "\\uE111\\u1161\\uE112\\u1162", "\\uAE4C\\u1102\\u0062\\u1162" },
-                new string[] { "\\uFFF3\\uFFF7\\U00010036\\U00010077", "\\U00010037\\U00010037\\uFFF6\\U00010037" }
-            };
-#if FEATURE_TYPEEXTENSIONS_GETTYPEINFO
-            Assembly assembly = typeof(BasicTest).GetTypeInfo().Assembly;
-#else
-            Assembly assembly = typeof(BasicTest).Assembly;
-#endif
-            Normalizer2 customNorm2;
-            customNorm2 =
-                Normalizer2.GetInstance(
-                    //BasicTest.class.getResourceAsStream("/com/ibm/icu/dev/data/testdata/testnorm.nrm"),
-                    assembly.GetManifestResourceStream("ICU4N.Dev.Data.TestData.testnorm.nrm"),
-                        "testnorm",
-                        Normalizer2Mode.ComposeContiguous);
-            for (int i = 0; i < pairs.Length; ++i)
-            {
-                string[] pair = pairs[i];
-                string input = Utility.Unescape(pair[0]);
-                string expected = Utility.Unescape(pair[1]);
-                string result = customNorm2.Normalize(input);
-                if (!result.Equals(expected))
-                {
-                    Errln("custom FCC Normalizer2 did not normalize input " + i + " as expected");
-                }
-            }
-        }
+        // ICU4N: Moved TestCustomFCC() to BasicTest.generated.tt
+
 
         [Test]
         public void TestCanonIterData()
@@ -3049,127 +2976,15 @@ namespace ICU4N.Dev.Test.Normalizers
             }
         }
 
-        [Test]
-        public void TestFilteredNormalizer2()
-        {
-            Normalizer2 nfcNorm2 = Normalizer2.NFCInstance;
-            UnicodeSet filter = new UnicodeSet("[^\u00a0-\u00ff\u0310-\u031f]");
-            FilteredNormalizer2 fn2 = new FilteredNormalizer2(nfcNorm2, filter);
-            int c;
-            for (c = 0; c <= 0x3ff; ++c)
-            {
-                int expectedCC = filter.Contains(c) ? nfcNorm2.GetCombiningClass(c) : 0;
-                int cc = fn2.GetCombiningClass(c);
-                assertEquals(
-                        "FilteredNormalizer2(NFC, ^A0-FF,310-31F).getCombiningClass(U+" + Hex(c) +
-                        ")==filtered NFC.getCC()",
-                        expectedCC, cc);
-            }
+        // ICU4N: Moved TestFilteredNormalizer2() to BasicTest.generated.tt
 
-            // More coverage.
-            StringBuilder sb = new StringBuilder();
-            assertEquals("filtered normalize()", "ää\u0304",
-                    fn2.Normalize("a\u0308ä\u0304", sb).ToString());
-            assertTrue("filtered hasBoundaryAfter()", fn2.HasBoundaryAfter('ä'));
-            assertTrue("filtered isInert()", fn2.IsInert(0x0313));
-        }
+        // ICU4N: Moved TestFilteredAppend() to BasicTest.generated.tt
 
-        [Test]
-        public void TestFilteredAppend()
-        {
-            Normalizer2 nfcNorm2 = Normalizer2.NFCInstance;
-            UnicodeSet filter = new UnicodeSet("[^\u00a0-\u00ff\u0310-\u031f]");
-            FilteredNormalizer2 fn2 = new FilteredNormalizer2(nfcNorm2, filter);
+        // ICU4N: Moved TestGetEasyToUseInstance() to BasicTest.generated.tt
 
-            // Append two strings that each contain a character outside the filter set.
-            StringBuilder sb = new StringBuilder("a\u0313a");
-            string second = "\u0301\u0313";
-            assertEquals("append()", "a\u0313á\u0313", fn2.Append(sb, second).ToString());
+        // ICU4N: Moved TestLowMappingToEmpty_D() to BasicTest.generated.tt
 
-            // Same, and also normalize the second string.
-            sb.Replace(0, 0x7fffffff - 0, "a\u0313a"); // ICU4N: Checked 2nd parameter
-            assertEquals(
-                "normalizeSecondAndAppend()",
-                "a\u0313á\u0313", fn2.NormalizeSecondAndAppend(sb, second).ToString());
-
-            // Normalizer2.Normalize(string) uses spanQuickCheckYes() and normalizeSecondAndAppend().
-            assertEquals("normalize()", "a\u0313á\u0313", fn2.Normalize("a\u0313a\u0301\u0313"));
-        }
-
-        [Test]
-        public void TestGetEasyToUseInstance()
-        {
-            // Test input string:
-            // U+00A0 -> <noBreak> 0020
-            // U+00C7 0301 = 1E08 = 0043 0327 0301
-            string @in = "\u00A0\u00C7\u0301";
-            Normalizer2 n2 = Normalizer2.NFCInstance;
-            string @out = n2.Normalize(@in);
-            assertEquals(
-                    "getNFCInstance() did not return an NFC instance " +
-                    "(normalizes to " + Prettify(@out) + ')',
-                    "\u00A0\u1E08", @out);
-
-            n2 = Normalizer2.NFDInstance;
-            @out = n2.Normalize(@in);
-            assertEquals(
-                    "getNFDInstance() did not return an NFD instance " +
-                    "(normalizes to " + Prettify(@out) + ')',
-                    "\u00A0C\u0327\u0301", @out);
-
-            n2 = Normalizer2.NFKCInstance;
-            @out = n2.Normalize(@in);
-            assertEquals(
-                    "getNFKCInstance() did not return an NFKC instance " +
-                    "(normalizes to " + Prettify(@out) + ')',
-                    " \u1E08", @out);
-
-            n2 = Normalizer2.NFKDInstance;
-            @out = n2.Normalize(@in);
-            assertEquals(
-                    "getNFKDInstance() did not return an NFKD instance " +
-                    "(normalizes to " + Prettify(@out) + ')',
-                    " C\u0327\u0301", @out);
-
-            n2 = Normalizer2.NFKCCaseFoldInstance;
-            @out = n2.Normalize(@in);
-            assertEquals(
-                    "getNFKCCasefoldInstance() did not return an NFKC_Casefold instance " +
-                    "(normalizes to " + Prettify(@out) + ')',
-                    " \u1E09", @out);
-        }
-
-        [Test]
-        public void TestLowMappingToEmpty_D()
-        {
-            Normalizer2 n2 = Normalizer2.GetInstance(null, "nfkc_cf", Normalizer2Mode.Decompose);
-            checkLowMappingToEmpty(n2);
-
-            string sh = "\u00AD";
-            assertFalse("soft hyphen is not normalized", n2.IsNormalized(sh));
-            string result = n2.Normalize(sh);
-            assertTrue("soft hyphen normalizes to empty", result == string.Empty);
-            assertEquals("soft hyphen QC=No", QuickCheckResult.No, n2.QuickCheck(sh));
-            assertEquals("soft hyphen spanQuickCheckYes", 0, n2.SpanQuickCheckYes(sh));
-
-            string s = "\u00ADÄ\u00AD\u0323";
-            result = n2.Normalize(s);
-            assertEquals("normalize string with soft hyphens", "a\u0323\u0308", result);
-        }
-
-        [Test]
-        public void TestLowMappingToEmpty_FCD()
-        {
-            Normalizer2 n2 = Normalizer2.GetInstance(null, "nfkc_cf", Normalizer2Mode.FCD);
-            checkLowMappingToEmpty(n2);
-
-            string sh = "\u00AD";
-            assertTrue("soft hyphen is FCD", n2.IsNormalized(sh));
-
-            string s = "\u00ADÄ\u00AD\u0323";
-            string result = n2.Normalize(s);
-            assertEquals("normalize string with soft hyphens", "\u00ADa\u0323\u0308", result);
-        }
+        // ICU4N: Moved TestLowMappingToEmpty_FCD() to BasicTest.generated.tt
 
         private void checkLowMappingToEmpty(Normalizer2 n2)
         {
@@ -3181,46 +2996,12 @@ namespace ICU4N.Dev.Test.Normalizers
             assertFalse("soft hyphen is not inert", n2.IsInert(0xad));
         }
 
-        [Test]
-        public void TestNormalizeIllFormedText()
-        {
-            Normalizer2 nfkc_cf = Normalizer2.NFKCCaseFoldInstance;
-            // Normalization behavior for ill-formed text is not defined.
-            // ICU currently treats ill-formed sequences as normalization-inert
-            // and copies them unchanged.
-            string src = "  A\uD800ÄA\u0308\uD900A\u0308\u00ad\u0323\uDBFFÄ\u0323," +
-                    "\u00ad\uDC00\u1100\u1161가\u11A8가\u3133  \uDFFF";
-            string expected = "  a\uD800ää\uD900ạ\u0308\uDBFFạ\u0308,\uDC00가각갃  \uDFFF";
-            string result = nfkc_cf.Normalize(src);
-            assertEquals("normalize", expected, result);
-        }
+        // ICU4N: Moved TestNormalizeIllFormedText() to BasicTest.generated.tt
 
-        [Test]
-        public void TestComposeJamoTBase()
-        {
-            // Algorithmic composition of Hangul syllables must not combine with JAMO_T_BASE = U+11A7
-            // which is not a conjoining Jamo Trailing consonant.
-            Normalizer2 nfkc = Normalizer2.NFKCInstance;
-            string s = "\u1100\u1161\u11A7\u1100\u314F\u11A7가\u11A7";
-            string expected = "가\u11A7가\u11A7가\u11A7";
-            string result = nfkc.Normalize(s);
-            assertEquals("normalize(LV+11A7)", expected, result);
-            assertFalse("isNormalized(LV+11A7)", nfkc.IsNormalized(s));
-            assertTrue("isNormalized(normalized)", nfkc.IsNormalized(result));
-        }
+        // ICU4N: Moved TestComposeJamoTBase() to BasicTest.generated.tt
 
-        [Test]
-        public void TestComposeBoundaryAfter()
-        {
-            Normalizer2 nfkc = Normalizer2.NFKCInstance;
-            // U+02DA and U+FB2C do not have compose-boundaries-after.
-            string s = "\u02DA\u0339 \uFB2C\u05B6";
-            string expected = " \u0339\u030A \u05E9\u05B6\u05BC\u05C1";
-            string result = nfkc.Normalize(s);
-            assertEquals("nfkc", expected, result);
-            assertFalse("U+02DA boundary-after", nfkc.HasBoundaryAfter(0x2DA));
-            assertFalse("U+FB2C boundary-after", nfkc.HasBoundaryAfter(0xFB2C));
-        }
+        // ICU4N: Moved TestComposeBoundaryAfter() to BasicTest.generated.tt
+
 
         [Test]
         public void TestNFC()
@@ -3263,20 +3044,11 @@ namespace ICU4N.Dev.Test.Normalizers
             // as far as its methods are reachable that way.
             assertEquals("NONE.Concatenate()", "ä\u0327",
                     Normalizer.Concatenate("ä", "\u0327", NormalizerMode.None, 0));
-            assertTrue("NONE.IsNormalized()", Normalizer.IsNormalized("ä\u0327", NormalizerMode.None, 0));
+            string input = "ä\u0327";
+            assertTrue("NONE.IsNormalized()", Normalizer.IsNormalized(input, NormalizerMode.None, 0));
         }
 
-        [Test]
-        public void TestNoopNormalizer2()
-        {
-            // Use the internal class directly for coverage of methods that are not publicly reachable.
-            Normalizer2 noop = Norm2AllModes.NoopNormalizer2;
-            assertEquals("noop.normalizeSecondAndAppend()", "ä\u0327",
-                    noop.NormalizeSecondAndAppend(new StringBuilder("ä"), "\u0327").ToString());
-            assertEquals("noop.getDecomposition()", null, noop.GetDecomposition('ä'));
-            assertTrue("noop.hasBoundaryAfter()", noop.HasBoundaryAfter(0x0308));
-            assertTrue("noop.isInert()", noop.IsInert(0x0308));
-        }
+        // ICU4N: Moved TestNoopNormalizer2() to BasicTest.generated.tt
 
         /*
          * Abstract class Normalizer2 has non-abstract methods which are overwritten by
