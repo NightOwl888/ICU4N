@@ -28,8 +28,8 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public FilteredNormalizer2(Normalizer2 n2, UnicodeSet filterSet)
         {
-            norm2 = n2;
-            set = filterSet;
+            norm2 = n2 ?? throw new ArgumentNullException(nameof(n2));
+            set = filterSet ?? throw new ArgumentNullException(nameof(filterSet));
         }
 
         // ICU4N specific - Normalize(
