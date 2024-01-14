@@ -117,8 +117,10 @@ namespace ICU4N.Impl
             {
                 throw new ArgumentException($"'{nameof(first)}' cannot be the same instance as '{nameof(second)}'");
             }
+            return first.Append(charSequence: second);
+<# } else { #>
+            return first.Append(second);
 <# } #>
-            return first.Append(second.ToString());
         }
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>

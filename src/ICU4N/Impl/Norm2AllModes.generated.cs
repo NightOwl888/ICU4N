@@ -126,7 +126,7 @@ namespace ICU4N.Impl
 
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second)
         {
-            return first.Append(second.ToString());
+            return first.Append(second);
         }
 
 
@@ -137,14 +137,14 @@ namespace ICU4N.Impl
             {
                 throw new ArgumentException($"'{nameof(first)}' cannot be the same instance as '{nameof(second)}'");
             }
-            return first.Append(second.ToString());
+            return first.Append(charSequence: second);
         }
 
 
 
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, char[] second)
         {
-            return first.Append(second.ToString());
+            return first.Append(second);
         }
 
 
@@ -155,7 +155,7 @@ namespace ICU4N.Impl
             {
                 throw new ArgumentException($"'{nameof(first)}' cannot be the same instance as '{nameof(second)}'");
             }
-            return first.Append(second.ToString());
+            return first.Append(charSequence: second);
         }
 
 #if FEATURE_SPAN
@@ -163,7 +163,7 @@ namespace ICU4N.Impl
 
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second)
         {
-            return first.Append(second.ToString());
+            return first.Append(second);
         }
 #endif 
 
