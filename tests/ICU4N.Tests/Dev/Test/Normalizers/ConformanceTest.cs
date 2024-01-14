@@ -334,7 +334,7 @@ namespace ICU4N.Dev.Test.Normalizers
             "D", "KD", "C", "KC"
         };
         private static readonly String[] kMessages = {
-            "c3!=D(c%d)", "c5!=KC(c%d)", "c2!=C(c%d)", "c4!=KC(c%d)" // ICU4N TODO: Change string format
+            "c3!=D(c{0})", "c5!=KC(c{0})", "c2!=C(c{0})", "c4!=KC(c{0})"
         };
 
         bool checkNorm(NormalizerMode mode, int options,  // Normalizer2 norm2,
