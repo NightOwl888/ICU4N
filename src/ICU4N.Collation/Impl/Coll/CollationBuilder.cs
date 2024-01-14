@@ -27,9 +27,9 @@ namespace ICU4N.Impl.Coll
 
         public CollationBuilder(CollationTailoring b)
         {
-            nfd = Normalizer2.GetNFDInstance();
-            fcd = Norm2AllModes.GetFCDNormalizer2();
-            nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
+            nfd = Normalizer2.NFDInstance;
+            fcd = Norm2AllModes.FCDNormalizer2;
+            nfcImpl = Norm2AllModes.NFCInstance.Impl;
             @base = b;
             baseData = b.Data;
             rootElements = new CollationRootElements(b.Data.RootElements);

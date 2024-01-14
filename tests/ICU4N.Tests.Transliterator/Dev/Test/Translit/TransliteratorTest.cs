@@ -3385,8 +3385,8 @@ namespace ICU4N.Dev.Test.Translit
         {
 
 
-            Normalizer2 nfc = Normalizer2.GetNFCInstance();
-            Normalizer2 nfd = Normalizer2.GetNFDInstance();
+            Normalizer2 nfc = Normalizer2.NFCInstance;
+            Normalizer2 nfd = Normalizer2.NFDInstance;
 
             //        Normalizer2 nfkd = Normalizer2.GetInstance(null, "nfkd", Mode.DECOMPOSE);
             //        UnicodeSet nfkdSource = new UnicodeSet();

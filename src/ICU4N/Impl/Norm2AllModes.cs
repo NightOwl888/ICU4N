@@ -373,27 +373,22 @@ namespace ICU4N.Impl
             }
             return singleton.allModes;
         }
-        public static Norm2AllModes GetNFCInstance()
-        {
-            return GetInstanceFromSingleton(NFCSingleton.Instance);
-        }
-        public static Norm2AllModes GetNFKCInstance()
-        {
-            return GetInstanceFromSingleton(NFKCSingleton.Instance);
-        }
-        public static Norm2AllModes GetNFKC_CFInstance()
-        {
-            return GetInstanceFromSingleton(NFKC_CFSingleton.Instance);
-        }
+        public static Norm2AllModes NFCInstance
+            => GetInstanceFromSingleton(NFCSingleton.Instance);
+
+        public static Norm2AllModes NFKCInstance
+            => GetInstanceFromSingleton(NFKCSingleton.Instance);
+        public static Norm2AllModes NFKC_CFInstance
+            => GetInstanceFromSingleton(NFKC_CFSingleton.Instance);
         // For use in properties APIs.
         public static Normalizer2WithImpl GetN2WithImpl(int index)
         {
             switch (index)
             {
-                case 0: return GetNFCInstance().Decomp;  // NFD
-                case 1: return GetNFKCInstance().Decomp; // NFKD
-                case 2: return GetNFCInstance().Comp;    // NFC
-                case 3: return GetNFKCInstance().Comp;   // NFKC
+                case 0: return NFCInstance.Decomp;  // NFD
+                case 1: return NFKCInstance.Decomp; // NFKD
+                case 2: return NFCInstance.Comp;    // NFC
+                case 3: return NFKCInstance.Comp;   // NFKC
                 default: return null;
             }
         }
@@ -453,11 +448,8 @@ namespace ICU4N.Impl
         /// Gets the FCD normalizer, with the FCD data initialized.
         /// </summary>
         /// <returns>FCD normalizer.</returns>
-        public static Normalizer2 GetFCDNormalizer2()
-        {
-            return GetNFCInstance().Fcd;
-        }
-
+        public static Normalizer2 FCDNormalizer2
+            => NFCInstance.Fcd;
         internal sealed class Norm2AllModesSingleton
         {
             public Norm2AllModesSingleton(string name)

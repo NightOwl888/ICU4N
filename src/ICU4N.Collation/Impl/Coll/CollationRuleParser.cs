@@ -1141,8 +1141,8 @@ namespace ICU4N.Impl.Coll
             return i;
         }
 
-        private Normalizer2 nfd = Normalizer2.GetNFDInstance();
-        private Normalizer2 nfc = Normalizer2.GetNFCInstance();
+        private Normalizer2 nfd = Normalizer2.NFDInstance;
+        private Normalizer2 nfc = Normalizer2.NFCInstance;
 
         private string rules;
         private readonly CollationData baseData;

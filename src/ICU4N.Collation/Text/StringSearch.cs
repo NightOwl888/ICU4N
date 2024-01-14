@@ -206,7 +206,7 @@ namespace ICU4N.Text
             variableTop_ = collator.VariableTop;
 #pragma warning restore 612, 618
 
-            nfd_ = Normalizer2.GetNFDInstance();
+            nfd_ = Normalizer2.NFDInstance;
 
             pattern_ = new UPattern(pattern);
 

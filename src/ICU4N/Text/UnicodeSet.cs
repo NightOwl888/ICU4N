@@ -3437,20 +3437,20 @@ namespace ICU4N.Text
                             UCharacterProperty.Instance.upropsvec_addPropertyStarts(incl);
                             break;
                         case UPropertySource.CaseAndNormalizer:
-                            Norm2AllModes.GetNFCInstance().Impl.AddPropertyStarts(incl);
+                            Norm2AllModes.NFCInstance.Impl.AddPropertyStarts(incl);
                             UCaseProperties.Instance.AddPropertyStarts(incl);
                             break;
                         case UPropertySource.NFC:
-                            Norm2AllModes.GetNFCInstance().Impl.AddPropertyStarts(incl);
+                            Norm2AllModes.NFCInstance.Impl.AddPropertyStarts(incl);
                             break;
                         case UPropertySource.NFKC:
-                            Norm2AllModes.GetNFKCInstance().Impl.AddPropertyStarts(incl);
+                            Norm2AllModes.NFKCInstance.Impl.AddPropertyStarts(incl);
                             break;
                         case UPropertySource.NFKCCaseFold:
-                            Norm2AllModes.GetNFKC_CFInstance().Impl.AddPropertyStarts(incl);
+                            Norm2AllModes.NFKC_CFInstance.Impl.AddPropertyStarts(incl);
                             break;
                         case UPropertySource.NFCCanonicalIterator:
-                            Norm2AllModes.GetNFCInstance().Impl.AddCanonIterPropertyStarts(incl);
+                            Norm2AllModes.NFCInstance.Impl.AddCanonIterPropertyStarts(incl);
                             break;
                         case UPropertySource.Case:
                             UCaseProperties.Instance.AddPropertyStarts(incl);

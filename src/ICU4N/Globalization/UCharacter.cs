@@ -1858,7 +1858,7 @@ namespace ICU4N
         /// <stable>ICU 2.1</stable>
         public static int GetCombiningClass(int ch)
         {
-            return Normalizer2.GetNFDInstance().GetCombiningClass(ch);
+            return Normalizer2.NFDInstance.GetCombiningClass(ch);
         }
 
         /// <icu/>

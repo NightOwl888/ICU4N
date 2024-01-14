@@ -727,8 +727,8 @@ namespace ICU4N.Dev.Test.Lang
             String DIR =
                 "L   R   EN  ES  ET  AN  CS  B   S   WS  ON  LRE LRO AL  RLE RLO PDF NSM BN  FSI LRI RLI PDI ";
 
-            Normalizer2 nfc = Normalizer2.GetNFCInstance();
-            Normalizer2 nfkc = Normalizer2.GetNFKCInstance();
+            Normalizer2 nfc = Normalizer2.NFCInstance;
+            Normalizer2 nfkc = Normalizer2.NFKCInstance;
 
             TextReader input = null;
             try
@@ -2963,9 +2963,9 @@ namespace ICU4N.Dev.Test.Lang
              * In general, the set for the middle such character should be a subset
              * of the set for the first.
              */
-            Normalizer2 norm2 = Normalizer2.GetNFDInstance();
+            Normalizer2 norm2 = Normalizer2.NFDInstance;
             set1 = new UnicodeSet();
-            Norm2AllModes.GetNFCInstance().Impl.
+            Norm2AllModes.NFCInstance.Impl.
                 EnsureCanonIterData().GetCanonStartSet(0x49, set1);
             set2 = new UnicodeSet();
 

@@ -401,7 +401,7 @@ namespace ICU4N.Text
         /// </summary>
         private IList<string> InitLabels()
         {
-            Normalizer2 nfkdNormalizer = Normalizer2.GetNFKDInstance();
+            Normalizer2 nfkdNormalizer = Normalizer2.NFKDInstance;
             List<String> indexCharacters = new List<string>();
 
             string firstScriptBoundary = firstCharsInScripts.FirstOrDefault();

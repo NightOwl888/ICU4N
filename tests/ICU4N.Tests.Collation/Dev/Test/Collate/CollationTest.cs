@@ -1979,8 +1979,8 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestDataDriven()
         {
-            nfd = Normalizer2.GetNFDInstance();
-            fcd = Norm2AllModes.GetFCDNormalizer2();
+            nfd = Normalizer2.NFDInstance;
+            fcd = Norm2AllModes.FCDNormalizer2;
 
             TextReader input = null;
 

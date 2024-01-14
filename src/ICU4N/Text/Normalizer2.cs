@@ -129,10 +129,8 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
         /// <stable>ICU 49</stable>
-        public static Normalizer2 GetNFCInstance()
-        {
-            return Norm2AllModes.GetNFCInstance().Comp;
-        }
+        public static Normalizer2 NFCInstance
+            => Norm2AllModes.NFCInstance.Comp;
 
         /// <summary>
         /// Returns a <see cref="Normalizer2"/> instance for Unicode NFD normalization.
@@ -141,10 +139,8 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
         /// <stable>ICU 49</stable>
-        public static Normalizer2 GetNFDInstance()
-        {
-            return Norm2AllModes.GetNFCInstance().Decomp;
-        }
+        public static Normalizer2 NFDInstance
+            => Norm2AllModes.NFCInstance.Decomp;
 
         /// <summary>
         /// Returns a <see cref="Normalizer2"/> instance for Unicode NFKC normalization.
@@ -153,10 +149,8 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
         /// <stable>ICU 49</stable>
-        public static Normalizer2 GetNFKCInstance()
-        {
-            return Norm2AllModes.GetNFKCInstance().Comp;
-        }
+        public static Normalizer2 NFKCInstance
+            => Norm2AllModes.NFKCInstance.Comp;
 
         /// <summary>
         /// Returns a <see cref="Normalizer2"/> instance for Unicode NFKD normalization.
@@ -165,10 +159,8 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
         /// <stable>ICU 49</stable>
-        public static Normalizer2 GetNFKDInstance()
-        {
-            return Norm2AllModes.GetNFKCInstance().Decomp;
-        }
+        public static Normalizer2 NFKDInstance
+            => Norm2AllModes.NFKCInstance.Decomp;
 
         /// <summary>
         /// Returns a <see cref="Normalizer2"/> instance for Unicode NFKC_Casefold normalization.
@@ -177,10 +169,8 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
         /// <stable>ICU 49</stable>
-        public static Normalizer2 GetNFKCCasefoldInstance()
-        {
-            return Norm2AllModes.GetNFKC_CFInstance().Comp;
-        }
+        public static Normalizer2 NFKCCaseFoldInstance
+            => Norm2AllModes.NFKC_CFInstance.Comp;
 
         /// <summary>
         /// Returns a <see cref="Normalizer2"/> instance which uses the specified data file
