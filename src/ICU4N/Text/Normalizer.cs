@@ -349,7 +349,7 @@ namespace ICU4N.Text
         private sealed class NFC32ModeImpl
         {
             private static readonly ModeImpl instance =
-                new ModeImpl(new FilteredNormalizer2(Normalizer2.NFDInstance,
+                new ModeImpl(new FilteredNormalizer2(Normalizer2.NFCInstance,
                                                  Unicode32.Instance));
             /// <summary>
             /// public singleton instance
