@@ -343,7 +343,12 @@ namespace ICU4N.Impl
         public int Length => str.Length;
         public int LastCC => lastCC;
 
-        internal ValueStringBuilder StringBuilder => str;
+        // ICU4N: It is not possible to return ValueStringBuilder by ref here,
+        // so we surface the part of the ValueStringBuilder API that Recompose() uses instead.
+        internal ref char this[int index] => ref str[index];
+        internal void Insert(int index, char value) => str.Insert(index, value);
+        internal void Remove(int startIndex, int length) => str.Remove(startIndex, length);
+        internal int CodePointAt(int index) => str.CodePointAt(index);
 
         public ReadOnlySpan<char> AsSpan() => str.AsSpan();
         public ReadOnlySpan<char> AsSpan(int start) => str.AsSpan(start);
@@ -762,7 +767,17 @@ namespace ICU4N.Impl
             }
         }
 
-        // ICU4N NOTE: No need to flush because we don't accept an IAppendable
+        /// <summary>
+        /// Flushes from the intermediate <see cref="StringBuilder"/> to the <see cref="IAppendable"/>,
+        /// if they are different objects.
+        /// Used after recomposition.
+        /// Must be called at the end when writing.
+        /// </summary>
+        public void Flush()
+        {
+            reorderStart = str.Length;
+            lastCC = 0;
+        }
 
         public void Remove()
         {
@@ -1356,7 +1371,7 @@ namespace ICU4N.Impl
         /// Flushes from the intermediate <see cref="StringBuilder"/> to the <see cref="IAppendable"/>,
         /// if they are different objects.
         /// Used after recomposition.
-        /// Must be called at the end when writing to a non-<see cref="StringBuilderCharSequence"/> <see cref="IAppendable"/>.
+        /// Must be called at the end when writing.
         /// </summary>
         public void Flush()
         {
@@ -8824,7 +8839,7 @@ namespace ICU4N.Impl
         private void Recompose(ref ValueReorderingBuffer buffer, int startIndex,
                                bool onlyContiguous)
         {
-            ValueStringBuilder sb = buffer.StringBuilder;
+            ref ValueReorderingBuffer sb = ref buffer;
             int p = startIndex;
             if (p == sb.Length)
             {
@@ -8882,7 +8897,7 @@ namespace ICU4N.Impl
                                 //sb.setCharAt(starter, syllable);
                                 sb[starter] = syllable;
                                 // remove the Jamo V/T
-                                sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
+                                sb.Remove(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
                                 p = pRemove;
                             }
                         }
@@ -8906,7 +8921,7 @@ namespace ICU4N.Impl
 
                         // Remove the combining mark.
                         pRemove = p - Character.CharCount(c);  // pRemove & p: start & limit of the combining mark
-                        sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
+                        sb.Remove(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
                         p = pRemove;
                         // Replace the starter with the composite.
                         if (starterIsSupplementary)
@@ -8998,6 +9013,7 @@ namespace ICU4N.Impl
                     compositionsList = -1;
                 }
             }
+            buffer.Flush();
         }
 #endif 
 
@@ -9075,7 +9091,7 @@ namespace ICU4N.Impl
                                 //sb.setCharAt(starter, syllable);
                                 sb[starter] = syllable;
                                 // remove the Jamo V/T
-                                sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
+                                sb.Remove(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
                                 p = pRemove;
                             }
                         }
@@ -9099,7 +9115,7 @@ namespace ICU4N.Impl
 
                         // Remove the combining mark.
                         pRemove = p - Character.CharCount(c);  // pRemove & p: start & limit of the combining mark
-                        sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
+                        sb.Remove(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
                         p = pRemove;
                         // Replace the starter with the composite.
                         if (starterIsSupplementary)

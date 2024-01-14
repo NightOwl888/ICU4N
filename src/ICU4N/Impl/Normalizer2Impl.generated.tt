@@ -294,7 +294,12 @@ namespace ICU4N.Impl
         public int LastCC => lastCC;
 
 <# if (bufferName == "ValueReorderingBuffer") { #>
-        internal ValueStringBuilder StringBuilder => str;
+        // ICU4N: It is not possible to return ValueStringBuilder by ref here,
+        // so we surface the part of the ValueStringBuilder API that Recompose() uses instead.
+        internal ref char this[int index] => ref str[index];
+        internal void Insert(int index, char value) => str.Insert(index, value);
+        internal void Remove(int startIndex, int length) => str.Remove(startIndex, length);
+        internal int CodePointAt(int index) => str.CodePointAt(index);
 <# } else { #>
         public StringBuilder StringBuilder => str;
 <# } #>
@@ -471,15 +476,18 @@ namespace ICU4N.Impl
 <#=!string.IsNullOrEmpty(charSequenceFeature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
 <# } #>
-<# if (bufferName != "ValueReorderingBuffer") { #>
         /// <summary>
         /// Flushes from the intermediate <see cref="StringBuilder"/> to the <see cref="IAppendable"/>,
         /// if they are different objects.
         /// Used after recomposition.
-        /// Must be called at the end when writing to a non-<see cref="StringBuilderCharSequence"/> <see cref="IAppendable"/>.
+        /// Must be called at the end when writing.
         /// </summary>
         public void Flush()
         {
+<# if (bufferName == "ValueReorderingBuffer") { #>
+            reorderStart = str.Length;
+            lastCC = 0;
+<# } else { #>
             if (appIsStringBuilder)
             {
                 reorderStart = str.Length;
@@ -492,10 +500,8 @@ namespace ICU4N.Impl
                 reorderStart = 0;
             }
             lastCC = 0;
-        }
-<# } else { #>
-        // ICU4N NOTE: No need to flush because we don't accept an IAppendable
 <# } #>
+        }
 
         public void Remove()
         {
@@ -1978,7 +1984,11 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
         private void Recompose(<#=bufferRef#><#=bufferName#> buffer, int startIndex,
                                bool onlyContiguous)
         {
-            <#=bufferName=="ValueReorderingBuffer"? "Value" : ""#>StringBuilder sb = buffer.StringBuilder;
+<# if (bufferName=="ValueReorderingBuffer") { #>
+            ref ValueReorderingBuffer sb = ref buffer;
+<# } else { #>
+            StringBuilder sb = buffer.StringBuilder;
+<# } #>
             int p = startIndex;
             if (p == sb.Length)
             {
@@ -2036,7 +2046,7 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
                                 //sb.setCharAt(starter, syllable);
                                 sb[starter] = syllable;
                                 // remove the Jamo V/T
-                                sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
+                                sb.Remove(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
                                 p = pRemove;
                             }
                         }
@@ -2060,7 +2070,7 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
 
                         // Remove the combining mark.
                         pRemove = p - Character.CharCount(c);  // pRemove & p: start & limit of the combining mark
-                        sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
+                        sb.Remove(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
                         p = pRemove;
                         // Replace the starter with the composite.
                         if (starterIsSupplementary)
@@ -2152,9 +2162,7 @@ for (int m = 0; m < decomposeMethodNames.Length; m++) {
                     compositionsList = -1;
                 }
             }
-<# if (bufferName == "ReorderingBuffer") { #>
             buffer.Flush();
-<# } #>
         }
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>

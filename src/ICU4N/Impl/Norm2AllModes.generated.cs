@@ -406,19 +406,18 @@ namespace ICU4N.Impl
         public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest)
         {
             int length = src.Length;
-            var sb = length <= CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                : new ValueStringBuilder(length);
+            var buffer = length <= CharStackBufferSize
+                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ValueReorderingBuffer(Impl, ReadOnlySpan<char>.Empty, length);
             try
             {
-                //sb.Append(src); // ICU4N TODO: Needed?
-                var buffer = new ValueReorderingBuffer(Impl, ref sb, length); // ICU4N TODO: Remove destinationCapacity from ValueReorderingBuffer?
                 Normalize(src, ref buffer);
                 dest.Append(buffer.AsSpan());
+                buffer.Flush();
             }
             finally
             {
-                sb.Dispose();
+                buffer.Dispose();
             }
             return dest;
         }
