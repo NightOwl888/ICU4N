@@ -15,7 +15,7 @@
     XDocument document = XDocument.Load(settingsPath);
     XElement[] charSequenceElements = document.XPathSelectElements(@"//codeGen/charSequences/charSequence").ToArray();
     string charSequenceAccessibility = document.XPathSelectElement(@"//codeGen/charSequenceAccessibility").Value;
-    string[] appendables = document.XPathSelectElements(@"//codeGen/appendables/appendable").Select(x => x.Value).ToArray();
+    string[] appendables = document.XPathSelectElements(@"//codeGen/appendables/appendable").Where(x => x.Value != "ValueStringBuilder").Select(x => x.Value).ToArray();
     string appendableAccessibility = document.XPathSelectElement(@"//codeGen/appendableAccessibility").Value;
 
     XElement[] numericTypeElements = document.XPathSelectElements(@"//codeGen/numericTypes/numericType").ToArray();
