@@ -10,8 +10,9 @@
   <!-- Accessibility of ICharSequence interface -->
   <charSequenceAccessibility>public</charSequenceAccessibility>
   <appendables>
-    <appendable>StringBuilder</appendable>
-    <appendable>IAppendable</appendable>
+    <appendable accessibility="public">StringBuilder</appendable>
+    <appendable accessibility="public">IAppendable</appendable>
+    <appendable accessibility="internal" modifier="ref " feature="FEATURE_SPAN">ValueStringBuilder</appendable>
   </appendables>
   <!-- Accessibility of IAppendable interface -->
   <appendableAccessibility>public</appendableAccessibility>
