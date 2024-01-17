@@ -413,7 +413,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, "", CountMethod.WholeSpan, spanCondition);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -427,7 +427,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -441,7 +441,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -455,7 +455,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -469,7 +469,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-        
+                
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -483,7 +483,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -497,7 +497,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -511,7 +511,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -525,7 +525,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-        
+                
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -539,7 +539,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -553,7 +553,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -567,7 +567,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -581,7 +581,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-        
+                
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -595,7 +595,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -609,7 +609,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -623,7 +623,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -637,7 +637,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
-        
+                
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -651,7 +651,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -665,7 +665,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -679,7 +679,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -693,7 +693,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-        
+                
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -707,7 +707,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -721,7 +721,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -735,7 +735,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -749,7 +749,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-        
+                
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -763,7 +763,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -777,7 +777,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -791,7 +791,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -805,7 +805,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-        
+                
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -819,7 +819,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -833,7 +833,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -847,7 +847,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -861,7 +861,7 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
-        
+                
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -922,7 +922,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -983,7 +983,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1044,7 +1044,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1105,7 +1105,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-        
+                
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1166,7 +1166,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1227,7 +1227,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1288,7 +1288,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1349,7 +1349,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-        
+                
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1410,7 +1410,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1471,7 +1471,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1532,7 +1532,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1593,7 +1593,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-        
+                
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1654,7 +1654,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1715,7 +1715,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1776,7 +1776,7 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-    
+            
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -1849,7 +1849,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        public virtual ICharSequence Trim(string sequence)
+        public virtual ICharSequence Trim(string sequence) // ICU4N TODO: API - Fix return type to match input type
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -1865,7 +1865,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        public virtual ICharSequence Trim(StringBuilder sequence)
+        public virtual ICharSequence Trim(StringBuilder sequence) // ICU4N TODO: API - Fix return type to match input type
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -1881,7 +1881,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        public virtual ICharSequence Trim(char[] sequence)
+        public virtual ICharSequence Trim(char[] sequence) // ICU4N TODO: API - Fix return type to match input type
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -1897,7 +1897,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        public virtual ICharSequence Trim(ICharSequence sequence)
+        public virtual ICharSequence Trim(ICharSequence sequence) // ICU4N TODO: API - Fix return type to match input type
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -1915,7 +1915,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        public virtual ICharSequence Trim(string sequence, TrimOption trimOption)
+        public virtual ICharSequence Trim(string sequence, TrimOption trimOption) // ICU4N TODO: API - Fix return type to match input type
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -1933,7 +1933,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        public virtual ICharSequence Trim(StringBuilder sequence, TrimOption trimOption)
+        public virtual ICharSequence Trim(StringBuilder sequence, TrimOption trimOption) // ICU4N TODO: API - Fix return type to match input type
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -1951,7 +1951,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        public virtual ICharSequence Trim(char[] sequence, TrimOption trimOption)
+        public virtual ICharSequence Trim(char[] sequence, TrimOption trimOption) // ICU4N TODO: API - Fix return type to match input type
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -1969,7 +1969,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        public virtual ICharSequence Trim(ICharSequence sequence, TrimOption trimOption)
+        public virtual ICharSequence Trim(ICharSequence sequence, TrimOption trimOption) // ICU4N TODO: API - Fix return type to match input type
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -1989,7 +1989,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        public virtual ICharSequence Trim(string sequence, TrimOption trimOption, SpanCondition spanCondition)
+        public virtual ICharSequence Trim(string sequence, TrimOption trimOption, SpanCondition spanCondition) // ICU4N TODO: API - Fix return type to match input type
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;
@@ -2033,7 +2033,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        public virtual ICharSequence Trim(StringBuilder sequence, TrimOption trimOption, SpanCondition spanCondition)
+        public virtual ICharSequence Trim(StringBuilder sequence, TrimOption trimOption, SpanCondition spanCondition) // ICU4N TODO: API - Fix return type to match input type
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;
@@ -2077,7 +2077,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        public virtual ICharSequence Trim(char[] sequence, TrimOption trimOption, SpanCondition spanCondition)
+        public virtual ICharSequence Trim(char[] sequence, TrimOption trimOption, SpanCondition spanCondition) // ICU4N TODO: API - Fix return type to match input type
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;
@@ -2121,7 +2121,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        public virtual ICharSequence Trim(ICharSequence sequence, TrimOption trimOption, SpanCondition spanCondition)
+        public virtual ICharSequence Trim(ICharSequence sequence, TrimOption trimOption, SpanCondition spanCondition) // ICU4N TODO: API - Fix return type to match input type
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;

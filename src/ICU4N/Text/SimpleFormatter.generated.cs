@@ -158,7 +158,7 @@ namespace ICU4N.Text
         /// Formats the given values.
         /// </summary>
         /// <stable>ICU 57</stable>
-		[CLSCompliant(false)]
+        [CLSCompliant(false)]
         public string Format(params char[][] values)
         {
             return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, values);
@@ -239,7 +239,7 @@ namespace ICU4N.Text
         /// </param>
         /// <returns><paramref name="appendTo"/></returns>
         /// <stable>ICU 57</stable>
-		[CLSCompliant(false)]
+        [CLSCompliant(false)]
         public StringBuilder FormatAndAppend(
             StringBuilder appendTo, int[] offsets, params char[][] values)
         {
@@ -339,7 +339,7 @@ namespace ICU4N.Text
         /// </param>
         /// <returns><paramref name="result"/></returns>
         /// <stable>ICU 57</stable>
-		[CLSCompliant(false)]
+        [CLSCompliant(false)]
         public StringBuilder FormatAndReplace(
             StringBuilder result, int[] offsets, params char[][] values)
         {
@@ -371,5 +371,5 @@ namespace ICU4N.Text
             return SimpleFormatterImpl.FormatAndReplace(compiledPattern, result, offsets, values);
         }
 
-	}
+    }
 }

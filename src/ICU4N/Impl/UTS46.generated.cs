@@ -2554,5 +2554,5 @@ namespace ICU4N.Impl
                 }
             }
         }
-	}
+    }
 }
