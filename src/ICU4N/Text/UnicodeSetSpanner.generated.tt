@@ -134,7 +134,7 @@ namespace ICU4N.Text
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
     <# foreach (var charSequence2 in CharSequences) { #>
-        <# string accessibility = GetAccessibility(charSequence.Accessibility, charSequence2.Accessibility); #>
+        <# string accessibility = GetAccessibility(charSequence, charSequence2); #>
 
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
@@ -153,7 +153,7 @@ namespace ICU4N.Text
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
     <# foreach (var charSequence2 in CharSequences) { #>
-        <# string accessibility = GetAccessibility(charSequence.Accessibility, charSequence2.Accessibility); #>
+        <# string accessibility = GetAccessibility(charSequence, charSequence2); #>
 
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
@@ -172,7 +172,7 @@ namespace ICU4N.Text
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
     <# foreach (var charSequence2 in CharSequences) { #>
-        <# string accessibility = GetAccessibility(charSequence.Accessibility, charSequence2.Accessibility); #>
+        <# string accessibility = GetAccessibility(charSequence, charSequence2); #>
 
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.

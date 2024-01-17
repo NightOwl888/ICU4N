@@ -222,7 +222,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="<#=appendable.NameForDocAsLink#>"/>.
         /// </summary>
-        <#=GetAccessibility(appendable.Accessibility, charSequence.Accessibility, charSequence2.Accessibility)#><# if (appendable.Name == "IAppendable") { #> static T Hex<T>(<#=charSequence#> s, int width, <#=charSequence2#> separator, bool useCodePoints, T result) where T : <#=appendable#><# } else { #> static <#=appendable#> Hex(<#=charSequence#> s, int width, <#=charSequence2#> separator, bool useCodePoints, <#=appendable#> result)<# } #>
+        <#=GetAccessibility(appendable, charSequence, charSequence2)#><# if (appendable.Name == "IAppendable") { #> static T Hex<T>(<#=charSequence#> s, int width, <#=charSequence2#> separator, bool useCodePoints, T result) where T : <#=appendable#><# } else { #> static <#=appendable#> Hex(<#=charSequence#> s, int width, <#=charSequence2#> separator, bool useCodePoints, <#=appendable#> result)<# } #>
 
         {
             try
@@ -269,7 +269,7 @@ namespace ICU4N.Impl
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
         /// </summary>
-        <#= GetAccessibility(charSequence.Accessibility, charSequence2.Accessibility) #> static string Hex(<#=charSequence#> s, int width, <#=charSequence2#> separator)
+        <#= GetAccessibility(charSequence, charSequence2) #> static string Hex(<#=charSequence#> s, int width, <#=charSequence2#> separator)
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }

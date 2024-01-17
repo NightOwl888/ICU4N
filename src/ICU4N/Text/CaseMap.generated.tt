@@ -59,7 +59,7 @@ namespace ICU4N.Text
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-        <# string accessibility = GetAccessibility(appendable.Accessibility, charSequence.Accessibility); #>
+        <# string accessibility = GetAccessibility(appendable, charSequence); #>
 
         // ICU4N specific overload for convenience
         /// <summary>
@@ -91,7 +91,7 @@ namespace ICU4N.Text
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-        <# string accessibility = GetAccessibility(appendable.Accessibility, charSequence.Accessibility); #>
+        <# string accessibility = GetAccessibility(appendable, charSequence); #>
 
         /// <summary>
         /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -163,7 +163,7 @@ namespace ICU4N.Text
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-        <# string accessibility = GetAccessibility(appendable.Accessibility, charSequence.Accessibility); #>
+        <# string accessibility = GetAccessibility(appendable, charSequence); #>
 
         // ICU4N specific overload for convenience
         /// <summary>
@@ -195,7 +195,7 @@ namespace ICU4N.Text
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-        <# string accessibility = GetAccessibility(appendable.Accessibility, charSequence.Accessibility); #>
+        <# string accessibility = GetAccessibility(appendable, charSequence); #>
 
         /// <summary>
         /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -300,7 +300,7 @@ namespace ICU4N.Text
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-        <# string accessibility = GetAccessibility(appendable.Accessibility, charSequence.Accessibility); #>
+        <# string accessibility = GetAccessibility(appendable, charSequence); #>
 
         // ICU4N specific overload for convenience
         /// <summary>
@@ -350,7 +350,7 @@ namespace ICU4N.Text
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-        <# string accessibility = GetAccessibility(appendable.Accessibility, charSequence.Accessibility); #>
+        <# string accessibility = GetAccessibility(appendable, charSequence); #>
 
         /// <summary>
         /// Titlecases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -428,7 +428,7 @@ namespace ICU4N.Text
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-        <# string accessibility = GetAccessibility(appendable.Accessibility, charSequence.Accessibility); #>
+        <# string accessibility = GetAccessibility(appendable, charSequence); #>
 
         /// <summary>
         /// Case-folds a string and optionally records edits (see <see cref="OmitUnchangedText"/>).

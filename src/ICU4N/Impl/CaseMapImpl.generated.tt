@@ -169,7 +169,7 @@ namespace ICU4N.Impl
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-        <#string accessibility = GetAccessibility(appendable.Accessibility, charSequence.Accessibility);#>
+        <#string accessibility = GetAccessibility(appendable, charSequence);#>
 
 <# if (appendable.Name == "IAppendable") { #>
         <#=accessibility#> static T ToLower<T>(CaseLocale caseLocale, int options,
@@ -222,7 +222,7 @@ namespace ICU4N.Impl
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-        <#string accessibility = GetAccessibility(appendable.Accessibility, charSequence.Accessibility);#>
+        <#string accessibility = GetAccessibility(appendable, charSequence);#>
 
 <# if (appendable.Name == "IAppendable") { #>
         <#=accessibility#> static T ToUpper<T>(CaseLocale caseLocale, int options,
@@ -285,7 +285,7 @@ namespace ICU4N.Impl
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-        <#string accessibility = GetAccessibility(appendable.Accessibility, charSequence.Accessibility);#>
+        <#string accessibility = GetAccessibility(appendable, charSequence);#>
 
 <# if (appendable.Name == "IAppendable") { #>
         <#=accessibility#> static T ToTitle<T>(
@@ -454,7 +454,7 @@ namespace ICU4N.Impl
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-        <#string accessibility = GetAccessibility(appendable.Accessibility, charSequence.Accessibility);#>
+        <#string accessibility = GetAccessibility(appendable, charSequence);#>
 
 <# if (appendable.Name == "IAppendable") { #>
         <#=accessibility#> static T Fold<T>(int options,
@@ -518,7 +518,7 @@ namespace ICU4N.Impl
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-        <#string accessibility = GetAccessibility(appendable.Accessibility, charSequence.Accessibility);#>
+        <#string accessibility = GetAccessibility(appendable, charSequence);#>
 
             /// <summary>
             /// Greek string uppercasing with a state machine.
