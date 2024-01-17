@@ -31,7 +31,9 @@ CharSequences = xDoc.Descendants("charSequence")
         IsNullable = bool.Parse(element.Attribute("nullable")?.Value ?? "true"),
         SliceMethod = element.Attribute("sliceMethod")?.Value ?? "",
         LegacySliceMethod = element.Attribute("legacySliceMethod")?.Value ?? element.Attribute("sliceMethod")?.Value ?? "",
-        FromStringFormat = element.Attribute("fromStringFormat")?.Value ?? "{0}" // Innefficient - use for testing only
+        FromStringFormat = element.Attribute("fromStringFormat")?.Value ?? "{0}", // Innefficient - use for testing only
+        ToStringFormat = element.Attribute("toStringFormat")?.Value ?? "{0}.ToString()",
+        NameForTest = element.Attribute("nameForTest")?.Value ?? element.Value
     })
     .ToList();
 CharSequences = CharSequenceFilter != null ? CharSequences.Where(CharSequenceFilter).ToList() : CharSequences;
@@ -56,7 +58,7 @@ NumericTypes = xDoc.Descendants("numericType")
     .Select(element => new NumericType
     {
         Name = element.Value,
-        IsClsCompliant = element.Attribute("clsCompliant") != null && bool.Parse(element.Attribute("clsCompliant").Value),
+        IsClsCompliant = bool.Parse(element.Attribute("clsCompliant")?.Value ?? "true"),
         CSharpName = element.Attribute("cSharpName")?.Value ?? "",
         Feature = element.Attribute("feature")?.Value ?? ""
     })

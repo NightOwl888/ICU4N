@@ -6,7 +6,7 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Xml.Linq" #>
 <#+
-public class CharSequence
+public class CharSequence : IAccessibility, IFeature
 {
     public string Name { get; set; }
     public string NameForDocAsType { get; set; }
@@ -19,6 +19,8 @@ public class CharSequence
     public string SliceMethod { get; set; }
     public string LegacySliceMethod { get; set; }
     public string FromStringFormat { get; set; } // For testing only
+    public string ToStringFormat { get; set; }
+    public string NameForTest { get; set; }
 
     public override bool Equals(object obj)
     {
@@ -36,7 +38,7 @@ public class CharSequence
     public static bool operator!= (CharSequence a, CharSequence b) => !(a == b);
 }
 
-public class Appendable
+public class Appendable : IAccessibility, IFeature
 {
     public string Name { get; set; }
     public string NameForDocAsType { get; set; }
@@ -63,7 +65,7 @@ public class Appendable
     public static bool operator!= (Appendable a, Appendable b) => !(a == b);
 }
 
-public class NumericType
+public class NumericType : IFeature
 {
     public string Name { get; set; }
     public bool IsClsCompliant { get; set; }
@@ -86,6 +88,16 @@ public class NumericType
     public static bool operator!= (NumericType a, NumericType b) => !(a == b);
 }
 
+public interface IAccessibility
+{
+    string Accessibility { get; set; }
+}
+
+public interface IFeature
+{
+    string Feature { get; set; }
+}
+
 string GetAccessibility(string accessibility1, string accessibility2)
 {
     string[] accessibilities = new string[] { accessibility1, accessibility2 };
@@ -98,6 +110,29 @@ string GetAccessibility(string accessibility1, string accessibility2)
         return "public";
 }
 
+string GetAccessibility(IAccessibility accessibility1, IAccessibility accessibility2)
+{
+    return GetAccessibility(accessibility1.Accessibility, accessibility2.Accessibility);
+}
+
+string GetAccessibility(string accessibility1, string accessibility2, string accessibility3)
+{
+    string[] accessibilities = new string[] { accessibility1, accessibility2, accessibility3 };
+
+    if (accessibilities.Contains("private"))
+        return "private";
+    else if (accessibilities.Contains("internal"))
+        return "internal";
+    else
+        return "public";
+}
+
+string GetAccessibility(IAccessibility accessibility1, IAccessibility accessibility2, IAccessibility accessibility3)
+{
+    return GetAccessibility(accessibility1.Accessibility, accessibility2.Accessibility, accessibility3.Accessibility);
+}
+
+
 string GetFeature(string feature1, string feature2)
 {
     bool feature1Present = !string.IsNullOrWhiteSpace(feature1);
@@ -108,6 +143,63 @@ string GetFeature(string feature1, string feature2)
         return feature1;
     else
         return feature2 ?? "";
+}
+
+string GetFeature(IFeature feature1, IFeature feature2)
+{
+    return GetFeature(feature1.Feature, feature2.Feature);
+}
+
+string GetFeature(string feature1, string feature2, string feature3)
+{
+    // Create a HashSet to store unique features
+    HashSet<string> uniqueFeatures = new HashSet<string>();
+
+    // Add non-empty features to the HashSet
+    if (!string.IsNullOrEmpty(feature1))
+        uniqueFeatures.Add(feature1);
+    
+    if (!string.IsNullOrEmpty(feature2))
+        uniqueFeatures.Add(feature2);
+    
+    if (!string.IsNullOrEmpty(feature3))
+        uniqueFeatures.Add(feature3);
+
+    // If there's only one unique feature, return it
+    if (uniqueFeatures.Count == 1)
+        return uniqueFeatures.First();
+
+    // If there are multiple features, concatenate them with " || "
+    if (uniqueFeatures.Count > 1)
+        return string.Join(" || ", uniqueFeatures);
+
+    // If no features are present, return an empty string
+    return string.Empty;
+}
+
+string GetFeature(IFeature feature1, IFeature feature2, IFeature feature3)
+{
+    return GetFeature(feature1.Feature, feature2.Feature, feature3.Feature);
+}
+
+string GetBeginFeature(string feature)
+{
+    return !string.IsNullOrEmpty(feature) ? "#if " + feature : "";
+}
+
+string GetBeginFeature(IFeature feature)
+{
+    return GetBeginFeature(feature.Feature);
+}
+
+string GetEndFeature(string feature)
+{
+    return !string.IsNullOrEmpty(feature) ? "#endif // " + feature : "";
+}
+
+string GetEndFeature(IFeature feature)
+{
+    return GetEndFeature(feature.Feature);
 }
 
 string GetNameForDocAsType(string name) // for use within links to methods that accept this type
