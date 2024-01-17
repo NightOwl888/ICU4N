@@ -145,7 +145,6 @@ namespace ICU4N.Text
 
 #if FEATURE_SPAN
 
-
         /// <summary>
         /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -161,8 +160,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.AddAll(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
 
         /// <summary>
@@ -249,7 +247,6 @@ namespace ICU4N.Text
 
 #if FEATURE_SPAN
 
-
         /// <summary>
         /// Complement the specified string in this set.
         /// The set will not contain the specified string once the call
@@ -268,8 +265,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.Complement(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
 
         /// <summary>
@@ -344,7 +340,6 @@ namespace ICU4N.Text
 
 #if FEATURE_SPAN
 
-
         /// <summary>
         /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -360,8 +355,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.ComplementAll(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
 
         /// <seealso cref="UnicodeSet.ContainsAll(UnicodeSet)"/>
@@ -484,7 +478,6 @@ namespace ICU4N.Text
 
 #if FEATURE_SPAN
 
-
         /// <summary>
         /// Returns true if this set contains one or more of the characters
         /// of the given string.
@@ -500,8 +493,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.ContainsSome(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
 
         /// <seealso cref="UnicodeSet.ContainsSome(UnicodeSet)"/>
@@ -624,7 +616,6 @@ namespace ICU4N.Text
 
 #if FEATURE_SPAN
 
-
         /// <summary>
         /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -640,8 +631,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.RemoveAll(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
 
         /// <seealso cref="UnicodeSet.RemoveAll(UnicodeSet)"/>
@@ -768,7 +758,6 @@ namespace ICU4N.Text
 
 #if FEATURE_SPAN
 
-
         /// <summary>
         /// Retain the specified string in this set if it is present.
         /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
@@ -785,8 +774,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.Retain(cs);
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
 
         /// <seealso cref="UnicodeSet.RetainAll(UnicodeSet)"/>
@@ -909,7 +897,6 @@ namespace ICU4N.Text
 
 #if FEATURE_SPAN
 
-
         /// <summary>
         /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -925,7 +912,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.RetainAll(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
     }
 }

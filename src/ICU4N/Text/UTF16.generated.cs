@@ -273,7 +273,6 @@ namespace ICU4N.Text
             return single; // return unmatched surrogate
         }
 
-
 #if FEATURE_SPAN
         /// <summary>
         /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
@@ -332,8 +331,7 @@ namespace ICU4N.Text
             }
             return single; // return unmatched surrogate
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Utility for getting a code point from a character sequence that contains exactly one code point.
@@ -458,7 +456,6 @@ namespace ICU4N.Text
             return -1;
         }
 
-
 #if FEATURE_SPAN
         /// <summary>
         /// Utility for getting a code point from a character sequence that contains exactly one code point.
@@ -489,8 +486,7 @@ namespace ICU4N.Text
             }
             return -1;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Utility for comparing a code point to a string without having to create a new string. Returns the same results
@@ -507,7 +503,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="codePoint">CodePoint to test.</param>
         /// <param name="s">String to test.</param>
-        /// <returns>Equivalent of code point comparator comparing two strings.</returns>
+        /// <returns>Equivalent of code point comparer comparing two strings.</returns>
         /// <stable>ICU 54</stable>
         public static int CompareCodePoint(int codePoint, string s)
         {
@@ -545,7 +541,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="codePoint">CodePoint to test.</param>
         /// <param name="s">String to test.</param>
-        /// <returns>Equivalent of code point comparator comparing two strings.</returns>
+        /// <returns>Equivalent of code point comparer comparing two strings.</returns>
         /// <stable>ICU 54</stable>
         public static int CompareCodePoint(int codePoint, StringBuilder s)
         {
@@ -583,7 +579,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="codePoint">CodePoint to test.</param>
         /// <param name="s">String to test.</param>
-        /// <returns>Equivalent of code point comparator comparing two strings.</returns>
+        /// <returns>Equivalent of code point comparer comparing two strings.</returns>
         /// <stable>ICU 54</stable>
         public static int CompareCodePoint(int codePoint, char[] s)
         {
@@ -621,7 +617,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="codePoint">CodePoint to test.</param>
         /// <param name="s">String to test.</param>
-        /// <returns>Equivalent of code point comparator comparing two strings.</returns>
+        /// <returns>Equivalent of code point comparer comparing two strings.</returns>
         /// <stable>ICU 54</stable>
         public static int CompareCodePoint(int codePoint, ICharSequence s)
         {
@@ -643,7 +639,6 @@ namespace ICU4N.Text
             return strLen == Character.CharCount(codePoint) ? 0 : -1;
         }
 
-
 #if FEATURE_SPAN
         /// <summary>
         /// Utility for comparing a code point to a string without having to create a new string. Returns the same results
@@ -660,7 +655,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="codePoint">CodePoint to test.</param>
         /// <param name="s">String to test.</param>
-        /// <returns>Equivalent of code point comparator comparing two strings.</returns>
+        /// <returns>Equivalent of code point comparer comparing two strings.</returns>
         /// <stable>ICU 54</stable>
         public static int CompareCodePoint(int codePoint, ReadOnlySpan<char> s)
         {
@@ -677,8 +672,7 @@ namespace ICU4N.Text
             }
             return strLen == Character.CharCount(codePoint) ? 0 : -1;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
     }
 }

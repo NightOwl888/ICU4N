@@ -44,22 +44,22 @@ namespace ICU4N.Text
         [Test]
         public void TestSetEquals_StringBuilder()
         {
-            var empty = new StringBuilder("");
-            var equiv1 = new StringBuilder("ABCDEF");
-            var equiv2 = new StringBuilder("BDEFAC");
-            var nonEquiv1 = new StringBuilder("CDEAZF");
-            var nonEquiv2 = new StringBuilder("ABCDEFG");
+            var empty = "";
+            var equiv1 = "ABCDEF";
+            var equiv2 = "BDEFAC";
+            var nonEquiv1 = "CDEAZF";
+            var nonEquiv2 = "ABCDEFG";
             
             string methodName = nameof(UnicodeSet.SetEquals);
 
             // Test empty set
-            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(empty));
-            assertTrue($"{methodName}: The word sets are not equal", emptySet.SetEquals(empty));
+            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(new StringBuilder(empty)));
+            assertTrue($"{methodName}: The word sets are not equal", emptySet.SetEquals(new StringBuilder(empty)));
 
-            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv1));
-            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv2));
-            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv1));
-            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv2));
+            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(new StringBuilder(equiv1)));
+            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(new StringBuilder(equiv2)));
+            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(new StringBuilder(nonEquiv1)));
+            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(new StringBuilder(nonEquiv2)));
         }
 
 
@@ -67,22 +67,22 @@ namespace ICU4N.Text
         [Test]
         public void TestSetEquals_CharArray()
         {
-            var empty = "".ToCharArray();
-            var equiv1 = "ABCDEF".ToCharArray();
-            var equiv2 = "BDEFAC".ToCharArray();
-            var nonEquiv1 = "CDEAZF".ToCharArray();
-            var nonEquiv2 = "ABCDEFG".ToCharArray();
+            var empty = "";
+            var equiv1 = "ABCDEF";
+            var equiv2 = "BDEFAC";
+            var nonEquiv1 = "CDEAZF";
+            var nonEquiv2 = "ABCDEFG";
             
             string methodName = nameof(UnicodeSet.SetEquals);
 
             // Test empty set
-            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(empty));
-            assertTrue($"{methodName}: The word sets are not equal", emptySet.SetEquals(empty));
+            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(empty.ToCharArray()));
+            assertTrue($"{methodName}: The word sets are not equal", emptySet.SetEquals(empty.ToCharArray()));
 
-            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv1));
-            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv2));
-            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv1));
-            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv2));
+            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv1.ToCharArray()));
+            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv2.ToCharArray()));
+            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv1.ToCharArray()));
+            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv2.ToCharArray()));
         }
 
 
@@ -90,49 +90,47 @@ namespace ICU4N.Text
         [Test]
         public void TestSetEquals_CharSequence()
         {
-            var empty = "".AsCharSequence();
-            var equiv1 = "ABCDEF".AsCharSequence();
-            var equiv2 = "BDEFAC".AsCharSequence();
-            var nonEquiv1 = "CDEAZF".AsCharSequence();
-            var nonEquiv2 = "ABCDEFG".AsCharSequence();
+            var empty = "";
+            var equiv1 = "ABCDEF";
+            var equiv2 = "BDEFAC";
+            var nonEquiv1 = "CDEAZF";
+            var nonEquiv2 = "ABCDEFG";
             
             string methodName = nameof(UnicodeSet.SetEquals);
 
             // Test empty set
-            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(empty));
-            assertTrue($"{methodName}: The word sets are not equal", emptySet.SetEquals(empty));
+            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(empty.AsCharSequence()));
+            assertTrue($"{methodName}: The word sets are not equal", emptySet.SetEquals(empty.AsCharSequence()));
 
-            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv1));
-            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv2));
-            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv1));
-            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv2));
+            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv1.AsCharSequence()));
+            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv2.AsCharSequence()));
+            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv1.AsCharSequence()));
+            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv2.AsCharSequence()));
         }
 
 #if FEATURE_SPAN
 
-
         [Test]
         public void TestSetEquals_ReadOnlySpan()
         {
-            var empty = "".AsSpan();
-            var equiv1 = "ABCDEF".AsSpan();
-            var equiv2 = "BDEFAC".AsSpan();
-            var nonEquiv1 = "CDEAZF".AsSpan();
-            var nonEquiv2 = "ABCDEFG".AsSpan();
+            var empty = "";
+            var equiv1 = "ABCDEF";
+            var equiv2 = "BDEFAC";
+            var nonEquiv1 = "CDEAZF";
+            var nonEquiv2 = "ABCDEFG";
             
             string methodName = nameof(UnicodeSet.SetEquals);
 
             // Test empty set
-            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(empty));
-            assertTrue($"{methodName}: The word sets are not equal", emptySet.SetEquals(empty));
+            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(empty.AsSpan()));
+            assertTrue($"{methodName}: The word sets are not equal", emptySet.SetEquals(empty.AsSpan()));
 
-            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv1));
-            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv2));
-            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv1));
-            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv2));
+            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv1.AsSpan()));
+            assertTrue($"{methodName}: The word sets are not equal", aThruFSet.SetEquals(equiv2.AsSpan()));
+            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv1.AsSpan()));
+            assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv2.AsSpan()));
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
 
         [Test]
@@ -211,6 +209,7 @@ namespace ICU4N.Text
             var equivSet2 = "BDEFAC";
             var equivSubset = "CDEAF";
             var equivSuperset = "ABCDEFG";
+
             string setOperation = "superset", methodName = nameof(UnicodeSet.IsSupersetOf);
 
             // Test empty set
@@ -229,22 +228,23 @@ namespace ICU4N.Text
         [Test]
         public void TestIsSupersetOf_StringBuilder()
         {
-            var equivEmptySet = new StringBuilder("");
-            var equivSet = new StringBuilder("ABCDEF");
-            var equivSet2 = new StringBuilder("BDEFAC");
-            var equivSubset = new StringBuilder("CDEAF");
-            var equivSuperset = new StringBuilder("ABCDEFG");
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSet2 = "BDEFAC";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "superset", methodName = nameof(UnicodeSet.IsSupersetOf);
 
             // Test empty set
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSupersetOf(equivEmptySet));
-            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSupersetOf(equivEmptySet));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSupersetOf(new StringBuilder(equivEmptySet)));
+            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSupersetOf(new StringBuilder(equivEmptySet)));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSupersetOf(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSupersetOf(equivSet2));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSupersetOf(equivSubset));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSupersetOf(equivSuperset));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSupersetOf(equivSuperset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSupersetOf(new StringBuilder(equivSet)));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSupersetOf(new StringBuilder(equivSet2)));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSupersetOf(new StringBuilder(equivSubset)));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSupersetOf(new StringBuilder(equivSuperset)));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSupersetOf(new StringBuilder(equivSuperset)));
         }
 
 
@@ -252,22 +252,23 @@ namespace ICU4N.Text
         [Test]
         public void TestIsSupersetOf_CharArray()
         {
-            var equivEmptySet = "".ToCharArray();
-            var equivSet = "ABCDEF".ToCharArray();
-            var equivSet2 = "BDEFAC".ToCharArray();
-            var equivSubset = "CDEAF".ToCharArray();
-            var equivSuperset = "ABCDEFG".ToCharArray();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSet2 = "BDEFAC";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "superset", methodName = nameof(UnicodeSet.IsSupersetOf);
 
             // Test empty set
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSupersetOf(equivEmptySet));
-            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSupersetOf(equivEmptySet));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSupersetOf(equivEmptySet.ToCharArray()));
+            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSupersetOf(equivEmptySet.ToCharArray()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSupersetOf(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSupersetOf(equivSet2));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSupersetOf(equivSubset));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSupersetOf(equivSuperset));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSupersetOf(equivSuperset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSupersetOf(equivSet.ToCharArray()));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSupersetOf(equivSet2.ToCharArray()));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSupersetOf(equivSubset.ToCharArray()));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSupersetOf(equivSuperset.ToCharArray()));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSupersetOf(equivSuperset.ToCharArray()));
         }
 
 
@@ -275,49 +276,49 @@ namespace ICU4N.Text
         [Test]
         public void TestIsSupersetOf_CharSequence()
         {
-            var equivEmptySet = "".AsCharSequence();
-            var equivSet = "ABCDEF".AsCharSequence();
-            var equivSet2 = "BDEFAC".AsCharSequence();
-            var equivSubset = "CDEAF".AsCharSequence();
-            var equivSuperset = "ABCDEFG".AsCharSequence();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSet2 = "BDEFAC";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "superset", methodName = nameof(UnicodeSet.IsSupersetOf);
 
             // Test empty set
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSupersetOf(equivEmptySet));
-            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSupersetOf(equivEmptySet));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSupersetOf(equivEmptySet.AsCharSequence()));
+            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSupersetOf(equivEmptySet.AsCharSequence()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSupersetOf(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSupersetOf(equivSet2));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSupersetOf(equivSubset));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSupersetOf(equivSuperset));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSupersetOf(equivSuperset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSupersetOf(equivSet.AsCharSequence()));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSupersetOf(equivSet2.AsCharSequence()));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSupersetOf(equivSubset.AsCharSequence()));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSupersetOf(equivSuperset.AsCharSequence()));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSupersetOf(equivSuperset.AsCharSequence()));
         }
 
 #if FEATURE_SPAN
 
-
         [Test]
         public void TestIsSupersetOf_ReadOnlySpan()
         {
-            var equivEmptySet = "".AsSpan();
-            var equivSet = "ABCDEF".AsSpan();
-            var equivSet2 = "BDEFAC".AsSpan();
-            var equivSubset = "CDEAF".AsSpan();
-            var equivSuperset = "ABCDEFG".AsSpan();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSet2 = "BDEFAC";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "superset", methodName = nameof(UnicodeSet.IsSupersetOf);
 
             // Test empty set
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSupersetOf(equivEmptySet));
-            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSupersetOf(equivEmptySet));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSupersetOf(equivEmptySet.AsSpan()));
+            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSupersetOf(equivEmptySet.AsSpan()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSupersetOf(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSupersetOf(equivSet2));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSupersetOf(equivSubset));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSupersetOf(equivSuperset));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSupersetOf(equivSuperset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSupersetOf(equivSet.AsSpan()));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSupersetOf(equivSet2.AsSpan()));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSupersetOf(equivSubset.AsSpan()));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSupersetOf(equivSuperset.AsSpan()));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSupersetOf(equivSuperset.AsSpan()));
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
 
         [Test]
@@ -428,6 +429,7 @@ namespace ICU4N.Text
             var equivSet2 = "BDEFAC";
             var equivSubset = "CDEAF";
             var equivSuperset = "ABCDEFG";
+
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSupersetOf);
 
             // Test empty set
@@ -446,22 +448,23 @@ namespace ICU4N.Text
         [Test]
         public void TestIsProperSupersetOf_StringBuilder()
         {
-            var equivEmptySet = new StringBuilder("");
-            var equivSet = new StringBuilder("ABCDEF");
-            var equivSet2 = new StringBuilder("BDEFAC");
-            var equivSubset = new StringBuilder("CDEAF");
-            var equivSuperset = new StringBuilder("ABCDEFG");
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSet2 = "BDEFAC";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSupersetOf);
 
             // Test empty set
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSupersetOf(equivEmptySet));
-            assertFalse($"{methodName}: {nameof(emptySet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSupersetOf(equivEmptySet));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSupersetOf(new StringBuilder(equivEmptySet)));
+            assertFalse($"{methodName}: {nameof(emptySet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSupersetOf(new StringBuilder(equivEmptySet)));
 
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSupersetOf(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsProperSupersetOf(equivSet2));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSupersetOf(equivSubset));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSupersetOf(equivSuperset));
-            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSupersetOf(equivSuperset));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSupersetOf(new StringBuilder(equivSet)));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsProperSupersetOf(new StringBuilder(equivSet2)));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSupersetOf(new StringBuilder(equivSubset)));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSupersetOf(new StringBuilder(equivSuperset)));
+            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSupersetOf(new StringBuilder(equivSuperset)));
         }
 
 
@@ -469,22 +472,23 @@ namespace ICU4N.Text
         [Test]
         public void TestIsProperSupersetOf_CharArray()
         {
-            var equivEmptySet = "".ToCharArray();
-            var equivSet = "ABCDEF".ToCharArray();
-            var equivSet2 = "BDEFAC".ToCharArray();
-            var equivSubset = "CDEAF".ToCharArray();
-            var equivSuperset = "ABCDEFG".ToCharArray();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSet2 = "BDEFAC";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSupersetOf);
 
             // Test empty set
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSupersetOf(equivEmptySet));
-            assertFalse($"{methodName}: {nameof(emptySet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSupersetOf(equivEmptySet));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSupersetOf(equivEmptySet.ToCharArray()));
+            assertFalse($"{methodName}: {nameof(emptySet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSupersetOf(equivEmptySet.ToCharArray()));
 
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSupersetOf(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsProperSupersetOf(equivSet2));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSupersetOf(equivSubset));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSupersetOf(equivSuperset));
-            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSupersetOf(equivSuperset));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSupersetOf(equivSet.ToCharArray()));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsProperSupersetOf(equivSet2.ToCharArray()));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSupersetOf(equivSubset.ToCharArray()));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSupersetOf(equivSuperset.ToCharArray()));
+            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSupersetOf(equivSuperset.ToCharArray()));
         }
 
 
@@ -492,49 +496,49 @@ namespace ICU4N.Text
         [Test]
         public void TestIsProperSupersetOf_CharSequence()
         {
-            var equivEmptySet = "".AsCharSequence();
-            var equivSet = "ABCDEF".AsCharSequence();
-            var equivSet2 = "BDEFAC".AsCharSequence();
-            var equivSubset = "CDEAF".AsCharSequence();
-            var equivSuperset = "ABCDEFG".AsCharSequence();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSet2 = "BDEFAC";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSupersetOf);
 
             // Test empty set
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSupersetOf(equivEmptySet));
-            assertFalse($"{methodName}: {nameof(emptySet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSupersetOf(equivEmptySet));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSupersetOf(equivEmptySet.AsCharSequence()));
+            assertFalse($"{methodName}: {nameof(emptySet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSupersetOf(equivEmptySet.AsCharSequence()));
 
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSupersetOf(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsProperSupersetOf(equivSet2));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSupersetOf(equivSubset));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSupersetOf(equivSuperset));
-            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSupersetOf(equivSuperset));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSupersetOf(equivSet.AsCharSequence()));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsProperSupersetOf(equivSet2.AsCharSequence()));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSupersetOf(equivSubset.AsCharSequence()));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSupersetOf(equivSuperset.AsCharSequence()));
+            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSupersetOf(equivSuperset.AsCharSequence()));
         }
 
 #if FEATURE_SPAN
 
-
         [Test]
         public void TestIsProperSupersetOf_ReadOnlySpan()
         {
-            var equivEmptySet = "".AsSpan();
-            var equivSet = "ABCDEF".AsSpan();
-            var equivSet2 = "BDEFAC".AsSpan();
-            var equivSubset = "CDEAF".AsSpan();
-            var equivSuperset = "ABCDEFG".AsSpan();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSet2 = "BDEFAC";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSupersetOf);
 
             // Test empty set
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSupersetOf(equivEmptySet));
-            assertFalse($"{methodName}: {nameof(emptySet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSupersetOf(equivEmptySet));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSupersetOf(equivEmptySet.AsSpan()));
+            assertFalse($"{methodName}: {nameof(emptySet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSupersetOf(equivEmptySet.AsSpan()));
 
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSupersetOf(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsProperSupersetOf(equivSet2));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSupersetOf(equivSubset));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSupersetOf(equivSuperset));
-            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSupersetOf(equivSuperset));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSupersetOf(equivSet.AsSpan()));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsProperSupersetOf(equivSet2.AsSpan()));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSupersetOf(equivSubset.AsSpan()));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSupersetOf(equivSuperset.AsSpan()));
+            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSupersetOf(equivSuperset.AsSpan()));
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
 
         [Test]
@@ -629,6 +633,7 @@ namespace ICU4N.Text
             var equivSet2 = "BDEFAC";
             var equivSubset = "CDEAF";
             var equivSuperset = "ABCDEFG";
+
             string setOperation = "subset", methodName = nameof(UnicodeSet.IsSubsetOf);
 
             // Test empty set
@@ -648,23 +653,24 @@ namespace ICU4N.Text
         [Test]
         public void TestIsSubsetOf_StringBuilder()
         {
-            var equivEmptySet = new StringBuilder("");
-            var equivSet = new StringBuilder("ABCDEF");
-            var equivSet2 = new StringBuilder("BDEFAC");
-            var equivSubset = new StringBuilder("CDEAF");
-            var equivSuperset = new StringBuilder("ABCDEFG");
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSet2 = "BDEFAC";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "subset", methodName = nameof(UnicodeSet.IsSubsetOf);
 
             // Test empty set
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSubsetOf(equivEmptySet));
-            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSubsetOf(equivEmptySet));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSubsetOf(new StringBuilder(equivEmptySet)));
+            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSubsetOf(new StringBuilder(equivEmptySet)));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSubsetOf(equivSet));
-            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSubsetOf(equivSet2));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSubsetOf(equivSubset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSubsetOf(new StringBuilder(equivSet)));
+            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSubsetOf(new StringBuilder(equivSet2)));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSubsetOf(new StringBuilder(equivSubset)));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSubsetOf(equivSuperset));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSubsetOf(equivSuperset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSubsetOf(new StringBuilder(equivSuperset)));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSubsetOf(new StringBuilder(equivSuperset)));
         }
 
 
@@ -672,23 +678,24 @@ namespace ICU4N.Text
         [Test]
         public void TestIsSubsetOf_CharArray()
         {
-            var equivEmptySet = "".ToCharArray();
-            var equivSet = "ABCDEF".ToCharArray();
-            var equivSet2 = "BDEFAC".ToCharArray();
-            var equivSubset = "CDEAF".ToCharArray();
-            var equivSuperset = "ABCDEFG".ToCharArray();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSet2 = "BDEFAC";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "subset", methodName = nameof(UnicodeSet.IsSubsetOf);
 
             // Test empty set
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSubsetOf(equivEmptySet));
-            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSubsetOf(equivEmptySet));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSubsetOf(equivEmptySet.ToCharArray()));
+            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSubsetOf(equivEmptySet.ToCharArray()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSubsetOf(equivSet));
-            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSubsetOf(equivSet2));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSubsetOf(equivSubset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSubsetOf(equivSet.ToCharArray()));
+            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSubsetOf(equivSet2.ToCharArray()));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSubsetOf(equivSubset.ToCharArray()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSubsetOf(equivSuperset));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSubsetOf(equivSuperset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSubsetOf(equivSuperset.ToCharArray()));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSubsetOf(equivSuperset.ToCharArray()));
         }
 
 
@@ -696,51 +703,51 @@ namespace ICU4N.Text
         [Test]
         public void TestIsSubsetOf_CharSequence()
         {
-            var equivEmptySet = "".AsCharSequence();
-            var equivSet = "ABCDEF".AsCharSequence();
-            var equivSet2 = "BDEFAC".AsCharSequence();
-            var equivSubset = "CDEAF".AsCharSequence();
-            var equivSuperset = "ABCDEFG".AsCharSequence();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSet2 = "BDEFAC";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "subset", methodName = nameof(UnicodeSet.IsSubsetOf);
 
             // Test empty set
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSubsetOf(equivEmptySet));
-            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSubsetOf(equivEmptySet));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSubsetOf(equivEmptySet.AsCharSequence()));
+            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSubsetOf(equivEmptySet.AsCharSequence()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSubsetOf(equivSet));
-            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSubsetOf(equivSet2));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSubsetOf(equivSubset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSubsetOf(equivSet.AsCharSequence()));
+            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSubsetOf(equivSet2.AsCharSequence()));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSubsetOf(equivSubset.AsCharSequence()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSubsetOf(equivSuperset));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSubsetOf(equivSuperset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSubsetOf(equivSuperset.AsCharSequence()));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSubsetOf(equivSuperset.AsCharSequence()));
         }
 
 #if FEATURE_SPAN
 
-
         [Test]
         public void TestIsSubsetOf_ReadOnlySpan()
         {
-            var equivEmptySet = "".AsSpan();
-            var equivSet = "ABCDEF".AsSpan();
-            var equivSet2 = "BDEFAC".AsSpan();
-            var equivSubset = "CDEAF".AsSpan();
-            var equivSuperset = "ABCDEFG".AsSpan();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSet2 = "BDEFAC";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "subset", methodName = nameof(UnicodeSet.IsSubsetOf);
 
             // Test empty set
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSubsetOf(equivEmptySet));
-            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSubsetOf(equivEmptySet));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsSubsetOf(equivEmptySet.AsSpan()));
+            assertTrue($"{methodName}: {nameof(emptySet)} is not a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsSubsetOf(equivEmptySet.AsSpan()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSubsetOf(equivSet));
-            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSubsetOf(equivSet2));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSubsetOf(equivSubset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSet)}", aThruFSet.IsSubsetOf(equivSet.AsSpan()));
+            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSet2)}", aThruFSuperset.IsSubsetOf(equivSet2.AsSpan()));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsSubsetOf(equivSubset.AsSpan()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSubsetOf(equivSuperset));
-            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSubsetOf(equivSuperset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSubsetOf(equivSuperset.AsSpan()));
+            assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSubsetOf(equivSuperset.AsSpan()));
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
 
         [Test]
@@ -850,6 +857,7 @@ namespace ICU4N.Text
             var equivSet = "ABCDEF";
             var equivSubset = "CDEAF";
             var equivSuperset = "ABCDEFG";
+
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSubsetOf);
 
             // Test empty set
@@ -869,22 +877,23 @@ namespace ICU4N.Text
         [Test]
         public void TestIsProperSubsetOf_StringBuilder()
         {
-            var equivEmptySet = new StringBuilder("");
-            var equivSet = new StringBuilder("ABCDEF");
-            var equivSubset = new StringBuilder("CDEAF");
-            var equivSuperset = new StringBuilder("ABCDEFG");
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSubsetOf);
 
             // Test empty set
-            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSubsetOf(equivEmptySet));
-            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSubsetOf(equivEmptySet));
+            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSubsetOf(new StringBuilder(equivEmptySet)));
+            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSubsetOf(new StringBuilder(equivEmptySet)));
 
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSubsetOf(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSubset)} is not a {setOperation} of {nameof(equivSet)}", aThruFSubset.IsProperSubsetOf(equivSet));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSubsetOf(equivSubset));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSubsetOf(new StringBuilder(equivSet)));
+            assertTrue($"{methodName}: {nameof(aThruFSubset)} is not a {setOperation} of {nameof(equivSet)}", aThruFSubset.IsProperSubsetOf(new StringBuilder(equivSet)));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSubsetOf(new StringBuilder(equivSubset)));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSubsetOf(equivSuperset));
-            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSubsetOf(equivSuperset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSubsetOf(new StringBuilder(equivSuperset)));
+            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSubsetOf(new StringBuilder(equivSuperset)));
         }
 
 
@@ -892,22 +901,23 @@ namespace ICU4N.Text
         [Test]
         public void TestIsProperSubsetOf_CharArray()
         {
-            var equivEmptySet = "".ToCharArray();
-            var equivSet = "ABCDEF".ToCharArray();
-            var equivSubset = "CDEAF".ToCharArray();
-            var equivSuperset = "ABCDEFG".ToCharArray();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSubsetOf);
 
             // Test empty set
-            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSubsetOf(equivEmptySet));
-            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSubsetOf(equivEmptySet));
+            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSubsetOf(equivEmptySet.ToCharArray()));
+            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSubsetOf(equivEmptySet.ToCharArray()));
 
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSubsetOf(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSubset)} is not a {setOperation} of {nameof(equivSet)}", aThruFSubset.IsProperSubsetOf(equivSet));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSubsetOf(equivSubset));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSubsetOf(equivSet.ToCharArray()));
+            assertTrue($"{methodName}: {nameof(aThruFSubset)} is not a {setOperation} of {nameof(equivSet)}", aThruFSubset.IsProperSubsetOf(equivSet.ToCharArray()));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSubsetOf(equivSubset.ToCharArray()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSubsetOf(equivSuperset));
-            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSubsetOf(equivSuperset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSubsetOf(equivSuperset.ToCharArray()));
+            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSubsetOf(equivSuperset.ToCharArray()));
         }
 
 
@@ -915,49 +925,49 @@ namespace ICU4N.Text
         [Test]
         public void TestIsProperSubsetOf_CharSequence()
         {
-            var equivEmptySet = "".AsCharSequence();
-            var equivSet = "ABCDEF".AsCharSequence();
-            var equivSubset = "CDEAF".AsCharSequence();
-            var equivSuperset = "ABCDEFG".AsCharSequence();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSubsetOf);
 
             // Test empty set
-            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSubsetOf(equivEmptySet));
-            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSubsetOf(equivEmptySet));
+            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSubsetOf(equivEmptySet.AsCharSequence()));
+            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSubsetOf(equivEmptySet.AsCharSequence()));
 
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSubsetOf(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSubset)} is not a {setOperation} of {nameof(equivSet)}", aThruFSubset.IsProperSubsetOf(equivSet));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSubsetOf(equivSubset));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSubsetOf(equivSet.AsCharSequence()));
+            assertTrue($"{methodName}: {nameof(aThruFSubset)} is not a {setOperation} of {nameof(equivSet)}", aThruFSubset.IsProperSubsetOf(equivSet.AsCharSequence()));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSubsetOf(equivSubset.AsCharSequence()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSubsetOf(equivSuperset));
-            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSubsetOf(equivSuperset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSubsetOf(equivSuperset.AsCharSequence()));
+            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSubsetOf(equivSuperset.AsCharSequence()));
         }
 
 #if FEATURE_SPAN
 
-
         [Test]
         public void TestIsProperSubsetOf_ReadOnlySpan()
         {
-            var equivEmptySet = "".AsSpan();
-            var equivSet = "ABCDEF".AsSpan();
-            var equivSubset = "CDEAF".AsSpan();
-            var equivSuperset = "ABCDEFG".AsSpan();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSubsetOf);
 
             // Test empty set
-            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSubsetOf(equivEmptySet));
-            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSubsetOf(equivEmptySet));
+            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", aThruFSet.IsProperSubsetOf(equivEmptySet.AsSpan()));
+            assertFalse($"{methodName}: {nameof(thaiWordSet)} is a {setOperation} of {nameof(equivEmptySet)}", emptySet.IsProperSubsetOf(equivEmptySet.AsSpan()));
 
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSubsetOf(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSubset)} is not a {setOperation} of {nameof(equivSet)}", aThruFSubset.IsProperSubsetOf(equivSet));
-            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSubsetOf(equivSubset));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSet)}", aThruFSet.IsProperSubsetOf(equivSet.AsSpan()));
+            assertTrue($"{methodName}: {nameof(aThruFSubset)} is not a {setOperation} of {nameof(equivSet)}", aThruFSubset.IsProperSubsetOf(equivSet.AsSpan()));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSubset)}", aThruFSet.IsProperSubsetOf(equivSubset.AsSpan()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSubsetOf(equivSuperset));
-            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSubsetOf(equivSuperset));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSubsetOf(equivSuperset.AsSpan()));
+            assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSubsetOf(equivSuperset.AsSpan()));
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
 
         [Test]
@@ -1067,6 +1077,7 @@ namespace ICU4N.Text
             var equivSet = "ABCDEF";
             var equivSubset = "CDEAF";
             var equivSuperset = "ABCDEFG";
+
             string setOperation = "overlap", methodName = nameof(UnicodeSet.Overlaps);
 
             // Test empty set
@@ -1084,20 +1095,21 @@ namespace ICU4N.Text
         [Test]
         public void TestOverlaps_StringBuilder()
         {
-            var equivEmptySet = new StringBuilder("");
-            var equivSet = new StringBuilder("ABCDEF");
-            var equivSubset = new StringBuilder("CDEAF");
-            var equivSuperset = new StringBuilder("ABCDEFG");
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "overlap", methodName = nameof(UnicodeSet.Overlaps);
 
             // Test empty set
-            assertFalse($"{methodName}: {nameof(aThruFSet)} does {setOperation} with {nameof(equivEmptySet)}", aThruFSet.Overlaps(equivEmptySet));
-            assertFalse($"{methodName}: {nameof(emptySet)} does {setOperation} with {nameof(equivEmptySet)}", emptySet.Overlaps(equivEmptySet));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} does {setOperation} with {nameof(equivEmptySet)}", aThruFSet.Overlaps(new StringBuilder(equivEmptySet)));
+            assertFalse($"{methodName}: {nameof(emptySet)} does {setOperation} with {nameof(equivEmptySet)}", emptySet.Overlaps(new StringBuilder(equivEmptySet)));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSet)}", aThruFSet.Overlaps(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSubset)}", aThruFSet.Overlaps(equivSubset));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSuperset)}", aThruFSet.Overlaps(equivSuperset));
-            assertFalse($"{methodName}: {nameof(thaiWordSet)} does {setOperation} with {nameof(equivSet)}", thaiWordSet.Overlaps(equivSet));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSet)}", aThruFSet.Overlaps(new StringBuilder(equivSet)));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSubset)}", aThruFSet.Overlaps(new StringBuilder(equivSubset)));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSuperset)}", aThruFSet.Overlaps(new StringBuilder(equivSuperset)));
+            assertFalse($"{methodName}: {nameof(thaiWordSet)} does {setOperation} with {nameof(equivSet)}", thaiWordSet.Overlaps(new StringBuilder(equivSet)));
         }
 
 
@@ -1105,20 +1117,21 @@ namespace ICU4N.Text
         [Test]
         public void TestOverlaps_CharArray()
         {
-            var equivEmptySet = "".ToCharArray();
-            var equivSet = "ABCDEF".ToCharArray();
-            var equivSubset = "CDEAF".ToCharArray();
-            var equivSuperset = "ABCDEFG".ToCharArray();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "overlap", methodName = nameof(UnicodeSet.Overlaps);
 
             // Test empty set
-            assertFalse($"{methodName}: {nameof(aThruFSet)} does {setOperation} with {nameof(equivEmptySet)}", aThruFSet.Overlaps(equivEmptySet));
-            assertFalse($"{methodName}: {nameof(emptySet)} does {setOperation} with {nameof(equivEmptySet)}", emptySet.Overlaps(equivEmptySet));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} does {setOperation} with {nameof(equivEmptySet)}", aThruFSet.Overlaps(equivEmptySet.ToCharArray()));
+            assertFalse($"{methodName}: {nameof(emptySet)} does {setOperation} with {nameof(equivEmptySet)}", emptySet.Overlaps(equivEmptySet.ToCharArray()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSet)}", aThruFSet.Overlaps(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSubset)}", aThruFSet.Overlaps(equivSubset));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSuperset)}", aThruFSet.Overlaps(equivSuperset));
-            assertFalse($"{methodName}: {nameof(thaiWordSet)} does {setOperation} with {nameof(equivSet)}", thaiWordSet.Overlaps(equivSet));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSet)}", aThruFSet.Overlaps(equivSet.ToCharArray()));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSubset)}", aThruFSet.Overlaps(equivSubset.ToCharArray()));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSuperset)}", aThruFSet.Overlaps(equivSuperset.ToCharArray()));
+            assertFalse($"{methodName}: {nameof(thaiWordSet)} does {setOperation} with {nameof(equivSet)}", thaiWordSet.Overlaps(equivSet.ToCharArray()));
         }
 
 
@@ -1126,45 +1139,45 @@ namespace ICU4N.Text
         [Test]
         public void TestOverlaps_CharSequence()
         {
-            var equivEmptySet = "".AsCharSequence();
-            var equivSet = "ABCDEF".AsCharSequence();
-            var equivSubset = "CDEAF".AsCharSequence();
-            var equivSuperset = "ABCDEFG".AsCharSequence();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "overlap", methodName = nameof(UnicodeSet.Overlaps);
 
             // Test empty set
-            assertFalse($"{methodName}: {nameof(aThruFSet)} does {setOperation} with {nameof(equivEmptySet)}", aThruFSet.Overlaps(equivEmptySet));
-            assertFalse($"{methodName}: {nameof(emptySet)} does {setOperation} with {nameof(equivEmptySet)}", emptySet.Overlaps(equivEmptySet));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} does {setOperation} with {nameof(equivEmptySet)}", aThruFSet.Overlaps(equivEmptySet.AsCharSequence()));
+            assertFalse($"{methodName}: {nameof(emptySet)} does {setOperation} with {nameof(equivEmptySet)}", emptySet.Overlaps(equivEmptySet.AsCharSequence()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSet)}", aThruFSet.Overlaps(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSubset)}", aThruFSet.Overlaps(equivSubset));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSuperset)}", aThruFSet.Overlaps(equivSuperset));
-            assertFalse($"{methodName}: {nameof(thaiWordSet)} does {setOperation} with {nameof(equivSet)}", thaiWordSet.Overlaps(equivSet));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSet)}", aThruFSet.Overlaps(equivSet.AsCharSequence()));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSubset)}", aThruFSet.Overlaps(equivSubset.AsCharSequence()));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSuperset)}", aThruFSet.Overlaps(equivSuperset.AsCharSequence()));
+            assertFalse($"{methodName}: {nameof(thaiWordSet)} does {setOperation} with {nameof(equivSet)}", thaiWordSet.Overlaps(equivSet.AsCharSequence()));
         }
 
 #if FEATURE_SPAN
 
-
         [Test]
         public void TestOverlaps_ReadOnlySpan()
         {
-            var equivEmptySet = "".AsSpan();
-            var equivSet = "ABCDEF".AsSpan();
-            var equivSubset = "CDEAF".AsSpan();
-            var equivSuperset = "ABCDEFG".AsSpan();
+            var equivEmptySet = "";
+            var equivSet = "ABCDEF";
+            var equivSubset = "CDEAF";
+            var equivSuperset = "ABCDEFG";
+
             string setOperation = "overlap", methodName = nameof(UnicodeSet.Overlaps);
 
             // Test empty set
-            assertFalse($"{methodName}: {nameof(aThruFSet)} does {setOperation} with {nameof(equivEmptySet)}", aThruFSet.Overlaps(equivEmptySet));
-            assertFalse($"{methodName}: {nameof(emptySet)} does {setOperation} with {nameof(equivEmptySet)}", emptySet.Overlaps(equivEmptySet));
+            assertFalse($"{methodName}: {nameof(aThruFSet)} does {setOperation} with {nameof(equivEmptySet)}", aThruFSet.Overlaps(equivEmptySet.AsSpan()));
+            assertFalse($"{methodName}: {nameof(emptySet)} does {setOperation} with {nameof(equivEmptySet)}", emptySet.Overlaps(equivEmptySet.AsSpan()));
 
-            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSet)}", aThruFSet.Overlaps(equivSet));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSubset)}", aThruFSet.Overlaps(equivSubset));
-            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSuperset)}", aThruFSet.Overlaps(equivSuperset));
-            assertFalse($"{methodName}: {nameof(thaiWordSet)} does {setOperation} with {nameof(equivSet)}", thaiWordSet.Overlaps(equivSet));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSet)}", aThruFSet.Overlaps(equivSet.AsSpan()));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSubset)}", aThruFSet.Overlaps(equivSubset.AsSpan()));
+            assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSuperset)}", aThruFSet.Overlaps(equivSuperset.AsSpan()));
+            assertFalse($"{methodName}: {nameof(thaiWordSet)} does {setOperation} with {nameof(equivSet)}", thaiWordSet.Overlaps(equivSet.AsSpan()));
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
 
         [Test]
@@ -1363,4 +1376,3 @@ namespace ICU4N.Text
 
             }
 }
-

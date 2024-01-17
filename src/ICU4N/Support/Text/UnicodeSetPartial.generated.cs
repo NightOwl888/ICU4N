@@ -133,7 +133,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -148,8 +147,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return AddAll(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Complement the specified string in this set.
@@ -227,7 +225,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Complement the specified string in this set.
         /// The set will not contain the specified string once the call
@@ -245,8 +242,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return Complement(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
@@ -312,7 +308,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -327,8 +322,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return ComplementAll(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
@@ -438,7 +432,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Returns true if this set contains one or more of the characters
         /// of the given string.
@@ -453,8 +446,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return ContainsSome(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <seealso cref="Overlaps(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
@@ -608,7 +600,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -623,8 +614,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return RemoveAll(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Retain the specified string in this set if it is present.
@@ -694,7 +684,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Retain the specified string in this set if it is present.
         /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
@@ -710,8 +699,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(cs));
             return Retain(cs);
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <seealso cref="IntersectWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
@@ -821,7 +809,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -836,8 +823,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return RetainAll(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
 // ***** .NET ISet<T> overloads that are missing from ICU4J *****
 
@@ -898,7 +884,6 @@ namespace ICU4N.Text
         }
     
 #if FEATURE_SPAN
-
     
         /// <summary>
         /// Returns true if this set contains all of the characters
@@ -915,8 +900,7 @@ namespace ICU4N.Text
 
             return Span(s, SpanCondition.Contained) == s.Length;
         }
-    #endif 
-
+    #endif // FEATURE_SPAN
 
 
         /// <summary>
@@ -991,7 +975,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Returns true if this set contains all of the characters
         /// of the given <see cref="ReadOnlySpan{Char}"/> plus at least one additional character.
@@ -1008,8 +991,7 @@ namespace ICU4N.Text
             int contained = Span(s, SpanCondition.Contained);
             return contained == s.Length && contained < this.Count;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a proper superset of the specified collection.
@@ -1208,7 +1190,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Returns true if this set contains all of the characters
         /// of the given <see cref="ReadOnlySpan{Char}"/> plus at least one additional character.
@@ -1224,8 +1205,7 @@ namespace ICU4N.Text
 
             return Span(s, SpanCondition.Contained) == this.Count;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a subset of the specified collection.
@@ -1265,7 +1245,7 @@ namespace ICU4N.Text
             foreach (var o in collection)
             {
                 if (Contains(o))
-                    found.Add(o.ToString());
+                    found.Add(o);
                 else
                     unfoundCount++;
             }
@@ -1484,7 +1464,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Returns true if this set contains all of the characters
         /// of the given <see cref="ReadOnlySpan{Char}"/> plus at least one additional character.
@@ -1501,8 +1480,7 @@ namespace ICU4N.Text
             int count = this.Count;
             return count < s.Length && Span(s, SpanCondition.Contained) == count;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <summary>
         /// Determines whether a <see cref="UnicodeSet"/> object is a proper subset of the specified collection.
@@ -1541,7 +1519,7 @@ namespace ICU4N.Text
             foreach (var o in collection)
             {
                 if (Contains(o))
-                    found.Add(o.ToString());
+                    found.Add(o);
                 else
                     unfoundCount++;
             }
@@ -1753,7 +1731,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Returns true if this set contains all of the characters
         /// of the given <see cref="ReadOnlySpan{Char}"/> and contains no aditional characters.
@@ -1769,8 +1746,7 @@ namespace ICU4N.Text
 
             return s.Length == this.Count && Span(s, SpanCondition.Contained) == s.Length;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <summary>
         /// Checks if this and other contain the same elements. This is set equality: 

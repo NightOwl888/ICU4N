@@ -159,7 +159,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -178,8 +177,7 @@ namespace ICU4N.Text
             }
             return this;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Complement the specified string in this set.
@@ -197,7 +195,7 @@ namespace ICU4N.Text
             int cp = GetSingleCP(s);
             if (cp < 0)
             {
-                string s2 = s.ToString();
+                string s2 = s;
                 if (strings.Contains(s2))
                 {
                     strings.Remove(s2);
@@ -321,7 +319,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Complement the specified string in this set.
         /// The set will not contain the specified string once the call
@@ -355,8 +352,7 @@ namespace ICU4N.Text
             }
             return this;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
@@ -410,7 +406,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -422,8 +417,7 @@ namespace ICU4N.Text
         {
             return ComplementAll(FromAll(s));
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <seealso cref="ContainsAll(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
@@ -537,7 +531,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Returns true if this set contains one or more of the characters
         /// of the given string.
@@ -549,8 +542,7 @@ namespace ICU4N.Text
         {
             return !ContainsNone(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <seealso cref="ContainsSome(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
@@ -688,7 +680,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -700,8 +691,7 @@ namespace ICU4N.Text
         {
             return RemoveAll(FromAll(s));
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Retain the specified string in this set if it is present.
@@ -716,7 +706,7 @@ namespace ICU4N.Text
             int cp = GetSingleCP(cs);
             if (cp < 0)
             {
-                string s = cs.ToString();
+                string s = cs;
                 bool isIn = strings.Contains(s);
                 if (isIn && Count == 1)
                 {
@@ -827,7 +817,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Retain the specified string in this set if it is present.
         /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
@@ -857,8 +846,7 @@ namespace ICU4N.Text
             }
             return this;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <seealso cref="RetainAll(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
@@ -964,7 +952,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -976,8 +963,7 @@ namespace ICU4N.Text
         {
             return RetainAll(FromAll(s));
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         // TODO: create IAppendable version of UTF16.Append(buf, c),
         // maybe in new class Appendables?
@@ -1002,6 +988,7 @@ namespace ICU4N.Text
             }
         }
 
+
         // TODO: create IAppendable version of UTF16.Append(buf, c),
         // maybe in new class Appendables?
         /// <exception cref="IOException"/>
@@ -1024,6 +1011,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
+
     
         // TODO: create class Appendables?
         /// <exception cref="IOException"/>
@@ -1038,7 +1026,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-    
+
     
         // TODO: create class Appendables?
         /// <exception cref="IOException"/>
@@ -1053,7 +1041,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-    
+
     
         // TODO: create class Appendables?
         /// <exception cref="IOException"/>
@@ -1068,7 +1056,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-    
+
     
         // TODO: create class Appendables?
         /// <exception cref="IOException"/>
@@ -1083,9 +1071,8 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-    
-    #if FEATURE_SPAN
 
+    #if FEATURE_SPAN
         // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(StringBuilder app, ReadOnlySpan<char> s)
@@ -1099,8 +1086,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-    #endif 
-
+#endif // FEATURE_SPAN
         
         // TODO: create class Appendables?
         /// <exception cref="IOException"/>
@@ -1115,7 +1101,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-    
+
     
         // TODO: create class Appendables?
         /// <exception cref="IOException"/>
@@ -1130,7 +1116,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-    
+
     
         // TODO: create class Appendables?
         /// <exception cref="IOException"/>
@@ -1145,7 +1131,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-    
+
     
         // TODO: create class Appendables?
         /// <exception cref="IOException"/>
@@ -1160,9 +1146,8 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-    
-    #if FEATURE_SPAN
 
+    #if FEATURE_SPAN
         // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(IAppendable app, ReadOnlySpan<char> s)
@@ -1176,8 +1161,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-    #endif 
-
+#endif // FEATURE_SPAN
     
         /// <summary>
         /// Append the <see cref="ToPattern(bool)"/> representation of a
@@ -1194,6 +1178,7 @@ namespace ICU4N.Text
             return buf;
         }
 
+
         /// <summary>
         /// Append the <see cref="ToPattern(bool)"/> representation of a
         /// string to the given <see cref="IAppendable"/>.
@@ -1208,6 +1193,7 @@ namespace ICU4N.Text
             }
             return buf;
         }
+
 
         /// <summary>
         /// Append the <see cref="ToPattern(bool)"/> representation of a
@@ -1258,6 +1244,7 @@ namespace ICU4N.Text
             }
         }
 
+
         /// <summary>
         /// Append the <see cref="ToPattern(bool)"/> representation of a
         /// character to the given <see cref="IAppendable"/>.
@@ -1306,6 +1293,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
+
 
         /// <summary>
         /// Append a string representation of this set to result.  This will be
@@ -1365,6 +1353,7 @@ namespace ICU4N.Text
             }
         }
 
+
         /// <summary>
         /// Append a string representation of this set to result.  This will be
         /// a cleaned version of the string passed to ApplyPattern(), if there
@@ -1422,6 +1411,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
+
 
         private StringBuilder AppendNewPattern(StringBuilder result, bool escapeUnprintable, bool includeStrings)
         {
@@ -1495,6 +1485,7 @@ namespace ICU4N.Text
             }
         }
 
+
         private T AppendNewPattern<T>(T result, bool escapeUnprintable, bool includeStrings) where T : IAppendable
         {
             try
@@ -1566,6 +1557,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
+
 
         /// <summary>
         /// Tests whether the text matches at the offset. If so, returns the end of the longest substring that it matches. If not, returns -1.
@@ -1755,7 +1747,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Tests whether the text matches at the offset. If so, returns the end of the longest substring that it matches. If not, returns -1.
         /// </summary>
@@ -1801,8 +1792,7 @@ namespace ICU4N.Text
 
             return offset + lastLen;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
@@ -1912,7 +1902,6 @@ namespace ICU4N.Text
         }
 
     #if FEATURE_SPAN
-
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1938,8 +1927,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-#endif 
-
+#endif // FEATURE_SPAN
         
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
@@ -2049,7 +2037,6 @@ namespace ICU4N.Text
         }
 
     #if FEATURE_SPAN
-
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -2075,8 +2062,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-#endif 
-
+#endif // FEATURE_SPAN
         
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
@@ -2186,7 +2172,6 @@ namespace ICU4N.Text
         }
 
     #if FEATURE_SPAN
-
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -2212,8 +2197,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-#endif 
-
+#endif // FEATURE_SPAN
         
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
@@ -2323,7 +2307,6 @@ namespace ICU4N.Text
         }
 
     #if FEATURE_SPAN
-
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -2349,10 +2332,8 @@ namespace ICU4N.Text
             }
             return i;
         }
-#endif 
-
+#endif // FEATURE_SPAN
         #if FEATURE_SPAN
-
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -2378,10 +2359,8 @@ namespace ICU4N.Text
             }
             return i;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     #if FEATURE_SPAN
-
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -2407,10 +2386,8 @@ namespace ICU4N.Text
             }
             return i;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     #if FEATURE_SPAN
-
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -2436,10 +2413,8 @@ namespace ICU4N.Text
             }
             return i;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     #if FEATURE_SPAN
-
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -2465,10 +2440,8 @@ namespace ICU4N.Text
             }
             return i;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     #if FEATURE_SPAN
-
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -2494,8 +2467,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <summary>
         /// Adds the specified multicharacter to this set if it is not already
@@ -2514,7 +2486,7 @@ namespace ICU4N.Text
             int cp = GetSingleCP(s);
             if (cp < 0)
             {
-                strings.Add(s.ToString());
+                strings.Add(s);
                 pat = null;
             }
             else
@@ -2609,7 +2581,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Adds the specified multicharacter to this set if it is not already
         /// present.  If this set already contains the multicharacter,
@@ -2636,8 +2607,7 @@ namespace ICU4N.Text
             }
             return this;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Utility for getting code point from single code point <see cref="string"/>.
@@ -2739,7 +2709,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Utility for getting code point from single code point <see cref="ReadOnlySpan{Char}"/>.
         /// See the public <see cref="UTF16.GetSingleCodePoint(ReadOnlySpan{Char})"/>.
@@ -2763,8 +2732,7 @@ namespace ICU4N.Text
             }
             return -1;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
 
         /// <summary>
@@ -2823,7 +2791,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Makes a set from a multicharacter string. Thus "ch" =&gt; {"ch"}
         /// <para/>
@@ -2836,8 +2803,7 @@ namespace ICU4N.Text
         {
             return new UnicodeSet().Add(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Makes a set from each of the characters in the string. Thus "ch" =&gt; {"c", "h"}
@@ -2887,7 +2853,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Makes a set from each of the characters in the string. Thus "ch" =&gt; {"c", "h"}
         /// </summary>
@@ -2898,8 +2863,7 @@ namespace ICU4N.Text
         {
             return new UnicodeSet().AddAll(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Removes the specified string from this set if it is present.
@@ -2914,7 +2878,7 @@ namespace ICU4N.Text
             int cp = GetSingleCP(s);
             if (cp < 0)
             {
-                strings.Remove(s.ToString());
+                strings.Remove(s);
                 pat = null;
             }
             else
@@ -2997,7 +2961,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Removes the specified string from this set if it is present.
         /// The set will not contain the specified string once the call
@@ -3020,8 +2983,7 @@ namespace ICU4N.Text
             }
             return this;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Returns <tt>true</tt> if this set contains the given
@@ -3035,7 +2997,7 @@ namespace ICU4N.Text
             int cp = GetSingleCP(s);
             if (cp < 0)
             {
-                return strings.Contains(s.ToString());
+                return strings.Contains(s);
             }
             else
             {
@@ -3107,7 +3069,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Returns <tt>true</tt> if this set contains the given
         /// multicharacter string.
@@ -3127,8 +3088,7 @@ namespace ICU4N.Text
                 return Contains(cp);
             }
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Returns true if this set contains none of the characters
@@ -3182,7 +3142,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Returns true if this set contains none of the characters
         /// of the given string.
@@ -3194,8 +3153,7 @@ namespace ICU4N.Text
         {
             return Span(s, SpanCondition.NotContained) == s.Length;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Span a string using this UnicodeSet.
@@ -3257,7 +3215,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Span a string using this UnicodeSet.
         /// <para/>
@@ -3271,8 +3228,7 @@ namespace ICU4N.Text
         {
             return Span(s, 0, spanCondition);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Span a string using this <see cref="UnicodeSet"/>.
@@ -3474,7 +3430,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Span a string using this <see cref="UnicodeSet"/>.
         /// <list type="bullet">
@@ -3523,8 +3478,7 @@ namespace ICU4N.Text
 
             return SpanCodePointsAndCount(s, start, spanCondition, out ignoredOutCount);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Same as <see cref="Span(string, SpanCondition)"/> but also counts the smallest number of set elements on any path across the span.
@@ -3710,7 +3664,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Same as <see cref="Span(ReadOnlySpan{Char}, SpanCondition)"/> but also counts the smallest number of set elements on any path across the span.
         /// <para/>
@@ -3755,8 +3708,7 @@ namespace ICU4N.Text
 
             return SpanCodePointsAndCount(s, start, spanCondition, out outCount);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         private int SpanCodePointsAndCount(string s, int start,
             SpanCondition spanCondition, out int outCount)
@@ -3858,7 +3810,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         private int SpanCodePointsAndCount(ReadOnlySpan<char> s, int start,
             SpanCondition spanCondition, out int outCount)
         {
@@ -3882,8 +3833,7 @@ namespace ICU4N.Text
             outCount = count;
             return next;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Span a string backwards (from the end) using this <see cref="UnicodeSet"/>.
@@ -3945,7 +3895,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Span a string backwards (from the end) using this <see cref="UnicodeSet"/>.
         /// <para/>
@@ -3959,8 +3908,7 @@ namespace ICU4N.Text
         {
             return SpanBack(s, s.Length, spanCondition);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Span a string backwards (from the <paramref name="fromIndex"/>) using this <see cref="UnicodeSet"/>.
@@ -4206,7 +4154,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Span a string backwards (from the <paramref name="fromIndex"/>) using this <see cref="UnicodeSet"/>.
         /// If the <paramref name="fromIndex"/> is less than 0, SpanBack will return 0.
@@ -4266,8 +4213,7 @@ namespace ICU4N.Text
             } while (prev > 0);
             return prev;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     
         /// <seealso cref="ContainsNone(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
@@ -4393,7 +4339,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Utility to compare a string to a code point.
         /// Same results as turning the code point into a string (with the [ugly] new StringBuilder().AppendCodePoint(codepoint).ToString())
@@ -4408,8 +4353,7 @@ namespace ICU4N.Text
             return CharSequences.Compare(str, codePoint);
 #pragma warning restore 612, 618
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Utility to compare a string to a code point.
@@ -4471,7 +4415,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Utility to compare a string to a code point.
         /// Same results as turning the code point into a string and comparing, but much faster (no object creation).
@@ -4485,8 +4428,7 @@ namespace ICU4N.Text
             return -CharSequences.Compare(str, codePoint);
 #pragma warning restore 612, 618
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Return the value of the first code point, if the string is exactly one code point. 
@@ -4532,7 +4474,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Return the value of the first code point, if the string is exactly one code point. 
         /// Otherwise return <see cref="int.MaxValue"/>.
@@ -4542,8 +4483,7 @@ namespace ICU4N.Text
         {
             return CharSequences.GetSingleCodePoint(s);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Find the first index at or after <paramref name="fromIndex"/> where the <see cref="UnicodeSet"/> matches at that index.
@@ -4633,7 +4573,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Find the first index at or after <paramref name="fromIndex"/> where the <see cref="UnicodeSet"/> matches at that index.
         /// If <paramref name="findNot"/> is true, then reverse the sense of the match: find the first place where the <see cref="UnicodeSet"/> doesn't match.
@@ -4654,8 +4593,7 @@ namespace ICU4N.Text
             }
             return fromIndex;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Find the last index before <paramref name="fromIndex"/> where the <see cref="UnicodeSet"/> matches at that index.
@@ -4753,7 +4691,6 @@ namespace ICU4N.Text
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Find the last index before <paramref name="fromIndex"/> where the <see cref="UnicodeSet"/> matches at that index.
         /// If <paramref name="findNot"/> is true, then reverse the sense of the match: find the last place where the <see cref="UnicodeSet"/> doesn't match.
@@ -4776,8 +4713,7 @@ namespace ICU4N.Text
             }
             return fromIndex < 0 ? -1 : fromIndex;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Strips code points from source. If matches is true, script all that match <i>this</i>. 
@@ -4798,6 +4734,7 @@ namespace ICU4N.Text
 #else
                 result.Append(source.Subsequence(pos, inside - pos)); // ICU4N: Corrected 2nd parameter
 #endif
+
                 pos = FindIn(source, inside, matches); // get next start
             }
             return result.ToString();
@@ -4818,7 +4755,12 @@ namespace ICU4N.Text
             for (int pos = 0; pos < source.Length;)
             {
                 int inside = FindIn(source, pos, !matches);
+#if FEATURE_SPAN
+                result.Append(source.ToString(pos, inside - pos)); // ICU4N: Corrected 2nd parameter
+#else
                 result.Append(source.Subsequence(pos, inside - pos)); // ICU4N: Corrected 2nd parameter
+#endif
+
                 pos = FindIn(source, inside, matches); // get next start
             }
             return result.ToString();
@@ -4844,6 +4786,7 @@ namespace ICU4N.Text
 #else
                 result.Append(source.Subsequence(pos, inside - pos)); // ICU4N: Corrected 2nd parameter
 #endif
+
                 pos = FindIn(source, inside, matches); // get next start
             }
             return result.ToString();
@@ -4864,14 +4807,18 @@ namespace ICU4N.Text
             for (int pos = 0; pos < source.Length;)
             {
                 int inside = FindIn(source, pos, !matches);
+#if FEATURE_SPAN
                 result.Append(source.Subsequence(pos, inside - pos)); // ICU4N: Corrected 2nd parameter
+#else
+                result.Append(source.Subsequence(pos, inside - pos)); // ICU4N: Corrected 2nd parameter
+#endif
+
                 pos = FindIn(source, inside, matches); // get next start
             }
             return result.ToString();
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Strips code points from source. If matches is true, script all that match <i>this</i>. 
         /// If matches is false, then strip all that <i>don't</i> match.
@@ -4886,12 +4833,16 @@ namespace ICU4N.Text
             for (int pos = 0; pos < source.Length;)
             {
                 int inside = FindIn(source, pos, !matches);
+#if FEATURE_SPAN
                 result.Append(source.Slice(pos, inside - pos)); // ICU4N: Corrected 2nd parameter
+#else
+                result.Append(source.Subsequence(pos, inside - pos)); // ICU4N: Corrected 2nd parameter
+#endif
+
                 pos = FindIn(source, inside, matches); // get next start
             }
             return result.ToString();
         }
-#endif 
-
+#endif // FEATURE_SPAN
     }
 }

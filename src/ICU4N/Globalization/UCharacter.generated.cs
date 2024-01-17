@@ -17,6 +17,7 @@ namespace ICU4N
 {
     public static partial class UChar
     {
+
         /// <summary>
         /// Return the <see cref="UProperty"/> selector for a given property name, as
         /// specified in the Unicode database file PropertyAliases.txt.
@@ -46,6 +47,7 @@ namespace ICU4N
             }
             return propEnum;
         }
+
 
         /// <summary>
         /// Return the <see cref="UProperty"/> selector for a given property name, as
@@ -77,6 +79,7 @@ namespace ICU4N
             return propEnum;
         }
 
+
         /// <summary>
         /// Return the <see cref="UProperty"/> selector for a given property name, as
         /// specified in the Unicode database file PropertyAliases.txt.
@@ -106,6 +109,7 @@ namespace ICU4N
             }
             return propEnum;
         }
+
 
         /// <summary>
         /// Return the <see cref="UProperty"/> selector for a given property name, as
@@ -154,7 +158,7 @@ namespace ICU4N
         /// <returns>a <see cref="UProperty"/> enum.</returns>
         /// <exception cref="ArgumentException">thrown if <paramref name="propertyAlias"/> is not recognized.</exception>
         /// <seealso cref="UProperty"/>
-        /// <seealso cref="TryGetPropertyEnum(ReadOnlySpan{char}, out int)"/>
+        /// <seealso cref="TryGetPropertyEnum(ReadOnlySpan{Char}, out int)"/>
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyEnum(ReadOnlySpan<char> propertyAlias)
         {
@@ -167,7 +171,7 @@ namespace ICU4N
             }
             return propEnum;
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Get the <see cref="UProperty"/> selector for a given property name, as
@@ -188,7 +192,7 @@ namespace ICU4N
         /// </returns>
         /// <seealso cref="UProperty"/>
         /// <seealso cref="GetPropertyEnum(string)"/>
-        /// <stable>ICU4N 60.1.0</stable>
+        /// <stable>ICU4N 60.1</stable>
         public static bool TryGetPropertyEnum(string propertyAlias, out int result) // ICU4N TODO: Tests
         {
             result = 0;
@@ -202,6 +206,7 @@ namespace ICU4N
             result = propEnum;
             return true;
         }
+
 
         /// <summary>
         /// Get the <see cref="UProperty"/> selector for a given property name, as
@@ -222,7 +227,7 @@ namespace ICU4N
         /// </returns>
         /// <seealso cref="UProperty"/>
         /// <seealso cref="GetPropertyEnum(StringBuilder)"/>
-        /// <stable>ICU4N 60.1.0</stable>
+        /// <stable>ICU4N 60.1</stable>
         public static bool TryGetPropertyEnum(StringBuilder propertyAlias, out int result) // ICU4N TODO: Tests
         {
             result = 0;
@@ -236,6 +241,7 @@ namespace ICU4N
             result = propEnum;
             return true;
         }
+
 
         /// <summary>
         /// Get the <see cref="UProperty"/> selector for a given property name, as
@@ -256,7 +262,7 @@ namespace ICU4N
         /// </returns>
         /// <seealso cref="UProperty"/>
         /// <seealso cref="GetPropertyEnum(char[])"/>
-        /// <stable>ICU4N 60.1.0</stable>
+        /// <stable>ICU4N 60.1</stable>
         public static bool TryGetPropertyEnum(char[] propertyAlias, out int result) // ICU4N TODO: Tests
         {
             result = 0;
@@ -270,6 +276,7 @@ namespace ICU4N
             result = propEnum;
             return true;
         }
+
 
         /// <summary>
         /// Get the <see cref="UProperty"/> selector for a given property name, as
@@ -290,7 +297,7 @@ namespace ICU4N
         /// </returns>
         /// <seealso cref="UProperty"/>
         /// <seealso cref="GetPropertyEnum(ICharSequence)"/>
-        /// <stable>ICU4N 60.1.0</stable>
+        /// <stable>ICU4N 60.1</stable>
         public static bool TryGetPropertyEnum(ICharSequence propertyAlias, out int result) // ICU4N TODO: Tests
         {
             result = 0;
@@ -324,8 +331,8 @@ namespace ICU4N
         /// true if <paramref name="propertyAlias"/> is valid, othewise false.
         /// </returns>
         /// <seealso cref="UProperty"/>
-        /// <seealso cref="GetPropertyEnum(ReadOnlySpan{char})"/>
-        /// <stable>ICU4N 60.1.0</stable>
+        /// <seealso cref="GetPropertyEnum(ReadOnlySpan{Char})"/>
+        /// <stable>ICU4N 60.1</stable>
         public static bool TryGetPropertyEnum(ReadOnlySpan<char> propertyAlias, out int result) // ICU4N TODO: Tests
         {
             result = 0;
@@ -339,7 +346,7 @@ namespace ICU4N
             result = propEnum;
             return true;
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Return the property value integer for a given value name, as
@@ -387,6 +394,7 @@ namespace ICU4N
             return propEnum;
         }
 
+
         /// <summary>
         /// Return the property value integer for a given value name, as
         /// specified in the Unicode database file PropertyValueAliases.txt.
@@ -433,6 +441,7 @@ namespace ICU4N
             return propEnum;
         }
 
+
         /// <summary>
         /// Return the property value integer for a given value name, as
         /// specified in the Unicode database file PropertyValueAliases.txt.
@@ -478,6 +487,7 @@ namespace ICU4N
             }
             return propEnum;
         }
+
 
         /// <summary>
         /// Return the property value integer for a given value name, as
@@ -558,7 +568,7 @@ namespace ICU4N
         /// selector or <paramref name="valueAlias"/> is not a value of this <paramref name="property"/>
         /// </exception>
         /// <seealso cref="UProperty"/>
-        /// <seealso cref="TryGetPropertyValueEnum(UProperty, ReadOnlySpan{char}, out int)"/>
+        /// <seealso cref="TryGetPropertyValueEnum(UProperty, ReadOnlySpan{Char}, out int)"/>
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyValueEnum(UProperty property, ReadOnlySpan<char> valueAlias)
         {
@@ -571,7 +581,7 @@ namespace ICU4N
             }
             return propEnum;
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Gets the property value integer for a given value name, as
@@ -614,6 +624,7 @@ namespace ICU4N
             return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 
+
         /// <summary>
         /// Gets the property value integer for a given value name, as
         /// specified in the Unicode database file PropertyValueAliases.txt.
@@ -655,6 +666,7 @@ namespace ICU4N
             return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 
+
         /// <summary>
         /// Gets the property value integer for a given value name, as
         /// specified in the Unicode database file PropertyValueAliases.txt.
@@ -695,6 +707,7 @@ namespace ICU4N
         {
             return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
+
 
         /// <summary>
         /// Gets the property value integer for a given value name, as
@@ -772,13 +785,13 @@ namespace ICU4N
         /// </returns>
         /// <see cref="UProperty"/>
         /// <stable>ICU 60.1</stable>
-        /// <seealso cref="GetPropertyValueEnum(UProperty, ReadOnlySpan{char})"/>
+        /// <seealso cref="GetPropertyValueEnum(UProperty, ReadOnlySpan{Char})"/>
         // ICU4N specific
         public static bool TryGetPropertyValueEnum(UProperty property, ReadOnlySpan<char> valueAlias, out int result) // ICU4N TODO: Tests
         {
             return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Same as <see cref="Character.CodePointAt(string, int)"/>.
@@ -810,6 +823,7 @@ namespace ICU4N
             return c1;
         }
 
+
         /// <summary>
         /// Same as <see cref="Character.CodePointAt(StringBuilder, int)"/>.
         /// Returns the code point at index.
@@ -840,6 +854,7 @@ namespace ICU4N
             return c1;
         }
 
+
         /// <summary>
         /// Same as <see cref="Character.CodePointAt(char[], int)"/>.
         /// Returns the code point at index.
@@ -869,6 +884,7 @@ namespace ICU4N
             }
             return c1;
         }
+
 
         /// <summary>
         /// Same as <see cref="Character.CodePointAt(ICharSequence, int)"/>.
@@ -902,7 +918,7 @@ namespace ICU4N
 
 #if FEATURE_SPAN
         /// <summary>
-        /// Same as <see cref="Character.CodePointAt(ReadOnlySpan{char}, int)"/>.
+        /// Same as <see cref="Character.CodePointAt(ReadOnlySpan{Char}, int)"/>.
         /// Returns the code point at index.
         /// This examines only the characters at index and index+1.
         /// </summary>
@@ -926,7 +942,7 @@ namespace ICU4N
             }
             return c1;
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Same as <see cref="Character.CodePointBefore(string, int)"/>.
@@ -958,6 +974,7 @@ namespace ICU4N
             return c2;
         }
 
+
         /// <summary>
         /// Same as <see cref="Character.CodePointBefore(StringBuilder, int)"/>.
         /// Return the code point before index.
@@ -988,6 +1005,7 @@ namespace ICU4N
             return c2;
         }
 
+
         /// <summary>
         /// Same as <see cref="Character.CodePointBefore(char[], int)"/>.
         /// Return the code point before index.
@@ -1017,6 +1035,7 @@ namespace ICU4N
             }
             return c2;
         }
+
 
         /// <summary>
         /// Same as <see cref="Character.CodePointBefore(ICharSequence, int)"/>.
@@ -1050,7 +1069,7 @@ namespace ICU4N
 
 #if FEATURE_SPAN
         /// <summary>
-        /// Same as <see cref="Character.CodePointBefore(ReadOnlySpan{char}, int)"/>.
+        /// Same as <see cref="Character.CodePointBefore(ReadOnlySpan{Char}, int)"/>.
         /// Return the code point before index.
         /// This examines only the characters at index-1 and index-2.
         /// </summary>
@@ -1074,7 +1093,7 @@ namespace ICU4N
             }
             return c2;
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Equivalent to the <see cref="Character.CodePointCount(string, int, int)"/>
@@ -1116,6 +1135,7 @@ namespace ICU4N
             return len;
         }
 
+
         /// <summary>
         /// Equivalent to the <see cref="Character.CodePointCount(StringBuilder, int, int)"/>
         /// method, for convenience.  Counts the number of code points in the range
@@ -1155,6 +1175,7 @@ namespace ICU4N
             }
             return len;
         }
+
 
         /// <summary>
         /// Equivalent to the <see cref="Character.CodePointCount(char[], int, int)"/>
@@ -1196,6 +1217,7 @@ namespace ICU4N
             return len;
         }
 
+
         /// <summary>
         /// Equivalent to the <see cref="Character.CodePointCount(ICharSequence, int, int)"/>
         /// method, for convenience.  Counts the number of code points in the range
@@ -1236,7 +1258,42 @@ namespace ICU4N
             return len;
         }
 
-    // ICU4N TODO: API - Create overload of CodePointCount(ReadOnlySpan<char>), since passing start and length is superfluous
+#if FEATURE_SPAN
+        /// <summary>
+        /// Equivalent to the <see cref="Character.CodePointCount(ReadOnlySpan{Char})"/>
+        /// method, for convenience.  Counts the number of code points in the range
+        /// of text.
+        /// </summary>
+        /// <param name="text">the characters to check</param>
+        /// <returns>the number of code points in the range</returns>
+        /// <stable>ICU 3.0</stable>
+        public static int CodePointCount(ReadOnlySpan<char> text)
+        {
+            int start = 0, limit = text.Length;
+            if (start < 0 || limit < start || limit > text.Length)
+            {
+                throw new IndexOutOfRangeException("start (" + start +
+                        ") or limit (" + limit +
+                        ") invalid or out of range 0, " + text.Length); // ICU4N TODO: API - Change to ArgumentOutOfRangeException
+            }
+
+            int len = limit - start;
+            while (limit > start)
+            {
+                char ch = text[--limit];
+                while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && limit > start)
+                {
+                    ch = text[--limit];
+                    if (ch >= MinHighSurrogate && ch <= MaxHighSurrogate)
+                    {
+                        --len;
+                        break;
+                    }
+                }
+            }
+            return len;
+        }
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Equivalent to the <see cref="Character.OffsetByCodePoints(string, int, int)"/>
@@ -1300,6 +1357,7 @@ namespace ICU4N
             return index;
         }
 
+
         /// <summary>
         /// Equivalent to the <see cref="Character.OffsetByCodePoints(StringBuilder, int, int)"/>
         /// method, for convenience.  Adjusts the char index by a code point offset.
@@ -1362,6 +1420,7 @@ namespace ICU4N
             return index;
         }
 
+
         /// <summary>
         /// Equivalent to the <see cref="Character.OffsetByCodePoints(char[], int, int)"/>
         /// method, for convenience.  Adjusts the char index by a code point offset.
@@ -1423,6 +1482,7 @@ namespace ICU4N
 
             return index;
         }
+
 
         /// <summary>
         /// Equivalent to the <see cref="Character.OffsetByCodePoints(ICharSequence, int, int)"/>
@@ -1488,7 +1548,7 @@ namespace ICU4N
 
 #if FEATURE_SPAN
         /// <summary>
-        /// Equivalent to the <see cref="Character.OffsetByCodePoints(ReadOnlySpan{char}, int, int)"/>
+        /// Equivalent to the <see cref="Character.OffsetByCodePoints(ReadOnlySpan{Char}, int, int)"/>
         /// method, for convenience.  Adjusts the char index by a code point offset.
         /// </summary>
         /// <param name="text">The characters to check.</param>
@@ -1544,7 +1604,6 @@ namespace ICU4N
 
             return index;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     }
 }

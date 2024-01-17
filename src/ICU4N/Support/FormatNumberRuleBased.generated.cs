@@ -19,6 +19,7 @@ namespace ICU4N
     {
         // byte
 
+
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
         /// <paramref name="ruleSetName"/> and <paramref name="provider"/>.
@@ -124,6 +125,7 @@ namespace ICU4N
         }
 
         // short
+
 
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
@@ -231,6 +233,7 @@ namespace ICU4N
 
         // int
 
+
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
         /// <paramref name="ruleSetName"/> and <paramref name="provider"/>.
@@ -336,6 +339,7 @@ namespace ICU4N
         }
 
         // long
+
 
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
@@ -547,9 +551,9 @@ namespace ICU4N
         {
             return IcuNumber.FormatInt128RuleBased(value, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
-#endif 
-
+#endif // FEATURE_INT128
         // BigInteger
+
 
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
@@ -657,6 +661,7 @@ namespace ICU4N
 
         // nint
 
+
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
         /// <paramref name="ruleSetName"/> and <paramref name="provider"/>.
@@ -762,6 +767,7 @@ namespace ICU4N
         }
 
         // sbyte
+
 
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
@@ -871,6 +877,7 @@ namespace ICU4N
 
         // ushort
 
+
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
         /// <paramref name="ruleSetName"/> and <paramref name="provider"/>.
@@ -979,6 +986,7 @@ namespace ICU4N
 
         // uint
 
+
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
         /// <paramref name="ruleSetName"/> and <paramref name="provider"/>.
@@ -1086,6 +1094,7 @@ namespace ICU4N
         }
 
         // ulong
+
 
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
@@ -1301,9 +1310,9 @@ namespace ICU4N
         {
             return IcuNumber.FormatUInt128RuleBased(value, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
-#endif 
-
+#endif // FEATURE_INT128
         // nuint
+
 
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
@@ -1517,9 +1526,9 @@ namespace ICU4N
         {
             return IcuNumber.FormatDoubleRuleBased((double)value, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
-#endif 
-
+#endif // FEATURE_HALF
         // float
+
 
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
@@ -1627,6 +1636,7 @@ namespace ICU4N
 
         // double
 
+
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
         /// <paramref name="ruleSetName"/> and <paramref name="provider"/>.
@@ -1732,6 +1742,7 @@ namespace ICU4N
         }
 
         // decimal
+
 
         /// <summary>
         /// Formats the specified <paramref name="value"/> using the specified <paramref name="presentation"/>,
@@ -1842,6 +1853,7 @@ namespace ICU4N
 
         // byte
 
+
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
         /// <paramref name="presentation"/>, <paramref name="ruleSetName"/> and <paramref name="provider"/>.
@@ -1950,7 +1962,9 @@ namespace ICU4N
             return IcuNumber.TryFormatInt64RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
+
         // short
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -2060,7 +2074,9 @@ namespace ICU4N
             return IcuNumber.TryFormatInt64RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
+
         // int
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -2170,7 +2186,9 @@ namespace ICU4N
             return IcuNumber.TryFormatInt64RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
+
         // long
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -2279,6 +2297,7 @@ namespace ICU4N
         {
             return IcuNumber.TryFormatInt64RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
+
 
         // Int128
 
@@ -2390,9 +2409,10 @@ namespace ICU4N
         {
             return IcuNumber.TryFormatInt128RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
-#endif 
+#endif // FEATURE_INT128
 
         // BigInteger
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -2502,7 +2522,9 @@ namespace ICU4N
             return IcuNumber.TryFormatBigIntegerRuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
+
         // nint
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -2612,7 +2634,9 @@ namespace ICU4N
             return IcuNumber.TryFormatInt64RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
+
         // sbyte
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -2724,7 +2748,9 @@ namespace ICU4N
             return IcuNumber.TryFormatInt64RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
+
         // ushort
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -2836,7 +2862,9 @@ namespace ICU4N
             return IcuNumber.TryFormatInt64RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
+
         // uint
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -2948,7 +2976,9 @@ namespace ICU4N
             return IcuNumber.TryFormatInt64RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
+
         // ulong
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -3059,6 +3089,7 @@ namespace ICU4N
         {
             return IcuNumber.TryFormatUInt64RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
+
 
         // UInt128
 
@@ -3172,9 +3203,10 @@ namespace ICU4N
         {
             return IcuNumber.TryFormatUInt128RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
-#endif 
+#endif // FEATURE_INT128
 
         // nuint
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -3286,6 +3318,7 @@ namespace ICU4N
             return IcuNumber.TryFormatUInt64RuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
+
         // Half
 
 #if FEATURE_HALF
@@ -3396,9 +3429,10 @@ namespace ICU4N
         {
             return IcuNumber.TryFormatDoubleRuleBased((double)value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
-#endif 
+#endif // FEATURE_HALF
 
         // float
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -3508,7 +3542,9 @@ namespace ICU4N
             return IcuNumber.TryFormatDoubleRuleBased((double)value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
+
         // double
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -3618,7 +3654,9 @@ namespace ICU4N
             return IcuNumber.TryFormatDoubleRuleBased(value, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
+
         // decimal
+
 
         /// <summary>
         /// Tries to format the <paramref name="value"/> into the provided span of characters using the specified
@@ -3727,6 +3765,7 @@ namespace ICU4N
         {
             return IcuNumber.TryFormatDoubleRuleBased(decimal.ToDouble(value), destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
+
 #endif
 
     }

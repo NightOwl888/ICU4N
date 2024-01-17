@@ -69,7 +69,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         private bool RegionMatches(int start, ReadOnlySpan<char> cs, int n)
         {
             for (int i = 0; i < n; ++i)
@@ -81,8 +80,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         public bool ContentEquals(string cs)
         {
@@ -128,7 +126,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         public bool ContentEquals(ReadOnlySpan<char> cs)
         {
             if (cs == null)
@@ -137,8 +134,7 @@ namespace ICU4N.Impl
             }
             return (cs.Length == length && RegionMatches(0, cs, length));
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         public bool StartsWith(string cs)
         {
@@ -184,14 +180,12 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         public bool StartsWith(ReadOnlySpan<char> cs)
         {
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(0, cs, csLength);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         public bool EndsWith(string cs)
         {
@@ -237,14 +231,12 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         public bool EndsWith(ReadOnlySpan<char> cs)
         {
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(length - csLength, cs, csLength);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <returns>true if the substring of this key starting from the offset
         /// contains the same characters as the other sequence.</returns>
@@ -298,7 +290,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         /// <returns>true if the substring of this key starting from the offset
         /// contains the same characters as the other sequence.</returns>
         public bool RegionMatches(int start, ReadOnlySpan<char> cs)
@@ -306,8 +297,7 @@ namespace ICU4N.Impl
             int csLength = cs.Length;
             return csLength == (length - start) && RegionMatches(start, cs, csLength);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         public int CompareTo(string cs)
         {
@@ -377,7 +367,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         public int CompareTo(ReadOnlySpan<char> cs)
         {
 
@@ -393,8 +382,7 @@ namespace ICU4N.Impl
             }
             return length - csLength;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
     }
 }

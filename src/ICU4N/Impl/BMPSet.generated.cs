@@ -581,7 +581,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Span the initial substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
         /// It must be <paramref name="spanCondition"/>==0 or 1.
@@ -721,8 +720,7 @@ namespace ICU4N.Impl
             outCount = spanLength - numSupplementary;  // number of code points
             return i;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Symmetrical with <see cref="Span(string, int, SpanCondition, out int)"/>.
@@ -1252,9 +1250,8 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
-        /// Symmetrical with <see cref="Span(ReadOnlySpan{char}, int, SpanCondition, out int)"/>.
+        /// Symmetrical with <see cref="Span(ReadOnlySpan{Char}, int, SpanCondition, out int)"/>.
         /// Span the trailing substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
         /// It must be <paramref name="s"/>.Length >= limit and <paramref name="spanCondition"/>==0 or 1.
         /// </summary>
@@ -1383,7 +1380,6 @@ namespace ICU4N.Impl
             }
             return limit + 1;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     }
 }

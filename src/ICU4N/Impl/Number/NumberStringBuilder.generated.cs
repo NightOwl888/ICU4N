@@ -15,6 +15,7 @@ namespace ICU4N.Numerics
 {
     internal partial class NumberStringBuilder
     {
+
         /// <summary>
         /// Appends the specified <see cref="string"/> to the end of the string.
         /// </summary>
@@ -25,6 +26,7 @@ namespace ICU4N.Numerics
         {
             return Insert(length, sequence, field);
         }
+
 
         /// <summary>
         /// Appends the specified <see cref="StringBuilder"/> to the end of the string.
@@ -37,6 +39,7 @@ namespace ICU4N.Numerics
             return Insert(length, sequence, field);
         }
 
+
         /// <summary>
         /// Appends the specified <see cref="T:char[]"/> to the end of the string.
         /// </summary>
@@ -47,6 +50,7 @@ namespace ICU4N.Numerics
         {
             return Insert(length, sequence, field);
         }
+
 
         /// <summary>
         /// Appends the specified <see cref="ICharSequence"/> to the end of the string.
@@ -70,7 +74,7 @@ namespace ICU4N.Numerics
         {
             return Insert(length, sequence, field);
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Inserts the specified <see cref="string"/> at the specified index in the string.
@@ -98,6 +102,7 @@ namespace ICU4N.Numerics
             }
         }
 
+
         /// <summary>
         /// Inserts the specified <see cref="StringBuilder"/> at the specified index in the string.
         /// </summary>
@@ -124,6 +129,7 @@ namespace ICU4N.Numerics
             }
         }
 
+
         /// <summary>
         /// Inserts the specified <see cref="T:char[]"/> at the specified index in the string.
         /// </summary>
@@ -149,6 +155,7 @@ namespace ICU4N.Numerics
                 return Insert(index, sequence, 0, sequence.Length, field);
             }
         }
+
 
         /// <summary>
         /// Inserts the specified <see cref="ICharSequence"/> at the specified index in the string.
@@ -202,7 +209,7 @@ namespace ICU4N.Numerics
                 return Insert(index, sequence, 0, sequence.Length, field);
             }
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Inserts the specified <see cref="string"/> at the specified index in the string, reading from the
@@ -225,6 +232,7 @@ namespace ICU4N.Numerics
             return length;
         }
 
+
         /// <summary>
         /// Inserts the specified <see cref="StringBuilder"/> at the specified index in the string, reading from the
         /// <see cref="StringBuilder"/> from <paramref name="startIndex"/> and including <paramref name="length"/> characters.
@@ -246,6 +254,7 @@ namespace ICU4N.Numerics
             return length;
         }
 
+
         /// <summary>
         /// Inserts the specified <see cref="T:char[]"/> at the specified index in the string, reading from the
         /// <see cref="T:char[]"/> from <paramref name="startIndex"/> and including <paramref name="length"/> characters.
@@ -266,6 +275,7 @@ namespace ICU4N.Numerics
             }
             return length;
         }
+
 
         /// <summary>
         /// Inserts the specified <see cref="ICharSequence"/> at the specified index in the string, reading from the
@@ -309,7 +319,6 @@ namespace ICU4N.Numerics
             }
             return length;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     }
 }

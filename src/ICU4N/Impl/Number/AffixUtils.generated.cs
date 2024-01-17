@@ -16,6 +16,7 @@ namespace ICU4N.Numerics
 {
     internal static partial class AffixUtils
     {
+
         /// <summary>
         /// Estimates the number of code points present in an unescaped version of the affix pattern string
         /// (one that would be returned by <see cref="Unescape(string, NumberStringBuilder, int, ISymbolProvider)"/>,
@@ -107,6 +108,7 @@ namespace ICU4N.Numerics
 
             return length;
         }
+
 
         /// <summary>
         /// Estimates the number of code points present in an unescaped version of the affix pattern string
@@ -200,6 +202,7 @@ namespace ICU4N.Numerics
             return length;
         }
 
+
         /// <summary>
         /// Estimates the number of code points present in an unescaped version of the affix pattern string
         /// (one that would be returned by <see cref="Unescape(char[], NumberStringBuilder, int, ISymbolProvider)"/>,
@@ -291,6 +294,7 @@ namespace ICU4N.Numerics
 
             return length;
         }
+
 
         /// <summary>
         /// Estimates the number of code points present in an unescaped version of the affix pattern string
@@ -387,7 +391,7 @@ namespace ICU4N.Numerics
 #if FEATURE_SPAN
         /// <summary>
         /// Estimates the number of code points present in an unescaped version of the affix pattern string
-        /// (one that would be returned by <see cref="Unescape(ReadOnlySpan{char}, NumberStringBuilder, int, ISymbolProvider)"/>,
+        /// (one that would be returned by <see cref="Unescape(ReadOnlySpan{Char}, NumberStringBuilder, int, ISymbolProvider)"/>,
         /// assuming that all interpolated symbols
         /// consume one code point and that currencies consume as many code points as their symbol width.
         /// Used for computing padding width.
@@ -476,7 +480,7 @@ namespace ICU4N.Numerics
 
             return length;
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Takes a string and escapes (quotes) characters that have special meaning in the affix pattern
@@ -548,6 +552,7 @@ namespace ICU4N.Numerics
             return output.Length - startLength;
         }
 
+
         /// <summary>
         /// Takes a string and escapes (quotes) characters that have special meaning in the affix pattern
         /// syntax. This function does not reverse-lookup symbols.
@@ -618,6 +623,7 @@ namespace ICU4N.Numerics
             return output.Length - startLength;
         }
 
+
         /// <summary>
         /// Takes a string and escapes (quotes) characters that have special meaning in the affix pattern
         /// syntax. This function does not reverse-lookup symbols.
@@ -687,6 +693,7 @@ namespace ICU4N.Numerics
 
             return output.Length - startLength;
         }
+
 
         /// <summary>
         /// Takes a string and escapes (quotes) characters that have special meaning in the affix pattern
@@ -828,7 +835,7 @@ namespace ICU4N.Numerics
 
             return output.Length - startLength;
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Version of <see cref="Escape(string, StringBuilder)"/> that returns a <see cref="string"/>.
@@ -842,6 +849,7 @@ namespace ICU4N.Numerics
             return sb.ToString();
         }
 
+
         /// <summary>
         /// Version of <see cref="Escape(StringBuilder, StringBuilder)"/> that returns a <see cref="string"/>.
         /// </summary>
@@ -854,6 +862,7 @@ namespace ICU4N.Numerics
             return sb.ToString();
         }
 
+
         /// <summary>
         /// Version of <see cref="Escape(char[], StringBuilder)"/> that returns a <see cref="string"/>.
         /// </summary>
@@ -865,6 +874,7 @@ namespace ICU4N.Numerics
             Escape(input, sb);
             return sb.ToString();
         }
+
 
         /// <summary>
         /// Version of <see cref="Escape(ICharSequence, StringBuilder)"/> that returns a <see cref="string"/>.
@@ -880,7 +890,7 @@ namespace ICU4N.Numerics
 
 #if FEATURE_SPAN
         /// <summary>
-        /// Version of <see cref="Escape(ReadOnlySpan{char}, StringBuilder)"/> that returns a <see cref="string"/>.
+        /// Version of <see cref="Escape(ReadOnlySpan{Char}, StringBuilder)"/> that returns a <see cref="string"/>.
         /// </summary>
         /// <param name="input">The string to be escaped.</param>
         /// <returns>The string containing the escaped string.</returns>
@@ -890,7 +900,7 @@ namespace ICU4N.Numerics
             Escape(input, sb);
             return sb.ToString();
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Executes the unescape state machine. Replaces the unquoted characters "-", "+", "%", "‰", and
@@ -943,6 +953,7 @@ namespace ICU4N.Numerics
             return length;
         }
 
+
         /// <summary>
         /// Executes the unescape state machine. Replaces the unquoted characters "-", "+", "%", "‰", and
         /// "¤" with the corresponding symbols provided by the <see cref="ISymbolProvider"/>, and inserts the
@@ -994,6 +1005,7 @@ namespace ICU4N.Numerics
             return length;
         }
 
+
         /// <summary>
         /// Executes the unescape state machine. Replaces the unquoted characters "-", "+", "%", "‰", and
         /// "¤" with the corresponding symbols provided by the <see cref="ISymbolProvider"/>, and inserts the
@@ -1044,6 +1056,7 @@ namespace ICU4N.Numerics
             }
             return length;
         }
+
 
         /// <summary>
         /// Executes the unescape state machine. Replaces the unquoted characters "-", "+", "%", "‰", and
@@ -1115,6 +1128,7 @@ namespace ICU4N.Numerics
             int position,
             ISymbolProvider provider)
         {
+            // ICU4N specific - added guard clauses
             if (output is null)
                 throw new ArgumentNullException(nameof(output));
             if (provider is null)
@@ -1144,7 +1158,7 @@ namespace ICU4N.Numerics
             }
             return length;
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Same as <see cref="Unescape(string, NumberStringBuilder, int, ISymbolProvider)"/>,
@@ -1158,7 +1172,6 @@ namespace ICU4N.Numerics
         /// <exception cref="ArgumentNullException"><paramref name="affixPattern"/> or <paramref name="provider"/> is <c>null</c>.</exception>
         public static int UnescapedCodePointCount(string affixPattern, ISymbolProvider provider)
         {
-            // ICU4N: Added guard clause
             // Note that HasNext() checks the affixPattern for null.
             if (provider is null)
                 throw new ArgumentNullException(nameof(provider));
@@ -1185,6 +1198,7 @@ namespace ICU4N.Numerics
             }
             return length;
         }
+
 
         /// <summary>
         /// Same as <see cref="Unescape(StringBuilder, NumberStringBuilder, int, ISymbolProvider)"/>,
@@ -1198,7 +1212,6 @@ namespace ICU4N.Numerics
         /// <exception cref="ArgumentNullException"><paramref name="affixPattern"/> or <paramref name="provider"/> is <c>null</c>.</exception>
         public static int UnescapedCodePointCount(StringBuilder affixPattern, ISymbolProvider provider)
         {
-            // ICU4N: Added guard clause
             // Note that HasNext() checks the affixPattern for null.
             if (provider is null)
                 throw new ArgumentNullException(nameof(provider));
@@ -1225,6 +1238,7 @@ namespace ICU4N.Numerics
             }
             return length;
         }
+
 
         /// <summary>
         /// Same as <see cref="Unescape(char[], NumberStringBuilder, int, ISymbolProvider)"/>,
@@ -1238,7 +1252,6 @@ namespace ICU4N.Numerics
         /// <exception cref="ArgumentNullException"><paramref name="affixPattern"/> or <paramref name="provider"/> is <c>null</c>.</exception>
         public static int UnescapedCodePointCount(char[] affixPattern, ISymbolProvider provider)
         {
-            // ICU4N: Added guard clause
             // Note that HasNext() checks the affixPattern for null.
             if (provider is null)
                 throw new ArgumentNullException(nameof(provider));
@@ -1266,6 +1279,7 @@ namespace ICU4N.Numerics
             return length;
         }
 
+
         /// <summary>
         /// Same as <see cref="Unescape(ICharSequence, NumberStringBuilder, int, ISymbolProvider)"/>,
         /// but only calculates the code point count.  More efficient than
@@ -1278,7 +1292,6 @@ namespace ICU4N.Numerics
         /// <exception cref="ArgumentNullException"><paramref name="affixPattern"/> or <paramref name="provider"/> is <c>null</c>.</exception>
         public static int UnescapedCodePointCount(ICharSequence affixPattern, ISymbolProvider provider)
         {
-            // ICU4N: Added guard clause
             // Note that HasNext() checks the affixPattern for null.
             if (provider is null)
                 throw new ArgumentNullException(nameof(provider));
@@ -1308,9 +1321,9 @@ namespace ICU4N.Numerics
 
 #if FEATURE_SPAN
         /// <summary>
-        /// Same as <see cref="Unescape(ReadOnlySpan{char}, NumberStringBuilder, int, ISymbolProvider)"/>,
+        /// Same as <see cref="Unescape(ReadOnlySpan{Char}, NumberStringBuilder, int, ISymbolProvider)"/>,
         /// but only calculates the code point count.  More efficient than
-        /// <see cref="Unescape(ReadOnlySpan{char}, NumberStringBuilder, int, ISymbolProvider)"/>
+        /// <see cref="Unescape(ReadOnlySpan{Char}, NumberStringBuilder, int, ISymbolProvider)"/>
         /// if you only need the length but not the string itself.
         /// </summary>
         /// <param name="affixPattern">The original string to be unescaped.</param>
@@ -1319,6 +1332,10 @@ namespace ICU4N.Numerics
         /// <exception cref="ArgumentNullException"><paramref name="affixPattern"/> or <paramref name="provider"/> is <c>null</c>.</exception>
         public static int UnescapedCodePointCount(ReadOnlySpan<char> affixPattern, ISymbolProvider provider)
         {
+            // Note that HasNext() checks the affixPattern for null.
+            if (provider is null)
+                throw new ArgumentNullException(nameof(provider));
+
             int length = 0;
             long tag = 0L;
             while (HasNext(tag, affixPattern))
@@ -1341,7 +1358,7 @@ namespace ICU4N.Numerics
             }
             return length;
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Checks whether the given affix pattern contains at least one token of the given type, which is
@@ -1368,6 +1385,7 @@ namespace ICU4N.Numerics
             return false;
         }
 
+
         /// <summary>
         /// Checks whether the given affix pattern contains at least one token of the given type, which is
         /// one of the <see cref="Type"/> enum values.
@@ -1393,6 +1411,7 @@ namespace ICU4N.Numerics
             return false;
         }
 
+
         /// <summary>
         /// Checks whether the given affix pattern contains at least one token of the given type, which is
         /// one of the <see cref="Type"/> enum values.
@@ -1417,6 +1436,7 @@ namespace ICU4N.Numerics
             }
             return false;
         }
+
 
         /// <summary>
         /// Checks whether the given affix pattern contains at least one token of the given type, which is
@@ -1468,7 +1488,7 @@ namespace ICU4N.Numerics
             }
             return false;
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Checks whether the specified affix pattern has any unquoted currency symbols ("¤").
@@ -1491,6 +1511,7 @@ namespace ICU4N.Numerics
             return false;
         }
 
+
         /// <summary>
         /// Checks whether the specified affix pattern has any unquoted currency symbols ("¤").
         /// </summary>
@@ -1512,6 +1533,7 @@ namespace ICU4N.Numerics
             return false;
         }
 
+
         /// <summary>
         /// Checks whether the specified affix pattern has any unquoted currency symbols ("¤").
         /// </summary>
@@ -1532,6 +1554,7 @@ namespace ICU4N.Numerics
             }
             return false;
         }
+
 
         /// <summary>
         /// Checks whether the specified affix pattern has any unquoted currency symbols ("¤").
@@ -1575,7 +1598,7 @@ namespace ICU4N.Numerics
             }
             return false;
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Replaces all occurrences of tokens with the given type with the given replacement char.
@@ -1601,6 +1624,7 @@ namespace ICU4N.Numerics
             return new string(chars);
         }
 
+
         /// <summary>
         /// Replaces all occurrences of tokens with the given type with the given replacement char.
         /// </summary>
@@ -1625,6 +1649,7 @@ namespace ICU4N.Numerics
             return new string(chars);
         }
 
+
         /// <summary>
         /// Replaces all occurrences of tokens with the given type with the given replacement char.
         /// </summary>
@@ -1648,6 +1673,7 @@ namespace ICU4N.Numerics
             }
             return new string(chars);
         }
+
 
         /// <summary>
         /// Replaces all occurrences of tokens with the given type with the given replacement char.
@@ -1697,7 +1723,7 @@ namespace ICU4N.Numerics
             }
             return new string(chars);
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Returns the next token from the affix pattern.
@@ -1888,6 +1914,7 @@ namespace ICU4N.Numerics
             }
         }
 
+
         /// <summary>
         /// Returns the next token from the affix pattern.
         /// </summary>
@@ -2077,6 +2104,7 @@ namespace ICU4N.Numerics
             }
         }
 
+
         /// <summary>
         /// Returns the next token from the affix pattern.
         /// </summary>
@@ -2265,6 +2293,7 @@ namespace ICU4N.Numerics
                     throw new InvalidOperationException(); //throw new AssertionError(); // Should never get here
             }
         }
+
 
         /// <summary>
         /// Returns the next token from the affix pattern.
@@ -2464,7 +2493,7 @@ namespace ICU4N.Numerics
         /// <param name="patternString">The affix pattern.</param>
         /// <returns>The bitmask tag to pass to the next call of this method to retrieve the following token
         /// (never negative), or -1 if there were no more tokens in the affix pattern.</returns>
-        /// <seealso cref="HasNext(long, ReadOnlySpan{char})"/>
+        /// <seealso cref="HasNext(long, ReadOnlySpan{Char})"/>
         /// <exception cref="ArgumentNullException"><paramref name="patternString"/> is <c>null</c>.</exception>
         /// <exception cref="FormatException">A non-terminated quote symbol was included in <paramref name="patternString"/>.</exception>
         public static long NextToken(long tag, ReadOnlySpan<char> patternString)
@@ -2640,7 +2669,7 @@ namespace ICU4N.Numerics
                     throw new InvalidOperationException(); //throw new AssertionError(); // Should never get here
             }
         }
-#endif 
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Returns whether the affix pattern string has any more tokens to be retrieved from a call to
@@ -2679,6 +2708,7 @@ namespace ICU4N.Numerics
             }
         }
 
+
         /// <summary>
         /// Returns whether the affix pattern string has any more tokens to be retrieved from a call to
         /// <see cref="NextToken(long, StringBuilder)"/>.
@@ -2716,6 +2746,7 @@ namespace ICU4N.Numerics
             }
         }
 
+
         /// <summary>
         /// Returns whether the affix pattern string has any more tokens to be retrieved from a call to
         /// <see cref="NextToken(long, char[])"/>.
@@ -2752,6 +2783,7 @@ namespace ICU4N.Numerics
                 return offset < affixPattern.Length;
             }
         }
+
 
         /// <summary>
         /// Returns whether the affix pattern string has any more tokens to be retrieved from a call to
@@ -2793,9 +2825,9 @@ namespace ICU4N.Numerics
 #if FEATURE_SPAN
         /// <summary>
         /// Returns whether the affix pattern string has any more tokens to be retrieved from a call to
-        /// <see cref="NextToken(long, ReadOnlySpan{char})"/>.
+        /// <see cref="NextToken(long, ReadOnlySpan{Char})"/>.
         /// </summary>
-        /// <param name="tag">The bitmask tag of the previous token, as returned by <see cref="NextToken(long, ReadOnlySpan{char})"/>.</param>
+        /// <param name="tag">The bitmask tag of the previous token, as returned by <see cref="NextToken(long, ReadOnlySpan{Char})"/>.</param>
         /// <param name="affixPattern">The affix pattern.</param>
         /// <returns><c>true</c> if there are more tokens to consume; <c>false</c> otherwise.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="affixPattern"/> is <c>null</c>.</exception>
@@ -2825,7 +2857,6 @@ namespace ICU4N.Numerics
                 return offset < affixPattern.Length;
             }
         }
-#endif 
-
+#endif // FEATURE_SPAN
     }
 }

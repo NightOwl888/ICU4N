@@ -106,7 +106,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Spans a string.
         /// </summary>
@@ -127,8 +126,7 @@ namespace ICU4N.Impl
             }
             return SpanWithStrings(s, start, spanLimit, spanCondition);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Synchronized method for complicated spans using the offsets.
@@ -946,7 +944,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Synchronized method for complicated spans using the offsets.
         /// Avoids synchronization for simple cases.
@@ -1149,8 +1146,7 @@ namespace ICU4N.Impl
                 }
             }
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Spans a string and counts the smallest number of set elements on any path across the span.
@@ -1412,7 +1408,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Spans a string and counts the smallest number of set elements on any path across the span.
         /// </summary>
@@ -1476,8 +1471,7 @@ namespace ICU4N.Impl
             outCount = count;
             return pos;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         private int SpanContainedAndCount(string s, int start, out int outCount)
         {
@@ -1679,7 +1673,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         private int SpanContainedAndCount(ReadOnlySpan<char> s, int start, out int outCount)
         {
             lock (syncLock)
@@ -1728,8 +1721,7 @@ namespace ICU4N.Impl
                 return pos;
             }
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Span a string backwards.
@@ -2571,7 +2563,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Span a string backwards.
         /// </summary>
@@ -2780,8 +2771,7 @@ namespace ICU4N.Impl
                 }
             }
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         // ICU4N specific wrapper method to call SpanNot with no
         // output count.
@@ -2819,7 +2809,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         // ICU4N specific wrapper method to call SpanNot with no
         // output count.
         private int SpanNot(ReadOnlySpan<char> s, int start)
@@ -2827,8 +2816,7 @@ namespace ICU4N.Impl
             int ignored = 0;
             return SpanNot(s, start, false, out ignored);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         // ICU4N specific wrapper method to call SpanNot with an
         // output count.
@@ -2862,15 +2850,13 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         // ICU4N specific wrapper method to call SpanNot with an
         // output count.
         private int SpanNot(ReadOnlySpan<char> s, int start, out int outCount)
         {
             return SpanNot(s, start, true, out outCount);
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Algorithm for <c>SpanNot()==Span(SpanCondition.Contained)</c>
@@ -2888,7 +2874,7 @@ namespace ICU4N.Impl
         /// Create and cache a spanNotSet which contains
         /// all of the single code points of the original set but none of its strings.
         /// For each set string add its initial code point to the spanNotSet.
-        /// (Also add its final code point for <see cref="SpanNotBack(ICharSequence, int)"/>.)
+        /// (Also add its final code point for <see cref="SpanNotBack(string, int)"/>.)
         /// <para/>
         /// - Loop:
         ///   + Do spanLength=spanNotSet.Span(SpanCondition.Contained).
@@ -2993,7 +2979,7 @@ namespace ICU4N.Impl
         /// Create and cache a spanNotSet which contains
         /// all of the single code points of the original set but none of its strings.
         /// For each set string add its initial code point to the spanNotSet.
-        /// (Also add its final code point for <see cref="SpanNotBack(ICharSequence, int)"/>.)
+        /// (Also add its final code point for <see cref="SpanNotBack(StringBuilder, int)"/>.)
         /// <para/>
         /// - Loop:
         ///   + Do spanLength=spanNotSet.Span(SpanCondition.Contained).
@@ -3098,7 +3084,7 @@ namespace ICU4N.Impl
         /// Create and cache a spanNotSet which contains
         /// all of the single code points of the original set but none of its strings.
         /// For each set string add its initial code point to the spanNotSet.
-        /// (Also add its final code point for <see cref="SpanNotBack(ICharSequence, int)"/>.)
+        /// (Also add its final code point for <see cref="SpanNotBack(char[], int)"/>.)
         /// <para/>
         /// - Loop:
         ///   + Do spanLength=spanNotSet.Span(SpanCondition.Contained).
@@ -3292,7 +3278,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Algorithm for <c>SpanNot()==Span(SpanCondition.Contained)</c>
         /// </summary>
@@ -3309,7 +3294,7 @@ namespace ICU4N.Impl
         /// Create and cache a spanNotSet which contains
         /// all of the single code points of the original set but none of its strings.
         /// For each set string add its initial code point to the spanNotSet.
-        /// (Also add its final code point for <see cref="SpanNotBack(ICharSequence, int)"/>.)
+        /// (Also add its final code point for <see cref="SpanNotBack(ReadOnlySpan{Char}, int)"/>.)
         /// <para/>
         /// - Loop:
         ///   + Do spanLength=spanNotSet.Span(SpanCondition.Contained).
@@ -3396,8 +3381,7 @@ namespace ICU4N.Impl
             }
             return length; // Reached the end of the string.
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         private int SpanNotBack(string s, int length)
         {
@@ -3599,7 +3583,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         private int SpanNotBack(ReadOnlySpan<char> s, int length)
         {
             int pos = length;
@@ -3648,8 +3631,7 @@ namespace ICU4N.Impl
             } while (pos != 0);
             return 0; // Reached the start of the string.
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         // Compare strings without any argument checks. Requires length>0.
         private static bool Matches16(string s, int start, string t, int length)
@@ -3711,7 +3693,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         // Compare strings without any argument checks. Requires length>0.
         private static bool Matches16(ReadOnlySpan<char> s, int start, string t, int length)
         {
@@ -3725,8 +3706,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Compare 16-bit Unicode strings (which may be malformed UTF-16)
@@ -3812,7 +3792,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Compare 16-bit Unicode strings (which may be malformed UTF-16)
         /// at code point boundaries.
@@ -3832,8 +3811,7 @@ namespace ICU4N.Impl
                     && !((start + tlength) < limit && char.IsHighSurrogate(s[start + tlength - 1]) &&
                             char.IsLowSurrogate(s[start + tlength]));
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Does the set contain the next code point?
@@ -3915,7 +3893,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Does the set contain the next code point?
         /// If so, return its length; otherwise return its negative length.
@@ -3934,8 +3911,7 @@ namespace ICU4N.Impl
             }
             return set.Contains(c) ? 1 : -1;
         }
-#endif 
-
+#endif // FEATURE_SPAN
 
         internal static int SpanOneBack(UnicodeSet set, string s, int length)
         {
@@ -4001,7 +3977,6 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-
         internal static int SpanOneBack(UnicodeSet set, ReadOnlySpan<char> s, int length)
         {
             char c = s[length - 1];
@@ -4016,7 +3991,6 @@ namespace ICU4N.Impl
             }
             return set.Contains(c) ? 1 : -1;
         }
-#endif 
-
+#endif // FEATURE_SPAN
     }
 }
