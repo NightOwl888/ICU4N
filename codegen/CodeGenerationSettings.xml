@@ -5,12 +5,12 @@
     <charSequence sliceMethod="ToString" fromStringFormat="new StringBuilder({0})">StringBuilder</charSequence>
     <charSequence sliceMethod="AsSpan" legacySliceMethod="Subsequence" fromStringFormat="{0}.ToCharArray()">char[]</charSequence>
     <charSequence sliceMethod="Subsequence" fromStringFormat="{0}.AsCharSequence()">ICharSequence</charSequence>
-    <charSequence sliceMethod="Slice" feature="FEATURE_SPAN" fromStringFormat="{0}.AsSpan()">ReadOnlySpan&lt;char&gt;</charSequence>
+    <charSequence sliceMethod="Slice" feature="FEATURE_SPAN" fromStringFormat="{0}.AsSpan()" nullable="false">ReadOnlySpan&lt;char&gt;</charSequence>
   </charSequences>
   <appendables>
     <appendable>StringBuilder</appendable>
     <appendable>IAppendable</appendable>
-    <appendable accessibility="internal" modifier="ref " feature="FEATURE_SPAN">ValueStringBuilder</appendable>
+    <appendable accessibility="internal" modifier="ref " feature="FEATURE_SPAN" nullable="false">ValueStringBuilder</appendable>
   </appendables>
   <numericTypes>
     <!-- integral types -->
