@@ -1,0 +1,122 @@
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml" #>
+<#@ assembly name="System.Xml.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#+
+public class CharSequence
+{
+    public string Name { get; set; }
+    public string NameForDocAsType { get; set; }
+    public string NameForDocAsLink { get; set; }
+    public string Accessibility { get; set; }
+    public string Feature { get; set; }
+    public string Modifier { get; set; }
+    public bool IsNullable { get; set; }
+    public string Nullable => IsNullable ? "?" : "";
+    public string SliceMethod { get; set; }
+    public string LegacySliceMethod { get; set; }
+    public string FromStringFormat { get; set; } // For testing only
+
+    public override bool Equals(object obj)
+    {
+        if (obj is string str)
+            return str.Equals(obj);
+        if (obj is CharSequence cs)
+            return cs.Name.Equals(Name);
+        return false;
+    }
+
+    public override string ToString() => Name;
+    public override int GetHashCode() => Name?.GetHashCode() ?? 0;
+
+    public static bool operator== (CharSequence a, CharSequence b) => a.Equals(b);
+    public static bool operator!= (CharSequence a, CharSequence b) => !(a == b);
+}
+
+public class Appendable
+{
+    public string Name { get; set; }
+    public string NameForDocAsType { get; set; }
+    public string NameForDocAsLink { get; set; }
+    public string Accessibility { get; set; }
+    public string Feature { get; set; }
+    public string Modifier { get; set; }
+    public bool IsNullable { get; set; }
+    public string Nullable => IsNullable ? "?" : "";
+
+    public override bool Equals(object obj)
+    {
+        if (obj is string str)
+            return str.Equals(obj);
+        if (obj is Appendable app)
+            return app.Name.Equals(Name);
+        return false;
+    }
+
+    public override string ToString() => Name;
+    public override int GetHashCode() => Name?.GetHashCode() ?? 0;
+
+    public static bool operator== (Appendable a, Appendable b) => a.Equals(b);
+    public static bool operator!= (Appendable a, Appendable b) => !(a == b);
+}
+
+public class NumericType
+{
+    public string Name { get; set; }
+    public bool IsClsCompliant { get; set; }
+    public string CSharpName { get; set; }
+    public string Feature { get; set; }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is string str)
+            return str.Equals(obj);
+        if (obj is NumericType nt)
+            return nt.Name.Equals(Name);
+        return false;
+    }
+
+    public override string ToString() => Name;
+    public override int GetHashCode() => Name?.GetHashCode() ?? 0;
+
+    public static bool operator== (NumericType a, NumericType b) => a.Equals(b);
+    public static bool operator!= (NumericType a, NumericType b) => !(a == b);
+}
+
+string GetAccessibility(string accessibility1, string accessibility2)
+{
+    string[] accessibilities = new string[] { accessibility1, accessibility2 };
+
+    if (accessibilities.Contains("private"))
+        return "private";
+    else if (accessibilities.Contains("internal"))
+        return "internal";
+    else
+        return "public";
+}
+
+string GetFeature(string feature1, string feature2)
+{
+    bool feature1Present = !string.IsNullOrWhiteSpace(feature1);
+    bool feature2Present = !string.IsNullOrWhiteSpace(feature2);
+    if (feature1Present && feature2Present)
+        return feature1.Equals(feature2) ? feature1 : feature1 + " || " + feature2;
+    else if (feature1Present)
+        return feature1;
+    else
+        return feature2 ?? "";
+}
+
+string GetNameForDocAsType(string name) // for use within links to methods that accept this type
+{
+    return name.Replace("<", "{").Replace(">", "}").Replace("{char}", "{Char}");
+}
+
+string GetNameForDocAsLink(string name) // for use as the entire link to a type
+{
+    return name == "char[]" ? "T:char[]" : name.Replace("<", "{").Replace(">", "}").Replace("{char}", "{Char}");
+}
+#>

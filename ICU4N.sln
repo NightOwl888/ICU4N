@@ -3,11 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{57271E32-0E88-4696-A477-D00D99DF06F7}"
-	ProjectSection(SolutionItems) = preProject
-		src\CodeGenerationSettings.xml = src\CodeGenerationSettings.xml
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{F0008007-6BDA-4F66-A01E-F559AD954127}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
@@ -105,6 +100,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Resources.NETFramework4.0", "src\ICU4N.Resources.NETFramework4.0\ICU4N.Resources.NETFramework4.0.csproj", "{6C646911-624D-482A-809D-B1C57A5E8411}"
 	ProjectSection(ProjectDependencies) = postProject
 		{883E16AF-AB40-4285-89A8-57333CC68AA2} = {883E16AF-AB40-4285-89A8-57333CC68AA2}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "codegen", "codegen", "{D0724B41-348B-4654-B9CC-EF4078F6E84E}"
+	ProjectSection(SolutionItems) = preProject
+		codegen\CodeGenerationSettings.xml = codegen\CodeGenerationSettings.xml
+		codegen\DataLoader.tt = codegen\DataLoader.tt
+		codegen\FilterDeclarations.tt = codegen\FilterDeclarations.tt
+		codegen\SharedObjects.tt = codegen\SharedObjects.tt
 	EndProjectSection
 EndProject
 Global

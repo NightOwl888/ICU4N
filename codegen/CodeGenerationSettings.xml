@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<codeGen>
+  <charSequences>
+    <charSequence sliceMethod="AsSpan" legacySliceMethod="Substring">string</charSequence>
+    <charSequence sliceMethod="ToString" fromStringFormat="new StringBuilder({0})">StringBuilder</charSequence>
+    <charSequence sliceMethod="AsSpan" legacySliceMethod="Subsequence" fromStringFormat="{0}.ToCharArray()">char[]</charSequence>
+    <charSequence sliceMethod="Subsequence" fromStringFormat="{0}.AsCharSequence()">ICharSequence</charSequence>
+    <charSequence sliceMethod="Slice" feature="FEATURE_SPAN" fromStringFormat="{0}.AsSpan()">ReadOnlySpan&lt;char&gt;</charSequence>
+  </charSequences>
+  <appendables>
+    <appendable>StringBuilder</appendable>
+    <appendable>IAppendable</appendable>
+    <appendable accessibility="internal" modifier="ref " feature="FEATURE_SPAN">ValueStringBuilder</appendable>
+  </appendables>
+  <numericTypes>
+    <!-- integral types -->
+    <numericType clsCompliant="true" cSharpName="byte">Byte</numericType>
+    <numericType clsCompliant="true" cSharpName="short">Int16</numericType>
+    <numericType clsCompliant="true" cSharpName="int">Int32</numericType>
+    <numericType clsCompliant="true" cSharpName="long">Int64</numericType>
+    <numericType clsCompliant="true" cSharpName="Int128" feature="FEATURE_INT128">Int128</numericType>
+    <numericType clsCompliant="true" cSharpName="BigInteger">BigInteger</numericType>
+    <numericType clsCompliant="true" cSharpName="nint">IntPtr</numericType>
+
+    <numericType clsCompliant="false" cSharpName="sbyte">SByte</numericType>
+    <numericType clsCompliant="false" cSharpName="ushort">UInt16</numericType>
+    <numericType clsCompliant="false" cSharpName="uint">UInt32</numericType>
+    <numericType clsCompliant="false" cSharpName="ulong">UInt64</numericType>
+    <numericType clsCompliant="false" cSharpName="UInt128" feature="FEATURE_INT128">UInt128</numericType>
+    <numericType clsCompliant="false" cSharpName="nuint">UIntPtr</numericType>
+
+    <!-- floating point types -->
+    <numericType clsCompliant="true" cSharpName="Half" feature="FEATURE_HALF">Half</numericType>
+    <numericType clsCompliant="true" cSharpName="float">Single</numericType>
+    <numericType clsCompliant="true" cSharpName="double">Double</numericType>
+    <numericType clsCompliant="true" cSharpName="decimal">Decimal</numericType>
+  </numericTypes>
+</codeGen>

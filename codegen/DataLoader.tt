@@ -1,0 +1,78 @@
+<#@ parameter name="CodeGenerationRelativePath" type="System.String" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Xml" #>
+<#@ assembly name="System.Xml.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#
+
+// Shared objects to hold the loaded data
+List<CharSequence> CharSequences;
+List<Appendable> Appendables;
+List<NumericType> NumericTypes;
+
+string codeGenerationPath = Path.GetFullPath(Path.Combine(Host.ResolvePath(string.Empty), codeGenerationRelativePath));
+string codeGenerationSettingsFilePath = Path.Combine(codeGenerationPath, "CodeGenerationSettings.xml");
+
+XDocument xDoc = XDocument.Load(codeGenerationSettingsFilePath);
+
+// Load charSequences
+CharSequences = xDoc.Descendants("charSequence")
+    .Select(element => new CharSequence
+    {
+        Name = element.Value,
+        NameForDocAsType = GetNameForDocAsType(element.Value),
+        NameForDocAsLink = GetNameForDocAsLink(element.Value),
+        Accessibility = element.Attribute("accessibility")?.Value ?? "public",
+        Feature = element.Attribute("feature")?.Value ?? "",
+        Modifier = element.Attribute("modifier")?.Value ?? "",
+        IsNullable = bool.Parse(element.Attribute("nullable")?.Value ?? "true"),
+        SliceMethod = element.Attribute("sliceMethod")?.Value ?? "",
+        LegacySliceMethod = element.Attribute("legacySliceMethod")?.Value ?? element.Attribute("sliceMethod")?.Value ?? "",
+        FromStringFormat = element.Attribute("fromStringFormat")?.Value ?? "{0}" // Innefficient - use for testing only
+    })
+    .ToList();
+CharSequences = CharSequenceFilter != null ? CharSequences.Where(CharSequenceFilter).ToList() : CharSequences;
+
+// Load appendables
+Appendables = xDoc.Descendants("appendable")
+    .Select(element => new Appendable
+    {
+        Name = element.Value,
+        NameForDocAsType = GetNameForDocAsType(element.Value),
+        NameForDocAsLink = GetNameForDocAsLink(element.Value),
+        Accessibility = element.Attribute("accessibility")?.Value ?? "public",
+        Feature = element.Attribute("feature")?.Value ?? "",
+        Modifier = element.Attribute("modifier")?.Value ?? "",
+        IsNullable = bool.Parse(element.Attribute("nullable")?.Value ?? "true"),
+    })
+    .ToList();
+Appendables = AppendableFilter != null ? Appendables.Where(AppendableFilter).ToList() : Appendables;
+
+// Load numericTypes
+NumericTypes = xDoc.Descendants("numericType")
+    .Select(element => new NumericType
+    {
+        Name = element.Value,
+        IsClsCompliant = element.Attribute("clsCompliant") != null && bool.Parse(element.Attribute("clsCompliant").Value),
+        CSharpName = element.Attribute("cSharpName")?.Value ?? "",
+        Feature = element.Attribute("feature")?.Value ?? ""
+    })
+    .ToList();
+
+// Legacy format support (to be removed when finished migrating to the new data structure)
+string[] charSequences = CharSequences.Select(x => x.Name).ToArray();
+string tempCharSequenceAccessibility = CharSequences.Where(x => x.Name == "ICharSequence").Select(x => x.Accessibility).FirstOrDefault() ?? "public";
+string charSequenceAccessibility = string.IsNullOrEmpty(tempCharSequenceAccessibility) ? "public" : tempCharSequenceAccessibility;
+string[] charSequenceForDocs = CharSequences.Select(x => x.Name.Replace("<", "{").Replace(">", "}")).ToArray();
+string[] charSequenceFeatures = CharSequences.Select(x => x.Feature).ToArray();
+string[] charSequenceSliceMethods = CharSequences.Select(x => x.SliceMethod).ToArray();
+string[] charSequenceStringConversionReplacements = CharSequences.Select(x => x.FromStringFormat.Replace("{0}", "$1")).ToArray();
+
+string[] appendables = Appendables.Select(x => x.Name).ToArray();
+string tempAppendableAccessibility = Appendables.Where(x => x.Name == "IAppendable").Select(x => x.Accessibility).FirstOrDefault() ?? "public";
+string appendableAccessibility = string.IsNullOrEmpty(tempAppendableAccessibility) ? "public" : tempAppendableAccessibility;
+
+#><#= "\uFEFF" #>

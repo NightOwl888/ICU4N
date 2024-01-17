@@ -1,0 +1,6 @@
+<#@ template language="C#" hostspecific="true" #>
+<#
+// Optional filters to apply to loaded data
+Func<CharSequence, bool> CharSequenceFilter = null;
+Func<Appendable, bool> AppendableFilter = null;
+#>
