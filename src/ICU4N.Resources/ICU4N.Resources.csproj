@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFrameworks Condition="'$(TargetFrameworks)' != ''"></TargetFrameworks>
     <TargetFramework>netstandard1.0</TargetFramework>
 
     <Description>Full data for ICU4N. This package is a transient dependency of ICU4N and does not necessarily need to be installed explicitly.</Description>

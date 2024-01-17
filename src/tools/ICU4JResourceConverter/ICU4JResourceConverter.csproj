@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <TargetFrameworks Condition="'$(TargetFrameworks)' != ''"></TargetFrameworks>
     <TargetFramework>net5.0</TargetFramework>
     <TargetFramework Condition="'$(VisualStudioVersion)' &gt;= '16.10'">net7.0</TargetFramework>
 
