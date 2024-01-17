@@ -23,7 +23,7 @@ namespace ICU4N.Impl
     {
         private readonly object syncLock = new object();
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Spans a string.
         /// </summary>
@@ -44,10 +44,10 @@ namespace ICU4N.Impl
             }
             return SpanWithStrings(s, start, spanLimit, spanCondition);
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Synchronized method for complicated spans using the offsets.
         /// Avoids synchronization for simple cases.
@@ -250,10 +250,10 @@ namespace ICU4N.Impl
                 }
             }
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Spans a string and counts the smallest number of set elements on any path across the span.
         /// </summary>
@@ -317,10 +317,10 @@ namespace ICU4N.Impl
             outCount = count;
             return pos;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         private int SpanContainedAndCount(<#=charSequence#> s, int start, out int outCount)
         {
             lock (syncLock)
@@ -369,10 +369,10 @@ namespace ICU4N.Impl
                 return pos;
             }
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Span a string backwards.
         /// </summary>
@@ -581,10 +581,10 @@ namespace ICU4N.Impl
                 }
             }
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         // ICU4N specific wrapper method to call SpanNot with no
         // output count.
         private int SpanNot(<#=charSequence#> s, int start)
@@ -592,20 +592,20 @@ namespace ICU4N.Impl
             int ignored = 0;
             return SpanNot(s, start, false, out ignored);
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         // ICU4N specific wrapper method to call SpanNot with an
         // output count.
         private int SpanNot(<#=charSequence#> s, int start, out int outCount)
         {
             return SpanNot(s, start, true, out outCount);
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Algorithm for <c>SpanNot()==Span(SpanCondition.Contained)</c>
         /// </summary>
@@ -709,10 +709,10 @@ namespace ICU4N.Impl
             }
             return length; // Reached the end of the string.
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         private int SpanNotBack(<#=charSequence#> s, int length)
         {
             int pos = length;
@@ -761,10 +761,10 @@ namespace ICU4N.Impl
             } while (pos != 0);
             return 0; // Reached the start of the string.
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         // Compare strings without any argument checks. Requires length>0.
         private static bool Matches16(<#=charSequence#> s, int start, string t, int length)
         {
@@ -778,10 +778,10 @@ namespace ICU4N.Impl
             }
             return true;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Compare 16-bit Unicode strings (which may be malformed UTF-16)
         /// at code point boundaries.
@@ -801,10 +801,10 @@ namespace ICU4N.Impl
                     && !((start + tlength) < limit && char.IsHighSurrogate(s[start + tlength - 1]) &&
                             char.IsLowSurrogate(s[start + tlength]));
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Does the set contain the next code point?
         /// If so, return its length; otherwise return its negative length.
@@ -823,10 +823,10 @@ namespace ICU4N.Impl
             }
             return set.Contains(c) ? 1 : -1;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         internal static int SpanOneBack(UnicodeSet set, <#=charSequence#> s, int length)
         {
             char c = s[length - 1];
@@ -841,7 +841,7 @@ namespace ICU4N.Impl
             }
             return set.Contains(c) ? 1 : -1;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
     }
 }

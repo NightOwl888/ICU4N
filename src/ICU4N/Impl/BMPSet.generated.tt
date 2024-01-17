@@ -22,7 +22,7 @@ namespace ICU4N.Impl
     public sealed partial class BMPSet
     {
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Span the initial substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
         /// It must be <paramref name="spanCondition"/>==0 or 1.
@@ -162,10 +162,10 @@ namespace ICU4N.Impl
             outCount = spanLength - numSupplementary;  // number of code points
             return i;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Symmetrical with <see cref="Span(<#=charSequence.NameForDocAsType#>, int, SpanCondition, out int)"/>.
         /// Span the trailing substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
@@ -296,7 +296,7 @@ namespace ICU4N.Impl
             }
             return limit + 1;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
     }
 }

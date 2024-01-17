@@ -22,7 +22,7 @@ namespace ICU4N.Impl
     public static partial class StandardPluralUtil
     {
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns the plural form corresponding to the keyword, or <c>null</c>.
         /// </summary>
@@ -67,10 +67,10 @@ namespace ICU4N.Impl
             }
             return null;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
         /// </summary>
@@ -81,10 +81,10 @@ namespace ICU4N.Impl
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? p.Value : StandardPlural.Other;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns the plural form corresponding to the keyword.
         /// </summary>
@@ -106,10 +106,10 @@ namespace ICU4N.Impl
                 return false;
             }
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns the index of the plural form corresponding to the keyword, or a negative value.
         /// </summary>
@@ -120,10 +120,10 @@ namespace ICU4N.Impl
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? (int)p.Value : -1;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns the index of the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
         /// </summary>
@@ -134,10 +134,10 @@ namespace ICU4N.Impl
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? (int)p.Value : (int)StandardPlural.Other;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Gets the index of the plural form corresponding to the keyword.
         /// </summary>
@@ -159,7 +159,7 @@ namespace ICU4N.Impl
                 return false;
             }
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
     }
 }

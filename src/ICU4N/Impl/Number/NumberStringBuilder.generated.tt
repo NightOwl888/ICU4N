@@ -21,7 +21,7 @@ namespace ICU4N.Numerics
     internal partial class NumberStringBuilder
     {
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Appends the specified <see cref="<#= charSequence.NameForDocAsLink #>"/> to the end of the string.
         /// </summary>
@@ -32,10 +32,10 @@ namespace ICU4N.Numerics
         {
             return Insert(length, sequence, field);
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Inserts the specified <see cref="<#= charSequence.NameForDocAsLink #>"/> at the specified index in the string.
         /// </summary>
@@ -61,10 +61,10 @@ namespace ICU4N.Numerics
                 return Insert(index, sequence, 0, sequence.Length, field);
             }
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Inserts the specified <see cref="<#= charSequence.NameForDocAsLink #>"/> at the specified index in the string, reading from the
         /// <see cref="<#= charSequence.NameForDocAsLink #>"/> from <paramref name="startIndex"/> and including <paramref name="length"/> characters.
@@ -85,7 +85,7 @@ namespace ICU4N.Numerics
             }
             return length;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
     }
 }

@@ -22,7 +22,7 @@ namespace ICU4N.Numerics
     internal static partial class AffixUtils
     {
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Estimates the number of code points present in an unescaped version of the affix pattern string
         /// (one that would be returned by <see cref="Unescape(<#=charSequence.NameForDocAsType#>, NumberStringBuilder, int, ISymbolProvider)"/>,
@@ -114,10 +114,10 @@ namespace ICU4N.Numerics
 
             return length;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Takes a string and escapes (quotes) characters that have special meaning in the affix pattern
         /// syntax. This function does not reverse-lookup symbols.
@@ -187,10 +187,10 @@ namespace ICU4N.Numerics
 
             return output.Length - startLength;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Version of <see cref="Escape(<#=charSequence.NameForDocAsType#>, StringBuilder)"/> that returns a <see cref="string"/>.
         /// </summary>
@@ -202,10 +202,10 @@ namespace ICU4N.Numerics
             Escape(input, sb);
             return sb.ToString();
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Executes the unescape state machine. Replaces the unquoted characters "-", "+", "%", "‰", and
         /// "¤" with the corresponding symbols provided by the <see cref="ISymbolProvider"/>, and inserts the
@@ -258,10 +258,10 @@ namespace ICU4N.Numerics
             }
             return length;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Same as <see cref="Unescape(<#=charSequence.NameForDocAsType#>, NumberStringBuilder, int, ISymbolProvider)"/>,
         /// but only calculates the code point count.  More efficient than
@@ -300,10 +300,10 @@ namespace ICU4N.Numerics
             }
             return length;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Checks whether the given affix pattern contains at least one token of the given type, which is
         /// one of the <see cref="Type"/> enum values.
@@ -332,10 +332,10 @@ namespace ICU4N.Numerics
             }
             return false;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Checks whether the specified affix pattern has any unquoted currency symbols ("¤").
         /// </summary>
@@ -360,10 +360,10 @@ namespace ICU4N.Numerics
             }
             return false;
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Replaces all occurrences of tokens with the given type with the given replacement char.
         /// </summary>
@@ -391,10 +391,10 @@ namespace ICU4N.Numerics
             }
             return new string(chars);
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns the next token from the affix pattern.
         /// </summary>
@@ -585,10 +585,10 @@ namespace ICU4N.Numerics
                     throw new InvalidOperationException(); //throw new AssertionError(); // Should never get here
             }
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns whether the affix pattern string has any more tokens to be retrieved from a call to
         /// <see cref="NextToken(long, <#=charSequence.NameForDocAsType#>)"/>.
@@ -627,7 +627,7 @@ namespace ICU4N.Numerics
                 return offset < affixPattern.Length;
             }
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
     }
 }

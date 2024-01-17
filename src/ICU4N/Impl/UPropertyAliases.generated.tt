@@ -22,7 +22,7 @@ namespace ICU4N.Impl
     public sealed partial class UPropertyAliases
     {
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         private bool ContainsName(BytesTrie trie, <#=charSequence#> name)
         {
             Result result = Result.NoValue;
@@ -43,10 +43,10 @@ namespace ICU4N.Impl
             }
             return result.HasValue();
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         private int GetPropertyOrValueEnum(int bytesTrieOffset, <#=charSequence#> alias)
         {
             BytesTrie trie = new BytesTrie(bytesTries, bytesTrieOffset);
@@ -61,14 +61,14 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
             }
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 
         //----------------------------------------------------------------
         // Public API
 
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns a property enum given one of its property names.
         /// If the property name is not known, this method returns
@@ -79,10 +79,10 @@ namespace ICU4N.Impl
             return GetPropertyOrValueEnum(0, alias);
         }
 
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
@@ -107,10 +107,10 @@ namespace ICU4N.Impl
             return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
         }
 
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
@@ -138,7 +138,7 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
         }
 
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
     }
 }

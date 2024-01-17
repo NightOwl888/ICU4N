@@ -20,7 +20,7 @@ namespace ICU4N.Impl
     public sealed partial class ResourceKey
     {
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         private bool RegionMatches(int start, <#=charSequence#> cs, int n)
         {
 <# if (charSequence.Name == "StringBuilder") { #>
@@ -47,10 +47,10 @@ namespace ICU4N.Impl
             return true;
 <# } #>
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         public bool ContentEquals(<#=charSequence#> cs)
         {
             if (cs == null)
@@ -65,10 +65,10 @@ namespace ICU4N.Impl
 <# } #>
             return (cs.Length == length && RegionMatches(0, cs, length));
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         public bool StartsWith(<#=charSequence#> cs)
         {
 <# if (charSequence.IsNullable) { #>
@@ -80,10 +80,10 @@ namespace ICU4N.Impl
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(0, cs, csLength);
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         public bool EndsWith(<#=charSequence#> cs)
         {
 <# if (charSequence.IsNullable) { #>
@@ -95,10 +95,10 @@ namespace ICU4N.Impl
             int csLength = cs.Length;
             return csLength <= length && RegionMatches(length - csLength, cs, csLength);
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         /// <returns>true if the substring of this key starting from the offset
         /// contains the same characters as the other sequence.</returns>
         public bool RegionMatches(int start, <#=charSequence#> cs)
@@ -112,10 +112,10 @@ namespace ICU4N.Impl
             int csLength = cs.Length;
             return csLength == (length - start) && RegionMatches(start, cs, csLength);
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence.Feature) #>
+<#= GetBeginFeature(charSequence) #>
         public int CompareTo(<#=charSequence#> cs)
         {
 <# if (charSequence.IsNullable) { #>
@@ -147,7 +147,7 @@ namespace ICU4N.Impl
             return length - csLength;
 <# } #>
         }
-<#= GetEndFeature(charSequence.Feature) #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 
     }
