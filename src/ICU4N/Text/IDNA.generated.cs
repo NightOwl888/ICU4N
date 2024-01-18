@@ -28,6 +28,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder LabelToASCII(string label, StringBuilder dest, IDNAInfo info);
 
+
         /// <summary>
         /// Converts a single domain name label into its ASCII form for DNS lookup.
         /// If any processing step fails, then info.HasErrors will be true and
@@ -41,6 +42,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder LabelToASCII(StringBuilder label, StringBuilder dest, IDNAInfo info);
+
 
         /// <summary>
         /// Converts a single domain name label into its ASCII form for DNS lookup.
@@ -56,6 +58,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder LabelToASCII(char[] label, StringBuilder dest, IDNAInfo info);
 
+
         /// <summary>
         /// Converts a single domain name label into its ASCII form for DNS lookup.
         /// If any processing step fails, then info.HasErrors will be true and
@@ -70,6 +73,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder LabelToASCII(ICharSequence label, StringBuilder dest, IDNAInfo info);
 
+
         /// <summary>
         /// Converts a single domain name label into its Unicode form for human-readable display.
         /// If any processing step fails, then info.HasErrors will be true.
@@ -81,6 +85,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder LabelToUnicode(string label, StringBuilder dest, IDNAInfo info);
+
 
         /// <summary>
         /// Converts a single domain name label into its Unicode form for human-readable display.
@@ -94,6 +99,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder LabelToUnicode(StringBuilder label, StringBuilder dest, IDNAInfo info);
 
+
         /// <summary>
         /// Converts a single domain name label into its Unicode form for human-readable display.
         /// If any processing step fails, then info.HasErrors will be true.
@@ -106,6 +112,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder LabelToUnicode(char[] label, StringBuilder dest, IDNAInfo info);
 
+
         /// <summary>
         /// Converts a single domain name label into its Unicode form for human-readable display.
         /// If any processing step fails, then info.HasErrors will be true.
@@ -117,6 +124,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder LabelToUnicode(ICharSequence label, StringBuilder dest, IDNAInfo info);
+
 
         /// <summary>
         /// Converts a whole domain name into its ASCII form for DNS lookup.
@@ -132,6 +140,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder NameToASCII(string name, StringBuilder dest, IDNAInfo info);
 
+
         /// <summary>
         /// Converts a whole domain name into its ASCII form for DNS lookup.
         /// If any processing step fails, then info.HasErrors will be true and
@@ -145,6 +154,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder NameToASCII(StringBuilder name, StringBuilder dest, IDNAInfo info);
+
 
         /// <summary>
         /// Converts a whole domain name into its ASCII form for DNS lookup.
@@ -160,6 +170,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder NameToASCII(char[] name, StringBuilder dest, IDNAInfo info);
 
+
         /// <summary>
         /// Converts a whole domain name into its ASCII form for DNS lookup.
         /// If any processing step fails, then info.HasErrors will be true and
@@ -174,6 +185,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder NameToASCII(ICharSequence name, StringBuilder dest, IDNAInfo info);
 
+
         /// <summary>
         /// Converts a whole domain name into its Unicode form for human-readable display.
         /// If any processing step fails, then info.HasErrors will be true.
@@ -185,6 +197,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder NameToUnicode(string name, StringBuilder dest, IDNAInfo info);
+
 
         /// <summary>
         /// Converts a whole domain name into its Unicode form for human-readable display.
@@ -198,6 +211,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder NameToUnicode(StringBuilder name, StringBuilder dest, IDNAInfo info);
 
+
         /// <summary>
         /// Converts a whole domain name into its Unicode form for human-readable display.
         /// If any processing step fails, then info.HasErrors will be true.
@@ -210,6 +224,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder NameToUnicode(char[] name, StringBuilder dest, IDNAInfo info);
 
+
         /// <summary>
         /// Converts a whole domain name into its Unicode form for human-readable display.
         /// If any processing step fails, then info.HasErrors will be true.
@@ -221,5 +236,6 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
         public abstract StringBuilder NameToUnicode(ICharSequence name, StringBuilder dest, IDNAInfo info);
+
     }
 }

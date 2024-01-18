@@ -25,21 +25,23 @@ namespace ICU4N.Impl
     public sealed partial class UTS46 : IDNA
     {
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         <#=charSequence.Accessibility#> override StringBuilder LabelToASCII(<#=charSequence#> label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, true, dest, info);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         <#=charSequence.Accessibility#> override StringBuilder LabelToUnicode(<#=charSequence#> label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, false, dest, info);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         <#=charSequence.Accessibility#> override StringBuilder NameToASCII(<#=charSequence#> name, StringBuilder dest, IDNAInfo info)
         {
             Process(name, false, true, dest, info);
@@ -54,16 +56,18 @@ namespace ICU4N.Impl
             }
             return dest;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         <#=charSequence.Accessibility#> override StringBuilder NameToUnicode(<#=charSequence#> name, StringBuilder dest, IDNAInfo info)
         {
             return Process(name, false, false, dest, info);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         private static bool IsASCIIString(<#=charSequence#> dest)
         {
             int length = dest.Length;
@@ -76,9 +80,10 @@ namespace ICU4N.Impl
             }
             return true;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         private StringBuilder Process(<#=charSequence#> src,
             bool isLabel, bool toASCII,
             StringBuilder dest,
@@ -212,9 +217,10 @@ namespace ICU4N.Impl
             }
             return dest;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         private StringBuilder ProcessUnicode(<#=charSequence#> src,
             int labelStart, int mappingStart,
             bool isLabel, bool toASCII,
@@ -282,9 +288,10 @@ namespace ICU4N.Impl
             }
             return dest;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         // Replace the label in dest with the label string, if the label was modified.
         // If label==dest then the label was modified in-place and labelLength
         // is the new label length, different from label.Length.
@@ -305,9 +312,10 @@ namespace ICU4N.Impl
             }
             return labelLength;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         // We scan the whole label and check both for whether it contains RTL characters
         // and whether it passes the BiDi Rule.
         // In a BiDi domain name, all labels must pass the BiDi Rule, but we might find
@@ -416,9 +424,10 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
             }
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         // Special code for the ASCII prefix of a BiDi domain name.
         // The ASCII prefix is all-LTR.
 
@@ -470,9 +479,10 @@ namespace ICU4N.Impl
             }
             return true;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         private bool IsLabelOkContextJ(<#=charSequence#> label, int labelStart, int labelLength)
         {
             // [IDNA2008-Tables]
@@ -567,9 +577,10 @@ namespace ICU4N.Impl
             }
             return true;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         private void CheckLabelContextO(<#=charSequence#> label, int labelStart, int labelLength, IDNAInfo info)
         {
             int labelEnd = labelStart + labelLength - 1;  // inclusive
@@ -695,6 +706,7 @@ namespace ICU4N.Impl
                 }
             }
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
     }
 }

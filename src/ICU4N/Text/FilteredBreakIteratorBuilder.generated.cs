@@ -29,6 +29,7 @@ namespace ICU4N.Text
             return SuppressBreakAfter(str.AsCharSequence());
         }
 
+
         /// <summary>
         /// Suppress a certain string from being the end of a segment.
         /// For example, suppressing "Mr.", then segments ending in "Mr." will not be returned
@@ -43,6 +44,7 @@ namespace ICU4N.Text
         {
             return SuppressBreakAfter(str.AsCharSequence());
         }
+
 
         /// <summary>
         /// Suppress a certain string from being the end of a segment.
@@ -59,6 +61,7 @@ namespace ICU4N.Text
             return SuppressBreakAfter(str.AsCharSequence());
         }
 
+
         /// <summary>
         /// Suppress a certain string from being the end of a segment.
         /// For example, suppressing "Mr.", then segments ending in "Mr." will not be returned
@@ -70,6 +73,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public abstract bool SuppressBreakAfter(ICharSequence str);
+
 
         /// <summary>
         /// Stop suppressing a certain string from being the end of the segment.
@@ -87,6 +91,7 @@ namespace ICU4N.Text
             return UnsuppressBreakAfter(str.AsCharSequence());
         }
 
+
         /// <summary>
         /// Stop suppressing a certain string from being the end of the segment.
         /// This function does not create any new segment boundaries, but only serves to un-do
@@ -102,6 +107,7 @@ namespace ICU4N.Text
         {
             return UnsuppressBreakAfter(str.AsCharSequence());
         }
+
 
         /// <summary>
         /// Stop suppressing a certain string from being the end of the segment.
@@ -119,6 +125,7 @@ namespace ICU4N.Text
             return UnsuppressBreakAfter(str.AsCharSequence());
         }
 
+
         /// <summary>
         /// Stop suppressing a certain string from being the end of the segment.
         /// This function does not create any new segment boundaries, but only serves to un-do
@@ -131,5 +138,6 @@ namespace ICU4N.Text
         /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public abstract bool UnsuppressBreakAfter(ICharSequence str);
+
     }
 }

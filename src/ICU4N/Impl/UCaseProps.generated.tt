@@ -22,7 +22,7 @@ namespace ICU4N.Impl
     public sealed partial class UCaseProperties
     {
 <# foreach (var appendable in Appendables) { #>
-
+<#= GetBeginFeature(appendable) #>
         /// <summary>
         /// Get the full lowercase mapping for <paramref name="c"/>.
         /// </summary>
@@ -176,7 +176,7 @@ namespace ICU4N.Impl
                     else if (c == 0x3a3 &&
                               !IsFollowedByCasedLetter(iter, forward: true) &&
                               IsFollowedByCasedLetter(iter, forward: false) /* -1=preceded */
-                  )
+                    )
                     {
                         /* greek capital sigma maps depending on surrounding cased letters (see SpecialCasing.txt) */
                         /*
@@ -223,9 +223,10 @@ namespace ICU4N.Impl
 
             return (result == c) ? ~result : result;
         }
+<#= GetEndFeature(appendable) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
-
+<#= GetBeginFeature(appendable) #>
         /* internal */
         private int ToUpperOrTitle(int c, ICasePropertiesContextEnumerator iter,
             <#=appendable#> output,
@@ -348,29 +349,32 @@ namespace ICU4N.Impl
 
             return (result == c) ? ~result : result;
         }
+<#= GetEndFeature(appendable) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
-
+<#= GetBeginFeature(appendable) #>
         <#=appendable.Accessibility#> int ToFullUpper(int c, ICasePropertiesContextEnumerator iter,
             <#=appendable#> output,
             CaseLocale caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, true);
         }
+<#= GetEndFeature(appendable) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
-
+<#= GetBeginFeature(appendable) #>
         <#=appendable.Accessibility#> int ToFullTitle(int c, ICasePropertiesContextEnumerator iter,
             <#=appendable#> output,
             CaseLocale caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, false);
         }
+<#= GetEndFeature(appendable) #>
 <# } #>
 
         /* case folding ------------------------------------------------------------- */
 <# foreach (var appendable in Appendables) { #>
-
+<#= GetBeginFeature(appendable) #>
         // Issue for canonical caseless match (UAX #21):
         // Turkic casefolding (using "T" mappings in CaseFolding.txt) does not preserve
         // canonical equivalence, unlike default-option casefolding.
@@ -492,6 +496,7 @@ namespace ICU4N.Impl
 
             return (result == c) ? ~result : result;
         }
+<#= GetEndFeature(appendable) #>
 <# } #>
     }
 }

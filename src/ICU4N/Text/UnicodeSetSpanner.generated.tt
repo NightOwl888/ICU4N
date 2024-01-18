@@ -24,7 +24,7 @@ namespace ICU4N.Text
     public partial class UnicodeSetSpanner
     {
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns the number of matching characters found in a character sequence, 
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -37,9 +37,10 @@ namespace ICU4N.Text
         {
             return CountIn(sequence, CountMethod.MinElements, SpanCondition.Simple);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns the number of matching characters found in a character sequence, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -52,9 +53,10 @@ namespace ICU4N.Text
         {
             return CountIn(sequence, countMethod, SpanCondition.Simple);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns the number of matching characters found in a character sequence.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -99,9 +101,10 @@ namespace ICU4N.Text
             }
             return count;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Delete all the matching spans in sequence, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -113,9 +116,10 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, "", CountMethod.WholeSpan, SpanCondition.Simple);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Delete all matching spans in sequence, according to the spanCondition.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -131,11 +135,12 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, "", CountMethod.WholeSpan, spanCondition);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
     <# foreach (var charSequence2 in CharSequences) { #>
         <# string accessibility = GetAccessibility(charSequence, charSequence2); #>
-
+<#= GetBeginFeature(GetFeature(charSequence, charSequence2)) #>
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
         /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.Simple"/>.
@@ -149,12 +154,13 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
+<#= GetEndFeature(GetFeature(charSequence, charSequence2)) #>
     <# } #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
     <# foreach (var charSequence2 in CharSequences) { #>
         <# string accessibility = GetAccessibility(charSequence, charSequence2); #>
-
+<#= GetBeginFeature(GetFeature(charSequence, charSequence2)) #>
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <see cref="CountMethod"/>, using <see cref="SpanCondition.Simple"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -168,12 +174,13 @@ namespace ICU4N.Text
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
+<#= GetEndFeature(GetFeature(charSequence, charSequence2)) #>
     <# } #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
     <# foreach (var charSequence2 in CharSequences) { #>
         <# string accessibility = GetAccessibility(charSequence, charSequence2); #>
-
+<#= GetBeginFeature(GetFeature(charSequence, charSequence2)) #>
         /// <summary>
         /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
@@ -234,10 +241,11 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
+<#= GetEndFeature(GetFeature(charSequence, charSequence2)) #>
     <# } #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start and
         /// end of the string, using <see cref="TrimOption.Both"/> and <see cref="SpanCondition.Simple"/>. For example:
@@ -253,9 +261,10 @@ namespace ICU4N.Text
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, using the <paramref name="trimOption"/> and <see cref="SpanCondition.Simple"/>. For example:
@@ -273,9 +282,10 @@ namespace ICU4N.Text
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, depending on the <paramref name="trimOption"/> and <paramref name="spanCondition"/>. For example:
@@ -323,6 +333,7 @@ namespace ICU4N.Text
 <# } #>
                 sequence.Subsequence(endLeadContained, startTrailContained - endLeadContained); // ICU4N: Corrected 2nd parameter
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 
     }

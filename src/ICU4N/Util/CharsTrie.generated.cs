@@ -37,6 +37,7 @@ namespace ICU4N.Util
             remainingMatchLength_ = -1;
         }
 
+
         /// <summary>
         /// Constructs a CharsTrie reader instance.
         /// </summary>
@@ -59,6 +60,7 @@ namespace ICU4N.Util
             pos_ = root_ = offset;
             remainingMatchLength_ = -1;
         }
+
 
         /// <summary>
         /// Constructs a CharsTrie reader instance.
@@ -83,6 +85,7 @@ namespace ICU4N.Util
             remainingMatchLength_ = -1;
         }
 
+
         /// <summary>
         /// Constructs a CharsTrie reader instance.
         /// </summary>
@@ -105,6 +108,7 @@ namespace ICU4N.Util
             pos_ = root_ = offset;
             remainingMatchLength_ = -1;
         }
+
 
         /// <summary>
         /// Traverses the trie from the current state for this string.
@@ -216,6 +220,7 @@ namespace ICU4N.Util
             }
         }
 
+
         /// <summary>
         /// Traverses the trie from the current state for this string.
         /// Equivalent to
@@ -325,6 +330,7 @@ namespace ICU4N.Util
                 }
             }
         }
+
 
         /// <summary>
         /// Traverses the trie from the current state for this string.
@@ -436,6 +442,7 @@ namespace ICU4N.Util
             }
         }
 
+
         /// <summary>
         /// Traverses the trie from the current state for this string.
         /// Equivalent to
@@ -545,5 +552,6 @@ namespace ICU4N.Util
                 }
             }
         }
+
     }
 }

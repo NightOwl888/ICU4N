@@ -32,6 +32,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src);
         }
 
+
         // ICU4N specific overload for convenience
         /// <summary>
         /// Lowercases a string.
@@ -47,6 +48,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src);
         }
+
 
         // ICU4N specific overload for convenience
         /// <summary>
@@ -64,6 +66,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src);
         }
 
+
         // ICU4N specific overload for convenience
         /// <summary>
         /// Lowercases a string.
@@ -79,6 +82,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src);
         }
+
 
         /// <summary>
         /// Lowercases a string.
@@ -96,6 +100,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src);
         }
 
+
         /// <summary>
         /// Lowercases a string.
         /// Casing is locale-dependent and context-sensitive.
@@ -111,6 +116,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src);
         }
+
 
         /// <summary>
         /// Lowercases a string.
@@ -128,6 +134,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src);
         }
 
+
         /// <summary>
         /// Lowercases a string.
         /// Casing is locale-dependent and context-sensitive.
@@ -143,6 +150,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -165,6 +173,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -187,6 +196,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -209,6 +219,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -231,6 +242,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
                 
         // ICU4N specific overload for convenience
         /// <summary>
@@ -253,6 +265,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -275,6 +288,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -297,6 +311,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -319,6 +334,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
                 
         /// <summary>
         /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -341,6 +357,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -363,6 +380,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -385,6 +403,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -407,6 +426,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
                 
         /// <summary>
         /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -429,6 +449,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -451,6 +472,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -473,6 +495,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -495,6 +518,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
         }
 
     public sealed partial class UpperCaseMap : CaseMap
@@ -516,6 +540,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src);
         }
 
+
         // ICU4N specific overload for convenience
         /// <summary>
         /// Uppercases a string.
@@ -531,6 +556,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src);
         }
+
 
         // ICU4N specific overload for convenience
         /// <summary>
@@ -548,6 +574,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src);
         }
 
+
         // ICU4N specific overload for convenience
         /// <summary>
         /// Uppercases a string.
@@ -563,6 +590,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src);
         }
+
 
         /// <summary>
         /// Uppercases a string.
@@ -580,6 +608,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src);
         }
 
+
         /// <summary>
         /// Uppercases a string.
         /// Casing is locale-dependent and context-sensitive.
@@ -595,6 +624,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src);
         }
+
 
         /// <summary>
         /// Uppercases a string.
@@ -612,6 +642,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src);
         }
 
+
         /// <summary>
         /// Uppercases a string.
         /// Casing is locale-dependent and context-sensitive.
@@ -627,6 +658,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -649,6 +681,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -671,6 +704,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -693,6 +727,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -715,6 +750,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
                 
         // ICU4N specific overload for convenience
         /// <summary>
@@ -737,6 +773,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -759,6 +796,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -781,6 +819,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -803,6 +842,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+
                 
         /// <summary>
         /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -825,6 +865,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -847,6 +888,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -869,6 +911,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -891,6 +934,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
                 
         /// <summary>
         /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -913,6 +957,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -935,6 +980,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -957,6 +1003,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -979,6 +1026,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+
         }
 
     public sealed partial class TitleCaseMap : CaseMap
@@ -1015,6 +1063,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToTitle(GetCaseLocale(locale), internalOptions, iter, src);
         }
 
+
         // ICU4N specific overload for convenience
         /// <summary>
         /// Titlecases a string.
@@ -1045,6 +1094,7 @@ namespace ICU4N.Text
             iter.SetText(src);
             return CaseMapImpl.ToTitle(GetCaseLocale(locale), internalOptions, iter, src);
         }
+
 
         // ICU4N specific overload for convenience
         /// <summary>
@@ -1077,6 +1127,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToTitle(GetCaseLocale(locale), internalOptions, iter, src);
         }
 
+
         // ICU4N specific overload for convenience
         /// <summary>
         /// Titlecases a string.
@@ -1107,6 +1158,7 @@ namespace ICU4N.Text
             iter.SetText(src);
             return CaseMapImpl.ToTitle(GetCaseLocale(locale), internalOptions, iter, src);
         }
+
 
         /// <summary>
         /// Titlecases a string.
@@ -1142,6 +1194,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToTitle(GetCaseLocale(locale), internalOptions, iter, src);
         }
 
+
         /// <summary>
         /// Titlecases a string.
         /// Casing is locale-dependent and context-sensitive.
@@ -1175,6 +1228,7 @@ namespace ICU4N.Text
             iter.SetText(src);
             return CaseMapImpl.ToTitle(GetCaseLocale(locale), internalOptions, iter, src);
         }
+
 
         /// <summary>
         /// Titlecases a string.
@@ -1210,6 +1264,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToTitle(GetCaseLocale(locale), internalOptions, iter, src);
         }
 
+
         /// <summary>
         /// Titlecases a string.
         /// Casing is locale-dependent and context-sensitive.
@@ -1243,6 +1298,7 @@ namespace ICU4N.Text
             iter.SetText(src);
             return CaseMapImpl.ToTitle(GetCaseLocale(locale), internalOptions, iter, src);
         }
+
             
         // ICU4N specific overload for convenience
         /// <summary>
@@ -1931,6 +1987,7 @@ namespace ICU4N.Text
             return CaseMapImpl.Fold(internalOptions, src);
         }
 
+
         /// <summary>
         /// Case-folds a string.
         /// The result may be longer or shorter than the original.
@@ -1949,6 +2006,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.Fold(internalOptions, src);
         }
+
 
         /// <summary>
         /// Case-folds a string.
@@ -1969,6 +2027,7 @@ namespace ICU4N.Text
             return CaseMapImpl.Fold(internalOptions, src);
         }
 
+
         /// <summary>
         /// Case-folds a string.
         /// The result may be longer or shorter than the original.
@@ -1987,6 +2046,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.Fold(internalOptions, src);
         }
+
             
         /// <summary>
         /// Case-folds a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -2013,6 +2073,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.Fold(internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Case-folds a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -2039,6 +2100,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.Fold(internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Case-folds a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -2065,6 +2127,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.Fold(internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Case-folds a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -2091,6 +2154,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.Fold(internalOptions, src, dest, edits);
         }
+
                 
         /// <summary>
         /// Case-folds a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -2117,6 +2181,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.Fold(internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Case-folds a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -2143,6 +2208,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.Fold(internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Case-folds a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -2169,6 +2235,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.Fold(internalOptions, src, dest, edits);
         }
+
             
         /// <summary>
         /// Case-folds a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -2195,6 +2262,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.Fold(internalOptions, src, dest, edits);
         }
+
     
     }
 }

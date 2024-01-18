@@ -32,6 +32,7 @@ namespace ICU4N.Util
             return this;
         }
 
+
         /// <summary>
         /// Adds a (StringBuilder, value) pair.
         /// The string must be unique.
@@ -49,6 +50,7 @@ namespace ICU4N.Util
 #pragma warning restore 612, 618
             return this;
         }
+
 
         /// <summary>
         /// Adds a (char[], value) pair.
@@ -68,6 +70,7 @@ namespace ICU4N.Util
             return this;
         }
 
+
         /// <summary>
         /// Adds a (ICharSequence, value) pair.
         /// The string must be unique.
@@ -85,5 +88,6 @@ namespace ICU4N.Util
 #pragma warning restore 612, 618
             return this;
         }
+
     }
 }

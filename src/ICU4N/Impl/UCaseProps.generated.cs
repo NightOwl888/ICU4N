@@ -169,7 +169,7 @@ namespace ICU4N.Impl
                     else if (c == 0x3a3 &&
                               !IsFollowedByCasedLetter(iter, forward: true) &&
                               IsFollowedByCasedLetter(iter, forward: false) /* -1=preceded */
-                  )
+                    )
                     {
                         /* greek capital sigma maps depending on surrounding cased letters (see SpecialCasing.txt) */
                         /*
@@ -216,6 +216,7 @@ namespace ICU4N.Impl
 
             return (result == c) ? ~result : result;
         }
+
 
         /// <summary>
         /// Get the full lowercase mapping for <paramref name="c"/>.
@@ -370,7 +371,7 @@ namespace ICU4N.Impl
                     else if (c == 0x3a3 &&
                               !IsFollowedByCasedLetter(iter, forward: true) &&
                               IsFollowedByCasedLetter(iter, forward: false) /* -1=preceded */
-                  )
+                    )
                     {
                         /* greek capital sigma maps depending on surrounding cased letters (see SpecialCasing.txt) */
                         /*
@@ -418,6 +419,7 @@ namespace ICU4N.Impl
             return (result == c) ? ~result : result;
         }
 
+
         /* internal */
         private int ToUpperOrTitle(int c, ICasePropertiesContextEnumerator iter,
             StringBuilder output,
@@ -541,6 +543,7 @@ namespace ICU4N.Impl
             return (result == c) ? ~result : result;
         }
 
+
         /* internal */
         private int ToUpperOrTitle(int c, ICasePropertiesContextEnumerator iter,
             IAppendable output,
@@ -664,12 +667,14 @@ namespace ICU4N.Impl
             return (result == c) ? ~result : result;
         }
 
+
         public int ToFullUpper(int c, ICasePropertiesContextEnumerator iter,
             StringBuilder output,
             CaseLocale caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, true);
         }
+
 
         public int ToFullUpper(int c, ICasePropertiesContextEnumerator iter,
             IAppendable output,
@@ -678,6 +683,7 @@ namespace ICU4N.Impl
             return ToUpperOrTitle(c, iter, output, caseLocale, true);
         }
 
+
         public int ToFullTitle(int c, ICasePropertiesContextEnumerator iter,
             StringBuilder output,
             CaseLocale caseLocale)
@@ -685,12 +691,14 @@ namespace ICU4N.Impl
             return ToUpperOrTitle(c, iter, output, caseLocale, false);
         }
 
+
         public int ToFullTitle(int c, ICasePropertiesContextEnumerator iter,
             IAppendable output,
             CaseLocale caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, false);
         }
+
 
         /* case folding ------------------------------------------------------------- */
 
@@ -816,6 +824,7 @@ namespace ICU4N.Impl
             return (result == c) ? ~result : result;
         }
 
+
         // Issue for canonical caseless match (UAX #21):
         // Turkic casefolding (using "T" mappings in CaseFolding.txt) does not preserve
         // canonical equivalence, unlike default-option casefolding.
@@ -937,5 +946,6 @@ namespace ICU4N.Impl
 
             return (result == c) ? ~result : result;
         }
+
     }
 }

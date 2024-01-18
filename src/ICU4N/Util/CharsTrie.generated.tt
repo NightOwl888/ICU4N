@@ -20,7 +20,7 @@ namespace ICU4N.Util
     public sealed partial class CharsTrie
     {
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Constructs a CharsTrie reader instance.
         /// </summary>
@@ -47,9 +47,10 @@ namespace ICU4N.Util
             pos_ = root_ = offset;
             remainingMatchLength_ = -1;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Traverses the trie from the current state for this string.
         /// Equivalent to
@@ -159,6 +160,7 @@ namespace ICU4N.Util
                 }
             }
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
     }
 }

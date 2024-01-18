@@ -22,7 +22,7 @@ namespace ICU4N.Impl
     public partial class TextTrieMap<TValue>
     {
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Adds the text key and its associated object in this object.
         /// </summary>
@@ -43,9 +43,10 @@ namespace ICU4N.Impl
             root.Add(chitr, val);
             return this;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Gets an enumerator of the objects associated with the
         /// longest prefix matching string key starting at the
@@ -62,9 +63,10 @@ namespace ICU4N.Impl
         {
             return Get(text, start, null);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         <#=charSequence.Accessibility#> virtual IEnumerator<TValue> Get(<#=charSequence#> text, int start, int[] matchLen)
         {
             LongestMatchHandler<TValue> handler = new LongestMatchHandler<TValue>();
@@ -75,16 +77,18 @@ namespace ICU4N.Impl
             }
             return handler.Matches;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         <#=charSequence.Accessibility#> virtual void Find(<#=charSequence#> text, IResultHandler<TValue> handler)
         {
             Find(text, 0, handler);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         <#=charSequence.Accessibility#> virtual void Find(<#=charSequence#> text, int offset, IResultHandler<TValue> handler)
         {
 <# if (charSequence.Name=="ICharSequence") { #>
@@ -96,6 +100,7 @@ namespace ICU4N.Impl
 <# } #>
             Find(root, chitr, handler);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
     }
 }

@@ -28,6 +28,7 @@ namespace ICU4N.Text
             return CompileMinMaxArguments(pattern, 0, int.MaxValue);
         }
 
+
         /// <summary>
         /// Creates a formatter from the pattern string.
         /// </summary>
@@ -39,6 +40,7 @@ namespace ICU4N.Text
         {
             return CompileMinMaxArguments(pattern, 0, int.MaxValue);
         }
+
 
         /// <summary>
         /// Creates a formatter from the pattern string.
@@ -52,6 +54,7 @@ namespace ICU4N.Text
             return CompileMinMaxArguments(pattern, 0, int.MaxValue);
         }
 
+
         /// <summary>
         /// Creates a formatter from the pattern string.
         /// </summary>
@@ -63,6 +66,7 @@ namespace ICU4N.Text
         {
             return CompileMinMaxArguments(pattern, 0, int.MaxValue);
         }
+
 
         /// <summary>
         /// Creates a formatter from the pattern string.
@@ -82,6 +86,7 @@ namespace ICU4N.Text
             return new SimpleFormatter(compiledPattern);
         }
 
+
         /// <summary>
         /// Creates a formatter from the pattern string.
         /// The number of arguments checked against the given limits is the
@@ -99,6 +104,7 @@ namespace ICU4N.Text
             string compiledPattern = SimpleFormatterImpl.CompileToStringMinMaxArguments(pattern, sb, min, max);
             return new SimpleFormatter(compiledPattern);
         }
+
 
         /// <summary>
         /// Creates a formatter from the pattern string.
@@ -118,6 +124,7 @@ namespace ICU4N.Text
             return new SimpleFormatter(compiledPattern);
         }
 
+
         /// <summary>
         /// Creates a formatter from the pattern string.
         /// The number of arguments checked against the given limits is the
@@ -136,6 +143,7 @@ namespace ICU4N.Text
             return new SimpleFormatter(compiledPattern);
         }
 
+
         /// <summary>
         /// Formats the given values.
         /// </summary>
@@ -145,6 +153,7 @@ namespace ICU4N.Text
             return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, values);
         }
 
+
         /// <summary>
         /// Formats the given values.
         /// </summary>
@@ -153,6 +162,7 @@ namespace ICU4N.Text
         {
             return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, values);
         }
+
 
         /// <summary>
         /// Formats the given values.
@@ -164,6 +174,7 @@ namespace ICU4N.Text
             return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, values);
         }
 
+
         /// <summary>
         /// Formats the given values.
         /// </summary>
@@ -172,6 +183,7 @@ namespace ICU4N.Text
         {
             return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, values);
         }
+
 
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
@@ -197,6 +209,7 @@ namespace ICU4N.Text
             return SimpleFormatterImpl.FormatAndAppend(compiledPattern, appendTo, offsets, values);
         }
 
+
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
         /// </summary>
@@ -220,6 +233,7 @@ namespace ICU4N.Text
         {
             return SimpleFormatterImpl.FormatAndAppend(compiledPattern, appendTo, offsets, values);
         }
+
 
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
@@ -246,6 +260,7 @@ namespace ICU4N.Text
             return SimpleFormatterImpl.FormatAndAppend(compiledPattern, appendTo, offsets, values);
         }
 
+
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
         /// </summary>
@@ -269,6 +284,7 @@ namespace ICU4N.Text
         {
             return SimpleFormatterImpl.FormatAndAppend(compiledPattern, appendTo, offsets, values);
         }
+
 
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
@@ -295,6 +311,7 @@ namespace ICU4N.Text
             return SimpleFormatterImpl.FormatAndReplace(compiledPattern, result, offsets, values);
         }
 
+
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
         /// May optimize by actually appending to the result if it is the same object
@@ -319,6 +336,7 @@ namespace ICU4N.Text
         {
             return SimpleFormatterImpl.FormatAndReplace(compiledPattern, result, offsets, values);
         }
+
 
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
@@ -346,6 +364,7 @@ namespace ICU4N.Text
             return SimpleFormatterImpl.FormatAndReplace(compiledPattern, result, offsets, values);
         }
 
+
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
         /// May optimize by actually appending to the result if it is the same object
@@ -370,6 +389,7 @@ namespace ICU4N.Text
         {
             return SimpleFormatterImpl.FormatAndReplace(compiledPattern, result, offsets, values);
         }
+
 
     }
 }

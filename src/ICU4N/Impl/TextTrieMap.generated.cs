@@ -31,6 +31,7 @@ namespace ICU4N.Impl
             return this;
         }
 
+
         /// <summary>
         /// Adds the text key and its associated object in this object.
         /// </summary>
@@ -45,6 +46,7 @@ namespace ICU4N.Impl
             root.Add(chitr, val);
             return this;
         }
+
 
         /// <summary>
         /// Adds the text key and its associated object in this object.
@@ -61,6 +63,7 @@ namespace ICU4N.Impl
             return this;
         }
 
+
         /// <summary>
         /// Adds the text key and its associated object in this object.
         /// </summary>
@@ -75,6 +78,7 @@ namespace ICU4N.Impl
             root.Add(chitr, val);
             return this;
         }
+
 
         /// <summary>
         /// Gets an enumerator of the objects associated with the
@@ -93,6 +97,7 @@ namespace ICU4N.Impl
             return Get(text, start, null);
         }
 
+
         /// <summary>
         /// Gets an enumerator of the objects associated with the
         /// longest prefix matching string key starting at the
@@ -109,6 +114,7 @@ namespace ICU4N.Impl
         {
             return Get(text, start, null);
         }
+
 
         /// <summary>
         /// Gets an enumerator of the objects associated with the
@@ -127,6 +133,7 @@ namespace ICU4N.Impl
             return Get(text, start, null);
         }
 
+
         /// <summary>
         /// Gets an enumerator of the objects associated with the
         /// longest prefix matching string key starting at the
@@ -144,6 +151,7 @@ namespace ICU4N.Impl
             return Get(text, start, null);
         }
 
+
         public virtual IEnumerator<TValue> Get(string text, int start, int[] matchLen)
         {
             LongestMatchHandler<TValue> handler = new LongestMatchHandler<TValue>();
@@ -154,6 +162,7 @@ namespace ICU4N.Impl
             }
             return handler.Matches;
         }
+
 
         public virtual IEnumerator<TValue> Get(StringBuilder text, int start, int[] matchLen)
         {
@@ -166,6 +175,7 @@ namespace ICU4N.Impl
             return handler.Matches;
         }
 
+
         public virtual IEnumerator<TValue> Get(char[] text, int start, int[] matchLen)
         {
             LongestMatchHandler<TValue> handler = new LongestMatchHandler<TValue>();
@@ -176,6 +186,7 @@ namespace ICU4N.Impl
             }
             return handler.Matches;
         }
+
 
         public virtual IEnumerator<TValue> Get(ICharSequence text, int start, int[] matchLen)
         {
@@ -188,25 +199,30 @@ namespace ICU4N.Impl
             return handler.Matches;
         }
 
+
         public virtual void Find(string text, IResultHandler<TValue> handler)
         {
             Find(text, 0, handler);
         }
+
 
         public virtual void Find(StringBuilder text, IResultHandler<TValue> handler)
         {
             Find(text, 0, handler);
         }
 
+
         public virtual void Find(char[] text, IResultHandler<TValue> handler)
         {
             Find(text, 0, handler);
         }
 
+
         public virtual void Find(ICharSequence text, IResultHandler<TValue> handler)
         {
             Find(text, 0, handler);
         }
+
 
         public virtual void Find(string text, int offset, IResultHandler<TValue> handler)
         {
@@ -214,11 +230,13 @@ namespace ICU4N.Impl
             Find(root, chitr, handler);
         }
 
+
         public virtual void Find(StringBuilder text, int offset, IResultHandler<TValue> handler)
         {
             CharEnumerator chitr = new CharEnumerator(text.ToString().AsCharSequence(), offset, ignoreCase);
             Find(root, chitr, handler);
         }
+
 
         public virtual void Find(char[] text, int offset, IResultHandler<TValue> handler)
         {
@@ -226,10 +244,12 @@ namespace ICU4N.Impl
             Find(root, chitr, handler);
         }
 
+
         public virtual void Find(ICharSequence text, int offset, IResultHandler<TValue> handler)
         {
             CharEnumerator chitr = new CharEnumerator(text, offset, ignoreCase);
             Find(root, chitr, handler);
         }
+
     }
 }

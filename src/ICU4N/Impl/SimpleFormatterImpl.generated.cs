@@ -160,6 +160,7 @@ namespace ICU4N.Impl
             return sb.ToString();
         }
 
+
         /// <summary>
         /// Creates a compiled form of the pattern string, for use with appropriate static methods.
         /// The number of arguments checked against the given limits is the
@@ -302,6 +303,7 @@ namespace ICU4N.Impl
             sb[0] = (char)argCount;
             return sb.ToString();
         }
+
 
         /// <summary>
         /// Creates a compiled form of the pattern string, for use with appropriate static methods.
@@ -446,6 +448,7 @@ namespace ICU4N.Impl
             return sb.ToString();
         }
 
+
         /// <summary>
         /// Creates a compiled form of the pattern string, for use with appropriate static methods.
         /// The number of arguments checked against the given limits is the
@@ -589,6 +592,7 @@ namespace ICU4N.Impl
             return sb.ToString();
         }
 
+
         /// <summary>
         /// Formats the given values.
         /// </summary>
@@ -599,6 +603,7 @@ namespace ICU4N.Impl
             return FormatAndAppend(compiledPattern, new StringBuilder(), null, values).ToString();
         }
 
+
         /// <summary>
         /// Formats the given values.
         /// </summary>
@@ -608,6 +613,7 @@ namespace ICU4N.Impl
         {
             return FormatAndAppend(compiledPattern, new StringBuilder(), null, values).ToString();
         }
+
 
         /// <summary>
         /// Formats the given values.
@@ -620,6 +626,7 @@ namespace ICU4N.Impl
             return FormatAndAppend(compiledPattern, new StringBuilder(), null, values).ToString();
         }
 
+
         /// <summary>
         /// Formats the given values.
         /// </summary>
@@ -629,6 +636,7 @@ namespace ICU4N.Impl
         {
             return FormatAndAppend(compiledPattern, new StringBuilder(), null, values).ToString();
         }
+
 
         /// <summary>
         /// Formats the not-compiled pattern with the given values.
@@ -651,6 +659,7 @@ namespace ICU4N.Impl
             return FormatAndAppend(compiledPattern, sb, null, values).ToString();
         }
 
+
         /// <summary>
         /// Formats the not-compiled pattern with the given values.
         /// Equivalent to <see cref="CompileToStringMinMaxArguments(StringBuilder, StringBuilder, int, int)"/> 
@@ -671,6 +680,7 @@ namespace ICU4N.Impl
             sb.Length = 0;
             return FormatAndAppend(compiledPattern, sb, null, values).ToString();
         }
+
 
         /// <summary>
         /// Formats the not-compiled pattern with the given values.
@@ -694,6 +704,7 @@ namespace ICU4N.Impl
             return FormatAndAppend(compiledPattern, sb, null, values).ToString();
         }
 
+
         /// <summary>
         /// Formats the not-compiled pattern with the given values.
         /// Equivalent to <see cref="CompileToStringMinMaxArguments(ICharSequence, StringBuilder, int, int)"/> 
@@ -714,6 +725,7 @@ namespace ICU4N.Impl
             sb.Length = 0;
             return FormatAndAppend(compiledPattern, sb, null, values).ToString();
         }
+
 
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
@@ -744,6 +756,7 @@ namespace ICU4N.Impl
             return Format(compiledPattern, values, appendTo, null, true, offsets);
         }
 
+
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
         /// </summary>
@@ -772,6 +785,7 @@ namespace ICU4N.Impl
             }
             return Format(compiledPattern, values, appendTo, null, true, offsets);
         }
+
 
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
@@ -803,6 +817,7 @@ namespace ICU4N.Impl
             return Format(compiledPattern, values, appendTo, null, true, offsets);
         }
 
+
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
         /// </summary>
@@ -831,6 +846,7 @@ namespace ICU4N.Impl
             }
             return Format(compiledPattern, values, appendTo, null, true, offsets);
         }
+
 
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
@@ -885,6 +901,7 @@ namespace ICU4N.Impl
             }
             return Format(compiledPattern, values, result, resultCopy, false, offsets);
         }
+
 
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
@@ -951,6 +968,7 @@ namespace ICU4N.Impl
             return Format(compiledPattern, values, result, resultCopy, false, offsets);
         }
 
+
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
         /// May optimize by actually appending to the result if it is the same object
@@ -1005,6 +1023,7 @@ namespace ICU4N.Impl
             }
             return Format(compiledPattern, values, result, resultCopy, false, offsets);
         }
+
 
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
@@ -1071,6 +1090,7 @@ namespace ICU4N.Impl
             return Format(compiledPattern, values, result, resultCopy, false, offsets);
         }
 
+
         private static StringBuilder Format(
             string compiledPattern, string[] values,
             StringBuilder result, string resultCopy, bool forbidResultAsValue,
@@ -1110,6 +1130,7 @@ namespace ICU4N.Impl
             }
             return result;
         }
+
 
         private static StringBuilder Format(
             string compiledPattern, StringBuilder[] values,
@@ -1177,6 +1198,7 @@ namespace ICU4N.Impl
             return result;
         }
 
+
         private static StringBuilder Format(
             string compiledPattern, char[][] values,
             StringBuilder result, string resultCopy, bool forbidResultAsValue,
@@ -1216,6 +1238,7 @@ namespace ICU4N.Impl
             }
             return result;
         }
+
 
         private static StringBuilder Format(
             string compiledPattern, ICharSequence[] values,
@@ -1282,6 +1305,7 @@ namespace ICU4N.Impl
             }
             return result;
         }
+
 
     }
 }

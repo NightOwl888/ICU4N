@@ -22,7 +22,7 @@ namespace ICU4N.Text
     public sealed partial class SimpleFormatter
     {
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Creates a formatter from the pattern string.
         /// </summary>
@@ -34,9 +34,10 @@ namespace ICU4N.Text
         {
             return CompileMinMaxArguments(pattern, 0, int.MaxValue);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Creates a formatter from the pattern string.
         /// The number of arguments checked against the given limits is the
@@ -54,9 +55,10 @@ namespace ICU4N.Text
             string compiledPattern = SimpleFormatterImpl.CompileToStringMinMaxArguments(pattern, sb, min, max);
             return new SimpleFormatter(compiledPattern);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Formats the given values.
         /// </summary>
@@ -68,9 +70,10 @@ namespace ICU4N.Text
         {
             return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, values);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
         /// </summary>
@@ -97,9 +100,10 @@ namespace ICU4N.Text
         {
             return SimpleFormatterImpl.FormatAndAppend(compiledPattern, appendTo, offsets, values);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
         /// May optimize by actually appending to the result if it is the same object
@@ -127,6 +131,7 @@ namespace ICU4N.Text
         {
             return SimpleFormatterImpl.FormatAndReplace(compiledPattern, result, offsets, values);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 
     }

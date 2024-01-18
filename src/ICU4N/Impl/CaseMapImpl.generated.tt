@@ -26,6 +26,7 @@ namespace ICU4N.Impl
     public sealed partial class CaseMapImpl
     {
 <# foreach (var appendable in Appendables) { #>
+<#= GetBeginFeature(appendable) #>
 
         private static int AppendCodePoint(<#=appendable#> a, int c)
         {
@@ -41,8 +42,10 @@ namespace ICU4N.Impl
                 return 2;
             }
         }
+<#= GetEndFeature(appendable) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
+<#= GetBeginFeature(appendable) #>
 
         /// <summary>
         /// Appends a full case mapping result, see <see cref="UCaseProperties.MaxStringLength"/>
@@ -83,10 +86,11 @@ namespace ICU4N.Impl
                 }
             }
         }
+<#= GetEndFeature(appendable) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
         private static void AppendUnchanged(<#=charSequence.Name#> src, int start, int length,
             <#=appendable#> dest, int options, Edits edits)
         {
@@ -103,10 +107,11 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         private static string ApplyEdits(<#=charSequence.Name#> src, StringBuilder replacementChars, Edits edits)
         {
             if (!edits.HasChanges)
@@ -129,9 +134,10 @@ namespace ICU4N.Impl
             }
             return result.ToString();
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
-
+<#= GetBeginFeature(appendable) #>
         private static void InternalToLower(CaseLocale caseLocale, int options, StringContextEnumerator iter,
             <#=appendable#> dest, Edits edits)
         {
@@ -142,9 +148,10 @@ namespace ICU4N.Impl
                 AppendResult(c, dest, iter.CPLength, options, edits);
             }
         }
+<#= GetEndFeature(appendable) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         <#=charSequence.Accessibility#> static string ToLower(CaseLocale caseLocale, int options, <#=charSequence.Name#> src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
@@ -166,11 +173,12 @@ namespace ICU4N.Impl
                         new StringBuilder(src.Length), null).ToString();
             }
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
         <#string accessibility = GetAccessibility(appendable, charSequence);#>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
 <# if (appendable.Name == "IAppendable") { #>
         <#=accessibility#> static T ToLower<T>(CaseLocale caseLocale, int options,
             <#=charSequence#> src, T dest, Edits edits) where T : <#=appendable#>
@@ -194,10 +202,11 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         <#=charSequence.Accessibility#> static string ToUpper(CaseLocale caseLocale, int options, <#=charSequence#> src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
@@ -219,11 +228,12 @@ namespace ICU4N.Impl
                         new StringBuilder(src.Length), null).ToString();
             }
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
         <#string accessibility = GetAccessibility(appendable, charSequence);#>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
 <# if (appendable.Name == "IAppendable") { #>
         <#=accessibility#> static T ToUpper<T>(CaseLocale caseLocale, int options,
             <#=charSequence#> src, T dest, Edits edits) where T : <#=appendable#>
@@ -256,10 +266,11 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         <#=charSequence.Accessibility#> static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, <#=charSequence#> src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
@@ -282,11 +293,12 @@ namespace ICU4N.Impl
                         new StringBuilder(src.Length), null).ToString();
             }
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
         <#string accessibility = GetAccessibility(appendable, charSequence);#>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
 <# if (appendable.Name == "IAppendable") { #>
         <#=accessibility#> static T ToTitle<T>(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
@@ -427,10 +439,11 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         <#=charSequence.Accessibility#> static string Fold(int options, <#=charSequence#> src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
@@ -451,11 +464,12 @@ namespace ICU4N.Impl
                 return Fold(options, src, new StringBuilder(src.Length), null).ToString();
             }
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
         <#string accessibility = GetAccessibility(appendable, charSequence);#>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
 <# if (appendable.Name == "IAppendable") { #>
         <#=accessibility#> static T Fold<T>(int options,
             <#=charSequence#> src, T dest, Edits edits) where T : <#=appendable#>
@@ -486,13 +500,14 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
 
         private sealed partial class GreekUpper
         {
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
             private static bool IsFollowedByCasedLetter(<#=charSequence#> s, int i)
             {
                 while (i < s.Length)
@@ -515,11 +530,12 @@ namespace ICU4N.Impl
                 }
                 return false;  // Not followed by cased letter.
             }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
         <#string accessibility = GetAccessibility(appendable, charSequence);#>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
             /// <summary>
             /// Greek string uppercasing with a state machine.
             /// Probably simpler than a stateless function that has to figure out complex context-before
@@ -700,6 +716,7 @@ namespace ICU4N.Impl
                 }
                 return dest;
             }
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
 

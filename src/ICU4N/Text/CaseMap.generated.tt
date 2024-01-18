@@ -22,7 +22,7 @@ namespace ICU4N.Text
     public sealed partial class LowerCaseMap : CaseMap
     {
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         // ICU4N specific overload for convenience
         /// <summary>
         /// Lowercases a string.
@@ -38,9 +38,10 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Lowercases a string.
         /// Casing is locale-dependent and context-sensitive.
@@ -56,11 +57,12 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
         <# string accessibility = GetAccessibility(appendable, charSequence); #>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
         // ICU4N specific overload for convenience
         /// <summary>
         /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -87,12 +89,13 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
         <# string accessibility = GetAccessibility(appendable, charSequence); #>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
         /// <summary>
         /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
         /// Casing is locale-dependent and context-sensitive.
@@ -119,6 +122,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
     }
@@ -126,7 +130,7 @@ namespace ICU4N.Text
     public sealed partial class UpperCaseMap : CaseMap
     {
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         // ICU4N specific overload for convenience
         /// <summary>
         /// Uppercases a string.
@@ -142,9 +146,10 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Uppercases a string.
         /// Casing is locale-dependent and context-sensitive.
@@ -160,11 +165,12 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
         <# string accessibility = GetAccessibility(appendable, charSequence); #>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
         // ICU4N specific overload for convenience
         /// <summary>
         /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -191,12 +197,13 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src, dest, edits);
         }
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
         <# string accessibility = GetAccessibility(appendable, charSequence); #>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
         /// <summary>
         /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
         /// Casing is locale-dependent and context-sensitive.
@@ -223,6 +230,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src, dest, edits);
         }
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
     }
@@ -230,7 +238,7 @@ namespace ICU4N.Text
     public sealed partial class TitleCaseMap : CaseMap
     {
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         // ICU4N specific overload for convenience
         /// <summary>
         /// Titlecases a string.
@@ -261,9 +269,10 @@ namespace ICU4N.Text
             iter.SetText(src);
             return CaseMapImpl.ToTitle(GetCaseLocale(locale), internalOptions, iter, src);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Titlecases a string.
         /// Casing is locale-dependent and context-sensitive.
@@ -297,11 +306,12 @@ namespace ICU4N.Text
             iter.SetText(src);
             return CaseMapImpl.ToTitle(GetCaseLocale(locale), internalOptions, iter, src);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
         <# string accessibility = GetAccessibility(appendable, charSequence); #>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
         // ICU4N specific overload for convenience
         /// <summary>
         /// Titlecases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
@@ -345,13 +355,13 @@ namespace ICU4N.Text
             return CaseMapImpl.ToTitle(
                     GetCaseLocale(locale), internalOptions, iter, src, dest, edits);
         }
-
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
         <# string accessibility = GetAccessibility(appendable, charSequence); #>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
         /// <summary>
         /// Titlecases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
         /// Casing is locale-dependent and context-sensitive.
@@ -398,7 +408,7 @@ namespace ICU4N.Text
             return CaseMapImpl.ToTitle(
                     GetCaseLocale(locale), internalOptions, iter, src, dest, edits);
         }
-
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
     }
@@ -406,7 +416,7 @@ namespace ICU4N.Text
     public sealed partial class FoldCaseMap : CaseMap
     {
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Case-folds a string.
         /// The result may be longer or shorter than the original.
@@ -425,11 +435,12 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.Fold(internalOptions, src);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var appendable in Appendables) { #>
     <# foreach (var charSequence in CharSequences) { #>
         <# string accessibility = GetAccessibility(appendable, charSequence); #>
-
+<#= GetBeginFeature(GetFeature(appendable, charSequence)) #>
         /// <summary>
         /// Case-folds a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
         /// The result may be longer or shorter than the original.
@@ -460,6 +471,7 @@ namespace ICU4N.Text
         {
             return CaseMapImpl.Fold(internalOptions, src, dest, edits);
         }
+<#= GetEndFeature(GetFeature(appendable, charSequence)) #>
     <# } #>
 <# } #>
 

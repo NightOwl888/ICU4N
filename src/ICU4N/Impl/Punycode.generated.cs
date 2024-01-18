@@ -170,6 +170,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
+
         /// <summary>
         /// Converts Unicode to Punycode.
         /// The input string must not contain single, unpaired surrogates.
@@ -322,6 +323,7 @@ namespace ICU4N.Impl
 
             return dest;
         }
+
 
         /// <summary>
         /// Converts Unicode to Punycode.
@@ -476,6 +478,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
+
         /// <summary>
         /// Converts Unicode to Punycode.
         /// The input string must not contain single, unpaired surrogates.
@@ -628,6 +631,7 @@ namespace ICU4N.Impl
 
             return dest;
         }
+
 
         /// <summary>
         /// Converts Punycode to Unicode.
@@ -831,6 +835,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
+
         /// <summary>
         /// Converts Punycode to Unicode.
         /// The Unicode string will be at most as long as the Punycode string.
@@ -1032,6 +1037,7 @@ namespace ICU4N.Impl
             }
             return dest;
         }
+
 
         /// <summary>
         /// Converts Punycode to Unicode.
@@ -1235,6 +1241,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
+
         /// <summary>
         /// Converts Punycode to Unicode.
         /// The Unicode string will be at most as long as the Punycode string.
@@ -1436,5 +1443,6 @@ namespace ICU4N.Impl
             }
             return dest;
         }
+
     }
 }

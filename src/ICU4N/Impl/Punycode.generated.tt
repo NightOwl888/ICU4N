@@ -23,7 +23,7 @@ namespace ICU4N.Impl
     public static partial class Punycode
     {
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Converts Unicode to Punycode.
         /// The input string must not contain single, unpaired surrogates.
@@ -176,9 +176,10 @@ namespace ICU4N.Impl
 
             return dest;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Converts Punycode to Unicode.
         /// The Unicode string will be at most as long as the Punycode string.
@@ -380,6 +381,7 @@ namespace ICU4N.Impl
             }
             return dest;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
     }
 }

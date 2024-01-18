@@ -20,6 +20,7 @@ namespace ICU4N.Impl
     public sealed partial class CaseMapImpl
     {
 
+
         private static int AppendCodePoint(StringBuilder a, int c)
         {
             if (c <= char.MaxValue)
@@ -35,6 +36,8 @@ namespace ICU4N.Impl
             }
         }
 
+
+
         private static int AppendCodePoint(IAppendable a, int c)
         {
             if (c <= char.MaxValue)
@@ -49,6 +52,8 @@ namespace ICU4N.Impl
                 return 2;
             }
         }
+
+
 
         /// <summary>
         /// Appends a full case mapping result, see <see cref="UCaseProperties.MaxStringLength"/>
@@ -90,6 +95,8 @@ namespace ICU4N.Impl
             }
         }
 
+
+
         /// <summary>
         /// Appends a full case mapping result, see <see cref="UCaseProperties.MaxStringLength"/>
         /// </summary>
@@ -129,6 +136,7 @@ namespace ICU4N.Impl
                 }
             }
         }
+
     
         private static void AppendUnchanged(string src, int start, int length,
             StringBuilder dest, int options, Edits edits)
@@ -146,6 +154,7 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
+
     
         private static void AppendUnchanged(StringBuilder src, int start, int length,
             StringBuilder dest, int options, Edits edits)
@@ -163,6 +172,7 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
+
     
         private static void AppendUnchanged(char[] src, int start, int length,
             StringBuilder dest, int options, Edits edits)
@@ -180,6 +190,7 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
+
     
         private static void AppendUnchanged(ICharSequence src, int start, int length,
             StringBuilder dest, int options, Edits edits)
@@ -197,6 +208,7 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
+
         
         private static void AppendUnchanged(string src, int start, int length,
             IAppendable dest, int options, Edits edits)
@@ -214,6 +226,7 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
+
     
         private static void AppendUnchanged(StringBuilder src, int start, int length,
             IAppendable dest, int options, Edits edits)
@@ -231,6 +244,7 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
+
     
         private static void AppendUnchanged(char[] src, int start, int length,
             IAppendable dest, int options, Edits edits)
@@ -248,6 +262,7 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
+
     
         private static void AppendUnchanged(ICharSequence src, int start, int length,
             IAppendable dest, int options, Edits edits)
@@ -265,6 +280,7 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
+
     
         private static string ApplyEdits(string src, StringBuilder replacementChars, Edits edits)
         {
@@ -289,6 +305,7 @@ namespace ICU4N.Impl
             return result.ToString();
         }
 
+
         private static string ApplyEdits(StringBuilder src, StringBuilder replacementChars, Edits edits)
         {
             if (!edits.HasChanges)
@@ -311,6 +328,7 @@ namespace ICU4N.Impl
             }
             return result.ToString();
         }
+
 
         private static string ApplyEdits(char[] src, StringBuilder replacementChars, Edits edits)
         {
@@ -335,6 +353,7 @@ namespace ICU4N.Impl
             return result.ToString();
         }
 
+
         private static string ApplyEdits(ICharSequence src, StringBuilder replacementChars, Edits edits)
         {
             if (!edits.HasChanges)
@@ -358,6 +377,7 @@ namespace ICU4N.Impl
             return result.ToString();
         }
 
+
         private static void InternalToLower(CaseLocale caseLocale, int options, StringContextEnumerator iter,
             StringBuilder dest, Edits edits)
         {
@@ -369,6 +389,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         private static void InternalToLower(CaseLocale caseLocale, int options, StringContextEnumerator iter,
             IAppendable dest, Edits edits)
         {
@@ -379,6 +400,7 @@ namespace ICU4N.Impl
                 AppendResult(c, dest, iter.CPLength, options, edits);
             }
         }
+
 
         public static string ToLower(CaseLocale caseLocale, int options, string src)
         {
@@ -402,6 +424,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         public static string ToLower(CaseLocale caseLocale, int options, StringBuilder src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
@@ -423,6 +446,7 @@ namespace ICU4N.Impl
                         new StringBuilder(src.Length), null).ToString();
             }
         }
+
 
         public static string ToLower(CaseLocale caseLocale, int options, char[] src)
         {
@@ -446,6 +470,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         public static string ToLower(CaseLocale caseLocale, int options, ICharSequence src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
@@ -467,6 +492,7 @@ namespace ICU4N.Impl
                         new StringBuilder(src.Length), null).ToString();
             }
         }
+
             
         public static StringBuilder ToLower(CaseLocale caseLocale, int options,
             string src, StringBuilder dest, Edits edits)
@@ -486,6 +512,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static StringBuilder ToLower(CaseLocale caseLocale, int options,
             StringBuilder src, StringBuilder dest, Edits edits)
@@ -505,6 +532,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static StringBuilder ToLower(CaseLocale caseLocale, int options,
             char[] src, StringBuilder dest, Edits edits)
@@ -524,6 +552,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static StringBuilder ToLower(CaseLocale caseLocale, int options,
             ICharSequence src, StringBuilder dest, Edits edits)
@@ -543,6 +572,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
                 
         public static T ToLower<T>(CaseLocale caseLocale, int options,
             string src, T dest, Edits edits) where T : IAppendable
@@ -562,6 +592,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static T ToLower<T>(CaseLocale caseLocale, int options,
             StringBuilder src, T dest, Edits edits) where T : IAppendable
@@ -581,6 +612,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static T ToLower<T>(CaseLocale caseLocale, int options,
             char[] src, T dest, Edits edits) where T : IAppendable
@@ -600,6 +632,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static T ToLower<T>(CaseLocale caseLocale, int options,
             ICharSequence src, T dest, Edits edits) where T : IAppendable
@@ -619,6 +652,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
     
         public static string ToUpper(CaseLocale caseLocale, int options, string src)
         {
@@ -642,6 +676,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         public static string ToUpper(CaseLocale caseLocale, int options, StringBuilder src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
@@ -663,6 +698,7 @@ namespace ICU4N.Impl
                         new StringBuilder(src.Length), null).ToString();
             }
         }
+
 
         public static string ToUpper(CaseLocale caseLocale, int options, char[] src)
         {
@@ -686,6 +722,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         public static string ToUpper(CaseLocale caseLocale, int options, ICharSequence src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
@@ -707,6 +744,7 @@ namespace ICU4N.Impl
                         new StringBuilder(src.Length), null).ToString();
             }
         }
+
             
         public static StringBuilder ToUpper(CaseLocale caseLocale, int options,
             string src, StringBuilder dest, Edits edits)
@@ -735,6 +773,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static StringBuilder ToUpper(CaseLocale caseLocale, int options,
             StringBuilder src, StringBuilder dest, Edits edits)
@@ -763,6 +802,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static StringBuilder ToUpper(CaseLocale caseLocale, int options,
             char[] src, StringBuilder dest, Edits edits)
@@ -791,6 +831,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static StringBuilder ToUpper(CaseLocale caseLocale, int options,
             ICharSequence src, StringBuilder dest, Edits edits)
@@ -819,6 +860,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
                 
         public static T ToUpper<T>(CaseLocale caseLocale, int options,
             string src, T dest, Edits edits) where T : IAppendable
@@ -847,6 +889,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static T ToUpper<T>(CaseLocale caseLocale, int options,
             StringBuilder src, T dest, Edits edits) where T : IAppendable
@@ -875,6 +918,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static T ToUpper<T>(CaseLocale caseLocale, int options,
             char[] src, T dest, Edits edits) where T : IAppendable
@@ -903,6 +947,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static T ToUpper<T>(CaseLocale caseLocale, int options,
             ICharSequence src, T dest, Edits edits) where T : IAppendable
@@ -931,6 +976,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
     
         public static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, string src)
         {
@@ -955,6 +1001,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         public static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, StringBuilder src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
@@ -977,6 +1024,7 @@ namespace ICU4N.Impl
                         new StringBuilder(src.Length), null).ToString();
             }
         }
+
 
         public static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, char[] src)
         {
@@ -1001,6 +1049,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         public static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, ICharSequence src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
@@ -1023,6 +1072,7 @@ namespace ICU4N.Impl
                         new StringBuilder(src.Length), null).ToString();
             }
         }
+
             
         public static StringBuilder ToTitle(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
@@ -1158,6 +1208,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static StringBuilder ToTitle(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
@@ -1293,6 +1344,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static StringBuilder ToTitle(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
@@ -1428,6 +1480,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static StringBuilder ToTitle(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
@@ -1563,6 +1616,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
                 
         public static T ToTitle<T>(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
@@ -1698,6 +1752,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static T ToTitle<T>(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
@@ -1833,6 +1888,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static T ToTitle<T>(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
@@ -1968,6 +2024,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static T ToTitle<T>(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
@@ -2103,6 +2160,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
     
         public static string Fold(int options, string src)
         {
@@ -2125,6 +2183,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         public static string Fold(int options, StringBuilder src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
@@ -2145,6 +2204,7 @@ namespace ICU4N.Impl
                 return Fold(options, src, new StringBuilder(src.Length), null).ToString();
             }
         }
+
 
         public static string Fold(int options, char[] src)
         {
@@ -2167,6 +2227,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         public static string Fold(int options, ICharSequence src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
@@ -2187,6 +2248,7 @@ namespace ICU4N.Impl
                 return Fold(options, src, new StringBuilder(src.Length), null).ToString();
             }
         }
+
             
         public static StringBuilder Fold(int options,
             string src, StringBuilder dest, Edits edits)
@@ -2213,6 +2275,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static StringBuilder Fold(int options,
             StringBuilder src, StringBuilder dest, Edits edits)
@@ -2239,6 +2302,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static StringBuilder Fold(int options,
             char[] src, StringBuilder dest, Edits edits)
@@ -2265,6 +2329,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static StringBuilder Fold(int options,
             ICharSequence src, StringBuilder dest, Edits edits)
@@ -2291,6 +2356,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
                 
         public static T Fold<T>(int options,
             string src, T dest, Edits edits) where T : IAppendable
@@ -2317,6 +2383,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static T Fold<T>(int options,
             StringBuilder src, T dest, Edits edits) where T : IAppendable
@@ -2343,6 +2410,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static T Fold<T>(int options,
             char[] src, T dest, Edits edits) where T : IAppendable
@@ -2369,6 +2437,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
             
         public static T Fold<T>(int options,
             ICharSequence src, T dest, Edits edits) where T : IAppendable
@@ -2395,6 +2464,7 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
+
     
         private sealed partial class GreekUpper
         {
@@ -2422,6 +2492,7 @@ namespace ICU4N.Impl
                 return false;  // Not followed by cased letter.
             }
 
+
             private static bool IsFollowedByCasedLetter(StringBuilder s, int i)
             {
                 while (i < s.Length)
@@ -2444,6 +2515,7 @@ namespace ICU4N.Impl
                 }
                 return false;  // Not followed by cased letter.
             }
+
 
             private static bool IsFollowedByCasedLetter(char[] s, int i)
             {
@@ -2468,6 +2540,7 @@ namespace ICU4N.Impl
                 return false;  // Not followed by cased letter.
             }
 
+
             private static bool IsFollowedByCasedLetter(ICharSequence s, int i)
             {
                 while (i < s.Length)
@@ -2490,6 +2563,7 @@ namespace ICU4N.Impl
                 }
                 return false;  // Not followed by cased letter.
             }
+
             
             /// <summary>
             /// Greek string uppercasing with a state machine.
@@ -2666,6 +2740,7 @@ namespace ICU4N.Impl
                 }
                 return dest;
             }
+
             
             /// <summary>
             /// Greek string uppercasing with a state machine.
@@ -2842,6 +2917,7 @@ namespace ICU4N.Impl
                 }
                 return dest;
             }
+
             
             /// <summary>
             /// Greek string uppercasing with a state machine.
@@ -3018,6 +3094,7 @@ namespace ICU4N.Impl
                 }
                 return dest;
             }
+
             
             /// <summary>
             /// Greek string uppercasing with a state machine.
@@ -3194,6 +3271,7 @@ namespace ICU4N.Impl
                 }
                 return dest;
             }
+
                 
             /// <summary>
             /// Greek string uppercasing with a state machine.
@@ -3370,6 +3448,7 @@ namespace ICU4N.Impl
                 }
                 return dest;
             }
+
             
             /// <summary>
             /// Greek string uppercasing with a state machine.
@@ -3546,6 +3625,7 @@ namespace ICU4N.Impl
                 }
                 return dest;
             }
+
             
             /// <summary>
             /// Greek string uppercasing with a state machine.
@@ -3722,6 +3802,7 @@ namespace ICU4N.Impl
                 }
                 return dest;
             }
+
             
             /// <summary>
             /// Greek string uppercasing with a state machine.
@@ -3898,6 +3979,7 @@ namespace ICU4N.Impl
                 }
                 return dest;
             }
+
     
         }
     }

@@ -23,7 +23,7 @@ namespace ICU4N.Impl
     public static partial class SimpleFormatterImpl
     {
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Creates a compiled form of the pattern string, for use with appropriate static methods.
         /// The number of arguments checked against the given limits is the
@@ -166,9 +166,10 @@ namespace ICU4N.Impl
             sb[0] = (char)argCount;
             return sb.ToString();
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Formats the given values.
         /// </summary>
@@ -181,9 +182,10 @@ namespace ICU4N.Impl
         {
             return FormatAndAppend(compiledPattern, new StringBuilder(), null, values).ToString();
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Formats the not-compiled pattern with the given values.
         /// Equivalent to <see cref="CompileToStringMinMaxArguments(<#=charSequence#>, StringBuilder, int, int)"/> 
@@ -207,9 +209,10 @@ namespace ICU4N.Impl
             sb.Length = 0;
             return FormatAndAppend(compiledPattern, sb, null, values).ToString();
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
         /// </summary>
@@ -241,9 +244,10 @@ namespace ICU4N.Impl
             }
             return Format(compiledPattern, values, appendTo, null, true, offsets);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
         /// May optimize by actually appending to the result if it is the same object
@@ -317,9 +321,10 @@ namespace ICU4N.Impl
             }
             return Format(compiledPattern, values, result, resultCopy, false, offsets);
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
-
+<#= GetBeginFeature(charSequence) #>
         private static StringBuilder Format(
             string compiledPattern, <#=charSequence#>[] values,
             StringBuilder result, string resultCopy, bool forbidResultAsValue,
@@ -397,6 +402,7 @@ namespace ICU4N.Impl
             }
             return result;
         }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 
     }

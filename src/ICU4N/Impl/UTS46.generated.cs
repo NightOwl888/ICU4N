@@ -24,40 +24,48 @@ namespace ICU4N.Impl
             return Process(label, true, true, dest, info);
         }
 
+
         public override StringBuilder LabelToASCII(StringBuilder label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, true, dest, info);
         }
+
 
         public override StringBuilder LabelToASCII(char[] label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, true, dest, info);
         }
 
+
         public override StringBuilder LabelToASCII(ICharSequence label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, true, dest, info);
         }
+
 
         public override StringBuilder LabelToUnicode(string label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, false, dest, info);
         }
 
+
         public override StringBuilder LabelToUnicode(StringBuilder label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, false, dest, info);
         }
+
 
         public override StringBuilder LabelToUnicode(char[] label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, false, dest, info);
         }
 
+
         public override StringBuilder LabelToUnicode(ICharSequence label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, false, dest, info);
         }
+
 
         public override StringBuilder NameToASCII(string name, StringBuilder dest, IDNAInfo info)
         {
@@ -74,6 +82,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
+
         public override StringBuilder NameToASCII(StringBuilder name, StringBuilder dest, IDNAInfo info)
         {
             Process(name, false, true, dest, info);
@@ -88,6 +97,7 @@ namespace ICU4N.Impl
             }
             return dest;
         }
+
 
         public override StringBuilder NameToASCII(char[] name, StringBuilder dest, IDNAInfo info)
         {
@@ -104,6 +114,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
+
         public override StringBuilder NameToASCII(ICharSequence name, StringBuilder dest, IDNAInfo info)
         {
             Process(name, false, true, dest, info);
@@ -119,25 +130,30 @@ namespace ICU4N.Impl
             return dest;
         }
 
+
         public override StringBuilder NameToUnicode(string name, StringBuilder dest, IDNAInfo info)
         {
             return Process(name, false, false, dest, info);
         }
+
 
         public override StringBuilder NameToUnicode(StringBuilder name, StringBuilder dest, IDNAInfo info)
         {
             return Process(name, false, false, dest, info);
         }
 
+
         public override StringBuilder NameToUnicode(char[] name, StringBuilder dest, IDNAInfo info)
         {
             return Process(name, false, false, dest, info);
         }
 
+
         public override StringBuilder NameToUnicode(ICharSequence name, StringBuilder dest, IDNAInfo info)
         {
             return Process(name, false, false, dest, info);
         }
+
 
         private static bool IsASCIIString(string dest)
         {
@@ -152,6 +168,7 @@ namespace ICU4N.Impl
             return true;
         }
 
+
         private static bool IsASCIIString(StringBuilder dest)
         {
             int length = dest.Length;
@@ -164,6 +181,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
 
         private static bool IsASCIIString(char[] dest)
         {
@@ -178,6 +196,7 @@ namespace ICU4N.Impl
             return true;
         }
 
+
         private static bool IsASCIIString(ICharSequence dest)
         {
             int length = dest.Length;
@@ -190,6 +209,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
 
         private StringBuilder Process(string src,
             bool isLabel, bool toASCII,
@@ -311,6 +331,7 @@ namespace ICU4N.Impl
             }
             return dest;
         }
+
 
         private StringBuilder Process(StringBuilder src,
             bool isLabel, bool toASCII,
@@ -440,6 +461,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
+
         private StringBuilder Process(char[] src,
             bool isLabel, bool toASCII,
             StringBuilder dest,
@@ -560,6 +582,7 @@ namespace ICU4N.Impl
             }
             return dest;
         }
+
 
         private StringBuilder Process(ICharSequence src,
             bool isLabel, bool toASCII,
@@ -689,6 +712,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
+
         private StringBuilder ProcessUnicode(string src,
             int labelStart, int mappingStart,
             bool isLabel, bool toASCII,
@@ -756,6 +780,7 @@ namespace ICU4N.Impl
             }
             return dest;
         }
+
 
         private StringBuilder ProcessUnicode(StringBuilder src,
             int labelStart, int mappingStart,
@@ -825,6 +850,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
+
         private StringBuilder ProcessUnicode(char[] src,
             int labelStart, int mappingStart,
             bool isLabel, bool toASCII,
@@ -892,6 +918,7 @@ namespace ICU4N.Impl
             }
             return dest;
         }
+
 
         private StringBuilder ProcessUnicode(ICharSequence src,
             int labelStart, int mappingStart,
@@ -961,6 +988,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
+
         // Replace the label in dest with the label string, if the label was modified.
         // If label==dest then the label was modified in-place and labelLength
         // is the new label length, different from label.Length.
@@ -976,6 +1004,7 @@ namespace ICU4N.Impl
             }
             return labelLength;
         }
+
 
         // Replace the label in dest with the label string, if the label was modified.
         // If label==dest then the label was modified in-place and labelLength
@@ -994,6 +1023,7 @@ namespace ICU4N.Impl
             return labelLength;
         }
 
+
         // Replace the label in dest with the label string, if the label was modified.
         // If label==dest then the label was modified in-place and labelLength
         // is the new label length, different from label.Length.
@@ -1009,6 +1039,7 @@ namespace ICU4N.Impl
             }
             return labelLength;
         }
+
 
         // Replace the label in dest with the label string, if the label was modified.
         // If label==dest then the label was modified in-place and labelLength
@@ -1026,6 +1057,7 @@ namespace ICU4N.Impl
             }
             return labelLength;
         }
+
 
         // We scan the whole label and check both for whether it contains RTL characters
         // and whether it passes the BiDi Rule.
@@ -1136,6 +1168,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         // We scan the whole label and check both for whether it contains RTL characters
         // and whether it passes the BiDi Rule.
         // In a BiDi domain name, all labels must pass the BiDi Rule, but we might find
@@ -1244,6 +1277,7 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
             }
         }
+
 
         // We scan the whole label and check both for whether it contains RTL characters
         // and whether it passes the BiDi Rule.
@@ -1354,6 +1388,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         // We scan the whole label and check both for whether it contains RTL characters
         // and whether it passes the BiDi Rule.
         // In a BiDi domain name, all labels must pass the BiDi Rule, but we might find
@@ -1463,6 +1498,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         // Special code for the ASCII prefix of a BiDi domain name.
         // The ASCII prefix is all-LTR.
 
@@ -1514,6 +1550,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
 
         // Special code for the ASCII prefix of a BiDi domain name.
         // The ASCII prefix is all-LTR.
@@ -1567,6 +1604,7 @@ namespace ICU4N.Impl
             return true;
         }
 
+
         // Special code for the ASCII prefix of a BiDi domain name.
         // The ASCII prefix is all-LTR.
 
@@ -1619,6 +1657,7 @@ namespace ICU4N.Impl
             return true;
         }
 
+
         // Special code for the ASCII prefix of a BiDi domain name.
         // The ASCII prefix is all-LTR.
 
@@ -1670,6 +1709,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
 
         private bool IsLabelOkContextJ(string label, int labelStart, int labelLength)
         {
@@ -1766,6 +1806,7 @@ namespace ICU4N.Impl
             return true;
         }
 
+
         private bool IsLabelOkContextJ(StringBuilder label, int labelStart, int labelLength)
         {
             // [IDNA2008-Tables]
@@ -1860,6 +1901,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
 
         private bool IsLabelOkContextJ(char[] label, int labelStart, int labelLength)
         {
@@ -1956,6 +1998,7 @@ namespace ICU4N.Impl
             return true;
         }
 
+
         private bool IsLabelOkContextJ(ICharSequence label, int labelStart, int labelLength)
         {
             // [IDNA2008-Tables]
@@ -2050,6 +2093,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
+
 
         private void CheckLabelContextO(string label, int labelStart, int labelLength, IDNAInfo info)
         {
@@ -2177,6 +2221,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         private void CheckLabelContextO(StringBuilder label, int labelStart, int labelLength, IDNAInfo info)
         {
             int labelEnd = labelStart + labelLength - 1;  // inclusive
@@ -2302,6 +2347,7 @@ namespace ICU4N.Impl
                 }
             }
         }
+
 
         private void CheckLabelContextO(char[] label, int labelStart, int labelLength, IDNAInfo info)
         {
@@ -2429,6 +2475,7 @@ namespace ICU4N.Impl
             }
         }
 
+
         private void CheckLabelContextO(ICharSequence label, int labelStart, int labelLength, IDNAInfo info)
         {
             int labelEnd = labelStart + labelLength - 1;  // inclusive
@@ -2554,5 +2601,6 @@ namespace ICU4N.Impl
                 }
             }
         }
+
     }
 }
