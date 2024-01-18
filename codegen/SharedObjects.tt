@@ -106,6 +106,8 @@ string GetAccessibility(string accessibility1, string accessibility2)
         return "private";
     else if (accessibilities.Contains("internal"))
         return "internal";
+    else if (accessibilities.Contains("protected"))
+        return "protected";
     else
         return "public";
 }
@@ -123,6 +125,8 @@ string GetAccessibility(string accessibility1, string accessibility2, string acc
         return "private";
     else if (accessibilities.Contains("internal"))
         return "internal";
+    else if (accessibilities.Contains("protected"))
+        return "protected";
     else
         return "public";
 }
