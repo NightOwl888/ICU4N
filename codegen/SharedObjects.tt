@@ -98,6 +98,11 @@ public interface IFeature
     string Feature { get; set; }
 }
 
+string GetAccessibility(IAccessibility accessibility)
+{
+    return accessibility.Accessibility;
+}
+
 string GetAccessibility(string accessibility1, string accessibility2)
 {
     string[] accessibilities = new string[] { accessibility1, accessibility2 };
