@@ -3422,6 +3422,9 @@ namespace ICU4N.Text
         /// to char arrays.
         /// </summary>
         private sealed partial class CharsAppendable : IAppendable
+#if FEATURE_SPAN
+            , ISpanAppendable
+#endif
         {
             public CharsAppendable(char[] dest, int destStart, int destLimit)
             {
@@ -3444,7 +3447,7 @@ namespace ICU4N.Text
                     }
                 }
             }
-            public IAppendable Append(char c)
+            public CharsAppendable Append(char c)
             {
                 if (offset < limit)
                 {
@@ -3453,6 +3456,47 @@ namespace ICU4N.Text
                 ++offset;
                 return this;
             }
+
+#if FEATURE_SPAN
+
+            public CharsAppendable Append(ReadOnlySpan<char> value)
+            {
+                int sLength = value.Length;
+                if (sLength <= (limit - offset))
+                {
+                    value.CopyTo(chars.AsSpan(offset));
+                }
+                offset += sLength;
+                return this;
+            }
+
+            #region ISpanAppendable
+            ISpanAppendable ISpanAppendable.Append(ReadOnlySpan<char> value) => Append(value);
+
+            #endregion ISpanAppendable
+
+            #region IAppendable
+            IAppendable IAppendable.Append(char value) => Append(value);
+
+            IAppendable IAppendable.Append(string value) => Append(value);
+
+            IAppendable IAppendable.Append(string value, int startIndex, int count) => Append(value, startIndex, count);
+
+            IAppendable IAppendable.Append(StringBuilder value) => Append(value);
+
+            IAppendable IAppendable.Append(StringBuilder value, int startIndex, int count) => Append(value, startIndex, count);
+
+            IAppendable IAppendable.Append(char[] value) => Append(value);
+
+            IAppendable IAppendable.Append(char[] value, int startIndex, int count) => Append(value, startIndex, count);
+
+            IAppendable IAppendable.Append(ICharSequence value) => Append(value);
+
+            IAppendable IAppendable.Append(ICharSequence value, int startIndex, int count) => Append(value, startIndex, count);
+
+            #endregion IAppendable
+
+#endif
 
             // ICU4N specific - Append(ICharSequence s) moved to Normalizer.generated.tt
 

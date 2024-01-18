@@ -18,12 +18,12 @@ namespace ICU4N.Text
         private sealed partial class CharsAppendable : IAppendable
         {
 
-            public IAppendable Append(string s)
+            public CharsAppendable Append(string s)
             {
                 return Append(s, 0, s.Length);
             }
 
-            public IAppendable Append(string s, int sStart, int sLength)
+            public CharsAppendable Append(string s, int sStart, int sLength)
             {
                 int sLimit = sStart + sLength;
                 if (sLength <= (limit - offset))
@@ -40,12 +40,12 @@ namespace ICU4N.Text
                 return this;
             }
 
-            public IAppendable Append(StringBuilder s)
+            public CharsAppendable Append(StringBuilder s)
             {
                 return Append(s, 0, s.Length);
             }
 
-            public IAppendable Append(StringBuilder s, int sStart, int sLength)
+            public CharsAppendable Append(StringBuilder s, int sStart, int sLength)
             {
                 int sLimit = sStart + sLength;
                 if (sLength <= (limit - offset))
@@ -62,12 +62,12 @@ namespace ICU4N.Text
                 return this;
             }
 
-            public IAppendable Append(char[] s)
+            public CharsAppendable Append(char[] s)
             {
                 return Append(s, 0, s.Length);
             }
 
-            public IAppendable Append(char[] s, int sStart, int sLength)
+            public CharsAppendable Append(char[] s, int sStart, int sLength)
             {
                 int sLimit = sStart + sLength;
                 if (sLength <= (limit - offset))
@@ -84,12 +84,12 @@ namespace ICU4N.Text
                 return this;
             }
 
-            public IAppendable Append(ICharSequence s)
+            public CharsAppendable Append(ICharSequence s)
             {
                 return Append(s, 0, s.Length);
             }
 
-            public IAppendable Append(ICharSequence s, int sStart, int sLength)
+            public CharsAppendable Append(ICharSequence s, int sStart, int sLength)
             {
                 int sLimit = sStart + sLength;
                 if (sLength <= (limit - offset))
