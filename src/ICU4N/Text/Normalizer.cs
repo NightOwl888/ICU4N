@@ -3475,6 +3475,7 @@ namespace ICU4N.Text
 
             #endregion ISpanAppendable
 
+#endif
             #region IAppendable
             IAppendable IAppendable.Append(char value) => Append(value);
 
@@ -3496,7 +3497,6 @@ namespace ICU4N.Text
 
             #endregion IAppendable
 
-#endif
 
             // ICU4N specific - Append(ICharSequence s) moved to Normalizer.generated.tt
 
