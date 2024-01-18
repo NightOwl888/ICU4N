@@ -24,12 +24,12 @@ namespace ICU4N.Text
         {
 <# foreach (var charSequence in CharSequences.Where(cs => cs.Name != "ReadOnlySpan<char>")) { #>
 
-            public IAppendable Append(<#=charSequence#> s)
+            public CharsAppendable Append(<#=charSequence#> s)
             {
                 return Append(s, 0, s.Length);
             }
 
-            public IAppendable Append(<#=charSequence#> s, int sStart, int sLength)
+            public CharsAppendable Append(<#=charSequence#> s, int sStart, int sLength)
             {
                 int sLimit = sStart + sLength;
                 if (sLength <= (limit - offset))
