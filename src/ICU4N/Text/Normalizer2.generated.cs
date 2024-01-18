@@ -65,7 +65,6 @@ namespace ICU4N.Text
 
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
         /// (replacing its contents) and returns the destination string.
@@ -76,8 +75,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest);
 
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
@@ -125,7 +123,6 @@ namespace ICU4N.Text
         public abstract IAppendable Normalize(ICharSequence src, IAppendable dest);
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
         /// and returns the destination <see cref="IAppendable"/>.
@@ -135,8 +132,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
         public abstract IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest);
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Appends the normalized form of the <paramref name="second"/> string to the <paramref name="first"/> string
@@ -194,7 +190,6 @@ namespace ICU4N.Text
             StringBuilder first, ICharSequence second);
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Appends the normalized form of the <paramref name="second"/> string to the <paramref name="first"/> string
         /// (merging them at the boundary) and returns the <paramref name="first"/> string.
@@ -207,8 +202,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder NormalizeSecondAndAppend(
             StringBuilder first, ReadOnlySpan<char> second);
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Appends the <paramref name="second"/> string to the <paramref name="first"/> string
@@ -262,7 +256,6 @@ namespace ICU4N.Text
         public abstract StringBuilder Append(StringBuilder first, ICharSequence second);
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Appends the <paramref name="second"/> string to the <paramref name="first"/> string
         /// (merging them at the boundary) and returns the <paramref name="first"/> string.
@@ -274,8 +267,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="first"/></returns>
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second);
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Tests if the string is normalized.
@@ -329,10 +321,9 @@ namespace ICU4N.Text
         public abstract bool IsNormalized(ICharSequence s);
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Tests if the string is normalized.
-        /// Internally, in cases where the <see cref="QuickCheck(ReadOnlySpan{char})"/> method would return "maybe"
+        /// Internally, in cases where the <see cref="QuickCheck(ReadOnlySpan{Char})"/> method would return "maybe"
         /// (which is only possible for the two COMPOSE modes) this method
         /// resolves to "yes" or "no" to provide a definitive result,
         /// at the cost of doing more work in those cases.
@@ -341,8 +332,7 @@ namespace ICU4N.Text
         /// <returns>true if <paramref name="s"/> is normalized.</returns>
         /// <stable>ICU 4.4</stable>
         public abstract bool IsNormalized(ReadOnlySpan<char> s);
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Tests if the string is normalized.
@@ -404,13 +394,12 @@ namespace ICU4N.Text
         public abstract QuickCheckResult QuickCheck(ICharSequence s);
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Tests if the string is normalized.
         /// For the two COMPOSE modes, the result could be "maybe" in cases that
         /// would take a little more work to resolve definitively.
-        /// Use <see cref="SpanQuickCheckYes(ReadOnlySpan{char})"/> and
-        /// <see cref="NormalizeSecondAndAppend(StringBuilder, ReadOnlySpan{char})"/> for a faster
+        /// Use <see cref="SpanQuickCheckYes(ReadOnlySpan{Char})"/> and
+        /// <see cref="NormalizeSecondAndAppend(StringBuilder, ReadOnlySpan{Char})"/> for a faster
         /// combination of quick check + normalization, to avoid
         /// re-checking the "yes" prefix.
         /// </summary>
@@ -418,8 +407,7 @@ namespace ICU4N.Text
         /// <returns>The quick check result.</returns>
         /// <stable>ICU 4.4</stable>
         public abstract QuickCheckResult QuickCheck(ReadOnlySpan<char> s);
-#endif 
-
+#endif // FEATURE_SPAN
 
         /// <summary>
         /// Returns the end of the normalized substring of the input string.
@@ -509,7 +497,6 @@ namespace ICU4N.Text
         public abstract int SpanQuickCheckYes(ICharSequence s);
 
 #if FEATURE_SPAN
-
         /// <summary>
         /// Returns the end of the normalized substring of the input string.
         /// In other words, with <c>end=SpanQuickCheckYes(s);</c>
@@ -524,14 +511,13 @@ namespace ICU4N.Text
         /// When the goal is a normalized string and most input strings are expected
         /// to be normalized already, then call this method,
         /// and if it returns a prefix shorter than the input string,
-        /// copy that prefix and use <see cref="NormalizeSecondAndAppend(StringBuilder, ReadOnlySpan{char})"/> for the remainder.
+        /// copy that prefix and use <see cref="NormalizeSecondAndAppend(StringBuilder, ReadOnlySpan{Char})"/> for the remainder.
         /// </remarks>
         /// <param name="s">Input string.</param>
         /// <returns>"yes" span end index.</returns>
         /// <stable>ICU 4.4</stable>
         public abstract int SpanQuickCheckYes(ReadOnlySpan<char> s);
-#endif 
-
+#endif // FEATURE_SPAN
 
     }
 }
