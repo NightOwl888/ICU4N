@@ -15,7 +15,7 @@ namespace ICU4N.Text
 {
     public sealed partial class Normalizer
     {
-        private sealed partial class CharsAppendable : IAppendable
+        private sealed partial class CharsAppendable
         {
 
             public IAppendable Append(string s)
@@ -28,10 +28,8 @@ namespace ICU4N.Text
                 int sLimit = sStart + sLength;
                 if (sLength <= (limit - offset))
                 {
-                    while (sStart < sLimit)
-                    {  // TODO: Is there a better way to copy the characters?
-                        chars[offset++] = s[sStart++];
-                    }
+                    s.CopyTo(sStart, chars, offset, sLength);
+                    offset += sLength;
                 }
                 else
                 {
@@ -50,10 +48,8 @@ namespace ICU4N.Text
                 int sLimit = sStart + sLength;
                 if (sLength <= (limit - offset))
                 {
-                    while (sStart < sLimit)
-                    {  // TODO: Is there a better way to copy the characters?
-                        chars[offset++] = s[sStart++];
-                    }
+                    s.CopyTo(sStart, chars, offset, sLength);
+                    offset += sLength;
                 }
                 else
                 {
@@ -72,10 +68,8 @@ namespace ICU4N.Text
                 int sLimit = sStart + sLength;
                 if (sLength <= (limit - offset))
                 {
-                    while (sStart < sLimit)
-                    {  // TODO: Is there a better way to copy the characters?
-                        chars[offset++] = s[sStart++];
-                    }
+                    System.Array.Copy(s, sStart, chars, offset, sLength);
+                    offset += sLength;
                 }
                 else
                 {
