@@ -30,6 +30,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
         /// (replacing its contents) and returns the destination string.
+        /// The source and destination strings must be different objects.
         /// </summary>
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
@@ -54,6 +55,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
         /// (replacing its contents) and returns the destination string.
+        /// The source and destination strings must be different objects.
         /// </summary>
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
@@ -78,8 +80,8 @@ namespace ICU4N.Text
 
 
         /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
+        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
+        /// and returns the destination <see cref="IAppendable"/>.
         /// </summary>
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
@@ -89,8 +91,9 @@ namespace ICU4N.Text
 
 
         /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
+        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
+        /// and returns the destination <see cref="IAppendable"/>.
+        /// The source and destination strings must be different objects.
         /// </summary>
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
@@ -100,8 +103,8 @@ namespace ICU4N.Text
 
 
         /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
+        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
+        /// and returns the destination <see cref="IAppendable"/>.
         /// </summary>
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
@@ -111,8 +114,9 @@ namespace ICU4N.Text
 
 
         /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
+        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
+        /// and returns the destination <see cref="IAppendable"/>.
+        /// The source and destination strings must be different objects.
         /// </summary>
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
@@ -123,8 +127,8 @@ namespace ICU4N.Text
 #if FEATURE_SPAN
 
         /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
+        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
+        /// and returns the destination <see cref="IAppendable"/>.
         /// </summary>
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
