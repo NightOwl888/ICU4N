@@ -2967,15 +2967,13 @@ namespace ICU4N.Text
                 return "" + (char)ch;
             }
 
-            // ICU4N: Both of the below alternatives were tried, but for some
-            // reason this caused perfomance to degrade considerably.
-            //return new string(GetLeadSurrogate(ch), GetTrailSurrogate(ch));
-            //return char.ConvertFromUtf32(ch);
-
-            StringBuilder result = new StringBuilder();
-            result.Append(GetLeadSurrogate(ch));
-            result.Append(GetTrailSurrogate(ch));
-            return result.ToString();
+            unsafe
+            {
+                char* buffer = stackalloc char[2];
+                buffer[0] = GetLeadSurrogate(ch);
+                buffer[1] = GetTrailSurrogate(ch);
+                return new string(buffer, 0, 2);
+            }
         }
     }
 }
