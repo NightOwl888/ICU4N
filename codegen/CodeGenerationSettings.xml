@@ -12,6 +12,11 @@
     <appendable>IAppendable</appendable>
     <appendable accessibility="internal" modifier="ref " feature="FEATURE_SPAN" nullable="false">ValueStringBuilder</appendable>
   </appendables>
+  <!-- These are also "appendable", but they only have scope to the normalizer code, so we only have APIs for normalizer classes -->
+  <reorderingBuffers>
+    <buffer modifier="ref " feature="FEATURE_SPAN" nullable="false">ValueReorderingBuffer</buffer>
+    <buffer>ReorderingBuffer</buffer>
+  </reorderingBuffers>
   <numericTypes>
     <!-- integral types -->
     <numericType clsCompliant="true" cSharpName="byte">Byte</numericType>

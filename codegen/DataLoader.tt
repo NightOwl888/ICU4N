@@ -11,6 +11,7 @@
 // Shared objects to hold the loaded data
 List<CharSequence> CharSequences;
 List<Appendable> Appendables;
+List<Appendable> ReorderingBuffers;
 List<NumericType> NumericTypes;
 
 string codeGenerationPath = Path.GetFullPath(Path.Combine(Host.ResolvePath(string.Empty), codeGenerationRelativePath));
@@ -52,6 +53,20 @@ Appendables = xDoc.Descendants("appendable")
     })
     .ToList();
 Appendables = AppendableFilter != null ? Appendables.Where(AppendableFilter).ToList() : Appendables;
+
+// Load reordering buffers
+ReorderingBuffers = xDoc.Descendants("buffer")
+    .Select(element => new Appendable
+    {
+        Name = element.Value,
+        NameForDocAsType = GetNameForDocAsType(element.Value),
+        NameForDocAsLink = GetNameForDocAsLink(element.Value),
+        Accessibility = element.Attribute("accessibility")?.Value ?? "public",
+        Feature = element.Attribute("feature")?.Value ?? "",
+        Modifier = element.Attribute("modifier")?.Value ?? "",
+        IsNullable = bool.Parse(element.Attribute("nullable")?.Value ?? "true"),
+    })
+    .ToList();
 
 // Load numericTypes
 NumericTypes = xDoc.Descendants("numericType")
