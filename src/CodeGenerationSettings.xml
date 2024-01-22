@@ -1,21 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <codeGen>
   <charSequences>
-    <charSequence>string</charSequence>
-    <charSequence>StringBuilder</charSequence>
-    <charSequence>char[]</charSequence>
-    <charSequence>ICharSequence</charSequence>
-    <charSequence feature="FEATURE_SPAN">ReadOnlySpan&lt;char&gt;</charSequence>
+    <charSequence sliceMethod="AsSpan" legacySliceMethod="Substring" toStringFormat="{0}" nameForTest="String">string</charSequence>
+    <charSequence sliceMethod="ToString" fromStringFormat="new StringBuilder({0})" toStringFormat="{0}.ToString()">StringBuilder</charSequence>
+    <charSequence sliceMethod="AsSpan" legacySliceMethod="Subsequence" fromStringFormat="{0}.ToCharArray()" toStringFormat="new string({0})" nameForTest="CharArray">char[]</charSequence>
+    <charSequence sliceMethod="Subsequence" fromStringFormat="{0}.AsCharSequence()" toStringFormat="{0}.ToString()" nameForTest="CharSequence">ICharSequence</charSequence>
+    <charSequence sliceMethod="Slice" feature="FEATURE_SPAN" fromStringFormat="{0}.AsSpan()" toStringFormat="{0}.ToString()" nullable="false" nameForTest="ReadOnlySpan">ReadOnlySpan&lt;char&gt;</charSequence>
   </charSequences>
-  <!-- Accessibility of ICharSequence interface -->
-  <charSequenceAccessibility>public</charSequenceAccessibility>
   <appendables>
-    <appendable accessibility="public">StringBuilder</appendable>
-    <appendable accessibility="public">IAppendable</appendable>
-    <appendable accessibility="internal" modifier="ref " feature="FEATURE_SPAN">ValueStringBuilder</appendable>
+    <appendable>StringBuilder</appendable>
+    <appendable>IAppendable</appendable>
+    <appendable accessibility="internal" modifier="ref " feature="FEATURE_SPAN" nullable="false">ValueStringBuilder</appendable>
   </appendables>
-  <!-- Accessibility of IAppendable interface -->
-  <appendableAccessibility>public</appendableAccessibility>
+  <!-- These are also "appendable", but they only have scope to the normalizer code, so we only have APIs for normalizer classes -->
+  <reorderingBuffers>
+    <buffer modifier="ref " feature="FEATURE_SPAN" nullable="false">ValueReorderingBuffer</buffer>
+    <buffer>ReorderingBuffer</buffer>
+  </reorderingBuffers>
   <numericTypes>
     <!-- integral types -->
     <numericType clsCompliant="true" cSharpName="byte">Byte</numericType>
