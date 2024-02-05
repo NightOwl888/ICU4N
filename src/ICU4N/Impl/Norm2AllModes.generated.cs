@@ -21,94 +21,85 @@ namespace ICU4N.Impl
     // Normalizer2 implementation for the old UNORM_NONE.
     public sealed partial class NoopNormalizer2
     {
-
+    
         public override StringBuilder Normalize(string src, StringBuilder dest)
         {
             dest.Length = 0;
             return dest.Append(src);
         }
 
+    
+        public override T Normalize<T>(string src, T dest)
+        {
+            // ICU4N: Removed unnecessary try/catch for IOException
+            return (T)dest.Append(src);
+        }
 
+        
         public override StringBuilder Normalize(StringBuilder src, StringBuilder dest)
         {
             if (dest == src)
-            {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-            }
             dest.Length = 0;
             return dest.Append(src);
         }
 
+    
+        public override T Normalize<T>(StringBuilder src, T dest)
+        {
+            if (dest == src)
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
+            // ICU4N: Removed unnecessary try/catch for IOException
+            return (T)dest.Append(src);
+        }
 
+        
         public override StringBuilder Normalize(char[] src, StringBuilder dest)
         {
             dest.Length = 0;
             return dest.Append(src);
         }
 
+    
+        public override T Normalize<T>(char[] src, T dest)
+        {
+            // ICU4N: Removed unnecessary try/catch for IOException
+            return (T)dest.Append(src);
+        }
 
+        
         public override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
         {
             if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
-            {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-            }
             dest.Length = 0;
             return dest.Append(src);
         }
 
-#if FEATURE_SPAN
+    
+        public override T Normalize<T>(ICharSequence src, T dest)
+        {
+            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
+            // ICU4N: Removed unnecessary try/catch for IOException
+            return (T)dest.Append(src);
+        }
+
+        #if FEATURE_SPAN
         public override StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest)
         {
             dest.Length = 0;
             return dest.Append(src);
         }
 #endif // FEATURE_SPAN
-
-        public override IAppendable Normalize(string src, IAppendable dest)
+    #if FEATURE_SPAN
+        public override T Normalize<T>(ReadOnlySpan<char> src, T dest)
         {
             // ICU4N: Removed unnecessary try/catch for IOException
-            return dest.Append(src);
-        }
-
-
-        public override IAppendable Normalize(StringBuilder src, IAppendable dest)
-        {
-            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).Value == src)
-            {
-                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-            }
-            // ICU4N: Removed unnecessary try/catch for IOException
-            return dest.Append(src);
-        }
-
-
-        public override IAppendable Normalize(char[] src, IAppendable dest)
-        {
-            // ICU4N: Removed unnecessary try/catch for IOException
-            return dest.Append(src);
-        }
-
-
-        public override IAppendable Normalize(ICharSequence src, IAppendable dest)
-        {
-            if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence 
-                && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
-            {
-                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-            }
-            // ICU4N: Removed unnecessary try/catch for IOException
-            return dest.Append(src);
-        }
-
-#if FEATURE_SPAN
-        public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest)
-        {
-            // ICU4N: Removed unnecessary try/catch for IOException
-            return dest.Append(src);
+            return (T)dest.Append(src);
         }
 #endif // FEATURE_SPAN
-
+    
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second)
         {
             return first.Append(second);
@@ -234,50 +225,91 @@ namespace ICU4N.Impl
 
     public abstract partial class Normalizer2WithImpl
     {
-
+    
         public override StringBuilder Normalize(string src, StringBuilder dest)
         {
-            dest.Length = 0;
-            Normalize(src, new ReorderingBuffer(Impl, dest, src.Length));
+            ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
+            Normalize(src, buffer);
+
             return dest;
         }
 
+    
+        public override T Normalize<T>(string src, T dest)
+        {
+            ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
+            Normalize(src, buffer);
+            buffer.Flush();
 
+            return dest;
+        }
+
+        
         public override StringBuilder Normalize(StringBuilder src, StringBuilder dest)
         {
-            if (dest == src)
-            {
+            if (src == dest)
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-            }
-            dest.Length = 0;
-            Normalize(src, new ReorderingBuffer(Impl, dest, src.Length));
+            ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
+            Normalize(src, buffer);
+
             return dest;
         }
 
+    
+        public override T Normalize<T>(StringBuilder src, T dest)
+        {
+            ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
+            Normalize(src, buffer);
+            buffer.Flush();
 
+            return dest;
+        }
+
+        
         public override StringBuilder Normalize(char[] src, StringBuilder dest)
         {
-            dest.Length = 0;
-            Normalize(src, new ReorderingBuffer(Impl, dest, src.Length));
+            ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
+            Normalize(src, buffer);
+
             return dest;
         }
 
+    
+        public override T Normalize<T>(char[] src, T dest)
+        {
+            ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
+            Normalize(src, buffer);
+            buffer.Flush();
 
+            return dest;
+        }
+
+        
         public override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
         {
-            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
-            {
+            if (src is StringBuilderCharSequence stringBuilderCharSequence && stringBuilderCharSequence.Value == dest)
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-            }
-            dest.Length = 0;
-            Normalize(src, new ReorderingBuffer(Impl, dest, src.Length));
+            ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
+            Normalize(src, buffer);
+
             return dest;
         }
 
-#if FEATURE_SPAN
+    
+        public override T Normalize<T>(ICharSequence src, T dest)
+        {
+            if (src is StringBuilderCharSequence stringBuilderCharSequence && ReferenceEquals(stringBuilderCharSequence.Value, dest))
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
+            ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
+            Normalize(src, buffer);
+            buffer.Flush();
+
+            return dest;
+        }
+
+        #if FEATURE_SPAN
         public override StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest)
         {
-            dest.Length = 0;
             int length = src.Length;
             var buffer = length <= CharStackBufferSize
                 ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
@@ -295,8 +327,28 @@ namespace ICU4N.Impl
             return dest;
         }
 #endif // FEATURE_SPAN
-
-        public override IAppendable Normalize(string src, IAppendable dest)
+    #if FEATURE_SPAN
+        public override T Normalize<T>(ReadOnlySpan<char> src, T dest)
+        {
+            int length = src.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ValueReorderingBuffer(Impl, ReadOnlySpan<char>.Empty, length);
+            try
+            {
+                Normalize(src, ref buffer);
+                dest.Append(buffer.AsSpan());
+                buffer.Flush();
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
+            return dest;
+        }
+#endif // FEATURE_SPAN
+    
+        public override T Normalize<T>(string src, T dest)
         {
             ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
             Normalize(src, buffer);
@@ -305,7 +357,7 @@ namespace ICU4N.Impl
         }
 
 
-        public override IAppendable Normalize(StringBuilder src, IAppendable dest)
+        public override T Normalize<T>(StringBuilder src, T dest)
         {
             if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).Value == src)
             {
@@ -318,7 +370,7 @@ namespace ICU4N.Impl
         }
 
 
-        public override IAppendable Normalize(char[] src, IAppendable dest)
+        public override T Normalize<T>(char[] src, T dest)
         {
             ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
             Normalize(src, buffer);
@@ -327,7 +379,7 @@ namespace ICU4N.Impl
         }
 
 
-        public override IAppendable Normalize(ICharSequence src, IAppendable dest)
+        public override T Normalize<T>(ICharSequence src, T dest)
         {
             if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence 
                 && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
@@ -341,7 +393,7 @@ namespace ICU4N.Impl
         }
 
 #if FEATURE_SPAN
-        public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest)
+        public override T Normalize<T>(ReadOnlySpan<char> src, T dest)
         {
             int length = src.Length;
             var buffer = length <= CharStackBufferSize

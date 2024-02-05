@@ -14,6 +14,7 @@ namespace ICU4N.Text
 {
     public abstract partial class Normalizer2
     {
+    
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
@@ -25,7 +26,19 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Normalize(string src, StringBuilder dest);
 
+    
 
+        /// <summary>
+        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
+        /// and returns the destination <see cref="IAppendable"/>.
+        /// </summary>
+        /// <param name="src">Source string.</param>
+        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        public abstract T Normalize<T>(string src, T dest) where T : IAppendable;
+
+        
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
@@ -38,7 +51,20 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Normalize(StringBuilder src, StringBuilder dest);
 
+    
 
+        /// <summary>
+        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
+        /// and returns the destination <see cref="IAppendable"/>.
+        /// The source and destination strings must be different objects.
+        /// </summary>
+        /// <param name="src">Source string.</param>
+        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        public abstract T Normalize<T>(StringBuilder src, T dest) where T : IAppendable;
+
+        
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
@@ -50,7 +76,19 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Normalize(char[] src, StringBuilder dest);
 
+    
 
+        /// <summary>
+        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
+        /// and returns the destination <see cref="IAppendable"/>.
+        /// </summary>
+        /// <param name="src">Source string.</param>
+        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        public abstract T Normalize<T>(char[] src, T dest) where T : IAppendable;
+
+        
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
@@ -63,8 +101,21 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Normalize(ICharSequence src, StringBuilder dest);
 
+    
 
-#if FEATURE_SPAN
+        /// <summary>
+        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
+        /// and returns the destination <see cref="IAppendable"/>.
+        /// The source and destination strings must be different objects.
+        /// </summary>
+        /// <param name="src">Source string.</param>
+        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        public abstract T Normalize<T>(ICharSequence src, T dest) where T : IAppendable;
+
+        #if FEATURE_SPAN
+
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
         /// (replacing its contents) and returns the destination string.
@@ -74,8 +125,8 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest);
-
 #endif // FEATURE_SPAN
+    #if FEATURE_SPAN
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
@@ -85,55 +136,9 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        public abstract IAppendable Normalize(string src, IAppendable dest);
-
-
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
-        /// and returns the destination <see cref="IAppendable"/>.
-        /// The source and destination strings must be different objects.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        /// <stable>ICU 4.6</stable>
-        public abstract IAppendable Normalize(StringBuilder src, IAppendable dest);
-
-
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
-        /// and returns the destination <see cref="IAppendable"/>.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        /// <stable>ICU 4.6</stable>
-        public abstract IAppendable Normalize(char[] src, IAppendable dest);
-
-
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
-        /// and returns the destination <see cref="IAppendable"/>.
-        /// The source and destination strings must be different objects.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        /// <stable>ICU 4.6</stable>
-        public abstract IAppendable Normalize(ICharSequence src, IAppendable dest);
-
-#if FEATURE_SPAN
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
-        /// and returns the destination <see cref="IAppendable"/>.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        /// <stable>ICU 4.6</stable>
-        public abstract IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest);
+        public abstract T Normalize<T>(ReadOnlySpan<char> src, T dest) where T : IAppendable;
 #endif // FEATURE_SPAN
-
+    
         /// <summary>
         /// Appends the normalized form of the <paramref name="second"/> string to the <paramref name="first"/> string
         /// (merging them at the boundary) and returns the <paramref name="first"/> string.

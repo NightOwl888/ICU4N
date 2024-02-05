@@ -20,27 +20,17 @@ namespace ICU4N.Text
     public abstract partial class Normalizer2
     {
 <# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence) #>
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
-<# if (charSequence.Name == "ICharSequence" || charSequence.Name == "StringBuilder") { #>
-        /// The source and destination strings must be different objects.
-<# } #>
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        /// <stable>ICU 4.4</stable>
-        <#=GetAccessibility(charSequence)#> abstract StringBuilder Normalize(<#=charSequence#> src, StringBuilder dest);
+    <# foreach (var appendable in Appendables) { #>
+<#= GetBeginFeature(GetFeature(charSequence, appendable)) #>
 
-<#= GetEndFeature(charSequence) #>
-<# } #>
-<# foreach (var charSequence in CharSequences) { #>
-<#= GetBeginFeature(charSequence) #>
         /// <summary>
+<# if (appendable.Name == "IAppendable") { #>
         /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
         /// and returns the destination <see cref="IAppendable"/>.
+<# } else { #>
+        /// Writes the normalized form of the source string to the destination string
+        /// (replacing its contents) and returns the destination string.
+<# } #>
 <# if (charSequence.Name == "ICharSequence" || charSequence.Name == "StringBuilder") { #>
         /// The source and destination strings must be different objects.
 <# } #>
@@ -48,9 +38,21 @@ namespace ICU4N.Text
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
+<# if (appendable.Name == "IAppendable") { #>
         /// <stable>ICU 4.6</stable>
-        <#=GetAccessibility(charSequence.Accessibility, appendableAccessibility)#> abstract IAppendable Normalize(<#=charSequence#> src, IAppendable dest);
-<#= GetEndFeature(charSequence) #>
+<# } else if (appendable.Name == "StringBuilder") { #>
+        /// <stable>ICU 4.4</stable>
+<# } else { #>
+        /// <draft>ICU 60.1<draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+<# } #>
+<# if (appendable.Name == "IAppendable") { #>
+        <#=GetAccessibility(charSequence, appendable)#> abstract T Normalize<T>(<#=charSequence#> src, T dest) where T : <#=appendable#>;
+<# } else { #>
+        <#=GetAccessibility(charSequence, appendable)#> abstract <#=appendable#> Normalize(<#=charSequence#> src, <#=appendable#> dest);
+<# } #>
+<#= GetEndFeature(GetFeature(charSequence, appendable)) #>
+    <# } #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
 <#= GetBeginFeature(charSequence) #>
