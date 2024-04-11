@@ -29,6 +29,8 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <ICUDataEndian Label="b for big endian, l for little endian">b</ICUDataEndian>
     <ICUDataPrefix>icudt</ICUDataPrefix>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(NUGET_PACKAGES)</NuGetPackageRoot>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$([System.Environment]::GetFolderPath(SpecialFolder.UserProfile))/.nuget/packages</NuGetPackageRoot>
   </PropertyGroup>
   
   <PropertyGroup Label="Copyright Info">
