@@ -117,7 +117,9 @@ namespace ICU4N
         /// <summary>
         /// Determines whether the specified sequence appears at the start of the span.
         /// </summary>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public unsafe static bool StartsWith<T>(this ReadOnlySpan<T> span, string value) where T : IEquatable<T>
         {
             int valueLength = value.Length;
@@ -170,7 +172,9 @@ namespace ICU4N
         /// <summary>
         /// Determines whether the specified sequence appears at the end of the span.
         /// </summary>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public unsafe static bool EndsWith<T>(this ReadOnlySpan<T> span, string value) where T : IEquatable<T>
         {
             int spanLength = span.Length;
@@ -260,7 +264,9 @@ namespace ICU4N
             }
         }
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         internal static bool EqualsOrdinal(this ReadOnlySpan<char> span, ReadOnlySpan<char> value)
         {
             if (span.Length != value.Length)

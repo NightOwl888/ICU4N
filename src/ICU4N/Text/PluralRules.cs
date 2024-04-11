@@ -2296,7 +2296,9 @@ namespace ICU4N.Text
         }
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         internal static bool TryParseRule(string keyword, string description, out Rule result)
             => TryParseRule(keyword.AsSpan(), description.AsSpan(), out result);
 #endif
