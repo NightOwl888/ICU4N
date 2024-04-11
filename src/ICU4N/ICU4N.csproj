@@ -58,6 +58,10 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
+    <PackageReference Include="NetFx.System.Memory" Version="$(NetFxSystemMemoryPackageReferenceVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net40' ">
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
 
