@@ -1636,7 +1636,7 @@ namespace ICU4N.Dev.Util
             {
                 entry.Freeze();
             }
-            return target.AsReadOnly();
+            return new J2N.Collections.ObjectModel.ReadOnlyDictionary<T, UnicodeSet>(target);
         }
 
         /**
