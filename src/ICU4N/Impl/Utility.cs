@@ -756,7 +756,9 @@ namespace ICU4N.Impl
         /// be updated to point after the escape sequence.</param>
         /// <returns>Character value from 0 to 10FFFF, or -1 on error.</returns>
         // ICU4N: To fix lack of implicit conversion
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static int UnescapeAt(string s, ref int offset16)
             => UnescapeAt(s.AsSpan(), ref offset16);
 #endif
@@ -1074,7 +1076,9 @@ namespace ICU4N.Impl
         /// </summary>
         /// <exception cref="ArgumentException">If an invalid escape is seen.</exception>
         // ICU4N: To fix lack of implicit conversion
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static string Unescape(string s)
             => Unescape(s.AsSpan());
 #endif
@@ -1130,7 +1134,9 @@ namespace ICU4N.Impl
         /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
         /// Leave invalid escape sequences unchanged.
         /// </summary>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static string UnescapeLeniently(string s)
             => UnescapeLeniently(s.AsSpan());
 #endif

@@ -109,11 +109,15 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 #if FEATURE_SPAN
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public void Reset(string localeID)
             => Reset(localeID.AsSpan());
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public void Reset(string localeID, bool canonicalize)
             => Reset(localeID.AsSpan(), canonicalize);
 #endif
@@ -198,7 +202,9 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
 #if FEATURE_SPAN
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         private void Set(int pos, string s)
             => Set(pos, s.AsSpan());
 #endif
