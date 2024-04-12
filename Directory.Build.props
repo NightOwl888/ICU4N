@@ -8,6 +8,10 @@
     <ArtifactsDir>$(RepositoryRoot)_artifacts</ArtifactsDir>
     <CLSCompliant>true</CLSCompliant>
   </PropertyGroup>
+
+  <PropertyGroup Label="Version Settings">
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
   
   <PropertyGroup Label="Assembly Signing">
     <AssemblyOriginatorKeyFile>$(RepositoryRoot).build/key.snk</AssemblyOriginatorKeyFile>
