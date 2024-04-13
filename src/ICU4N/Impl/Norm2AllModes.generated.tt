@@ -27,13 +27,8 @@ namespace ICU4N.Impl
     public sealed partial class NoopNormalizer2
     {
 <# foreach (var charSequence in CharSequences) { #>
-    <# foreach (var appendable in Appendables) { #>
-<#= GetBeginFeature(GetFeature(charSequence, appendable)) #>
-<# if (appendable.Name == "IAppendable") { #>
-        <#=GetAccessibility(charSequence)#> override T Normalize<T>(<#=charSequence#> src, T dest)
-<# } else { #>
-        <#=GetAccessibility(charSequence)#> override <#=appendable#> Normalize(<#=charSequence#> src, <#=appendable#> dest)
-<# } #>
+<#= GetBeginFeature(charSequence) #>
+        <#=GetAccessibility(charSequence)#> override StringBuilder Normalize(<#=charSequence#> src, StringBuilder dest)
         {
 <# if (charSequence.Name=="ICharSequence" || charSequence.Name=="StringBuilder") { #>
 <# if (charSequence.Name=="StringBuilder") { #>
@@ -41,18 +36,34 @@ namespace ICU4N.Impl
 <# } else if (charSequence.Name=="ICharSequence") { #>
             if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
 <# } #>
+            {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
+            }
 <# } #>
-<# if (appendable.Name == "IAppendable") { #>
-            // ICU4N: Removed unnecessary try/catch for IOException
-            return (T)dest.Append(src);
-<# } else { #>
             dest.Length = 0;
             return dest.Append(src);
-<# } #>
         }
-<#= GetEndFeature(GetFeature(charSequence, appendable)) #>
-    <# } #>
+<#= GetEndFeature(charSequence) #>
+<# } #>
+<# foreach (var charSequence in CharSequences) { #>
+<#= GetBeginFeature(charSequence) #>
+        <#= GetAccessibility(charSequence.Accessibility, appendableAccessibility) #> override IAppendable Normalize(<#=charSequence#> src, IAppendable dest)
+        {
+<# if (charSequence.Name=="ICharSequence" || charSequence.Name=="StringBuilder") { #>
+<# if (charSequence.Name=="StringBuilder") { #>
+            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).Value == src)
+<# } else if (charSequence.Name=="ICharSequence") { #>
+            if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence 
+                && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
+<# } #>
+            {
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
+            }
+<# } #>
+            // ICU4N: Removed unnecessary try/catch for IOException
+            return dest.Append(src);
+        }
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
 <#= GetBeginFeature(charSequence) #>
@@ -115,66 +126,45 @@ namespace ICU4N.Impl
     public abstract partial class Normalizer2WithImpl
     {
 <# foreach (var charSequence in CharSequences) { #>
-    <# foreach (var appendable in Appendables) { #>
-<#= GetBeginFeature(GetFeature(charSequence, appendable)) #>
-<# if (appendable.Name == "IAppendable") { #>
-        <#=GetAccessibility(charSequence, appendable)#> override T Normalize<T>(<#=charSequence#> src, T dest)
-<# } else { #>
-        <#=GetAccessibility(charSequence, appendable)#> override <#=appendable#> Normalize(<#=charSequence#> src, <#=appendable.Modifier#><#=appendable#> dest)
-<# } #>
+<#= GetBeginFeature(charSequence) #>
+        <#=GetAccessibility(charSequence)#> override StringBuilder Normalize(<#=charSequence#> src, StringBuilder dest)
         {
-<# if (charSequence.Name=="ICharSequence" || (charSequence.Name=="StringBuilder" && appendable.Name!="IAppendable")) { #>
-<# if (charSequence.Name=="StringBuilder" && appendable.Name!="IAppendable") { #>
-            if (src == dest)
+<# if (charSequence.Name=="ICharSequence" || charSequence.Name=="StringBuilder") { #>
+<# if (charSequence.Name=="StringBuilder") { #>
+            if (dest == src)
 <# } else if (charSequence.Name=="ICharSequence") { #>
-            if (src is StringBuilderCharSequence stringBuilderCharSequence && <#= appendable.Name=="IAppendable" ? "ReferenceEquals(stringBuilderCharSequence.Value, dest)" : "stringBuilderCharSequence.Value == dest"#>)
+            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
 <# } #>
+            {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
+            }
 <# } #>
+            dest.Length = 0;
 <# if (charSequence.Name == "ReadOnlySpan<char>") { #>
             int length = src.Length;
-<# if (appendable.Name == "ValueStringBuilder") { #>
-            dest.Length = 0; // ICU4N TODO: Do we really need this side effect?
-            var buffer = new ValueReorderingBuffer(Impl, ref dest, length);
-<# } else { #>
             var buffer = length <= CharStackBufferSize
                 ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
                 : new ValueReorderingBuffer(Impl, ReadOnlySpan<char>.Empty, length);
-<# } #>
             try
             {
-<# if (appendable.Name == "IAppendable") { #>
-                Normalize(src, ref buffer);
-                dest.Append(buffer.AsSpan());
-                buffer.Flush();
-<# } else if (appendable.Name == "ValueStringBuilder") { #>
-                Normalize(src, ref buffer);
-<# } else { #>
                 Normalize(src, ref buffer);
                 dest.Length = 0;
                 dest.Append(buffer.AsSpan());
-<# } #>
             }
             finally
             {
                 buffer.Dispose();
             }
 <# } else { #>
-            ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
-            Normalize(src, buffer);
-<# if (appendable.Name == "IAppendable") { #>
-            buffer.Flush();
-<# } /* appendable */ #>
-
+            Normalize(src, new ReorderingBuffer(Impl, dest, src.Length));
 <# } #>
             return dest;
         }
-<#= GetEndFeature(GetFeature(charSequence, appendable)) #>
-    <# } #>
+<#= GetEndFeature(charSequence) #>
 <# } #>
 <# foreach (var charSequence in CharSequences) { #>
 <#= GetBeginFeature(charSequence) #>
-        <#= GetAccessibility(charSequence.Accessibility, appendableAccessibility) #> override T Normalize<T>(<#=charSequence#> src, T dest)
+        <#= GetAccessibility(charSequence.Accessibility, appendableAccessibility) #> override IAppendable Normalize(<#=charSequence#> src, IAppendable dest)
         {
 <# if (charSequence.Name=="ICharSequence" || charSequence.Name=="StringBuilder") { #>
 <# if (charSequence.Name=="StringBuilder") { #>
