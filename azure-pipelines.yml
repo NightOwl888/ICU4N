@@ -50,6 +50,9 @@ stages:
     pool:
       vmImage: 'windows-2019'
 
+    variables:
+      NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+
     steps:
     - pwsh: |
         $configuration = if ($env:BUILDCONFIGURATION) { $env:BUILDCONFIGURATION } else { "Release" }
