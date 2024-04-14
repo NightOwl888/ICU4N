@@ -517,11 +517,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>FilteredBreakIteratorBuilder.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Text\FilteredNormalizer2.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>FilteredNormalizer2.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Text\IDNA.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -670,10 +665,6 @@
     <None Update="Text\FilteredBreakIteratorBuilder.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FilteredBreakIteratorBuilder.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Text\FilteredNormalizer2.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>FilteredNormalizer2.generated.cs</LastGenOutput>
     </None>
     <None Update="Text\IDNA.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
