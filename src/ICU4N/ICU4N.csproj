@@ -427,11 +427,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CaseMapImpl.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Impl\Norm2AllModes.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Norm2AllModes.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Impl\Number\AffixUtils.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -603,10 +598,6 @@
     <None Update="Impl\CaseMapImpl.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CaseMapImpl.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Impl\Norm2AllModes.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Norm2AllModes.generated.cs</LastGenOutput>
     </None>
     <None Update="Impl\Number\AffixUtils.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
