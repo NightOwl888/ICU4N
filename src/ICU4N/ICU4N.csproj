@@ -432,11 +432,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Norm2AllModes.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Impl\Normalizer2Impl.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Normalizer2Impl.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Impl\Number\AffixUtils.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -612,10 +607,6 @@
     <None Update="Impl\Norm2AllModes.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Norm2AllModes.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Impl\Normalizer2Impl.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Normalizer2Impl.generated.cs</LastGenOutput>
     </None>
     <None Update="Impl\Number\AffixUtils.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
