@@ -13,7 +13,9 @@ namespace ICU4N.Support.Text
         private const int CharStackBufferSize = 32;
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         internal void AppendFormat(long value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
             => AppendFormat(value, format.AsSpan(), info, numberGroupSizesOverride);
 #endif
@@ -47,7 +49,9 @@ namespace ICU4N.Support.Text
 
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         internal void AppendFormat(double value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
             => AppendFormat(value, format.AsSpan(), info, numberGroupSizesOverride);
 #endif
@@ -80,7 +84,9 @@ namespace ICU4N.Support.Text
         }
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         internal void InsertFormat(int index, long value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
             => InsertFormat(index, value, format.AsSpan(), info, numberGroupSizesOverride);
 #endif
@@ -108,7 +114,9 @@ namespace ICU4N.Support.Text
         }
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         internal void InsertFormat(int index, double value, string? format, UNumberFormatInfo info, int[]? numberGroupSizesOverride = null)
             => InsertFormat(index, value, format.AsSpan(), info, numberGroupSizesOverride);
 #endif

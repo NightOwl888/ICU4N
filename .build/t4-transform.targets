@@ -8,7 +8,7 @@
   
     <TransformOnBuild>false</TransformOnBuild>
     <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
-    <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
+    <TransformOutOfDateOnly>true</TransformOutOfDateOnly>
     <TransformTargetsFilePath>$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TextTemplating\Microsoft.TextTemplating.targets</TransformTargetsFilePath>
   </PropertyGroup>
 

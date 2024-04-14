@@ -8,6 +8,10 @@
     <ArtifactsDir>$(RepositoryRoot)_artifacts</ArtifactsDir>
     <CLSCompliant>true</CLSCompliant>
   </PropertyGroup>
+
+  <PropertyGroup Label="Version Settings">
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
   
   <PropertyGroup Label="Assembly Signing">
     <AssemblyOriginatorKeyFile>$(RepositoryRoot).build/key.snk</AssemblyOriginatorKeyFile>
@@ -29,6 +33,8 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <ICUDataEndian Label="b for big endian, l for little endian">b</ICUDataEndian>
     <ICUDataPrefix>icudt</ICUDataPrefix>
+    <!-- This appears to be a bug in MSBuild. We need to use NUGET_PACKAGES if it is defined. -->
+    <NuGetPackageRoot Condition=" '$(NUGET_PACKAGES)' != '' ">$(NUGET_PACKAGES)</NuGetPackageRoot>
   </PropertyGroup>
   
   <PropertyGroup Label="Copyright Info">
