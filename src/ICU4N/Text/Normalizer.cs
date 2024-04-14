@@ -3413,6 +3413,8 @@ namespace ICU4N.Text
             }
         }
 
+        // ICU4N TODO: Replace with ValueStringBuilder
+
         /// <summary>
         /// An <see cref="IAppendable"/> that writes into a char array with a capacity that may be
         /// less than array.Length.
@@ -3499,8 +3501,99 @@ namespace ICU4N.Text
 
 
             // ICU4N specific - Append(ICharSequence s) moved to Normalizer.generated.tt
+            #region Append(ICharSequence)
+            public CharsAppendable Append(string s)
+            {
+                return Append(s, 0, s.Length);
+            }
+
+            public CharsAppendable Append(StringBuilder s)
+            {
+                return Append(s, 0, s.Length);
+            }
+
+            public CharsAppendable Append(char[] s)
+            {
+                return Append(s, 0, s.Length);
+            }
+
+            public CharsAppendable Append(ICharSequence s)
+            {
+                return Append(s, 0, s.Length);
+            }
+
+            #endregion Append(ICharSequence)
 
             // ICU4N specific - Append(ICharSequence s, int sStart, int sLimit) moved to Normalizer.generated.tt
+            #region Append(ICharSequence, int, int)
+            public CharsAppendable Append(string s, int sStart, int sLength)
+            {
+                int sLimit = sStart + sLength;
+                if (sLength <= (limit - offset))
+                {
+                    while (sStart < sLimit)
+                    {  // TODO: Is there a better way to copy the characters?
+                        chars[offset++] = s[sStart++];
+                    }
+                }
+                else
+                {
+                    offset += sLength;
+                }
+                return this;
+            }
+
+            public CharsAppendable Append(StringBuilder s, int sStart, int sLength)
+            {
+                int sLimit = sStart + sLength;
+                if (sLength <= (limit - offset))
+                {
+                    while (sStart < sLimit)
+                    {  // TODO: Is there a better way to copy the characters?
+                        chars[offset++] = s[sStart++];
+                    }
+                }
+                else
+                {
+                    offset += sLength;
+                }
+                return this;
+            }
+
+            public CharsAppendable Append(char[] s, int sStart, int sLength)
+            {
+                int sLimit = sStart + sLength;
+                if (sLength <= (limit - offset))
+                {
+                    while (sStart < sLimit)
+                    {  // TODO: Is there a better way to copy the characters?
+                        chars[offset++] = s[sStart++];
+                    }
+                }
+                else
+                {
+                    offset += sLength;
+                }
+                return this;
+            }
+
+            public CharsAppendable Append(ICharSequence s, int sStart, int sLength)
+            {
+                int sLimit = sStart + sLength;
+                if (sLength <= (limit - offset))
+                {
+                    while (sStart < sLimit)
+                    {  // TODO: Is there a better way to copy the characters?
+                        chars[offset++] = s[sStart++];
+                    }
+                }
+                else
+                {
+                    offset += sLength;
+                }
+                return this;
+            }
+            #endregion Append(ICharSequence, int, int)
 
             private readonly char[] chars;
             private readonly int start, limit;
