@@ -1,6 +1,8 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Support.Text;
 using J2N;
 using J2N.Text;
+using System;
 using System.Collections.Concurrent;
 using System.Text;
 
@@ -9,6 +11,8 @@ namespace ICU4N.Text
     /// <author>Alan Liu, Markus Scherer</author>
     internal sealed class NormalizationTransliterator : Transliterator
     {
+        private const int CharStackBufferSize = 128;
+
         private readonly Normalizer2 norm2;
 
         /// <summary>
@@ -124,40 +128,47 @@ namespace ICU4N.Text
              * a bulk mode normalization could be used.
              * (For details, see the comment in the C++ version.)
              */
-            StringBuilder segment = new StringBuilder();
             StringBuilder normalized = new StringBuilder();
-            int c = text.Char32At(start);
-            do
+            ValueStringBuilder segment = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                int prev = start;
-                // Skip at least one character so we make progress.
-                // c holds the character at start.
-                segment.Length = 0;
+                int c = text.Char32At(start);
                 do
                 {
-                    segment.AppendCodePoint(c);
-                    start += Character.CharCount(c);
-                } while (start < limit && !norm2.HasBoundaryBefore(c = text.Char32At(start)));
-                if (start == limit && isIncremental && !norm2.HasBoundaryAfter(c))
-                {
-                    // stop in incremental mode when we reach the input limit
-                    // in case there are additional characters that could change the
-                    // normalization result
-                    start = prev;
-                    break;
-                }
-                norm2.Normalize(segment, normalized);
-                if (!UTF16Plus.Equal(segment, normalized))
-                {
-                    // replace the input chunk with its normalized form
-                    text.Replace(prev, start - prev, normalized.ToString()); // ICU4N: Corrected 2nd parameter
+                    int prev = start;
+                    // Skip at least one character so we make progress.
+                    // c holds the character at start.
+                    segment.Length = 0;
+                    do
+                    {
+                        segment.AppendCodePoint(c);
+                        start += Character.CharCount(c);
+                    } while (start < limit && !norm2.HasBoundaryBefore(c = text.Char32At(start)));
+                    if (start == limit && isIncremental && !norm2.HasBoundaryAfter(c))
+                    {
+                        // stop in incremental mode when we reach the input limit
+                        // in case there are additional characters that could change the
+                        // normalization result
+                        start = prev;
+                        break;
+                    }
+                    norm2.Normalize(segment.AsSpan(), normalized); // ICU4N TODO: Use ValueStringBuilder for normalized result
+                    if (!UTF16Plus.Equal(segment.AsSpan(), normalized))
+                    {
+                        // replace the input chunk with its normalized form
+                        text.Replace(prev, start - prev, normalized.ToString()); // ICU4N: Corrected 2nd parameter
 
-                    // update all necessary indexes accordingly
-                    int delta = normalized.Length - (start - prev);
-                    start += delta;
-                    limit += delta;
-                }
-            } while (start < limit);
+                        // update all necessary indexes accordingly
+                        int delta = normalized.Length - (start - prev);
+                        start += delta;
+                        limit += delta;
+                    }
+                } while (start < limit);
+            }
+            finally
+            {
+                segment.Dispose();
+            }
 
             offsets.Start = start;
             offsets.ContextLimit += limit - offsets.Limit;
