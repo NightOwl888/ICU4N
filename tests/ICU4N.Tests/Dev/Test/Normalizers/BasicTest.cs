@@ -3063,8 +3063,6 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override StringBuffer Normalize(StringBuffer src, StringBuffer dest) { return null; }
 
-            public override StringBuffer Normalize(char[] src, StringBuffer dest) { return null; }
-
             public override StringBuilder Normalize(ICharSequence src, StringBuilder dest) { return null; }
 
 #if FEATURE_SPAN
@@ -3073,7 +3071,6 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override IAppendable Normalize(string src, IAppendable dest) { return null; }
             public override IAppendable Normalize(StringBuffer src, IAppendable dest) { return null; }
-            public override IAppendable Normalize(char[] src, IAppendable dest) { return null; }
             public override IAppendable Normalize(ICharSequence src, IAppendable dest) { return null; }
 
 #if FEATURE_SPAN
@@ -3084,8 +3081,6 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, StringBuffer second) { return null; }
 
-            public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, char[] second) { return null; }
-
             public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second) { return null; }
 
 #if FEATURE_SPAN
@@ -3095,8 +3090,6 @@ namespace ICU4N.Dev.Test.Normalizers
             public override StringBuffer Append(StringBuffer first, string second) { return null; }
 
             public override StringBuffer Append(StringBuffer first, StringBuffer second) { return null; }
-
-            public override StringBuffer Append(StringBuffer first, char[] second) { return null; }
 
             public override StringBuilder Append(StringBuilder first, ICharSequence second) { return null; }
 
@@ -3110,8 +3103,6 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override bool IsNormalized(StringBuffer s) { return false; }
 
-            public override bool IsNormalized(char[] s) { return false; }
-
             public override bool IsNormalized(ICharSequence s) { return false; }
 
 #if FEATURE_SPAN
@@ -3122,8 +3113,6 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override QuickCheckResult QuickCheck(StringBuffer s) { return (QuickCheckResult)(-1); }
 
-            public override QuickCheckResult QuickCheck(char[] s) { return (QuickCheckResult)(-1); }
-
             public override QuickCheckResult QuickCheck(ICharSequence s) { return (QuickCheckResult)(-1); }
 
 #if FEATURE_SPAN
@@ -3133,8 +3122,6 @@ namespace ICU4N.Dev.Test.Normalizers
             public override int SpanQuickCheckYes(string s) { return 0; }
 
             public override int SpanQuickCheckYes(StringBuffer s) { return 0; }
-
-            public override int SpanQuickCheckYes(char[] s) { return 0; }
 
             public override int SpanQuickCheckYes(ICharSequence s) { return 0; }
 
