@@ -23,7 +23,7 @@
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('net5.')) Or $(TargetFramework.StartsWith('net6.')) Or $(TargetFramework.StartsWith('net7.')) ">
     
     <DefineConstants>$(DefineConstants);FEATURE_HALF</DefineConstants>
-    
+
   </PropertyGroup>
 
   <!-- Features in .NET Core 3.x, .NET 5.x, .NET 6.x, and .NET 7.x -->
@@ -31,6 +31,7 @@
 
     <DefineConstants>$(DefineConstants);FEATURE_RUNE</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_STRING_CONCAT_READONLYSPAN</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_STRING_GETHASHCODE_READONLYSPAN</DefineConstants>
 
   </PropertyGroup>
 

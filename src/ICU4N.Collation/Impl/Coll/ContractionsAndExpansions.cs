@@ -3,6 +3,7 @@ using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -235,16 +236,22 @@ namespace ICU4N.Impl.Coll
                             // TODO: This should be optimized,
                             // especially if [start..end] is the complete Hangul range. (assert that)
                             UTF16CollationIterator iter = new UTF16CollationIterator(data);
-                            StringBuilderCharSequence hangul = new StringBuilderCharSequence(new StringBuilder(1));
-                            for (int c = start; c <= end; ++c)
+                            char[] hangul = ArrayPool<char>.Shared.Rent(2);
+                            try
                             {
-                                hangul.Value.Length=0;
-                                hangul.Value.AppendCodePoint(c);
-                                iter.SetText(false, hangul, 0);
-                                int length = iter.FetchCEs();
-                                // Ignore the terminating non-CE.
-                                Debug.Assert(length >= 2 && iter.GetCE(length - 1) == Collation.NoCE);
-                                sink.HandleExpansion(iter.GetCEs(), 0, length - 1);
+                                for (int c = start; c <= end; ++c)
+                                {
+                                    int count = J2N.Character.ToChars(c, hangul, 0);
+                                    iter.SetText(false, hangul.AsMemory(0, count), 0);
+                                    int length = iter.FetchCEs();
+                                    // Ignore the terminating non-CE.
+                                    Debug.Assert(length >= 2 && iter.GetCE(length - 1) == Collation.NoCE);
+                                    sink.HandleExpansion(iter.GetCEs(), 0, length - 1);
+                                }
+                            }
+                            finally
+                            {
+                                ArrayPool<char>.Shared.Return(hangul);
                             }
                         }
                         // Optimization: If we have a prefix,

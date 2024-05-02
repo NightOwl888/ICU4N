@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 #nullable enable
@@ -309,12 +310,20 @@ namespace ICU4N.Impl
     /// <see cref="ToString()"/>. The user is responsible for calling <see cref="Dispose()"/>
     /// if the value is not obtained through <see cref="ToString()"/>.
     /// </summary>
-    public ref struct ValueReorderingBuffer
+    public unsafe ref struct ValueReorderingBuffer
     {
         public ValueReorderingBuffer(Normalizer2Impl ni, Span<char> initialBuffer)
+            : this(ni, ReadOnlySpan<char>.Empty, initialBuffer)
+        {
+        }
+        public ValueReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, Span<char> initialBuffer)
         {
             impl = ni ?? throw new ArgumentNullException(nameof(ni));
             str = new ValueStringBuilder(initialBuffer);
+            if (!initialValue.IsEmpty)
+            {
+                str.Append(initialValue);
+            }
             reorderStart = 0;
             codePointStart = 0;
             codePointLimit = 0;
@@ -334,6 +343,11 @@ namespace ICU4N.Impl
                 }
                 reorderStart = codePointLimit;
             }
+        }
+
+        public ValueReorderingBuffer(Normalizer2Impl ni, int initialCapacity)
+            : this(ni, ReadOnlySpan<char>.Empty, initialCapacity)
+        {
         }
 
         // ICU4N TODO: Evaluate whether this approach makes sense and if not, remove
@@ -407,6 +421,9 @@ namespace ICU4N.Impl
         public ReadOnlySpan<char> AsSpan() => str.AsSpan();
         public ReadOnlySpan<char> AsSpan(int start) => str.AsSpan(start);
         public ReadOnlySpan<char> AsSpan(int start, int length) => str.AsSpan(start, length);
+
+        [CLSCompliant(false)]
+        public char* GetCharsPointer() => str.GetCharsPointer();
 
         public bool TryCopyTo(Span<char> destination, out int charsWritten) => str.TryCopyTo(destination, out charsWritten);
 
@@ -2099,23 +2116,8 @@ namespace ICU4N.Impl
         /// <returns>true if s1 contains the same text as s2.</returns>
         public static bool Equal(ReadOnlySpan<char> s1, ReadOnlySpan<char> s2)
         {
-            if (s1 == s2)
-            {
-                return true;
-            }
-            int length = s1.Length;
-            if (length != s2.Length)
-            {
-                return false;
-            }
-            for (int i = 0; i < length; ++i)
-            {
-                if (s1[i] != s2[i])
-                {
-                    return false;
-                }
-            }
-            return true;
+            // ICU4N: Use optimized equality comparison in System.Memory
+            return System.MemoryExtensions.Equals(s1, s2, StringComparison.Ordinal);
         }
 #endif 
         #endregion Equal(ICharSequence, ICharSequence)
@@ -3439,9 +3441,10 @@ namespace ICU4N.Impl
             {
                 destLengthEstimate = limit - src;
             }
-            dest.Length = 0;
             ValueReorderingBuffer buffer = new ValueReorderingBuffer(this, ref dest, destLengthEstimate);
+            dest.Length = 0;
             Decompose(s, ref buffer);
+            dest.Length = buffer.Length; // HACK: Although the value gets written to dest, the length value needs to be manually transferred.
         }
 #endif
         #endregion Decompose(ICharSequence, int, int, StringBuilder, int)

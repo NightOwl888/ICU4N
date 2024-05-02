@@ -6,8 +6,10 @@ using J2N.Collections;
 using J2N.Numerics;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ICU4N.Impl.Coll
@@ -103,7 +105,7 @@ namespace ICU4N.Impl.Coll
         }
 
         /// <summary>
-        /// <c>true</c> if this builder has mappings (e.g., <see cref="Add(ICharSequence, ICharSequence, long[], int)"/> has been called)
+        /// <c>true</c> if this builder has mappings (e.g., <see cref="Add(ReadOnlySpan{char}, ReadOnlySpan{char}, long[], int)"/> has been called)
         /// </summary>
         internal bool HasMappings => modified;
 
@@ -113,7 +115,7 @@ namespace ICU4N.Impl.Coll
             return Collation.IsAssignedCE32(trie.Get(c));
         }
 
-        internal void Add(ICharSequence prefix, ICharSequence s, long[] ces, int cesLength)
+        internal void Add(ReadOnlySpan<char> prefix, ReadOnlySpan<char> s, long[] ces, int cesLength)
         {
             int ce32 = EncodeCEs(ces, cesLength);
             AddCE32(prefix, s, ce32);
@@ -182,7 +184,7 @@ namespace ICU4N.Impl.Coll
             return EncodeExpansion(ces, 0, cesLength);
         }
 
-        internal void AddCE32(ICharSequence prefix, ICharSequence s, int ce32)
+        internal void AddCE32(ReadOnlySpan<char> prefix, ReadOnlySpan<char> s, int ce32)
         {
             if (s.Length == 0)
             {
@@ -241,9 +243,11 @@ namespace ICU4N.Impl.Coll
                     cond = GetConditionalCE32ForCE32(oldCE32);
                     cond.BuiltCE32 = Collation.NO_CE32;
                 }
-                ICharSequence suffix = s.Subsequence(cLength, s.Length - cLength); // ICU4N: Corrected 2nd parameter
-                string context = new StringBuilder().Append((char)prefix.Length).
-                        Append(prefix).Append(suffix).ToString();
+                // ICU4N: Eliminated StringBuilder instance.
+                ReadOnlySpan<char> suffix = s.Slice(cLength, s.Length - cLength); // ICU4N: Corrected 2nd parameter
+                Span<char> prefixLength = stackalloc char[1];
+                prefixLength[0] = (char)prefix.Length;
+                string context = StringHelper.Concat(prefixLength, prefix, suffix);
                 unsafeBackwardSet.AddAll(suffix);
                 for (; ; )
                 {
@@ -374,12 +378,12 @@ namespace ICU4N.Impl.Coll
         /// Does not write beyond <see cref="Collation.MAX_EXPANSION_LENGTH"/>.
         /// </summary>
         /// <returns>Incremented cesLength.</returns>
-        internal int GetCEs(ICharSequence s, long[] ces, int cesLength)
+        internal int GetCEs(ReadOnlyMemory<char> s, long[] ces, int cesLength)
         {
             return GetCEs(s, 0, ces, cesLength);
         }
 
-        internal int GetCEs(ICharSequence prefix, ICharSequence s, long[] ces, int cesLength)
+        internal int GetCEs(ReadOnlySpan<char> prefix, ReadOnlyMemory<char> s, long[] ces, int cesLength)
         {
             int prefixLength = prefix.Length;
             if (prefixLength == 0)
@@ -388,7 +392,18 @@ namespace ICU4N.Impl.Coll
             }
             else
             {
-                return GetCEs(new StringBuilder(prefix.Length).Append(prefix).Append(s).AsCharSequence(), prefixLength, ces, cesLength);
+                int bufferLength = prefix.Length + s.Length;
+                char[] buffer = ArrayPool<char>.Shared.Rent(bufferLength);
+                try
+                {
+                    prefix.CopyTo(buffer.AsSpan(0, prefix.Length));
+                    s.Span.CopyTo(buffer.AsSpan(prefix.Length));
+                    return GetCEs(buffer.AsMemory(0, bufferLength), prefixLength, ces, cesLength);
+                }
+                finally
+                {
+                    ArrayPool<char>.Shared.Return(buffer);
+                }
             }
         }
 
@@ -1399,7 +1414,7 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        private int GetCEs(ICharSequence s, int start, long[] ces, int cesLength)
+        private int GetCEs(ReadOnlyMemory<char> s, int start, long[] ces, int cesLength)
         {
             if (collIter == null)
             {
@@ -1457,7 +1472,7 @@ namespace ICU4N.Impl.Coll
                 builderData.jamoCE32s = jamoCE32s;
             }
 
-            internal int FetchCEs(ICharSequence str, int start, long[] ces, int cesLength)
+            internal int FetchCEs(ReadOnlyMemory<char> str, int start, long[] ces, int cesLength)
             {
                 // Set the pointers each time, in case they changed due to reallocation.
                 builderData.ce32s = builder.ce32s;
@@ -1467,11 +1482,12 @@ namespace ICU4N.Impl.Coll
                 Reset();
                 s = str;
                 pos = start;
+                ReadOnlySpan<char> sSpan = s.Span;
                 while (pos < s.Length)
                 {
                     // No need to keep all CEs in the iterator buffer.
                     ClearCEs();
-                    int c = Character.CodePointAt(s, pos);
+                    int c = Character.CodePointAt(sSpan, pos);
                     pos += Character.CharCount(c);
                     int ce32 = builder.trie.Get(c);
                     CollationData d;
@@ -1515,7 +1531,7 @@ namespace ICU4N.Impl.Coll
                 {
                     return Collation.SentinelCodePoint;
                 }
-                int c = Character.CodePointAt(s, pos);
+                int c = Character.CodePointAt(s.Span, pos);
                 pos += Character.CharCount(c);
                 return c;
             }
@@ -1526,19 +1542,19 @@ namespace ICU4N.Impl.Coll
                 {
                     return Collation.SentinelCodePoint;
                 }
-                int c = Character.CodePointBefore(s, pos);
+                int c = Character.CodePointBefore(s.Span, pos);
                 pos -= Character.CharCount(c);
                 return c;
             }
 
             protected override void ForwardNumCodePoints(int num)
             {
-                pos = Character.OffsetByCodePoints(s, pos, num);
+                pos = Character.OffsetByCodePoints(s.Span, pos, num);
             }
 
             protected override void BackwardNumCodePoints(int num)
             {
-                pos = Character.OffsetByCodePoints(s, pos, -num);
+                pos = Character.OffsetByCodePoints(s.Span, pos, -num);
             }
 
             protected override int GetDataCE32(int c)
@@ -1578,7 +1594,7 @@ namespace ICU4N.Impl.Coll
             private readonly CollationDataBuilder builder;
             private readonly CollationData builderData;
             private readonly int[] jamoCE32s = new int[CollationData.JAMO_CE32S_LENGTH];
-            private ICharSequence s;
+            private ReadOnlyMemory<char> s;
             private int pos;
         }
 

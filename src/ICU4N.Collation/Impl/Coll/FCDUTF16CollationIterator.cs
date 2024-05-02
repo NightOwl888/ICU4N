@@ -1,5 +1,8 @@
-﻿using J2N;
+﻿using ICU4N.Support.Text;
+using ICU4N.Text;
+using J2N;
 using J2N.Text;
+using System;
 using System.Diagnostics;
 using System.Text;
 
@@ -19,7 +22,8 @@ namespace ICU4N.Impl.Coll
             nfcImpl = d.NfcImpl;
         }
 
-        public FCDUTF16CollationIterator(CollationData data, bool numeric, ICharSequence s, int p)
+        // ICU4N: The value for s must have a reference to it that has a lifetime longer than this class.
+        public FCDUTF16CollationIterator(CollationData data, bool numeric, ReadOnlyMemory<char> s, int p)
             : base(data, numeric, s, p)
         {
             rawSeq = s;
@@ -32,23 +36,26 @@ namespace ICU4N.Impl.Coll
         public override bool Equals(object other)
         {
             // Skip the UTF16CollationIterator and call its parent.
-            if (!(other is CollationIterator)
-            || !((CollationIterator)this).Equals(other)
-            || !(other is FCDUTF16CollationIterator))
+            if (!(other is CollationIterator otherCi)
+                || !otherCi.Equals(other)
+                || !(other is FCDUTF16CollationIterator o))
             {
                 return false;
             }
-            FCDUTF16CollationIterator o = (FCDUTF16CollationIterator)other;
             // Compare the iterator state but not the text: Assume that the caller does that.
             if (checkDir != o.checkDir)
             {
                 return false;
             }
-            if (checkDir == 0 && (seq == rawSeq) != (o.seq == o.rawSeq))
+            ReadOnlySpan<char> seqSpan = seq.Span;
+            ReadOnlySpan<char> rawSeqSpan = rawSeq.Span;
+            ReadOnlySpan<char> oSeqSpan = seq.Span;
+            ReadOnlySpan<char> oRawSeqSpan = rawSeq.Span;
+            if (checkDir == 0 && (seqSpan.Equals(rawSeqSpan, StringComparison.Ordinal)) != (oSeqSpan.Equals(oRawSeqSpan, StringComparison.Ordinal)))
             {
                 return false;
             }
-            if (checkDir != 0 || seq == rawSeq)
+            if (checkDir != 0 || seqSpan.Equals(rawSeqSpan, StringComparison.Ordinal))
             {
                 return (pos - rawStart) == (o.pos - /*o.*/ rawStart);
             }
@@ -61,17 +68,18 @@ namespace ICU4N.Impl.Coll
 
         public override int GetHashCode()
         {
+            ReadOnlySpan<char> seqSpan = seq.Span;
+            ReadOnlySpan<char> rawSeqSpan = rawSeq.Span;
             // ICU4N specific - implemented hash code
             int hash = 17;
             unchecked // Overflow is fine, just wrap
             {
                 hash = hash * 23 + checkDir.GetHashCode();
-                hash = hash * 23 + ((checkDir == 0) ? seq.GetHashCode() ^ rawSeq.GetHashCode() : 0);
-                hash = hash * 23 + ((checkDir != 0 || seq == rawSeq) ? (pos - rawStart).GetHashCode() : (segmentStart - rawStart).GetHashCode() ^ (pos - start).GetHashCode());
+                hash = hash * 23 + ((checkDir == 0) ? StringHelper.GetHashCode(seqSpan) ^ StringHelper.GetHashCode(rawSeqSpan) : 0);
+                hash = hash * 23 + ((checkDir != 0 || seqSpan.Equals(rawSeqSpan, StringComparison.Ordinal)) ? (pos - rawStart).GetHashCode() : (segmentStart - rawStart).GetHashCode() ^ (pos - start).GetHashCode());
             }
             return hash;
         }
-
         public override void ResetToOffset(int newOffset)
         {
             Reset();
@@ -85,7 +93,7 @@ namespace ICU4N.Impl.Coll
         {
             get
             {
-                if (checkDir != 0 || seq == rawSeq)
+                if (checkDir != 0 || seq.Span.Equals(rawSeq.Span, StringComparison.Ordinal))
                 {
                     return pos - rawStart;
                 }
@@ -100,7 +108,8 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        public override void SetText(bool numeric, ICharSequence s, int p)
+        // ICU4N: The value for s must have a reference to it that has a lifetime longer than this class.
+        public override void SetText(bool numeric, ReadOnlyMemory<char> s, int p)
         {
             base.SetText(numeric, s, p);
             rawSeq = s;
@@ -120,22 +129,22 @@ namespace ICU4N.Impl.Coll
                     {
                         return Collation.SentinelCodePoint;
                     }
-                    c = seq[pos++];
+                    c = seq.Span[pos++];
                     if (CollationFCD.HasTccc(c))
                     {
                         if (CollationFCD.MaybeTibetanCompositeVowel(c) ||
-                                (pos != limit && CollationFCD.HasLccc(seq[pos])))
+                                (pos != limit && CollationFCD.HasLccc(seq.Span[pos])))
                         {
                             --pos;
                             NextSegment();
-                            c = seq[pos++];
+                            c = seq.Span[pos++];
                         }
                     }
                     break;
                 }
                 else if (checkDir == 0 && pos != limit)
                 {
-                    c = seq[pos++];
+                    c = seq.Span[pos++];
                     break;
                 }
                 else
@@ -145,7 +154,7 @@ namespace ICU4N.Impl.Coll
             }
             char trail;
             if (char.IsHighSurrogate(c) && pos != limit &&
-                    char.IsLowSurrogate(trail = seq[pos]))
+                    char.IsLowSurrogate(trail = seq.Span[pos]))
             {
                 ++pos;
                 return Character.ToCodePoint(c, trail);
@@ -158,6 +167,7 @@ namespace ICU4N.Impl.Coll
 
         public override int PreviousCodePoint()
         {
+            ReadOnlySpan<char> seqSpan = seq.Span;
             char c;
             for (; ; )
             {
@@ -167,32 +177,34 @@ namespace ICU4N.Impl.Coll
                     {
                         return Collation.SentinelCodePoint;
                     }
-                    c = seq[--pos];
+                    c = seqSpan[--pos];
                     if (CollationFCD.HasLccc(c))
                     {
                         if (CollationFCD.MaybeTibetanCompositeVowel(c) ||
-                                (pos != start && CollationFCD.HasTccc(seq[pos - 1])))
+                                (pos != start && CollationFCD.HasTccc(seqSpan[pos - 1])))
                         {
                             ++pos;
                             PreviousSegment();
-                            c = seq[--pos];
+                            seqSpan = seq.Span;
+                            c = seqSpan[--pos];
                         }
                     }
                     break;
                 }
                 else if (checkDir == 0 && pos != start)
                 {
-                    c = seq[--pos];
+                    c = seqSpan[--pos];
                     break;
                 }
                 else
                 {
                     SwitchToBackward();
+                    seqSpan = seq.Span;
                 }
             }
             char lead;
             if (char.IsLowSurrogate(c) && pos != start &&
-                    char.IsHighSurrogate(lead = seq[pos - 1]))
+                    char.IsHighSurrogate(lead = seqSpan[pos - 1]))
             {
                 --pos;
                 return Character.ToCodePoint(lead, c);
@@ -205,6 +217,7 @@ namespace ICU4N.Impl.Coll
 
         protected override long HandleNextCE32()
         {
+            ReadOnlySpan<char> seqSpan = seq.Span;
             char c;
             for (; ; )
             {
@@ -214,27 +227,29 @@ namespace ICU4N.Impl.Coll
                     {
                         return NoCodePointAndCE32;
                     }
-                    c = seq[pos++];
+                    c = seqSpan[pos++];
                     if (CollationFCD.HasTccc(c))
                     {
                         if (CollationFCD.MaybeTibetanCompositeVowel(c) ||
-                                (pos != limit && CollationFCD.HasLccc(seq[pos])))
+                                (pos != limit && CollationFCD.HasLccc(seqSpan[pos])))
                         {
                             --pos;
                             NextSegment();
-                            c = seq[pos++];
+                            seqSpan = seq.Span;
+                            c = seqSpan[pos++];
                         }
                     }
                     break;
                 }
                 else if (checkDir == 0 && pos != limit)
                 {
-                    c = seq[pos++];
+                    c = seqSpan[pos++];
                     break;
                 }
                 else
                 {
                     SwitchToForward();
+                    seqSpan = seq.Span;
                 }
             }
             return MakeCodePointAndCE32Pair(c, trie.GetFromU16SingleLead(c));
@@ -269,7 +284,9 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         private void SwitchToForward()
         {
-            Debug.Assert((checkDir < 0 && seq == rawSeq) || (checkDir == 0 && pos == limit));
+            ReadOnlySpan<char> seqSpan = seq.Span;
+            ReadOnlySpan<char> rawSeqSpan = rawSeq.Span;
+            Debug.Assert((checkDir < 0 && seqSpan.Equals(rawSeqSpan, StringComparison.Ordinal)) || (checkDir == 0 && pos == limit));
             if (checkDir < 0)
             {
                 // Turn around from backward checking.
@@ -287,7 +304,7 @@ namespace ICU4N.Impl.Coll
             else
             {
                 // Reached the end of the FCD segment.
-                if (seq == rawSeq)
+                if (seqSpan.Equals(rawSeqSpan, StringComparison.Ordinal))
                 {
                     // The input text segment is FCD, extend it forward.
                 }
@@ -314,7 +331,9 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         private void NextSegment()
         {
-            Debug.Assert(checkDir > 0 && seq == rawSeq && pos != limit);
+            ReadOnlySpan<char> seqSpan = seq.Span;
+            ReadOnlySpan<char> rawSeqSpan = rawSeq.Span;
+            Debug.Assert(checkDir > 0 && seqSpan.Equals(rawSeqSpan, StringComparison.Ordinal) && pos != limit);
             // The input text [segmentStart..pos[ passes the FCD check.
             int p = pos;
             int prevCC = 0;
@@ -322,7 +341,7 @@ namespace ICU4N.Impl.Coll
             {
                 // Fetch the next character's fcd16 value.
                 int q = p;
-                int c = Character.CodePointAt(seq, p);
+                int c = Character.CodePointAt(seqSpan, p);
                 p += Character.CharCount(c);
                 int fcd16 = nfcImpl.GetFCD16(c);
                 int leadCC = fcd16 >> 8;
@@ -339,10 +358,12 @@ namespace ICU4N.Impl.Coll
                     {
                         q = p;
                         if (p == rawLimit) { break; }
-                        c = Character.CodePointAt(seq, p);
+                        c = Character.CodePointAt(seqSpan, p);
                         p += Character.CharCount(c);
                     } while (nfcImpl.GetFCD16(c) > 0xff);
                     Normalize(pos, q);
+                    seqSpan = seq.Span;
+                    rawSeqSpan = rawSeq.Span;
                     pos = start;
                     break;
                 }
@@ -365,7 +386,9 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         private void SwitchToBackward()
         {
-            Debug.Assert((checkDir > 0 && seq == rawSeq) || (checkDir == 0 && pos == start));
+            ReadOnlySpan<char> seqSpan = seq.Span;
+            ReadOnlySpan<char> rawSeqSpan = rawSeq.Span;
+            Debug.Assert((checkDir > 0 && seqSpan.Equals(rawSeqSpan, StringComparison.Ordinal)) || (checkDir == 0 && pos == start));
             if (checkDir > 0)
             {
                 // Turn around from forward checking.
@@ -383,7 +406,7 @@ namespace ICU4N.Impl.Coll
             else
             {
                 // Reached the start of the FCD segment.
-                if (seq == rawSeq)
+                if (seqSpan.Equals(rawSeqSpan, StringComparison.Ordinal))
                 {
                     // The input text segment is FCD, extend it backward.
                 }
@@ -406,7 +429,9 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         private void PreviousSegment()
         {
-            Debug.Assert(checkDir < 0 && seq == rawSeq && pos != start);
+            ReadOnlySpan<char> seqSpan = seq.Span;
+            ReadOnlySpan<char> rawSeqSpan = rawSeq.Span;
+            Debug.Assert(checkDir < 0 && seqSpan.Equals(rawSeqSpan, StringComparison.Ordinal) && pos != start);
             // The input text [pos..segmentLimit[ passes the FCD check.
             int p = pos;
             int nextCC = 0;
@@ -414,7 +439,7 @@ namespace ICU4N.Impl.Coll
             {
                 // Fetch the previous character's fcd16 value.
                 int q = p;
-                int c = Character.CodePointBefore(seq, p);
+                int c = Character.CodePointBefore(seqSpan, p);
                 p -= Character.CharCount(c);
                 int fcd16 = nfcImpl.GetFCD16(c);
                 int trailCC = fcd16 & 0xff;
@@ -432,10 +457,12 @@ namespace ICU4N.Impl.Coll
                     {
                         q = p;
                         if (fcd16 <= 0xff || p == rawStart) { break; }
-                        c = Character.CodePointBefore(seq, p);
+                        c = Character.CodePointBefore(seqSpan, p);
                         p -= Character.CharCount(c);
                     } while ((fcd16 = nfcImpl.GetFCD16(c)) != 0);
                     Normalize(q, pos);
+                    seqSpan = seq.Span;
+                    rawSeqSpan = rawSeq.Span;
                     pos = limit;
                     break;
                 }
@@ -451,19 +478,33 @@ namespace ICU4N.Impl.Coll
             checkDir = 0;
         }
 
+        private const int CharStackBufferSize = 64;
         private void Normalize(int from, int to)
         {
             if (normalized == null)
             {
-                normalized = new StringBuilder();
+                normalized = new OpenStringBuilder();
             }
-            // NFD without argument checking.
-            nfcImpl.Decompose(rawSeq, from, to - from, normalized, to - from); // ICU4N: Corrected 3rd parameter
+            normalized.Length = 0;
+            int estimatedLength = to - from;
+            ValueStringBuilder sb = estimatedLength <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(estimatedLength);
+            try
+            {
+                // NFD without argument checking.
+                nfcImpl.Decompose(rawSeq.Span.Slice(from, to - from), ref sb, to - from); // ICU4N: Corrected 3rd parameter
+                normalized.Append(sb.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
             // Switch collation processing into the FCD buffer
             // with the result of normalizing [segmentStart, segmentLimit[.
             segmentStart = from;
             segmentLimit = to;
-            seq = normalized.AsCharSequence();
+            seq = normalized.AsMemory();
             start = 0;
             limit = start + normalized.Length;
         }
@@ -493,14 +534,14 @@ namespace ICU4N.Impl.Coll
         // or the current segment had to be normalized so that
         // rawSeq[segmentStart..segmentLimit[ turned into the normalized string,
         // corresponding to seq==normalized && 0==start<=pos<=limit==start+normalized.length().
-        private ICharSequence rawSeq;
+        private ReadOnlyMemory<char> rawSeq;
         private const int rawStart = 0;
         private int segmentStart;
         private int segmentLimit;
         private int rawLimit;
 
         private readonly Normalizer2Impl nfcImpl;
-        private StringBuilder normalized;
+        private OpenStringBuilder normalized;
         // Direction of incremental FCD check. See comments before rawStart.
         private int checkDir;
     }

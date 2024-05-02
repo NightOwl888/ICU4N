@@ -313,7 +313,7 @@ namespace ICU4N.Dev.Test.Collate
             }
             catch (Exception e)
             {
-                Errln("Unexpected exception " + e);
+                Errln($"Unexpected exception {e} line number: {lineNo}");
             }
             finally
             {

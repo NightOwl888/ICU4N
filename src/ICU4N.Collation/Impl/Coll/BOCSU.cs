@@ -1,6 +1,7 @@
 ﻿using ICU4N.Util;
 using J2N;
 using J2N.Text;
+using System;
 
 namespace ICU4N.Impl.Coll
 {
@@ -93,8 +94,9 @@ namespace ICU4N.Impl.Coll
         /// Note that the identical-level run in a sort key is generated from
         /// NFD text - there are never Hangul characters included.
         /// </remarks>
-        public static int WriteIdenticalLevelRun(int prev, ICharSequence s, int i, int length, ByteArrayWrapper sink)
+        public static int WriteIdenticalLevelRun(int prev, ReadOnlySpan<char> s, ByteArrayWrapper sink)
         {
+            int i = 0, length = s.Length;
             while (i < length)
             {
                 // We must have capacity>=SLOPE_MAX_BYTES in case writeDiff() writes that much,

@@ -1,4 +1,5 @@
 ﻿using ICU4N.Globalization;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using J2N;
 using J2N.Text;
@@ -67,8 +68,8 @@ namespace ICU4N.Impl.Coll
             /// <summary>
             /// Adds a relation with strength and prefix | str / extension.
             /// </summary>
-            void AddRelation(CollationStrength strength, ICharSequence prefix,
-                    ICharSequence str, string extension); // ICU4N specific - changed extension from ICharSequence to string
+            void AddRelation(CollationStrength strength, ReadOnlySpan<char> prefix,
+                    string str, ReadOnlySpan<char> extension); // ICU4N specific - changed prefix and extension from ICharSequence to ReadOnlySpan<char>
 
             void SuppressContractions(UnicodeSet set);
 
@@ -338,17 +339,22 @@ namespace ICU4N.Impl.Coll
             // Parse
             //     prefix | str / extension
             // where prefix and extension are optional.
-            StringCharSequence prefix = new StringCharSequence("");
-            string extension = "";
+            string prefix = string.Empty;
+            string extension = string.Empty;
             i = ParseTailoringString(i, rawBuilder.Value);
             char next = (i < rules.Length) ? rules[i] : (char)0;
             if (next == 0x7c)
             {  // '|' separates the context prefix from the string.
-                prefix = new StringCharSequence(rawBuilder.ToString());
+                prefix = rawBuilder.ToString();
                 i = ParseTailoringString(i + 1, rawBuilder.Value);
                 next = (i < rules.Length) ? rules[i] : (char)0;
             }
             // str = rawBuilder (do not modify rawBuilder any more in this function)
+            // ICU4N: We need to materialize the string in .NET or it will be very slow for subsequent operations
+            // due to the indexer of StringBuilder being sluggish.
+            // ICU4N TODO: Investigate whether we can use ValueStringBuilder here so we don't have to
+            // re-allocate memory.
+            string str = rawBuilder.ToString();
             if (next == 0x2f)
             {  // '/' separates the string from the extension.
                 StringBuilder extBuilder = new StringBuilder();
@@ -357,8 +363,8 @@ namespace ICU4N.Impl.Coll
             }
             if (prefix.Length != 0)
             {
-                int prefix0 = prefix.Value.CodePointAt(0);
-                int c = rawBuilder.Value.CodePointAt(0);
+                int prefix0 = prefix.CodePointAt(0);
+                int c = str.CodePointAt(0);
                 if (!nfc.HasBoundaryBefore(prefix0) || !nfc.HasBoundaryBefore(c))
                 {
                     SetParseError("in 'prefix|str', prefix and str must each start with an NFC boundary");
@@ -367,7 +373,7 @@ namespace ICU4N.Impl.Coll
             }
             try
             {
-                sink.AddRelation(strength, prefix, rawBuilder, extension);
+                sink.AddRelation(strength, prefix.AsSpan(), str, extension.AsSpan());
             }
             catch (Exception e)
             {
@@ -379,7 +385,7 @@ namespace ICU4N.Impl.Coll
 
         private void ParseStarredCharacters(CollationStrength strength, int i)
         {
-            StringCharSequence empty = new StringCharSequence("");
+            string empty = string.Empty;
             i = ParseString(SkipWhiteSpace(i), rawBuilder.Value);
             if (rawBuilder.Length == 0)
             {
@@ -400,7 +406,7 @@ namespace ICU4N.Impl.Coll
                     }
                     try
                     {
-                        sink.AddRelation(strength, empty, UTF16.ValueOf(cp).AsCharSequence(), empty.Value);
+                        sink.AddRelation(strength, empty.AsSpan(), UTF16.ValueOf(cp), empty.AsSpan());
                     }
                     catch (Exception e)
                     {
@@ -451,7 +457,7 @@ namespace ICU4N.Impl.Coll
                     }
                     try
                     {
-                        sink.AddRelation(strength, empty, UTF16.ValueOf(prev).AsCharSequence(), empty.Value);
+                        sink.AddRelation(strength, empty.AsSpan(), UTF16.ValueOf(prev), empty.AsSpan());
                     }
                     catch (Exception e)
                     {

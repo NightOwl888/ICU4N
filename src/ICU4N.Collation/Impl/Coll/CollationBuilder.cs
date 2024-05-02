@@ -14,6 +14,8 @@ namespace ICU4N.Impl.Coll
 {
     public sealed class CollationBuilder : CollationRuleParser.ISink
     {
+        private const int CharStackBufferSize = 64;
+
         private static readonly bool DEBUG = false;
         private sealed class BundleImporter : CollationRuleParser.IImporter
         {
@@ -112,7 +114,7 @@ namespace ICU4N.Impl.Coll
             {
                 // normal reset to a character or string
                 string nfdString = nfd.Normalize(str);
-                cesLength = dataBuilder.GetCEs(nfdString.AsCharSequence(), ces, 0);
+                cesLength = dataBuilder.GetCEs(nfdString.AsMemory(), ces, 0);
                 if (cesLength > Collation.MAX_EXPANSION_LENGTH)
                 {
                     throw new ArgumentException(
@@ -493,18 +495,18 @@ namespace ICU4N.Impl.Coll
         }
 
         /// <summary>Implements <see cref="CollationRuleParser.ISink"/>.</summary>
-        void CollationRuleParser.ISink.AddRelation(CollationStrength strength, ICharSequence prefix, ICharSequence str, string extension) // ICU4N specific - changed extension from ICharSequence to string
+        void CollationRuleParser.ISink.AddRelation(CollationStrength strength, ReadOnlySpan<char> prefix, string str, ReadOnlySpan<char> extension)
         {
-            StringCharSequence nfdPrefix;
+            string nfdPrefix;
             if (prefix.Length == 0)
             {
-                nfdPrefix = new StringCharSequence("");
+                nfdPrefix = string.Empty;
             }
             else
             {
-                nfdPrefix = new StringCharSequence(nfd.Normalize(prefix));
+                nfdPrefix = nfd.Normalize(prefix);
             }
-            StringCharSequence nfdString = new StringCharSequence(nfd.Normalize(str));
+            string nfdString = nfd.Normalize(str);
 
             // The runtime code decomposes Hangul syllables on the fly,
             // with recursive processing but without making the Jamo pieces visible for matching.
@@ -566,13 +568,13 @@ namespace ICU4N.Impl.Coll
                 ces[cesLength - 1] = TempCEFromIndexAndStrength(index, tempStrength);
             }
 
-            SetCaseBits(nfdString);
+            SetCaseBits(nfdString.AsMemory());
 
             int cesLengthBeforeExtension = cesLength;
             if (extension.Length != 0)
             {
                 string nfdExtension = nfd.Normalize(extension);
-                cesLength = dataBuilder.GetCEs(nfdExtension.AsCharSequence(), ces, cesLength);
+                cesLength = dataBuilder.GetCEs(nfdExtension.AsMemory(), ces, cesLength);
                 if (cesLength > Collation.MAX_EXPANSION_LENGTH)
                 {
                     throw new ArgumentException(
@@ -580,15 +582,15 @@ namespace ICU4N.Impl.Coll
                 }
             }
             int ce32 = Collation.UNASSIGNED_CE32;
-            if ((!nfdPrefix.Value.ContentEquals(prefix) || !nfdString.Value.ContentEquals(str)) &&
-                    !IgnorePrefix(prefix) && !IgnoreString(str))
+            if ((!prefix.Equals(nfdPrefix, StringComparison.Ordinal) || !str.Equals(nfdString, StringComparison.Ordinal)) &&
+                !IgnorePrefix(prefix) && !IgnoreString(str))
             {
                 // Map from the original input to the CEs.
                 // We do this in case the canonical closure is incomplete,
                 // so that it is possible to explicitly provide the missing mappings.
-                ce32 = AddIfDifferent(prefix, str, ces, cesLength, ce32);
+                ce32 = AddIfDifferent(prefix, str.AsMemory(), ces, cesLength, ce32);
             }
-            AddWithClosure(nfdPrefix, nfdString, ces, cesLength, ce32);
+            AddWithClosure(nfdPrefix.AsSpan(), nfdString.AsMemory(), ces, cesLength, ce32);
             cesLength = cesLengthBeforeExtension;
         }
 
@@ -885,7 +887,7 @@ namespace ICU4N.Impl.Coll
             return index;
         }
 
-        private void SetCaseBits(ICharSequence nfdString)
+        private void SetCaseBits(ReadOnlyMemory<char> nfdString)
         {
             int numTailoredPrimaries = 0;
             for (int i = 0; i < cesLength; ++i)
@@ -900,8 +902,7 @@ namespace ICU4N.Impl.Coll
             long cases = 0;
             if (numTailoredPrimaries > 0)
             {
-                ICharSequence s = nfdString;
-                UTF16CollationIterator baseCEs = new UTF16CollationIterator(baseData, false, s, 0);
+                UTF16CollationIterator baseCEs = new UTF16CollationIterator(baseData, false, nfdString, 0);
                 int baseCEsLength = baseCEs.FetchCEs() - 1;
                 Debug.Assert(baseCEsLength >= 0 && baseCEs.GetCE(baseCEsLength) == Collation.NoCE);
 
@@ -981,17 +982,17 @@ namespace ICU4N.Impl.Coll
         /// Takes ce32=dataBuilder.EncodeCEs(...) so that the data builder
         /// need not re-encode the CEs multiple times.
         /// </summary>
-        private int AddWithClosure(ICharSequence nfdPrefix, ICharSequence nfdString,
+        private int AddWithClosure(ReadOnlySpan<char> nfdPrefix, ReadOnlyMemory<char> nfdString,
                     long[] newCEs, int newCEsLength, int ce32)
         {
             // Map from the NFD input to the CEs.
             ce32 = AddIfDifferent(nfdPrefix, nfdString, newCEs, newCEsLength, ce32);
-            ce32 = AddOnlyClosure(nfdPrefix, nfdString, newCEs, newCEsLength, ce32);
-            AddTailComposites(nfdPrefix, nfdString);
+            ce32 = AddOnlyClosure(nfdPrefix, nfdString.Span, newCEs, newCEsLength, ce32);
+            AddTailComposites(nfdPrefix, nfdString.Span);
             return ce32;
         }
 
-        private int AddOnlyClosure(ICharSequence nfdPrefix, ICharSequence nfdString,
+        private int AddOnlyClosure(ReadOnlySpan<char> nfdPrefix, ReadOnlySpan<char> nfdString,
             long[] newCEs, int newCEsLength, int ce32)
         {
             // Map from canonically equivalent input to the CEs. (But not from the all-NFD input.)
@@ -999,12 +1000,12 @@ namespace ICU4N.Impl.Coll
             if (nfdPrefix.Length == 0)
             {
                 CanonicalEnumerator stringIter = new CanonicalEnumerator(nfdString.ToString());
-                ICharSequence prefix = new StringCharSequence("");
+                ReadOnlySpan<char> prefix = default;
                 while (stringIter.MoveNext())
                 {
                     string str = stringIter.Current;
-                    if (IgnoreString(str) || str.ContentEquals(nfdString)) { continue; }
-                    ce32 = AddIfDifferent(prefix, str.AsCharSequence(), newCEs, newCEsLength, ce32);
+                    if (IgnoreString(str.AsSpan()) || nfdString.Equals(str, StringComparison.Ordinal)) { continue; }
+                    ce32 = AddIfDifferent(prefix, str.AsMemory(), newCEs, newCEsLength, ce32);
                 }
             }
             else
@@ -1016,12 +1017,12 @@ namespace ICU4N.Impl.Coll
                     string prefix = prefixIter.Current;
                     if (IgnorePrefix(prefix)) { continue; }
                     bool samePrefix = prefix.ContentEquals(nfdPrefix);
-                    ICharSequence prefixCharSequence = prefix.AsCharSequence();
+                    ReadOnlySpan<char> prefixCharSequence = prefix.AsSpan();
                     while (stringIter.MoveNext())
                     {
                         string str = stringIter.Current;
                         if (IgnoreString(str) || (samePrefix && str.ContentEquals(nfdString))) { continue; }
-                        ce32 = AddIfDifferent(prefixCharSequence, str.AsCharSequence(), newCEs, newCEsLength, ce32);
+                        ce32 = AddIfDifferent(prefixCharSequence, str.AsMemory(), newCEs, newCEsLength, ce32);
                     }
                     stringIter.Reset();
                 }
@@ -1029,7 +1030,7 @@ namespace ICU4N.Impl.Coll
             return ce32;
         }
 
-        private void AddTailComposites(ICharSequence nfdPrefix, ICharSequence nfdString)
+        private void AddTailComposites(ReadOnlySpan<char> nfdPrefix, ReadOnlySpan<char> nfdString)
         {
             // Look for the last starter in the NFD string.
             int lastStarter;
@@ -1050,7 +1051,12 @@ namespace ICU4N.Impl.Coll
             UnicodeSet composites = new UnicodeSet();
             if (!nfcImpl.GetCanonStartSet(lastStarter, composites)) { return; }
 
-            StringBuilderCharSequence newNFDString = new StringBuilderCharSequence(new StringBuilder()), newString = new StringBuilderCharSequence(new StringBuilder());
+            // ICU4N: Best guess for memory allocation sizes.
+            // We use OpenStringBuilder because it can be converted to ReadOnlyMemory<char>, whereas
+            // StringBuilder cannot be.
+            OpenStringBuilder newNFDString = new OpenStringBuilder(nfdString.Length);
+            OpenStringBuilder newString =  new OpenStringBuilder(nfdPrefix.Length + nfdString.Length);
+
             long[] newCEs = new long[Collation.MAX_EXPANSION_LENGTH];
             UnicodeSetIterator iter = new UnicodeSetIterator(composites);
             while (iter.Next())
@@ -1058,12 +1064,12 @@ namespace ICU4N.Impl.Coll
                 Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
                 int composite = iter.Codepoint;
                 string decomp = nfd.GetDecomposition(composite);
-                if (!MergeCompositeIntoString(nfdString, indexAfterLastStarter, composite, decomp,
-                        newNFDString.Value, newString.Value))
+                if (!MergeCompositeIntoString(nfdString, indexAfterLastStarter, composite, decomp.AsSpan(),
+                        newNFDString, newString))
                 {
                     continue;
                 }
-                int newCEsLength = dataBuilder.GetCEs(nfdPrefix, newNFDString, newCEs, 0);
+                int newCEsLength = dataBuilder.GetCEs(nfdPrefix, newNFDString.AsMemory(), newCEs, 0);
                 if (newCEsLength > Collation.MAX_EXPANSION_LENGTH)
                 {
                     // Ignore mappings that we cannot store.
@@ -1084,22 +1090,22 @@ namespace ICU4N.Impl.Coll
                 // We do not need an explicit mapping for the NFD strings.
                 // It is fine if the NFD input collates like this via a sequence of mappings.
                 // It also saves a little bit of space, and may reduce the set of characters with contractions.
-                int ce32 = AddIfDifferent(nfdPrefix, newString,
-                                              newCEs, newCEsLength, Collation.UNASSIGNED_CE32);
+                int ce32 = AddIfDifferent(nfdPrefix, newString.AsMemory(),
+                                                newCEs, newCEsLength, Collation.UNASSIGNED_CE32);
                 if (ce32 != Collation.UNASSIGNED_CE32)
                 {
                     // was different, was added
-                    AddOnlyClosure(nfdPrefix, newNFDString, newCEs, newCEsLength, ce32);
+                    AddOnlyClosure(nfdPrefix, newNFDString.AsSpan(), newCEs, newCEsLength, ce32);
                 }
             }
         }
 
-        private bool MergeCompositeIntoString(ICharSequence nfdString, int indexAfterLastStarter,
-                    int composite, string decomp,
-                    StringBuilder newNFDString, StringBuilder newString) // ICU4N specific - changed decomp from ICharSequence to string
+        private bool MergeCompositeIntoString(ReadOnlySpan<char> nfdString, int indexAfterLastStarter,
+                    int composite, ReadOnlySpan<char> decomp,
+                    OpenStringBuilder newNFDString, OpenStringBuilder newString)
         {
             Debug.Assert(Character.CodePointBefore(nfdString, indexAfterLastStarter) ==
-            Character.CodePointAt(decomp, 0));
+                Character.CodePointAt(decomp, 0));
             int lastStarterLength = Character.OffsetByCodePoints(decomp, 0, 1);
             if (lastStarterLength == decomp.Length)
             {
@@ -1119,8 +1125,8 @@ namespace ICU4N.Impl.Coll
             newNFDString.Length = 0;
             newNFDString.Append(nfdString, 0, indexAfterLastStarter - 0); // ICU4N: Checked 3rd parameter
             newString.Length = 0;
-            newString.Append(nfdString, 0, (indexAfterLastStarter - lastStarterLength) - 0) // ICU4N: Checked 3rd parameter
-                .AppendCodePoint(composite);
+            newString.Append(nfdString, 0, (indexAfterLastStarter - lastStarterLength) - 0); // ICU4N: Checked 3rd parameter
+            newString.AppendCodePoint(composite);
 
             // The following is related to discontiguous contraction matching,
             // but builds only FCD strings (or else returns false).
@@ -1193,13 +1199,13 @@ namespace ICU4N.Impl.Coll
             {  // more characters from decomp, not from nfdString
                 newNFDString.Append(decomp, decompIndex, decomp.Length - decompIndex); // ICU4N: Corrected 3rd parameter
             }
-            Debug.Assert(nfd.IsNormalized(newNFDString));
-            Debug.Assert(fcd.IsNormalized(newString));
-            Debug.Assert(nfd.Normalize(newString).Equals(newNFDString.ToString()));  // canonically equivalent
+            Debug.Assert(nfd.IsNormalized(newNFDString.AsSpan()));
+            Debug.Assert(fcd.IsNormalized(newString.AsSpan()));
+            Debug.Assert(nfd.Normalize(newString.AsSpan()).AsSpan().Equals(newNFDString.AsSpan(), StringComparison.Ordinal));  // canonically equivalent
             return true;
         }
 
-        private bool EqualSubSequences(ICharSequence left, int leftStart, string right, int rightStart) // ICU4N specific - changed right from ICharSequence to string
+        private bool EqualSubSequences(ReadOnlySpan<char> left, int leftStart, ReadOnlySpan<char> right, int rightStart) // ICU4N specific - changed right from ICharSequence to string
         {
             // C++ UnicodeString::compare(leftStart, 0x7fffffff, right, rightStart, 0x7fffffff) == 0
             int leftLength = left.Length;
@@ -1219,7 +1225,7 @@ namespace ICU4N.Impl.Coll
             // Do not map non-FCD prefixes.
             return !IsFCD(s);
         }
-        private bool IgnorePrefix(ICharSequence s) 
+        private bool IgnorePrefix(ReadOnlySpan<char> s)
         {
             // Do not map non-FCD prefixes.
             return !IsFCD(s);
@@ -1231,7 +1237,7 @@ namespace ICU4N.Impl.Coll
             // Do not map strings that start with Hangul syllables: We decompose those on the fly.
             return !IsFCD(s) || Hangul.IsHangul(s[0]);
         }
-        private bool IgnoreString(ICharSequence s)
+        private bool IgnoreString(ReadOnlySpan<char> s)
         {
             // Do not map non-FCD strings.
             // Do not map strings that start with Hangul syllables: We decompose those on the fly.
@@ -1242,7 +1248,7 @@ namespace ICU4N.Impl.Coll
         {
             return fcd.IsNormalized(s);
         }
-        private bool IsFCD(ICharSequence s)
+        private bool IsFCD(ReadOnlySpan<char> s)
         {
             return fcd.IsNormalized(s);
         }
@@ -1256,13 +1262,13 @@ namespace ICU4N.Impl.Coll
 
         private void CloseOverComposites()
         {
-            ICharSequence prefix = new StringCharSequence("");  // empty
+            ReadOnlySpan<char> prefix = default; // empty
             UnicodeSetIterator iter = new UnicodeSetIterator(COMPOSITES);
             while (iter.Next())
             {
                 Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
                 string nfdString = nfd.GetDecomposition(iter.Codepoint);
-                cesLength = dataBuilder.GetCEs(nfdString.AsCharSequence(), ces, 0);
+                cesLength = dataBuilder.GetCEs(nfdString.AsMemory(), ces, 0);
                 if (cesLength > Collation.MAX_EXPANSION_LENGTH)
                 {
                     // Too many CEs from the decomposition (unusual), ignore this composite.
@@ -1271,11 +1277,11 @@ namespace ICU4N.Impl.Coll
                     continue;
                 }
                 string composite = iter.GetString();
-                AddIfDifferent(prefix, composite.AsCharSequence(), ces, cesLength, Collation.UNASSIGNED_CE32);
+                AddIfDifferent(prefix, composite.AsMemory(), ces, cesLength, Collation.UNASSIGNED_CE32);
             }
         }
 
-        private int AddIfDifferent(ICharSequence prefix, ICharSequence str,
+        private int AddIfDifferent(ReadOnlySpan<char> prefix, ReadOnlyMemory<char> str,
                     long[] newCEs, int newCEsLength, int ce32)
         {
             long[] oldCEs = new long[Collation.MAX_EXPANSION_LENGTH];
@@ -1286,7 +1292,7 @@ namespace ICU4N.Impl.Coll
                 {
                     ce32 = dataBuilder.EncodeCEs(newCEs, newCEsLength);
                 }
-                dataBuilder.AddCE32(prefix, str, ce32);
+                dataBuilder.AddCE32(prefix, str.Span, ce32);
             }
             return ce32;
         }

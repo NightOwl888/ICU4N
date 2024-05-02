@@ -546,11 +546,11 @@ namespace ICU4N.Text
             bool numeric = rbc_.settings.ReadOnly.IsNumeric;
             if (rbc_.settings.ReadOnly.DontCheckFCD)
             {
-                newIter = new UTF16CollationIterator(rbc_.data, numeric, string_.AsCharSequence(), 0);
+                newIter = new UTF16CollationIterator(rbc_.data, numeric, string_.AsMemory(), 0);
             }
             else
             {
-                newIter = new FCDUTF16CollationIterator(rbc_.data, numeric, string_.AsCharSequence(), 0);
+                newIter = new FCDUTF16CollationIterator(rbc_.data, numeric, string_.AsMemory(), 0);
             }
             iter_ = newIter;
             otherHalf_ = 0;

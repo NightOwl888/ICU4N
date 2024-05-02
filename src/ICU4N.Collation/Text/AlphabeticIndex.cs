@@ -1148,7 +1148,7 @@ namespace ICU4N.Text
                 RuleBasedCollator coll, long variableTop, string s)
         {
 #pragma warning disable 612, 618
-            long[] ces = coll.InternalGetCEs(s.AsCharSequence());
+            long[] ces = coll.InternalGetCEs(s.AsMemory());
 #pragma warning restore 612, 618
             bool seenPrimary = false;
             for (int i = 0; i < ces.Length; ++i)

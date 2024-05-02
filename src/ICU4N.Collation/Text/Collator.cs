@@ -1486,7 +1486,7 @@ namespace ICU4N.Text
         /// <param name="right"></param>
         /// <returns></returns>
         [Obsolete("This API is ICU internal only.")]
-        internal virtual int DoCompare(ICharSequence left, ICharSequence right) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
+        internal virtual int DoCompare(ReadOnlyMemory<char> left, ReadOnlyMemory<char> right) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
         {
             return Compare(left.ToString(), right.ToString());
         }
