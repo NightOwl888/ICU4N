@@ -3,29 +3,22 @@ using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using J2N;
 using J2N.Collections.Generic.Extensions;
+using J2N.Globalization;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Text.RegularExpressions;
-using JCG = J2N.Collections.Generic;
-using Number = J2N.Numerics.Number;
+using static ICU4N.Text.PluralFormat;
 using Double = J2N.Numerics.Double;
 using Integer = J2N.Numerics.Int32;
+using JCG = J2N.Collections.Generic;
 using Long = J2N.Numerics.Int64;
-using J2N.Globalization;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using ICU4N.Util;
-using System.Runtime.InteropServices;
-using static ICU4N.Text.PluralFormat;
-#if FEATURE_ARRAYPOOL
-using System.Buffers;
-#endif
+using Number = J2N.Numerics.Number;
 
 namespace ICU4N.Text
 {

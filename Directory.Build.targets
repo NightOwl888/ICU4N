@@ -148,11 +148,6 @@
     <DebugType>full</DebugType>
   </PropertyGroup>
 
-  <!-- Features defined everywhere (to be removed) -->
-  <PropertyGroup>
-    <DefineConstants>$(DefineConstants);FEATURE_ARRAYPOOL</DefineConstants>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
   </PropertyGroup>
