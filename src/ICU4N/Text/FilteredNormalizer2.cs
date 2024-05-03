@@ -94,8 +94,6 @@ namespace ICU4N.Text
             return dest;
         }
 
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
@@ -111,7 +109,7 @@ namespace ICU4N.Text
             Normalize(src, dest, SpanCondition.Simple);
             return dest;
         }
-#endif
+
         #endregion Normalize(ICharSequence, StringBuilder)
 
         // ICU4N specific - Normalize(
@@ -169,9 +167,6 @@ namespace ICU4N.Text
             return Normalize(src, dest, SpanCondition.Simple);
         }
 
-#if FEATURE_SPAN
-
-
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
         /// (replacing its contents) and returns the destination string.
@@ -184,7 +179,7 @@ namespace ICU4N.Text
         {
             return Normalize(src, dest, SpanCondition.Simple);
         }
-#endif
+
         #endregion Normalize(ICharSequence, IAppendable)
 
         // ICU4N specific - NormalizeSecondAndAppend(
@@ -239,8 +234,6 @@ namespace ICU4N.Text
             return NormalizeSecondAndAppend(first, second, true);
         }
 
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Appends the normalized form of the second string to the first string
@@ -256,7 +249,7 @@ namespace ICU4N.Text
         {
             return NormalizeSecondAndAppend(first, second, true);
         }
-#endif
+
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence)
 
         // ICU4N specific - Append(
@@ -311,8 +304,6 @@ namespace ICU4N.Text
             return NormalizeSecondAndAppend(first, second, false);
         }
 
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Appends the second string to the first string
@@ -328,7 +319,7 @@ namespace ICU4N.Text
         {
             return NormalizeSecondAndAppend(first, second, false);
         }
-#endif 
+
         #endregion Append(StringBuilder, ICharSequence)
 
         /// <summary>
@@ -513,8 +504,6 @@ namespace ICU4N.Text
             return true;
         }
 
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Tests if the string is normalized.
@@ -548,7 +537,7 @@ namespace ICU4N.Text
             }
             return true;
         }
-#endif 
+
         #endregion IsNormalized(ICharSequence)
 
         // ICU4N specific - QuickCheck(ICharSequence s) moved to FilteredNormalizer.generated.tt
@@ -680,8 +669,6 @@ namespace ICU4N.Text
             return result;
         }
 
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Tests if the string is normalized.
@@ -723,7 +710,7 @@ namespace ICU4N.Text
             }
             return result;
         }
-#endif 
+
         #endregion QuickCheck(ICharSequence)
 
         // ICU4N specific - SpanQuickCheckYes(ICharSequence s) moved to FilteredNormalizer.generated.tt
@@ -864,8 +851,6 @@ namespace ICU4N.Text
             return s.Length;
         }
 
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Returns the end of the normalized substring of the input string.
@@ -910,7 +895,7 @@ namespace ICU4N.Text
             }
             return s.Length;
         }
-#endif 
+
         #endregion SpanQuickCheckYes(ICharSequence)
 
         /// <summary>
@@ -1097,8 +1082,6 @@ namespace ICU4N.Text
             return dest;
         }
 
-#if FEATURE_SPAN
-
 
         // Internal: No argument checking, and appends to dest.
         // Pass as input spanCondition the one that is likely to yield a non-zero
@@ -1139,7 +1122,6 @@ namespace ICU4N.Text
             }
             return dest;
         }
-#endif
 
 
 
@@ -1267,8 +1249,6 @@ namespace ICU4N.Text
             return dest;
         }
 
-#if FEATURE_SPAN
-
 
         // Internal: No argument checking, and appends to dest.
         // Pass as input spanCondition the one that is likely to yield a non-zero
@@ -1309,7 +1289,7 @@ namespace ICU4N.Text
             }
             return dest;
         }
-#endif 
+
         #endregion Normalize(ICharSequence, IAppendable, SpanCondition)
 
         // ICU4N specific - NormalizeSecondAndAppend(StringBuilder first, ICharSequence second,
@@ -1510,8 +1490,6 @@ namespace ICU4N.Text
             return first;
         }
 
-#if FEATURE_SPAN
-
 
         private StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second,
                                                        bool doNormalize)
@@ -1573,10 +1551,9 @@ namespace ICU4N.Text
             }
             return first;
         }
-#endif 
+
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool)
 
-#if FEATURE_SPAN
         public override bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength)
         {
             throw new NotImplementedException(); // ICU4N TODO: Implement
@@ -1591,8 +1568,6 @@ namespace ICU4N.Text
         {
             throw new NotImplementedException(); // ICU4N TODO: Implement
         }
-
-#endif
 
         private Normalizer2 norm2;
         private UnicodeSet set;

@@ -143,7 +143,6 @@ namespace ICU4N.Text
             return set.AddAll(s);
         }
 
-#if FEATURE_SPAN
 
 
         /// <summary>
@@ -161,7 +160,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.AddAll(s);
         }
-#endif 
 
 
 
@@ -247,7 +245,6 @@ namespace ICU4N.Text
             return set.Complement(s);
         }
 
-#if FEATURE_SPAN
 
 
         /// <summary>
@@ -268,7 +265,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.Complement(s);
         }
-#endif 
 
 
 
@@ -342,7 +338,6 @@ namespace ICU4N.Text
             return set.ComplementAll(s);
         }
 
-#if FEATURE_SPAN
 
 
         /// <summary>
@@ -360,7 +355,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.ComplementAll(s);
         }
-#endif 
 
     
 
@@ -482,7 +476,6 @@ namespace ICU4N.Text
             return set.ContainsSome(s);
         }
 
-#if FEATURE_SPAN
 
 
         /// <summary>
@@ -500,7 +493,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.ContainsSome(s);
         }
-#endif 
 
     
 
@@ -622,7 +614,6 @@ namespace ICU4N.Text
             return set.RemoveAll(s);
         }
 
-#if FEATURE_SPAN
 
 
         /// <summary>
@@ -640,7 +631,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.RemoveAll(s);
         }
-#endif 
 
     
 
@@ -766,7 +756,6 @@ namespace ICU4N.Text
             return set.Retain(cs);
         }
 
-#if FEATURE_SPAN
 
 
         /// <summary>
@@ -785,7 +774,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.Retain(cs);
         }
-#endif 
 
     
 
@@ -907,7 +895,6 @@ namespace ICU4N.Text
             return set.RetainAll(s);
         }
 
-#if FEATURE_SPAN
 
 
         /// <summary>
@@ -925,7 +912,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(set));
             return set.RetainAll(s);
         }
-#endif 
 
     }
 }

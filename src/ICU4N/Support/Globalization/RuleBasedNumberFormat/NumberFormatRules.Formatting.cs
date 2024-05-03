@@ -3,7 +3,6 @@ using System.Diagnostics;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     public sealed partial class NumberFormatRules
     {
         //-----------------------------------------------------------------------
@@ -94,5 +93,4 @@ namespace ICU4N.Globalization
             }
         }
     }
-#endif
 }

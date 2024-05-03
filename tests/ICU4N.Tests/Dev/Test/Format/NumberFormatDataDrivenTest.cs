@@ -396,11 +396,7 @@ namespace ICU4N.Dev.Test.Format
             private java.util.Locale toLocale(UCultureInfo uCultureInfo) // ICU4N: Convert UCultureInfo to java.util.Locale
             {
                 string localeId = uCultureInfo.ToString();
-#if FEATURE_SPAN
                 using var parser = new LocaleIDParser(stackalloc char[32], localeId);
-#else
-                using var parser = new LocaleIDParser(localeID);
-#endif
 
                 string language = parser.GetLanguage();
                 string country = parser.GetCountry();

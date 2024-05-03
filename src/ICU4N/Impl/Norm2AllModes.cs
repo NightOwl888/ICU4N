@@ -46,15 +46,12 @@ namespace ICU4N.Impl
             return dest.Append(src);
         }
 
-#if FEATURE_SPAN
-
-
         public override StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest)
         {
             dest.Length = 0;
             return dest.Append(src);
         }
-#endif
+
         #endregion
 
         // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModes.generated.tt
@@ -90,15 +87,12 @@ namespace ICU4N.Impl
             return dest.Append(src);
         }
 
-#if FEATURE_SPAN
-
-
         public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest)
         {
             // ICU4N: Removed unnecessary try/catch for IOException
             return dest.Append(src);
         }
-#endif
+
         #endregion Normalize(ICharSequence, IAppendable)
 
         // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence) to Norm2AllModes.generated.tt
@@ -130,14 +124,11 @@ namespace ICU4N.Impl
             return first.Append(charSequence: second);
         }
 
-#if FEATURE_SPAN
-
-
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second)
         {
             return first.Append(second);
         }
-#endif
+
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence)
 
         // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModes.generated.tt
@@ -169,14 +160,11 @@ namespace ICU4N.Impl
             return first.Append(second);
         }
 
-#if FEATURE_SPAN
-
-
         public override StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second)
         {
             return first.Append(second);
         }
-#endif
+
         #endregion
 
         // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModes.generated.tt
@@ -191,11 +179,8 @@ namespace ICU4N.Impl
 
         public override bool IsNormalized(ICharSequence s) { return true; }
 
-#if FEATURE_SPAN
-
-
         public override bool IsNormalized(ReadOnlySpan<char> s) { return true; }
-#endif
+
         #endregion
 
         // ICU4N specific: Moved QuickCheck(ICharSequence) to Norm2AllModes.generated.tt
@@ -210,11 +195,8 @@ namespace ICU4N.Impl
 
         public override QuickCheckResult QuickCheck(ICharSequence s) { return QuickCheckResult.Yes; }
 
-#if FEATURE_SPAN
-
-
         public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s) { return QuickCheckResult.Yes; }
-#endif
+
         #endregion QuickCheck(ICharSequence)
 
         // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
@@ -229,11 +211,9 @@ namespace ICU4N.Impl
 
         public override int SpanQuickCheckYes(ICharSequence s) { return s.Length; }
 
-#if FEATURE_SPAN
-
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s) { return s.Length; }
-#endif 
+
         #endregion SpanQuickCheckYes(ICharSequence)
 
         public override string GetDecomposition(int c)
@@ -248,7 +228,6 @@ namespace ICU4N.Impl
 
         public override bool IsInert(int c) { return true; }
 
-#if FEATURE_SPAN
         public override bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength)
         {
             if (Unsafe.AreSame(ref MemoryMarshal.GetReference(source), ref MemoryMarshal.GetReference(destination)))
@@ -291,7 +270,6 @@ namespace ICU4N.Impl
             charsLength = first.Length + second.Length;
             return success;
         }
-#endif
     }
 
     // Intermediate class:
@@ -306,8 +284,6 @@ namespace ICU4N.Impl
         }
 
         // normalize
-
-#if FEATURE_SPAN
 
         /// <summary>
         /// Returns the normalized form of the source <see cref="ReadOnlySpan{Char}"/>.
@@ -362,10 +338,6 @@ namespace ICU4N.Impl
                 buffer.Dispose();
             }
         }
-#endif
-
-#if FEATURE_SPAN
-        
 
         public override bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
         {
@@ -402,8 +374,6 @@ namespace ICU4N.Impl
             charsLength = buffer.Length;
             return success;
         }
-#endif
-
 
         // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModes.generated.tt
         #region Normalize(ICharSequence, StringBuilder)
@@ -440,8 +410,6 @@ namespace ICU4N.Impl
             return dest;
         }
 
-#if FEATURE_SPAN
-
         // ICU4N TODO: Cascade this call to Normalize(ReadOnlySpan<char>, ref ValueStringBuilder) and append the result...?
         public override StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest)
         {
@@ -462,7 +430,7 @@ namespace ICU4N.Impl
             }
             return dest;
         }
-#endif
+
         #endregion Normalize(ICharSequence, StringBuilder)
 
         // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModes.generated.tt
@@ -504,9 +472,6 @@ namespace ICU4N.Impl
             return dest;
         }
 
-#if FEATURE_SPAN
-
-
         public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest)
         {
             int length = src.Length;
@@ -525,7 +490,7 @@ namespace ICU4N.Impl
             }
             return dest;
         }
-#endif
+
         #endregion Normalize(ICharSequence, IAppendable)
 
         // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModes.generated.tt
@@ -540,11 +505,9 @@ namespace ICU4N.Impl
 
         protected abstract void Normalize(ICharSequence src, ReorderingBuffer buffer);
 
-#if FEATURE_SPAN
-
 
         protected abstract void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer);
-#endif
+
         #endregion Normalize(ICharSequence, ReorderingBuffer)
 
         // normalize and append
@@ -570,14 +533,12 @@ namespace ICU4N.Impl
             return NormalizeSecondAndAppend(first, second, true);
         }
 
-#if FEATURE_SPAN
-
 
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second)
         {
             return NormalizeSecondAndAppend(first, second, true);
         }
-#endif
+
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence)
 
         // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModes.generated.tt
@@ -601,14 +562,12 @@ namespace ICU4N.Impl
             return NormalizeSecondAndAppend(first, second, false);
         }
 
-#if FEATURE_SPAN
-
 
         public override StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second)
         {
             return NormalizeSecondAndAppend(first, second, false);
         }
-#endif
+
         #endregion
 
         // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool) to Norm2AllModes.generated.tt
@@ -649,8 +608,6 @@ namespace ICU4N.Impl
             return first;
         }
 
-#if FEATURE_SPAN
-
 
         public virtual StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second, bool doNormalize)
         {
@@ -672,7 +629,7 @@ namespace ICU4N.Impl
             }
             return first;
         }
-#endif
+
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool)
 
         // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModes.generated.tt
@@ -690,12 +647,10 @@ namespace ICU4N.Impl
         protected abstract void NormalizeAndAppend(
             ICharSequence src, bool doNormalize, ReorderingBuffer buffer);
 
-#if FEATURE_SPAN
-
 
         protected abstract void NormalizeAndAppend(
             ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer);
-#endif 
+
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
         public override string GetDecomposition(int c)
@@ -742,14 +697,12 @@ namespace ICU4N.Impl
             return s.Length == SpanQuickCheckYes(s);
         }
 
-#if FEATURE_SPAN
-
 
         public override bool IsNormalized(ReadOnlySpan<char> s)
         {
             return s.Length == SpanQuickCheckYes(s);
         }
-#endif
+
         #endregion
 
         // ICU4N specific: Moved QuickCheck(ICharSequence s) to Norm2AllModes.generated.tt
@@ -773,14 +726,12 @@ namespace ICU4N.Impl
             return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
         }
 
-#if FEATURE_SPAN
-
 
         public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s)
         {
             return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
         }
-#endif 
+
         #endregion QuickCheck(ICharSequence s)
 
 
@@ -817,14 +768,12 @@ namespace ICU4N.Impl
             Impl.Decompose(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 
-#if FEATURE_SPAN
-
 
         protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
         {
             Impl.Decompose(src, ref buffer);
         }
-#endif
+
         #endregion Normalize(ICharSequence, ReorderingBuffer)
 
         // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModes.generated.tt
@@ -848,14 +797,12 @@ namespace ICU4N.Impl
             Impl.DecomposeAndAppend(src, doNormalize, buffer);
         }
 
-#if FEATURE_SPAN
-
 
         protected override void NormalizeAndAppend(ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer)
         {
             Impl.DecomposeAndAppend(src, doNormalize, ref buffer);
         }
-#endif
+
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
         // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
@@ -879,14 +826,12 @@ namespace ICU4N.Impl
             return Impl.DecomposeQuickCheck(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
         }
 
-#if FEATURE_SPAN
-
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
         {
             return Impl.DecomposeQuickCheck(s); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
         }
-#endif 
+
         #endregion
 
         public override int GetQuickCheck(int c)
@@ -930,14 +875,12 @@ namespace ICU4N.Impl
             Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer); // ICU4N: Checked 3rd parameter
         }
 
-#if FEATURE_SPAN
-
 
         protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
         {
             Impl.Compose(src, onlyContiguous, true, ref buffer);
         }
-#endif 
+
         #endregion Normalize(ICharSequence, ReorderingBuffer)
 
         // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModes.generated.tt
@@ -964,15 +907,13 @@ namespace ICU4N.Impl
             Impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
         }
 
-#if FEATURE_SPAN
-
 
         protected override void NormalizeAndAppend(
             ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer)
         {
             Impl.ComposeAndAppend(src, doNormalize, onlyContiguous, ref buffer);
         }
-#endif 
+
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
         // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModes.generated.tt
@@ -1005,7 +946,6 @@ namespace ICU4N.Impl
                                 new ReorderingBuffer(Impl, new StringBuilder(), 5)); // ICU4N: Checked 3rd parameter
         }
 
-#if FEATURE_SPAN
 
 
         public override bool IsNormalized(ReadOnlySpan<char> s)
@@ -1021,7 +961,7 @@ namespace ICU4N.Impl
                 buffer.Dispose();
             }
         }
-#endif 
+
         #endregion IsNormalized(ICharSequence)
 
         // ICU4N specific: Moved QuickCheck(ICharSequence) to Norm2AllModes.generated.tt
@@ -1081,8 +1021,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
-
 
         public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s)
         {
@@ -1100,7 +1038,7 @@ namespace ICU4N.Impl
                 return QuickCheckResult.No;
             }
         }
-#endif 
+
         #endregion QuickCheck(ICharSequence)
 
         // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
@@ -1124,14 +1062,12 @@ namespace ICU4N.Impl
             return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
         }
 
-#if FEATURE_SPAN
-
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
         {
             return Impl.ComposeQuickCheck(s, onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
         }
-#endif 
+
         #endregion SpanQuickCheckYes(ICharSequence)
 
         public override int GetQuickCheck(int c)
@@ -1182,14 +1118,12 @@ namespace ICU4N.Impl
             Impl.MakeFCD(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 
-#if FEATURE_SPAN
-
 
         protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
         {
             Impl.MakeFCD(src, ref buffer);
         }
-#endif 
+
         #endregion Normalize(ICharSequence, ReorderingBuffer)
 
         // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModes.generated.tt
@@ -1216,15 +1150,13 @@ namespace ICU4N.Impl
             Impl.MakeFCDAndAppend(src, doNormalize, buffer);
         }
 
-#if FEATURE_SPAN
-
 
         protected override void NormalizeAndAppend(
             ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer)
         {
             Impl.MakeFCDAndAppend(src, doNormalize, ref buffer);
         }
-#endif
+
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
         // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
@@ -1248,14 +1180,12 @@ namespace ICU4N.Impl
             return Impl.MakeFCDQuickCheck(s, 0, s.Length); // ICU4N: Checked 3rd parameter
         }
 
-#if FEATURE_SPAN
-
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
         {
             return Impl.MakeFCDQuickCheck(s); // ICU4N: Checked 3rd parameter
         }
-#endif
+
         #endregion SpanQuickCheckYes(ICharSequence)
 
 

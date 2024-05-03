@@ -12,7 +12,6 @@ using System.Text;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     public sealed partial class NumberFormatRules : INumberFormatRules
     {
         //-----------------------------------------------------------------------
@@ -610,5 +609,4 @@ namespace ICU4N.Globalization
 
         NumberFormatRuleSet INumberFormatRules.FindRuleSet(string name) => FindRuleSet(name);
     }
-#endif
 }

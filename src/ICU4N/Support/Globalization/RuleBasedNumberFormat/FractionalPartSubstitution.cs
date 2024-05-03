@@ -6,7 +6,6 @@ using System.Diagnostics;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     //===================================================================
     // FractionalPartSubstitution
     //===================================================================
@@ -266,5 +265,4 @@ namespace ICU4N.Globalization
         /// </summary>
         private protected override char TokenChar => '>';
     }
-#endif
 }

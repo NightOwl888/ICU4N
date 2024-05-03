@@ -105,7 +105,6 @@ namespace ICU4N.Impl
             return SpanWithStrings(s, start, spanLimit, spanCondition);
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Spans a string.
@@ -127,7 +126,6 @@ namespace ICU4N.Impl
             }
             return SpanWithStrings(s, start, spanLimit, spanCondition);
         }
-#endif 
 
 
         /// <summary>
@@ -945,7 +943,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Synchronized method for complicated spans using the offsets.
@@ -1149,7 +1146,6 @@ namespace ICU4N.Impl
                 }
             }
         }
-#endif 
 
 
         /// <summary>
@@ -1411,7 +1407,6 @@ namespace ICU4N.Impl
             return pos;
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Spans a string and counts the smallest number of set elements on any path across the span.
@@ -1476,7 +1471,6 @@ namespace ICU4N.Impl
             outCount = count;
             return pos;
         }
-#endif 
 
 
         private int SpanContainedAndCount(string s, int start, out int outCount)
@@ -1678,7 +1672,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
 
         private int SpanContainedAndCount(ReadOnlySpan<char> s, int start, out int outCount)
         {
@@ -1728,7 +1721,6 @@ namespace ICU4N.Impl
                 return pos;
             }
         }
-#endif 
 
 
         /// <summary>
@@ -2570,7 +2562,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Span a string backwards.
@@ -2780,7 +2771,6 @@ namespace ICU4N.Impl
                 }
             }
         }
-#endif 
 
 
         // ICU4N specific wrapper method to call SpanNot with no
@@ -2818,7 +2808,6 @@ namespace ICU4N.Impl
             return SpanNot(s, start, false, out ignored);
         }
 
-#if FEATURE_SPAN
 
         // ICU4N specific wrapper method to call SpanNot with no
         // output count.
@@ -2827,7 +2816,6 @@ namespace ICU4N.Impl
             int ignored = 0;
             return SpanNot(s, start, false, out ignored);
         }
-#endif 
 
 
         // ICU4N specific wrapper method to call SpanNot with an
@@ -2861,7 +2849,6 @@ namespace ICU4N.Impl
             return SpanNot(s, start, true, out outCount);
         }
 
-#if FEATURE_SPAN
 
         // ICU4N specific wrapper method to call SpanNot with an
         // output count.
@@ -2869,7 +2856,6 @@ namespace ICU4N.Impl
         {
             return SpanNot(s, start, true, out outCount);
         }
-#endif 
 
 
         /// <summary>
@@ -3291,7 +3277,6 @@ namespace ICU4N.Impl
             return length; // Reached the end of the string.
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Algorithm for <c>SpanNot()==Span(SpanCondition.Contained)</c>
@@ -3396,7 +3381,6 @@ namespace ICU4N.Impl
             }
             return length; // Reached the end of the string.
         }
-#endif 
 
 
         private int SpanNotBack(string s, int length)
@@ -3598,7 +3582,6 @@ namespace ICU4N.Impl
             return 0; // Reached the start of the string.
         }
 
-#if FEATURE_SPAN
 
         private int SpanNotBack(ReadOnlySpan<char> s, int length)
         {
@@ -3648,7 +3631,6 @@ namespace ICU4N.Impl
             } while (pos != 0);
             return 0; // Reached the start of the string.
         }
-#endif 
 
 
         // Compare strings without any argument checks. Requires length>0.
@@ -3710,7 +3692,6 @@ namespace ICU4N.Impl
             return true;
         }
 
-#if FEATURE_SPAN
 
         // Compare strings without any argument checks. Requires length>0.
         private static bool Matches16(ReadOnlySpan<char> s, int start, string t, int length)
@@ -3725,7 +3706,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif 
 
 
         /// <summary>
@@ -3811,7 +3791,6 @@ namespace ICU4N.Impl
                             char.IsLowSurrogate(s[start + tlength]));
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Compare 16-bit Unicode strings (which may be malformed UTF-16)
@@ -3832,7 +3811,6 @@ namespace ICU4N.Impl
                     && !((start + tlength) < limit && char.IsHighSurrogate(s[start + tlength - 1]) &&
                             char.IsLowSurrogate(s[start + tlength]));
         }
-#endif 
 
 
         /// <summary>
@@ -3914,7 +3892,6 @@ namespace ICU4N.Impl
             return set.Contains(c) ? 1 : -1;
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Does the set contain the next code point?
@@ -3934,7 +3911,6 @@ namespace ICU4N.Impl
             }
             return set.Contains(c) ? 1 : -1;
         }
-#endif 
 
 
         internal static int SpanOneBack(UnicodeSet set, string s, int length)
@@ -4000,7 +3976,6 @@ namespace ICU4N.Impl
             return set.Contains(c) ? 1 : -1;
         }
 
-#if FEATURE_SPAN
 
         internal static int SpanOneBack(UnicodeSet set, ReadOnlySpan<char> s, int length)
         {
@@ -4016,7 +3991,6 @@ namespace ICU4N.Impl
             }
             return set.Contains(c) ? 1 : -1;
         }
-#endif 
 
     }
 }

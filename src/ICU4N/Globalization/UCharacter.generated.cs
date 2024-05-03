@@ -137,7 +137,6 @@ namespace ICU4N
             return propEnum;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Return the <see cref="UProperty"/> selector for a given property name, as
         /// specified in the Unicode database file PropertyAliases.txt.
@@ -167,7 +166,6 @@ namespace ICU4N
             }
             return propEnum;
         }
-#endif 
 
         /// <summary>
         /// Get the <see cref="UProperty"/> selector for a given property name, as
@@ -305,7 +303,6 @@ namespace ICU4N
             return true;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Get the <see cref="UProperty"/> selector for a given property name, as
         /// specified in the Unicode database file PropertyAliases.txt.
@@ -339,7 +336,6 @@ namespace ICU4N
             result = propEnum;
             return true;
         }
-#endif 
 
         /// <summary>
         /// Return the property value integer for a given value name, as
@@ -525,7 +521,6 @@ namespace ICU4N
             return propEnum;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Return the property value integer for a given value name, as
         /// specified in the Unicode database file PropertyValueAliases.txt.
@@ -571,7 +566,6 @@ namespace ICU4N
             }
             return propEnum;
         }
-#endif 
 
         /// <summary>
         /// Gets the property value integer for a given value name, as
@@ -737,7 +731,6 @@ namespace ICU4N
             return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Gets the property value integer for a given value name, as
         /// specified in the Unicode database file PropertyValueAliases.txt.
@@ -778,7 +771,6 @@ namespace ICU4N
         {
             return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
-#endif 
 
         /// <summary>
         /// Same as <see cref="Character.CodePointAt(string, int)"/>.
@@ -900,7 +892,6 @@ namespace ICU4N
             return c1;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Same as <see cref="Character.CodePointAt(ReadOnlySpan{char}, int)"/>.
         /// Returns the code point at index.
@@ -926,7 +917,6 @@ namespace ICU4N
             }
             return c1;
         }
-#endif 
 
         /// <summary>
         /// Same as <see cref="Character.CodePointBefore(string, int)"/>.
@@ -1048,7 +1038,6 @@ namespace ICU4N
             return c2;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Same as <see cref="Character.CodePointBefore(ReadOnlySpan{char}, int)"/>.
         /// Return the code point before index.
@@ -1074,7 +1063,6 @@ namespace ICU4N
             }
             return c2;
         }
-#endif 
 
         /// <summary>
         /// Equivalent to the <see cref="Character.CodePointCount(string, int, int)"/>
@@ -1486,7 +1474,6 @@ namespace ICU4N
             return index;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Equivalent to the <see cref="Character.OffsetByCodePoints(ReadOnlySpan{char}, int, int)"/>
         /// method, for convenience.  Adjusts the char index by a code point offset.
@@ -1544,7 +1531,6 @@ namespace ICU4N
 
             return index;
         }
-#endif 
 
     }
 }

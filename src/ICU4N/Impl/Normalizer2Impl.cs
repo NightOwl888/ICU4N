@@ -125,8 +125,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
@@ -150,9 +148,6 @@ namespace ICU4N.Impl
                 return 3;
             }
         }
-#endif
-
-#if FEATURE_SPAN
 
 
         /// <summary>
@@ -177,7 +172,7 @@ namespace ICU4N.Impl
                 return 3;
             }
         }
-#endif
+
         #endregion AppendHangulDecomposition(int, IAppendable)
 
         // ICU4N specific - GetRawDecomposition(int c, IAppendable buffer) moved to Normalizer2Impl.generated.tt
@@ -209,8 +204,6 @@ namespace ICU4N.Impl
             }
         }
 
-
-
         /// <summary>
         /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
         /// This is the raw, not recursive, decomposition. Its length is always 2.
@@ -237,9 +230,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
-
-
         /// <summary>
         /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
         /// This is the raw, not recursive, decomposition. Its length is always 2.
@@ -262,10 +252,6 @@ namespace ICU4N.Impl
                 buffer.Append((char)(JamoTBase + c2));
             }
         }
-#endif
-
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
@@ -289,14 +275,12 @@ namespace ICU4N.Impl
                 buffer.Append((char)(JamoTBase + c2));
             }
         }
-#endif
+
         #endregion AppendHangulRawDecomposition(int, IAppendable)
     }
 
     // ICU4N specific - ReorderingBuffer moved to Normalizer2Impl.generated.tt
     #region ValueReorderingBuffer
-#if FEATURE_SPAN
-
 
     /// <summary>
     /// Writable buffer that takes care of canonical ordering.
@@ -448,13 +432,10 @@ namespace ICU4N.Impl
             return UTF16Plus.Equal(str.AsSpan(), 0, str.Length, s, start, length);
         }
 
-#if FEATURE_SPAN
-
         public bool Equals(ReadOnlySpan<char> s)
         {
             return UTF16Plus.Equal(str.AsSpan(), s);
         }
-#endif 
 
 
         public void Append(int c, int cc)
@@ -657,8 +638,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
-
         public void Append(ReadOnlySpan<char> s, int leadCC, int trailCC)
         {
             int start = 0, length = s.Length; // ICU4N: Removed from method signature because we can slice
@@ -702,7 +681,6 @@ namespace ICU4N.Impl
                 }
             }
         }
-#endif 
 
 
         // The following append() methods work like C++ appendZeroCC().
@@ -734,8 +712,6 @@ namespace ICU4N.Impl
             }
         }
 
-
-
         public void Append(StringBuilder? s)
         {
             if (s != null && s.Length != 0)
@@ -745,8 +721,6 @@ namespace ICU4N.Impl
                 reorderStart = str.Length;
             }
         }
-
-
 
         public void Append(char[]? s)
         {
@@ -758,8 +732,6 @@ namespace ICU4N.Impl
             }
         }
 
-
-
         public void Append(ICharSequence? s)
         {
             if (s != null && s.Length != 0)
@@ -770,21 +742,15 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
-
-
         public void Append(ReadOnlySpan<char> s)
         {
-            if (s != null && s.Length != 0)
+            if (s.Length != 0)
             {
                 str.Append(s);
                 lastCC = 0;
                 reorderStart = str.Length;
             }
         }
-#endif 
-
-
 
         public void Append(string? s, int start, int length) // ICU4N specific: changed limit to length
         {
@@ -796,8 +762,6 @@ namespace ICU4N.Impl
             }
         }
 
-
-
         public void Append(StringBuilder? s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (length != 0)
@@ -808,8 +772,6 @@ namespace ICU4N.Impl
             }
         }
 
-
-
         public void Append(char[]? s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (length != 0)
@@ -819,8 +781,6 @@ namespace ICU4N.Impl
                 reorderStart = str.Length;
             }
         }
-
-
 
         public void Append(ICharSequence? s, int start, int length) // ICU4N specific: changed limit to length
         {
@@ -858,27 +818,11 @@ namespace ICU4N.Impl
             reorderStart = str.Length;
         }
 
-
-
         // ICU4N NOTE: Instead of FlushAndAppendZeroCC(string, int, int), call Append(string, int, int)
-
-
-
         // ICU4N NOTE: Instead of FlushAndAppendZeroCC(StringBuilder, int, int), call Append(StringBuilder, int, int)
-
-
-
         // ICU4N NOTE: Instead of FlushAndAppendZeroCC(char[], int, int), call Append(char[], int, int)
-
-
-
         // ICU4N NOTE: Instead of FlushAndAppendZeroCC(ICharSequence, int, int), call Append(ICharSequence, int, int)
-
-#if FEATURE_SPAN
-
-
         // ICU4N NOTE: Instead of FlushAndAppendZeroCC(ReadOnlySpan<char>, int, int), call Append(ReadOnlySpan<char>, int, int)
-#endif 
 
 
         /*
@@ -946,7 +890,6 @@ namespace ICU4N.Impl
         private int codePointStart, codePointLimit;
     }
 
-#endif
     #endregion ValueReorderingBuffer
 
     #region ReorderingBuffer
@@ -961,10 +904,7 @@ namespace ICU4N.Impl
     /// Append() methods that take combining-class values always write to the <see cref="System.Text.StringBuilder"/>.
     /// Other Append() methods flush and append to the <see cref="IAppendable"/>.
     /// </summary>
-    public sealed class ReorderingBuffer : IAppendable
-#if FEATURE_SPAN
-        , ISpanAppendable
-#endif
+    public sealed class ReorderingBuffer : IAppendable, ISpanAppendable
     {
         public ReorderingBuffer(Normalizer2Impl ni, StringBuilder dest, int destCapacity)
             : this(ni, dest.AsAppendable(), destCapacity)
@@ -1032,13 +972,10 @@ namespace ICU4N.Impl
             return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
         }
 
-#if FEATURE_SPAN
-
         public bool Equals(ReadOnlySpan<char> s)
         {
             return UTF16Plus.Equal(str, s);
         }
-#endif 
 
 
         public void Append(int c, int cc)
@@ -1241,8 +1178,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
-
         public void Append(ReadOnlySpan<char> s, int leadCC, int trailCC)
         {
             int start = 0, length = s.Length; // ICU4N: Removed from method signature because we can slice
@@ -1286,8 +1221,6 @@ namespace ICU4N.Impl
                 }
             }
         }
-#endif 
-
 
         // The following append() methods work like C++ appendZeroCC().
         // They assume that the cc or trailCC of their input is 0.
@@ -1307,8 +1240,6 @@ namespace ICU4N.Impl
             reorderStart = str.Length;
         }
 
-
-
         public ReorderingBuffer Append(string? s)
         {
             if (s != null && s.Length != 0)
@@ -1319,8 +1250,6 @@ namespace ICU4N.Impl
             }
             return this;
         }
-
-
 
         public ReorderingBuffer Append(StringBuilder? s)
         {
@@ -1333,8 +1262,6 @@ namespace ICU4N.Impl
             return this;
         }
 
-
-
         public ReorderingBuffer Append(char[]? s)
         {
             if (s != null && s.Length != 0)
@@ -1345,8 +1272,6 @@ namespace ICU4N.Impl
             }
             return this;
         }
-
-
 
         public ReorderingBuffer Append(ICharSequence? s)
         {
@@ -1359,9 +1284,6 @@ namespace ICU4N.Impl
             return this;
         }
 
-#if FEATURE_SPAN
-
-
         public ReorderingBuffer Append(ReadOnlySpan<char> s)
         {
             if (s != null && s.Length != 0)
@@ -1372,9 +1294,6 @@ namespace ICU4N.Impl
             }
             return this;
         }
-#endif 
-
-
 
         public ReorderingBuffer Append(string? s, int start, int length) // ICU4N specific: changed limit to length
         {
@@ -1387,8 +1306,6 @@ namespace ICU4N.Impl
             return this;
         }
 
-
-
         public ReorderingBuffer Append(StringBuilder? s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (length != 0)
@@ -1400,8 +1317,6 @@ namespace ICU4N.Impl
             return this;
         }
 
-
-
         public ReorderingBuffer Append(char[]? s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (length != 0)
@@ -1412,8 +1327,6 @@ namespace ICU4N.Impl
             }
             return this;
         }
-
-
 
         public ReorderingBuffer Append(ICharSequence? s, int start, int length) // ICU4N specific: changed limit to length
         {
@@ -1462,9 +1375,6 @@ namespace ICU4N.Impl
             reorderStart = str.Length;
         }
 
-
-
-
         /// <summary>
         /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
         /// if they are different objects.
@@ -1489,9 +1399,6 @@ namespace ICU4N.Impl
             lastCC = 0;
             return this;
         }
-
-
-
 
         /// <summary>
         /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
@@ -1518,9 +1425,6 @@ namespace ICU4N.Impl
             return this;
         }
 
-
-
-
         /// <summary>
         /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
         /// if they are different objects.
@@ -1545,9 +1449,6 @@ namespace ICU4N.Impl
             lastCC = 0;
             return this;
         }
-
-
-
 
         /// <summary>
         /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
@@ -1574,10 +1475,6 @@ namespace ICU4N.Impl
             return this;
         }
 
-#if FEATURE_SPAN
-
-
-
         /// <summary>
         /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
         /// if they are different objects.
@@ -1602,8 +1499,6 @@ namespace ICU4N.Impl
             lastCC = 0;
             return this;
         }
-#endif 
-
 
         /*
          * TODO: Revisit whether it makes sense to track reorderStart.
@@ -1698,9 +1593,7 @@ namespace ICU4N.Impl
         // how it was in Java).
         #region ISpanAppendable
 
-#if FEATURE_SPAN
         ISpanAppendable ISpanAppendable.Append(ReadOnlySpan<char> csq) => Append(csq);
-#endif
 
         #endregion ISpanAppendable
 
@@ -1798,8 +1691,6 @@ namespace ICU4N.Impl
             return true;
         }
 
-#if FEATURE_SPAN
-
         /// <summary>
         /// Compares two character sequence objects for binary equality.
         /// </summary>
@@ -1822,8 +1713,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif
-
 
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -1900,8 +1789,6 @@ namespace ICU4N.Impl
             return true;
         }
 
-#if FEATURE_SPAN
-
         /// <summary>
         /// Compares two character sequence objects for binary equality.
         /// </summary>
@@ -1924,8 +1811,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif
-
 
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -2002,8 +1887,6 @@ namespace ICU4N.Impl
             return true;
         }
 
-#if FEATURE_SPAN
-
         /// <summary>
         /// Compares two character sequence objects for binary equality.
         /// </summary>
@@ -2026,9 +1909,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif
-
-#if FEATURE_SPAN
 
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -2052,9 +1932,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif
-
-#if FEATURE_SPAN
 
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -2078,9 +1955,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif
-
-#if FEATURE_SPAN
 
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -2104,9 +1978,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif
-
-#if FEATURE_SPAN
 
         /// <summary>
         /// Compares two character sequence objects for binary equality.
@@ -2119,7 +1990,7 @@ namespace ICU4N.Impl
             // ICU4N: Use optimized equality comparison in System.Memory
             return System.MemoryExtensions.Equals(s1, s2, StringComparison.Ordinal);
         }
-#endif 
+
         #endregion Equal(ICharSequence, ICharSequence)
 
         // ICU4N specific -  Equal(ICharSequence s1, int start1, int limit1,
@@ -2217,9 +2088,6 @@ namespace ICU4N.Impl
             return true;
         }
 
-#if FEATURE_SPAN
-
-
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -2247,9 +2115,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif
-
-
 
         /// <summary>
         /// Compares two character subsequences for binary equality.
@@ -2343,9 +2208,6 @@ namespace ICU4N.Impl
             return true;
         }
 
-#if FEATURE_SPAN
-
-
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -2373,9 +2235,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif
-
-
 
         /// <summary>
         /// Compares two character subsequences for binary equality.
@@ -2469,9 +2328,6 @@ namespace ICU4N.Impl
             return true;
         }
 
-#if FEATURE_SPAN
-
-
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
@@ -2499,10 +2355,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif
-
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Compares two character subsequences for binary equality.
@@ -2531,10 +2383,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif
-
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Compares two character subsequences for binary equality.
@@ -2563,10 +2411,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif
-
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Compares two character subsequences for binary equality.
@@ -2595,10 +2439,6 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif
-
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Compares two character subsequences for binary equality.
@@ -2631,7 +2471,7 @@ namespace ICU4N.Impl
             }
             return true;
         }
-#endif 
+
         #endregion Equal(ICharSequence, int, int)
     }
 
@@ -3108,11 +2948,7 @@ namespace ICU4N.Impl
             else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
             {
                 // Hangul syllable: decompose algorithmically
-#if FEATURE_SPAN
                 ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[3]);
-#else
-                StringBuilder buffer = new StringBuilder(3);
-#endif
                 buffer.AppendHangulDecomposition(c);
                 return buffer.ToString();
             }
@@ -3138,11 +2974,7 @@ namespace ICU4N.Impl
             else if (IsHangulLV(norm16) || IsHangulLVT(norm16))
             {
                 // Hangul syllable: decompose algorithmically
-#if FEATURE_SPAN
                 ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[3]);
-#else
-                StringBuilder buffer = new StringBuilder(3);
-#endif
                 buffer.AppendHangulRawDecomposition(c);
                 return buffer.ToString();
             }
@@ -3332,8 +3164,6 @@ namespace ICU4N.Impl
 
 
         // NFD without an NFD Normalizer2 instance.
-#if FEATURE_SPAN
-
         public StringBuilder Decompose(ReadOnlySpan<char> s, StringBuilder dest)
         {
             Decompose(s, dest, s.Length);
@@ -3345,7 +3175,7 @@ namespace ICU4N.Impl
         {
             Decompose(s, ref dest, s.Length);
         }
-#endif
+
         #endregion Decompose(ICharSequence, StringBuilder)
 
         // ICU4N specific - Decompose(ICharSequence s, int src, int limit, StringBuilder dest,
@@ -3406,7 +3236,6 @@ namespace ICU4N.Impl
             Decompose(s, src, length, buffer); // ICU4N: Changed limit to length
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Decomposes s[src, length[ and writes the result to <paramref name="dest"/>.
         /// length can be NULL if src is NUL-terminated.
@@ -3446,7 +3275,7 @@ namespace ICU4N.Impl
             Decompose(s, ref buffer);
             dest.Length = buffer.Length; // HACK: Although the value gets written to dest, the length value needs to be manually transferred.
         }
-#endif
+
         #endregion Decompose(ICharSequence, int, int, StringBuilder, int)
 
         // ICU4N specific - Decompose(ICharSequence s, int src, int limit,
@@ -3690,9 +3519,6 @@ namespace ICU4N.Impl
             return src;
         }
 
-#if FEATURE_SPAN
-
-
         // normalize
         // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
         // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
@@ -3766,7 +3592,7 @@ namespace ICU4N.Impl
             }
             return src;
         }
-#endif
+
         #endregion Decompose(ICharSequence, int, int, ReorderingBuffer)
 
         #region DecomposeQuickCheck(ICharSquence, int, int)
@@ -4050,8 +3876,6 @@ namespace ICU4N.Impl
             return src;
         }
 
-#if FEATURE_SPAN
-
 
         // normalize
         // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
@@ -4141,7 +3965,7 @@ namespace ICU4N.Impl
             }
             return src;
         }
-#endif
+
         #endregion DecomposeQuickCheck(ICharSquence, int, int)
 
         // ICU4N specific - DecomposeAndAppend(ICharSequence s, bool doDecompose, ReorderingBuffer buffer) moved to Normalizer2Impl.generated.tt
@@ -4246,9 +4070,6 @@ namespace ICU4N.Impl
             buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
         }
 
-#if FEATURE_SPAN
-
-
         public void DecomposeAndAppend(ReadOnlySpan<char> s, bool doDecompose, ref ValueReorderingBuffer buffer)
         {
             int limit = s.Length;
@@ -4280,7 +4101,7 @@ namespace ICU4N.Impl
             buffer.Append(s.Slice(0, src - 0), firstCC, prevCC); // ICU4N: Corrected 3rd parameter
             buffer.Append(s.Slice(src, limit - src)); // ICU4N: Corrected 3rd parameter
         }
-#endif
+
         #endregion DecomposeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
         // ICU4N specific - Compose(ICharSequence s, int src, int limit,
@@ -5217,9 +5038,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
-
-
         // Very similar to ComposeQuickCheck(): Make the same changes in both places if relevant.
         // doCompose: normalize
         // !doCompose: isNormalized (buffer must be empty and initialized)
@@ -5528,7 +5346,7 @@ namespace ICU4N.Impl
                 prevBoundary = src;
             }
         }
-#endif
+
         #endregion Compose(ICharSequence, int, int, bool, bool, ReorderingBuffer)
 
         // ICU4N specific - ComposeQuickCheck(ICharSequence s, int src, int limit,
@@ -5997,9 +5815,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
-
-
         /// <summary>
         /// Very similar to Compose(): Make the same changes in both places if relevant.
         /// doSpan: SpanQuickCheckYes (ignore bit 0 of the return value)
@@ -6152,7 +5967,7 @@ namespace ICU4N.Impl
                 return prevBoundary << 1;  // "no"
             }
         }
-#endif
+
         #endregion ComposeQuickCheck(ICharSequence, int, int, bool, bool)
 
         // ICU4N specific - ComposeAndAppend(ICharSequence s, bool doCompose,
@@ -6264,9 +6079,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
-
-
         public void ComposeAndAppend(ReadOnlySpan<char> s,
             bool doCompose,
             bool onlyContiguous,
@@ -6310,7 +6122,7 @@ namespace ICU4N.Impl
                 buffer.Append(s.Slice(src, limit - src)); // ICU4N: Corrected 3rd parameter
             }
         }
-#endif
+
         #endregion ComposeAndAppend(ICharSequence, bool, bool, ReorderingBuffer)
 
         // ICU4N specific - MakeFCD(ICharSequence s, int src, int limit, ReorderingBuffer buffer) moved to Normalizer2Impl.generated.tt
@@ -6823,9 +6635,6 @@ namespace ICU4N.Impl
             return src;
         }
 
-#if FEATURE_SPAN
-
-
         // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
         public int MakeFCD(ReadOnlySpan<char> s, ref ValueReorderingBuffer buffer)
@@ -6989,7 +6798,7 @@ namespace ICU4N.Impl
             }
             return src;
         }
-#endif
+
         #endregion MakeFCD(ICharSequence, int, int, ReorderingBuffer)
 
         #region MakeFCDQuickCheck(ICharSequence, int, int)
@@ -7432,9 +7241,6 @@ namespace ICU4N.Impl
             return src;
         }
 
-#if FEATURE_SPAN
-
-
         // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
         public int MakeFCDQuickCheck(ReadOnlySpan<char> s)
@@ -7576,7 +7382,7 @@ namespace ICU4N.Impl
             }
             return src;
         }
-#endif 
+
         #endregion MakeFCDQuickCheck(ICharSequence, int, int)
 
         // ICU4N specific - MakeFCDAndAppend(ICharSequence s, bool doMakeFCD, ReorderingBuffer buffer) moved to Normalizer2Impl.generated.tt
@@ -7678,9 +7484,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
-
-
         public void MakeFCDAndAppend(ReadOnlySpan<char> s, bool doMakeFCD, ref ValueReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
@@ -7721,7 +7524,7 @@ namespace ICU4N.Impl
                 buffer.Append(s.Slice(src, limit - src)); // ICU4N: Corrected 3rd parameter
             }
         }
-#endif 
+
         #endregion MakeFCDAndAppend(ICharSequence, bool, ReorderingBuffer)
 
         public bool HasDecompBoundaryBefore(int c)
@@ -8035,9 +7838,6 @@ namespace ICU4N.Impl
             return src;
         }
 
-#if FEATURE_SPAN
-
-
         // Decompose a short piece of text which is likely to contain characters that
         // fail the quick check loop and/or where the quick check loop's overhead
         // is unlikely to be amortized.
@@ -8069,13 +7869,11 @@ namespace ICU4N.Impl
             }
             return src;
         }
-#endif
+
         #endregion DecomposeShort(ICharSequence, int, int, bool, bool, ReorderingBuffer)
 
         // ICU4N specific - Decompose(int c, int norm16, ReorderingBuffer buffer) moved to Normalizer2Impl.generated.tt
         #region Decompose(int, int, ReorderingBuffer)
-#if FEATURE_SPAN
-
 
         private void Decompose(int c, int norm16, ref ValueReorderingBuffer buffer)
         {
@@ -8121,10 +7919,6 @@ namespace ICU4N.Impl
                 buffer.Append(extraData, mapping, length, leadCC, trailCC); // ICU4N: Corrected 3rd parameter
             }
         }
-
-#endif 
-
-
 
         private void Decompose(int c, int norm16, ReorderingBuffer buffer)
         {
@@ -8294,8 +8088,6 @@ namespace ICU4N.Impl
 
         // ICU4N specific - moved Recompose() to Normalizer2Impl.generated.tt
         #region Recompose(ReorderingBuffer, int, bool)
-#if FEATURE_SPAN
-
 
         /// <summary>
         /// Recomposes the buffer text starting at <paramref name="startIndex"/>
@@ -8487,9 +8279,6 @@ namespace ICU4N.Impl
             }
             buffer.Flush();
         }
-#endif 
-
-
 
         /// <summary>
         /// Recomposes the buffer text starting at <paramref name="startIndex"/>
@@ -8784,14 +8573,11 @@ namespace ICU4N.Impl
             return src == limit || HasCompBoundaryBefore(Character.CodePointAt(s, src));
         }
 
-#if FEATURE_SPAN
-
-
         private bool HasCompBoundaryBefore(ReadOnlySpan<char> s, int src, int limit)
         {
             return src == limit || HasCompBoundaryBefore(Character.CodePointAt(s, src));
         }
-#endif 
+
         #endregion HasCompBoundaryBefore(ICharSequence, int, int)
 
         private bool Norm16HasCompBoundaryAfter(int norm16, bool onlyContiguous)
@@ -8821,14 +8607,11 @@ namespace ICU4N.Impl
             return start == p || HasCompBoundaryAfter(Character.CodePointBefore(s, p), onlyContiguous);
         }
 
-#if FEATURE_SPAN
-
-
         private bool HasCompBoundaryAfter(ReadOnlySpan<char> s, int start, int p, bool onlyContiguous)
         {
             return start == p || HasCompBoundaryAfter(Character.CodePointBefore(s, p), onlyContiguous);
         }
-#endif 
+
         #endregion HasCompBoundaryAfter(ICharSequence, int, int, bool)
 
 
@@ -8902,9 +8685,6 @@ namespace ICU4N.Impl
             return p;
         }
 
-#if FEATURE_SPAN
-
-
         private int FindPreviousCompBoundary(ReadOnlySpan<char> s, int p, bool onlyContiguous)
         {
             while (p > 0)
@@ -8923,7 +8703,7 @@ namespace ICU4N.Impl
             }
             return p;
         }
-#endif
+
         #endregion FindPreviousCompBoundary(ICharSequence, int, bool)
 
         // ICU4N specific - FindNextCompBoundary(ICharSequence s, int p, int limit, bool onlyContiguous) moved to Normalizer2Impl.generated.tt
@@ -8989,9 +8769,6 @@ namespace ICU4N.Impl
             return p;
         }
 
-#if FEATURE_SPAN
-
-
         private int FindNextCompBoundary(ReadOnlySpan<char> s, int p, int limit, bool onlyContiguous)
         {
             while (p < limit)
@@ -9010,7 +8787,7 @@ namespace ICU4N.Impl
             }
             return p;
         }
-#endif
+
         #endregion FindNextCompBoundary(ICharSequence, int, int, bool)
 
         // ICU4N specific - FindPreviousFCDBoundary(ICharSequence s, int p) moved to Normalizer2Impl.generated.tt
@@ -9076,9 +8853,6 @@ namespace ICU4N.Impl
             return p;
         }
 
-#if FEATURE_SPAN
-
-
         private int FindPreviousFCDBoundary(ReadOnlySpan<char> s, int p)
         {
             while (p > 0)
@@ -9097,7 +8871,7 @@ namespace ICU4N.Impl
             }
             return p;
         }
-#endif
+
         #endregion FindPreviousFCDBoundary(ICharSequence, int)
 
         // ICU4N specific - FindNextFCDBoundary(ICharSequence s, int p, int limit) moved to Normalizer2Impl.generated.tt
@@ -9163,9 +8937,6 @@ namespace ICU4N.Impl
             return p;
         }
 
-#if FEATURE_SPAN
-
-
         private int FindNextFCDBoundary(ReadOnlySpan<char> s, int p, int limit)
         {
             while (p < limit)
@@ -9184,7 +8955,7 @@ namespace ICU4N.Impl
             }
             return p;
         }
-#endif
+
         #endregion FindNextFCDBoundary(ICharSequence, int, int)
 
         // ICU4N specific - GetPreviousTrailCC(ICharSequence s, int start, int p) moved to Normalizer2Impl.generated.tt
@@ -9220,9 +8991,6 @@ namespace ICU4N.Impl
             return GetFCD16(Character.CodePointBefore(s, p));
         }
 
-#if FEATURE_SPAN
-
-
         private int GetPreviousTrailCC(ReadOnlySpan<char> s, int start, int p)
         {
             if (start == p)
@@ -9231,7 +8999,7 @@ namespace ICU4N.Impl
             }
             return GetFCD16(Character.CodePointBefore(s, p));
         }
-#endif 
+
         #endregion
 
         private void AddToStartSet(Trie2Writable newData, int origin, int decompLead)

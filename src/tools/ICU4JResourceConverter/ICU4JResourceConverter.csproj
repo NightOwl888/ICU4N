@@ -17,6 +17,7 @@
     <Compile Include="..\..\ICU4N\Support\Collections\DictionaryExtensions.cs" Link="Shared\DictionaryExtensions.cs" />
     <Compile Include="..\..\ICU4N\Support\Globalization\LocaleID.cs" Link="Shared\LocaleID.cs" />
     <Compile Include="..\..\ICU4N\Support\Text\ValueStringBuilder.cs" Link="Shared\ValueStringBuilder.cs" />
+    <Compile Include="..\..\ICU4N\Support\Text\ValueStringBuilder.CharSequence.cs" Link="Shared\ValueStringBuilder.CharSequence.cs" />
   </ItemGroup>
 
   <ItemGroup>

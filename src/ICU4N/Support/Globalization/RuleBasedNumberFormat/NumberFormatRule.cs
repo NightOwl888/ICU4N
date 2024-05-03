@@ -10,7 +10,6 @@ using System.Text;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     /// <summary>
     /// A class representing a single rule in a <see cref="INumberFormatRules"/>. A rule
     /// inserts its text into the result string and then passes control to its
@@ -1001,5 +1000,4 @@ namespace ICU4N.Globalization
         /// </summary>
         public long Divisor => Power(radix, exponent);
     }
-#endif
 }

@@ -67,7 +67,6 @@ namespace ICU4N
             return new int[] { groupingSize, secondaryGroupingSize };
         }
 
-#if FEATURE_SPAN
         /// <summary>Formats the specified value according to the specified format and info.</summary>
         /// <returns>
         /// Non-null if an existing string can be returned, in which case the builder will be unmodified.
@@ -822,7 +821,6 @@ namespace ICU4N
             charsWritten = 0;
             return false;
         }
-#endif
 
         private static string[] AsciiDigits = new string[] { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
 

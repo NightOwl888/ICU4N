@@ -680,14 +680,12 @@ namespace ICU4N.Dev.Test.Format
             {
                 Errln("Got " + result + " for 21000");
             }
-#if FEATURE_SPAN
             NumberFormatRules russianRules = ruFormatter.CreateNumberFormatRules();
             string result2 = IcuNumber.FormatInt64RuleBased(21000, russianRules, ruleSetName: null, new UCultureInfo("ru").NumberFormat);
             if (!"двадцать один тысяча".Equals(result2, StringComparison.Ordinal))
             {
                 Errln("Got " + result + " for 21000");
             }
-#endif
         }
 
         /**
@@ -1151,8 +1149,6 @@ namespace ICU4N.Dev.Test.Format
             }
         }
 
-#if FEATURE_SPAN
-
         /// <summary>
         /// This is a proof of concept test to show that it is possible to use <see cref="double.ToString(string?, IFormatProvider?)"/>
         /// in place of <see cref="DecimalFormat"/> for built-in cultures. We will still need a static replacement for DecimalFormat
@@ -1305,7 +1301,6 @@ namespace ICU4N.Dev.Test.Format
         /// </remarks>
         public static bool IsBetween(char c, char minInclusive, char maxInclusive) =>
             (uint)(c - minInclusive) <= (uint)(maxInclusive - minInclusive);
-#endif
 
         [Test]
         public void TestAllLocales()
@@ -1423,7 +1418,6 @@ namespace ICU4N.Dev.Test.Format
                         }
                     }
 
-#if FEATURE_SPAN
                     actualWords = formatterSettings.FormatWithIcuNumber(num);
 
                     if (!actualWords.Equals(expectedWords))
@@ -1444,7 +1438,6 @@ namespace ICU4N.Dev.Test.Format
                                     actualNumber);
                         }
                     }
-#endif
                 }
             }
             catch (Exception e)
@@ -1894,7 +1887,6 @@ namespace ICU4N.Dev.Test.Format
             }
         }
 
-#if FEATURE_SPAN
         [Test]
         public void TestContext_IcuNumber()
         {
@@ -1922,7 +1914,6 @@ namespace ICU4N.Dev.Test.Format
                 }
             }
         }
-#endif
 
         [Test]
         public void TestInfinityNaN()
@@ -2202,7 +2193,6 @@ namespace ICU4N.Dev.Test.Format
             this.formatter.SetDefaultRuleSet(defaultRuleSet);
         }
 
-#if FEATURE_SPAN
         public NumberFormatRules CreateNumberFormatRules()
         {
             switch (createOption)
@@ -2262,6 +2252,5 @@ namespace ICU4N.Dev.Test.Format
                 return IcuNumber.FormatDoubleRuleBased(num.ToDouble(), rules, ruleSet, numberFormatInfo);
             }
         }
-#endif
     }
 }

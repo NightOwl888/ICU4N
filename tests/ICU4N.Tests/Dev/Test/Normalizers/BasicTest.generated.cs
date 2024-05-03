@@ -160,7 +160,6 @@ namespace ICU4N.Dev.Test.Normalizers
             }
         }
 
-#if FEATURE_SPAN
 
         [Test]
         public void TestCustomComp_ReadOnlySpan()
@@ -195,7 +194,6 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
             }
         }
-#endif 
 
 
         [Test]
@@ -345,7 +343,6 @@ namespace ICU4N.Dev.Test.Normalizers
             }
         }
 
-#if FEATURE_SPAN
 
         [Test]
         public void TestCustomFCC_ReadOnlySpan()
@@ -382,7 +379,6 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
             }
         }
-#endif 
 
 
         [Test]
@@ -492,7 +488,6 @@ namespace ICU4N.Dev.Test.Normalizers
             assertTrue("filtered isInert()", fn2.IsInert(0x0313));
         }
 
-#if FEATURE_SPAN
 
         [Test]
         public void TestFilteredNormalizer2_ReadOnlySpan()
@@ -519,7 +514,6 @@ namespace ICU4N.Dev.Test.Normalizers
             assertTrue("filtered hasBoundaryAfter()", fn2.HasBoundaryAfter('ä'));
             assertTrue("filtered isInert()", fn2.IsInert(0x0313));
         }
-#endif 
 
 
         [Test]
@@ -617,7 +611,6 @@ namespace ICU4N.Dev.Test.Normalizers
             assertEquals("normalize()", "a\u0313á\u0313", fn2.Normalize(input.AsCharSequence()));
         }
 
-#if FEATURE_SPAN
 
         [Test]
         public void TestFilteredAppend_ReadOnlySpan()
@@ -641,7 +634,6 @@ namespace ICU4N.Dev.Test.Normalizers
             string input = "a\u0313a\u0301\u0313";
             assertEquals("normalize()", "a\u0313á\u0313", fn2.Normalize(input.AsSpan()));
         }
-#endif 
 
 
         [Test]
@@ -819,7 +811,6 @@ namespace ICU4N.Dev.Test.Normalizers
                     " \u1E09", @out);
         }
 
-#if FEATURE_SPAN
 
         [Test]
         public void TestGetEasyToUseInstance_ReadOnlySpan()
@@ -863,7 +854,6 @@ namespace ICU4N.Dev.Test.Normalizers
                     "(normalizes to " + Prettify(@out) + ')',
                     " \u1E09", @out);
         }
-#endif 
 
 
         [Test]
@@ -941,7 +931,6 @@ namespace ICU4N.Dev.Test.Normalizers
             assertEquals("normalize string with soft hyphens", "a\u0323\u0308", result);
         }
 
-#if FEATURE_SPAN
 
         [Test]
         public void TestLowMappingToEmpty_D_ReadOnlySpan()
@@ -960,7 +949,6 @@ namespace ICU4N.Dev.Test.Normalizers
             result = n2.Normalize(s.AsSpan());
             assertEquals("normalize string with soft hyphens", "a\u0323\u0308", result);
         }
-#endif 
 
 
         [Test]
@@ -1022,7 +1010,6 @@ namespace ICU4N.Dev.Test.Normalizers
             assertEquals("normalize string with soft hyphens", "\u00ADa\u0323\u0308", result);
         }
 
-#if FEATURE_SPAN
 
         [Test]
         public void TestLowMappingToEmpty_FCD_ReadOnlySpan()
@@ -1037,7 +1024,6 @@ namespace ICU4N.Dev.Test.Normalizers
             string result = n2.Normalize(s.AsSpan());
             assertEquals("normalize string with soft hyphens", "\u00ADa\u0323\u0308", result);
         }
-#endif 
 
 
         [Test]
@@ -1099,7 +1085,6 @@ namespace ICU4N.Dev.Test.Normalizers
             assertEquals("normalize", expected, result);
         }
 
-#if FEATURE_SPAN
 
         [Test]
         public void TestNormalizeIllFormedText_ReadOnlySpan()
@@ -1114,7 +1099,6 @@ namespace ICU4N.Dev.Test.Normalizers
             string result = nfkc_cf.Normalize(src.AsSpan());
             assertEquals("normalize", expected, result);
         }
-#endif 
 
 
         [Test]
@@ -1176,7 +1160,6 @@ namespace ICU4N.Dev.Test.Normalizers
             assertTrue("isNormalized(normalized)", nfkc.IsNormalized(result.AsCharSequence()));
         }
 
-#if FEATURE_SPAN
 
         [Test]
         public void TestComposeJamoTBase_ReadOnlySpan()
@@ -1191,7 +1174,6 @@ namespace ICU4N.Dev.Test.Normalizers
             assertFalse("isNormalized(LV+11A7)", nfkc.IsNormalized(s.AsSpan()));
             assertTrue("isNormalized(normalized)", nfkc.IsNormalized(result.AsSpan()));
         }
-#endif 
 
 
         [Test]
@@ -1249,7 +1231,6 @@ namespace ICU4N.Dev.Test.Normalizers
             assertFalse("U+FB2C boundary-after", nfkc.HasBoundaryAfter(0xFB2C));
         }
 
-#if FEATURE_SPAN
 
         [Test]
         public void TestComposeBoundaryAfter_ReadOnlySpan()
@@ -1263,7 +1244,6 @@ namespace ICU4N.Dev.Test.Normalizers
             assertFalse("U+02DA boundary-after", nfkc.HasBoundaryAfter(0x2DA));
             assertFalse("U+FB2C boundary-after", nfkc.HasBoundaryAfter(0xFB2C));
         }
-#endif 
 
 
         [Test]
@@ -1321,7 +1301,6 @@ namespace ICU4N.Dev.Test.Normalizers
             assertTrue("noop.isInert()", noop.IsInert(0x0308));
         }
 
-#if FEATURE_SPAN
 
         [Test]
         public void TestNoopNormalizer2_ReadOnlySpan()
@@ -1335,7 +1314,6 @@ namespace ICU4N.Dev.Test.Normalizers
             assertTrue("noop.hasBoundaryAfter()", noop.HasBoundaryAfter(0x0308));
             assertTrue("noop.isInert()", noop.IsInert(0x0308));
         }
-#endif 
 
 
 

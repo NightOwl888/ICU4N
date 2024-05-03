@@ -154,11 +154,7 @@ namespace JavaResourceConverter
         {
             if (baseName == "root") return string.Empty;
 
-#if FEATURE_SPAN
             using var parser = new LocaleIDParser(stackalloc char[32], baseName);
-#else
-            using var parser = new LocaleIDParser(baseName);
-#endif
             return parser.GetName();
         }
 

@@ -7,7 +7,6 @@ using System.Text;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     /// <summary>
     /// A collection of rules used by a <see cref="INumberFormatRules"/> to format and
     /// parse numbers. It is the responsibility of a <see cref="NumberFormatRuleSet"/> to select an
@@ -526,5 +525,4 @@ namespace ICU4N.Globalization
         /// </summary>
         public bool IsParseable => isParseable;
     }
-#endif
 }

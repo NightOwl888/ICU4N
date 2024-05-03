@@ -194,11 +194,7 @@ namespace ICU4N.Impl
             else
             {
                 List<T> locales = new List<T>(visIDs.Count);
-#if FEATURE_SPAN
                 using var parser = new LocaleIDParser(stackalloc char[16], ReadOnlySpan<char>.Empty);
-#else
-                using var parser = new LocaleIDParser(string.Empty);
-#endif
                 foreach (string id in visIDs)
                 {
                     // Filter the culture type before allocating the object

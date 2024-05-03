@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     //===================================================================
     // NumberFormatSubstitution (abstract base class)
     //===================================================================
@@ -652,5 +651,4 @@ namespace ICU4N.Globalization
         /// </summary>
         public virtual bool IsModulusSubstitution => false;
     }
-#endif
 }

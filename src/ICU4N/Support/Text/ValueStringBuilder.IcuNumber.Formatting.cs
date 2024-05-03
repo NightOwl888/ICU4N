@@ -1,6 +1,4 @@
-﻿#if FEATURE_SPAN
-
-using ICU4N.Globalization;
+﻿using ICU4N.Globalization;
 using ICU4N.Text;
 using System;
 using System.Runtime.CompilerServices;
@@ -168,5 +166,3 @@ namespace ICU4N.Support.Text
         }
     }
 }
-
-#endif

@@ -3423,10 +3423,7 @@ namespace ICU4N.Text
         /// An overflow is only reported at the end, for the old Normalizer API functions that write
         /// to char arrays.
         /// </summary>
-        private sealed partial class CharsAppendable : IAppendable
-#if FEATURE_SPAN
-            , ISpanAppendable
-#endif
+        private sealed partial class CharsAppendable : IAppendable , ISpanAppendable
         {
             public CharsAppendable(char[] dest, int destStart, int destLimit)
             {
@@ -3459,8 +3456,6 @@ namespace ICU4N.Text
                 return this;
             }
 
-#if FEATURE_SPAN
-
             public CharsAppendable Append(ReadOnlySpan<char> value)
             {
                 int sLength = value.Length;
@@ -3477,7 +3472,6 @@ namespace ICU4N.Text
 
             #endregion ISpanAppendable
 
-#endif
             #region IAppendable
             IAppendable IAppendable.Append(char value) => Append(value);
 

@@ -1,5 +1,4 @@
-﻿#if FEATURE_SPAN
-using J2N;
+﻿using J2N;
 using J2N.Text;
 using System;
 using System.Diagnostics;
@@ -271,4 +270,3 @@ namespace ICU4N.Support.Text
 #endif
     }
 }
-#endif

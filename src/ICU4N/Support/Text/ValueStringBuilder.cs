@@ -1,8 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-#if FEATURE_SPAN
-
 using System;
 using System.Buffers;
 using System.Diagnostics;
@@ -394,5 +392,3 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
         }
     }
 }
-
-#endif

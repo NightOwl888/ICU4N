@@ -200,7 +200,6 @@ namespace ICU4N.Impl
             return null;
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Returns the plural form corresponding to the keyword, or <c>null</c>.
@@ -246,7 +245,6 @@ namespace ICU4N.Impl
             }
             return null;
         }
-#endif 
 
 
         /// <summary>
@@ -296,7 +294,6 @@ namespace ICU4N.Impl
             return p != null ? p.Value : StandardPlural.Other;
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Returns the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
@@ -308,7 +305,6 @@ namespace ICU4N.Impl
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? p.Value : StandardPlural.Other;
         }
-#endif 
 
 
         /// <summary>
@@ -402,7 +398,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Returns the plural form corresponding to the keyword.
@@ -425,7 +420,6 @@ namespace ICU4N.Impl
                 return false;
             }
         }
-#endif 
 
 
         /// <summary>
@@ -475,7 +469,6 @@ namespace ICU4N.Impl
             return p != null ? (int)p.Value : -1;
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Returns the index of the plural form corresponding to the keyword, or a negative value.
@@ -487,7 +480,6 @@ namespace ICU4N.Impl
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? (int)p.Value : -1;
         }
-#endif 
 
 
         /// <summary>
@@ -537,7 +529,6 @@ namespace ICU4N.Impl
             return p != null ? (int)p.Value : (int)StandardPlural.Other;
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Returns the index of the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.
@@ -549,7 +540,6 @@ namespace ICU4N.Impl
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? (int)p.Value : (int)StandardPlural.Other;
         }
-#endif 
 
 
         /// <summary>
@@ -643,7 +633,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Gets the index of the plural form corresponding to the keyword.
@@ -666,7 +655,6 @@ namespace ICU4N.Impl
                 return false;
             }
         }
-#endif 
 
     }
 }

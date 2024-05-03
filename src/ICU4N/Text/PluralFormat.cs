@@ -728,8 +728,6 @@ namespace ICU4N.Text
             }
         }
 
-#if FEATURE_SPAN
-
         private const int CharStackBufferSize = 128;
 
 #nullable enable
@@ -805,7 +803,6 @@ namespace ICU4N.Text
         }
 
 #nullable restore
-#endif
 
         /// <summary>
         /// This method is not yet supported by <see cref="PluralFormat"/>.

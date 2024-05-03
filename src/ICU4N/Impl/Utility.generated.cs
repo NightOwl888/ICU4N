@@ -383,7 +383,6 @@ namespace ICU4N.Impl
             return Hex(s, 4, ",", true, new StringBuilder()).ToString();
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
@@ -393,7 +392,6 @@ namespace ICU4N.Impl
         {
             return Hex(s, 4, ",", true, new StringBuilder()).ToString();
         }
-#endif 
 
             
 
@@ -567,8 +565,7 @@ namespace ICU4N.Impl
             }
         }
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -610,7 +607,6 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
                     
 
@@ -784,8 +780,7 @@ namespace ICU4N.Impl
             }
         }
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -827,7 +822,6 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
                     
 
@@ -1001,8 +995,7 @@ namespace ICU4N.Impl
             }
         }
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -1044,7 +1037,6 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
                     
 
@@ -1218,8 +1210,7 @@ namespace ICU4N.Impl
             }
         }
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -1261,10 +1252,8 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
-                    #if FEATURE_SPAN
-
+                    
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -1306,10 +1295,8 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -1351,10 +1338,8 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -1396,10 +1381,8 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -1441,10 +1424,8 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -1486,7 +1467,6 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
                         
 
@@ -1660,8 +1640,7 @@ namespace ICU4N.Impl
             }
         }
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -1703,7 +1682,6 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
                     
 
@@ -1877,8 +1855,7 @@ namespace ICU4N.Impl
             }
         }
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -1920,7 +1897,6 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
                     
 
@@ -2094,8 +2070,7 @@ namespace ICU4N.Impl
             }
         }
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -2137,7 +2112,6 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
                     
 
@@ -2311,8 +2285,7 @@ namespace ICU4N.Impl
             }
         }
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -2354,10 +2327,8 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
-                    #if FEATURE_SPAN
-
+                    
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -2399,10 +2370,8 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -2444,10 +2413,8 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -2489,10 +2456,8 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -2534,10 +2499,8 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
@@ -2579,7 +2542,6 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-#endif 
 
                 
 
@@ -2625,8 +2587,7 @@ namespace ICU4N.Impl
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
 
-    #if FEATURE_SPAN
-
+    
 
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
@@ -2636,7 +2597,6 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-#endif 
 
         
 
@@ -2682,8 +2642,7 @@ namespace ICU4N.Impl
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
 
-    #if FEATURE_SPAN
-
+    
 
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
@@ -2693,7 +2652,6 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-#endif 
 
         
 
@@ -2739,8 +2697,7 @@ namespace ICU4N.Impl
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
 
-    #if FEATURE_SPAN
-
+    
 
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
@@ -2750,7 +2707,6 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-#endif 
 
         
 
@@ -2796,8 +2752,7 @@ namespace ICU4N.Impl
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
 
-    #if FEATURE_SPAN
-
+    
 
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
@@ -2807,10 +2762,8 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-#endif 
 
-        #if FEATURE_SPAN
-
+        
 
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
@@ -2820,10 +2773,8 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-#endif 
 
-    #if FEATURE_SPAN
-
+    
 
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
@@ -2833,10 +2784,8 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-#endif 
 
-    #if FEATURE_SPAN
-
+    
 
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
@@ -2846,10 +2795,8 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-#endif 
 
-    #if FEATURE_SPAN
-
+    
 
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
@@ -2859,10 +2806,8 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-#endif 
 
-    #if FEATURE_SPAN
-
+    
 
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
@@ -2872,7 +2817,6 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-#endif 
 
     
         /// <summary>

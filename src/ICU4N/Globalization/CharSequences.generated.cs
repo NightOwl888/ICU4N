@@ -128,8 +128,7 @@ namespace ICU4N.Globalization
             return result;
         }
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
         /// </summary>
@@ -156,7 +155,6 @@ namespace ICU4N.Globalization
             }
             return result;
         }
-#endif 
 
         
         /// <summary>
@@ -270,8 +268,7 @@ namespace ICU4N.Globalization
             return result;
         }
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
         /// </summary>
@@ -298,7 +295,6 @@ namespace ICU4N.Globalization
             }
             return result;
         }
-#endif 
 
         
         /// <summary>
@@ -412,8 +408,7 @@ namespace ICU4N.Globalization
             return result;
         }
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
         /// </summary>
@@ -440,7 +435,6 @@ namespace ICU4N.Globalization
             }
             return result;
         }
-#endif 
 
         
         /// <summary>
@@ -554,8 +548,7 @@ namespace ICU4N.Globalization
             return result;
         }
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
         /// </summary>
@@ -582,10 +575,8 @@ namespace ICU4N.Globalization
             }
             return result;
         }
-#endif 
 
-        #if FEATURE_SPAN
-
+        
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
         /// </summary>
@@ -612,10 +603,8 @@ namespace ICU4N.Globalization
             }
             return result;
         }
-#endif 
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
         /// </summary>
@@ -642,10 +631,8 @@ namespace ICU4N.Globalization
             }
             return result;
         }
-#endif 
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
         /// </summary>
@@ -672,10 +659,8 @@ namespace ICU4N.Globalization
             }
             return result;
         }
-#endif 
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
         /// </summary>
@@ -702,10 +687,8 @@ namespace ICU4N.Globalization
             }
             return result;
         }
-#endif 
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Find the longest n such that a[aIndex,n] = b[bIndex,n], and n is on a character boundary.
         /// </summary>
@@ -732,7 +715,6 @@ namespace ICU4N.Globalization
             }
             return result;
         }
-#endif 
 
     
         /// <summary>
@@ -818,7 +800,6 @@ namespace ICU4N.Globalization
             //        }
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Count the code point length. Unpaired surrogates count as 1.
@@ -839,7 +820,6 @@ namespace ICU4N.Globalization
             //            }
             //        }
         }
-#endif 
 
         /// <summary>
         /// Utility function for comparing codepoint to string without generating new
@@ -917,7 +897,6 @@ namespace ICU4N.Globalization
             }
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Utility function for comparing codepoint to string without generating new
         /// string.
@@ -936,7 +915,6 @@ namespace ICU4N.Globalization
                 default: return false;
             }
         }
-#endif 
 
         [Obsolete("This API is ICU internal only.")]
         public static bool Equals(string other, int codepoint)
@@ -962,13 +940,11 @@ namespace ICU4N.Globalization
             return Equals(codepoint, other);
         }
 
-#if FEATURE_SPAN
         [Obsolete("This API is ICU internal only.")]
         public static bool Equals(ReadOnlySpan<char> other, int codepoint)
         {
             return Equals(codepoint, other);
         }
-#endif 
 
         /// <summary>
         /// Utility to compare a string to a code point.
@@ -1170,7 +1146,6 @@ namespace ICU4N.Globalization
             return stringLength - 2;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Utility to compare a string to a code point.
         /// Same results as turning the code point into a string (with the [ugly] new StringBuilder().AppendCodePoint(codepoint).ToString())
@@ -1220,7 +1195,6 @@ namespace ICU4N.Globalization
             }
             return stringLength - 2;
         }
-#endif 
 
         /// <summary>
         /// Utility to compare a string to a code point.
@@ -1274,7 +1248,6 @@ namespace ICU4N.Globalization
             return result > 0 ? -1 : result < 0 ? 1 : 0; // Reverse the order.
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Utility to compare a string to a code point.
         /// Same results as turning the code point into a string and comparing, but much faster (no object creation).
@@ -1287,7 +1260,6 @@ namespace ICU4N.Globalization
             int result = Compare(a, codepoint);
             return result > 0 ? -1 : result < 0 ? 1 : 0; // Reverse the order.
         }
-#endif 
 
         /// <summary>
         /// Return the value of the first code point, if the string is exactly one code point. Otherwise return <see cref="int.MaxValue"/>.
@@ -1349,7 +1321,6 @@ namespace ICU4N.Globalization
             return (result < 0x10000) == (length == 1) ? result : int.MaxValue;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Return the value of the first code point, if the string is exactly one code point. Otherwise return <see cref="int.MaxValue"/>.
         /// </summary>
@@ -1364,7 +1335,6 @@ namespace ICU4N.Globalization
             int result = Character.CodePointAt(s, 0);
             return (result < 0x10000) == (length == 1) ? result : int.MaxValue;
         }
-#endif 
 
     
         /// <summary>
@@ -1450,8 +1420,7 @@ namespace ICU4N.Globalization
             return alength - blength;
         }
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
@@ -1471,7 +1440,6 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
-#endif 
 
         
         /// <summary>
@@ -1557,8 +1525,7 @@ namespace ICU4N.Globalization
             return alength - blength;
         }
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
@@ -1578,7 +1545,6 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
-#endif 
 
         
         /// <summary>
@@ -1664,8 +1630,7 @@ namespace ICU4N.Globalization
             return alength - blength;
         }
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
@@ -1685,7 +1650,6 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
-#endif 
 
         
         /// <summary>
@@ -1771,8 +1735,7 @@ namespace ICU4N.Globalization
             return alength - blength;
         }
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
@@ -1792,10 +1755,8 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
-#endif 
 
-        #if FEATURE_SPAN
-
+        
         /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
@@ -1815,10 +1776,8 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
-#endif 
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
@@ -1838,10 +1797,8 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
-#endif 
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
@@ -1861,10 +1818,8 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
-#endif 
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
@@ -1884,10 +1839,8 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
-#endif 
 
-    #if FEATURE_SPAN
-
+    
         /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
@@ -1907,7 +1860,6 @@ namespace ICU4N.Globalization
             }
             return alength - blength;
         }
-#endif 
 
                 /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -1949,8 +1901,7 @@ namespace ICU4N.Globalization
             return a.Length == b.Length && Compare(a, b) == 0;
         }
 
-    #if FEATURE_SPAN
-        /// <summary>
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -1959,7 +1910,6 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-#endif 
 
                 /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -2001,8 +1951,7 @@ namespace ICU4N.Globalization
             return a.Length == b.Length && Compare(a, b) == 0;
         }
 
-    #if FEATURE_SPAN
-        /// <summary>
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -2011,7 +1960,6 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-#endif 
 
                 /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -2053,8 +2001,7 @@ namespace ICU4N.Globalization
             return a.Length == b.Length && Compare(a, b) == 0;
         }
 
-    #if FEATURE_SPAN
-        /// <summary>
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -2063,7 +2010,6 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-#endif 
 
                 /// <summary>
         /// Utility for comparing the contents of character sequences.
@@ -2105,8 +2051,7 @@ namespace ICU4N.Globalization
             return a.Length == b.Length && Compare(a, b) == 0;
         }
 
-    #if FEATURE_SPAN
-        /// <summary>
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -2115,10 +2060,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-#endif 
 
-        #if FEATURE_SPAN
-        /// <summary>
+                /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -2127,10 +2070,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-#endif 
 
-    #if FEATURE_SPAN
-        /// <summary>
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -2139,10 +2080,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-#endif 
 
-    #if FEATURE_SPAN
-        /// <summary>
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -2151,10 +2090,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-#endif 
 
-    #if FEATURE_SPAN
-        /// <summary>
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -2163,10 +2100,8 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-#endif 
 
-    #if FEATURE_SPAN
-        /// <summary>
+            /// <summary>
         /// Utility for comparing the contents of character sequences.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
@@ -2175,7 +2110,6 @@ namespace ICU4N.Globalization
             // do length test first for fast path
             return a.Length == b.Length && Compare(a, b) == 0;
         }
-#endif 
 
             /// <summary>
         /// Are we on a character boundary?
@@ -2225,7 +2159,6 @@ namespace ICU4N.Globalization
             || !char.IsLowSurrogate(s[i]);
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Are we on a character boundary?
         /// </summary>
@@ -2237,7 +2170,6 @@ namespace ICU4N.Globalization
             || !char.IsHighSurrogate(s[i - 1])
             || !char.IsLowSurrogate(s[i]);
         }
-#endif 
 
         /// <summary>
         /// Find code point in string.
@@ -2311,7 +2243,6 @@ namespace ICU4N.Globalization
             return -1;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Find code point in string.
         /// </summary>
@@ -2329,7 +2260,6 @@ namespace ICU4N.Globalization
             }
             return -1;
         }
-#endif 
 
         /// <summary>
         /// Utility function for simplified, more robust loops, such as:
@@ -2483,7 +2413,6 @@ namespace ICU4N.Globalization
             return shortResult;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Utility function for simplified, more robust loops, such as:
         /// <code>
@@ -2521,7 +2450,6 @@ namespace ICU4N.Globalization
             System.Array.Copy(result, 0, shortResult, 0, j);
             return shortResult;
         }
-#endif 
 
 
     }

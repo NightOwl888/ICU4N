@@ -132,7 +132,6 @@ namespace ICU4N.Text
             return AddAll(s);
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
@@ -148,7 +147,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return AddAll(s);
         }
-#endif 
 
 
         /// <summary>
@@ -226,7 +224,6 @@ namespace ICU4N.Text
             return Complement(s);
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Complement the specified string in this set.
@@ -245,7 +242,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return Complement(s);
         }
-#endif 
 
 
         /// <summary>
@@ -311,7 +307,6 @@ namespace ICU4N.Text
             return ComplementAll(s);
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
@@ -327,7 +322,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return ComplementAll(s);
         }
-#endif 
 
     
         /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
@@ -437,7 +431,6 @@ namespace ICU4N.Text
             return ContainsSome(s);
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Returns true if this set contains one or more of the characters
@@ -453,7 +446,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return ContainsSome(s);
         }
-#endif 
 
     
         /// <seealso cref="Overlaps(UnicodeSet)"/>
@@ -607,7 +599,6 @@ namespace ICU4N.Text
             return RemoveAll(s);
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
@@ -623,7 +614,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return RemoveAll(s);
         }
-#endif 
 
 
         /// <summary>
@@ -693,7 +683,6 @@ namespace ICU4N.Text
             return Retain(cs);
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Retain the specified string in this set if it is present.
@@ -710,7 +699,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(cs));
             return Retain(cs);
         }
-#endif 
 
     
         /// <seealso cref="IntersectWith(UnicodeSet)"/>
@@ -820,7 +808,6 @@ namespace ICU4N.Text
             return RetainAll(s);
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
@@ -836,7 +823,6 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(s));
             return RetainAll(s);
         }
-#endif 
 
 
 // ***** .NET ISet<T> overloads that are missing from ICU4J *****
@@ -897,7 +883,6 @@ namespace ICU4N.Text
             return Span(s, SpanCondition.Contained) == s.Length;
         }
     
-#if FEATURE_SPAN
 
     
         /// <summary>
@@ -915,8 +900,7 @@ namespace ICU4N.Text
 
             return Span(s, SpanCondition.Contained) == s.Length;
         }
-    #endif 
-
+    
 
 
         /// <summary>
@@ -990,7 +974,6 @@ namespace ICU4N.Text
             return contained == s.Length && contained < this.Count;
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Returns true if this set contains all of the characters
@@ -1008,7 +991,6 @@ namespace ICU4N.Text
             int contained = Span(s, SpanCondition.Contained);
             return contained == s.Length && contained < this.Count;
         }
-#endif 
 
     
         /// <summary>
@@ -1207,7 +1189,6 @@ namespace ICU4N.Text
             return Span(s, SpanCondition.Contained) == this.Count;
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Returns true if this set contains all of the characters
@@ -1224,7 +1205,6 @@ namespace ICU4N.Text
 
             return Span(s, SpanCondition.Contained) == this.Count;
         }
-#endif 
 
     
         /// <summary>
@@ -1483,7 +1463,6 @@ namespace ICU4N.Text
             return count < s.Length && Span(s, SpanCondition.Contained) == count;
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Returns true if this set contains all of the characters
@@ -1501,7 +1480,6 @@ namespace ICU4N.Text
             int count = this.Count;
             return count < s.Length && Span(s, SpanCondition.Contained) == count;
         }
-#endif 
 
     
         /// <summary>
@@ -1752,7 +1730,6 @@ namespace ICU4N.Text
             return s.Length == this.Count && Span(s, SpanCondition.Contained) == s.Length;
         }
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Returns true if this set contains all of the characters
@@ -1769,7 +1746,6 @@ namespace ICU4N.Text
 
             return s.Length == this.Count && Span(s, SpanCondition.Contained) == s.Length;
         }
-#endif 
 
     
         /// <summary>

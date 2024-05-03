@@ -3,7 +3,6 @@
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     /// <summary>
     /// An interface to represent the owner of a <see cref="NumberFormatRuleSet"/>. These are used
     /// internally to construct the rules. Rules need to be instantiated first before properties are set
@@ -27,5 +26,4 @@ namespace ICU4N.Globalization
         /// <exception cref="ArgumentException">No rule exists with the provided <paramref name="name"/>.</exception>
         NumberFormatRuleSet FindRuleSet(string name); // ICU4N TODO: API - Change this to GetRuleSet()/TryGetRuleSet()/ContainsRuleSet() to make this easier to work with.
     }
-#endif
 }

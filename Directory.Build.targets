@@ -151,7 +151,6 @@
   <!-- Features defined everywhere (to be removed) -->
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);FEATURE_ARRAYPOOL</DefineConstants>
-    <DefineConstants>$(DefineConstants);FEATURE_SPAN</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">

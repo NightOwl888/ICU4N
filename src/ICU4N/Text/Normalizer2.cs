@@ -268,8 +268,6 @@ namespace ICU4N.Text
             return Normalize(src, new StringBuilder(src.Length)).ToString();
         }
 
-#if FEATURE_SPAN
-
         /// <summary>
         /// Returns the normalized form of the source <see cref="ReadOnlySpan{Char}"/>.
         /// </summary>
@@ -333,7 +331,6 @@ namespace ICU4N.Text
         /// </exception>
         /// <draft>ICU 60.1</draft>
         public abstract bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength);
-#endif
 
         // ICU4N specific - Moved Normalize(ICharSequence src, StringBuilder dest) to Normalizer2.generated.tt
         #region Normalize(ICharSequence, StringBuilder)
@@ -375,8 +372,6 @@ namespace ICU4N.Text
         public abstract StringBuilder Normalize(ICharSequence src, StringBuilder dest);
 
 
-#if FEATURE_SPAN
-
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
         /// (replacing its contents) and returns the destination string.
@@ -386,8 +381,6 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest);
-
-#endif
 
         #endregion Normalize(ICharSequence, StringBuilder)
 
@@ -428,7 +421,6 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public abstract IAppendable Normalize(ICharSequence src, IAppendable dest);
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
@@ -439,7 +431,6 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
         public abstract IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest);
-#endif
 
         #endregion Normalize(ICharSequence, IAppendable)
 
@@ -487,7 +478,6 @@ namespace ICU4N.Text
         public abstract StringBuilder NormalizeSecondAndAppend(
             StringBuilder first, ICharSequence second);
 
-#if FEATURE_SPAN
 
         /// <summary>
         /// Appends the normalized form of the <paramref name="second"/> string to the <paramref name="first"/> string
@@ -501,7 +491,6 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder NormalizeSecondAndAppend(
             StringBuilder first, ReadOnlySpan<char> second);
-#endif
 
         #endregion
 
@@ -545,8 +534,6 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Append(StringBuilder first, ICharSequence second);
 
-#if FEATURE_SPAN
-
         /// <summary>
         /// Appends the <paramref name="second"/> string to the <paramref name="first"/> string
         /// (merging them at the boundary) and returns the <paramref name="first"/> string.
@@ -558,7 +545,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="first"/></returns>
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second);
-#endif 
+
         #endregion Append(StringBuilder, ICharSequence)
 
         /// <summary>
@@ -666,8 +653,6 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public abstract bool IsNormalized(ICharSequence s);
 
-#if FEATURE_SPAN
-
         /// <summary>
         /// Tests if the string is normalized.
         /// Internally, in cases where the <see cref="QuickCheck(ReadOnlySpan{char})"/> method would return "maybe"
@@ -679,7 +664,7 @@ namespace ICU4N.Text
         /// <returns>true if <paramref name="s"/> is normalized.</returns>
         /// <stable>ICU 4.4</stable>
         public abstract bool IsNormalized(ReadOnlySpan<char> s);
-#endif
+
         #endregion IsNormalized(ICharSequence)
 
         // ICU4N specific - Moved QuickCheck(ICharSequence s) to Normalizer2.generated.tt
@@ -728,8 +713,6 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public abstract QuickCheckResult QuickCheck(ICharSequence s);
 
-#if FEATURE_SPAN
-
         /// <summary>
         /// Tests if the string is normalized.
         /// For the two COMPOSE modes, the result could be "maybe" in cases that
@@ -743,7 +726,7 @@ namespace ICU4N.Text
         /// <returns>The quick check result.</returns>
         /// <stable>ICU 4.4</stable>
         public abstract QuickCheckResult QuickCheck(ReadOnlySpan<char> s);
-#endif
+
         #endregion QuickCheck(ICharSequence)
 
         // ICU4N specific - Moved SpanQuickCheckYes(ICharSequence s) to Normalizer2.generated.tt
@@ -813,8 +796,6 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public abstract int SpanQuickCheckYes(ICharSequence s);
 
-#if FEATURE_SPAN
-
         /// <summary>
         /// Returns the end of the normalized substring of the input string.
         /// In other words, with <c>end=SpanQuickCheckYes(s);</c>
@@ -835,7 +816,7 @@ namespace ICU4N.Text
         /// <returns>"yes" span end index.</returns>
         /// <stable>ICU 4.4</stable>
         public abstract int SpanQuickCheckYes(ReadOnlySpan<char> s);
-#endif 
+
         #endregion SpanQuickCheckYes(ICharSequence)
 
         /// <summary>

@@ -5,14 +5,14 @@
     <charSequence>StringBuilder</charSequence>
     <charSequence>char[]</charSequence>
     <charSequence>ICharSequence</charSequence>
-    <charSequence feature="FEATURE_SPAN">ReadOnlySpan&lt;char&gt;</charSequence>
+    <charSequence>ReadOnlySpan&lt;char&gt;</charSequence>
   </charSequences>
   <!-- Accessibility of ICharSequence interface -->
   <charSequenceAccessibility>public</charSequenceAccessibility>
   <appendables>
     <appendable accessibility="public">StringBuilder</appendable>
     <appendable accessibility="public">IAppendable</appendable>
-    <appendable accessibility="internal" modifier="ref " feature="FEATURE_SPAN">ValueStringBuilder</appendable>
+    <appendable accessibility="internal" modifier="ref ">ValueStringBuilder</appendable>
   </appendables>
   <!-- Accessibility of IAppendable interface -->
   <appendableAccessibility>public</appendableAccessibility>

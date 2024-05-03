@@ -4,8 +4,6 @@ using NUnit.Framework;
 using System;
 using System.Text;
 
-#if FEATURE_SPAN
-
 namespace ICU4N.Support.Text
 {
     public class ValueStringBuilderTest
@@ -1154,5 +1152,3 @@ namespace ICU4N.Support.Text
         }
     }
 }
-
-#endif

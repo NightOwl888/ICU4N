@@ -4,9 +4,7 @@ using J2N;
 using J2N.Collections;
 using J2N.Text;
 using System;
-#if FEATURE_SPAN
 using System.Buffers;
-#endif
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -699,11 +697,7 @@ namespace ICU4N.Impl
         /// </summary>
         public static string Escape(string s)
         {
-#if FEATURE_SPAN
             ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-#else
-            StringBuilder buf = new StringBuilder();
-#endif
             for (int i = 0; i < s.Length;)
             {
                 int c = Character.CodePointAt(s, i);
@@ -745,7 +739,7 @@ namespace ICU4N.Impl
             /*v*/ (char)0x76, (char)0x0b
         };
 
-#if FEATURE_SPAN && !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         /// <summary>
         /// Convert an escape to a 32-bit code point value.  We attempt
         /// to parallel the icu4c unescapeAt() function.
@@ -772,13 +766,7 @@ namespace ICU4N.Impl
         /// <em>after</em> the backslash.  Upon return offset16 will
         /// be updated to point after the escape sequence.</param>
         /// <returns>Character value from 0 to 10FFFF, or -1 on error.</returns>
-        public static int UnescapeAt(
-#if FEATURE_SPAN
-            ReadOnlySpan<char> s,
-#else
-            string s,
-#endif
-            ref int offset16) // ICU4N: Changed array to ref parameter
+        public static int UnescapeAt(ReadOnlySpan<char> s, ref int offset16) // ICU4N: Changed array to ref parameter
         {
             int c;
             int result = 0;
@@ -917,159 +905,6 @@ namespace ICU4N.Impl
             return c;
         }
 
-#if !FEATURE_SPAN
-        /// <summary>
-        /// Convert an escape to a 32-bit code point value.  We attempt
-        /// to parallel the icu4c unescapeAt() function.
-        /// </summary>
-        /// <param name="s">The character sequence to escape.</param>
-        /// <param name="offset16">An offset to the character
-        /// <em>after</em> the backslash.  Upon return offset16 will
-        /// be updated to point after the escape sequence.</param>
-        /// <returns>Character value from 0 to 10FFFF, or -1 on error.</returns>
-        public static int UnescapeAt(char[] s, ref int offset16) // ICU4N: Changed array to ref parameter
-        {
-            int c;
-            int result = 0;
-            int n = 0;
-            int minDig = 0;
-            int maxDig = 0;
-            int bitsPerDigit = 4;
-            int dig;
-            int i;
-            bool braces = false;
-
-            /* Check that offset is in range */
-            int offset = offset16;
-            int length = s.Length;
-            if (offset < 0 || offset >= length)
-            {
-                return -1;
-            }
-
-            /* Fetch first UChar after '\\' */
-            c = Character.CodePointAt(s, offset);
-            offset += UTF16.GetCharCount(c);
-
-            /* Convert hexadecimal and octal escapes */
-            switch (c)
-            {
-                case 'u':
-                    minDig = maxDig = 4;
-                    break;
-                case 'U':
-                    minDig = maxDig = 8;
-                    break;
-                case 'x':
-                    minDig = 1;
-                    if (offset < length && UTF16.CharAt(s, offset) == 0x7B /*{*/)
-                    {
-                        ++offset;
-                        braces = true;
-                        maxDig = 8;
-                    }
-                    else
-                    {
-                        maxDig = 2;
-                    }
-                    break;
-                default:
-                    dig = UChar.Digit(c, 8);
-                    if (dig >= 0)
-                    {
-                        minDig = 1;
-                        maxDig = 3;
-                        n = 1; /* Already have first octal digit */
-                        bitsPerDigit = 3;
-                        result = dig;
-                    }
-                    break;
-            }
-            if (minDig != 0)
-            {
-                while (offset < length && n < maxDig)
-                {
-                    c = UTF16.CharAt(s, offset);
-                    dig = UChar.Digit(c, (bitsPerDigit == 3) ? 8 : 16);
-                    if (dig < 0)
-                    {
-                        break;
-                    }
-                    result = (result << bitsPerDigit) | dig;
-                    offset += UTF16.GetCharCount(c);
-                    ++n;
-                }
-                if (n < minDig)
-                {
-                    return -1;
-                }
-                if (braces)
-                {
-                    if (c != 0x7D /*}*/)
-                    {
-                        return -1;
-                    }
-                    ++offset;
-                }
-                if (result < 0 || result >= 0x110000)
-                {
-                    return -1;
-                }
-                // If an escape sequence specifies a lead surrogate, see
-                // if there is a trail surrogate after it, either as an
-                // escape or as a literal.  If so, join them up into a
-                // supplementary.
-                if (offset < length &&
-                        UTF16.IsLeadSurrogate((char)result))
-                {
-                    int ahead = offset + 1;
-                    c = s[offset]; // [sic] get 16-bit code unit
-                    if (c == '\\' && ahead < length)
-                    {
-                        c = UnescapeAt(s, ref ahead); // ICU4N: Changed array to ref parameter
-                    }
-                    if (UTF16.IsTrailSurrogate((char)c))
-                    {
-                        offset = ahead;
-                        result = Character.ToCodePoint((char)result, (char)c);
-                    }
-                }
-                offset16 = offset;
-                return result;
-            }
-
-            /* Convert C-style escapes in table */
-            for (i = 0; i < UNESCAPE_MAP.Length; i += 2)
-            {
-                if (c == UNESCAPE_MAP[i])
-                {
-                    offset16 = offset;
-                    return UNESCAPE_MAP[i + 1];
-                }
-                else if (c < UNESCAPE_MAP[i])
-                {
-                    break;
-                }
-            }
-
-            /* Map \cX to control-X: X & 0x1F */
-            if (c == 'c' && offset < length)
-            {
-                c = UTF16.CharAt(s, offset);
-                offset16 = offset + UTF16.GetCharCount(c);
-                return 0x1F & c;
-            }
-
-            /* If no special forms are recognized, then consider
-             * the backslash to generically escape the next character. */
-            offset16 = offset;
-            return c;
-        }
-
-#endif
-
-
-#if FEATURE_SPAN
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         /// <summary>
         /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
@@ -1090,15 +925,6 @@ namespace ICU4N.Impl
         public static string Unescape(ReadOnlySpan<char> s)
         {
             ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-#else
-        /// <summary>
-        /// Convert all escapes in a given string using <see cref="UnescapeAt(string, ref int)"/>.
-        /// </summary>
-        /// <exception cref="ArgumentException">If an invalid escape is seen.</exception>
-        public static string Unescape(string s)
-        {
-            StringBuilder buf = new StringBuilder();
-#endif
             int pos;
             for (int i = 0; i < s.Length;)
             {
@@ -1109,13 +935,7 @@ namespace ICU4N.Impl
                     int e = UnescapeAt(s, ref pos); // ICU4N: Changed array to ref parameter
                     if (e < 0)
                     {
-                        throw new ArgumentException(
-#if FEATURE_SPAN
-                            StringHelper.Concat("Invalid escape sequence ".AsSpan(), s.Slice(i - 1, Math.Min(i + 8, s.Length) - (i - 1)))); // ICU4N: Corrected 2nd parameter
-#else
-                            string.Concat("Invalid escape sequence ", s.Substring(i - 1, Math.Min(i + 8, s.Length) - (i - 1)))); // ICU4N: Corrected 2nd parameter
-#endif
-
+                        throw new ArgumentException(StringHelper.Concat("Invalid escape sequence ".AsSpan(), s.Slice(i - 1, Math.Min(i + 8, s.Length) - (i - 1)))); // ICU4N: Corrected 2nd parameter
                     }
                     buf.AppendCodePoint(e);
                     i = pos;
@@ -1128,7 +948,6 @@ namespace ICU4N.Impl
             return buf.ToString();
         }
 
-#if FEATURE_SPAN
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         /// <summary>
         /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
@@ -1147,15 +966,6 @@ namespace ICU4N.Impl
         public static string UnescapeLeniently(ReadOnlySpan<char> s)
         {
             ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-#else
-        /// <summary>
-        /// Convert all escapes in a given string using <see cref="UnescapeAt(string, ref int)"/>.
-        /// Leave invalid escape sequences unchanged.
-        /// </summary>
-        public static string UnescapeLeniently(string s)
-        {
-            StringBuilder buf = new StringBuilder();
-#endif
             int pos;
             for (int i = 0; i < s.Length;)
             {
@@ -1206,7 +1016,8 @@ namespace ICU4N.Impl
                 i = -i;
             }
             //string result = Long.toString(i, 16).toUpperCase(Locale.ENGLISH);
-#if FEATURE_SPAN
+
+            // ICU4N: Use built-in precision specifier instead of substring
             int length = places + (negative ? 1 : 0) + 16;
             bool usePool = length > CharStackBufferSize;
             char[]? arrayToReturnToPool = usePool ? ArrayPool<char>.Shared.Rent(length) : null;
@@ -1236,16 +1047,6 @@ namespace ICU4N.Impl
                 if (arrayToReturnToPool is not null)
                     ArrayPool<char>.Shared.Return(arrayToReturnToPool);
             }
-            
-#else
-            // ICU4N: Use built-in precision specifier instead of substring
-            string result = i.ToString("X" + places.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
-            if (negative)
-            {
-                return '-' + result;
-            }
-            return result;
-#endif
         }
 
 #nullable restore

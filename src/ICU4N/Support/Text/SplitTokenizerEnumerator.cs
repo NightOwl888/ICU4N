@@ -1,5 +1,5 @@
 ﻿using System;
-#if FEATURE_SPAN
+
 namespace ICU4N.Text
 {
     /// <summary>
@@ -969,4 +969,3 @@ namespace ICU4N.Text
         public SplitEntry Current { get; private set; }
     }
 }
-#endif

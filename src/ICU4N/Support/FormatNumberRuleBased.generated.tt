@@ -53,7 +53,6 @@ using System.Numerics;
 
 namespace ICU4N
 {
-#if FEATURE_SPAN
     public static partial class FormatNumberRuleBased
     {
 <# for (int i = 0; i < numericTypes.Length; i++) {
@@ -198,7 +197,6 @@ namespace ICU4N
         }
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>
-#if FEATURE_SPAN
 
 <# for (int i = 0; i < numericTypes.Length; i++) {
     string name = numericTypes[i];
@@ -346,8 +344,6 @@ namespace ICU4N
             return IcuNumber.TryFormat<#=methodType#>RuleBased(<#=value#>, destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }<#=!string.IsNullOrEmpty(feature) ? Environment.NewLine + "#endif ": ""#>
 <# } #>
-#endif
 
     }
-#endif
 }

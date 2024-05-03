@@ -5,7 +5,6 @@ using System.Diagnostics;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     //===================================================================
     // NumeratorSubstitution
     //===================================================================
@@ -74,21 +73,12 @@ namespace ICU4N.Globalization
             this.withZeros = description.EndsWith("<<", StringComparison.Ordinal);
         }
 
-#if FEATURE_SPAN
         internal static ReadOnlySpan<char> FixDescription(ReadOnlySpan<char> description)
         {
             return description.EndsWith("<<", StringComparison.Ordinal)
                 ? description.Slice(0, description.Length - 1) // ICU4N: Checked 2nd parameter
                 : description;
         }
-#else
-        internal static string FixDescription(string description) // ICU4N: for b/w compatibility with older .NET versions
-        {
-            return description.EndsWith("<<", StringComparison.Ordinal)
-                ? description.Substring(0, description.Length - 1) // ICU4N: Checked 2nd parameter
-                : description;
-        }
-#endif
 
         //-----------------------------------------------------------------------
         // boilerplate
@@ -323,5 +313,4 @@ namespace ICU4N.Globalization
         /// </summary>
         private protected override char TokenChar => '<';
     }
-#endif
-    }
+}

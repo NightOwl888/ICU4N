@@ -12,7 +12,6 @@ namespace ICU4N.Support.Text
             return StringComparer.OrdinalIgnoreCase.Compare(str, value);
         }
 
-#if FEATURE_SPAN
         /// <summary>Copies the contents of this string into the destination span.</summary>
         /// <param name="s">This string.</param>
         /// <param name="destination">The span into which to copy this string's contents.</param>
@@ -54,6 +53,5 @@ namespace ICU4N.Support.Text
             }
             return retVal;
         }
-#endif
     }
 }

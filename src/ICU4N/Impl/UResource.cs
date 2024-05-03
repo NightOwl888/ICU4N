@@ -164,12 +164,8 @@ namespace ICU4N.Impl
         private string InternalSubString(int start, int length)
         {
             int end = length - start;
-#if FEATURE_SPAN
             const int CharStackBufferSize = 32;
             ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-#else
-            StringBuilder sb = new StringBuilder(length);
-#endif
             for (int i = start; i < end; ++i)
             {
                 sb.Append((char)bytes[offset + i]);

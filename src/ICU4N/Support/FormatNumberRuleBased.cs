@@ -6,7 +6,6 @@ using System;
 
 namespace ICU4N
 {
-#if FEATURE_SPAN
     /// <summary>
     /// Formats a numeric type into a sequence of <see cref="char"/>s based on a set of rules defined in an instance
     /// of <see cref="NumberFormatRules"/>.
@@ -69,5 +68,4 @@ namespace ICU4N
         }
 
     }
-#endif
 }

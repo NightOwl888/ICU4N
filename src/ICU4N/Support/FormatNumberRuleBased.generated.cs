@@ -14,7 +14,6 @@ using System.Numerics;
 
 namespace ICU4N
 {
-#if FEATURE_SPAN
     public static partial class FormatNumberRuleBased
     {
         // byte
@@ -1837,7 +1836,6 @@ namespace ICU4N
             return IcuNumber.FormatDoubleRuleBased(decimal.ToDouble(value), presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
 
-#if FEATURE_SPAN
 
 
         // byte
@@ -3727,8 +3725,6 @@ namespace ICU4N
         {
             return IcuNumber.TryFormatDoubleRuleBased(decimal.ToDouble(value), destination, out charsWritten, presentation, ruleSetName: null, UNumberFormatInfo.GetInstance(provider));
         }
-#endif
 
     }
-#endif
 }

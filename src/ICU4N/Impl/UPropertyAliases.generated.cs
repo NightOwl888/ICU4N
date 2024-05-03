@@ -104,7 +104,6 @@ namespace ICU4N.Impl
             return result.HasValue();
         }
 
-#if FEATURE_SPAN
 
         private bool ContainsName(BytesTrie trie, ReadOnlySpan<char> name)
         {
@@ -126,7 +125,6 @@ namespace ICU4N.Impl
             }
             return result.HasValue();
         }
-#endif 
 
 
         private int GetPropertyOrValueEnum(int bytesTrieOffset, string alias)
@@ -192,7 +190,6 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_SPAN
 
         private int GetPropertyOrValueEnum(int bytesTrieOffset, ReadOnlySpan<char> alias)
         {
@@ -208,7 +205,6 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
             }
         }
-#endif 
 
 
         //----------------------------------------------------------------
@@ -258,7 +254,6 @@ namespace ICU4N.Impl
         }
 
 
-#if FEATURE_SPAN
         /// <summary>
         /// Returns a property enum given one of its property names.
         /// If the property name is not known, this method returns
@@ -269,7 +264,6 @@ namespace ICU4N.Impl
             return GetPropertyOrValueEnum(0, alias);
         }
 
-#endif 
 
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
@@ -371,7 +365,6 @@ namespace ICU4N.Impl
         }
 
 
-#if FEATURE_SPAN
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
@@ -396,7 +389,6 @@ namespace ICU4N.Impl
             return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
         }
 
-#endif 
 
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
@@ -510,7 +502,6 @@ namespace ICU4N.Impl
         }
 
 
-#if FEATURE_SPAN
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
@@ -538,7 +529,6 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
         }
 
-#endif 
 
     }
 }

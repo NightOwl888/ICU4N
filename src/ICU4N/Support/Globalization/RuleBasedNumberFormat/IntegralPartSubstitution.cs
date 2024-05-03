@@ -3,7 +3,6 @@
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     //===================================================================
     // IntegralPartSubstitution
     //===================================================================
@@ -97,5 +96,4 @@ namespace ICU4N.Globalization
         /// </summary>
         private protected override char TokenChar => '<';
     }
-#endif
 }

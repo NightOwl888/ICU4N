@@ -274,7 +274,6 @@ namespace ICU4N.Text
         }
 
 
-#if FEATURE_SPAN
         /// <summary>
         /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
         /// <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
@@ -332,7 +331,6 @@ namespace ICU4N.Text
             }
             return single; // return unmatched surrogate
         }
-#endif 
 
 
         /// <summary>
@@ -459,7 +457,6 @@ namespace ICU4N.Text
         }
 
 
-#if FEATURE_SPAN
         /// <summary>
         /// Utility for getting a code point from a character sequence that contains exactly one code point.
         /// </summary>
@@ -489,7 +486,6 @@ namespace ICU4N.Text
             }
             return -1;
         }
-#endif 
 
 
         /// <summary>
@@ -644,7 +640,6 @@ namespace ICU4N.Text
         }
 
 
-#if FEATURE_SPAN
         /// <summary>
         /// Utility for comparing a code point to a string without having to create a new string. Returns the same results
         /// as a code point comparison of UTF16.ValueOf(codePoint) and s.ToString(). More specifically, if
@@ -677,7 +672,6 @@ namespace ICU4N.Text
             }
             return strLen == Character.CharCount(codePoint) ? 0 : -1;
         }
-#endif 
 
 
     }

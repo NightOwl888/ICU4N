@@ -10,8 +10,6 @@ namespace ICU4N
 {
     internal static class MemoryExtensions // ICU4N TODO: Clean up
     {
-#if FEATURE_SPAN
-
 #if !FEATURE_MEMORYEXTENSIONS_READONLYSPAN_EQUALS
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
@@ -395,8 +393,6 @@ namespace ICU4N
             if (comparisonType < StringComparison.CurrentCulture || comparisonType > StringComparison.OrdinalIgnoreCase)
                 throw new ArgumentOutOfRangeException(nameof(comparisonType));
         }
-#endif
-
 #endif
     }
 }

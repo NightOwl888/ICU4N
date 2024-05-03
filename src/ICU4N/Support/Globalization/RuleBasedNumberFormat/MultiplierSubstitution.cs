@@ -4,7 +4,6 @@ using System;
 
 namespace ICU4N.Globalization
 {
-#if FEATURE_SPAN
     //===================================================================
     // MultiplierSubstitution
     //===================================================================
@@ -172,5 +171,4 @@ namespace ICU4N.Globalization
         /// </summary>
         private protected override char TokenChar => '<';
     }
-#endif
 }

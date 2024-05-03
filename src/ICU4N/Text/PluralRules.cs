@@ -294,9 +294,6 @@ namespace ICU4N.Text
 #endif
     public class PluralRules : IPluralSelector
     {
-#if !FEATURE_SPAN
-        internal static readonly UnicodeSet ALLOWED_ID = new UnicodeSet("[a-z]").Freeze();
-#endif
 
         // TODO Remove RulesList by moving its API and fields into PluralRules.
         /// <internal/>
@@ -401,7 +398,6 @@ namespace ICU4N.Text
         /// </summary>
         private static readonly Rule DEFAULT_RULE = new Rule("other", NO_CONSTRAINT, null, null);
 
-#if FEATURE_SPAN
         /// <summary>
         /// Parses a plural rules <paramref name="description"/> and returns a <see cref="PluralRules"/>.
         /// <para/>
@@ -421,7 +417,7 @@ namespace ICU4N.Text
                 ThrowParseException(status, source.ToString(), context.ToString());
             return result;
         }
-#endif
+
         /// <summary>
         /// Parses a plural rules <paramref name="description"/> and returns a <see cref="PluralRules"/>.
         /// </summary>
@@ -435,19 +431,12 @@ namespace ICU4N.Text
             if (description is null)
                 throw new ArgumentNullException(nameof(description));
 
-#if FEATURE_SPAN
             ParseRuleStatus status = TryParseDescription(description.AsSpan(), out PluralRules result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
             if (status != ParseRuleStatus.OK)
                 ThrowParseException(status, source.ToString(), context.ToString());
-#else
-            ParseRuleStatus status = TryParseDescription(description, out PluralRules result, out string source, out string context);
-            if (status != ParseRuleStatus.OK)
-                ThrowParseException(status, source, context);
-#endif
             return result;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Parses a plural rules <paramref name="description"/> to its <see cref="PluralRules"/> equivalent.
         /// A return value indicates whether the conversion succeeded.
@@ -471,7 +460,7 @@ namespace ICU4N.Text
             ParseRuleStatus status = TryParseDescription(description, out result, out ReadOnlySpan<char> _, out ReadOnlySpan<char> _);
             return status == ParseRuleStatus.OK;
         }
-#endif
+
         /// <summary>
         /// Parses a plural rules <paramref name="description"/> to its <see cref="PluralRules"/> equivalent.
         /// A return value indicates whether the conversion succeeded.
@@ -491,15 +480,10 @@ namespace ICU4N.Text
             if (description is null)
                 throw new ArgumentNullException(nameof(description));
 
-#if FEATURE_SPAN
             ParseRuleStatus status = TryParseDescription(description.AsSpan(), out result, out ReadOnlySpan<char> _, out ReadOnlySpan<char> _);
-#else
-            ParseRuleStatus status = TryParseDescription(description, out result, out string _, out string _);
-#endif
             return status == ParseRuleStatus.OK;
         }
 
-#if FEATURE_SPAN
         internal static ParseRuleStatus TryParseDescription(ReadOnlySpan<char> description, out PluralRules result, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context)
         {
             result = default;
@@ -518,28 +502,7 @@ namespace ICU4N.Text
             result = new PluralRules(ruleList);
             return ParseRuleStatus.OK;
         }
-#else
-        internal static ParseRuleStatus TryParseDescription(string description, out PluralRules result, out string source, out string context)
-        {
-            result = default;
-            source = default;
-            context = description;
-            description = description.Trim();
-            if (description.Length == 0)
-            {
-                result = Default;
-                return ParseRuleStatus.OK;
-            }
-            ParseRuleStatus status = TryParseRuleChain(description, out RuleList ruleList, out source, out context);
-            if (status != ParseRuleStatus.OK)
-                return status;
 
-            result = new PluralRules(ruleList);
-            return ParseRuleStatus.OK;
-        }
-#endif
-
-#if FEATURE_SPAN
         /// <summary>
         /// Creates a <see cref="PluralRules"/> from a <paramref name="description"/> if it is parsable,
         /// otherwise returns <c>null</c>.
@@ -556,7 +519,6 @@ namespace ICU4N.Text
         {
             return TryParseDescription(description, out PluralRules result) ? result : null;
         }
-#endif
 
         /// <summary>
         /// Creates a <see cref="PluralRules"/> from a <paramref name="description"/> if it is parsable,
@@ -677,7 +639,6 @@ namespace ICU4N.Text
                 return false;
             }
 
-#if FEATURE_SPAN
             /// <summary>
             /// Converts the string representation of the name or numeric value of one or more enumerated constants
             /// to an equivalent symbol. A parameter specifies whether the operation is case-sensitive. The return
@@ -710,7 +671,6 @@ namespace ICU4N.Text
 
                 return false;
             }
-#endif
 
             // since all of the symbols are only 1 char, we use a char data type.
             [Obsolete("This API is ICU internal only.")]
@@ -996,7 +956,6 @@ namespace ICU4N.Text
                 }
             }
 
-#if FEATURE_SPAN
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
             // ICU4N: Replaced constructor to make parsing safe
@@ -1025,7 +984,6 @@ namespace ICU4N.Text
                     return value.Length - decimalPos;
                 }
             }
-#endif
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
@@ -1057,14 +1015,12 @@ namespace ICU4N.Text
                 return OperandExtensions.TryParse(value, ignoreCase: true, out result);
             }
 
-#if FEATURE_SPAN
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
             public static bool TryGetOperand(ReadOnlySpan<char> value, out Operand result) // ICU4N: Added to eliminate exceptions
             {
                 return OperandExtensions.TryParse(value, ignoreCase: true, out result);
             }
-#endif
 
             /// <summary>
             /// We're not going to care about NaN.
@@ -1125,7 +1081,6 @@ namespace ICU4N.Text
                 return (int)(decimalDigits + 37 * (visibleDecimalDigitCount + (int)(37 * source)));
             }
 
-#if FEATURE_SPAN
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
             public virtual ReadOnlySpan<char> AsSpan() // ICU4N: Added to patch platforms that don't implicitly convert string to ReadOnlySpan<char>
@@ -1136,7 +1091,6 @@ namespace ICU4N.Text
 #endif
                     ;
             }
-#endif
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
@@ -1280,7 +1234,6 @@ namespace ICU4N.Text
                 this.bounded = bounded;
             }
 
-#if FEATURE_SPAN
             /// <summary>
             /// Parse a list of the form described in CLDR. The <paramref name="text"/> must be trimmed.
             /// </summary>
@@ -1380,102 +1333,6 @@ namespace ICU4N.Text
                 result = new FixedDecimalSamples(sampleType2, samples2.AsReadOnly(), bounded2);
                 return ParseRuleStatus.OK;
             }
-#else
-            /// <summary>
-            /// Parse a list of the form described in CLDR. The <paramref name="source"/> must be trimmed.
-            /// </summary>
-            internal static ParseRuleStatus TryParse(string text, out FixedDecimalSamples result, out string source, out string context)
-            {
-                result = default;
-                source = default;
-                context = text;
-                PluralRulesSampleType sampleType2;
-                bool bounded2 = true;
-                bool haveBound = false;
-                ISet<FixedDecimalRange> samples2 = new JCG.LinkedHashSet<FixedDecimalRange>();
-
-                if (text.StartsWith("integer", StringComparison.Ordinal))
-                {
-                    sampleType2 = PluralRulesSampleType.Integer;
-                }
-                else if (text.StartsWith("decimal", StringComparison.Ordinal))
-                {
-                    sampleType2 = PluralRulesSampleType.Decimal;
-                }
-                else
-                {
-                    return ParseRuleStatus.SamplesMustStartWithIntOrDec;
-                }
-                text = text.Substring(7).Trim(); // remove both
-
-                foreach (string range in COMMA_SEPARATED.Split(text))
-                {
-                    // ICU4N specific - .NET Split() doesn't remove empty entries
-                    // from the end of the array. So, we skip them here.
-                    if (string.IsNullOrWhiteSpace(range))
-                    {
-                        continue;
-                    }
-
-                    if (range.Equals("…", StringComparison.Ordinal) || range.Equals("...", StringComparison.Ordinal))
-                    {
-                        bounded2 = false;
-                        haveBound = true;
-                        continue;
-                    }
-                    if (haveBound)
-                    {
-                        source = range;
-                        return ParseRuleStatus.MisplacedEndRangeBound;
-                    }
-                    string[] rangeParts = TILDE_SEPARATED.Split(range);
-                    switch (rangeParts.Length)
-                    {
-                        case 1:
-                            if (!FixedDecimal.TryParse(rangeParts[0], out FixedDecimal sample))
-                            {
-                                source = rangeParts[0];
-                                return ParseRuleStatus.RangeBoundMustBeFloat;
-                            }
-                            if (!TryCheckDecimal(sampleType2, sample))
-                            {
-                                source = sample.ToString();
-                                return ParseRuleStatus.IllformedNumberRange;
-                            }
-                            samples2.Add(new FixedDecimalRange(sample, sample));
-                            break;
-                        case 2:
-                            if (!FixedDecimal.TryParse(rangeParts[0], out FixedDecimal start))
-                            {
-                                source = rangeParts[0];
-                                return ParseRuleStatus.RangeBoundMustBeFloat;
-                            }
-                            if (!FixedDecimal.TryParse(rangeParts[1], out FixedDecimal end))
-                            {
-                                source = rangeParts[1];
-                                return ParseRuleStatus.RangeBoundMustBeFloat;
-                            }
-                            if (!TryCheckDecimal(sampleType2, start))
-                            {
-                                source = start.ToString();
-                                return ParseRuleStatus.IllformedNumberRange;
-                            }
-                            if (!TryCheckDecimal(sampleType2, end))
-                            {
-                                source = end.ToString();
-                                return ParseRuleStatus.IllformedNumberRange;
-                            }
-                            samples2.Add(new FixedDecimalRange(start, end));
-                            break;
-                        default:
-                            source = range;
-                            return ParseRuleStatus.IllformedNumberRange;
-                    }
-                }
-                result =  new FixedDecimalSamples(sampleType2, samples2.AsReadOnly(), bounded2);
-                return ParseRuleStatus.OK;
-            }
-#endif
 
             private static bool TryCheckDecimal(PluralRulesSampleType sampleType2, FixedDecimal sample)
             {
@@ -1609,7 +1466,6 @@ namespace ICU4N.Text
             }
         }
 
-#if FEATURE_SPAN
         internal ref struct SimpleTokenizerEnumerator
         {
             private static readonly UnicodeSet BreakAndIgnore = new UnicodeSet(0x09, 0x0a, 0x0c, 0x0d, 0x20, 0x20).Freeze();
@@ -1956,283 +1812,8 @@ namespace ICU4N.Text
         }
 #pragma warning restore CS9091 // This returns local 'enumerator' by reference but it is not a ref local
 
-#else
-
-        /*
-        * syntax:
-        * condition :       or_condition
-        *                   and_condition
-        * or_condition :    and_condition 'or' condition
-        * and_condition :   relation
-        *                   relation 'and' relation
-        * relation :        in_relation
-        *                   within_relation
-        * in_relation :     not? expr not? in not? range
-        * within_relation : not? expr not? 'within' not? range
-        * not :             'not'
-        *                   '!'
-        * expr :            'n'
-        *                   'n' mod value
-        * mod :             'mod'
-        *                   '%'
-        * in :              'in'
-        *                   'is'
-        *                   '='
-        *                   '≠'
-        * value :           digit+
-        * digit :           0|1|2|3|4|5|6|7|8|9
-        * range :           value'..'value
-        */
-        private static ParseRuleStatus TryParseConstraint(string description, out IConstraint result, out string token, out string condition)
-        {
-            result = default;
-            token = null;
-            condition = null;
-            string[] or_together = OR_SEPARATED.Split(description);
-            for (int i = 0; i < or_together.Length; ++i)
-            {
-                IConstraint andConstraint = null;
-                string[] and_together = AND_SEPARATED.Split(or_together[i]);
-                for (int j = 0; j < and_together.Length; ++j)
-                {
-                    IConstraint newConstraint = NO_CONSTRAINT;
-
-                    condition = and_together[j].Trim();
-                    string[] tokens = SimpleTokenizer.Split(condition);
-
-                    int mod = 0;
-                    bool inRange = true;
-                    bool integersOnly = true;
-                    double lowBound = long.MaxValue;
-                    double highBound = long.MinValue;
-                    long[] vals;
-
-                    int x = 0;
-                    token = tokens[x++];
-                    bool hackForCompatibility = false;
-#pragma warning disable 612, 618
-                    if (!FixedDecimal.TryGetOperand(token, out Operand operand))
-                    {
-                        return ParseRuleStatus.ConstraintInvalidOperand;
-                    }
-#pragma warning restore 612, 618
-                    if (x < tokens.Length)
-                    {
-                        token = tokens[x++];
-                        if (("mod".Equals(token, StringComparison.Ordinal) || "%".Equals(token, StringComparison.Ordinal)) && TryGetNextToken(tokens, ref x, out token))
-                        {
-                            // ICU4N NOTE: This overload allows non-ASCII digits
-                            if (!Integer.TryParse(token, radix: 10, out mod))
-                            {
-                                return ParseRuleStatus.ConstraintModulusMustBeDigits;
-                            }
-                            if (!TryGetNextToken(tokens, ref x, out token))
-                            {
-                                return ParseRuleStatus.ConstraintMissingToken;
-                            }
-                        }
-                        if ("not".Equals(token, StringComparison.Ordinal))
-                        {
-                            inRange = !inRange;
-                            if (!TryGetNextToken(tokens, ref x, out token))
-                            {
-                                return ParseRuleStatus.ConstraintMissingToken;
-                            }
-                            if ("=".Equals(token, StringComparison.Ordinal))
-                            {
-                                return ParseRuleStatus.ConstraintUnexpectedToken;
-                            }
-                        }
-                        else if ("!".Equals(token))
-                        {
-                            inRange = !inRange;
-                            if (!TryGetNextToken(tokens, ref x, out token))
-                            {
-                                return ParseRuleStatus.ConstraintMissingToken;
-                            }
-                            if (!"=".Equals(token, StringComparison.Ordinal)) // ICU4N NOTE: This is the inverse of "not" above
-                            {
-                                return ParseRuleStatus.ConstraintUnexpectedToken;
-                            }
-                        }
-                        if ("is".Equals(token, StringComparison.Ordinal) || "in".Equals(token, StringComparison.Ordinal) || "=".Equals(token, StringComparison.Ordinal))
-                        {
-                            hackForCompatibility = "is".Equals(token);
-                            if (hackForCompatibility && !inRange)
-                            {
-                                return ParseRuleStatus.ConstraintUnexpectedToken;
-                            }
-                            if (!TryGetNextToken(tokens, ref x, out token))
-                            {
-                                return ParseRuleStatus.ConstraintMissingToken;
-                            }
-                        }
-                        else if ("within".Equals(token, StringComparison.Ordinal))
-                        {
-                            integersOnly = false;
-                            if (!TryGetNextToken(tokens, ref x, out token))
-                            {
-                                return ParseRuleStatus.ConstraintMissingToken;
-                            }
-                        }
-                        else
-                        {
-                            return ParseRuleStatus.ConstraintUnexpectedToken;
-                        }
-                        if ("not".Equals(token, StringComparison.Ordinal))
-                        {
-                            if (!hackForCompatibility && !inRange)
-                            {
-                                return ParseRuleStatus.ConstraintUnexpectedToken;
-                            }
-                            inRange = !inRange;
-                            if (!TryGetNextToken(tokens, ref x, out token))
-                            {
-                                return ParseRuleStatus.ConstraintMissingToken;
-                            }
-                        }
-
-                        List<long> valueList = new List<long>();
-
-                        // the token t is always one item ahead
-                        while (true)
-                        {
-                            // ICU4N NOTE: This overload allows non-ASCII digits
-                            if (!Long.TryParse(token, radix: 10, out long low))
-                            {
-                                return ParseRuleStatus.ConstraintValueMustBeDigits;
-                            }
-                            long high = low;
-                            if (x < tokens.Length)
-                            {
-                                if (!TryGetNextToken(tokens, ref x, out token))
-                                {
-                                    return ParseRuleStatus.ConstraintMissingToken;
-                                }
-                                if (token.Equals(".", StringComparison.Ordinal))
-                                {
-                                    if (!TryGetNextToken(tokens, ref x, out token))
-                                    {
-                                        return ParseRuleStatus.ConstraintMissingToken;
-                                    }
-                                    if (!token.Equals(".", StringComparison.Ordinal))
-                                    {
-                                        return ParseRuleStatus.ConstraintUnexpectedToken;
-                                    }
-                                    if (!TryGetNextToken(tokens, ref x, out token))
-                                    {
-                                        return ParseRuleStatus.ConstraintMissingToken;
-                                    }
-                                    // ICU4N NOTE: This overload allows non-ASCII digits
-                                    if (!Long.TryParse(token, radix: 10, out high))
-                                    {
-                                        return ParseRuleStatus.ConstraintValueMustBeDigits;
-                                    }
-                                    if (x < tokens.Length)
-                                    {
-                                        if (!TryGetNextToken(tokens, ref x, out token))
-                                        {
-                                            return ParseRuleStatus.ConstraintMissingToken;
-                                        }
-                                        if (!token.Equals(",", StringComparison.Ordinal))
-                                        {
-                                            // adjacent number: 1 2
-                                            // no separator, fail
-                                            return ParseRuleStatus.ConstraintUnexpectedToken;
-                                        }
-                                    }
-                                }
-                                else if (!token.Equals(",", StringComparison.Ordinal))
-                                {
-                                    // adjacent number: 1 2
-                                    // no separator, fail
-                                    return ParseRuleStatus.ConstraintUnexpectedToken;
-                                }
-                            }
-                            // at this point, either we are out of tokens, or t is ','
-                            if (low > high)
-                            {
-                                token = low + "~" + high;
-                                return ParseRuleStatus.ConstraintUnexpectedToken;
-                            }
-                            else if (mod != 0 && high >= mod)
-                            {
-                                token = high + ">mod=" + mod;
-                                return ParseRuleStatus.ConstraintUnexpectedToken;
-                            }
-                            valueList.Add(low);
-                            valueList.Add(high);
-                            lowBound = Math.Min(lowBound, low);
-                            highBound = Math.Max(highBound, high);
-                            if (x >= tokens.Length)
-                            {
-                                break;
-                            }
-                            TryGetNextToken(tokens, ref x, out token);
-                        }
-
-                        if (token.Equals(",", StringComparison.Ordinal))
-                        {
-                            return ParseRuleStatus.ConstraintUnexpectedToken;
-                        }
-
-                        if (valueList.Count == 2)
-                        {
-                            vals = null;
-                        }
-                        else
-                        {
-                            vals = new long[valueList.Count];
-                            for (int k = 0; k < vals.Length; ++k)
-                            {
-                                vals[k] = valueList[k];
-                            }
-                        }
-
-                        // Hack to exclude "is not 1,2"
-                        if (lowBound != highBound && hackForCompatibility && !inRange)
-                        {
-                            token = "is not <range>";
-                            return ParseRuleStatus.ConstraintUnexpectedToken;
-                        }
-
-                        newConstraint = new RangeConstraint(mod, inRange, operand, integersOnly, lowBound, highBound, vals);
-                    }
-
-                    if (andConstraint == null)
-                    {
-                        andConstraint = newConstraint;
-                    }
-                    else
-                    {
-                        andConstraint = new AndConstraint(andConstraint, newConstraint);
-                    }
-                }
-
-                if (result == null)
-                {
-                    result = andConstraint;
-                }
-                else
-                {
-                    result = new OrConstraint(result, andConstraint);
-                }
-            }
-            return ParseRuleStatus.OK;
-        }
-
-        private static readonly Regex AT_SEPARATED = new Regex("\\s*@\\s*", RegexOptions.Compiled); // ICU4N: \E and \Q are not supported in .NET
-        private static readonly Regex OR_SEPARATED = new Regex("\\s*or\\s*", RegexOptions.Compiled);
-        private static readonly Regex AND_SEPARATED = new Regex("\\s*and\\s*", RegexOptions.Compiled);
-        private static readonly Regex COMMA_SEPARATED = new Regex("\\s*,\\s*", RegexOptions.Compiled);
-        private static readonly Regex DOTDOT_SEPARATED = new Regex("\\s*\\.\\.\\s*", RegexOptions.Compiled); // ICU4N: \E and \Q are not supported in .NET
-        private static readonly Regex TILDE_SEPARATED = new Regex("\\s*~\\s*", RegexOptions.Compiled);
-        private static readonly Regex SEMI_SEPARATED = new Regex("\\s*;\\s*", RegexOptions.Compiled);
-#endif
-
         // ICU4N: Removed Unexpected method and replaced with ThrowParseException()
 
-#if FEATURE_SPAN
         /// <summary>
         /// Retrieves the next token in <paramref name="enumerator"/>. If there are no tokens remaining, returns <c>false</c>.
         /// </summary>
@@ -2247,26 +1828,7 @@ namespace ICU4N.Text
             result = ReadOnlySpan<char>.Empty;
             return false;
         }
-#else
-        /// <summary>
-        /// Retrieves the token at <paramref name="x"/> if it doesn't go past the end of the <paramref name="tokens"/> array.
-        /// If <paramref name="x"/> is outside of the bounds of , returns <c>false</c>. Incrments the value of <paramref name="x"/>
-        /// after the token is retrieved.
-        /// </summary>
-        // ICU4N specific - converted NextToken method to TryGetNextToken for .NET
-        private static bool TryGetNextToken(string[] tokens, ref int x, out string result)
-        {
-            if (x >= 0 && x < tokens.Length)
-            {
-                result = tokens[x++];
-                return true;
-            }
-            result = default;
-            return false;
-        }
-#endif
 
-#if FEATURE_SPAN
         /// <summary>
         /// Syntax:
         /// rule : keyword ':' condition
@@ -2446,131 +2008,7 @@ namespace ICU4N.Text
             var result = new ReadOnlySpan<char>(tempArray, 0, actualLength);
             return result;
         }
-#else
 
-        /// <summary>
-        /// Syntax:
-        /// rule : keyword ':' condition
-        /// keyword: &lt;identifier&gt;
-        /// </summary>
-        // ICU4N: Refactored ParseRule into TryParseRule for compatibility with .NET
-        private static ParseRuleStatus TryParseRule(string description, out Rule result, out string source, out string context)
-        {
-            result = default;
-            source = default;
-            context = description;
-
-            if (description.Length == 0)
-            {
-                result = DEFAULT_RULE;
-                return ParseRuleStatus.OK;
-            }
-
-            int x = description.IndexOf(':');
-            if (x == -1)
-            {
-                return ParseRuleStatus.MissingColonInRule;
-            }
-
-            // ICU4N: Checked 2nd arg
-            return TryParseRule(description.Substring(0, x).Trim(), description.Substring(x + 1).Trim(), out result, out source, out context);
-        }
-
-        // ICU4N: Added overload for use by PluralRulesLoader so it doesn't have to use StringBuilder
-        internal static bool TryParseRule(string keyword, string description, out Rule result)
-        {
-            return TryParseRule(keyword, description, out result, out string _, out string _) == ParseRuleStatus.OK;
-        }
-
-        /// <summary>
-        /// Syntax:
-        /// rule : keyword ':' condition
-        /// keyword: &lt;identifier&gt;
-        /// </summary>
-        // ICU4N: Added overload for use by PluralRulesLoader so it doesn't have to use StringBuilder
-        private static ParseRuleStatus TryParseRule(string keyword, string description, out Rule result, out string source, out string context)
-        {
-            result = default;
-            source = default;
-            context = description;
-
-            if (description.Length == 0)
-            {
-                result = DEFAULT_RULE;
-                return ParseRuleStatus.OK;
-            }
-
-            keyword = keyword.ToLowerInvariant();
-            if (!IsValidKeyword(keyword))
-            {
-                source = keyword;
-                return ParseRuleStatus.KeywordInvalid;
-            }
-
-            description = description.ToLowerInvariant();
-
-            string[] constraintOrSamples = AT_SEPARATED.Split(description);
-            bool sampleFailure = false;
-#pragma warning disable 612, 618
-            FixedDecimalSamples integerSamples = null, decimalSamples = null;
-            ParseRuleStatus status;
-            switch (constraintOrSamples.Length)
-            {
-                case 1: break;
-                case 2:
-                    if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[1], out integerSamples, out source, out context)) != ParseRuleStatus.OK)
-                        return status;
-                    if (integerSamples.sampleType == PluralRulesSampleType.Decimal)
-                    {
-                        decimalSamples = integerSamples;
-                        integerSamples = null;
-                    }
-                    break;
-                case 3:
-                    if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[1], out integerSamples, out source, out context)) != ParseRuleStatus.OK)
-                        return status;
-                    if ((status = FixedDecimalSamples.TryParse(constraintOrSamples[2], out decimalSamples, out source, out context)) != ParseRuleStatus.OK)
-                        return status;
-                    if (integerSamples.sampleType != PluralRulesSampleType.Integer || decimalSamples.sampleType != PluralRulesSampleType.Decimal) // ICU4N TODO: This can never fail - should assert
-#pragma warning restore 612, 618
-                    {
-                        return ParseRuleStatus.StringMustHaveIntOrDec;
-                    }
-                    break;
-                default:
-                    source = keyword;
-                    return ParseRuleStatus.TooManySamples;
-            }
-            // ICU4N TODO: This is completely unused
-            if (sampleFailure)
-            {
-                return ParseRuleStatus.IllformedSamplesAtChar;
-            }
-
-            // 'other' is special, and must have no rules; all other keywords must have rules.
-            bool isOther = keyword.Equals("other", StringComparison.Ordinal);
-            if (isOther != (constraintOrSamples[0].Length == 0))
-            {
-                context = description;
-                return ParseRuleStatus.KeywordOtherMustNotHaveConstraints;
-            }
-
-            IConstraint constraint;
-            if (isOther)
-            {
-                constraint = NO_CONSTRAINT;
-            }
-            else
-            {
-                if ((status = TryParseConstraint(constraintOrSamples[0], out constraint, out source, out context)) != ParseRuleStatus.OK)
-                    return status;
-            }
-            result = new Rule(keyword, constraint, integerSamples, decimalSamples);
-            return ParseRuleStatus.OK;
-        }
-#endif
-
-#if FEATURE_SPAN
         /// <summary>
         /// Syntax:
         /// rules : rule
@@ -2600,36 +2038,6 @@ namespace ICU4N.Text
             result = result.Finish();
             return ParseRuleStatus.OK;
         }
-#else
-
-        /// <summary>
-        /// Syntax:
-        /// rules : rule
-        ///         rule ';' rules
-        /// </summary>
-        private static ParseRuleStatus TryParseRuleChain(string description, out RuleList result, out string source, out string context)
-        {
-            source = default;
-            context = description;
-            result = new RuleList();
-            // remove trailing ;
-            if (description.EndsWith(";", StringComparison.Ordinal))
-            {
-                description = description.Substring(0, description.Length - 1); // ICU4N: Checked 2nd arg
-            }
-            ParseRuleStatus status;
-            string[] rules = SEMI_SEPARATED.Split(description);
-            for (int i = 0; i < rules.Length; ++i)
-            {
-                if ((status = TryParseRule(rules[i].Trim(), out Rule rule, out source, out context)) != ParseRuleStatus.OK)
-                    return status;
-
-                result.AddRule(rule);
-            }
-            result = result.Finish();
-            return ParseRuleStatus.OK;
-        }
-#endif
 
         /// <summary>
         /// A status that is used to determine whether a parse result succeeded or failed in a specific way.
@@ -3076,15 +2484,9 @@ namespace ICU4N.Text
                     // ICU4N: Hard-coded rule will always succeed unless TryParseRule has a bug. So, we don't need a try version of this method.
 
                     // make sure we have always have an 'other' a rule
-#if FEATURE_SPAN
                     ParseRuleStatus status = TryParseRule("other:".AsSpan(), out otherRule, out ReadOnlySpan<char> source, out ReadOnlySpan<char> context);
                     if (status != ParseRuleStatus.OK)
                         ThrowParseException(status, source.ToString(), context.ToString());
-#else
-                    ParseRuleStatus status = TryParseRule("other:", out otherRule, out string source, out string context);
-                    if (status != ParseRuleStatus.OK)
-                        ThrowParseException(status, source, context);
-#endif
                 }
                 rules.Add("other", otherRule);
                 return this;
@@ -3384,7 +2786,6 @@ namespace ICU4N.Text
 #pragma warning restore 612, 618
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Checks whether a <paramref name="token"/> is a valid keyword.
         /// </summary>
@@ -3399,18 +2800,6 @@ namespace ICU4N.Text
             }
             return true;
         }
-#else
-
-        /// <summary>
-        /// Checks whether a <paramref name="token"/> is a valid keyword.
-        /// </summary>
-        /// <param name="token">The token to be checked.</param>
-        /// <returns>true if the token is a valid keyword.</returns>
-        private static bool IsValidKeyword(string token)
-        {
-            return ALLOWED_ID.IsSupersetOf(token);
-        }
-#endif
 
         /// <summary>
         /// Creates a new <see cref="PluralRules"/> object. Immutable.

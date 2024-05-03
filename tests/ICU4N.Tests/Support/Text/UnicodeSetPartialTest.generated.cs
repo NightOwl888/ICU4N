@@ -108,7 +108,6 @@ namespace ICU4N.Text
             assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv2));
         }
 
-#if FEATURE_SPAN
 
 
         [Test]
@@ -131,7 +130,6 @@ namespace ICU4N.Text
             assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv1));
             assertFalse($"{methodName}: The word sets are equal", aThruFSet.SetEquals(nonEquiv2));
         }
-#endif 
 
     
 
@@ -293,7 +291,6 @@ namespace ICU4N.Text
             assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSupersetOf(equivSuperset));
         }
 
-#if FEATURE_SPAN
 
 
         [Test]
@@ -316,7 +313,6 @@ namespace ICU4N.Text
             assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSupersetOf(equivSuperset));
             assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSupersetOf(equivSuperset));
         }
-#endif 
 
     
 
@@ -510,7 +506,6 @@ namespace ICU4N.Text
             assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSupersetOf(equivSuperset));
         }
 
-#if FEATURE_SPAN
 
 
         [Test]
@@ -533,7 +528,6 @@ namespace ICU4N.Text
             assertFalse($"{methodName}: {nameof(aThruFSet)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSupersetOf(equivSuperset));
             assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSupersetOf(equivSuperset));
         }
-#endif 
 
     
 
@@ -715,7 +709,6 @@ namespace ICU4N.Text
             assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSubsetOf(equivSuperset));
         }
 
-#if FEATURE_SPAN
 
 
         [Test]
@@ -739,7 +732,6 @@ namespace ICU4N.Text
             assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsSubsetOf(equivSuperset));
             assertTrue($"{methodName}: {nameof(aThruFSuperset)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsSubsetOf(equivSuperset));
         }
-#endif 
 
     
 
@@ -933,7 +925,6 @@ namespace ICU4N.Text
             assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSubsetOf(equivSuperset));
         }
 
-#if FEATURE_SPAN
 
 
         [Test]
@@ -956,7 +947,6 @@ namespace ICU4N.Text
             assertTrue($"{methodName}: {nameof(aThruFSet)} is not a {setOperation} of {nameof(equivSuperset)}", aThruFSet.IsProperSubsetOf(equivSuperset));
             assertFalse($"{methodName}: {nameof(aThruFSuperset)} is a {setOperation} of {nameof(equivSuperset)}", aThruFSuperset.IsProperSubsetOf(equivSuperset));
         }
-#endif 
 
     
 
@@ -1142,7 +1132,6 @@ namespace ICU4N.Text
             assertFalse($"{methodName}: {nameof(thaiWordSet)} does {setOperation} with {nameof(equivSet)}", thaiWordSet.Overlaps(equivSet));
         }
 
-#if FEATURE_SPAN
 
 
         [Test]
@@ -1163,7 +1152,6 @@ namespace ICU4N.Text
             assertTrue($"{methodName}: {nameof(aThruFSet)} does not {setOperation} with {nameof(equivSuperset)}", aThruFSet.Overlaps(equivSuperset));
             assertFalse($"{methodName}: {nameof(thaiWordSet)} does {setOperation} with {nameof(equivSet)}", thaiWordSet.Overlaps(equivSet));
         }
-#endif 
 
     
 

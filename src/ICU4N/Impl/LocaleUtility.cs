@@ -265,7 +265,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
         private static string? FallbackAsString(string name, char separator = '_')
         {
             // ICU4N: Using LocaleIDParser for more accurate results
-#if FEATURE_SPAN
             var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], name);
             int bufferLength = name.Length + 5;
             Span<char> result = bufferLength <= CharStackBufferSize ? stackalloc char[bufferLength] : new char[bufferLength];
@@ -303,32 +302,6 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Impl namespace
             if (totalLength == 0) return null;
 
             return result.Slice(0, totalLength).ToString();
-#else
-            using var parser = new LocaleIDParser(name);
-
-            // Split the locale into parts and remove the rightmost part
-            const int language = 0;
-            const int country = 1;
-            const int variant = 2;
-
-            string[] parts = new string[] { parser.GetLanguage(), parser.GetCountry(), parser.GetVariant() };
-            int i;
-            for (i = 2; i >= 0; --i)
-            {
-                if (parts[i].Length != 0)
-                {
-                    parts[i] = string.Empty;
-                    break;
-                }
-            }
-            if (i < 0)
-            {
-                return null; // All parts were empty
-            }
-            return string.Concat(parts[language],
-                (parts[country].Length > 0 ? separator + parts[country] : string.Empty),
-                (parts[variant].Length > 0 ? separator + parts[variant] : string.Empty));
-#endif
         }
 
 #nullable restore

@@ -59,7 +59,6 @@ namespace ICU4N.Numerics
             return Insert(length, sequence, field);
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Appends the specified <see cref="ReadOnlySpan{Char}"/> to the end of the string.
         /// </summary>
@@ -70,7 +69,6 @@ namespace ICU4N.Numerics
         {
             return Insert(length, sequence, field);
         }
-#endif 
 
         /// <summary>
         /// Inserts the specified <see cref="string"/> at the specified index in the string.
@@ -176,7 +174,6 @@ namespace ICU4N.Numerics
             }
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Inserts the specified <see cref="ReadOnlySpan{Char}"/> at the specified index in the string.
         /// </summary>
@@ -202,7 +199,6 @@ namespace ICU4N.Numerics
                 return Insert(index, sequence, 0, sequence.Length, field);
             }
         }
-#endif 
 
         /// <summary>
         /// Inserts the specified <see cref="string"/> at the specified index in the string, reading from the
@@ -288,7 +284,6 @@ namespace ICU4N.Numerics
             return length;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Inserts the specified <see cref="ReadOnlySpan{Char}"/> at the specified index in the string, reading from the
         /// <see cref="ReadOnlySpan{Char}"/> from <paramref name="startIndex"/> and including <paramref name="length"/> characters.
@@ -309,7 +304,6 @@ namespace ICU4N.Numerics
             }
             return length;
         }
-#endif 
 
     }
 }

@@ -133,11 +133,7 @@ namespace ICU4N.Globalization
                 }
 
                 var collationName = culture.CompareInfo?.Name;
-#if FEATURE_SPAN
                 using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], string.Empty);
-#else
-                using var parser = new LocaleIDParser(string.Empty);
-#endif
                 bool collationFound = false;
 
                 if (!string.IsNullOrEmpty(collationName))
@@ -360,11 +356,7 @@ namespace ICU4N.Globalization
 
             private static string ICUBaseNameToCultureInfoName(string baseName)
             {
-#if FEATURE_SPAN
                 using var parser = new LocaleIDParser(stackalloc char[CharStackBufferSize], baseName);
-#else
-                using var parser = new LocaleIDParser(baseName);
-#endif
                 return parser.GetName();
             }
         }

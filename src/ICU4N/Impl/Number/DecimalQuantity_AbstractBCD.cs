@@ -526,24 +526,14 @@ namespace ICU4N.Numerics
                 // Case 1: Exponential notation.
                 Debug.Assert(dstr.IndexOf('.') == 1);
                 int expPos = dstr.IndexOf('E');
-#if FEATURE_SPAN
                 SetToLongImpl(long.Parse(StringHelper.Concat(dstr.AsSpan(0, 1), dstr.AsSpan(2, expPos - 2)), CultureInfo.InvariantCulture)); // ICU4N: Corrected 2nd arg.
                 scale += J2N.Numerics.Int32.Parse(dstr.AsSpan(expPos + 1), NumberStyle.Integer, CultureInfo.InvariantCulture) - (expPos - 1) + 1;
-#else
-                SetToLongImpl(long.Parse(dstr[0] + dstr.Substring(2, expPos - 2), CultureInfo.InvariantCulture)); // ICU4N: Corrected 2nd arg.
-                scale += J2N.Numerics.Int32.Parse(dstr, startIndex: expPos + 1, length: dstr.Length - (expPos + 1), radix: 10) - (expPos - 1) + 1;
-#endif
-
             }
             else if (dstr[0] == '0')
             {
                 // Case 2: Fraction-only number.
                 Debug.Assert(dstr.IndexOf('.') == 1);
-#if FEATURE_SPAN
                 SetToLongImpl(J2N.Numerics.Int64.Parse(dstr.AsSpan(2), NumberStyle.None, CultureInfo.InvariantCulture));
-#else
-                SetToLongImpl(J2N.Numerics.Int64.Parse(dstr, startIndex: 2, length: dstr.Length - 2, radix: 10));
-#endif
                 scale += 2 - dstr.Length;
             }
             else if (dstr[dstr.Length - 1] == '0')
@@ -553,23 +543,14 @@ namespace ICU4N.Numerics
                 // before the approximate double logic is performed.
                 Debug.Assert(dstr.IndexOf('.') == dstr.Length - 2);
                 Debug.Assert(dstr.Length - 2 <= 18);
-#if FEATURE_SPAN
                 SetToLongImpl(J2N.Numerics.Int64.Parse(dstr.AsSpan(0, dstr.Length - 2), NumberStyle.None, CultureInfo.InvariantCulture)); // ICU4N: Checked 2nd arg
                                                                                                                              // no need to adjust scale
-#else
-                SetToLongImpl(J2N.Numerics.Int64.Parse(dstr, startIndex: 0, length: dstr.Length - 2, radix:10)); // ICU4N: Checked 2nd arg
-                                                                                                             // no need to adjust scale
-#endif
             }
             else
             {
                 // Case 4: Number with both a fraction and an integer.
                 int decimalPos = dstr.IndexOf('.');
-#if FEATURE_SPAN
                 SetToLongImpl(long.Parse(StringHelper.Concat(dstr.AsSpan(0, decimalPos), dstr.AsSpan(decimalPos + 1)), CultureInfo.InvariantCulture)); // ICU4N: Checked 2nd arg
-#else
-                SetToLongImpl(long.Parse(dstr.Substring(0, decimalPos) + dstr.Substring(decimalPos + 1), CultureInfo.InvariantCulture)); // ICU4N: Checked 2nd arg
-#endif
                 scale += decimalPos - dstr.Length + 1;
             }
 

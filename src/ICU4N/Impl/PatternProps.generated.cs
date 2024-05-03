@@ -66,7 +66,6 @@ namespace ICU4N.Impl
             return i;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Skips over Pattern_White_Space starting at index i of the string.
         /// </summary>
@@ -79,7 +78,6 @@ namespace ICU4N.Impl
             }
             return i;
         }
-#endif 
 
         /// <summary>
         /// Tests whether the string contains a "pattern identifier", that is,
@@ -177,7 +175,6 @@ namespace ICU4N.Impl
             return true;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Tests whether the string contains a "pattern identifier", that is,
         /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
@@ -201,7 +198,6 @@ namespace ICU4N.Impl
             } while (start < limit);
             return true;
         }
-#endif 
 
         /// <summary>
         /// Tests whether the string contains a "pattern identifier", that is,
@@ -299,7 +295,6 @@ namespace ICU4N.Impl
             return true;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Tests whether the string contains a "pattern identifier", that is,
         /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
@@ -323,7 +318,6 @@ namespace ICU4N.Impl
             } while (start < limit);
             return true;
         }
-#endif 
 
         /// <summary>
         /// Skips over a "pattern identifier" starting at index <paramref name="i"/> of the string.
@@ -389,7 +383,6 @@ namespace ICU4N.Impl
             return i;
         }
 
-#if FEATURE_SPAN
         /// <summary>
         /// Skips over a "pattern identifier" starting at index <paramref name="i"/> of the string.
         /// </summary>
@@ -405,7 +398,6 @@ namespace ICU4N.Impl
             }
             return i;
         }
-#endif 
 
     }
 }
