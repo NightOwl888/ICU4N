@@ -61,14 +61,21 @@ namespace ICU4N.Dev.Test.Normalizers
                 Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToUnicode(fA\u00DF.de) info.errors={0} result matches={1}",
                                     info.Errors, resultString.Equals("fass.de")));
             }
+
+            ValueStringBuilder result2 = new ValueStringBuilder(stackalloc char[16]);
+            result2.Append(result);
             try
             {
-                nontrans.LabelToUnicode(result, result, info);
+                nontrans.LabelToUnicode(result2.AsSpan(), ref result2, info);
                 Errln("N.labelToUnicode(result, result) did not throw an Exception");
             }
             catch (Exception e)
             {
                 // as expected (should be an IllegalArgumentException, or an ICU version of it)
+            }
+            finally
+            {
+                result2.Dispose();
             }
         }
 
@@ -480,6 +487,7 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void TestSomeCases()
         {
+            // ICU4N TODO: Replace these with OpenStringBuilder or ValueStringBuilder instances
             StringBuilder aT = new StringBuilder(), uT = new StringBuilder();
             StringBuilder aN = new StringBuilder(), uN = new StringBuilder();
             IDNAInfo aTInfo = new IDNAInfo(), uTInfo = new IDNAInfo();
@@ -592,10 +600,10 @@ namespace ICU4N.Dev.Test.Normalizers
                 // second-level processing
                 try
                 {
-                    nontrans.NameToUnicode(aT, aTuN, aTuNInfo);
-                    nontrans.NameToASCII(uT, uTaN, uTaNInfo);
-                    nontrans.NameToUnicode(aN, aNuN, aNuNInfo);
-                    nontrans.NameToASCII(uN, uNaN, uNaNInfo);
+                    nontrans.NameToUnicode(aT.ToString(), aTuN, aTuNInfo);
+                    nontrans.NameToASCII(uT.ToString(), uTaN, uTaNInfo);
+                    nontrans.NameToUnicode(aN.ToString(), aNuN, aNuNInfo);
+                    nontrans.NameToASCII(uN.ToString(), uNaN, uNaNInfo);
                 }
                 catch (Exception e)
                 {

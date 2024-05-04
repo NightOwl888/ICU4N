@@ -1,6 +1,8 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Support.Text;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using JCG = J2N.Collections.Generic;
 using StringBuffer = System.Text.StringBuilder;
 
@@ -210,6 +212,8 @@ namespace ICU4N.Text
     /// <stable>ICU 2.8</stable>
     public abstract partial class IDNA
     {
+        internal const int CharStackBufferSize = 64;
+
         // ICU4N specific - options moved to UTS46Options and IDNA2003Options
         // [Flags] enums
 
@@ -247,11 +251,284 @@ namespace ICU4N.Text
 
         // ICU4N specific - LabelToASCII(ICharSequence label, StringBuilder dest, Info info) moved to IDNA.generated.tt
 
+        // ICU4N TODO: Since we are managing memory reuse internally, the below public methods should be changed
+        // to return string instead of StringBuilder. StringBuilder is not a form that is very useful because
+        // 1. It cannot be converted to ReadOnlySpan<char> without allocating again
+        // 2. Indexing the StringBuilder to read the chars is very slow in .NET
+        //
+        // We should also add a Try... version of each method so there is an end user path that allows use of the stack.
+        // Although, guessing the amount of memory to allocate up front isn't nearly as simple as using ValueStringBuilder.
+
+        /// <summary>
+        /// Converts a single domain name label into its ASCII form for DNS lookup.
+        /// If any processing step fails, then info.HasErrors will be true and
+        /// the result might not be an ASCII string.
+        /// The label might be modified according to the types of errors.
+        /// Labels with severe errors will be left in (or turned into) their Unicode form.
+        /// </summary>
+        /// <param name="label">Input domain name label.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        public virtual StringBuilder LabelToASCII(string label, StringBuilder dest, IDNAInfo info)
+        {
+            if (label is null)
+                throw new ArgumentNullException(nameof(label));
+
+            return LabelToASCII(label.AsSpan(), dest, info);
+        }
+
+        /// <summary>
+        /// Converts a single domain name label into its ASCII form for DNS lookup.
+        /// If any processing step fails, then info.HasErrors will be true and
+        /// the result might not be an ASCII string.
+        /// The label might be modified according to the types of errors.
+        /// Labels with severe errors will be left in (or turned into) their Unicode form.
+        /// </summary>
+        /// <param name="label">Input domain name label.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        public abstract StringBuilder LabelToASCII(ReadOnlySpan<char> label, StringBuilder dest, IDNAInfo info);
+
+        /// <summary>
+        /// Converts a single domain name label into its ASCII form for DNS lookup.
+        /// If any processing step fails, then info.HasErrors will be true and
+        /// the result might not be an ASCII string.
+        /// The label might be modified according to the types of errors.
+        /// Labels with severe errors will be left in (or turned into) their Unicode form.
+        /// </summary>
+        /// <param name="label">Input domain name label.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <draft>ICU 60.1</draft>
+        internal virtual void LabelToASCII(string label, ref ValueStringBuilder dest, IDNAInfo info)
+        {
+            if (label is null)
+                throw new ArgumentNullException(nameof(label));
+
+            LabelToASCII(label.AsSpan(), ref dest, info);
+        }
+
+        /// <summary>
+        /// Converts a single domain name label into its ASCII form for DNS lookup.
+        /// If any processing step fails, then info.HasErrors will be true and
+        /// the result might not be an ASCII string.
+        /// The label might be modified according to the types of errors.
+        /// Labels with severe errors will be left in (or turned into) their Unicode form.
+        /// </summary>
+        /// <param name="label">Input domain name label.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <draft>ICU 60.1</draft>
+        internal virtual void LabelToASCII(ReadOnlySpan<char> label, ref ValueStringBuilder dest, IDNAInfo info)
+        {
+            throw new NotSupportedException();
+        }
+
         // ICU4N specific - LabelToUnicode(ICharSequence label, StringBuilder dest, Info info) moved to IDNA.generated.tt
+
+        /// <summary>
+        /// Converts a single domain name label into its Unicode form for human-readable display.
+        /// If any processing step fails, then info.HasErrors will be true.
+        /// The label might be modified according to the types of errors.
+        /// </summary>
+        /// <param name="label">Input domain name label.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        public virtual StringBuilder LabelToUnicode(string label, StringBuilder dest, IDNAInfo info)
+        {
+            if (label is null)
+                throw new ArgumentNullException(nameof(label));
+
+            return LabelToUnicode(label.AsSpan(), dest, info);
+        }
+
+        /// <summary>
+        /// Converts a single domain name label into its Unicode form for human-readable display.
+        /// If any processing step fails, then info.HasErrors will be true.
+        /// The label might be modified according to the types of errors.
+        /// </summary>
+        /// <param name="label">Input domain name label.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        public abstract StringBuilder LabelToUnicode(ReadOnlySpan<char> label, StringBuilder dest, IDNAInfo info);
+
+        /// <summary>
+        /// Converts a single domain name label into its Unicode form for human-readable display.
+        /// If any processing step fails, then info.HasErrors will be true.
+        /// The label might be modified according to the types of errors.
+        /// </summary>
+        /// <param name="label">Input domain name label.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <draft>ICU 60.1</draft>
+        internal virtual void LabelToUnicode(string label, ref ValueStringBuilder dest, IDNAInfo info)
+        {
+            if (label is null)
+                throw new ArgumentNullException(nameof(label));
+
+            LabelToUnicode(label.AsSpan(), ref dest, info);
+        }
+
+        /// <summary>
+        /// Converts a single domain name label into its Unicode form for human-readable display.
+        /// If any processing step fails, then info.HasErrors will be true.
+        /// The label might be modified according to the types of errors.
+        /// </summary>
+        /// <param name="label">Input domain name label.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <draft>ICU 60.1</draft>
+        internal virtual void LabelToUnicode(ReadOnlySpan<char> label, ref ValueStringBuilder dest, IDNAInfo info)
+        {
+            throw new NotSupportedException();
+        }
 
         // ICU4N specific - NameToASCII(ICharSequence name, StringBuilder dest, Info info) moved to IDNA.generated.tt
 
+
+        /// <summary>
+        /// Converts a whole domain name into its ASCII form for DNS lookup.
+        /// If any processing step fails, then info.HasErrors will be true and
+        /// the result might not be an ASCII string.
+        /// The domain name might be modified according to the types of errors.
+        /// Labels with severe errors will be left in (or turned into) their Unicode form.
+        /// </summary>
+        /// <param name="name">Input domain name.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        public virtual StringBuilder NameToASCII(string name, StringBuilder dest, IDNAInfo info)
+        {
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
+
+            return NameToASCII(name.AsSpan(), dest, info);
+        }
+
+        /// <summary>
+        /// Converts a whole domain name into its ASCII form for DNS lookup.
+        /// If any processing step fails, then info.HasErrors will be true and
+        /// the result might not be an ASCII string.
+        /// The domain name might be modified according to the types of errors.
+        /// Labels with severe errors will be left in (or turned into) their Unicode form.
+        /// </summary>
+        /// <param name="name">Input domain name.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        public abstract StringBuilder NameToASCII(ReadOnlySpan<char> name, StringBuilder dest, IDNAInfo info);
+
+        /// <summary>
+        /// Converts a whole domain name into its ASCII form for DNS lookup.
+        /// If any processing step fails, then info.HasErrors will be true and
+        /// the result might not be an ASCII string.
+        /// The domain name might be modified according to the types of errors.
+        /// Labels with severe errors will be left in (or turned into) their Unicode form.
+        /// </summary>
+        /// <param name="name">Input domain name.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <draft>ICU 60.1</draft>
+        internal virtual void NameToASCII(string name, ref ValueStringBuilder dest, IDNAInfo info)
+        {
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
+
+            NameToASCII(name.AsSpan(), ref dest, info);
+        }
+
+        /// <summary>
+        /// Converts a whole domain name into its ASCII form for DNS lookup.
+        /// If any processing step fails, then info.HasErrors will be true and
+        /// the result might not be an ASCII string.
+        /// The domain name might be modified according to the types of errors.
+        /// Labels with severe errors will be left in (or turned into) their Unicode form.
+        /// </summary>
+        /// <param name="name">Input domain name.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <draft>ICU 60.1</draft>
+        internal virtual void NameToASCII(ReadOnlySpan<char> name, ref ValueStringBuilder dest, IDNAInfo info)
+        {
+            throw new NotSupportedException();
+        }
+
         // ICU4N specific - NameToUnicode(ICharSequence name, StringBuilder dest, Info info) moved to IDNA.generated.tt
+
+        /// <summary>
+        /// Converts a whole domain name into its Unicode form for human-readable display.
+        /// If any processing step fails, then info.HasErrors will be true.
+        /// The domain name might be modified according to the types of errors.
+        /// </summary>
+        /// <param name="name">Input domain name.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        public virtual StringBuilder NameToUnicode(string name, StringBuilder dest, IDNAInfo info)
+        {
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
+
+            return NameToUnicode(name.AsSpan(), dest, info);
+        }
+
+        /// <summary>
+        /// Converts a whole domain name into its Unicode form for human-readable display.
+        /// If any processing step fails, then info.HasErrors will be true.
+        /// The domain name might be modified according to the types of errors.
+        /// </summary>
+        /// <param name="name">Input domain name.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        public abstract StringBuilder NameToUnicode(ReadOnlySpan<char> name, StringBuilder dest, IDNAInfo info);
+
+        /// <summary>
+        /// Converts a whole domain name into its Unicode form for human-readable display.
+        /// If any processing step fails, then info.HasErrors will be true.
+        /// The domain name might be modified according to the types of errors.
+        /// </summary>
+        /// <param name="name">Input domain name.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <draft>ICU 60.1</draft>
+        internal virtual void NameToUnicode(string name, ref ValueStringBuilder dest, IDNAInfo info)
+        {
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
+
+            NameToUnicode(name.AsSpan(), ref dest, info);
+        }
+
+        /// <summary>
+        /// Converts a whole domain name into its Unicode form for human-readable display.
+        /// If any processing step fails, then info.HasErrors will be true.
+        /// The domain name might be modified according to the types of errors.
+        /// </summary>
+        /// <param name="name">Input domain name.</param>
+        /// <param name="dest">Destination string object.</param>
+        /// <param name="info">Output container of IDNA processing details.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <draft>ICU 60.1</draft>
+        internal virtual void NameToUnicode(ReadOnlySpan<char> name, ref ValueStringBuilder dest, IDNAInfo info)
+        {
+            throw new NotSupportedException();
+        }
 
         // ICU4N specific - De-nested Info class and renamed IDNAInfo
 

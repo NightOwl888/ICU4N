@@ -2668,35 +2668,43 @@ namespace ICU4N.Dev.Test.Normalizers
             // For each character about which we are unsure, see if it changes when we add
             // one of the back-combining characters.
             Normalizer2 norm2 = Normalizer2.NFCInstance;
-            StringBuilder s = new StringBuilder();
-            iter.Reset(unsure);
-            while (iter.Next())
+            ValueStringBuilder s = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                int c = iter.Codepoint;
-                s.Delete(0, 0x7fffffff - 0).AppendCodePoint(c); // ICU4N: Corrected 2nd parameter of Delete
-                int cLength = s.Length;
-                int tccc = UChar.GetIntPropertyValue(c, UProperty.Trail_Canonical_Combining_Class);
-                for (int i = 0; i < numCombineBack; ++i)
+                iter.Reset(unsure);
+                while (iter.Next())
                 {
-                    // If c's decomposition ends with a character with non-zero combining class, then
-                    // c can only change if it combines with a character with a non-zero combining class.
-                    int cc2 = combineBackCharsAndCc[2 * i + 1];
-                    if (tccc == 0 || cc2 != 0)
+                    int c = iter.Codepoint;
+                    s.Delete(0, 0x7fffffff - 0); // ICU4N: Corrected 2nd parameter of Delete
+                    s.AppendCodePoint(c);
+                    int cLength = s.Length;
+                    int tccc = UChar.GetIntPropertyValue(c, UProperty.Trail_Canonical_Combining_Class);
+                    for (int i = 0; i < numCombineBack; ++i)
                     {
-                        int c2 = combineBackCharsAndCc[2 * i];
-                        s.AppendCodePoint(c2);
-                        if (!norm2.IsNormalized(s))
+                        // If c's decomposition ends with a character with non-zero combining class, then
+                        // c can only change if it combines with a character with a non-zero combining class.
+                        int cc2 = combineBackCharsAndCc[2 * i + 1];
+                        if (tccc == 0 || cc2 != 0)
                         {
-                            // System.out.format("remove U+%04x (tccc=%d) + U+%04x (cc=%d)\n", c, tccc, c2, cc2);
-                            skipSets[C].Remove(c);
-                            skipSets[KC].Remove(c);
-                            break;
+                            int c2 = combineBackCharsAndCc[2 * i];
+                            s.AppendCodePoint(c2);
+                            if (!norm2.IsNormalized(s.AsSpan()))
+                            {
+                                // System.out.format("remove U+%04x (tccc=%d) + U+%04x (cc=%d)\n", c, tccc, c2, cc2);
+                                skipSets[C].Remove(c);
+                                skipSets[KC].Remove(c);
+                                break;
+                            }
+                            s.Delete(cLength, 0x7fffffff - cLength); // ICU4N: Corrected 2nd parameter of Delete
                         }
-                        s.Delete(cLength, 0x7fffffff - cLength); // ICU4N: Corrected 2nd parameter of Delete
                     }
                 }
+                return skipSets;
             }
-            return skipSets;
+            finally
+            {
+                s.Dispose();
+            }
         }
 
         private static string[] kModeStrings = {
@@ -3061,39 +3069,43 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override StringBuffer Normalize(string src, StringBuffer dest) { return null; }
 
-            public override StringBuffer Normalize(StringBuffer src, StringBuffer dest) { return null; }
-
             public override StringBuilder Normalize(ICharSequence src, StringBuilder dest) { return null; }
 
             public override StringBuffer Normalize(ReadOnlySpan<char> src, StringBuffer dest) => null;
 
+            internal override void Normalize(ReadOnlySpan<char> src, ref ValueStringBuilder dest)
+            {
+            }
+
             public override IAppendable Normalize(string src, IAppendable dest) { return null; }
-            public override IAppendable Normalize(StringBuffer src, IAppendable dest) { return null; }
+
             public override IAppendable Normalize(ICharSequence src, IAppendable dest) { return null; }
 
             public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest) => null;
 
             public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, string second) { return null; }
 
-            public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, StringBuffer second) { return null; }
-
             public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second) { return null; }
 
             public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, ReadOnlySpan<char> second) => null;
 
-            public override StringBuffer Append(StringBuffer first, string second) { return null; }
+            internal override void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+            {
+            }
 
-            public override StringBuffer Append(StringBuffer first, StringBuffer second) { return null; }
+            public override StringBuffer Append(StringBuffer first, string second) { return null; }
 
             public override StringBuilder Append(StringBuilder first, ICharSequence second) { return null; }
 
             public override StringBuffer Append(StringBuffer first, ReadOnlySpan<char> second) => null;
 
+            internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
+            {
+            }
+
             public override string GetDecomposition(int c) { return null; }
 
             public override bool IsNormalized(string s) { return false; }
-
-            public override bool IsNormalized(StringBuffer s) { return false; }
 
             public override bool IsNormalized(ICharSequence s) { return false; }
 
@@ -3101,15 +3113,11 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override QuickCheckResult QuickCheck(string s) { return (QuickCheckResult)(-1); }
 
-            public override QuickCheckResult QuickCheck(StringBuffer s) { return (QuickCheckResult)(-1); }
-
             public override QuickCheckResult QuickCheck(ICharSequence s) { return (QuickCheckResult)(-1); }
 
             public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s) => (QuickCheckResult)(-1);
 
             public override int SpanQuickCheckYes(string s) { return 0; }
-
-            public override int SpanQuickCheckYes(StringBuffer s) { return 0; }
 
             public override int SpanQuickCheckYes(ICharSequence s) { return 0; }
 

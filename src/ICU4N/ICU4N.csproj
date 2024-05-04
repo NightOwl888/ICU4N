@@ -462,11 +462,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>TextTrieMap.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Impl\UCaseProps.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UCaseProps.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Impl\UnicodeSetStringSpan.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -486,11 +481,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Utility.generated.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Impl\UTS46.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UTS46.generated.tt</DependentUpon>
     </Compile>
     <Compile Update="Support\FormatNumberRuleBased.generated.cs">
       <DesignTime>True</DesignTime>
@@ -516,11 +506,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>FilteredBreakIteratorBuilder.generated.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Text\IDNA.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>IDNA.generated.tt</DependentUpon>
     </Compile>
     <Compile Update="Text\SimpleFormatter.generated.cs">
       <DesignTime>True</DesignTime>
@@ -622,10 +607,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TextTrieMap.generated.cs</LastGenOutput>
     </None>
-    <None Update="Impl\UCaseProps.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UCaseProps.generated.cs</LastGenOutput>
-    </None>
     <None Update="Impl\UnicodeSetStringSpan.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UnicodeSetStringSpan.generated.cs</LastGenOutput>
@@ -641,10 +622,6 @@
     <None Update="Impl\Utility.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Utility.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Impl\UTS46.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UTS46.generated.cs</LastGenOutput>
     </None>
     <None Update="Support\FormatNumberRuleBased.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -665,10 +642,6 @@
     <None Update="Text\FilteredBreakIteratorBuilder.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FilteredBreakIteratorBuilder.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Text\IDNA.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>IDNA.generated.cs</LastGenOutput>
     </None>
     <None Update="Text\SimpleFormatter.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

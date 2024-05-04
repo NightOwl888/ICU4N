@@ -250,6 +250,8 @@ namespace ICU4N.Text
         : ICloneable
 #endif
     {
+        private const int CharStackBufferSize = 64;
+
         // The input text and our position in it
         private UCharacterIterator text;
         private Normalizer2 norm2;
@@ -2216,35 +2218,42 @@ namespace ICU4N.Text
             Normalizer2 nfkc = NFKCModeImpl.Instance.Normalizer2;
             UCaseProperties csp = UCaseProperties.Instance;
             // first: b = NFKC(Fold(a))
-            StringBuilder folded = new StringBuilder();
-            int folded1Length = csp.ToFullFolding(c, folded, 0);
-            if (folded1Length < 0)
+            ValueStringBuilder folded = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                Normalizer2Impl nfkcImpl = ((Normalizer2WithImpl)nfkc).Impl;
-                if (nfkcImpl.GetCompQuickCheck(nfkcImpl.GetNorm16(c)) != 0)
+                int folded1Length = csp.ToFullFolding(c, ref folded, 0);
+                if (folded1Length < 0)
                 {
-                    return "";  // c does not change at all under CaseFolding+NFKC
+                    Normalizer2Impl nfkcImpl = ((Normalizer2WithImpl)nfkc).Impl;
+                    if (nfkcImpl.GetCompQuickCheck(nfkcImpl.GetNorm16(c)) != 0)
+                    {
+                        return "";  // c does not change at all under CaseFolding+NFKC
+                    }
+                    folded.AppendCodePoint(c);
                 }
-                folded.AppendCodePoint(c);
-            }
-            else
-            {
-                if (folded1Length > UCaseProperties.MaxStringLength)
+                else
                 {
-                    folded.AppendCodePoint(folded1Length);
+                    if (folded1Length > UCaseProperties.MaxStringLength)
+                    {
+                        folded.AppendCodePoint(folded1Length);
+                    }
+                }
+                string kc1 = nfkc.Normalize(folded.AsSpan());
+                // second: c = NFKC(Fold(b))
+                string kc2 = nfkc.Normalize(UChar.FoldCase(kc1, 0));
+                // if (c != b) add the mapping from a to c
+                if (kc1.Equals(kc2))
+                {
+                    return "";
+                }
+                else
+                {
+                    return kc2;
                 }
             }
-            string kc1 = nfkc.Normalize(folded);
-            // second: c = NFKC(Fold(b))
-            string kc2 = nfkc.Normalize(UChar.FoldCase(kc1, 0));
-            // if (c != b) add the mapping from a to c
-            if (kc1.Equals(kc2))
+            finally
             {
-                return "";
-            }
-            else
-            {
-                return kc2;
+                folded.Dispose();
             }
         }
 
@@ -2712,7 +2721,8 @@ namespace ICU4N.Text
             {
                 return false;
             }
-            StringBuilder segment = new StringBuilder().AppendCodePoint(c);
+            using ValueStringBuilder segment = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            segment.AppendCodePoint(c);
             while ((c = text.NextCodePoint()) >= 0)
             {
                 if (norm2.HasBoundaryBefore(c))
@@ -2723,7 +2733,7 @@ namespace ICU4N.Text
                 segment.AppendCodePoint(c);
             }
             nextIndex = text.Index;
-            norm2.Normalize(segment, buffer);
+            norm2.Normalize(segment.AsSpan(), buffer);
             return buffer.Length != 0;
         }
 
@@ -2732,7 +2742,7 @@ namespace ICU4N.Text
             ClearBuffer();
             nextIndex = currentIndex;
             text.Index = currentIndex;
-            StringBuilder segment = new StringBuilder();
+            using ValueStringBuilder segment = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             int c;
             while ((c = text.PreviousCodePoint()) >= 0)
             {
@@ -2742,7 +2752,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    segment.Insert(0, Character.ToChars(c));
+                    segment.InsertCodePoint(0, c); // ICU4N: Optimized insertion of code point without allocating
                 }
                 if (norm2.HasBoundaryBefore(c))
                 {
@@ -2750,7 +2760,7 @@ namespace ICU4N.Text
                 }
             }
             currentIndex = text.Index;
-            norm2.Normalize(segment, buffer);
+            norm2.Normalize(segment.AsSpan(), buffer);
             bufferPos = buffer.Length;
             return buffer.Length != 0;
         }
