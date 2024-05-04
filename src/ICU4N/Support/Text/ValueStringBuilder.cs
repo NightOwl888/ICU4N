@@ -209,6 +209,28 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
 #if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
+        private void InsertBlank(int index, int numberOfChars)
+        {
+            int count = numberOfChars;
+
+            if (count == 0)
+            {
+                return;
+            }
+
+            if (_pos > (_chars.Length - count))
+            {
+                Grow(count);
+            }
+
+            int remaining = _pos - index;
+            _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
+            _pos += count;
+        }
+
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public void Append(char c)
         {
             int pos = _pos;
