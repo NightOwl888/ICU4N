@@ -122,8 +122,6 @@ namespace ICU4N.Text
     /// <stable>ICU 2.8</stable>
     public sealed class RuleBasedCollator : Collator
     {
-        private const int CharStackBufferSize = 64;
-
         // public constructors ---------------------------------------------------
 
         /// <summary>

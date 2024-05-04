@@ -455,6 +455,8 @@ namespace ICU4N.Text
         , ICloneable
 #endif
     {
+        internal const int CharStackBufferSize = 64;
+
         //// public data members ---------------------------------------------------
 
         /// <summary>
