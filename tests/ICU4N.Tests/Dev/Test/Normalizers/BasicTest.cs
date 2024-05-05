@@ -3067,8 +3067,6 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public TestNormalizer2() { }
 
-            public override StringBuffer Normalize(string src, StringBuffer dest) { return null; }
-
             public override StringBuffer Normalize(ReadOnlySpan<char> src, StringBuffer dest) => null;
 
             internal override void Normalize(ReadOnlySpan<char> src, ref ValueStringBuilder dest)

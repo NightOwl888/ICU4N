@@ -13,16 +13,6 @@ namespace ICU4N.Impl
     public sealed partial class NoopNormalizer2 : Normalizer2
     {
         #region Normalize(ICharSequence, StringBuilder)
-        public override StringBuilder Normalize(string src, StringBuilder dest)
-        {
-            if (src is null)
-                throw new ArgumentNullException(nameof(src));
-            if (dest is null)
-                throw new ArgumentNullException(nameof(dest));
-
-            dest.Length = 0;
-            return dest.Append(src);
-        }
 
         public override StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest)
         {
@@ -320,30 +310,6 @@ namespace ICU4N.Impl
         }
 
         #region Normalize(ICharSequence, StringBuilder)
-        public override StringBuilder Normalize(string src, StringBuilder dest)
-        {
-            if (src is null)
-                throw new ArgumentNullException(nameof(src));
-            if (dest is null)
-                throw new ArgumentNullException(nameof(dest));
-
-            dest.Length = 0;
-            int length = src.Length;
-            var buffer = length <= CharStackBufferSize
-                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
-                : new ValueReorderingBuffer(Impl, length);
-            try
-            {
-                Normalize(src, ref buffer);
-                dest.Length = 0;
-                dest.Append(buffer.AsSpan());
-            }
-            finally
-            {
-                buffer.Dispose();
-            }
-            return dest;
-        }
 
         // ICU4N TODO: Cascade this call to Normalize(ReadOnlySpan<char>, ref ValueStringBuilder) and append the result...?
         public override StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest)

@@ -323,7 +323,15 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="src"/> or <paramref name="dest"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
-        public abstract StringBuilder Normalize(string src, StringBuilder dest);
+        public virtual StringBuilder Normalize(string src, StringBuilder dest)
+        {
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
+            return Normalize(src.AsSpan(), dest);
+        }
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
