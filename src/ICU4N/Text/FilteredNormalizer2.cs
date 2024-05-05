@@ -61,26 +61,6 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.4</stable>
-        public override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
-        {
-            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
-            {
-                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-            }
-            dest.Length = 0;
-            Normalize(src, dest, SpanCondition.Simple);
-            return dest;
-        }
-
-
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        /// <stable>ICU 4.4</stable>
         public override StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest)
         {
             dest.Length = 0;
@@ -98,6 +78,11 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         internal override void Normalize(ReadOnlySpan<char> src, ref ValueStringBuilder dest)
         {
+            if (MemoryHelper.AreSame(src, dest.RawChars))
+            {
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same memory location as '{nameof(dest)}'");
+            }
+
             dest.Length = 0;
             Normalize(src, ref dest, SpanCondition.Simple);
         }
@@ -117,24 +102,6 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         public override IAppendable Normalize(string src, IAppendable dest)
         {
-            return Normalize(src, dest, SpanCondition.Simple);
-        }
-
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        /// <stable>ICU 4.6</stable>
-        public override IAppendable Normalize(ICharSequence src, IAppendable dest)
-        {
-            if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence
-                && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
-            {
-                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-            }
             return Normalize(src, dest, SpanCondition.Simple);
         }
 
@@ -170,22 +137,6 @@ namespace ICU4N.Text
         {
             return NormalizeSecondAndAppend(first, second, true);
         }
-
-        /// <summary>
-        /// Appends the normalized form of the second string to the first string
-        /// (merging them at the boundary) and returns the first string.
-        /// The result is normalized if the first string was normalized.
-        /// The first and second strings must be different objects.
-        /// </summary>
-        /// <param name="first">First string, should be normalized.</param>
-        /// <param name="second">Second string, will be normalized.</param>
-        /// <returns><paramref name="first"/></returns>
-        public override StringBuilder NormalizeSecondAndAppend(
-            StringBuilder first, ICharSequence second)
-        {
-            return NormalizeSecondAndAppend(first, second, true);
-        }
-
 
         /// <summary>
         /// Appends the normalized form of the second string to the first string
@@ -238,22 +189,6 @@ namespace ICU4N.Text
         /// <param name="second">Second string, should be normalized.</param>
         /// <returns><paramref name="first"/></returns>
         /// <stable>ICU 4.4</stable>
-        public override StringBuilder Append(StringBuilder first, ICharSequence second)
-        {
-            return NormalizeSecondAndAppend(first, second, false);
-        }
-
-
-        /// <summary>
-        /// Appends the second string to the first string
-        /// (merging them at the boundary) and returns the first string.
-        /// The result is normalized if both the strings were normalized.
-        /// The first and second strings must be different objects.
-        /// </summary>
-        /// <param name="first">First string, should be normalized.</param>
-        /// <param name="second">Second string, should be normalized.</param>
-        /// <returns><paramref name="first"/></returns>
-        /// <stable>ICU 4.4</stable>
         public override StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second)
         {
             return NormalizeSecondAndAppend(first, second, false);
@@ -261,6 +196,11 @@ namespace ICU4N.Text
 
         internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
         {
+            if (MemoryHelper.AreSame(first.RawChars, second))
+            {
+                throw new ArgumentException($"'{nameof(first)}' cannot be the same memory location as '{nameof(second)}'");
+            }
+
             NormalizeSecondAndAppend(ref first, second);
         }
 
@@ -380,40 +320,6 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Tests if the string is normalized.
-        /// Internally, in cases where the <see cref="QuickCheck(ICharSequence)"/> method would return "maybe"
-        /// (which is only possible for the two COMPOSE modes) this method
-        /// resolves to "yes" or "no" to provide a definitive result,
-        /// at the cost of doing more work in those cases.
-        /// </summary>
-        /// <param name="s">Input string.</param>
-        /// <returns>true if s is normalized.</returns>
-        /// <stable>ICU 4.4</stable>
-        public override bool IsNormalized(ICharSequence s)
-        {
-            SpanCondition spanCondition = SpanCondition.Simple;
-            for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
-            {
-                int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == SpanCondition.NotContained)
-                {
-                    spanCondition = SpanCondition.Simple;
-                }
-                else
-                {
-                    if (!norm2.IsNormalized(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit))) // ICU4N: Corrected 2nd parameter
-                    {
-                        return false;
-                    }
-                    spanCondition = SpanCondition.NotContained;
-                }
-                prevSpanLimit = spanLimit;
-            }
-            return true;
-        }
-
-
-        /// <summary>
-        /// Tests if the string is normalized.
         /// Internally, in cases where the <see cref="QuickCheck(ReadOnlySpan{char})"/> method would return "maybe"
         /// (which is only possible for the two COMPOSE modes) this method
         /// resolves to "yes" or "no" to provide a definitive result,
@@ -489,48 +395,6 @@ namespace ICU4N.Text
             }
             return result;
         }
-
-        /// <summary>
-        /// Tests if the string is normalized.
-        /// For the two COMPOSE modes, the result could be "maybe" in cases that
-        /// would take a little more work to resolve definitively.
-        /// Use <see cref="SpanQuickCheckYes(ICharSequence)"/> and
-        /// <see cref="NormalizeSecondAndAppend(StringBuilder, ICharSequence)"/> for a faster
-        /// combination of quick check + normalization, to avoid
-        /// re-checking the "yes" prefix.
-        /// </summary>
-        /// <param name="s">Input string.</param>
-        /// <returns>The quick check result.</returns>
-        /// <stable>ICU 4.4</stable>
-        public override QuickCheckResult QuickCheck(ICharSequence s)
-        {
-            QuickCheckResult result = QuickCheckResult.Yes;
-            SpanCondition spanCondition = SpanCondition.Simple;
-            for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
-            {
-                int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == SpanCondition.NotContained)
-                {
-                    spanCondition = SpanCondition.Simple;
-                }
-                else
-                {
-                    QuickCheckResult qcResult = norm2.QuickCheck(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Corrected 2nd parameter
-                    if (qcResult == QuickCheckResult.No)
-                    {
-                        return qcResult;
-                    }
-                    else if (qcResult == QuickCheckResult.Maybe)
-                    {
-                        result = qcResult;
-                    }
-                    spanCondition = SpanCondition.NotContained;
-                }
-                prevSpanLimit = spanLimit;
-            }
-            return result;
-        }
-
 
         /// <summary>
         /// Tests if the string is normalized.
@@ -620,51 +484,6 @@ namespace ICU4N.Text
             }
             return s.Length;
         }
-
-        /// <summary>
-        /// Returns the end of the normalized substring of the input string.
-        /// In other words, with <c>end=SpanQuickCheckYes(s);</c>
-        /// the substring <c>s.SubString(0, end)</c>
-        /// will pass the quick check with a "yes" result.
-        /// </summary>
-        /// <remarks>
-        /// The returned end index is usually one or more characters before the
-        /// "no" or "maybe" character: The end index is at a normalization boundary.
-        /// (See the class documentation for more about normalization boundaries.)
-        /// <para/>
-        /// When the goal is a normalized string and most input strings are expected
-        /// to be normalized already, then call this method,
-        /// and if it returns a prefix shorter than the input string,
-        /// copy that prefix and use <see cref="NormalizeSecondAndAppend(StringBuilder, ICharSequence)"/> for the remainder.
-        /// </remarks>
-        /// <param name="s">Input string.</param>
-        /// <returns>"yes" span end index.</returns>
-        /// <stable>ICU 4.4</stable>
-        public override int SpanQuickCheckYes(ICharSequence s)
-        {
-            SpanCondition spanCondition = SpanCondition.Simple;
-            for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
-            {
-                int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == SpanCondition.NotContained)
-                {
-                    spanCondition = SpanCondition.Simple;
-                }
-                else
-                {
-                    int yesLimit =
-                        prevSpanLimit + norm2.SpanQuickCheckYes(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Corrected 2nd parameter
-                    if (yesLimit < spanLimit)
-                    {
-                        return yesLimit;
-                    }
-                    spanCondition = SpanCondition.NotContained;
-                }
-                prevSpanLimit = spanLimit;
-            }
-            return s.Length;
-        }
-
 
         /// <summary>
         /// Returns the end of the normalized substring of the input string.
@@ -819,47 +638,6 @@ namespace ICU4N.Text
         // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
         // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
-        private StringBuilder Normalize(ICharSequence src, StringBuilder dest,
-                                     SpanCondition spanCondition)
-        {
-            // Don't throw away destination buffer between iterations.
-            StringBuilder tempDest = new StringBuilder();
-            // ICU4N: Removed unnecessary try/catch for IOException
-            for (int prevSpanLimit = 0; prevSpanLimit < src.Length;)
-            {
-                int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
-                int spanLength = spanLimit - prevSpanLimit;
-                if (spanCondition == SpanCondition.NotContained)
-                {
-                    if (spanLength != 0)
-                    {
-                        dest.Append(src, prevSpanLimit, spanLimit - prevSpanLimit); // ICU4N: Changed 3rd parameter
-                    }
-                    spanCondition = SpanCondition.Simple;
-                }
-                else
-                {
-                    if (spanLength != 0)
-                    {
-                        // Not norm2.normalizeSecondAndAppend() because we do not want
-                        // to modify the non-filter part of dest.
-                        dest.Append(norm2.Normalize(src.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
-                    }
-                    spanCondition = SpanCondition.NotContained;
-                }
-                prevSpanLimit = spanLimit;
-            }
-            return dest;
-        }
-
-
-        // Internal: No argument checking, and appends to dest.
-        // Pass as input spanCondition the one that is likely to yield a non-zero
-        // span length at the start of src.
-        // For set=[:age=3.2:], since almost all common characters were in Unicode 3.2,
-        // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
-        // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
-        // an in-filter prefix.
         private StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest,
                                      SpanCondition spanCondition)
         {
@@ -983,47 +761,6 @@ namespace ICU4N.Text
         // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
         // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
-        private IAppendable Normalize(ICharSequence src, IAppendable dest,
-                                     SpanCondition spanCondition)
-        {
-            // Don't throw away destination buffer between iterations.
-            StringBuilder tempDest = new StringBuilder();
-            // ICU4N: Removed unnecessary try/catch for IOException
-            for (int prevSpanLimit = 0; prevSpanLimit < src.Length;)
-            {
-                int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
-                int spanLength = spanLimit - prevSpanLimit;
-                if (spanCondition == SpanCondition.NotContained)
-                {
-                    if (spanLength != 0)
-                    {
-                        dest.Append(src, prevSpanLimit, spanLimit - prevSpanLimit); // ICU4N: Changed 3rd parameter
-                    }
-                    spanCondition = SpanCondition.Simple;
-                }
-                else
-                {
-                    if (spanLength != 0)
-                    {
-                        // Not norm2.normalizeSecondAndAppend() because we do not want
-                        // to modify the non-filter part of dest.
-                        dest.Append(norm2.Normalize(src.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
-                    }
-                    spanCondition = SpanCondition.NotContained;
-                }
-                prevSpanLimit = spanLimit;
-            }
-            return dest;
-        }
-
-
-        // Internal: No argument checking, and appends to dest.
-        // Pass as input spanCondition the one that is likely to yield a non-zero
-        // span length at the start of src.
-        // For set=[:age=3.2:], since almost all common characters were in Unicode 3.2,
-        // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
-        // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
-        // an in-filter prefix.
         private IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest,
                                      SpanCondition spanCondition)
         {
@@ -1123,72 +860,6 @@ namespace ICU4N.Text
             return first;
         }
 
-        private StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second,
-                                                       bool doNormalize)
-        {
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
-            {
-                throw new ArgumentException("'first' cannot be the same StringBuilder instance as 'second'");
-            }
-            if (first.Length == 0)
-            {
-                if (doNormalize)
-                {
-                    return Normalize(second, first);
-                }
-                else
-                {
-                    return first.Append(second);
-                }
-            }
-            // merge the in-filter suffix of the first string with the in-filter prefix of the second
-            int prefixLimit = set.Span(second, 0, SpanCondition.Simple);
-            if (prefixLimit != 0)
-            {
-                var prefix = second.Subsequence(0, prefixLimit - 0); // ICU4N: Checked 2nd parameter
-                int suffixStart = set.SpanBack(first, 0x7fffffff, SpanCondition.Simple);
-                if (suffixStart == 0)
-                {
-                    if (doNormalize)
-                    {
-                        norm2.NormalizeSecondAndAppend(first, prefix);
-                    }
-                    else
-                    {
-                        norm2.Append(first, prefix);
-                    }
-                }
-                else
-                {
-                    StringBuilder middle = new StringBuilder(
-                            first.ToString(suffixStart, first.Length - suffixStart)); // ICU4N: Changed 2nd parameter
-                    if (doNormalize)
-                    {
-                        norm2.NormalizeSecondAndAppend(middle, prefix);
-                    }
-                    else
-                    {
-                        norm2.Append(middle, prefix);
-                    }
-                    first.Delete(suffixStart, 0x7fffffff - suffixStart).Append(middle); // ICU4N: Corrected 2nd parameter of Delete
-                }
-            }
-            if (prefixLimit < second.Length)
-            {
-                var rest = second.Subsequence(prefixLimit, second.Length - prefixLimit); // ICU4N: Corrected 2nd parameter
-                if (doNormalize)
-                {
-                    Normalize(rest, first, SpanCondition.NotContained);
-                }
-                else
-                {
-                    first.Append(rest);
-                }
-            }
-            return first;
-        }
-
-
         private StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second,
                                                        bool doNormalize)
         {
@@ -1254,15 +925,21 @@ namespace ICU4N.Text
         private void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second,
                                                bool doNormalize)
         {
+            if (MemoryHelper.AreSame(first.RawChars, second))
+            {
+                throw new ArgumentException($"'{nameof(first)}' cannot be the same memory location as '{nameof(second)}'");
+            }
             if (first.Length == 0)
             {
                 if (doNormalize)
                 {
                     Normalize(second, ref first);
+                    return;
                 }
                 else
                 {
                     first.Append(second);
+                    return;
                 }
             }
             // merge the in-filter suffix of the first string with the in-filter prefix of the second

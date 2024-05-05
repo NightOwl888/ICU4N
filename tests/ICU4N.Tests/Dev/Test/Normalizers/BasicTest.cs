@@ -3069,8 +3069,6 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override StringBuffer Normalize(string src, StringBuffer dest) { return null; }
 
-            public override StringBuilder Normalize(ICharSequence src, StringBuilder dest) { return null; }
-
             public override StringBuffer Normalize(ReadOnlySpan<char> src, StringBuffer dest) => null;
 
             internal override void Normalize(ReadOnlySpan<char> src, ref ValueStringBuilder dest)
@@ -3079,13 +3077,9 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override IAppendable Normalize(string src, IAppendable dest) { return null; }
 
-            public override IAppendable Normalize(ICharSequence src, IAppendable dest) { return null; }
-
             public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest) => null;
 
             public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, string second) { return null; }
-
-            public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second) { return null; }
 
             public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, ReadOnlySpan<char> second) => null;
 
@@ -3094,8 +3088,6 @@ namespace ICU4N.Dev.Test.Normalizers
             }
 
             public override StringBuffer Append(StringBuffer first, string second) { return null; }
-
-            public override StringBuilder Append(StringBuilder first, ICharSequence second) { return null; }
 
             public override StringBuffer Append(StringBuffer first, ReadOnlySpan<char> second) => null;
 
@@ -3107,19 +3099,13 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override bool IsNormalized(string s) { return false; }
 
-            public override bool IsNormalized(ICharSequence s) { return false; }
-
             public override bool IsNormalized(ReadOnlySpan<char> s) => false;
 
             public override QuickCheckResult QuickCheck(string s) { return (QuickCheckResult)(-1); }
 
-            public override QuickCheckResult QuickCheck(ICharSequence s) { return (QuickCheckResult)(-1); }
-
             public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s) => (QuickCheckResult)(-1);
 
             public override int SpanQuickCheckYes(string s) { return 0; }
-
-            public override int SpanQuickCheckYes(ICharSequence s) { return 0; }
 
             public override int SpanQuickCheckYes(ReadOnlySpan<char> s) => 0;
 

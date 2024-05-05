@@ -4,10 +4,7 @@ using J2N.IO;
 using J2N.Numerics;
 using J2N.Text;
 using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Xml.Serialization;
 
 namespace ICU4N.Impl
 {
@@ -18,16 +15,6 @@ namespace ICU4N.Impl
         #region Normalize(ICharSequence, StringBuilder)
         public override StringBuilder Normalize(string src, StringBuilder dest)
         {
-            dest.Length = 0;
-            return dest.Append(src);
-        }
-
-        public override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
-        {
-            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
-            {
-                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-            }
             dest.Length = 0;
             return dest.Append(src);
         }
@@ -59,17 +46,6 @@ namespace ICU4N.Impl
             return dest.Append(src);
         }
 
-        public override IAppendable Normalize(ICharSequence src, IAppendable dest)
-        {
-            if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence
-                && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
-            {
-                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-            }
-            // ICU4N: Removed unnecessary try/catch for IOException
-            return dest.Append(src);
-        }
-
         public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest)
         {
             // ICU4N: Removed unnecessary try/catch for IOException
@@ -83,15 +59,6 @@ namespace ICU4N.Impl
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second)
         {
             return first.Append(second);
-        }
-
-        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second)
-        {
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
-            {
-                throw new ArgumentException($"'{nameof(first)}' cannot be the same instance as '{nameof(second)}'");
-            }
-            return first.Append(charSequence: second);
         }
 
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second)
@@ -118,16 +85,6 @@ namespace ICU4N.Impl
             return first.Append(second);
         }
 
-
-        public override StringBuilder Append(StringBuilder first, ICharSequence second)
-        {
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
-            {
-                throw new ArgumentException($"'{nameof(first)}' cannot be the same instance as '{nameof(second)}'");
-            }
-            return first.Append(second);
-        }
-
         public override StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second)
         {
             return first.Append(second);
@@ -149,8 +106,6 @@ namespace ICU4N.Impl
         #region IsNormalized(ICharSequence)
         public override bool IsNormalized(string s) { return true; }
 
-        public override bool IsNormalized(ICharSequence s) { return true; }
-
         public override bool IsNormalized(ReadOnlySpan<char> s) { return true; }
 
         #endregion
@@ -159,8 +114,6 @@ namespace ICU4N.Impl
         #region QuickCheck(ICharSequence)
         public override QuickCheckResult QuickCheck(string s) { return QuickCheckResult.Yes; }
 
-        public override QuickCheckResult QuickCheck(ICharSequence s) { return QuickCheckResult.Yes; }
-
         public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s) { return QuickCheckResult.Yes; }
 
         #endregion QuickCheck(ICharSequence)
@@ -168,9 +121,6 @@ namespace ICU4N.Impl
         // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
         #region SpanQuickCheckYes(ICharSequence)
         public override int SpanQuickCheckYes(string s) { return s.Length; }
-
-        public override int SpanQuickCheckYes(ICharSequence s) { return s.Length; }
-
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s) { return s.Length; }
 
@@ -342,17 +292,6 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        public override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
-        {
-            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
-            {
-                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-            }
-            dest.Length = 0;
-            Normalize(src, new ReorderingBuffer(Impl, dest, src.Length));
-            return dest;
-        }
-
         // ICU4N TODO: Cascade this call to Normalize(ReadOnlySpan<char>, ref ValueStringBuilder) and append the result...?
         public override StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest)
         {
@@ -408,19 +347,6 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        public override IAppendable Normalize(ICharSequence src, IAppendable dest)
-        {
-            if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence
-                && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
-            {
-                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-            }
-            ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
-            Normalize(src, buffer);
-            buffer.Flush();
-            return dest;
-        }
-
         public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest)
         {
             int length = src.Length;
@@ -446,10 +372,6 @@ namespace ICU4N.Impl
         #region Normalize(ICharSequence, ReorderingBuffer)
         protected abstract void Normalize(string src, ReorderingBuffer buffer);
 
-
-        protected abstract void Normalize(ICharSequence src, ReorderingBuffer buffer);
-
-
         protected abstract void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer);
 
         #endregion Normalize(ICharSequence, ReorderingBuffer)
@@ -462,12 +384,6 @@ namespace ICU4N.Impl
         {
             return NormalizeSecondAndAppend(first, second, doNormalize: true);
         }
-
-        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second)
-        {
-            return NormalizeSecondAndAppend(first, second, doNormalize: true);
-        }
-
 
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second)
         {
@@ -487,12 +403,6 @@ namespace ICU4N.Impl
         {
             return NormalizeSecondAndAppend(first, second, false);
         }
-
-        public override StringBuilder Append(StringBuilder first, ICharSequence second)
-        {
-            return NormalizeSecondAndAppend(first, second, false);
-        }
-
 
         public override StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second)
         {
@@ -515,19 +425,6 @@ namespace ICU4N.Impl
                 new ReorderingBuffer(Impl, first, first.Length + second.Length));
             return first;
         }
-
-        public virtual StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second, bool doNormalize)
-        {
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
-            {
-                throw new ArgumentException($"'{nameof(first)}' cannot be the same instance as '{nameof(second)}'");
-            }
-            NormalizeAndAppend(
-                second, doNormalize,
-                new ReorderingBuffer(Impl, first, first.Length + second.Length));
-            return first;
-        }
-
 
         public virtual StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second, bool doNormalize)
         {
@@ -586,10 +483,6 @@ namespace ICU4N.Impl
             string src, bool doNormalize, ReorderingBuffer buffer);
 
         protected abstract void NormalizeAndAppend(
-            ICharSequence src, bool doNormalize, ReorderingBuffer buffer);
-
-
-        protected abstract void NormalizeAndAppend(
             ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer);
 
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
@@ -624,12 +517,6 @@ namespace ICU4N.Impl
             return s.Length == SpanQuickCheckYes(s);
         }
 
-        public override bool IsNormalized(ICharSequence s)
-        {
-            return s.Length == SpanQuickCheckYes(s);
-        }
-
-
         public override bool IsNormalized(ReadOnlySpan<char> s)
         {
             return s.Length == SpanQuickCheckYes(s);
@@ -643,12 +530,6 @@ namespace ICU4N.Impl
         {
             return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
         }
-
-        public override QuickCheckResult QuickCheck(ICharSequence s)
-        {
-            return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
-        }
-
 
         public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s)
         {
@@ -677,12 +558,6 @@ namespace ICU4N.Impl
             Impl.Decompose(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 
-        protected override void Normalize(ICharSequence src, ReorderingBuffer buffer)
-        {
-            Impl.Decompose(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
-        }
-
-
         protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
         {
             if (MemoryHelper.AreSame(src, buffer.RawChars))
@@ -702,12 +577,6 @@ namespace ICU4N.Impl
             Impl.DecomposeAndAppend(src, doNormalize, buffer);
         }
 
-        protected override void NormalizeAndAppend(ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            Impl.DecomposeAndAppend(src, doNormalize, buffer);
-        }
-
-
         protected override void NormalizeAndAppend(ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer)
         {
             if (MemoryHelper.AreSame(src, buffer.RawChars))
@@ -726,12 +595,6 @@ namespace ICU4N.Impl
         {
             return Impl.DecomposeQuickCheck(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
         }
-
-        public override int SpanQuickCheckYes(ICharSequence s)
-        {
-            return Impl.DecomposeQuickCheck(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
-        }
-
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
         {
@@ -767,12 +630,6 @@ namespace ICU4N.Impl
             Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer); // ICU4N: Checked 3rd parameter
         }
 
-        protected override void Normalize(ICharSequence src, ReorderingBuffer buffer)
-        {
-            Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer); // ICU4N: Checked 3rd parameter
-        }
-
-
         protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
         {
             if (MemoryHelper.AreSame(src, buffer.RawChars))
@@ -792,13 +649,6 @@ namespace ICU4N.Impl
         {
             Impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
         }
-
-        protected override void NormalizeAndAppend(
-            ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            Impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
-        }
-
 
         protected override void NormalizeAndAppend(
             ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer)
@@ -822,16 +672,6 @@ namespace ICU4N.Impl
                                 onlyContiguous, false,
                                 new ReorderingBuffer(Impl, new StringBuilder(), 5)); // ICU4N: Checked 3rd parameter
         }
-
-        public override bool IsNormalized(ICharSequence s)
-        {
-            // 5: small destCapacity for substring normalization
-            return Impl.Compose(s, 0, s.Length,
-                                onlyContiguous, false,
-                                new ReorderingBuffer(Impl, new StringBuilder(), 5)); // ICU4N: Checked 3rd parameter
-        }
-
-
 
         public override bool IsNormalized(ReadOnlySpan<char> s)
         {
@@ -868,24 +708,6 @@ namespace ICU4N.Impl
             }
         }
 
-        public override QuickCheckResult QuickCheck(ICharSequence s)
-        {
-            int spanLengthAndMaybe = Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, false);
-            if ((spanLengthAndMaybe & 1) != 0)
-            {
-                return QuickCheckResult.Maybe;
-            }
-            else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
-            {
-                return QuickCheckResult.Yes;
-            }
-            else
-            {
-                return QuickCheckResult.No;
-            }
-        }
-
-
         public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s)
         {
             int spanLengthAndMaybe = Impl.ComposeQuickCheck(s, onlyContiguous, false);
@@ -911,12 +733,6 @@ namespace ICU4N.Impl
         {
             return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
         }
-
-        public override int SpanQuickCheckYes(ICharSequence s)
-        {
-            return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
-        }
-
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
         {
@@ -959,12 +775,6 @@ namespace ICU4N.Impl
             Impl.MakeFCD(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
         }
 
-        protected override void Normalize(ICharSequence src, ReorderingBuffer buffer)
-        {
-            Impl.MakeFCD(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
-        }
-
-
         protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
         {
             if (MemoryHelper.AreSame(src, buffer.RawChars))
@@ -986,13 +796,6 @@ namespace ICU4N.Impl
         }
 
         protected override void NormalizeAndAppend(
-            ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            Impl.MakeFCDAndAppend(src, doNormalize, buffer);
-        }
-
-
-        protected override void NormalizeAndAppend(
             ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer)
         {
             Impl.MakeFCDAndAppend(src, doNormalize, ref buffer);
@@ -1006,12 +809,6 @@ namespace ICU4N.Impl
         {
             return Impl.MakeFCDQuickCheck(s, 0, s.Length); // ICU4N: Checked 3rd parameter
         }
-
-        public override int SpanQuickCheckYes(ICharSequence s)
-        {
-            return Impl.MakeFCDQuickCheck(s, 0, s.Length); // ICU4N: Checked 3rd parameter
-        }
-
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
         {

@@ -4,6 +4,7 @@ using ICU4N.Text;
 using J2N;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -63,13 +64,13 @@ namespace ICU4N.Impl.Coll
             /// <para/>
             /// strength=<see cref="CollationStrength.Primary"/>/<see cref="CollationStrength.Secondary"/>/<see cref="CollationStrength.Tertiary"/> for &amp;[before n]str where n=1/2/3.
             /// </summary>
-            void AddReset(CollationStrength strength, ICharSequence str);
+            void AddReset(CollationStrength strength, ReadOnlySpan<char> str);
 
             /// <summary>
             /// Adds a relation with strength and prefix | str / extension.
             /// </summary>
             void AddRelation(CollationStrength strength, ReadOnlySpan<char> prefix,
-                    string str, ReadOnlySpan<char> extension); // ICU4N specific - changed prefix and extension from ICharSequence to ReadOnlySpan<char>
+                    ReadOnlyMemory<char> str, ReadOnlySpan<char> extension); // ICU4N specific - changed prefix and extension from ICharSequence to ReadOnlySpan<char>
 
             void SuppressContractions(UnicodeSet set);
 
@@ -129,7 +130,7 @@ namespace ICU4N.Impl.Coll
 
         // In C++, we parse into temporary UnicodeString objects named "raw" or "str".
         // In Java, we reuse this StringBuilder.
-        private readonly StringBuilderCharSequence rawBuilder = new StringBuilderCharSequence(new StringBuilder());
+        private readonly OpenStringBuilder rawBuilder = new OpenStringBuilder();
 
         private void Parse(string ruleString)
         {
@@ -254,15 +255,15 @@ namespace ICU4N.Impl.Coll
             }
             if (rules[i] == 0x5b)
             {  // '['
-                i = ParseSpecialPosition(i, rawBuilder.Value);
+                i = ParseSpecialPosition(i, rawBuilder);
             }
             else
             {
-                i = ParseTailoringString(i, rawBuilder.Value);
+                i = ParseTailoringString(i, rawBuilder);
             }
             try
             {
-                sink.AddReset(resetStrength, rawBuilder);
+                sink.AddReset(resetStrength, rawBuilder.AsSpan());
             }
             catch (Exception e)
             {
@@ -341,30 +342,27 @@ namespace ICU4N.Impl.Coll
             // where prefix and extension are optional.
             string prefix = string.Empty;
             string extension = string.Empty;
-            i = ParseTailoringString(i, rawBuilder.Value);
+            i = ParseTailoringString(i, rawBuilder);
             char next = (i < rules.Length) ? rules[i] : (char)0;
             if (next == 0x7c)
             {  // '|' separates the context prefix from the string.
                 prefix = rawBuilder.ToString();
-                i = ParseTailoringString(i + 1, rawBuilder.Value);
+                i = ParseTailoringString(i + 1, rawBuilder);
                 next = (i < rules.Length) ? rules[i] : (char)0;
             }
             // str = rawBuilder (do not modify rawBuilder any more in this function)
-            // ICU4N: We need to materialize the string in .NET or it will be very slow for subsequent operations
-            // due to the indexer of StringBuilder being sluggish.
             // ICU4N TODO: Investigate whether we can use ValueStringBuilder here so we don't have to
             // re-allocate memory.
-            string str = rawBuilder.ToString();
             if (next == 0x2f)
             {  // '/' separates the string from the extension.
-                StringBuilder extBuilder = new StringBuilder();
+                OpenStringBuilder extBuilder = new OpenStringBuilder();
                 i = ParseTailoringString(i + 1, extBuilder);
                 extension = extBuilder.ToString();
             }
             if (prefix.Length != 0)
             {
                 int prefix0 = prefix.CodePointAt(0);
-                int c = str.CodePointAt(0);
+                int c = rawBuilder.CodePointAt(0);
                 if (!nfc.HasBoundaryBefore(prefix0) || !nfc.HasBoundaryBefore(c))
                 {
                     SetParseError("in 'prefix|str', prefix and str must each start with an NFC boundary");
@@ -373,7 +371,7 @@ namespace ICU4N.Impl.Coll
             }
             try
             {
-                sink.AddRelation(strength, prefix.AsSpan(), str, extension.AsSpan());
+                sink.AddRelation(strength, prefix.AsSpan(), rawBuilder.AsMemory(), extension.AsSpan());
             }
             catch (Exception e)
             {
@@ -386,7 +384,7 @@ namespace ICU4N.Impl.Coll
         private void ParseStarredCharacters(CollationStrength strength, int i)
         {
             string empty = string.Empty;
-            i = ParseString(SkipWhiteSpace(i), rawBuilder.Value);
+            i = ParseString(SkipWhiteSpace(i), rawBuilder);
             if (rawBuilder.Length == 0)
             {
                 SetParseError("missing starred-relation string");
@@ -394,84 +392,94 @@ namespace ICU4N.Impl.Coll
             }
             int prev = -1;
             int j = 0;
-            for (; ; )
+            char[] str = ArrayPool<char>.Shared.Rent(2);
+            try
             {
-                while (j < rawBuilder.Length)
+                for (; ; )
                 {
-                    int cp = rawBuilder.Value.CodePointAt(j);
-                    if (!nfd.IsInert(cp))
+                    while (j < rawBuilder.Length)
                     {
-                        SetParseError("starred-relation string is not all NFD-inert");
+                        int cp = rawBuilder.CodePointAt(j);
+                        if (!nfd.IsInert(cp))
+                        {
+                            SetParseError("starred-relation string is not all NFD-inert");
+                            return;
+                        }
+                        try
+                        {
+                            int length = UTF16.ValueOf(cp, str, 0);
+                            sink.AddRelation(strength, empty.AsSpan(), str.AsMemory(0, length), empty.AsSpan());
+                        }
+                        catch (Exception e)
+                        {
+                            SetParseError("adding relation failed", e);
+                            return;
+                        }
+                        j += Character.CharCount(cp);
+                        prev = cp;
+                    }
+                    if (i >= rules.Length || rules[i] != 0x2d)
+                    {  // '-'
+                        break;
+                    }
+                    if (prev < 0)
+                    {
+                        SetParseError("range without start in starred-relation string");
                         return;
                     }
-                    try
+                    i = ParseString(i + 1, rawBuilder);
+                    if (rawBuilder.Length == 0)
                     {
-                        sink.AddRelation(strength, empty.AsSpan(), UTF16.ValueOf(cp), empty.AsSpan());
-                    }
-                    catch (Exception e)
-                    {
-                        SetParseError("adding relation failed", e);
+                        SetParseError("range without end in starred-relation string");
                         return;
                     }
-                    j += Character.CharCount(cp);
-                    prev = cp;
-                }
-                if (i >= rules.Length || rules[i] != 0x2d)
-                {  // '-'
-                    break;
-                }
-                if (prev < 0)
-                {
-                    SetParseError("range without start in starred-relation string");
-                    return;
-                }
-                i = ParseString(i + 1, rawBuilder.Value);
-                if (rawBuilder.Length == 0)
-                {
-                    SetParseError("range without end in starred-relation string");
-                    return;
-                }
-                int c = rawBuilder.Value.CodePointAt(0);
-                if (c < prev)
-                {
-                    SetParseError("range start greater than end in starred-relation string");
-                    return;
-                }
-                // range prev-c
-                while (++prev <= c)
-                {
-                    if (!nfd.IsInert(prev))
+                    int c = rawBuilder.CodePointAt(0);
+                    if (c < prev)
                     {
-                        SetParseError("starred-relation string range is not all NFD-inert");
+                        SetParseError("range start greater than end in starred-relation string");
                         return;
                     }
-                    if (IsSurrogate(prev))
+                    // range prev-c
+                    while (++prev <= c)
                     {
-                        SetParseError("starred-relation string range contains a surrogate");
-                        return;
+                        if (!nfd.IsInert(prev))
+                        {
+                            SetParseError("starred-relation string range is not all NFD-inert");
+                            return;
+                        }
+                        if (IsSurrogate(prev))
+                        {
+                            SetParseError("starred-relation string range contains a surrogate");
+                            return;
+                        }
+                        if (0xfffd <= prev && prev <= 0xffff)
+                        {
+                            SetParseError("starred-relation string range contains U+FFFD, U+FFFE or U+FFFF");
+                            return;
+                        }
+                        try
+                        {
+                            int length = UTF16.ValueOf(prev, str, 0);
+                            sink.AddRelation(strength, empty.AsSpan(), str.AsMemory(0, length), empty.AsSpan());
+                        }
+                        catch (Exception e)
+                        {
+                            SetParseError("adding relation failed", e);
+                            return;
+                        }
                     }
-                    if (0xfffd <= prev && prev <= 0xffff)
-                    {
-                        SetParseError("starred-relation string range contains U+FFFD, U+FFFE or U+FFFF");
-                        return;
-                    }
-                    try
-                    {
-                        sink.AddRelation(strength, empty.AsSpan(), UTF16.ValueOf(prev), empty.AsSpan());
-                    }
-                    catch (Exception e)
-                    {
-                        SetParseError("adding relation failed", e);
-                        return;
-                    }
+                    prev = -1;
+                    j = Character.CharCount(c);
                 }
-                prev = -1;
-                j = Character.CharCount(c);
+            }
+            finally
+            {
+                ArrayPool<char>.Shared.Return(str);
             }
             ruleIndex = SkipWhiteSpace(i);
         }
 
-        private int ParseTailoringString(int i, StringBuilder raw)
+        private int ParseTailoringString(int i, OpenStringBuilder raw)
         {
             i = ParseString(SkipWhiteSpace(i), raw);
             if (raw.Length == 0)
@@ -481,7 +489,7 @@ namespace ICU4N.Impl.Coll
             return SkipWhiteSpace(i);
         }
 
-        private int ParseString(int i, StringBuilder raw)
+        private int ParseString(int i, OpenStringBuilder raw)
         {
             raw.Length = 0;
             while (i < rules.Length)
@@ -600,9 +608,9 @@ namespace ICU4N.Impl.Coll
         /// <param name="str"></param>
         /// <returns>Rule index after the special reset position.</returns>
         /// <exception cref="FormatException"/>
-        private int ParseSpecialPosition(int i, StringBuilder str)
+        private int ParseSpecialPosition(int i, OpenStringBuilder str)
         {
-            int j = ReadWords(i + 1, rawBuilder.Value);
+            int j = ReadWords(i + 1, rawBuilder);
             if (j > i && rules[j] == 0x5d && rawBuilder.Length != 0)
             {  // words end with ]
                 ++j;
@@ -634,7 +642,7 @@ namespace ICU4N.Impl.Coll
         private void ParseSetting()
         {
             int i = ruleIndex + 1;
-            int j = ReadWords(i, rawBuilder.Value);
+            int j = ReadWords(i, rawBuilder);
             if (j <= i || rawBuilder.Length == 0)
             {
                 SetParseError("expected a setting/option at '['");
@@ -1016,7 +1024,7 @@ namespace ICU4N.Impl.Coll
             return ++j;
         }
 
-        private int ReadWords(int i, StringBuilder raw)
+        private int ReadWords(int i, OpenStringBuilder raw)
         {
             raw.Length = 0;
             i = SkipWhiteSpace(i);

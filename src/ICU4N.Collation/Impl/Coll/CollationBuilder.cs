@@ -6,6 +6,7 @@ using J2N;
 using J2N.Numerics;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
@@ -101,7 +102,7 @@ namespace ICU4N.Impl.Coll
         }
 
         /// <summary>Implements <see cref="CollationRuleParser.ISink"/>.</summary>
-        void CollationRuleParser.ISink.AddReset(CollationStrength strength, ICharSequence str)
+        void CollationRuleParser.ISink.AddReset(CollationStrength strength, ReadOnlySpan<char> str)
         {
             Debug.Assert(str.Length != 0);
             if (str[0] == CollationRuleParser.POS_LEAD)
@@ -113,12 +114,20 @@ namespace ICU4N.Impl.Coll
             else
             {
                 // normal reset to a character or string
-                string nfdString = nfd.Normalize(str);
-                cesLength = dataBuilder.GetCEs(nfdString.AsMemory(), ces, 0);
-                if (cesLength > Collation.MAX_EXPANSION_LENGTH)
+                ValueStringBuilder nfdString = new ValueStringBuilder(str.Length);
+                try
                 {
-                    throw new ArgumentException(
-                            "reset position maps to too many collation elements (more than 31)");
+                    nfd.Normalize(str, ref nfdString);
+                    cesLength = dataBuilder.GetCEs(nfdString.AsMemory(), ces, 0);
+                    if (cesLength > Collation.MAX_EXPANSION_LENGTH)
+                    {
+                        throw new ArgumentException(
+                                "reset position maps to too many collation elements (more than 31)");
+                    }
+                }
+                finally
+                {
+                    nfdString.Dispose();
                 }
             }
             if (strength == CollationStrength.Identical) { return; }  // simple reset-at-position
@@ -313,7 +322,7 @@ namespace ICU4N.Impl.Coll
             return weight16;
         }
 
-        private long GetSpecialResetPosition(ICharSequence str)
+        private long GetSpecialResetPosition(ReadOnlySpan<char> str)
         {
             Debug.Assert(str.Length == 2);
             long ce;
@@ -495,103 +504,112 @@ namespace ICU4N.Impl.Coll
         }
 
         /// <summary>Implements <see cref="CollationRuleParser.ISink"/>.</summary>
-        void CollationRuleParser.ISink.AddRelation(CollationStrength strength, ReadOnlySpan<char> prefix, string str, ReadOnlySpan<char> extension)
+        void CollationRuleParser.ISink.AddRelation(CollationStrength strength, ReadOnlySpan<char> prefix, ReadOnlyMemory<char> str, ReadOnlySpan<char> extension)
         {
-            string nfdPrefix;
-            if (prefix.Length == 0)
+            ReadOnlySpan<char> strSpan = str.Span;
+            // ICU4N: These are intentionally declared on the heap so we can use AsMemory(),
+            // which will be required until the iterators can be made into ref structs
+            // (and into enumerators).
+            ValueStringBuilder nfdPrefix = new ValueStringBuilder(prefix.Length);
+            ValueStringBuilder nfdString = new ValueStringBuilder(str.Length);
+            try
             {
-                nfdPrefix = string.Empty;
-            }
-            else
-            {
-                nfdPrefix = nfd.Normalize(prefix);
-            }
-            string nfdString = nfd.Normalize(str);
+                if (prefix.Length > 0)
+                {
+                    nfd.Normalize(prefix, ref nfdPrefix);
+                }
+                nfd.Normalize(strSpan, ref nfdString);
 
-            // The runtime code decomposes Hangul syllables on the fly,
-            // with recursive processing but without making the Jamo pieces visible for matching.
-            // It does not work with certain types of contextual mappings.
-            int nfdLength = nfdString.Length;
-            if (nfdLength >= 2)
-            {
-                char c = nfdString[0];
-                if (Hangul.IsJamoL(c) || Hangul.IsJamoV(c))
+                // The runtime code decomposes Hangul syllables on the fly,
+                // with recursive processing but without making the Jamo pieces visible for matching.
+                // It does not work with certain types of contextual mappings.
+                int nfdLength = nfdString.Length;
+                if (nfdLength >= 2)
                 {
-                    // While handling a Hangul syllable, contractions starting with Jamo L or V
-                    // would not see the following Jamo of that syllable.
-                    throw new NotSupportedException(
-                            "contractions starting with conjoining Jamo L or V not supported");
+                    char c = nfdString[0];
+                    if (Hangul.IsJamoL(c) || Hangul.IsJamoV(c))
+                    {
+                        // While handling a Hangul syllable, contractions starting with Jamo L or V
+                        // would not see the following Jamo of that syllable.
+                        throw new NotSupportedException(
+                                "contractions starting with conjoining Jamo L or V not supported");
+                    }
+                    c = nfdString[nfdLength - 1];
+                    if (Hangul.IsJamoL(c) ||
+                            (Hangul.IsJamoV(c) && Hangul.IsJamoL(nfdString[nfdLength - 2])))
+                    {
+                        // A contraction ending with Jamo L or L+V would require
+                        // generating Hangul syllables in addTailComposites() (588 for a Jamo L),
+                        // or decomposing a following Hangul syllable on the fly, during contraction matching.
+                        throw new NotSupportedException(
+                                "contractions ending with conjoining Jamo L or L+V not supported");
+                    }
+                    // A Hangul syllable completely inside a contraction is ok.
                 }
-                c = nfdString[nfdLength - 1];
-                if (Hangul.IsJamoL(c) ||
-                        (Hangul.IsJamoV(c) && Hangul.IsJamoL(nfdString[nfdLength - 2])))
-                {
-                    // A contraction ending with Jamo L or L+V would require
-                    // generating Hangul syllables in addTailComposites() (588 for a Jamo L),
-                    // or decomposing a following Hangul syllable on the fly, during contraction matching.
-                    throw new NotSupportedException(
-                            "contractions ending with conjoining Jamo L or L+V not supported");
-                }
-                // A Hangul syllable completely inside a contraction is ok.
-            }
-            // Note: If there is a prefix, then the parser checked that
-            // both the prefix and the string beging with NFC boundaries (not Jamo V or T).
-            // Therefore: prefix.isEmpty() || !isJamoVOrT(nfdString.charAt(0))
-            // (While handling a Hangul syllable, prefixes on Jamo V or T
-            // would not see the previous Jamo of that syllable.)
+                // Note: If there is a prefix, then the parser checked that
+                // both the prefix and the string beging with NFC boundaries (not Jamo V or T).
+                // Therefore: prefix.isEmpty() || !isJamoVOrT(nfdString.charAt(0))
+                // (While handling a Hangul syllable, prefixes on Jamo V or T
+                // would not see the previous Jamo of that syllable.)
 
-            if (strength != CollationStrength.Identical)
-            {
-                // Find the node index after which we insert the new tailored node.
-                int index = FindOrInsertNodeForCEs(strength);
-                Debug.Assert(cesLength > 0);
-                long ce = ces[cesLength - 1];
-                if (strength == CollationStrength.Primary && !IsTempCE(ce) && (ce.TripleShift(32)) == 0)
+                if (strength != CollationStrength.Identical)
                 {
-                    // There is no primary gap between ignorables and the space-first-primary.
-                    throw new NotSupportedException(
-                            "tailoring primary after ignorables not supported");
+                    // Find the node index after which we insert the new tailored node.
+                    int index = FindOrInsertNodeForCEs(strength);
+                    Debug.Assert(cesLength > 0);
+                    long ce = ces[cesLength - 1];
+                    if (strength == CollationStrength.Primary && !IsTempCE(ce) && (ce.TripleShift(32)) == 0)
+                    {
+                        // There is no primary gap between ignorables and the space-first-primary.
+                        throw new NotSupportedException(
+                                "tailoring primary after ignorables not supported");
+                    }
+                    if (strength == CollationStrength.Quaternary && ce == 0)
+                    {
+                        // The CE data structure does not support non-zero quaternary weights
+                        // on tertiary ignorables.
+                        throw new NotSupportedException(
+                                "tailoring quaternary after tertiary ignorables not supported");
+                    }
+                    // Insert the new tailored node.
+                    index = InsertTailoredNodeAfter(index, strength);
+                    // Strength of the temporary CE:
+                    // The new relation may yield a stronger CE but not a weaker one.
+                    CollationStrength tempStrength = CeStrength(ce);
+                    if (strength < tempStrength) { tempStrength = strength; }
+                    ces[cesLength - 1] = TempCEFromIndexAndStrength(index, tempStrength);
                 }
-                if (strength == CollationStrength.Quaternary && ce == 0)
-                {
-                    // The CE data structure does not support non-zero quaternary weights
-                    // on tertiary ignorables.
-                    throw new NotSupportedException(
-                            "tailoring quaternary after tertiary ignorables not supported");
-                }
-                // Insert the new tailored node.
-                index = InsertTailoredNodeAfter(index, strength);
-                // Strength of the temporary CE:
-                // The new relation may yield a stronger CE but not a weaker one.
-                CollationStrength tempStrength = CeStrength(ce);
-                if (strength < tempStrength) { tempStrength = strength; }
-                ces[cesLength - 1] = TempCEFromIndexAndStrength(index, tempStrength);
-            }
 
-            SetCaseBits(nfdString.AsMemory());
+                SetCaseBits(nfdString.AsMemory());
 
-            int cesLengthBeforeExtension = cesLength;
-            if (extension.Length != 0)
-            {
-                string nfdExtension = nfd.Normalize(extension);
-                cesLength = dataBuilder.GetCEs(nfdExtension.AsMemory(), ces, cesLength);
-                if (cesLength > Collation.MAX_EXPANSION_LENGTH)
+                int cesLengthBeforeExtension = cesLength;
+                if (extension.Length != 0)
                 {
-                    throw new ArgumentException(
-                            "extension string adds too many collation elements (more than 31 total)");
+                    string nfdExtension = nfd.Normalize(extension);
+                    cesLength = dataBuilder.GetCEs(nfdExtension.AsMemory(), ces, cesLength);
+                    if (cesLength > Collation.MAX_EXPANSION_LENGTH)
+                    {
+                        throw new ArgumentException(
+                                "extension string adds too many collation elements (more than 31 total)");
+                    }
                 }
+                int ce32 = Collation.UNASSIGNED_CE32;
+                if ((!prefix.Equals(nfdPrefix.AsSpan(), StringComparison.Ordinal) || !strSpan.Equals(nfdString.AsSpan(), StringComparison.Ordinal)) &&
+                    !IgnorePrefix(prefix) && !IgnoreString(strSpan))
+                {
+                    // Map from the original input to the CEs.
+                    // We do this in case the canonical closure is incomplete,
+                    // so that it is possible to explicitly provide the missing mappings.
+                    ce32 = AddIfDifferent(prefix, str, ces, cesLength, ce32);
+                }
+                AddWithClosure(nfdPrefix.AsSpan(), nfdString.AsMemory(), ces, cesLength, ce32);
+                cesLength = cesLengthBeforeExtension;
             }
-            int ce32 = Collation.UNASSIGNED_CE32;
-            if ((!prefix.Equals(nfdPrefix, StringComparison.Ordinal) || !str.Equals(nfdString, StringComparison.Ordinal)) &&
-                !IgnorePrefix(prefix) && !IgnoreString(str))
+            finally
             {
-                // Map from the original input to the CEs.
-                // We do this in case the canonical closure is incomplete,
-                // so that it is possible to explicitly provide the missing mappings.
-                ce32 = AddIfDifferent(prefix, str.AsMemory(), ces, cesLength, ce32);
+                nfdPrefix.Dispose();
+                nfdString.Dispose();
             }
-            AddWithClosure(nfdPrefix.AsSpan(), nfdString.AsMemory(), ces, cesLength, ce32);
-            cesLength = cesLengthBeforeExtension;
         }
 
         /// <summary>

@@ -14,7 +14,7 @@
     // Load common settings from the XML file using relative path
     string settingsPath = System.IO.Path.GetFullPath(System.IO.Path.Combine(Host.ResolvePath(string.Empty), @"../../../../../src/CodeGenerationSettings.xml"));
     XDocument document = XDocument.Load(settingsPath);
-    XElement[] charSequenceElements = document.XPathSelectElements(@"//codeGen/charSequences/charSequence").Where(x => x.Value != "StringBuilder").ToArray();
+    XElement[] charSequenceElements = document.XPathSelectElements(@"//codeGen/charSequences/charSequence").Where(x => x.Value != "StringBuilder" && x.Value != "ICharSequence").ToArray();
     string charSequenceAccessibility = document.XPathSelectElement(@"//codeGen/charSequenceAccessibility").Value;
     string[] appendables = document.XPathSelectElements(@"//codeGen/appendables/appendable").Where(x => x.Value != "ValueStringBuilder").Select(x => x.Value).ToArray();
 

@@ -6,7 +6,9 @@ using J2N;
 using J2N.IO;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
@@ -948,7 +950,7 @@ namespace ICU4N.Text
                               char[] dest, int destStart, int destLimit,
                               bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
-            CharBuffer srcBuffer = CharBuffer.Wrap(src, srcStart, srcLimit - srcStart);
+            Span<char> srcBuffer = src.AsSpan(srcStart, srcLimit - srcStart);
             CharsAppendable app = new CharsAppendable(dest, destStart, destLimit);
             GetComposeNormalizer2(compat, (int)unicodeVersion).Normalize(srcBuffer, app);
             return app.Length;
@@ -1044,7 +1046,7 @@ namespace ICU4N.Text
                                 char[] dest, int destStart, int destLimit,
                                 bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
-            CharBuffer srcBuffer = CharBuffer.Wrap(src, srcStart, srcLimit - srcStart);
+            Span<char> srcBuffer = src.AsSpan(srcStart, srcLimit - srcStart);
             CharsAppendable app = new CharsAppendable(dest, destStart, destLimit);
             GetDecomposeNormalizer2(compat, (int)unicodeVersion).Normalize(srcBuffer, app);
             return app.Length;
@@ -1139,7 +1141,7 @@ namespace ICU4N.Text
                                 char[] dest, int destStart, int destLimit,
                                 NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            CharBuffer srcBuffer = CharBuffer.Wrap(src, srcStart, srcLimit - srcStart);
+            Span<char> srcBuffer = src.AsSpan(srcStart, srcLimit - srcStart);
             CharsAppendable app = new CharsAppendable(dest, destStart, destLimit);
             GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Normalize(srcBuffer, app);
             return app.Length;
@@ -1271,7 +1273,7 @@ namespace ICU4N.Text
         public static QuickCheckResult QuickCheck(char[] source, int start,
                                               int limit, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            CharBuffer srcBuffer = CharBuffer.Wrap(source, start, limit - start);
+            Span<char> srcBuffer = source.AsSpan(start, limit - start);
             return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).QuickCheck(srcBuffer);
         }
 
@@ -1301,7 +1303,7 @@ namespace ICU4N.Text
                                        int limit, NormalizerMode mode,
                                        NormalizerUnicodeVersion unicodeVersion)
         {
-            CharBuffer srcBuffer = CharBuffer.Wrap(src, start, limit - start);
+            Span<char> srcBuffer = src.AsSpan(start, limit - start);
             return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).IsNormalized(srcBuffer);
         }
 
@@ -1570,8 +1572,8 @@ namespace ICU4N.Text
             {
                 throw new ArgumentException();
             }
-            return InternalCompare(CharBuffer.Wrap(s1, s1Start, s1Limit - s1Start),
-                                   CharBuffer.Wrap(s2, s2Start, s2Limit - s2Start),
+            return InternalCompare(s1.AsSpan(s1Start, s1Limit - s1Start),
+                                   s2.AsSpan(s2Start, s2Limit - s2Start),
                                    (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
@@ -1762,7 +1764,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(string s1, string s2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(s1.AsCharSequence(), s2.AsCharSequence(), (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return InternalCompare(s1.AsSpan(), s2.AsSpan(), (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
         // ---------------------------------
@@ -1892,7 +1894,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(char[] s1, char[] s2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(CharBuffer.Wrap(s1), CharBuffer.Wrap(s2), (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return InternalCompare(s1.AsSpan(), s2.AsSpan(), (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
         // ---------------------------------
@@ -1957,7 +1959,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(int char32a, int char32b, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(UTF16.ValueOf(char32a).AsCharSequence(), UTF16.ValueOf(char32b).AsCharSequence(), (int)comparison | (int)foldCase | INPUT_IS_FCD, (int)unicodeVersion);
+            return InternalCompare(UTF16.ValueOf(char32a).AsSpan(), UTF16.ValueOf(char32b).AsSpan(), (int)comparison | (int)foldCase | INPUT_IS_FCD, (int)unicodeVersion);
         }
 
         // ---------------------------------
@@ -2022,7 +2024,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(int char32a, string str2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(UTF16.ValueOf(char32a).AsCharSequence(), str2.AsCharSequence(), (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return InternalCompare(UTF16.ValueOf(char32a).AsSpan(), str2.AsSpan(), (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
         /* Concatenation of normalized strings --------------------------------- */
@@ -2089,7 +2091,7 @@ namespace ICU4N.Text
             /* allow left==dest */
             StringBuilder destBuilder = new StringBuilder(leftLimit - leftStart + rightLimit - rightStart + 16);
             destBuilder.Append(left, leftStart, (leftLimit - leftStart) - leftStart); // ICU4N: Fixed 3rd parameter math
-            CharBuffer rightBuffer = CharBuffer.Wrap(right, rightStart, rightLimit - rightStart);
+            Span<char> rightBuffer = right.AsSpan(rightStart, rightLimit - rightStart);
             GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(destBuilder, rightBuffer);
             int destLength = destBuilder.Length;
             if (destLength <= (destLimit - destStart))
@@ -2138,7 +2140,7 @@ namespace ICU4N.Text
         public static string Concatenate(char[] left, char[] right, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
             StringBuilder dest = new StringBuilder(left.Length + right.Length + 16).Append(left);
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(dest, CharBuffer.Wrap(right)).ToString();
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(dest, right).ToString();
         }
 
         /// <summary>
@@ -2768,7 +2770,7 @@ namespace ICU4N.Text
         /* compare canonically equivalent ------------------------------------------- */
 
         // TODO: Broaden the public compare(string, string, options) API like this. Ticket #7407
-        private static int InternalCompare(ICharSequence s1, ICharSequence s2, int options, int normOptions)
+        private static int InternalCompare(ReadOnlySpan<char> s1, ReadOnlySpan<char> s2, int options, int normOptions)
         {
 //#pragma warning disable 612, 618
 //            int normOptions = options.TripleShift(COMPARE_NORM_OPTIONS_SHIFT);
@@ -2823,16 +2825,47 @@ namespace ICU4N.Text
                  * Therefore, ICU 2.6 removes that optimization.
                  */
 
-                if (spanQCYes1 < s1.Length)
-                {
-                    StringBuilder fcd1 = new StringBuilder(s1.Length + 16).Append(s1, 0, spanQCYes1 - 0); // ICU4N: Checked 3rd parameter math
-                    s1 = n2.NormalizeSecondAndAppend(fcd1, s1.Subsequence(spanQCYes1, s1.Length - spanQCYes1)).AsCharSequence(); // ICU4N: Checked 2nd parameter math
 
-                }
-                if (spanQCYes2 < s2.Length)
+                bool s1Normalize = spanQCYes1 < s1.Length;
+                bool s2Normalize = spanQCYes2 < s2.Length;
+                int s1BufferLength = s1.Length + 16;
+                int s2BufferLength = s2.Length + 16;
+
+                // ICU4N: We need to declare these at the same stack level so they remain in
+                // scope for the duration of the CmpEquivFold call.
+                ValueStringBuilder fcd1 = !s1Normalize ? default :
+                    (s1BufferLength <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(s1BufferLength));
+                ValueStringBuilder fcd2 = !s2Normalize ? default :
+                    (s2BufferLength <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(s2BufferLength));
+
+                try
                 {
-                    StringBuilder fcd2 = new StringBuilder(s2.Length + 16).Append(s2, 0, spanQCYes2 - 0); // ICU4N: Checked 3rd parameter math
-                    s2 = n2.NormalizeSecondAndAppend(fcd2, s2.Subsequence(spanQCYes2, s2.Length - spanQCYes2)).AsCharSequence(); // ICU4N: Corrected 2nd parameter math
+                    if (s1Normalize)
+                    {
+                        fcd1.Append(s1.Slice(0, spanQCYes1 - 0)); // ICU4N: Checked 3rd parameter math
+                        n2.NormalizeSecondAndAppend(ref fcd1, s1.Slice(spanQCYes1, s1.Length - spanQCYes1)); // ICU4N: Checked 2nd parameter math
+                                                                                                             //s1String = fcd1.ToString();
+                    }
+                    if (s2Normalize)
+                    {
+                        fcd2.Append(s2.Slice(0, spanQCYes2 - 0)); // ICU4N: Checked 3rd parameter math
+                        n2.NormalizeSecondAndAppend(ref fcd2, s2.Slice(spanQCYes2, s2.Length - spanQCYes2)); // ICU4N: Checked 2nd parameter math
+                                                                                                             //s2String = fcd2.ToString();
+                    }
+
+                    return CmpEquivFold(
+                        s1Normalize ? fcd1.AsSpan() : s1,
+                        s2Normalize ? fcd2.AsSpan() : s2,
+                        options);
+                }
+                finally
+                {
+                    fcd1.Dispose();
+                    fcd2.Dispose();
                 }
             }
 
@@ -2929,17 +2962,48 @@ namespace ICU4N.Text
          * (Comments in unorm_compare() are more up to date than this TODO.)
          */
 
+        // ICU4N: Refactored the "stack" to use ref structs
         /* stack element for previous-level source/decomposition pointers */
-        private sealed class CmpEquivLevel
+        private unsafe ref struct CmpEquivLevel
         {
-            public ICharSequence Cs { get; set; }
+            public CmpEquivLevel()
+            {
+                Cs = default;
+                S = default;
+            }
+
+            public ReadOnlySpan<char> Cs { get; set; }
             public int S { get; set; }
-        };
-        private static CmpEquivLevel[] CreateCmpEquivLevelStack()
+        }
+
+        private unsafe ref struct StackContainer
         {
-            return new CmpEquivLevel[] {
-            new CmpEquivLevel(), new CmpEquivLevel()
-        };
+            private CmpEquivLevel level0;
+            private CmpEquivLevel level1;
+
+            public StackContainer()
+            {
+                level0 = new CmpEquivLevel();
+                level1 = new CmpEquivLevel();
+            }
+
+            public ref CmpEquivLevel this[int index]
+            {
+                get
+                {
+                    switch (index)
+                    {
+                        case 0:
+#pragma warning disable CS9084 // Struct member returns 'this' or other instance members by reference
+                            return ref level0;
+                        case 1:
+                            return ref level1;
+#pragma warning restore CS9084 // Struct member returns 'this' or other instance members by reference
+                        default:
+                            throw new IndexOutOfRangeException(nameof(index));
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -2951,7 +3015,7 @@ namespace ICU4N.Text
         /// <summary>
         /// internal function; package visibility for use by <see cref="UTF16.StringComparer"/>
         /// </summary>
-        internal static int CmpEquivFold(ICharSequence cs1, ICharSequence cs2, int options)
+        internal static int CmpEquivFold(ReadOnlySpan<char> cs1, ReadOnlySpan<char> cs2, int options)
         {
             Normalizer2Impl nfcImpl;
             UCaseProperties csp;
@@ -2963,467 +3027,471 @@ namespace ICU4N.Text
             int length;
 
             /* stacks of previous-level start/current/limit */
-            CmpEquivLevel[] stack1 = null, stack2 = null;
+            StackContainer stack1 = new StackContainer();
+            StackContainer stack2 = new StackContainer();
 
             /* buffers for algorithmic decompositions */
-            string decomp1, decomp2;
+            const int DecompositionCharStackBufferSize = 16; // maximum length of 6, but need to be safe because it will fail if not enough
+            Span<char> decomp1 = stackalloc char[DecompositionCharStackBufferSize];
+            Span<char> decomp2 = stackalloc char[DecompositionCharStackBufferSize];
 
             /* case folding buffers, only use current-level start/limit */
-            StringBuilder fold1, fold2;
-
-            /* track which is the current level per string */
-            int level1, level2;
-
-            /* current code units, and code points for lookups */
-            int c1, c2, cp1, cp2;
-
-            /* no argument error checking because this itself is not an API */
-
-            /*
-             * assume that at least one of the options _COMPARE_EQUIV and U_COMPARE_IGNORE_CASE is set
-             * otherwise this function must behave exactly as uprv_strCompare()
-             * not checking for that here makes testing this function easier
-             */
-
-            /* normalization/properties data loaded? */
-            if ((options & COMPARE_EQUIV) != 0)
+            const int FoldCharStackBufferSize = 8; // maximum length of 3
+            var fold1 = new ValueStringBuilder(stackalloc char[FoldCharStackBufferSize]);
+            var fold2 = new ValueStringBuilder(stackalloc char[FoldCharStackBufferSize]);
+            try
             {
-                nfcImpl = Norm2AllModes.NFCInstance.Impl;
-            }
-            else
-            {
-                nfcImpl = null;
-            }
-            if ((options & COMPARE_IGNORE_CASE) != 0)
-            {
-                csp = UCaseProperties.Instance;
-                fold1 = new StringBuilder();
-                fold2 = new StringBuilder();
-            }
-            else
-            {
-                csp = null;
-                fold1 = fold2 = null;
-            }
 
-            /* initialize */
-            s1 = 0;
-            limit1 = cs1.Length;
-            s2 = 0;
-            limit2 = cs2.Length;
+                /* track which is the current level per string */
+                int level1, level2;
 
-            level1 = level2 = 0;
-            c1 = c2 = -1;
+                /* current code units, and code points for lookups */
+                int c1, c2, cp1, cp2;
 
-            /* comparison loop */
-            for (; ; )
-            {
-                /*
-                 * here a code unit value of -1 means "get another code unit"
-                 * below it will mean "this source is finished"
-                 */
-
-                if (c1 < 0)
-                {
-                    /* get next code unit from string 1, post-increment */
-                    for (; ; )
-                    {
-                        if (s1 == limit1)
-                        {
-                            if (level1 == 0)
-                            {
-                                c1 = -1;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            c1 = cs1[s1++];
-                            break;
-                        }
-
-                        /* reached end of level buffer, pop one level */
-                        do
-                        {
-                            --level1;
-                            cs1 = stack1[level1].Cs;
-                        } while (cs1 == null);
-                        s1 = stack1[level1].S;
-                        limit1 = cs1.Length;
-                    }
-                }
-
-                if (c2 < 0)
-                {
-                    /* get next code unit from string 2, post-increment */
-                    for (; ; )
-                    {
-                        if (s2 == limit2)
-                        {
-                            if (level2 == 0)
-                            {
-                                c2 = -1;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            c2 = cs2[s2++];
-                            break;
-                        }
-
-                        /* reached end of level buffer, pop one level */
-                        do
-                        {
-                            --level2;
-                            cs2 = stack2[level2].Cs;
-                        } while (cs2 == null);
-                        s2 = stack2[level2].S;
-                        limit2 = cs2.Length;
-                    }
-                }
+                /* no argument error checking because this itself is not an API */
 
                 /*
-                 * compare c1 and c2
-                 * either variable c1, c2 is -1 only if the corresponding string is finished
+                 * assume that at least one of the options _COMPARE_EQUIV and U_COMPARE_IGNORE_CASE is set
+                 * otherwise this function must behave exactly as uprv_strCompare()
+                 * not checking for that here makes testing this function easier
                  */
-                if (c1 == c2)
+
+                /* normalization/properties data loaded? */
+                if ((options & COMPARE_EQUIV) != 0)
                 {
+                    nfcImpl = Norm2AllModes.NFCInstance.Impl;
+                }
+                else
+                {
+                    nfcImpl = null;
+                }
+                if ((options & COMPARE_IGNORE_CASE) != 0)
+                {
+                    csp = UCaseProperties.Instance;
+                    // ICU4N: fold1, fold2 instantiated on stack above
+                }
+                else
+                {
+                    csp = null;
+                }
+
+                /* initialize */
+                s1 = 0;
+                limit1 = cs1.Length;
+                s2 = 0;
+                limit2 = cs2.Length;
+
+                level1 = level2 = 0;
+                c1 = c2 = -1;
+
+                /* comparison loop */
+                for (; ; )
+                {
+                    /*
+                     * here a code unit value of -1 means "get another code unit"
+                     * below it will mean "this source is finished"
+                     */
+
                     if (c1 < 0)
                     {
-                        return 0;   /* c1==c2==-1 indicating end of strings */
-                    }
-                    c1 = c2 = -1;       /* make us fetch new code units */
-                    continue;
-                }
-                else if (c1 < 0)
-                {
-                    return -1;      /* string 1 ends before string 2 */
-                }
-                else if (c2 < 0)
-                {
-                    return 1;       /* string 2 ends before string 1 */
-                }
-                /* c1!=c2 && c1>=0 && c2>=0 */
-
-                /* get complete code points for c1, c2 for lookups if either is a surrogate */
-                cp1 = c1;
-                if (UTF16.IsSurrogate((char)c1))
-                {
-                    char c;
-
-                    if (UTF16Plus.IsSurrogateLead(c1))
-                    {
-                        if (s1 != limit1 && char.IsLowSurrogate(c = cs1[s1]))
+                        /* get next code unit from string 1, post-increment */
+                        for (; ; )
                         {
-                            /* advance ++s1; only below if cp1 decomposes/case-folds */
-                            cp1 = Character.ToCodePoint((char)c1, c);
+                            if (s1 == limit1)
+                            {
+                                if (level1 == 0)
+                                {
+                                    c1 = -1;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                c1 = cs1[s1++];
+                                break;
+                            }
+
+                            /* reached end of level buffer, pop one level */
+                            do
+                            {
+                                --level1;
+                                cs1 = stack1[level1].Cs;
+                            } while (cs1 == null);
+                            s1 = stack1[level1].S;
+                            limit1 = cs1.Length;
                         }
                     }
-                    else /* isTrail(c1) */
+
+                    if (c2 < 0)
                     {
-                        if (0 <= (s1 - 2) && char.IsHighSurrogate(c = cs1[s1 - 2]))
+                        /* get next code unit from string 2, post-increment */
+                        for (; ; )
                         {
-                            cp1 = Character.ToCodePoint(c, (char)c1);
+                            if (s2 == limit2)
+                            {
+                                if (level2 == 0)
+                                {
+                                    c2 = -1;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                c2 = cs2[s2++];
+                                break;
+                            }
+
+                            /* reached end of level buffer, pop one level */
+                            do
+                            {
+                                --level2;
+                                cs2 = stack2[level2].Cs;
+                            } while (cs2 == null);
+                            s2 = stack2[level2].S;
+                            limit2 = cs2.Length;
                         }
                     }
-                }
 
-                cp2 = c2;
-                if (UTF16.IsSurrogate((char)c2))
-                {
-                    char c;
-
-                    if (UTF16Plus.IsSurrogateLead(c2))
+                    /*
+                     * compare c1 and c2
+                     * either variable c1, c2 is -1 only if the corresponding string is finished
+                     */
+                    if (c1 == c2)
                     {
-                        if (s2 != limit2 && char.IsLowSurrogate(c = cs2[s2]))
+                        if (c1 < 0)
                         {
-                            /* advance ++s2; only below if cp2 decomposes/case-folds */
-                            cp2 = Character.ToCodePoint((char)c2, c);
+                            return 0;   /* c1==c2==-1 indicating end of strings */
                         }
+                        c1 = c2 = -1;       /* make us fetch new code units */
+                        continue;
                     }
-                    else /* isTrail(c2) */
+                    else if (c1 < 0)
                     {
-                        if (0 <= (s2 - 2) && char.IsHighSurrogate(c = cs2[s2 - 2]))
-                        {
-                            cp2 = Character.ToCodePoint(c, (char)c2);
-                        }
+                        return -1;      /* string 1 ends before string 2 */
                     }
-                }
+                    else if (c2 < 0)
+                    {
+                        return 1;       /* string 2 ends before string 1 */
+                    }
+                    /* c1!=c2 && c1>=0 && c2>=0 */
 
-                /*
-                 * go down one level for each string
-                 * continue with the main loop as soon as there is a real change
-                 */
-
-                if (level1 == 0 && (options & COMPARE_IGNORE_CASE) != 0 &&
-                    (length = csp.ToFullFolding(cp1, fold1, options)) >= 0
-                )
-                {
-                    /* cp1 case-folds to the code point "length" or to p[length] */
+                    /* get complete code points for c1, c2 for lookups if either is a surrogate */
+                    cp1 = c1;
                     if (UTF16.IsSurrogate((char)c1))
                     {
+                        char c;
+
                         if (UTF16Plus.IsSurrogateLead(c1))
                         {
-                            /* advance beyond source surrogate pair if it case-folds */
-                            ++s1;
+                            if (s1 != limit1 && char.IsLowSurrogate(c = cs1[s1]))
+                            {
+                                /* advance ++s1; only below if cp1 decomposes/case-folds */
+                                cp1 = Character.ToCodePoint((char)c1, c);
+                            }
                         }
                         else /* isTrail(c1) */
                         {
-                            /*
-                             * we got a supplementary code point when hitting its trail surrogate,
-                             * therefore the lead surrogate must have been the same as in the other string;
-                             * compare this decomposition with the lead surrogate in the other string
-                             * remember that this simulates bulk text replacement:
-                             * the decomposition would replace the entire code point
-                             */
-                            --s2;
-                            c2 = cs2[s2 - 1];
+                            if (0 <= (s1 - 2) && char.IsHighSurrogate(c = cs1[s1 - 2]))
+                            {
+                                cp1 = Character.ToCodePoint(c, (char)c1);
+                            }
                         }
                     }
 
-                    /* push current level pointers */
-                    if (stack1 == null)
-                    {
-                        stack1 = CreateCmpEquivLevelStack();
-                    }
-                    stack1[0].Cs = cs1;
-                    stack1[0].S = s1;
-                    ++level1;
-
-                    /* copy the folding result to fold1[] */
-                    /* Java: the buffer was probably not empty, remove the old contents */
-                    if (length <= UCaseProperties.MaxStringLength)
-                    {
-                        fold1.Delete(0, (fold1.Length - length) - 0); // ICU4N: Corrected 2nd parameter of Delete
-                    }
-                    else
-                    {
-                        fold1.Length = 0;
-                        fold1.AppendCodePoint(length);
-                    }
-
-                    /* set next level pointers to case folding */
-                    cs1 = fold1.AsCharSequence();
-                    s1 = 0;
-                    limit1 = fold1.Length;
-
-                    /* get ready to read from decomposition, continue with loop */
-                    c1 = -1;
-                    continue;
-                }
-
-                if (level2 == 0 && (options & COMPARE_IGNORE_CASE) != 0 &&
-                    (length = csp.ToFullFolding(cp2, fold2, options)) >= 0
-                )
-                {
-                    /* cp2 case-folds to the code point "length" or to p[length] */
+                    cp2 = c2;
                     if (UTF16.IsSurrogate((char)c2))
                     {
+                        char c;
+
                         if (UTF16Plus.IsSurrogateLead(c2))
                         {
-                            /* advance beyond source surrogate pair if it case-folds */
-                            ++s2;
+                            if (s2 != limit2 && char.IsLowSurrogate(c = cs2[s2]))
+                            {
+                                /* advance ++s2; only below if cp2 decomposes/case-folds */
+                                cp2 = Character.ToCodePoint((char)c2, c);
+                            }
                         }
                         else /* isTrail(c2) */
                         {
-                            /*
-                             * we got a supplementary code point when hitting its trail surrogate,
-                             * therefore the lead surrogate must have been the same as in the other string;
-                             * compare this decomposition with the lead surrogate in the other string
-                             * remember that this simulates bulk text replacement:
-                             * the decomposition would replace the entire code point
-                             */
-                            --s1;
-                            c1 = cs1[s1 - 1];
+                            if (0 <= (s2 - 2) && char.IsHighSurrogate(c = cs2[s2 - 2]))
+                            {
+                                cp2 = Character.ToCodePoint(c, (char)c2);
+                            }
                         }
                     }
 
-                    /* push current level pointers */
-                    if (stack2 == null)
-                    {
-                        stack2 = CreateCmpEquivLevelStack();
-                    }
-                    stack2[0].Cs = cs2;
-                    stack2[0].S = s2;
-                    ++level2;
+                    /*
+                     * go down one level for each string
+                     * continue with the main loop as soon as there is a real change
+                     */
 
-                    /* copy the folding result to fold2[] */
-                    /* Java: the buffer was probably not empty, remove the old contents */
-                    if (length <= UCaseProperties.MaxStringLength)
+                    if (level1 == 0 && (options & COMPARE_IGNORE_CASE) != 0 &&
+                        (length = csp.ToFullFolding(cp1, ref fold1, options)) >= 0)
                     {
-                        fold2.Delete(0, (fold2.Length - length) - 0); // ICU4N: Corrected 2nd parameter of Delete
-                    }
-                    else
-                    {
-                        fold2.Length = 0;
-                        fold2.AppendCodePoint(length);
-                    }
-
-                    /* set next level pointers to case folding */
-                    cs2 = fold2.AsCharSequence();
-                    s2 = 0;
-                    limit2 = fold2.Length;
-
-                    /* get ready to read from decomposition, continue with loop */
-                    c2 = -1;
-                    continue;
-                }
-
-                if (level1 < 2 && (options & COMPARE_EQUIV) != 0 &&
-                    (decomp1 = nfcImpl.GetDecomposition(cp1)) != null
-                )
-                {
-                    /* cp1 decomposes into p[length] */
-                    if (UTF16.IsSurrogate((char)c1))
-                    {
-                        if (UTF16Plus.IsSurrogateLead(c1))
+                        /* cp1 case-folds to the code point "length" or to p[length] */
+                        if (UTF16.IsSurrogate((char)c1))
                         {
-                            /* advance beyond source surrogate pair if it decomposes */
-                            ++s1;
+                            if (UTF16Plus.IsSurrogateLead(c1))
+                            {
+                                /* advance beyond source surrogate pair if it case-folds */
+                                ++s1;
+                            }
+                            else /* isTrail(c1) */
+                            {
+                                /*
+                                    * we got a supplementary code point when hitting its trail surrogate,
+                                    * therefore the lead surrogate must have been the same as in the other string;
+                                    * compare this decomposition with the lead surrogate in the other string
+                                    * remember that this simulates bulk text replacement:
+                                    * the decomposition would replace the entire code point
+                                    */
+                                --s2;
+                                c2 = cs2[s2 - 1];
+                            }
                         }
-                        else /* isTrail(c1) */
+
+                        /* push current level pointers */
+                        stack1[0].Cs = cs1;
+                        stack1[0].S = s1;
+                        ++level1;
+
+                        /* copy the folding result to fold1[] */
+                        /* Java: the buffer was probably not empty, remove the old contents */
+                        if (length <= UCaseProperties.MaxStringLength)
                         {
-                            /*
-                             * we got a supplementary code point when hitting its trail surrogate,
-                             * therefore the lead surrogate must have been the same as in the other string;
-                             * compare this decomposition with the lead surrogate in the other string
-                             * remember that this simulates bulk text replacement:
-                             * the decomposition would replace the entire code point
-                             */
-                            --s2;
-                            c2 = cs2[s2 - 1];
+                            fold1.Delete(0, (fold1.Length - length) - 0); // ICU4N: Corrected 2nd parameter of Delete
                         }
-                    }
-
-                    /* push current level pointers */
-                    if (stack1 == null)
-                    {
-                        stack1 = CreateCmpEquivLevelStack();
-                    }
-                    stack1[level1].Cs = cs1;
-                    stack1[level1].S = s1;
-                    ++level1;
-
-                    /* set empty intermediate level if skipped */
-                    if (level1 < 2)
-                    {
-                        stack1[level1++].Cs = null;
-                    }
-
-                    /* set next level pointers to decomposition */
-                    cs1 = decomp1.AsCharSequence();
-                    s1 = 0;
-                    limit1 = decomp1.Length;
-
-                    /* get ready to read from decomposition, continue with loop */
-                    c1 = -1;
-                    continue;
-                }
-
-                if (level2 < 2 && (options & COMPARE_EQUIV) != 0 &&
-                    (decomp2 = nfcImpl.GetDecomposition(cp2)) != null
-                )
-                {
-                    /* cp2 decomposes into p[length] */
-                    if (UTF16.IsSurrogate((char)c2))
-                    {
-                        if (UTF16Plus.IsSurrogateLead(c2))
+                        else
                         {
-                            /* advance beyond source surrogate pair if it decomposes */
-                            ++s2;
+                            fold1.Length = 0;
+                            fold1.AppendCodePoint(length);
                         }
-                        else /* isTrail(c2) */
+
+                        /* set next level pointers to case folding */
+                        unsafe
                         {
-                            /*
-                             * we got a supplementary code point when hitting its trail surrogate,
-                             * therefore the lead surrogate must have been the same as in the other string;
-                             * compare this decomposition with the lead surrogate in the other string
-                             * remember that this simulates bulk text replacement:
-                             * the decomposition would replace the entire code point
-                             */
-                            --s1;
-                            c1 = cs1[s1 - 1];
+                            cs1 = new ReadOnlySpan<char>(fold1.GetCharsPointer(), fold1.Length);
                         }
+                        s1 = 0;
+                        limit1 = fold1.Length;
+
+                        /* get ready to read from decomposition, continue with loop */
+                        c1 = -1;
+                        continue;
                     }
 
-                    /* push current level pointers */
-                    if (stack2 == null)
-                    {
-                        stack2 = CreateCmpEquivLevelStack();
-                    }
-                    stack2[level2].Cs = cs2;
-                    stack2[level2].S = s2;
-                    ++level2;
-
-                    /* set empty intermediate level if skipped */
-                    if (level2 < 2)
-                    {
-                        stack2[level2++].Cs = null;
-                    }
-
-                    /* set next level pointers to decomposition */
-                    cs2 = decomp2.AsCharSequence();
-                    s2 = 0;
-                    limit2 = decomp2.Length;
-
-                    /* get ready to read from decomposition, continue with loop */
-                    c2 = -1;
-                    continue;
-                }
-
-                /*
-                 * no decomposition/case folding, max level for both sides:
-                 * return difference result
-                 *
-                 * code point order comparison must not just return cp1-cp2
-                 * because when single surrogates are present then the surrogate pairs
-                 * that formed cp1 and cp2 may be from different string indexes
-                 *
-                 * example: { d800 d800 dc01 } vs. { d800 dc00 }, compare at second code units
-                 * c1=d800 cp1=10001 c2=dc00 cp2=10000
-                 * cp1-cp2>0 but c1-c2<0 and in fact in UTF-32 it is { d800 10001 } < { 10000 }
-                 *
-                 * therefore, use same fix-up as in ustring.c/uprv_strCompare()
-                 * except: uprv_strCompare() fetches c=*s while this functions fetches c=*s++
-                 * so we have slightly different pointer/start/limit comparisons here
-                 */
-
-                if (c1 >= 0xd800 && c2 >= 0xd800 && (options & COMPARE_CODE_POINT_ORDER) != 0)
-                {
-                    /* subtract 0x2800 from BMP code points to make them smaller than supplementary ones */
-                    if (
-                        (c1 <= 0xdbff && s1 != limit1 && char.IsLowSurrogate(cs1[s1])) ||
-                        (char.IsLowSurrogate((char)c1) && 0 != (s1 - 1) && char.IsHighSurrogate(cs1[s1 - 2]))
+                    if (level2 == 0 && (options & COMPARE_IGNORE_CASE) != 0 &&
+                        (length = csp.ToFullFolding(cp2, ref fold2, options)) >= 0
                     )
                     {
-                        /* part of a surrogate pair, leave >=d800 */
-                    }
-                    else
-                    {
-                        /* BMP code point - may be surrogate code point - make <d800 */
-                        c1 -= 0x2800;
+                        /* cp2 case-folds to the code point "length" or to p[length] */
+                        if (UTF16.IsSurrogate((char)c2))
+                        {
+                            if (UTF16Plus.IsSurrogateLead(c2))
+                            {
+                                /* advance beyond source surrogate pair if it case-folds */
+                                ++s2;
+                            }
+                            else /* isTrail(c2) */
+                            {
+                                /*
+                                 * we got a supplementary code point when hitting its trail surrogate,
+                                 * therefore the lead surrogate must have been the same as in the other string;
+                                 * compare this decomposition with the lead surrogate in the other string
+                                 * remember that this simulates bulk text replacement:
+                                 * the decomposition would replace the entire code point
+                                 */
+                                --s1;
+                                c1 = cs1[s1 - 1];
+                            }
+                        }
+
+                        /* push current level pointers */
+                        stack2[0].Cs = cs2;
+                        stack2[0].S = s2;
+                        ++level2;
+
+                        /* copy the folding result to fold2[] */
+                        /* Java: the buffer was probably not empty, remove the old contents */
+                        if (length <= UCaseProperties.MaxStringLength)
+                        {
+                            fold2.Delete(0, (fold2.Length - length) - 0); // ICU4N: Corrected 2nd parameter of Delete
+                        }
+                        else
+                        {
+                            fold2.Length = 0;
+                            fold2.AppendCodePoint(length);
+                        }
+
+                        /* set next level pointers to case folding */
+                        unsafe
+                        {
+                            cs2 = new ReadOnlySpan<char>(fold2.GetCharsPointer(), fold2.Length);
+                        }
+                        s2 = 0;
+                        limit2 = fold2.Length;
+
+                        /* get ready to read from decomposition, continue with loop */
+                        c2 = -1;
+                        continue;
                     }
 
-                    if (
-                        (c2 <= 0xdbff && s2 != limit2 && char.IsLowSurrogate(cs2[s2])) ||
-                        (char.IsLowSurrogate((char)c2) && 0 != (s2 - 1) && char.IsHighSurrogate(cs2[s2 - 2]))
+                    if (level1 < 2 && (options & COMPARE_EQUIV) != 0 &&
+                        nfcImpl.TryGetDecomposition(cp1, decomp1, out int decomp1Length)
                     )
                     {
-                        /* part of a surrogate pair, leave >=d800 */
-                    }
-                    else
-                    {
-                        /* BMP code point - may be surrogate code point - make <d800 */
-                        c2 -= 0x2800;
-                    }
-                }
+                        /* cp1 decomposes into p[length] */
+                        if (UTF16.IsSurrogate((char)c1))
+                        {
+                            if (UTF16Plus.IsSurrogateLead(c1))
+                            {
+                                /* advance beyond source surrogate pair if it decomposes */
+                                ++s1;
+                            }
+                            else /* isTrail(c1) */
+                            {
+                                /*
+                                 * we got a supplementary code point when hitting its trail surrogate,
+                                 * therefore the lead surrogate must have been the same as in the other string;
+                                 * compare this decomposition with the lead surrogate in the other string
+                                 * remember that this simulates bulk text replacement:
+                                 * the decomposition would replace the entire code point
+                                 */
+                                --s2;
+                                c2 = cs2[s2 - 1];
+                            }
+                        }
 
-                return c1 - c2;
+                        /* push current level pointers */
+                        stack1[level1].Cs = cs1;
+                        stack1[level1].S = s1;
+                        ++level1;
+
+                        /* set empty intermediate level if skipped */
+                        if (level1 < 2)
+                        {
+                            stack1[level1++].Cs = null;
+                        }
+
+                        /* set next level pointers to decomposition */
+                        unsafe
+                        {
+                            cs1 = new ReadOnlySpan<char>((char*)Unsafe.AsPointer(ref decomp1[0]), decomp1Length);
+                        }
+                        s1 = 0;
+                        limit1 = decomp1Length;
+
+                        /* get ready to read from decomposition, continue with loop */
+                        c1 = -1;
+                        continue;
+                    }
+
+                    if (level2 < 2 && (options & COMPARE_EQUIV) != 0 &&
+                        nfcImpl.TryGetDecomposition(cp2, decomp2, out int decomp2Length)
+                    )
+                    {
+                        /* cp2 decomposes into p[length] */
+                        if (UTF16.IsSurrogate((char)c2))
+                        {
+                            if (UTF16Plus.IsSurrogateLead(c2))
+                            {
+                                /* advance beyond source surrogate pair if it decomposes */
+                                ++s2;
+                            }
+                            else /* isTrail(c2) */
+                            {
+                                /*
+                                 * we got a supplementary code point when hitting its trail surrogate,
+                                 * therefore the lead surrogate must have been the same as in the other string;
+                                 * compare this decomposition with the lead surrogate in the other string
+                                 * remember that this simulates bulk text replacement:
+                                 * the decomposition would replace the entire code point
+                                 */
+                                --s1;
+                                c1 = cs1[s1 - 1];
+                            }
+                        }
+
+                        /* push current level pointers */
+                        stack2[level2].Cs = cs2;
+                        stack2[level2].S = s2;
+                        ++level2;
+
+                        /* set empty intermediate level if skipped */
+                        if (level2 < 2)
+                        {
+                            stack2[level2++].Cs = null;
+                        }
+
+                        /* set next level pointers to decomposition */
+                        unsafe
+                        {
+                            cs2 = new ReadOnlySpan<char>((char*)Unsafe.AsPointer(ref decomp2[0]), decomp2Length);
+                        }
+                        s2 = 0;
+                        limit2 = decomp2Length;
+
+                        /* get ready to read from decomposition, continue with loop */
+                        c2 = -1;
+                        continue;
+                    }
+
+                    /*
+                     * no decomposition/case folding, max level for both sides:
+                     * return difference result
+                     *
+                     * code point order comparison must not just return cp1-cp2
+                     * because when single surrogates are present then the surrogate pairs
+                     * that formed cp1 and cp2 may be from different string indexes
+                     *
+                     * example: { d800 d800 dc01 } vs. { d800 dc00 }, compare at second code units
+                     * c1=d800 cp1=10001 c2=dc00 cp2=10000
+                     * cp1-cp2>0 but c1-c2<0 and in fact in UTF-32 it is { d800 10001 } < { 10000 }
+                     *
+                     * therefore, use same fix-up as in ustring.c/uprv_strCompare()
+                     * except: uprv_strCompare() fetches c=*s while this functions fetches c=*s++
+                     * so we have slightly different pointer/start/limit comparisons here
+                     */
+
+                    if (c1 >= 0xd800 && c2 >= 0xd800 && (options & COMPARE_CODE_POINT_ORDER) != 0)
+                    {
+                        /* subtract 0x2800 from BMP code points to make them smaller than supplementary ones */
+                        if (
+                            (c1 <= 0xdbff && s1 != limit1 && char.IsLowSurrogate(cs1[s1])) ||
+                            (char.IsLowSurrogate((char)c1) && 0 != (s1 - 1) && char.IsHighSurrogate(cs1[s1 - 2]))
+                        )
+                        {
+                            /* part of a surrogate pair, leave >=d800 */
+                        }
+                        else
+                        {
+                            /* BMP code point - may be surrogate code point - make <d800 */
+                            c1 -= 0x2800;
+                        }
+
+                        if (
+                            (c2 <= 0xdbff && s2 != limit2 && char.IsLowSurrogate(cs2[s2])) ||
+                            (char.IsLowSurrogate((char)c2) && 0 != (s2 - 1) && char.IsHighSurrogate(cs2[s2 - 2]))
+                        )
+                        {
+                            /* part of a surrogate pair, leave >=d800 */
+                        }
+                        else
+                        {
+                            /* BMP code point - may be surrogate code point - make <d800 */
+                            c2 -= 0x2800;
+                        }
+                    }
+
+                    return c1 - c2;
+                }
+            }
+            finally
+            {
+                fold1.Dispose();
+                fold2.Dispose();
             }
         }
-
-        // ICU4N TODO: Replace with ValueStringBuilder
 
         /// <summary>
         /// An <see cref="IAppendable"/> that writes into a char array with a capacity that may be
