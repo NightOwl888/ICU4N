@@ -1,5 +1,4 @@
 ﻿using ICU4N.Support.Text;
-using J2N.IO;
 using J2N.Text;
 using System;
 using System.Text;
@@ -209,12 +208,12 @@ namespace ICU4N.Text
         /// <summary>
         /// Gets the decomposition mapping of <paramref name="codePoint"/>.
         /// Roughly equivalent to normalizing the <see cref="string"/> form of <paramref name="codePoint"/>
-        /// on a DECOMPOSE Normalizer2 instance, but much faster, and except that this function
+        /// on a DECOMPOSE <see cref="Normalizer2"/> instance, but much faster, and except that this function
         /// returns null if c does not have a decomposition mapping in this instance's data.
-        /// This function is independent of the mode of the Normalizer2.
+        /// This function is independent of the mode of the <see cref="Normalizer2"/>.
         /// </summary>
         /// <param name="codePoint">Code point.</param>
-        /// <returns><paramref name="codePoint"/>'s decomposition mapping, if any; otherwise null.</returns>
+        /// <returns><paramref name="codePoint"/>'s decomposition mapping, if any; otherwise <c>null</c>.</returns>
         /// <stable>ICU 4.6</stable>
         public override string GetDecomposition(int codePoint)
         {
@@ -222,9 +221,29 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Gets the raw decomposition mapping of <paramref name="codePoint"/>.
+        /// Gets the decomposition mapping of <paramref name="codePoint"/>.
+        /// Roughly equivalent to normalizing the <see cref="string"/> form of <paramref name="codePoint"/>
+        /// on a DECOMPOSE <see cref="Normalizer2"/> instance, but much faster, and except that this function
+        /// returns <c>false</c> if <paramref name="codePoint"/> does not have a decomposition mapping in this instance's data.
+        /// This function is independent of the mode of the <see cref="Normalizer2"/>.
         /// </summary>
-        /// <remarks>
+        /// <param name="codePoint">Code point.</param>
+        /// <param name="destination">Upon return, will contain the decomposition.</param>
+        /// <param name="charsLength">Upon return, will contain the length of the decomposition (whether successuful or not).
+        /// If the value is 0, it means there is not a valid decomposition value. If the value is greater than 0 and
+        /// the method returns <c>false</c>, it means that there was not enough space allocated and the number indicates
+        /// the minimum number of chars required.</param>
+        /// <returns><c>true</c> if the decomposition was succssfully written to <paramref name="destination"/>; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public override bool TryGetDecomposition(int codePoint, Span<char> destination, out int charsLength)
+        {
+            charsLength = 0;
+            return set.Contains(codePoint) ? norm2.TryGetDecomposition(codePoint, destination, out charsLength) : false;
+        }
+
+        /// <summary>
+        /// Gets the raw decomposition mapping of <paramref name="codePoint"/>.
+        /// <para/>
         /// This is similar to the <see cref="GetDecomposition"/> method but returns the
         /// raw decomposition mapping as specified in UnicodeData.txt or
         /// (for custom data) in the mapping files processed by the gennorm2 tool.
@@ -239,14 +258,47 @@ namespace ICU4N.Text
         /// in this case, the result contains either one or two code points (=1..4 .NET chars).
         /// <para/>
         /// This function is independent of the mode of the Normalizer2.
-        /// The default implementation returns null.
-        /// </remarks>
+        /// The default implementation returns <c>null</c>.
+        /// </summary>
         /// <param name="codePoint">Code point.</param>
-        /// <returns><paramref name="codePoint"/>'s raw decomposition mapping, if any; otherwise null.</returns>
+        /// <returns><paramref name="codePoint"/>'s raw decomposition mapping, if any; otherwise <c>null</c>.</returns>
         /// <stable>ICU 49</stable>
         public override string GetRawDecomposition(int codePoint)
         {
             return set.Contains(codePoint) ? norm2.GetRawDecomposition(codePoint) : null;
+        }
+
+        /// <summary>
+        /// Gets the raw decomposition mapping of <paramref name="codePoint"/>.
+        /// <para/>
+        /// This is similar to the <see cref="GetDecomposition"/> method but returns the
+        /// raw decomposition mapping as specified in UnicodeData.txt or
+        /// (for custom data) in the mapping files processed by the gennorm2 tool.
+        /// By contrast, <see cref="GetDecomposition"/> returns the processed,
+        /// recursively-decomposed version of this mapping.
+        /// <para/>
+        /// When used on a standard NFKC <see cref="Normalizer2"/> instance,
+        /// <see cref="GetRawDecomposition"/> returns the Unicode Decomposition_Mapping (dm) property.
+        /// <para/>
+        /// When used on a standard NFC <see cref="Normalizer2"/> instance,
+        /// it returns the Decomposition_Mapping only if the Decomposition_Type (dt) is Canonical (Can);
+        /// in this case, the result contains either one or two code points (=1..4 .NET chars).
+        /// <para/>
+        /// This function is independent of the mode of the <see cref="Normalizer2"/>.
+        /// The default implementation returns <c>false</c>.
+        /// </summary>
+        /// <param name="codePoint">Code point.</param>
+        /// <param name="destination">Upon return, will contain the raw decomposition.</param>
+        /// <param name="charsLength">Upon return, will contain the length of the decomposition (whether successuful or not).
+        /// If the value is 0, it means there is not a valid decomposition value. If the value is greater than 0 and
+        /// the method returns <c>false</c>, it means that there was not enough space allocated and the number indicates
+        /// the minimum number of chars required.</param>
+        /// <returns><c>true</c> if the decomposition was succssfully written to <paramref name="destination"/>; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public override bool TryGetRawDecomposition(int codePoint, Span<char> destination, out int charsLength)
+        {
+            charsLength = 0;
+            return set.Contains(codePoint) ? norm2.TryGetRawDecomposition(codePoint, destination, out charsLength) : false;
         }
 
         /// <summary>

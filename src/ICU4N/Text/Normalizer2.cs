@@ -1,6 +1,5 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Text;
-using ICU4N.Util;
 using J2N.IO;
 using J2N.Text;
 using System;
@@ -201,14 +200,8 @@ namespace ICU4N.Text
             ByteBuffer bytes = null;
             if (data != null)
             {
-                try
-                {
-                    bytes = ICUBinary.GetByteBufferFromStreamAndDisposeStream(data);
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);
-                }
+                // ICU4N: Removed unnecessary try/catch
+                bytes = ICUBinary.GetByteBufferFromStreamAndDisposeStream(data);
             }
             Norm2AllModes all2Modes = Norm2AllModes.GetInstance(bytes, name);
             switch (mode)
@@ -226,6 +219,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="src">Source string.</param>
         /// <returns>Normalized <paramref name="src"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="src"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
         public virtual string Normalize(string src)
         {
@@ -234,12 +228,17 @@ namespace ICU4N.Text
             {
                 return src;
             }
+            ValueStringBuilder sb = src.Length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(src.Length);
             if (spanLength != 0)
             {
-                StringBuilder sb = new StringBuilder(src.Length).Append(src, 0, spanLength - 0); // ICU4N: Checked 3rd parameter math
-                return NormalizeSecondAndAppend(sb, src.Substring(spanLength, src.Length - spanLength)).ToString(); // ICU4N: Corrected 2nd substring parameter
+                sb.Append(src.AsSpan(0, spanLength - 0)); // ICU4N: Checked 2nd parameter math
+                NormalizeSecondAndAppend(ref sb, src.AsSpan(spanLength, src.Length - spanLength)); // ICU4N: Corrected 2nd substring parameter
+                return sb.ToString();
             }
-            return Normalize(src, new StringBuilder(src.Length)).ToString();
+            Normalize(src.AsSpan(), ref sb);
+            return sb.ToString();
         }
 
         /// <summary>
@@ -275,7 +274,8 @@ namespace ICU4N.Text
         /// Appends the normalized form of the <paramref name="second"/> string to the <paramref name="first"/> string
         /// (merging them at the boundary) and returns the <paramref name="first"/> string.
         /// The result is normalized if the <paramref name="first"/> string was normalized.
-        /// The <paramref name="first"/> and <paramref name="second"/> strings must be different objects.
+        /// The <paramref name="first"/> and <paramref name="second"/> strings must be different references.
+        /// The <paramref name="first"/> and <paramref name="destination"/> strings may be the same reference.
         /// </summary>
         /// <param name="first">First string, should be normalized.</param>
         /// <param name="second">Second string, will be normalized.</param>
@@ -294,6 +294,7 @@ namespace ICU4N.Text
         /// (merging them at the boundary) and puts the result into <paramref name="destination"/>.
         /// The result is normalized if both the strings were normalized.
         /// The <paramref name="second"/> and <paramref name="destination"/> strings must be different references.
+        /// The <paramref name="first"/> and <paramref name="destination"/> strings may be the same reference.
         /// </summary>
         /// <param name="first">First string, should be normalized. This string may be a slice of
         /// <paramref name="destination"/>, which allows this method to be called recursively.</param>
@@ -311,7 +312,6 @@ namespace ICU4N.Text
         /// <draft>ICU 60.1</draft>
         public abstract bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength);
 
-        // ICU4N specific - Moved Normalize(ICharSequence src, StringBuilder dest) to Normalizer2.generated.tt
         #region Normalize(ICharSequence, StringBuilder)
 
         /// <summary>
@@ -321,6 +321,7 @@ namespace ICU4N.Text
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="src"/> or <paramref name="dest"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Normalize(string src, StringBuilder dest);
 
@@ -331,6 +332,7 @@ namespace ICU4N.Text
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="dest"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest);
 
@@ -342,12 +344,14 @@ namespace ICU4N.Text
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="src"/> and <paramref name="dest"/> refer to the same memory location.
+        /// </exception>
         /// <draft>ICU 60.1</draft>
         internal abstract void Normalize(ReadOnlySpan<char> src, ref ValueStringBuilder dest);
 
         #endregion Normalize(ICharSequence, StringBuilder)
 
-        // ICU4N specific - Moved Normalize(ICharSequence src, IAppendable dest) to Normalizer2.generated.tt
         #region Normalize(ICharSequence, IAppendable)
 
         /// <summary>
@@ -357,6 +361,7 @@ namespace ICU4N.Text
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="src"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.6</stable>
         public abstract IAppendable Normalize(string src, IAppendable dest);
 
@@ -372,7 +377,6 @@ namespace ICU4N.Text
 
         #endregion Normalize(ICharSequence, IAppendable)
 
-        // ICU4N specific - Moved NormalizeSecondAndAppend(StringBuilder first, ICharSequence second) to Normalizer2.generated.tt
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence)
 
         /// <summary>
@@ -384,6 +388,7 @@ namespace ICU4N.Text
         /// <param name="first">First string, should be normalized.</param>
         /// <param name="second">Second string, will be normalized.</param>
         /// <returns><paramref name="first"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="first"/> or <paramref name="second"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder NormalizeSecondAndAppend(
             StringBuilder first, string second);
@@ -397,6 +402,7 @@ namespace ICU4N.Text
         /// <param name="first">First string, should be normalized.</param>
         /// <param name="second">Second string, will be normalized.</param>
         /// <returns><paramref name="first"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="first"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder NormalizeSecondAndAppend(
             StringBuilder first, ReadOnlySpan<char> second);
@@ -410,13 +416,15 @@ namespace ICU4N.Text
         /// <param name="first">First string, should be normalized.</param>
         /// <param name="second">Second string, will be normalized.</param>
         /// <returns><paramref name="first"/></returns>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="first"/> and <paramref name="second"/> refer to the same memory location.
+        /// </exception>
         /// <draft>ICU 60.1</draft>
         internal abstract void NormalizeSecondAndAppend(
             ref ValueStringBuilder first, ReadOnlySpan<char> second);
 
         #endregion
 
-        // ICU4N specific - Moved Append(StringBuilder first, ICharSequence second) to Normalizer2.generated.tt
         #region Append(StringBuilder, ICharSequence)
         /// <summary>
         /// Appends the <paramref name="second"/> string to the <paramref name="first"/> string
@@ -427,6 +435,7 @@ namespace ICU4N.Text
         /// <param name="first">First string, should be normalized.</param>
         /// <param name="second">Second string, should be normalized.</param>
         /// <returns><paramref name="first"/></returns>
+        /// <exception cref="ArgumentNullException"><paramref name="first"/> or <paramref name="second"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
         public abstract StringBuilder Append(StringBuilder first, string second);
 
@@ -451,6 +460,9 @@ namespace ICU4N.Text
         /// <param name="first">First string, should be normalized.</param>
         /// <param name="second">Second string, should be normalized.</param>
         /// <returns><paramref name="first"/></returns>
+        /// <exception cref="ArgumentException">
+        /// <paramref name="first"/> and <paramref name="second"/> refer to the same memory location.
+        /// </exception>
         /// <stable>ICU 4.4</stable>
         internal abstract void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second);
 
@@ -460,8 +472,8 @@ namespace ICU4N.Text
         /// Gets the decomposition mapping of <paramref name="codePoint"/>.
         /// Roughly equivalent to normalizing the <see cref="string"/> form of <paramref name="codePoint"/>
         /// on a DECOMPOSE <see cref="Normalizer2"/> instance, but much faster, and except that this function
-        /// returns null if c does not have a decomposition mapping in this instance's data.
-        /// This function is independent of the mode of the Normalizer2.
+        /// returns <c>null</c> if <paramref name="codePoint"/> does not have a decomposition mapping in this instance's data.
+        /// This function is independent of the mode of the <see cref="Normalizer2"/>.
         /// </summary>
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s decomposition mapping, if any; otherwise null.</returns>
@@ -469,9 +481,25 @@ namespace ICU4N.Text
         public abstract string GetDecomposition(int codePoint);
 
         /// <summary>
-        /// Gets the raw decomposition mapping of <paramref name="codePoint"/>.
+        /// Gets the decomposition mapping of <paramref name="codePoint"/>.
+        /// Roughly equivalent to normalizing the <see cref="string"/> form of <paramref name="codePoint"/>
+        /// on a DECOMPOSE <see cref="Normalizer2"/> instance, but much faster, and except that this function
+        /// returns <c>false</c> if <paramref name="codePoint"/> does not have a decomposition mapping in this instance's data.
+        /// This function is independent of the mode of the <see cref="Normalizer2"/>.
         /// </summary>
-        /// <remarks>
+        /// <param name="codePoint">Code point.</param>
+        /// <param name="destination">Upon return, will contain the decomposition.</param>
+        /// <param name="charsLength">Upon return, will contain the length of the decomposition (whether successuful or not).
+        /// If the value is 0, it means there is not a valid decomposition value. If the value is greater than 0 and
+        /// the method returns <c>false</c>, it means that there was not enough space allocated and the number indicates
+        /// the minimum number of chars required.</param>
+        /// <returns><c>true</c> if the decomposition was succssfully written to <paramref name="destination"/>; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public abstract bool TryGetDecomposition(int codePoint, Span<char> destination, out int charsLength);
+
+        /// <summary>
+        /// Gets the raw decomposition mapping of <paramref name="codePoint"/>.
+        /// <para/>
         /// This is similar to the <see cref="GetDecomposition"/> method but returns the
         /// raw decomposition mapping as specified in UnicodeData.txt or
         /// (for custom data) in the mapping files processed by the gennorm2 tool.
@@ -486,12 +514,45 @@ namespace ICU4N.Text
         /// in this case, the result contains either one or two code points (=1..4 .NET chars).
         /// <para/>
         /// This function is independent of the mode of the <see cref="Normalizer2"/>.
-        /// The default implementation returns null.
-        /// </remarks>
+        /// The default implementation returns <c>null</c>.
+        /// </summary>
         /// <param name="codePoint">Code point.</param>
-        /// <returns><paramref name="codePoint"/>'s raw decomposition mapping, if any; otherwise null.</returns>
+        /// <returns><paramref name="codePoint"/>'s raw decomposition mapping, if any; otherwise <c>null</c>.</returns>
         /// <stable>ICU 49</stable>
-        public virtual string GetRawDecomposition(int codePoint) { return null; }
+        public virtual string GetRawDecomposition(int codePoint) => null;
+
+        /// <summary>
+        /// Gets the raw decomposition mapping of <paramref name="codePoint"/>.
+        /// <para/>
+        /// This is similar to the <see cref="GetDecomposition"/> method but returns the
+        /// raw decomposition mapping as specified in UnicodeData.txt or
+        /// (for custom data) in the mapping files processed by the gennorm2 tool.
+        /// By contrast, <see cref="GetDecomposition"/> returns the processed,
+        /// recursively-decomposed version of this mapping.
+        /// <para/>
+        /// When used on a standard NFKC <see cref="Normalizer2"/> instance,
+        /// <see cref="GetRawDecomposition"/> returns the Unicode Decomposition_Mapping (dm) property.
+        /// <para/>
+        /// When used on a standard NFC <see cref="Normalizer2"/> instance,
+        /// it returns the Decomposition_Mapping only if the Decomposition_Type (dt) is Canonical (Can);
+        /// in this case, the result contains either one or two code points (=1..4 .NET chars).
+        /// <para/>
+        /// This function is independent of the mode of the <see cref="Normalizer2"/>.
+        /// The default implementation returns <c>false</c>.
+        /// </summary>
+        /// <param name="codePoint">Code point.</param>
+        /// <param name="destination">Upon return, will contain the raw decomposition.</param>
+        /// <param name="charsLength">Upon return, will contain the length of the decomposition (whether successuful or not).
+        /// If the value is 0, it means there is not a valid decomposition value. If the value is greater than 0 and
+        /// the method returns <c>false</c>, it means that there was not enough space allocated and the number indicates
+        /// the minimum number of chars required.</param>
+        /// <returns><c>true</c> if the decomposition was succssfully written to <paramref name="destination"/>; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public virtual bool TryGetRawDecomposition(int codePoint, Span<char> destination, out int charsLength)
+        {
+            charsLength = 0;
+            return false;
+        }
 
         /// <summary>
         /// Performs pairwise composition of a &amp; b and returns the composite if there is one.
@@ -509,7 +570,7 @@ namespace ICU4N.Text
         /// <param name="b">Another code point.</param>
         /// <returns>The non-negative composite code point if there is one; otherwise a negative value.</returns>
         /// <stable>ICU 49</stable>
-        public virtual int ComposePair(int a, int b) { return -1; }
+        public virtual int ComposePair(int a, int b) => -1;
 
         /// <summary>
         /// Gets the combining class of <paramref name="codePoint"/>.
@@ -519,9 +580,8 @@ namespace ICU4N.Text
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s combining class.</returns>
         /// <stable>ICU 49</stable>
-        public virtual int GetCombiningClass(int codePoint) { return 0; }
+        public virtual int GetCombiningClass(int codePoint) => 0;
 
-        // ICU4N specific - Moved IsNormalized(ICharSequence s) to Normalizer2.generated.tt
         #region IsNormailzed(ICharSequence)
         /// <summary>
         /// Tests if the string is normalized.
@@ -532,6 +592,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="s">Input string.</param>
         /// <returns>true if <paramref name="s"/> is normalized.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="s"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
         public abstract bool IsNormalized(string s);
 
@@ -549,7 +610,6 @@ namespace ICU4N.Text
 
         #endregion IsNormalized(ICharSequence)
 
-        // ICU4N specific - Moved QuickCheck(ICharSequence s) to Normalizer2.generated.tt
         #region QuickCheck(ICharSequence)
         /// <summary>
         /// Tests if the string is normalized.
@@ -562,6 +622,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="s"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
         public abstract QuickCheckResult QuickCheck(string s);
 
@@ -581,7 +642,6 @@ namespace ICU4N.Text
 
         #endregion QuickCheck(ICharSequence)
 
-        // ICU4N specific - Moved SpanQuickCheckYes(ICharSequence s) to Normalizer2.generated.tt
         #region SpanQuickCheckYes(ICharSequence)
         /// <summary>
         /// Returns the end of the normalized substring of the input string.

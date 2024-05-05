@@ -3097,6 +3097,12 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override string GetDecomposition(int c) { return null; }
 
+            public override bool TryGetDecomposition(int codePoint, Span<char> destination, out int charsLength)
+            {
+                charsLength = 0;
+                return false;
+            }
+
             public override bool IsNormalized(string s) { return false; }
 
             public override bool IsNormalized(ReadOnlySpan<char> s) => false;

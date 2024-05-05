@@ -5,22 +5,30 @@ using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.Text;
+#nullable enable
 
 namespace ICU4N.Impl
 {
     // Normalizer2 implementation for the old UNORM_NONE.
     public sealed partial class NoopNormalizer2 : Normalizer2
     {
-        // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModes.generated.tt
         #region Normalize(ICharSequence, StringBuilder)
         public override StringBuilder Normalize(string src, StringBuilder dest)
         {
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
             dest.Length = 0;
             return dest.Append(src);
         }
 
         public override StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest)
         {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
             dest.Length = 0;
             return dest.Append(src);
         }
@@ -38,31 +46,45 @@ namespace ICU4N.Impl
 
         #endregion
 
-        // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModes.generated.tt
         #region Normalize(ICharSequence, IAppendable)
         public override IAppendable Normalize(string src, IAppendable dest)
         {
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
             // ICU4N: Removed unnecessary try/catch for IOException
             return dest.Append(src);
         }
 
         public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest)
         {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
             // ICU4N: Removed unnecessary try/catch for IOException
             return dest.Append(src);
         }
 
         #endregion Normalize(ICharSequence, IAppendable)
 
-        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence) to Norm2AllModes.generated.tt
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence)
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second)
         {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+            if (second is null)
+                throw new ArgumentNullException(nameof(second));
+
             return first.Append(second);
         }
 
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second)
         {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+
             return first.Append(second);
         }
 
@@ -78,15 +100,22 @@ namespace ICU4N.Impl
 
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence)
 
-        // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModes.generated.tt
         #region Append(StringBuilder, ICharSequence)
         public override StringBuilder Append(StringBuilder first, string second)
         {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+            if (second is null)
+                throw new ArgumentNullException(nameof(second));
+
             return first.Append(second);
         }
 
         public override StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second)
         {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+
             return first.Append(second);
         }
 
@@ -102,41 +131,47 @@ namespace ICU4N.Impl
 
         #endregion
 
-        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModes.generated.tt
         #region IsNormalized(ICharSequence)
-        public override bool IsNormalized(string s) { return true; }
+        public override bool IsNormalized(string s) => true;
 
-        public override bool IsNormalized(ReadOnlySpan<char> s) { return true; }
+        public override bool IsNormalized(ReadOnlySpan<char> s) => true;
 
         #endregion
 
-        // ICU4N specific: Moved QuickCheck(ICharSequence) to Norm2AllModes.generated.tt
         #region QuickCheck(ICharSequence)
-        public override QuickCheckResult QuickCheck(string s) { return QuickCheckResult.Yes; }
+        public override QuickCheckResult QuickCheck(string s) => QuickCheckResult.Yes;
 
-        public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s) { return QuickCheckResult.Yes; }
+        public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s) => QuickCheckResult.Yes;
 
         #endregion QuickCheck(ICharSequence)
 
-        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
         #region SpanQuickCheckYes(ICharSequence)
-        public override int SpanQuickCheckYes(string s) { return s.Length; }
+        public override int SpanQuickCheckYes(string s) => s?.Length ?? 0;
 
-        public override int SpanQuickCheckYes(ReadOnlySpan<char> s) { return s.Length; }
+        public override int SpanQuickCheckYes(ReadOnlySpan<char> s) => s.Length;
 
         #endregion SpanQuickCheckYes(ICharSequence)
 
-        public override string GetDecomposition(int c)
+        public override string? GetDecomposition(int c)
         {
             return null;
         }
+
+        public override bool TryGetDecomposition(int codePoint, Span<char> destination, out int charsLength)
+        {
+            charsLength = 0;
+            return false;
+        }
+
         // No need to override the default GetRawDecomposition().
 
-        public override bool HasBoundaryBefore(int c) { return true; }
+        // No need to override the default TryGetRawDecomposition()
 
-        public override bool HasBoundaryAfter(int c) { return true; }
+        public override bool HasBoundaryBefore(int c) => true;
 
-        public override bool IsInert(int c) { return true; }
+        public override bool HasBoundaryAfter(int c) => true;
+
+        public override bool IsInert(int c) => true;
 
         public override bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength)
         {
@@ -204,7 +239,7 @@ namespace ICU4N.Impl
             int length = source.Length;
             var buffer = length <= CharStackBufferSize
                 ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
-                : new ValueReorderingBuffer(Impl, ReadOnlySpan<char>.Empty, length);
+                : new ValueReorderingBuffer(Impl, length);
             try
             {
                 Normalize(source, ref buffer);
@@ -235,7 +270,7 @@ namespace ICU4N.Impl
             int length = source.Length;
             var buffer = length <= CharStackBufferSize
                 ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
-                : new ValueReorderingBuffer(Impl, ReadOnlySpan<char>.Empty, length);
+                : new ValueReorderingBuffer(Impl, length);
             try
             {
                 Normalize(source, ref buffer);
@@ -283,23 +318,43 @@ namespace ICU4N.Impl
             return success;
         }
 
-        // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModes.generated.tt
         #region Normalize(ICharSequence, StringBuilder)
         public override StringBuilder Normalize(string src, StringBuilder dest)
         {
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
             dest.Length = 0;
-            Normalize(src, new ReorderingBuffer(Impl, dest, src.Length));
+            int length = src.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ValueReorderingBuffer(Impl, length);
+            try
+            {
+                Normalize(src, ref buffer);
+                dest.Length = 0;
+                dest.Append(buffer.AsSpan());
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
             return dest;
         }
 
         // ICU4N TODO: Cascade this call to Normalize(ReadOnlySpan<char>, ref ValueStringBuilder) and append the result...?
         public override StringBuilder Normalize(ReadOnlySpan<char> src, StringBuilder dest)
         {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
             dest.Length = 0;
             int length = src.Length;
             var buffer = length <= CharStackBufferSize
                 ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
-                : new ValueReorderingBuffer(Impl, ReadOnlySpan<char>.Empty, length);
+                : new ValueReorderingBuffer(Impl, length);
             try
             {
                 Normalize(src, ref buffer);
@@ -315,6 +370,11 @@ namespace ICU4N.Impl
 
         internal override void Normalize(ReadOnlySpan<char> src, ref ValueStringBuilder dest)
         {
+            if (MemoryHelper.AreSame(src, dest.RawChars))
+            {
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same memory location as '{nameof(dest)}'");
+            }
+
             dest.Length = 0;
             int length = src.Length;
             var buffer = length <= CharStackBufferSize
@@ -337,13 +397,27 @@ namespace ICU4N.Impl
 
         #endregion Normalize(ICharSequence, StringBuilder)
 
-        // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModes.generated.tt
         #region Normalize(ICharSequence, IAppendable)
         public override IAppendable Normalize(string src, IAppendable dest)
         {
-            ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
-            Normalize(src, buffer);
-            buffer.Flush();
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+
+            int length = src.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ValueReorderingBuffer(Impl, length);
+
+            try
+            {
+                Normalize(src, ref buffer);
+                dest.Append(buffer.AsSpan());
+                buffer.Flush();
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
             return dest;
         }
 
@@ -352,7 +426,7 @@ namespace ICU4N.Impl
             int length = src.Length;
             var buffer = length <= CharStackBufferSize
                 ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
-                : new ValueReorderingBuffer(Impl, ReadOnlySpan<char>.Empty, length);
+                : new ValueReorderingBuffer(Impl, length);
             try
             {
                 Normalize(src, ref buffer);
@@ -368,9 +442,8 @@ namespace ICU4N.Impl
 
         #endregion Normalize(ICharSequence, IAppendable)
 
-        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModes.generated.tt
         #region Normalize(ICharSequence, ReorderingBuffer)
-        protected abstract void Normalize(string src, ReorderingBuffer buffer);
+        protected abstract void Normalize(string src, ref ValueReorderingBuffer buffer);
 
         protected abstract void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer);
 
@@ -378,7 +451,6 @@ namespace ICU4N.Impl
 
         // normalize and append
 
-        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence) to Norm2AllModes.generated.tt
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence)
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second)
         {
@@ -397,7 +469,6 @@ namespace ICU4N.Impl
 
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence)
 
-        // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModes.generated.tt
         #region Append(StringBuilder, ICharSequence)
         public override StringBuilder Append(StringBuilder first, string second)
         {
@@ -416,18 +487,38 @@ namespace ICU4N.Impl
 
         #endregion
 
-        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool) to Norm2AllModes.generated.tt
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool)
         public virtual StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second, bool doNormalize)
         {
-            NormalizeAndAppend(
-                second, doNormalize,
-                new ReorderingBuffer(Impl, first, first.Length + second.Length));
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+            if (second is null)
+                throw new ArgumentNullException(nameof(second));
+
+            int length = first.Length + second.Length;
+            var sb = length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(length);
+            try
+            {
+                sb.Append(first);
+                var buffer = new ValueReorderingBuffer(Impl, ref sb, length);
+                NormalizeAndAppend(second.AsSpan(), doNormalize, ref buffer);
+                first.Length = 0;
+                first.Append(buffer.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
             return first;
         }
 
         public virtual StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second, bool doNormalize)
         {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+
             int length = first.Length + second.Length;
             var sb = length <= CharStackBufferSize
                 ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
@@ -477,24 +568,33 @@ namespace ICU4N.Impl
 
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool)
 
-        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModes.generated.tt
         #region NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
         protected abstract void NormalizeAndAppend(
-            string src, bool doNormalize, ReorderingBuffer buffer);
+            string src, bool doNormalize, ref ValueReorderingBuffer buffer);
 
         protected abstract void NormalizeAndAppend(
             ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer);
 
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
-        public override string GetDecomposition(int c)
+        public override string? GetDecomposition(int c)
         {
             return Impl.GetDecomposition(c);
         }
 
-        public override string GetRawDecomposition(int c)
+        public override bool TryGetDecomposition(int codePoint, Span<char> destination, out int charsLength)
+        {
+            return Impl.TryGetDecomposition(codePoint, destination, out charsLength);
+        }
+
+        public override string? GetRawDecomposition(int c)
         {
             return Impl.GetRawDecomposition(c);
+        }
+
+        public override bool TryGetRawDecomposition(int codePoint, Span<char> destination, out int charsLength)
+        {
+            return Impl.TryGetRawDecomposition(codePoint, destination, out charsLength);
         }
 
         public override int ComposePair(int a, int b)
@@ -510,10 +610,12 @@ namespace ICU4N.Impl
 
         // quick checks
 
-        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModes.generated.tt
         #region IsNormalized(ICharSequence)
         public override bool IsNormalized(string s)
         {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
             return s.Length == SpanQuickCheckYes(s);
         }
 
@@ -524,7 +626,6 @@ namespace ICU4N.Impl
 
         #endregion
 
-        // ICU4N specific: Moved QuickCheck(ICharSequence s) to Norm2AllModes.generated.tt
         #region QuickCheck(ICharSequence s)
         public override QuickCheckResult QuickCheck(string s)
         {
@@ -551,11 +652,13 @@ namespace ICU4N.Impl
         {
         }
 
-        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModes.generated.tt
         #region Normalize(ICharSequence, ReorderingBuffer)
-        protected override void Normalize(string src, ReorderingBuffer buffer)
+        protected override void Normalize(string src, ref ValueReorderingBuffer buffer)
         {
-            Impl.Decompose(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+
+            Impl.Decompose(src.AsSpan(), ref buffer); // ICU4N: Checked 3rd parameter
         }
 
         protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
@@ -570,11 +673,13 @@ namespace ICU4N.Impl
 
         #endregion Normalize(ICharSequence, ReorderingBuffer)
 
-        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModes.generated.tt
         #region NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
-        protected override void NormalizeAndAppend(string src, bool doNormalize, ReorderingBuffer buffer)
+        protected override void NormalizeAndAppend(string src, bool doNormalize, ref ValueReorderingBuffer buffer)
         {
-            Impl.DecomposeAndAppend(src, doNormalize, buffer);
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+
+            Impl.DecomposeAndAppend(src.AsSpan(), doNormalize, ref buffer);
         }
 
         protected override void NormalizeAndAppend(ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer)
@@ -589,11 +694,13 @@ namespace ICU4N.Impl
 
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
-        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
         #region SpanQuickCheckYes(ICharSequence)
         public override int SpanQuickCheckYes(string s)
         {
-            return Impl.DecomposeQuickCheck(s, 0, s.Length); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return Impl.DecomposeQuickCheck(s.AsSpan()); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
         }
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
@@ -608,11 +715,11 @@ namespace ICU4N.Impl
             return Impl.IsDecompYes(Impl.GetNorm16(c)) ? 1 : 0;
         }
 
-        public override bool HasBoundaryBefore(int c) { return Impl.HasDecompBoundaryBefore(c); }
+        public override bool HasBoundaryBefore(int c) => Impl.HasDecompBoundaryBefore(c);
 
-        public override bool HasBoundaryAfter(int c) { return Impl.HasDecompBoundaryAfter(c); }
+        public override bool HasBoundaryAfter(int c) => Impl.HasDecompBoundaryAfter(c);
 
-        public override bool IsInert(int c) { return Impl.IsDecompInert(c); }
+        public override bool IsInert(int c) => Impl.IsDecompInert(c);
     }
 
     public sealed partial class ComposeNormalizer2 : Normalizer2WithImpl
@@ -623,11 +730,13 @@ namespace ICU4N.Impl
             onlyContiguous = fcc;
         }
 
-        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModes.generated.tt
         #region Normalize(ICharSequence, ReorderingBuffer)
-        protected override void Normalize(string src, ReorderingBuffer buffer)
+        protected override void Normalize(string src, ref ValueReorderingBuffer buffer)
         {
-            Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer); // ICU4N: Checked 3rd parameter
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+
+            Impl.Compose(src.AsSpan(), onlyContiguous, doCompose: true, ref buffer);
         }
 
         protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
@@ -637,17 +746,19 @@ namespace ICU4N.Impl
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same memory location as '{nameof(buffer)}'");
             }
 
-            Impl.Compose(src, onlyContiguous, true, ref buffer);
+            Impl.Compose(src, onlyContiguous, doCompose: true, ref buffer);
         }
 
         #endregion Normalize(ICharSequence, ReorderingBuffer)
 
-        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModes.generated.tt
         #region NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
         protected override void NormalizeAndAppend(
-            string src, bool doNormalize, ReorderingBuffer buffer)
+            string src, bool doNormalize, ref ValueReorderingBuffer buffer)
         {
-            Impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+
+            Impl.ComposeAndAppend(src.AsSpan(), doNormalize, onlyContiguous, ref buffer);
         }
 
         protected override void NormalizeAndAppend(
@@ -663,14 +774,22 @@ namespace ICU4N.Impl
 
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
-        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModes.generated.tt
         #region IsNormalized(ICharSequence)
         public override bool IsNormalized(string s)
         {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
             // 5: small destCapacity for substring normalization
-            return Impl.Compose(s, 0, s.Length,
-                                onlyContiguous, false,
-                                new ReorderingBuffer(Impl, new StringBuilder(), 5)); // ICU4N: Checked 3rd parameter
+            var buffer = new ValueReorderingBuffer(Impl, stackalloc char[5]);
+            try
+            {
+                return Impl.Compose(s.AsSpan(), onlyContiguous, doCompose: false, ref buffer);
+            }
+            finally
+            {
+                buffer.Dispose();
+            }
         }
 
         public override bool IsNormalized(ReadOnlySpan<char> s)
@@ -689,11 +808,13 @@ namespace ICU4N.Impl
 
         #endregion IsNormalized(ICharSequence)
 
-        // ICU4N specific: Moved QuickCheck(ICharSequence) to Norm2AllModes.generated.tt
         #region QuickCheck(ICharSequence)
         public override QuickCheckResult QuickCheck(string s)
         {
-            int spanLengthAndMaybe = Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, false);
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            int spanLengthAndMaybe = Impl.ComposeQuickCheck(s.AsSpan(), onlyContiguous, false);
             if ((spanLengthAndMaybe & 1) != 0)
             {
                 return QuickCheckResult.Maybe;
@@ -727,11 +848,13 @@ namespace ICU4N.Impl
 
         #endregion QuickCheck(ICharSequence)
 
-        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
         #region SpanQuickCheckYes(ICharSequence)
         public override int SpanQuickCheckYes(string s)
         {
-            return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return Impl.ComposeQuickCheck(s.AsSpan(), onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
         }
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
@@ -768,11 +891,13 @@ namespace ICU4N.Impl
         {
         }
 
-        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModes.generated.tt
         #region Normalize(ICharSequence, ReorderingBuffer)
-        protected override void Normalize(string src, ReorderingBuffer buffer)
+        protected override void Normalize(string src, ref ValueReorderingBuffer buffer)
         {
-            Impl.MakeFCD(src, 0, src.Length, buffer); // ICU4N: Checked 3rd parameter
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+
+            Impl.MakeFCD(src.AsSpan(), ref buffer);
         }
 
         protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
@@ -787,12 +912,14 @@ namespace ICU4N.Impl
 
         #endregion Normalize(ICharSequence, ReorderingBuffer)
 
-        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModes.generated.tt
         #region NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
         protected override void NormalizeAndAppend(
-            string src, bool doNormalize, ReorderingBuffer buffer)
+            string src, bool doNormalize, ref ValueReorderingBuffer buffer)
         {
-            Impl.MakeFCDAndAppend(src, doNormalize, buffer);
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+
+            Impl.MakeFCDAndAppend(src.AsSpan(), doNormalize, ref buffer);
         }
 
         protected override void NormalizeAndAppend(
@@ -803,11 +930,13 @@ namespace ICU4N.Impl
 
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
-        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModes.generated.tt
         #region SpanQuickCheckYes(ICharSequence)
         public override int SpanQuickCheckYes(string s)
         {
-            return Impl.MakeFCDQuickCheck(s, 0, s.Length); // ICU4N: Checked 3rd parameter
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return Impl.MakeFCDQuickCheck(s.AsSpan()); // ICU4N: Checked 3rd parameter
         }
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
@@ -823,11 +952,11 @@ namespace ICU4N.Impl
             return Impl.IsDecompYes(Impl.GetNorm16(c)) ? 1 : 0;
         }
 
-        public override bool HasBoundaryBefore(int c) { return Impl.HasFCDBoundaryBefore(c); }
+        public override bool HasBoundaryBefore(int c) => Impl.HasFCDBoundaryBefore(c);
 
-        public override bool HasBoundaryAfter(int c) { return Impl.HasFCDBoundaryAfter(c); }
+        public override bool HasBoundaryAfter(int c) => Impl.HasFCDBoundaryAfter(c);
 
-        public override bool IsInert(int c) { return Impl.IsFCDInert(c); }
+        public override bool IsInert(int c) => Impl.IsFCDInert(c);
     }
 
     public sealed class Norm2AllModes
@@ -868,7 +997,7 @@ namespace ICU4N.Impl
             {
                 throw singleton.exception;
             }
-            return singleton.allModes;
+            return singleton.allModes!;
         }
         public static Norm2AllModes NFCInstance
             => GetInstanceFromSingleton(NFCSingleton.Instance);
@@ -878,7 +1007,7 @@ namespace ICU4N.Impl
         public static Norm2AllModes NFKC_CFInstance
             => GetInstanceFromSingleton(NFKC_CFSingleton.Instance);
         // For use in properties APIs.
-        public static Normalizer2WithImpl GetN2WithImpl(int index)
+        public static Normalizer2WithImpl? GetN2WithImpl(int index)
         {
             switch (index)
             {
@@ -891,9 +1020,12 @@ namespace ICU4N.Impl
         }
         public static Norm2AllModes GetInstance(ByteBuffer bytes, string name) // ICU4N TODO: API - Eliminate ByteBuffer
         {
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
+
             if (bytes == null)
             {
-                Norm2AllModesSingleton singleton;
+                Norm2AllModesSingleton? singleton;
                 if (name.Equals("nfc", StringComparison.OrdinalIgnoreCase))
                 {
                     singleton = NFCSingleton.Instance;
@@ -916,7 +1048,7 @@ namespace ICU4N.Impl
                     {
                         throw singleton.exception;
                     }
-                    return singleton.allModes;
+                    return singleton.allModes!;
                 }
             }
             return cache.GetOrCreate(name, (key) =>
@@ -962,8 +1094,8 @@ namespace ICU4N.Impl
                 }
             }
 
-            internal Norm2AllModes allModes;
-            internal Exception exception;
+            internal Norm2AllModes? allModes;
+            internal Exception? exception;
         }
         internal sealed class NFCSingleton
         {
