@@ -4,6 +4,7 @@
 using System;
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 #nullable enable
@@ -106,6 +107,64 @@ namespace ICU4N.Support.Text // ICU4N TODO: Move to ICU4N.Text namespace
 
         /// <summary>Returns the underlying storage of the builder.</summary>
         public Span<char> RawChars => _chars;
+
+        /// <summary>
+        /// Returns a memory around the contents of the builder.
+        /// <para/>
+        /// NOTE: This can only be used if this instance is constructed using the <see cref="ValueStringBuilder(int)"/>
+        /// or <see cref="ValueStringBuilder()"/> constructors and you ensure that the returned value goes out of scope
+        /// prior to calling <see cref="Dispose()"/>.
+        /// </summary>
+        /// <param name="terminate">Ensures that the builder has a null char after <see cref="Length"/></param>
+        public ReadOnlyMemory<char> AsMemory(bool terminate)
+        {
+            Debug.Assert(_arrayToReturnToPool != null, "ValueStringBuilder must be constructed using ValueStringBuilder(int) or ValueStringBuilder() to use as memory.");
+            if (terminate)
+            {
+                EnsureCapacity(Length + 1);
+                _chars[Length] = '\0';
+            }
+            return _arrayToReturnToPool.AsMemory(0, _pos);
+        }
+
+        /// <summary>
+        /// Returns a memory around the contents of the builder.
+        /// <para/>
+        /// NOTE: This can only be used if this instance is constructed using the <see cref="ValueStringBuilder(int)"/>
+        /// or <see cref="ValueStringBuilder()"/> constructors and you ensure that the returned value goes out of scope
+        /// prior to calling <see cref="Dispose()"/>.
+        /// </summary>
+        public ReadOnlyMemory<char> AsMemory()
+        {
+            Debug.Assert(_arrayToReturnToPool != null, "ValueStringBuilder must be constructed using ValueStringBuilder(int) or ValueStringBuilder() to use as memory.");
+            return _arrayToReturnToPool.AsMemory(0, _pos);
+        }
+
+        /// <summary>
+        /// Returns a memory around the contents of the builder.
+        /// <para/>
+        /// NOTE: This can only be used if this instance is constructed using the <see cref="ValueStringBuilder(int)"/>
+        /// or <see cref="ValueStringBuilder()"/> constructors and you ensure that the returned value goes out of scope
+        /// prior to calling <see cref="Dispose()"/>.
+        /// </summary>
+        public ReadOnlyMemory<char> AsMemory(int start)
+        {
+            Debug.Assert(_arrayToReturnToPool != null, "ValueStringBuilder must be constructed using ValueStringBuilder(int) or ValueStringBuilder() to use as memory.");
+            return _arrayToReturnToPool.AsMemory(start, _pos - start);
+        }
+
+        /// <summary>
+        /// Returns a memory around the contents of the builder.
+        /// <para/>
+        /// NOTE: This can only be used if this instance is constructed using the <see cref="ValueStringBuilder(int)"/>
+        /// or <see cref="ValueStringBuilder()"/> constructors and you ensure that the returned value goes out of scope
+        /// prior to calling <see cref="Dispose()"/>.
+        /// </summary>
+        public ReadOnlyMemory<char> AsMemory(int start, int length)
+        {
+            Debug.Assert(_arrayToReturnToPool != null, "ValueStringBuilder must be constructed using ValueStringBuilder(int) or ValueStringBuilder() to use as memory.");
+            return _arrayToReturnToPool.AsMemory(start, length);
+        }
 
         /// <summary>
         /// Returns a span around the contents of the builder.
