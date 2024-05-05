@@ -37,17 +37,6 @@ namespace ICU4N.Impl
         #endregion
 
         #region Normalize(ICharSequence, IAppendable)
-        public override TAppendable Normalize<TAppendable>(string src, TAppendable dest)
-        {
-            if (src is null)
-                throw new ArgumentNullException(nameof(src));
-            if (dest is null)
-                throw new ArgumentNullException(nameof(dest));
-
-            // ICU4N: Removed unnecessary try/catch for IOException
-            dest.Append(src);
-            return dest;
-        }
 
         public override TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest)
         {
@@ -365,29 +354,6 @@ namespace ICU4N.Impl
         #endregion Normalize(ICharSequence, StringBuilder)
 
         #region Normalize(ICharSequence, IAppendable)
-        public override TAppendable Normalize<TAppendable>(string src, TAppendable dest)
-        {
-            if (src is null)
-                throw new ArgumentNullException(nameof(src));
-
-            int length = src.Length;
-            var buffer = length <= CharStackBufferSize
-                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
-                : new ValueReorderingBuffer(Impl, length);
-
-            try
-            {
-                Normalize(src, ref buffer);
-                dest.Append(buffer.AsSpan());
-                buffer.Flush();
-            }
-            finally
-            {
-                buffer.Dispose();
-            }
-            return dest;
-        }
-
         public override TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest)
         {
             int length = src.Length;

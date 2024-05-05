@@ -3073,8 +3073,6 @@ namespace ICU4N.Dev.Test.Normalizers
             {
             }
 
-            public override TAppendable Normalize<TAppendable>(string src, TAppendable dest) { return default; }
-
             public override TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest) => default;
 
             public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, string second) { return null; }

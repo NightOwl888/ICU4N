@@ -73,20 +73,6 @@ namespace ICU4N.Text
         #endregion Normalize(ICharSequence, StringBuilder)
 
         #region Normalize(ICharSequence, IAppendable)
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        /// <typeparam name="TAppendable">The implementation of <see cref="IAppendable"/> to use to write the output.</typeparam>
-        /// <exception cref="ArgumentNullException"><paramref name="src"/> is <c>null</c>.</exception>
-        /// <stable>ICU 4.6</stable>
-        public override TAppendable Normalize<TAppendable>(string src, TAppendable dest)
-        {
-            return Normalize(src, dest, SpanCondition.Simple);
-        }
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
@@ -96,9 +82,13 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <typeparam name="TAppendable">The implementation of <see cref="IAppendable"/> to use to write the output.</typeparam>
+        /// <exception cref="ArgumentNullException"><paramref name="dest"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.6</stable>
         public override TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest)
         {
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
             return Normalize(src, dest, SpanCondition.Simple);
         }
 
@@ -699,48 +689,6 @@ namespace ICU4N.Text
                 }
                 prevSpanLimit = spanLimit;
             }
-        }
-
-
-
-        // Internal: No argument checking, and appends to dest.
-        // Pass as input spanCondition the one that is likely to yield a non-zero
-        // span length at the start of src.
-        // For set=[:age=3.2:], since almost all common characters were in Unicode 3.2,
-        // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
-        // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
-        // an in-filter prefix.
-        private TAppendable Normalize<TAppendable>(string src, TAppendable dest,
-                                     SpanCondition spanCondition) where TAppendable : IAppendable
-        {
-            // Don't throw away destination buffer between iterations.
-            StringBuilder tempDest = new StringBuilder();
-            // ICU4N: Removed unnecessary try/catch for IOException
-            for (int prevSpanLimit = 0; prevSpanLimit < src.Length;)
-            {
-                int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
-                int spanLength = spanLimit - prevSpanLimit;
-                if (spanCondition == SpanCondition.NotContained)
-                {
-                    if (spanLength != 0)
-                    {
-                        dest.Append(src.AsSpan(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Changed 3rd parameter
-                    }
-                    spanCondition = SpanCondition.Simple;
-                }
-                else
-                {
-                    if (spanLength != 0)
-                    {
-                        // Not norm2.normalizeSecondAndAppend() because we do not want
-                        // to modify the non-filter part of dest.
-                        dest.Append(norm2.Normalize(src.AsSpan(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
-                    }
-                    spanCondition = SpanCondition.NotContained;
-                }
-                prevSpanLimit = spanLimit;
-            }
-            return dest;
         }
 
         // Internal: No argument checking, and appends to dest.

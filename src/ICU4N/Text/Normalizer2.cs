@@ -372,7 +372,15 @@ namespace ICU4N.Text
         /// <typeparam name="TAppendable">The implementation of <see cref="IAppendable"/> to use to write the output.</typeparam>
         /// <exception cref="ArgumentNullException"><paramref name="src"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.6</stable>
-        public abstract TAppendable Normalize<TAppendable>(string src, TAppendable dest) where TAppendable : IAppendable;
+        public virtual TAppendable Normalize<TAppendable>(string src, TAppendable dest) where TAppendable : IAppendable
+        {
+            if (src is null)
+                throw new ArgumentNullException(nameof(src));
+            if (dest is null)
+                throw new ArgumentNullException(nameof(dest));
+
+            return Normalize(src.AsSpan(), dest);
+        }
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
