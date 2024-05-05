@@ -361,9 +361,10 @@ namespace ICU4N.Text
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
+        /// <typeparam name="TAppendable">The implementation of <see cref="IAppendable"/> to use to write the output.</typeparam>
         /// <exception cref="ArgumentNullException"><paramref name="src"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.6</stable>
-        public abstract IAppendable Normalize(string src, IAppendable dest);
+        public abstract TAppendable Normalize<TAppendable>(string src, TAppendable dest) where TAppendable : IAppendable;
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination <see cref="IAppendable"/>
@@ -372,8 +373,9 @@ namespace ICU4N.Text
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
+        /// <typeparam name="TAppendable">The implementation of <see cref="IAppendable"/> to use to write the output.</typeparam>
         /// <stable>ICU 4.6</stable>
-        public abstract IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest);
+        public abstract TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest) where TAppendable : IAppendable;
 
         #endregion Normalize(ICharSequence, IAppendable)
 

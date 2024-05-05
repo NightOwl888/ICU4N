@@ -34,8 +34,6 @@ namespace ICU4N.Text
             set = filterSet ?? throw new ArgumentNullException(nameof(filterSet));
         }
 
-        // ICU4N specific - Normalize(
-        //    ICharSequence src, StringBuilder dest) moved to FilteredNormalizer.generated.tt
         #region Normalize(ICharSequence, StringBuilder)
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
@@ -88,8 +86,6 @@ namespace ICU4N.Text
 
         #endregion Normalize(ICharSequence, StringBuilder)
 
-        // ICU4N specific - Normalize(
-        //    ICharSequence src, IAppendable dest) moved to FilteredNormalizer.generated.tt
         #region Normalize(ICharSequence, IAppendable)
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
@@ -98,8 +94,10 @@ namespace ICU4N.Text
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
+        /// <typeparam name="TAppendable">The implementation of <see cref="IAppendable"/> to use to write the output.</typeparam>
+        /// <exception cref="ArgumentNullException"><paramref name="src"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.6</stable>
-        public override IAppendable Normalize(string src, IAppendable dest)
+        public override TAppendable Normalize<TAppendable>(string src, TAppendable dest)
         {
             return Normalize(src, dest, SpanCondition.Simple);
         }
@@ -111,16 +109,15 @@ namespace ICU4N.Text
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
+        /// <typeparam name="TAppendable">The implementation of <see cref="IAppendable"/> to use to write the output.</typeparam>
         /// <stable>ICU 4.6</stable>
-        public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest)
+        public override TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest)
         {
             return Normalize(src, dest, SpanCondition.Simple);
         }
 
         #endregion Normalize(ICharSequence, IAppendable)
 
-        // ICU4N specific - NormalizeSecondAndAppend(
-        //    StringBuilder first, ICharSequence second) moved to FilteredNormalizer.generated.tt
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence)
         /// <summary>
         /// Appends the normalized form of the second string to the first string
@@ -160,8 +157,6 @@ namespace ICU4N.Text
 
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence)
 
-        // ICU4N specific - Append(
-        //    StringBuilder first, ICharSequence second) moved to FilteredNormalizer.generated.tt
         #region Append(StringBuilder, ICharSequence)
         /// <summary>
         /// Appends the second string to the first string
@@ -335,7 +330,6 @@ namespace ICU4N.Text
             return set.Contains(codePoint) ? norm2.GetCombiningClass(codePoint) : 0;
         }
 
-        // ICU4N specific - IsNormalized(ICharSequence s) moved to FilteredNormalizer.generated.tt
         #region IsNormalized(ICharSequence)
         /// <summary>
         /// Tests if the string is normalized.
@@ -405,7 +399,6 @@ namespace ICU4N.Text
 
         #endregion IsNormalized(ICharSequence)
 
-        // ICU4N specific - QuickCheck(ICharSequence s) moved to FilteredNormalizer.generated.tt
         #region QuickCheck(ICharSequence)
         /// <summary>
         /// Tests if the string is normalized.
@@ -491,7 +484,6 @@ namespace ICU4N.Text
 
         #endregion QuickCheck(ICharSequence)
 
-        // ICU4N specific - SpanQuickCheckYes(ICharSequence s) moved to FilteredNormalizer.generated.tt
         #region SpanQuickCheckYes(ICharSequence)
         /// <summary>
         /// Returns the end of the normalized substring of the input string.
@@ -640,8 +632,6 @@ namespace ICU4N.Text
             return !set.Contains(character) || norm2.IsInert(character);
         }
 
-        // ICU4N specific - Normalize(ICharSequence src, IAppendable dest,
-        //    SpanCondition spanCondition) moved to FilteredNormalizer.generated.tt
         #region Normalize(ICharSequence, IAppendable, SpanCondition)
         // Internal: No argument checking, and appends to dest.
         // Pass as input spanCondition the one that is likely to yield a non-zero
@@ -773,8 +763,8 @@ namespace ICU4N.Text
         // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
         // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
-        private IAppendable Normalize(string src, IAppendable dest,
-                                     SpanCondition spanCondition)
+        private TAppendable Normalize<TAppendable>(string src, TAppendable dest,
+                                     SpanCondition spanCondition) where TAppendable : IAppendable
         {
             // Don't throw away destination buffer between iterations.
             StringBuilder tempDest = new StringBuilder();
@@ -813,8 +803,8 @@ namespace ICU4N.Text
         // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
         // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
-        private IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest,
-                                     SpanCondition spanCondition)
+        private TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest,
+                                     SpanCondition spanCondition) where TAppendable : IAppendable
         {
             // Don't throw away destination buffer between iterations.
             StringBuilder tempDest = new StringBuilder();
@@ -848,8 +838,6 @@ namespace ICU4N.Text
 
         #endregion Normalize(ICharSequence, IAppendable, SpanCondition)
 
-        // ICU4N specific - NormalizeSecondAndAppend(StringBuilder first, ICharSequence second,
-        //    bool doNormalize) moved to FilteredNormalizer.generated.tt
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool)
         private StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second,
                                                        bool doNormalize)

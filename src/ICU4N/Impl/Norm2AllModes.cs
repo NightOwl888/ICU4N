@@ -47,7 +47,7 @@ namespace ICU4N.Impl
         #endregion
 
         #region Normalize(ICharSequence, IAppendable)
-        public override IAppendable Normalize(string src, IAppendable dest)
+        public override TAppendable Normalize<TAppendable>(string src, TAppendable dest)
         {
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
@@ -55,10 +55,11 @@ namespace ICU4N.Impl
                 throw new ArgumentNullException(nameof(dest));
 
             // ICU4N: Removed unnecessary try/catch for IOException
-            return dest.Append(src);
+            dest.Append(src);
+            return dest;
         }
 
-        public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest)
+        public override TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest)
         {
             if (dest is null)
                 throw new ArgumentNullException(nameof(dest));
@@ -398,7 +399,7 @@ namespace ICU4N.Impl
         #endregion Normalize(ICharSequence, StringBuilder)
 
         #region Normalize(ICharSequence, IAppendable)
-        public override IAppendable Normalize(string src, IAppendable dest)
+        public override TAppendable Normalize<TAppendable>(string src, TAppendable dest)
         {
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
@@ -421,7 +422,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        public override IAppendable Normalize(ReadOnlySpan<char> src, IAppendable dest)
+        public override TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest)
         {
             int length = src.Length;
             var buffer = length <= CharStackBufferSize
