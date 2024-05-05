@@ -463,7 +463,15 @@ namespace ICU4N.Text
         /// <returns><paramref name="first"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="first"/> or <paramref name="second"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
-        public abstract StringBuilder Append(StringBuilder first, string second);
+        public virtual StringBuilder Append(StringBuilder first, string second)
+        {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+            if (second is null)
+                throw new ArgumentNullException(nameof(second));
+
+            return Append(first, second.AsSpan());
+        }
 
         /// <summary>
         /// Appends the <paramref name="second"/> string to the <paramref name="first"/> string

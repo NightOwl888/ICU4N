@@ -72,15 +72,6 @@ namespace ICU4N.Impl
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence)
 
         #region Append(StringBuilder, ICharSequence)
-        public override StringBuilder Append(StringBuilder first, string second)
-        {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
-
-            return first.Append(second);
-        }
 
         public override StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second)
         {
@@ -390,10 +381,6 @@ namespace ICU4N.Impl
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence)
 
         #region Append(StringBuilder, ICharSequence)
-        public override StringBuilder Append(StringBuilder first, string second)
-        {
-            return NormalizeSecondAndAppend(first, second, false);
-        }
 
         public override StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second)
         {
@@ -408,31 +395,6 @@ namespace ICU4N.Impl
         #endregion
 
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool)
-        public virtual StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second, bool doNormalize)
-        {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
-
-            int length = first.Length + second.Length;
-            var sb = length <= CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                : new ValueStringBuilder(length);
-            try
-            {
-                sb.Append(first);
-                var buffer = new ValueReorderingBuffer(Impl, ref sb, length);
-                NormalizeAndAppend(second.AsSpan(), doNormalize, ref buffer);
-                first.Length = 0;
-                first.Append(buffer.AsSpan());
-            }
-            finally
-            {
-                sb.Dispose();
-            }
-            return first;
-        }
 
         public virtual StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second, bool doNormalize)
         {

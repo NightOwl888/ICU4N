@@ -120,20 +120,6 @@ namespace ICU4N.Text
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence)
 
         #region Append(StringBuilder, ICharSequence)
-        /// <summary>
-        /// Appends the second string to the first string
-        /// (merging them at the boundary) and returns the first string.
-        /// The result is normalized if both the strings were normalized.
-        /// The first and second strings must be different objects.
-        /// </summary>
-        /// <param name="first">First string, should be normalized.</param>
-        /// <param name="second">Second string, should be normalized.</param>
-        /// <returns><paramref name="first"/></returns>
-        /// <stable>ICU 4.4</stable>
-        public override StringBuilder Append(StringBuilder first, string second)
-        {
-            return NormalizeSecondAndAppend(first, second, false);
-        }
 
         /// <summary>
         /// Appends the second string to the first string
@@ -720,66 +706,6 @@ namespace ICU4N.Text
         #endregion Normalize(ICharSequence, IAppendable, SpanCondition)
 
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool)
-        private StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second,
-                                                       bool doNormalize)
-        {
-            if (first.Length == 0)
-            {
-                if (doNormalize)
-                {
-                    return Normalize(second, first);
-                }
-                else
-                {
-                    return first.Append(second);
-                }
-            }
-            // merge the in-filter suffix of the first string with the in-filter prefix of the second
-            int prefixLimit = set.Span(second, 0, SpanCondition.Simple);
-            if (prefixLimit != 0)
-            {
-                var prefix = second.AsSpan(0, prefixLimit - 0); // ICU4N: Checked 2nd parameter
-                int suffixStart = set.SpanBack(first, 0x7fffffff, SpanCondition.Simple);
-                if (suffixStart == 0)
-                {
-                    if (doNormalize)
-                    {
-                        norm2.NormalizeSecondAndAppend(first, prefix);
-                    }
-                    else
-                    {
-                        norm2.Append(first, prefix);
-                    }
-                }
-                else
-                {
-                    StringBuilder middle = new StringBuilder(
-                            first.ToString(suffixStart, first.Length - suffixStart)); // ICU4N: Changed 2nd parameter
-                    if (doNormalize)
-                    {
-                        norm2.NormalizeSecondAndAppend(middle, prefix);
-                    }
-                    else
-                    {
-                        norm2.Append(middle, prefix);
-                    }
-                    first.Delete(suffixStart, 0x7fffffff - suffixStart).Append(middle); // ICU4N: Corrected 2nd parameter of Delete
-                }
-            }
-            if (prefixLimit < second.Length)
-            {
-                var rest = second.AsSpan(prefixLimit, second.Length - prefixLimit); // ICU4N: Corrected 2nd parameter
-                if (doNormalize)
-                {
-                    Normalize(rest, first, SpanCondition.NotContained);
-                }
-                else
-                {
-                    first.Append(rest);
-                }
-            }
-            return first;
-        }
 
         private StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second,
                                                        bool doNormalize)

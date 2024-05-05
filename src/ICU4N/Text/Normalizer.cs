@@ -2181,7 +2181,7 @@ namespace ICU4N.Text
         public static string Concatenate(string left, string right, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
             StringBuilder dest = new StringBuilder(left.Length + right.Length + 16).Append(left);
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(dest, right).ToString();
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(dest, right.AsSpan()).ToString();
         }
 
         /// <summary>

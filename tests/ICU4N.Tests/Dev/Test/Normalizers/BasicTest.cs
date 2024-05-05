@@ -3081,8 +3081,6 @@ namespace ICU4N.Dev.Test.Normalizers
             {
             }
 
-            public override StringBuffer Append(StringBuffer first, string second) { return null; }
-
             public override StringBuffer Append(StringBuffer first, ReadOnlySpan<char> second) => null;
 
             internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
