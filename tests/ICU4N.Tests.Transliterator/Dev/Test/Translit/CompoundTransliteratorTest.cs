@@ -29,7 +29,7 @@ namespace ICU4N.Dev.Test.Translit
             catch (ArgumentException ex)
             {
                 Errln("FAIL: Transliterator construction failed" + ex.ToString());
-                throw ex;
+                throw; // ICU4N: CA2200 Rethrow to preserve stack information
             }
 
             string[] IDs ={
@@ -46,30 +46,30 @@ namespace ICU4N.Dev.Test.Translit
                 {
                     Transliterator.GetInstance(IDs[i]);
                 }
-                catch (ArgumentException ex1)
+                catch (ArgumentException)
                 {
                     Errln("FAIL: construction using CompoundTransliterator(String ID) failed for " + IDs[i]);
-                    throw ex1;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
 
                 try
                 {
                     Transliterator.GetInstance(IDs[i], Transliterator.Forward);
                 }
-                catch (ArgumentException ex2)
+                catch (ArgumentException)
                 {
                     Errln("FAIL: construction using CompoundTransliterator(String ID, int direction=FORWARD) failed for " + IDs[i]);
-                    throw ex2;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
 
                 try
                 {
                     Transliterator.GetInstance(IDs[i], Transliterator.Reverse);
                 }
-                catch (ArgumentException ex3)
+                catch (ArgumentException)
                 {
                     Errln("FAIL: construction using CompoundTransliterator(String ID, int direction=REVERSE) failed for " + IDs[i]);
-                    throw ex3;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
 
                 //            try{
@@ -107,10 +107,10 @@ namespace ICU4N.Dev.Test.Translit
                 //ct1=new CompoundTransliterator(ID);
                 ct1 = Transliterator.GetInstance(ID);
             }
-            catch (ArgumentException iae)
+            catch (ArgumentException)
             {
                 Errln("CompoundTransliterator construction failed for ID=" + ID);
-                throw iae;
+                throw; // ICU4N: CA2200 Rethrow to preserve stack information
             }
             //int count=ct1.getCount();
             Transliterator[] elems = ct1.GetElements();
@@ -147,10 +147,10 @@ namespace ICU4N.Dev.Test.Translit
             {
                 ct1 = Transliterator.GetInstance("Any-Hex;Hex-Any");
             }
-            catch (ArgumentException iae)
+            catch (ArgumentException)
             {
                 Errln("FAIL: construction using CompoundTransliterator(String ID) failed for " + "Any-Hex;Hex-Any");
-                throw iae;
+                throw; // ICU4N: CA2200 Rethrow to preserve stack information
             }
 
             String s = "abcabc";
@@ -195,10 +195,10 @@ namespace ICU4N.Dev.Test.Translit
                 {
                     ct2 = Transliterator.GetInstance(Data[i + 0]);
                 }
-                catch (ArgumentException iae2)
+                catch (ArgumentException)
                 {
                     Errln("FAIL: CompoundTransliterator construction failed for " + Data[i + 0]);
-                    throw iae2;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
                 expect(ct2, Data[i + 1], Data[i + 2]);
             }

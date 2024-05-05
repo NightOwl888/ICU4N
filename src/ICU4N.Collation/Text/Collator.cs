@@ -777,10 +777,10 @@ namespace ICU4N.Text
                     Type cls = Type.GetType("ICU4N.Text.CollatorServiceShim, ICU4N");
                     shim = (ServiceShim)Activator.CreateInstance(cls);
                 }
-                catch (MissingManifestResourceException e)
+                catch (MissingManifestResourceException)
                 {
                     ////CLOVER:OFF
-                    throw e;
+                    throw; // ICU4N: Rethrow to preserve stack information
                     ////CLOVER:ON
                 }
                 catch (Exception e)

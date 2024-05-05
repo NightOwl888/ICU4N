@@ -1337,7 +1337,7 @@ namespace ICU4N.Dev.Test.Lang
                 }
                 else
                 {
-                    throw e;
+                    throw; // ICU4N: CA2200 Rethrow to preserve stack information
                 }
             }
 
