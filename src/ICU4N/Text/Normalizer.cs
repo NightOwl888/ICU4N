@@ -1329,7 +1329,7 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static bool IsNormalized(string str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).IsNormalized(str);
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).IsNormalized(str.AsSpan());
         }
 
         /// <summary>

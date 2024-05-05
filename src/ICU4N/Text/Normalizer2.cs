@@ -628,7 +628,13 @@ namespace ICU4N.Text
         /// <returns>true if <paramref name="s"/> is normalized.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="s"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
-        public abstract bool IsNormalized(string s);
+        public virtual bool IsNormalized(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return IsNormalized(s.AsSpan());
+        }
 
         /// <summary>
         /// Tests if the string is normalized.

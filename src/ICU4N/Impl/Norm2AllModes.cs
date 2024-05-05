@@ -94,8 +94,6 @@ namespace ICU4N.Impl
         #endregion
 
         #region IsNormalized(ICharSequence)
-        public override bool IsNormalized(string s) => true;
-
         public override bool IsNormalized(ReadOnlySpan<char> s) => true;
 
         #endregion
@@ -493,13 +491,6 @@ namespace ICU4N.Impl
         // quick checks
 
         #region IsNormalized(ICharSequence)
-        public override bool IsNormalized(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            return s.Length == SpanQuickCheckYes(s);
-        }
 
         public override bool IsNormalized(ReadOnlySpan<char> s)
         {
@@ -511,7 +502,7 @@ namespace ICU4N.Impl
         #region QuickCheck(ICharSequence s)
         public override QuickCheckResult QuickCheck(string s)
         {
-            return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
+            return IsNormalized(s.AsSpan()) ? QuickCheckResult.Yes : QuickCheckResult.No;
         }
 
         public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s)
@@ -657,22 +648,6 @@ namespace ICU4N.Impl
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
         #region IsNormalized(ICharSequence)
-        public override bool IsNormalized(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            // 5: small destCapacity for substring normalization
-            var buffer = new ValueReorderingBuffer(Impl, stackalloc char[5]);
-            try
-            {
-                return Impl.Compose(s.AsSpan(), onlyContiguous, doCompose: false, ref buffer);
-            }
-            finally
-            {
-                buffer.Dispose();
-            }
-        }
 
         public override bool IsNormalized(ReadOnlySpan<char> s)
         {
@@ -680,7 +655,7 @@ namespace ICU4N.Impl
             var buffer = new ValueReorderingBuffer(Impl, stackalloc char[5]);
             try
             {
-                return Impl.Compose(s, onlyContiguous, false, ref buffer);
+                return Impl.Compose(s, onlyContiguous, doCompose: false, ref buffer);
             }
             finally
             {

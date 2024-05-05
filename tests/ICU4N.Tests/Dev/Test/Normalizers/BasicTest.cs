@@ -3095,8 +3095,6 @@ namespace ICU4N.Dev.Test.Normalizers
                 return false;
             }
 
-            public override bool IsNormalized(string s) { return false; }
-
             public override bool IsNormalized(ReadOnlySpan<char> s) => false;
 
             public override QuickCheckResult QuickCheck(string s) { return (QuickCheckResult)(-1); }

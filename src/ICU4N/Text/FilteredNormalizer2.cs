@@ -279,38 +279,6 @@ namespace ICU4N.Text
         }
 
         #region IsNormalized(ICharSequence)
-        /// <summary>
-        /// Tests if the string is normalized.
-        /// Internally, in cases where the <see cref="QuickCheck(string)"/> method would return "maybe"
-        /// (which is only possible for the two COMPOSE modes) this method
-        /// resolves to "yes" or "no" to provide a definitive result,
-        /// at the cost of doing more work in those cases.
-        /// </summary>
-        /// <param name="s">Input string.</param>
-        /// <returns>true if s is normalized.</returns>
-        /// <stable>ICU 4.4</stable>
-        public override bool IsNormalized(string s)
-        {
-            SpanCondition spanCondition = SpanCondition.Simple;
-            for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
-            {
-                int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == SpanCondition.NotContained)
-                {
-                    spanCondition = SpanCondition.Simple;
-                }
-                else
-                {
-                    if (!norm2.IsNormalized(s.AsSpan(prevSpanLimit, spanLimit - prevSpanLimit))) // ICU4N: Corrected 2nd parameter
-                    {
-                        return false;
-                    }
-                    spanCondition = SpanCondition.NotContained;
-                }
-                prevSpanLimit = spanLimit;
-            }
-            return true;
-        }
 
         /// <summary>
         /// Tests if the string is normalized.
