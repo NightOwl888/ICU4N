@@ -361,49 +361,6 @@ namespace ICU4N.Text
         #endregion QuickCheck(ICharSequence)
 
         #region SpanQuickCheckYes(ICharSequence)
-        /// <summary>
-        /// Returns the end of the normalized substring of the input string.
-        /// In other words, with <c>end=SpanQuickCheckYes(s);</c>
-        /// the substring <c>s.SubString(0, end)</c>
-        /// will pass the quick check with a "yes" result.
-        /// </summary>
-        /// <remarks>
-        /// The returned end index is usually one or more characters before the
-        /// "no" or "maybe" character: The end index is at a normalization boundary.
-        /// (See the class documentation for more about normalization boundaries.)
-        /// <para/>
-        /// When the goal is a normalized string and most input strings are expected
-        /// to be normalized already, then call this method,
-        /// and if it returns a prefix shorter than the input string,
-        /// copy that prefix and use <see cref="NormalizeSecondAndAppend(StringBuilder, string)"/> for the remainder.
-        /// </remarks>
-        /// <param name="s">Input string.</param>
-        /// <returns>"yes" span end index.</returns>
-        /// <stable>ICU 4.4</stable>
-        public override int SpanQuickCheckYes(string s)
-        {
-            SpanCondition spanCondition = SpanCondition.Simple;
-            for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
-            {
-                int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == SpanCondition.NotContained)
-                {
-                    spanCondition = SpanCondition.Simple;
-                }
-                else
-                {
-                    int yesLimit =
-                        prevSpanLimit + norm2.SpanQuickCheckYes(s.AsSpan(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Corrected 2nd parameter
-                    if (yesLimit < spanLimit)
-                    {
-                        return yesLimit;
-                    }
-                    spanCondition = SpanCondition.NotContained;
-                }
-                prevSpanLimit = spanLimit;
-            }
-            return s.Length;
-        }
 
         /// <summary>
         /// Returns the end of the normalized substring of the input string.

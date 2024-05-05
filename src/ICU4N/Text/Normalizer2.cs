@@ -223,7 +223,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public virtual string Normalize(string src)
         {
-            int spanLength = SpanQuickCheckYes(src);
+            int spanLength = SpanQuickCheckYes(src); // ICU4N: SpanQuickCheckYes does the null check
             if (spanLength == src.Length)
             {
                 return src;
@@ -690,6 +690,7 @@ namespace ICU4N.Text
         #endregion QuickCheck(ICharSequence)
 
         #region SpanQuickCheckYes(ICharSequence)
+
         /// <summary>
         /// Returns the end of the normalized substring of the input string.
         /// In other words, with <c>end=SpanQuickCheckYes(s);</c>
@@ -709,7 +710,13 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>"yes" span end index.</returns>
         /// <stable>ICU 4.4</stable>
-        public abstract int SpanQuickCheckYes(string s);
+        public virtual int SpanQuickCheckYes(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return SpanQuickCheckYes(s.AsSpan());
+        }
 
         /// <summary>
         /// Returns the end of the normalized substring of the input string.
@@ -730,7 +737,7 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>"yes" span end index.</returns>
         /// <stable>ICU 4.4</stable>
-        public abstract int SpanQuickCheckYes(ReadOnlySpan<char> s);
+        public abstract int SpanQuickCheckYes(ReadOnlySpan<char> s); // ICU4N TODO: Update docs because in .NET Substring uses length instead of end
 
         #endregion SpanQuickCheckYes(ICharSequence)
 

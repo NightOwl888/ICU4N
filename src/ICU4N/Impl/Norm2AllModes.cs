@@ -104,8 +104,6 @@ namespace ICU4N.Impl
         #endregion QuickCheck(ICharSequence)
 
         #region SpanQuickCheckYes(ICharSequence)
-        public override int SpanQuickCheckYes(string s) => s?.Length ?? 0;
-
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s) => s.Length;
 
         #endregion SpanQuickCheckYes(ICharSequence)
@@ -562,13 +560,6 @@ namespace ICU4N.Impl
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
         #region SpanQuickCheckYes(ICharSequence)
-        public override int SpanQuickCheckYes(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            return Impl.DecomposeQuickCheck(s.AsSpan()); // ICU4N: Changed to a separate method so we can use a ref struct for a buffer
-        }
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
         {
@@ -681,17 +672,10 @@ namespace ICU4N.Impl
         #endregion QuickCheck(ICharSequence)
 
         #region SpanQuickCheckYes(ICharSequence)
-        public override int SpanQuickCheckYes(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            return Impl.ComposeQuickCheck(s.AsSpan(), onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
-        }
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
         {
-            return Impl.ComposeQuickCheck(s, onlyContiguous, true).TripleShift(1); // ICU4N: Checked 3rd parameter
+            return Impl.ComposeQuickCheck(s, onlyContiguous, doSpan: true).TripleShift(1); // ICU4N: Checked 3rd parameter
         }
 
         #endregion SpanQuickCheckYes(ICharSequence)
@@ -763,17 +747,10 @@ namespace ICU4N.Impl
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
         #region SpanQuickCheckYes(ICharSequence)
-        public override int SpanQuickCheckYes(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            return Impl.MakeFCDQuickCheck(s.AsSpan()); // ICU4N: Checked 3rd parameter
-        }
 
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
         {
-            return Impl.MakeFCDQuickCheck(s); // ICU4N: Checked 3rd parameter
+            return Impl.MakeFCDQuickCheck(s);
         }
 
         #endregion SpanQuickCheckYes(ICharSequence)

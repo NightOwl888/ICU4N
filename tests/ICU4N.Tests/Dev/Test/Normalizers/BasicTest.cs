@@ -3099,8 +3099,6 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s) => (QuickCheckResult)(-1);
 
-            public override int SpanQuickCheckYes(string s) { return 0; }
-
             public override int SpanQuickCheckYes(ReadOnlySpan<char> s) => 0;
 
             public override bool HasBoundaryBefore(int c) { return false; }
