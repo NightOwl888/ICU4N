@@ -4,6 +4,7 @@ using J2N;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ICU4N.Text
@@ -490,6 +491,9 @@ namespace ICU4N.Text
         /// <param name="char16">The input character.</param>
         /// <returns>true if the input character is a surrogate.</returns>
         /// <stable>ICU 2.1</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static bool IsSurrogate(char char16)
         {
             return (char16 & SurrogateBitmask) == SurrogateBits;
@@ -501,6 +505,9 @@ namespace ICU4N.Text
         /// <param name="char16">The input character.</param>
         /// <returns>true if the input character is a trail surrogate.</returns>
         /// <stable>ICU 2.1</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static bool IsTrailSurrogate(char char16)
         {
             return (char16 & TrailSurrogateBitmask) == TrailSurrogateBits;
@@ -512,6 +519,9 @@ namespace ICU4N.Text
         /// <param name="char16">The input character.</param>
         /// <returns>true if the input character is a lead surrogate.</returns>
         /// <stable>ICU 2.1</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static bool IsLeadSurrogate(char char16)
         {
             return (char16 & LeadSurrogateBitmask) == LeadSurrogateBits;
@@ -525,6 +535,9 @@ namespace ICU4N.Text
         /// <returns>Lead surrogate if the <c>GetCharCount(ch)</c> is 2;
         /// and 0 otherwise (note: 0 is not a valid lead surrogate).</returns>
         /// 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static char GetLeadSurrogate(int char32)
         {
             if (char32 >= SupplementaryMinValue)
@@ -542,6 +555,9 @@ namespace ICU4N.Text
         /// <returns>The trail surrogate if the <c>GetCharCount(ch)</c> is 2;
         /// otherwise the character itself.</returns>
         /// <stable>ICU 2.1</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public static char GetTrailSurrogate(int char32)
         {
             if (char32 >= SupplementaryMinValue)
@@ -549,6 +565,48 @@ namespace ICU4N.Text
                 return (char)(TrailSurrogateMinValue + (char32 & TrailSurrogateMask));
             }
             return (char)char32;
+        }
+
+        /// <summary>
+        /// Writes a one or two char string to <paramref name="destination"/>
+        /// containing the UTF-32 value in UTF16 format. If a validity check is required, use
+        /// <see cref="UChar.IsLegal(int)"/> on <paramref name="char32"/> before calling.
+        /// <para/>
+        /// Note that this method can be used to write directly to the stack so we can avoid allocations
+        /// associated with the other overloads in .NET.
+        /// </summary>
+        /// <param name="char32">The input character.</param>
+        /// <param name="destination">Upon return, will contain the value of <paramref name="char32"/> in UTF16 format.</param>
+        /// <param name="destinationIndex">The index in <paramref name="destination"/> to start writing characters.</param>
+        /// <returns>The length of the characters that were written to <paramref name="destination"/> (either 1 or 2).</returns>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="char32"/> is a invalid codepoint.</exception>
+        /// <draft>ICU 60.1</draft>
+        public static int ValueOf(int char32, Span<char> destination, int destinationIndex) // ICU4N TODO: This method name is Java-like. In J2N, these were named ToChars().
+        {
+            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
+            {
+                throw new ArgumentException("Illegal codepoint");
+            }
+            if (destinationIndex < 0 || destinationIndex >= destination.Length)
+                throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+
+            if (char32 < SupplementaryMinValue)
+            {
+                destination[destinationIndex] = (char)char32;
+                return 1;
+            }
+
+            return ValueOfSupplementary(char32, destination, destinationIndex);
+
+            static int ValueOfSupplementary(int char32, Span<char> destination, int destinationIndex)
+            {
+                if (destinationIndex == destination.Length - 1)
+                    throw new ArgumentOutOfRangeException(nameof(destinationIndex));
+
+                destination[destinationIndex] = GetLeadSurrogate(char32);
+                destination[destinationIndex + 1] = GetTrailSurrogate(char32);
+                return 2;
+            }
         }
 
         /// <summary>

@@ -1133,6 +1133,59 @@ namespace ICU4N.Dev.Test.Lang
         }
 
         [Test]
+        public void TestValueOf_Int32_Span_Int32()
+        {
+            Span<char> actual = stackalloc char[2];
+            int length;
+            length = UTF16.ValueOf(0x61, actual, 0);
+            if (!MemoryExtensions.Equals(actual.Slice(0, length), "a", StringComparison.Ordinal))
+            { 
+                Errln("FAIL: valueof(char32, destination, destinationIndex)");
+            }
+            length = UTF16.ValueOf(0x10000, actual, 0);
+            if (!MemoryExtensions.Equals(actual.Slice(0, length), "\ud800\udc00", StringComparison.Ordinal))
+            {
+                Errln("FAIL: valueof(char32, destination, destinationIndex)");
+            }
+            try
+            {
+                UTF16.ValueOf(0x61, actual, 3);
+                Errln("FAIL: out of bounds error expected");
+            }
+            catch (Exception e)
+            {
+                Console.Out.Write("");
+            }
+            try
+            {
+                UTF16.ValueOf(0x61, actual, -1);
+                Errln("FAIL: out of bounds error expected");
+            }
+            catch (Exception e)
+            {
+                Console.Out.Write("");
+            }
+            try
+            {
+                UTF16.ValueOf(UTF16.CodePointMinValue - 1, actual, 0);
+                Errln("FAIL: out of bounds error expected");
+            }
+            catch (Exception e)
+            {
+                Console.Out.Write("");
+            }
+            try
+            {
+                UTF16.ValueOf(UTF16.CodePointMaxValue + 1, actual, 0);
+                Errln("FAIL: out of bounds error expected");
+            }
+            catch (Exception e)
+            {
+                Console.Out.Write("");
+            }
+        }
+
+        [Test]
         public void TestIndexOf()
         {
             //012345678901234567890123456789012345
