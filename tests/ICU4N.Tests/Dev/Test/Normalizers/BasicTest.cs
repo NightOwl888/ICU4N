@@ -3075,8 +3075,6 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override TAppendable Normalize<TAppendable>(ReadOnlySpan<char> src, TAppendable dest) => default;
 
-            public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, string second) { return null; }
-
             public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, ReadOnlySpan<char> second) => null;
 
             internal override void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second)

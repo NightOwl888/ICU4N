@@ -50,15 +50,6 @@ namespace ICU4N.Impl
         #endregion Normalize(ICharSequence, IAppendable)
 
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence)
-        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second)
-        {
-            if (first is null)
-                throw new ArgumentNullException(nameof(first));
-            if (second is null)
-                throw new ArgumentNullException(nameof(second));
-
-            return first.Append(second);
-        }
 
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second)
         {
@@ -385,10 +376,6 @@ namespace ICU4N.Impl
         // normalize and append
 
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence)
-        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second)
-        {
-            return NormalizeSecondAndAppend(first, second, doNormalize: true);
-        }
 
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second)
         {

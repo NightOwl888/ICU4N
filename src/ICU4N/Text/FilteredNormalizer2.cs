@@ -95,20 +95,6 @@ namespace ICU4N.Text
         #endregion Normalize(ICharSequence, IAppendable)
 
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence)
-        /// <summary>
-        /// Appends the normalized form of the second string to the first string
-        /// (merging them at the boundary) and returns the first string.
-        /// The result is normalized if the first string was normalized.
-        /// The first and second strings must be different objects.
-        /// </summary>
-        /// <param name="first">First string, should be normalized.</param>
-        /// <param name="second">Second string, will be normalized.</param>
-        /// <returns><paramref name="first"/></returns>
-        public override StringBuilder NormalizeSecondAndAppend(
-            StringBuilder first, string second)
-        {
-            return NormalizeSecondAndAppend(first, second, true);
-        }
 
         /// <summary>
         /// Appends the normalized form of the second string to the first string
