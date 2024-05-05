@@ -99,8 +99,6 @@ namespace ICU4N.Impl
         #endregion
 
         #region QuickCheck(ICharSequence)
-        public override QuickCheckResult QuickCheck(string s) => QuickCheckResult.Yes;
-
         public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s) => QuickCheckResult.Yes;
 
         #endregion QuickCheck(ICharSequence)
@@ -500,10 +498,6 @@ namespace ICU4N.Impl
         #endregion
 
         #region QuickCheck(ICharSequence s)
-        public override QuickCheckResult QuickCheck(string s)
-        {
-            return IsNormalized(s.AsSpan()) ? QuickCheckResult.Yes : QuickCheckResult.No;
-        }
 
         public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s)
         {
@@ -666,29 +660,10 @@ namespace ICU4N.Impl
         #endregion IsNormalized(ICharSequence)
 
         #region QuickCheck(ICharSequence)
-        public override QuickCheckResult QuickCheck(string s)
-        {
-            if (s is null)
-                throw new ArgumentNullException(nameof(s));
-
-            int spanLengthAndMaybe = Impl.ComposeQuickCheck(s.AsSpan(), onlyContiguous, false);
-            if ((spanLengthAndMaybe & 1) != 0)
-            {
-                return QuickCheckResult.Maybe;
-            }
-            else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
-            {
-                return QuickCheckResult.Yes;
-            }
-            else
-            {
-                return QuickCheckResult.No;
-            }
-        }
 
         public override QuickCheckResult QuickCheck(ReadOnlySpan<char> s)
         {
-            int spanLengthAndMaybe = Impl.ComposeQuickCheck(s, onlyContiguous, false);
+            int spanLengthAndMaybe = Impl.ComposeQuickCheck(s, onlyContiguous, doSpan: false);
             if ((spanLengthAndMaybe & 1) != 0)
             {
                 return QuickCheckResult.Maybe;

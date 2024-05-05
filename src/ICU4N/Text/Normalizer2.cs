@@ -651,6 +651,7 @@ namespace ICU4N.Text
         #endregion IsNormalized(ICharSequence)
 
         #region QuickCheck(ICharSequence)
+
         /// <summary>
         /// Tests if the string is normalized.
         /// For the two COMPOSE modes, the result could be "maybe" in cases that
@@ -664,7 +665,13 @@ namespace ICU4N.Text
         /// <returns>The quick check result.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="s"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
-        public abstract QuickCheckResult QuickCheck(string s);
+        public virtual QuickCheckResult QuickCheck(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return QuickCheck(s.AsSpan());
+        }
 
         /// <summary>
         /// Tests if the string is normalized.

@@ -1223,7 +1223,7 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static QuickCheckResult QuickCheck(string source, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).QuickCheck(source);
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).QuickCheck(source.AsSpan());
         }
 
         /// <summary>

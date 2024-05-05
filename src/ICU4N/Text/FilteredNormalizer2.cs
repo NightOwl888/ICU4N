@@ -316,46 +316,6 @@ namespace ICU4N.Text
         #endregion IsNormalized(ICharSequence)
 
         #region QuickCheck(ICharSequence)
-        /// <summary>
-        /// Tests if the string is normalized.
-        /// For the two COMPOSE modes, the result could be "maybe" in cases that
-        /// would take a little more work to resolve definitively.
-        /// Use <see cref="SpanQuickCheckYes(string)"/> and
-        /// <see cref="NormalizeSecondAndAppend(StringBuilder, string)"/> for a faster
-        /// combination of quick check + normalization, to avoid
-        /// re-checking the "yes" prefix.
-        /// </summary>
-        /// <param name="s">Input string.</param>
-        /// <returns>The quick check result.</returns>
-        /// <stable>ICU 4.4</stable>
-        public override QuickCheckResult QuickCheck(string s)
-        {
-            QuickCheckResult result = QuickCheckResult.Yes;
-            SpanCondition spanCondition = SpanCondition.Simple;
-            for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
-            {
-                int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == SpanCondition.NotContained)
-                {
-                    spanCondition = SpanCondition.Simple;
-                }
-                else
-                {
-                    QuickCheckResult qcResult = norm2.QuickCheck(s.AsSpan(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Corrected 2nd parameter
-                    if (qcResult == QuickCheckResult.No)
-                    {
-                        return qcResult;
-                    }
-                    else if (qcResult == QuickCheckResult.Maybe)
-                    {
-                        result = qcResult;
-                    }
-                    spanCondition = SpanCondition.NotContained;
-                }
-                prevSpanLimit = spanLimit;
-            }
-            return result;
-        }
 
         /// <summary>
         /// Tests if the string is normalized.
