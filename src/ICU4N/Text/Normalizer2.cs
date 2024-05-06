@@ -110,7 +110,7 @@ namespace ICU4N.Text
     /// <author>Markus W. Scherer</author>
     public abstract partial class Normalizer2
     {
-        internal const int CharStackBufferSize = 64;
+        internal const int CharStackBufferSize = 32;
         internal IntPtr normalizerReference;
 
         /// <summary>

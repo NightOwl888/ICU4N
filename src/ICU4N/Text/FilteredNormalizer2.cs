@@ -478,36 +478,45 @@ namespace ICU4N.Text
                                      SpanCondition spanCondition)
         {
             // Don't throw away destination buffer between iterations.
-            StringBuilder tempDest = new StringBuilder();
-            // ICU4N: Removed unnecessary try/catch for IOException
-            for (int prevSpanLimit = 0; prevSpanLimit < src.Length;)
+            ValueStringBuilder tempDest = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
-                int spanLength = spanLimit - prevSpanLimit;
-                if (spanCondition == SpanCondition.NotContained)
+                // ICU4N: Removed unnecessary try/catch for IOException
+                for (int prevSpanLimit = 0; prevSpanLimit < src.Length;)
                 {
-                    if (spanLength != 0)
+                    int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
+                    int spanLength = spanLimit - prevSpanLimit;
+                    if (spanCondition == SpanCondition.NotContained)
                     {
-                        dest.Append(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Changed 3rd parameter
+                        if (spanLength != 0)
+                        {
+                            dest.Append(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Changed 2nd parameter
+                        }
+                        spanCondition = SpanCondition.Simple;
                     }
-                    spanCondition = SpanCondition.Simple;
-                }
-                else
-                {
-                    if (spanLength != 0)
+                    else
                     {
-                        // Not norm2.normalizeSecondAndAppend() because we do not want
-                        // to modify the non-filter part of dest.
-                        dest.Append(norm2.Normalize(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
+                        if (spanLength != 0)
+                        {
+                            // Not norm2.normalizeSecondAndAppend() because we do not want
+                            // to modify the non-filter part of dest.
+                            norm2.Normalize(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit), ref tempDest); // ICU4N: Changed 2nd parameter
+                            unsafe
+                            {
+                                dest.Append(new ReadOnlySpan<char>(tempDest.GetCharsPointer(), tempDest.Length));
+                            }
+                        }
+                        spanCondition = SpanCondition.NotContained;
                     }
-                    spanCondition = SpanCondition.NotContained;
+                    prevSpanLimit = spanLimit;
                 }
-                prevSpanLimit = spanLimit;
+            }
+            finally
+            {
+                tempDest.Dispose();
             }
             return dest;
         }
-
-        // ICU4N TODO: Make the below implementation authoritive and cascade all calls to this
 
         // Internal: No argument checking, and appends to dest.
         // Pass as input spanCondition the one that is likely to yield a non-zero
@@ -520,31 +529,42 @@ namespace ICU4N.Text
                                      SpanCondition spanCondition)
         {
             // Don't throw away destination buffer between iterations.
-            StringBuilder tempDest = new StringBuilder();
-            // ICU4N: Removed unnecessary try/catch for IOException
-            for (int prevSpanLimit = 0; prevSpanLimit < src.Length;)
+            ValueStringBuilder tempDest = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
-                int spanLength = spanLimit - prevSpanLimit;
-                if (spanCondition == SpanCondition.NotContained)
+                // ICU4N: Removed unnecessary try/catch for IOException
+                for (int prevSpanLimit = 0; prevSpanLimit < src.Length;)
                 {
-                    if (spanLength != 0)
+                    int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
+                    int spanLength = spanLimit - prevSpanLimit;
+                    if (spanCondition == SpanCondition.NotContained)
                     {
-                        dest.Append(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Changed 3rd parameter
+                        if (spanLength != 0)
+                        {
+                            dest.Append(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Changed 2nd parameter
+                        }
+                        spanCondition = SpanCondition.Simple;
                     }
-                    spanCondition = SpanCondition.Simple;
-                }
-                else
-                {
-                    if (spanLength != 0)
+                    else
                     {
-                        // Not norm2.normalizeSecondAndAppend() because we do not want
-                        // to modify the non-filter part of dest.
-                        dest.Append(norm2.Normalize(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
+                        if (spanLength != 0)
+                        {
+                            // Not norm2.normalizeSecondAndAppend() because we do not want
+                            // to modify the non-filter part of dest.
+                            norm2.Normalize(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit), ref tempDest); // ICU4N: Changed 2nd parameter
+                            unsafe
+                            {
+                                dest.Append(new ReadOnlySpan<char>(tempDest.GetCharsPointer(), tempDest.Length));
+                            }
+                        }
+                        spanCondition = SpanCondition.NotContained;
                     }
-                    spanCondition = SpanCondition.NotContained;
+                    prevSpanLimit = spanLimit;
                 }
-                prevSpanLimit = spanLimit;
+            }
+            finally
+            {
+                tempDest.Dispose();
             }
         }
 
@@ -559,31 +579,42 @@ namespace ICU4N.Text
                                      SpanCondition spanCondition) where TAppendable : IAppendable
         {
             // Don't throw away destination buffer between iterations.
-            StringBuilder tempDest = new StringBuilder();
-            // ICU4N: Removed unnecessary try/catch for IOException
-            for (int prevSpanLimit = 0; prevSpanLimit < src.Length;)
+            ValueStringBuilder tempDest = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
-                int spanLength = spanLimit - prevSpanLimit;
-                if (spanCondition == SpanCondition.NotContained)
+                // ICU4N: Removed unnecessary try/catch for IOException
+                for (int prevSpanLimit = 0; prevSpanLimit < src.Length;)
                 {
-                    if (spanLength != 0)
+                    int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
+                    int spanLength = spanLimit - prevSpanLimit;
+                    if (spanCondition == SpanCondition.NotContained)
                     {
-                        dest.Append(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Changed 3rd parameter
+                        if (spanLength != 0)
+                        {
+                            dest.Append(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Changed 2nd parameter
+                        }
+                        spanCondition = SpanCondition.Simple;
                     }
-                    spanCondition = SpanCondition.Simple;
-                }
-                else
-                {
-                    if (spanLength != 0)
+                    else
                     {
-                        // Not norm2.normalizeSecondAndAppend() because we do not want
-                        // to modify the non-filter part of dest.
-                        dest.Append(norm2.Normalize(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
+                        if (spanLength != 0)
+                        {
+                            // Not norm2.normalizeSecondAndAppend() because we do not want
+                            // to modify the non-filter part of dest.
+                            norm2.Normalize(src.Slice(prevSpanLimit, spanLimit - prevSpanLimit), ref tempDest); // ICU4N: Changed 2nd parameter
+                            unsafe
+                            {
+                                dest.Append(new ReadOnlySpan<char>(tempDest.GetCharsPointer(), tempDest.Length));
+                            }
+                        }
+                        spanCondition = SpanCondition.NotContained;
                     }
-                    spanCondition = SpanCondition.NotContained;
+                    prevSpanLimit = spanLimit;
                 }
-                prevSpanLimit = spanLimit;
+            }
+            finally
+            {
+                tempDest.Dispose();
             }
             return dest;
         }
