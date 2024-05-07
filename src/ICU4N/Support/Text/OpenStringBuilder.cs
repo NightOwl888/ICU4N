@@ -40,6 +40,17 @@ namespace ICU4N.Text
             value.CopyTo(_chars.AsSpan(_pos));
             _pos = value.Length;
         }
+
+        public OpenStringBuilder(StringBuilder value)
+        {
+            Debug.Assert(value != null);
+
+            int length = value!.Length;
+            _chars = new char[RoundUpToPowerOf2(length)];
+            value.CopyTo(0, _chars.AsSpan(_pos), length);
+            _pos = length;
+        }
+
         public int Length
         {
             get => _pos;
