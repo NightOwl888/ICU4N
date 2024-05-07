@@ -1,4 +1,5 @@
 ﻿using ICU4N.Text;
+using J2N.Text;
 using System;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
@@ -416,7 +417,7 @@ namespace ICU4N.Impl
             //step 3: verify ACE Prefix
             if (StartsWithPrefix(processOut))
             {
-                StringBuffer decodeOut = null;
+                OpenStringBuilder decodeOut = null;
 
                 //step 4: Remove the ACE Prefix
                 string temp = processOut.ToString(ACE_PREFIX.Length, processOut.Length - ACE_PREFIX.Length);
@@ -424,7 +425,7 @@ namespace ICU4N.Impl
                 //step 5: Decode using punycode
                 try
                 {
-                    decodeOut = new StringBuffer(Punycode.Decode(temp, caseFlags).ToString());
+                    decodeOut = new OpenStringBuilder(Punycode.Decode(temp, caseFlags));
                 }
                 catch (StringPrepParseException)
                 {
@@ -448,7 +449,7 @@ namespace ICU4N.Impl
                 //step 8: return output of step 5
                 if (decodeOut != null)
                 {
-                    return decodeOut;
+                    return new StringBuffer(decodeOut.Length).Append(decodeOut.AsSpan());
                 }
             }
 

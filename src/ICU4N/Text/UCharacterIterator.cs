@@ -102,6 +102,18 @@ namespace ICU4N.Text
         }
 
         /// <summary>
+        /// Returns a <see cref="UCharacterIterator"/> object given a source <see cref="OpenStringBuilder"/>.
+        /// </summary>
+        /// <param name="source">A string buffer of UTF-16 code units.</param>
+        /// <returns><see cref="UCharacterIterator"/> object.</returns>
+        /// <exception cref="ArgumentException">If the argument is null.</exception>
+        /// <stable>ICU 2.4</stable>
+        internal static UCharacterIterator GetInstance(OpenStringBuilder source)
+        {
+            return new ReplaceableUCharacterIterator(source);
+        }
+
+        /// <summary>
         /// Returns a <see cref="UCharacterIterator"/> object given a <see cref="CharacterIterator"/>.
         /// </summary>
         /// <param name="source">A valid <see cref="CharacterIterator"/> object.</param>

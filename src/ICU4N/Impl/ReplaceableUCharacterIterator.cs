@@ -59,6 +59,17 @@ namespace ICU4N.Impl
             this.currentIndex = 0;
         }
 
+        // ICU4N: This constructor can be used to improve performance by passing the OpenStringBuilder directly
+        internal ReplaceableUCharacterIterator(OpenStringBuilder buf)
+        {
+            if (buf == null)
+            {
+                throw new ArgumentException();
+            }
+            this.replaceable = new ReplaceableString(buf);
+            this.currentIndex = 0;
+        }
+
         // public methods ----------------------------------------------------------
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Text;
+using J2N.Numerics;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -126,6 +127,11 @@ namespace ICU4N.Dev.Test.Translit
                 return Chars.Substring(start, length); // ICU4N: Warning this has .NET semantics, just like string.Substring(int, int)
             }
 
+            public ReadOnlySpan<char> AsSpan(int start, int length)
+            {
+                return Chars.AsSpan(start, length);
+            }
+
             public int Length => Chars.Length;
 
             public char this[int offset] => Chars[offset];
@@ -156,12 +162,20 @@ namespace ICU4N.Dev.Test.Translit
                 if (DEBUG) Console.Out.Write(Utility.Escape(ToString()));
             }
 
-            public void Replace(int startIndex, int count, char[] charArray,
-                                int charsStart, int charsLen)
+            // ICU4N: Replaced with the (startIndex, count, span) overload
+            //public void Replace(int startIndex, int count, char[] charArray,
+            //                    int charsStart, int charsLen)
+            //{
+            //    if (Substring(startIndex, count).Equals(new String(charArray, charsStart, charsLen - charsStart))) return; // NO ACTION! // ICU4N: Corrected 2nd substring parameter (but since we changed to count, we are back to the original)
+            //    this.Chars.Replace(startIndex, count, charArray, charsStart, charsLen);
+            //    fixStyles(startIndex, count, charsLen); // ICU4N: Corrected 2nd parameter
+            //}
+
+            public void Replace(int startIndex, int count, ReadOnlySpan<char> span)
             {
-                if (Substring(startIndex, count).Equals(new String(charArray, charsStart, charsLen - charsStart))) return; // NO ACTION! // ICU4N: Corrected 2nd substring parameter (but since we changed to count, we are back to the original)
-                this.Chars.Replace(startIndex, count, charArray, charsStart, charsLen);
-                fixStyles(startIndex, count, charsLen); // ICU4N: Corrected 2nd parameter
+                if (AsSpan(startIndex, count).Equals(span, StringComparison.Ordinal)) return; // NO ACTION! // ICU4N: Corrected 2nd substring parameter (but since we changed to count, we are back to the original)
+                this.Chars.Replace(startIndex, count, span);
+                fixStyles(startIndex, count, span.Length); // ICU4N: Corrected 2nd parameter
             }
 
             void fixStyles(int start, int count, int newLen)
