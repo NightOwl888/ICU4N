@@ -176,6 +176,28 @@ namespace ICU4N.Text
 #if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
+        private void InsertBlank(int index, int numberOfChars)
+        {
+            int count = numberOfChars;
+
+            if (count == 0)
+            {
+                return;
+            }
+
+            if (_pos > (_chars.Length - count))
+            {
+                Grow(count);
+            }
+
+            int remaining = _pos - index;
+            _chars.AsSpan(index, remaining).CopyTo(_chars.AsSpan(index + count));
+            _pos += count;
+        }
+
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public OpenStringBuilder Append(char c)
         {
             int pos = _pos;

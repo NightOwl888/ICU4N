@@ -64,6 +64,45 @@ namespace ICU4N.Text
                 Remove(startIndex, count);
         }
 
+        public void Replace(int startIndex, int count, string newValue)
+        {
+            Debug.Assert(newValue != null);
+
+            Replace(startIndex, count, newValue.AsSpan());
+        }
+
+        public void Replace(int startIndex, int count, ReadOnlySpan<char> newValue)
+        {
+            Debug.Assert(startIndex >= 0 || startIndex <= _pos);
+            Debug.Assert(count >= 0);
+
+            int end = startIndex + count;
+            if (end > _pos)
+            {
+                end = _pos;
+            }
+            if (end > startIndex)
+            {
+                int stringLength = newValue.Length;
+                int diff = end - startIndex - stringLength;
+                if (diff > 0)
+                { // replacing with fewer characters
+                    Remove(startIndex, diff);
+                }
+                else if (diff < 0)
+                {
+                    // replacing with more characters...need some room
+                    InsertBlank(startIndex, -diff);
+                }
+                // copy the chars based on the new length
+                newValue.CopyTo(_chars.AsSpan(startIndex, stringLength));
+            }
+            if (startIndex == end)
+            {
+                Insert(startIndex, newValue);
+            }
+        }
+
         public int IndexOf(char value) => _chars.AsSpan(0, _pos).IndexOf(value);
 
         public int IndexOf(ReadOnlySpan<char> value, StringComparison comparisonType)

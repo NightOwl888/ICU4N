@@ -828,6 +828,191 @@ namespace ICU4N.Text
         }
 
         /**
+         * @tests java.lang.StringBuilder.replace(int, int, String)'
+         */
+        [Test]
+        public void Test_Replace_String()
+        {
+            string fixture = "0000";
+            OpenStringBuilder sb = new OpenStringBuilder();
+            sb.Append(fixture);
+            //Assert.AreSame(sb, sb.Replace(1, 3 - 1, "11")); // J2N; Corrected 2nd parameter
+            sb.Replace(1, 3 - 1, "11"); // J2N; Corrected 2nd parameter
+            Assert.AreEqual("0110", sb.AsSpan().ToString());
+            Assert.AreEqual(4, sb.Length);
+
+            //sb = new StringBuilder(fixture);
+            sb.Length = 0;
+            sb.Append(fixture);
+            //Assert.AreSame(sb, );
+            sb.Replace(1, 2 - 1, "11"); // J2N; Corrected 2nd parameter
+            Assert.AreEqual("01100", sb.AsSpan().ToString());
+            Assert.AreEqual(5, sb.Length);
+
+            //sb = new StringBuilder(fixture);
+            sb.Length = 0;
+            sb.Append(fixture);
+            //Assert.AreSame(sb, );
+            sb.Replace(4, 5 - 4, "11"); // J2N; Corrected 2nd parameter
+            Assert.AreEqual("000011", sb.AsSpan().ToString());
+            Assert.AreEqual(6, sb.Length);
+
+            //sb = new StringBuilder(fixture);
+            sb.Length = 0;
+            sb.Append(fixture);
+            //Assert.AreSame(sb, ); 
+            sb.Replace(4, 6 - 4, "11"); // J2N; Corrected 2nd parameter
+            Assert.AreEqual("000011", sb.AsSpan().ToString());
+            Assert.AreEqual(6, sb.Length);
+
+            //// FIXME Undocumented NPE in Sun's JRE 5.0_5
+            //try
+            //{
+            //    sb.Replace(1, 2 - 1, null); // J2N; Corrected 2nd parameter
+            //    Assert.Fail("No NPE");
+            //}
+            //catch (ArgumentNullException e)
+            //{
+            //    // Expected
+            //}
+
+            //try
+            //{
+            //    //sb = new StringBuilder(fixture);
+            //    sb.Length = 0;
+            //    sb.Append(fixture);
+            //    sb.Replace(-1, 2 - -1, "11"); // J2N; Corrected 2nd parameter
+            //    Assert.Fail("No SIOOBE, negative start");
+            //}
+            //catch (ArgumentOutOfRangeException e)
+            //{
+            //    // Expected
+            //}
+
+            //try
+            //{
+            //    //sb = new StringBuilder(fixture);
+            //    sb.Length = 0;
+            //    sb.Append(fixture);
+            //    sb.Replace(5, 2 - 5, "11"); // J2N; Corrected 2nd parameter
+            //    Assert.Fail("No SIOOBE, start > length");
+            //}
+            //catch (ArgumentOutOfRangeException e)
+            //{
+            //    // Expected
+            //}
+
+            //try
+            //{
+            //    //sb = new StringBuilder(fixture);
+            //    sb.Length = 0;
+            //    sb.Append(fixture);
+            //    sb.Replace(3, 2 - 3, "11"); // J2N; Corrected 2nd parameter
+            //    Assert.Fail("No SIOOBE, start > end");
+            //}
+            //catch (ArgumentOutOfRangeException e)
+            //{
+            //    // Expected
+            //}
+
+            // Regression for HARMONY-348
+            OpenStringBuilder buffer = new OpenStringBuilder();
+            buffer.Append("1234567");
+            buffer.Replace(2, 6 - 2, "XXX"); // J2N; Corrected 2nd parameter
+            Assert.AreEqual("12XXX7", buffer.ToString());
+        }
+
+
+        /**
+         * @tests java.lang.StringBuilder.replace(int, int, String)'
+         */
+        [Test]
+        public void Test_Replace_ReadOnlySpan()
+        {
+            string fixture = "0000";
+            OpenStringBuilder sb = new OpenStringBuilder();
+            sb.Append(fixture);
+            //Assert.AreSame(sb, );
+            sb.Replace(1, 3 - 1, "11".AsSpan()); // J2N; Corrected 2nd parameter
+            Assert.AreEqual("0110", sb.AsSpan().ToString());
+            Assert.AreEqual(4, sb.Length);
+
+            sb.Length = 0;
+            sb.Append(fixture);
+            //Assert.AreSame(sb, );
+            sb.Replace(1, 2 - 1, "11".AsSpan()); // J2N; Corrected 2nd parameter
+            Assert.AreEqual("01100", sb.AsSpan().ToString());
+            Assert.AreEqual(5, sb.Length);
+
+            sb.Length = 0;
+            sb.Append(fixture);
+            //Assert.AreSame(sb, );
+            sb.Replace(4, 5 - 4, "11".AsSpan()); // J2N; Corrected 2nd parameter
+            Assert.AreEqual("000011", sb.AsSpan().ToString());
+            Assert.AreEqual(6, sb.Length);
+
+            sb.Length = 0;
+            sb.Append(fixture);
+            //Assert.AreSame(sb, );
+            sb.Replace(4, 6 - 4, "11".AsSpan()); // J2N; Corrected 2nd parameter
+            Assert.AreEqual("000011", sb.AsSpan().ToString());
+            Assert.AreEqual(6, sb.Length);
+
+            ////// FIXME Undocumented NPE in Sun's JRE 5.0_5
+            ////try
+            ////{
+            ////    sb.Replace(1, 2 - 1, null); // J2N; Corrected 2nd parameter
+            ////    fail("No NPE");
+            ////}
+            ////catch (ArgumentNullException e)
+            ////{
+            ////    // Expected
+            ////}
+
+            //try
+            //{
+            //    sb.Length = 0;
+            //    sb.Append(fixture);
+            //    sb.Replace(-1, 2 - -1, "11".AsSpan()); // J2N; Corrected 2nd parameter
+            //    Assert.Fail("No SIOOBE, negative start");
+            //}
+            //catch (ArgumentOutOfRangeException e)
+            //{
+            //    // Expected
+            //}
+
+            //try
+            //{
+            //    sb.Length = 0;
+            //    sb.Append(fixture);
+            //    sb.Replace(5, 2 - 5, "11".AsSpan()); // J2N; Corrected 2nd parameter
+            //    Assert.Fail("No SIOOBE, start > length");
+            //}
+            //catch (ArgumentOutOfRangeException e)
+            //{
+            //    // Expected
+            //}
+
+            //try
+            //{
+            //    sb.Length = 0;
+            //    sb.Append(fixture);
+            //    sb.Replace(3, 2 - 3, "11".AsSpan()); // J2N; Corrected 2nd parameter
+            //    Assert.Fail("No SIOOBE, start > end");
+            //}
+            //catch (ArgumentOutOfRangeException e)
+            //{
+            //    // Expected
+            //}
+
+            // Regression for HARMONY-348
+            OpenStringBuilder buffer = new OpenStringBuilder();
+            buffer.Append("1234567");
+            buffer.Replace(2, 6 - 2, "XXX".AsSpan()); // J2N; Corrected 2nd parameter
+            Assert.AreEqual("12XXX7", buffer.AsSpan().ToString());
+        }
+
+        /**
          * @tests java.lang.StringBuilder.delete(int, int)
          */
         [Test]
