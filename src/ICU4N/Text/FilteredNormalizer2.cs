@@ -1,19 +1,20 @@
 ﻿using ICU4N.Support.Text;
 using J2N.Text;
 using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ICU4N.Text
 {
     /// <summary>
-	/// Normalization filtered by a <see cref="UnicodeSet"/>.
-	/// Normalizes portions of the text contained in the filter set and leaves
-	/// portions not contained in the filter set unchanged.
-	/// Filtering is done via <c>UnicodeSet.Span(..., SpanCondition.Simple)</c>.
-	/// Not-in-the-filter text is treated as "is normalized" and "quick check yes".
-	/// This class implements all of (and only) the <see cref="Normalizer2"/> API.
-	/// An instance of this class is unmodifiable/immutable.
-	/// </summary>
+    /// Normalization filtered by a <see cref="UnicodeSet"/>.
+    /// Normalizes portions of the text contained in the filter set and leaves
+    /// portions not contained in the filter set unchanged.
+    /// Filtering is done via <c>UnicodeSet.Span(..., SpanCondition.Simple)</c>.
+    /// Not-in-the-filter text is treated as "is normalized" and "quick check yes".
+    /// This class implements all of (and only) the <see cref="Normalizer2"/> API.
+    /// An instance of this class is unmodifiable/immutable.
+    /// </summary>
     /// <stable>ICU 4.4</stable>
     /// <author>Markus W. Scherer</author>
     public partial class FilteredNormalizer2 : Normalizer2
@@ -105,16 +106,22 @@ namespace ICU4N.Text
         /// <param name="first">First string, should be normalized.</param>
         /// <param name="second">Second string, will be normalized.</param>
         /// <returns><paramref name="first"/></returns>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override StringBuilder NormalizeSecondAndAppend(
             StringBuilder first, ReadOnlySpan<char> second)
         {
-            return NormalizeSecondAndAppend(first, second, true);
+            return NormalizeSecondAndAppend(first, second, doNormalize: true);
         }
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         internal override void NormalizeSecondAndAppend(
             ref ValueStringBuilder first, ReadOnlySpan<char> second)
         {
-            NormalizeSecondAndAppend(ref first, second, true);
+            NormalizeSecondAndAppend(ref first, second, doNormalize: true);
         }
 
         #endregion NormalizeSecondAndAppend(StringBuilder, ICharSequence)
@@ -131,11 +138,17 @@ namespace ICU4N.Text
         /// <param name="second">Second string, should be normalized.</param>
         /// <returns><paramref name="first"/></returns>
         /// <stable>ICU 4.4</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second)
         {
-            return NormalizeSecondAndAppend(first, second, false);
+            return NormalizeSecondAndAppend(first, second, doNormalize: false);
         }
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
         {
             if (MemoryHelper.AreSame(first.RawChars, second))
@@ -143,7 +156,7 @@ namespace ICU4N.Text
                 throw new ArgumentException($"'{nameof(first)}' cannot be the same memory location as '{nameof(second)}'");
             }
 
-            NormalizeSecondAndAppend(ref first, second);
+            NormalizeSecondAndAppend(ref first, second, doNormalize: false);
         }
 
         #endregion Append(StringBuilder, ICharSequence)
@@ -158,6 +171,9 @@ namespace ICU4N.Text
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s decomposition mapping, if any; otherwise <c>null</c>.</returns>
         /// <stable>ICU 4.6</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override string GetDecomposition(int codePoint)
         {
             return set.Contains(codePoint) ? norm2.GetDecomposition(codePoint) : null;
@@ -178,10 +194,13 @@ namespace ICU4N.Text
         /// the minimum number of chars required.</param>
         /// <returns><c>true</c> if the decomposition was succssfully written to <paramref name="destination"/>; otherwise, <c>false</c>.</returns>
         /// <draft>ICU 60.1</draft>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool TryGetDecomposition(int codePoint, Span<char> destination, out int charsLength)
         {
             charsLength = 0;
-            return set.Contains(codePoint) ? norm2.TryGetDecomposition(codePoint, destination, out charsLength) : false;
+            return set.Contains(codePoint) && norm2.TryGetDecomposition(codePoint, destination, out charsLength);
         }
 
         /// <summary>
@@ -206,6 +225,9 @@ namespace ICU4N.Text
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s raw decomposition mapping, if any; otherwise <c>null</c>.</returns>
         /// <stable>ICU 49</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override string GetRawDecomposition(int codePoint)
         {
             return set.Contains(codePoint) ? norm2.GetRawDecomposition(codePoint) : null;
@@ -238,10 +260,13 @@ namespace ICU4N.Text
         /// the minimum number of chars required.</param>
         /// <returns><c>true</c> if the decomposition was succssfully written to <paramref name="destination"/>; otherwise, <c>false</c>.</returns>
         /// <draft>ICU 60.1</draft>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool TryGetRawDecomposition(int codePoint, Span<char> destination, out int charsLength)
         {
             charsLength = 0;
-            return set.Contains(codePoint) ? norm2.TryGetRawDecomposition(codePoint, destination, out charsLength) : false;
+            return set.Contains(codePoint) && norm2.TryGetRawDecomposition(codePoint, destination, out charsLength);
         }
 
         /// <summary>
@@ -260,6 +285,9 @@ namespace ICU4N.Text
         /// <param name="b">Another code point.</param>
         /// <returns>The non-negative composite code point if there is one; otherwise a negative value.</returns>
         /// <stable>ICU 49</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override int ComposePair(int a, int b)
         {
             return (set.Contains(a) && set.Contains(b)) ? norm2.ComposePair(a, b) : -1;
@@ -273,6 +301,9 @@ namespace ICU4N.Text
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s combining class.</returns>
         /// <stable>ICU 49</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override int GetCombiningClass(int codePoint)
         {
             return set.Contains(codePoint) ? norm2.GetCombiningClass(codePoint) : 0;
@@ -421,6 +452,9 @@ namespace ICU4N.Text
         /// <param name="character">Character to test.</param>
         /// <returns>true if <paramref name="character"/> has a normalization boundary before it.</returns>
         /// <stable>ICU 4.4</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool HasBoundaryBefore(int character)
         {
             return !set.Contains(character) || norm2.HasBoundaryBefore(character);
@@ -441,6 +475,9 @@ namespace ICU4N.Text
         /// <param name="character">Character to test.</param>
         /// <returns>true if <paramref name="character"/> has a normalization boundary after it.</returns>
         /// <stable>ICU 4.4</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool HasBoundaryAfter(int character)
         {
             return !set.Contains(character) || norm2.HasBoundaryAfter(character);
@@ -460,6 +497,9 @@ namespace ICU4N.Text
         /// <param name="character">Character to test.</param>
         /// <returns>true if <paramref name="character"/> is normalization-inert.</returns>
         /// <stable>ICU 4.4</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool IsInert(int character)
         {
             return !set.Contains(character) || norm2.IsInert(character);
@@ -684,7 +724,6 @@ namespace ICU4N.Text
             return first;
         }
 
-
         private void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second,
                                                bool doNormalize)
         {
@@ -769,20 +808,52 @@ namespace ICU4N.Text
 
         public override bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength)
         {
-            throw new NotImplementedException(); // ICU4N TODO: Implement
+            if (MemoryHelper.AreSame(source, destination))
+            {
+                throw new ArgumentException($"'{nameof(source)}' cannot be the same memory location as '{nameof(destination)}'");
+            }
+
+            int length = source.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(length);
+
+            Normalize(source, ref buffer, SpanCondition.Simple);
+            charsLength = buffer.Length;
+            return buffer.TryCopyTo(destination, out _);
         }
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
-        {
-            throw new NotImplementedException(); // ICU4N TODO: Implement
-        }
+            => TryNormalizeSecondAndConcat(first, second, destination, out charsLength, doNormalize: true);
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+            => TryNormalizeSecondAndConcat(first, second, destination, out charsLength, doNormalize: false);
+
+        private bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength, bool doNormalize)
         {
-            throw new NotImplementedException(); // ICU4N TODO: Implement
+            if (MemoryHelper.AreSame(second, destination))
+            {
+                throw new ArgumentException($"'{nameof(second)}' cannot be the same memory location as '{nameof(destination)}'");
+            }
+
+            int length = first.Length + second.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(length);
+
+            buffer.Append(first);
+            NormalizeSecondAndAppend(ref buffer, second, doNormalize);
+            charsLength = buffer.Length;
+            return buffer.TryCopyTo(destination, out _);
         }
 
-        private Normalizer2 norm2;
-        private UnicodeSet set;
+        private readonly Normalizer2 norm2;
+        private readonly UnicodeSet set;
     }
 }

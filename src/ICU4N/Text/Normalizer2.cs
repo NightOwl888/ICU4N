@@ -4,6 +4,7 @@ using J2N.IO;
 using J2N.Text;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ICU4N.Text
@@ -247,6 +248,9 @@ namespace ICU4N.Text
         /// <param name="src">Source <see cref="ReadOnlySpan{Char}"/>.</param>
         /// <returns>Normalized <paramref name="src"/>.</returns>
         /// <stable>ICU 4.4</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public virtual string Normalize(ReadOnlySpan<char> src)
         {
             ValueStringBuilder sb = src.Length <= CharStackBufferSize
@@ -266,9 +270,52 @@ namespace ICU4N.Text
         /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
         /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
         /// <returns>Normalized <paramref name="source"/>.</returns>
-        /// <stable>ICU 60.1</stable>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
+        /// <draft>ICU 60.1</draft>
+        public virtual bool TryNormalize(string source, Span<char> destination, out int charsLength)
+        {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
+            return TryNormalize(source.AsSpan(), destination, out charsLength);
+        }
+
+        /// <summary>
+        /// Normalizes the form of the source <see cref="ReadOnlySpan{Char}"/>
+        /// and places the result in <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="source">Source <see cref="ReadOnlySpan{Char}"/>.</param>
+        /// <param name="destination">The span in which to write the normalized value formatted as a span of characters.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
+        /// <returns>Normalized <paramref name="source"/>.</returns>
+        /// <draft>ICU 60.1</draft>
         public abstract bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength);
 
+        /// <summary>
+        /// Appends the normalized form of the <paramref name="second"/> string to the <paramref name="first"/> string
+        /// (merging them at the boundary) and returns the <paramref name="first"/> string.
+        /// The result is normalized if the <paramref name="first"/> string was normalized.
+        /// </summary>
+        /// <param name="first">First string, should be normalized.</param>
+        /// <param name="second">Second string, will be normalized.</param>
+        /// <param name="destination"></param>
+        /// <param name="charsLength"></param>
+        /// <returns><c>false</c> if <paramref name="destination"/> was not long enough to perform the
+        /// concatenation; otherwise, <c>true</c>.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="first"/> or <paramref name="second"/> is <c>null</c>.
+        /// </exception>
+        /// <draft>ICU 60.1</draft>
+        public virtual bool TryNormalizeSecondAndConcat(string first, string second, Span<char> destination, out int charsLength)
+        {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+            if (second is null)
+                throw new ArgumentNullException(nameof(second));
+
+            return TryNormalizeSecondAndConcat(first.AsSpan(), second.AsSpan(), destination, out charsLength);
+        }
 
         /// <summary>
         /// Appends the normalized form of the <paramref name="second"/> string to the <paramref name="first"/> string
@@ -288,6 +335,35 @@ namespace ICU4N.Text
         /// </exception>
         /// <draft>ICU 60.1</draft>
         public abstract bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength);
+
+        /// <summary>
+        /// Appends the <paramref name="second"/> string to the <paramref name="first"/> string
+        /// (merging them at the boundary) and puts the result into <paramref name="destination"/>.
+        /// The result is normalized if both the strings were normalized.
+        /// </summary>
+        /// <param name="first">First string, should be normalized. This string may be a slice of
+        /// <paramref name="destination"/>, which allows this method to be called recursively.</param>
+        /// <param name="second">Second string, should be normalized.</param>
+        /// <param name="destination">The span in which to write the normalized value formatted as a span of characters.</param>
+        /// <param name="charsLength">Upon return, will contain the length of <paramref name="destination"/> after
+        /// the operation. If the return value is <c>false</c>,
+        /// this will contain the length of <paramref name="destination"/> that would need to be provided to make the
+        /// operation succeed.</param>
+        /// <returns><c>false</c> if <paramref name="destination"/> was not long enough to perform the
+        /// concatenation; otherwise, <c>true</c>.</returns>
+        /// <exception cref="ArgumentNullException">
+        /// <paramref name="first"/> or <paramref name="second"/> is <c>null</c>.
+        /// </exception>
+        /// <draft>ICU 60.1</draft>
+        public virtual bool TryConcat(string first, string second, Span<char> destination, out int charsLength)
+        {
+            if (first is null)
+                throw new ArgumentNullException(nameof(first));
+            if (second is null)
+                throw new ArgumentNullException(nameof(second));
+
+            return TryConcat(first.AsSpan(), second.AsSpan(), destination, out charsLength);
+        }
 
         /// <summary>
         /// Appends the <paramref name="second"/> string to the <paramref name="first"/> string
@@ -323,6 +399,9 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="src"/> or <paramref name="dest"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public virtual StringBuilder Normalize(string src, StringBuilder dest)
         {
             if (src is null)
@@ -372,6 +451,9 @@ namespace ICU4N.Text
         /// <typeparam name="TAppendable">The implementation of <see cref="IAppendable"/> to use to write the output.</typeparam>
         /// <exception cref="ArgumentNullException"><paramref name="src"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.6</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public virtual TAppendable Normalize<TAppendable>(string src, TAppendable dest) where TAppendable : IAppendable
         {
             if (src is null)
@@ -408,6 +490,9 @@ namespace ICU4N.Text
         /// <returns><paramref name="first"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="first"/> or <paramref name="second"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public virtual StringBuilder NormalizeSecondAndAppend(
             StringBuilder first, string second)
         {
@@ -463,6 +548,9 @@ namespace ICU4N.Text
         /// <returns><paramref name="first"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="first"/> or <paramref name="second"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public virtual StringBuilder Append(StringBuilder first, string second)
         {
             if (first is null)
@@ -628,6 +716,9 @@ namespace ICU4N.Text
         /// <returns>true if <paramref name="s"/> is normalized.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="s"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public virtual bool IsNormalized(string s)
         {
             if (s is null)
@@ -665,6 +756,9 @@ namespace ICU4N.Text
         /// <returns>The quick check result.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="s"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public virtual QuickCheckResult QuickCheck(string s)
         {
             if (s is null)
@@ -710,6 +804,9 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>"yes" span end index.</returns>
         /// <stable>ICU 4.4</stable>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public virtual int SpanQuickCheckYes(string s)
         {
             if (s is null)

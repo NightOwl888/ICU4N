@@ -63,6 +63,7 @@
 //------------------------------------------------------------------------------
 using ICU4N.Impl;
 using ICU4N.Text;
+using ICU4N.Support.Text;
 using J2N;
 using J2N.Text;
 using NUnit.Framework;
@@ -102,6 +103,7 @@ namespace ICU4N.Dev.Test.Normalizers
                     assembly.GetManifestResourceStream("ICU4N.Dev.Data.TestData.testnorm.nrm"),
                         "testnorm",
                         Normalizer2Mode.Compose);
+            Span<char> resultSpan = stackalloc char[64];
             for (int i = 0; i < pairs.Length; ++i)
             {
                 string[] pair = pairs[i];
@@ -109,6 +111,13 @@ namespace ICU4N.Dev.Test.Normalizers
                 string expected = Utility.Unescape(pair[1]);
                 string result = customNorm2.Normalize(<#=Regex.Replace("input", "(input)", charSequenceConversion)#>);
                 if (!result.Equals(expected))
+                {
+                    Errln("custom compose Normalizer2 did not normalize input " + i + " as expected");
+                }
+
+                // ICU4N: Test TryNormalize
+                assertTrue("", customNorm2.TryNormalize(<#=Regex.Replace("input", "(input)", charSequenceConversion)#>, resultSpan, out int charsLength));
+                if (!resultSpan.Slice(0, charsLength).SequenceEqual(expected.AsSpan()))
                 {
                     Errln("custom compose Normalizer2 did not normalize input " + i + " as expected");
                 }
@@ -145,6 +154,7 @@ namespace ICU4N.Dev.Test.Normalizers
                     assembly.GetManifestResourceStream("ICU4N.Dev.Data.TestData.testnorm.nrm"),
                         "testnorm",
                         Normalizer2Mode.ComposeContiguous);
+            Span<char> resultSpan = stackalloc char[64];
             for (int i = 0; i < pairs.Length; ++i)
             {
                 string[] pair = pairs[i];
@@ -154,6 +164,13 @@ namespace ICU4N.Dev.Test.Normalizers
                 if (!result.Equals(expected))
                 {
                     Errln("custom FCC Normalizer2 did not normalize input " + i + " as expected");
+                }
+
+                // ICU4N: Test TryNormalize
+                assertTrue("", customNorm2.TryNormalize(<#=Regex.Replace("input", "(input)", charSequenceConversion)#>, resultSpan, out int charsLength));
+                if (!resultSpan.Slice(0, charsLength).SequenceEqual(expected.AsSpan()))
+                {
+                    Errln("custom compose Normalizer2 did not normalize input " + i + " as expected");
                 }
             }
         }
@@ -206,19 +223,35 @@ namespace ICU4N.Dev.Test.Normalizers
             FilteredNormalizer2 fn2 = new FilteredNormalizer2(nfcNorm2, filter);
 
             // Append two strings that each contain a character outside the filter set.
-            StringBuilder sb = new StringBuilder("a\u0313a");
+            string first = "a\u0313a";
+            StringBuilder sb = new StringBuilder(first);
             string second = "\u0301\u0313";
-            assertEquals("append()", "a\u0313á\u0313", fn2.Append(sb, <#=Regex.Replace("second", "(second)", charSequenceConversion)#>).ToString());
+            string expected = "a\u0313á\u0313";
+            assertEquals("append()", expected, fn2.Append(sb, <#=Regex.Replace("second", "(second)", charSequenceConversion)#>).ToString());
+
+            Span<char> resultSpan = stackalloc char[64];
+            // ICU4N: Test TryConcat
+            assertTrue("", fn2.TryConcat(<#=Regex.Replace("first", "(first)", charSequenceConversion)#>, <#=Regex.Replace("second", "(second)", charSequenceConversion)#>, resultSpan, out int charsLength));
+            assertEquals("TryConcat()", expected, resultSpan.Slice(0, charsLength).ToString());
 
             // Same, and also normalize the second string.
             sb.Replace(0, 0x7fffffff - 0, "a\u0313a"); // ICU4N: Checked 2nd parameter
+            expected = "a\u0313á\u0313";
             assertEquals(
                 "normalizeSecondAndAppend()",
-                "a\u0313á\u0313", fn2.NormalizeSecondAndAppend(sb, <#=Regex.Replace("second", "(second)", charSequenceConversion)#>).ToString());
+                expected, fn2.NormalizeSecondAndAppend(sb, <#=Regex.Replace("second", "(second)", charSequenceConversion)#>).ToString());
+
+            // ICU4N: Test TryNormalizeSecondAndConcat
+            assertTrue("", fn2.TryNormalizeSecondAndConcat(<#=Regex.Replace("first", "(first)", charSequenceConversion)#>, <#=Regex.Replace("second", "(second)", charSequenceConversion)#>, resultSpan, out charsLength));
+            assertEquals("TryNormalizeSecondAndConcat()", expected, resultSpan.Slice(0, charsLength).ToString());
 
             // Normalizer2.Normalize(string) uses spanQuickCheckYes() and normalizeSecondAndAppend().
             string input = "a\u0313a\u0301\u0313";
             assertEquals("normalize()", "a\u0313á\u0313", fn2.Normalize(<#=Regex.Replace("input", "(input)", charSequenceConversion)#>));
+
+            // ICU4N: Test TryNormalize
+            assertTrue("", fn2.TryNormalize(<#=Regex.Replace("input", "(input)", charSequenceConversion)#>, resultSpan, out charsLength));
+            assertEquals("TryNormalize()", expected, resultSpan.Slice(0, charsLength).ToString());
         }
 <#=!string.IsNullOrEmpty(feature) ? "#endif " + Environment.NewLine: ""#>
 <# } #>

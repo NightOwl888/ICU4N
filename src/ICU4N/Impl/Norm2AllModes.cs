@@ -4,6 +4,7 @@ using J2N.IO;
 using J2N.Numerics;
 using J2N.Text;
 using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 #nullable enable
 
@@ -230,7 +231,8 @@ namespace ICU4N.Impl
             try
             {
                 Normalize(source, ref buffer);
-                return buffer.TryCopyTo(destination, out charsLength);
+                charsLength = buffer.Length;
+                return buffer.TryCopyTo(destination, out _);
             }
             finally
             {
@@ -238,40 +240,38 @@ namespace ICU4N.Impl
             }
         }
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
-        {
-            if (MemoryHelper.AreSame(second, destination))
-            {
-                throw new ArgumentException($"'{nameof(second)}' cannot be the same memory location as '{nameof(destination)}'");
-            }
-            bool success = true;
-            if (!MemoryHelper.AreSame(first, destination))
-            {
-                success = first.TryCopyTo(destination);
-            }
-            var buffer = new ValueReorderingBuffer(Impl, destination);
-            NormalizeAndAppend(second, doNormalize: true, ref buffer);
-            success = success && buffer.Length <= destination.Length;
-            charsLength = buffer.Length;
-            return success;
-        }
+            => TryNormalizeAndConcat(first, second, destination, out charsLength, doNormalize: true);
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
+            => TryNormalizeAndConcat(first, second, destination, out charsLength, doNormalize: false);
+
+        private bool TryNormalizeAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength, bool doNormalize)
         {
             if (MemoryHelper.AreSame(second, destination))
             {
                 throw new ArgumentException($"'{nameof(second)}' cannot be the same memory location as '{nameof(destination)}'");
             }
-            bool success = true;
-            if (!MemoryHelper.AreSame(first, destination))
+            int length = first.Length + second.Length;
+            var buffer = length <= CharStackBufferSize
+                ? new ValueReorderingBuffer(Impl, initialValue: first, stackalloc char[CharStackBufferSize])
+                : new ValueReorderingBuffer(Impl, initialValue: first, length);
+            try
             {
-                success = first.TryCopyTo(destination);
+                NormalizeAndAppend(second, doNormalize, ref buffer);
+                charsLength = buffer.Length;
+                return buffer.TryCopyTo(destination, out _);
             }
-            var buffer = new ValueReorderingBuffer(Impl, destination);
-            NormalizeAndAppend(second, doNormalize: false, ref buffer);
-            success = success && buffer.Length <= destination.Length;
-            charsLength = buffer.Length;
-            return success;
+            finally
+            {
+                buffer.Dispose();
+            }
         }
 
         #region Normalize(ICharSequence, StringBuilder)
@@ -610,6 +610,10 @@ namespace ICU4N.Impl
         #endregion Normalize(ICharSequence, ReorderingBuffer)
 
         #region NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
+
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         protected override void NormalizeAndAppend(
             string src, bool doNormalize, ref ValueReorderingBuffer buffer)
         {
@@ -619,6 +623,9 @@ namespace ICU4N.Impl
             Impl.ComposeAndAppend(src.AsSpan(), doNormalize, onlyContiguous, ref buffer);
         }
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         protected override void NormalizeAndAppend(
             ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer)
         {
@@ -634,6 +641,9 @@ namespace ICU4N.Impl
 
         #region IsNormalized(ICharSequence)
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool IsNormalized(ReadOnlySpan<char> s)
         {
             // 5: small destCapacity for substring normalization
@@ -673,29 +683,37 @@ namespace ICU4N.Impl
 
         #region SpanQuickCheckYes(ICharSequence)
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
-        {
-            return Impl.ComposeQuickCheck(s, onlyContiguous, doSpan: true).TripleShift(1); // ICU4N: Checked 3rd parameter
-        }
+            => Impl.ComposeQuickCheck(s, onlyContiguous, doSpan: true).TripleShift(1); // ICU4N: Checked 3rd parameter
 
         #endregion SpanQuickCheckYes(ICharSequence)
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override int GetQuickCheck(int c)
-        {
-            return Impl.GetCompQuickCheck(Impl.GetNorm16(c));
-        }
+            => Impl.GetCompQuickCheck(Impl.GetNorm16(c));
 
-        public override bool HasBoundaryBefore(int c) { return Impl.HasCompBoundaryBefore(c); }
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        public override bool HasBoundaryBefore(int c)
+            => Impl.HasCompBoundaryBefore(c);
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool HasBoundaryAfter(int c)
-        {
-            return Impl.HasCompBoundaryAfter(c, onlyContiguous);
-        }
+            => Impl.HasCompBoundaryAfter(c, onlyContiguous);
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override bool IsInert(int c)
-        {
-            return Impl.IsCompInert(c, onlyContiguous);
-        }
+                => Impl.IsCompInert(c, onlyContiguous);
 
         private readonly bool onlyContiguous;
     }
@@ -708,6 +726,9 @@ namespace ICU4N.Impl
         }
 
         #region Normalize(ICharSequence, ReorderingBuffer)
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         protected override void Normalize(string src, ref ValueReorderingBuffer buffer)
         {
             if (src is null)
@@ -716,6 +737,9 @@ namespace ICU4N.Impl
             Impl.MakeFCD(src.AsSpan(), ref buffer);
         }
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
         {
             if (MemoryHelper.AreSame(src, buffer.RawChars))
@@ -729,6 +753,10 @@ namespace ICU4N.Impl
         #endregion Normalize(ICharSequence, ReorderingBuffer)
 
         #region NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
+
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         protected override void NormalizeAndAppend(
             string src, bool doNormalize, ref ValueReorderingBuffer buffer)
         {
@@ -738,6 +766,9 @@ namespace ICU4N.Impl
             Impl.MakeFCDAndAppend(src.AsSpan(), doNormalize, ref buffer);
         }
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         protected override void NormalizeAndAppend(
             ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer)
         {
@@ -748,24 +779,37 @@ namespace ICU4N.Impl
 
         #region SpanQuickCheckYes(ICharSequence)
 
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override int SpanQuickCheckYes(ReadOnlySpan<char> s)
-        {
-            return Impl.MakeFCDQuickCheck(s);
-        }
+            => Impl.MakeFCDQuickCheck(s);
 
         #endregion SpanQuickCheckYes(ICharSequence)
 
-
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
         public override int GetQuickCheck(int c)
-        {
-            return Impl.IsDecompYes(Impl.GetNorm16(c)) ? 1 : 0;
-        }
+            => Impl.IsDecompYes(Impl.GetNorm16(c)) ? 1 : 0;
 
-        public override bool HasBoundaryBefore(int c) => Impl.HasFCDBoundaryBefore(c);
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        public override bool HasBoundaryBefore(int c)
+            => Impl.HasFCDBoundaryBefore(c);
 
-        public override bool HasBoundaryAfter(int c) => Impl.HasFCDBoundaryAfter(c);
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        public override bool HasBoundaryAfter(int c)
+            => Impl.HasFCDBoundaryAfter(c);
 
-        public override bool IsInert(int c) => Impl.IsFCDInert(c);
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        public override bool IsInert(int c)
+            => Impl.IsFCDInert(c);
     }
 
     public sealed class Norm2AllModes
