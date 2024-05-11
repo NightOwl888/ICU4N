@@ -2,6 +2,9 @@
 using ICU4N.Globalization;
 using System;
 using System.Globalization;
+using System.Text;
+using J2N.Text;
+using ICU4N.Support.Text;
 
 namespace ICU4N.Text
 {
@@ -98,10 +101,178 @@ namespace ICU4N.Text
             return OMIT_UNCHANGED;
         }
 
+        //// ICU4N specific overload for convenience
+        ///// <summary>
+        ///// Lowercases a string.
+        ///// Casing is locale-dependent and context-sensitive.
+        ///// The result may be longer or shorter than the original.
+        ///// </summary>
+        ///// <param name="src">The original string.</param>
+        ///// <returns>The result string.</returns>
+        ///// <seealso cref="UChar.ToLower(CultureInfo, string)"/>
+        ///// <draft>ICU4N 60.1</draft>
+        ///// <provisional>This API might change or be removed in a future release.</provisional>
+        //public string Apply(string src)
+        //{
+        //    return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src);
+        //}
+
+        // ICU4N specific overload for convenience
+        /// <summary>
+        /// Lowercases a string.
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="src">The original string.</param>
+        /// <returns>The result string.</returns>
+        /// <seealso cref="UChar.ToLower(CultureInfo, string)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public string Apply(ReadOnlySpan<char> src)
+        {
+            return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src);
+        }
+
+
         // ICU4N specific - Apply(CultureInfo locale, ICharSequence src) moved to CaseMap.generated.tt
+
+        #region Apply(CultureInfo locale, ICharSequence src)
+
+        /// <summary>
+        /// Lowercases a string.
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
+        /// <param name="src">The original string.</param>
+        /// <returns>The result string.</returns>
+        /// <seealso cref="UChar.ToLower(CultureInfo, string)"/>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public string Apply(CultureInfo locale, ReadOnlySpan<char> src)
+        {
+            return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src);
+        }
+
+        #endregion Apply(CultureInfo locale, ICharSequence src)
+
 
         // ICU4N specific - Apply(
         //    CultureInfo locale, string src, StringBuilder dest, Edits edits) moved to CaseMap.generated.tt
+
+        #region Apply(CultureInfo locale, string src, StringBuilder dest, Edits edits)
+
+        /// <summary>
+        /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="src">The original string.</param>
+        /// <param name="dest">A buffer for the result string. Must not be null.</param>
+        /// <param name="edits">Records edits for index mapping, working with styled text,
+        /// and getting only changes (if any).
+        /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
+        /// </param>
+        /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
+        /// <seealso cref="UChar.ToLower(CultureInfo, string)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public StringBuilder Apply(
+            ReadOnlySpan<char> src, StringBuilder dest, Edits edits)
+        {
+            return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src, dest, edits);
+        }
+
+        /// <summary>
+        /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="src">The original string.</param>
+        /// <param name="dest">A buffer for the result string. Must not be null.</param>
+        /// <param name="edits">Records edits for index mapping, working with styled text,
+        /// and getting only changes (if any).
+        /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
+        /// </param>
+        /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
+        /// <seealso cref="UChar.ToLower(CultureInfo, string)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public T Apply<T>(
+            ReadOnlySpan<char> src, T dest, Edits edits) where T : IAppendable
+        {
+            return CaseMapImpl.ToLower(GetCaseLocale(null), internalOptions, src, dest, edits);
+        }
+
+        // -----------
+
+        /// <summary>
+        /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
+        /// <param name="src">The original string.</param>
+        /// <param name="dest">A buffer for the result string. Must not be null.</param>
+        /// <param name="edits">Records edits for index mapping, working with styled text,
+        /// and getting only changes (if any).
+        /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
+        /// </param>
+        /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
+        /// <seealso cref="UChar.ToLower(CultureInfo, string)"/>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public StringBuilder Apply(
+            CultureInfo locale, ReadOnlySpan<char> src, StringBuilder dest, Edits edits)
+        {
+            return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src, dest, edits);
+        }
+
+        /// <summary>
+        /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
+        /// <param name="src">The original string.</param>
+        /// <param name="dest">A buffer for the result string. Must not be null.</param>
+        /// <param name="edits">Records edits for index mapping, working with styled text,
+        /// and getting only changes (if any).
+        /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
+        /// </param>
+        /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
+        /// <seealso cref="UChar.ToLower(CultureInfo, string)"/>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public TAppendable Apply<TAppendable>(
+            CultureInfo locale, ReadOnlySpan<char> src, TAppendable dest, Edits edits) where TAppendable : IAppendable
+        {
+            return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src, dest, edits);
+        }
+
+        /// <summary>
+        /// Lowercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
+        /// <param name="src">The original string.</param>
+        /// <param name="dest">A buffer for the result string. Must not be null.</param>
+        /// <param name="edits">Records edits for index mapping, working with styled text,
+        /// and getting only changes (if any).
+        /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
+        /// </param>
+        /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
+        /// <seealso cref="UChar.ToLower(CultureInfo, string)"/>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal void Apply(
+            CultureInfo locale, ReadOnlySpan<char> src, ref ValueStringBuilder dest, Edits edits)
+        {
+            return CaseMapImpl.ToLower(GetCaseLocale(locale), internalOptions, src, dest, edits);
+        }
+
+        #endregion Apply(CultureInfo locale, string src, StringBuilder dest, Edits edits)
     }
 
     /// <summary>
@@ -131,10 +302,183 @@ namespace ICU4N.Text
             return OMIT_UNCHANGED;
         }
 
+        //// ICU4N specific overload for convenience
+        ///// <summary>
+        ///// Uppercases a string.
+        ///// Casing is locale-dependent and context-sensitive.
+        ///// The result may be longer or shorter than the original.
+        ///// </summary>
+        ///// <param name="src">The original string.</param>
+        ///// <returns>The result string.</returns>
+        ///// <seealso cref="UChar.ToUpper(CultureInfo, string)"/>
+        ///// <draft>ICU4N 60.1</draft>
+        ///// <provisional>This API might change or be removed in a future release.</provisional>
+        //public string Apply(string src)
+        //{
+        //    return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src);
+        //}
+
+
+        // ICU4N specific overload for convenience
+        /// <summary>
+        /// Uppercases a string.
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="src">The original string.</param>
+        /// <returns>The result string.</returns>
+        /// <seealso cref="UChar.ToUpper(CultureInfo, string)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public string Apply(ReadOnlySpan<char> src)
+        {
+            return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src);
+        }
+
+
         // ICU4N specific - Apply(CultureInfo locale, ICharSequence src) moved to CaseMap.generated.tt
+
+        #region Apply(CultureInfo locale, ICharSequence src)
+
+        /// <summary>
+        /// Uppercases a string.
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
+        /// <param name="src">The original string.</param>
+        /// <returns>The result string.</returns>
+        /// <seealso cref="UChar.ToUpper(CultureInfo, string)"/>
+        /// <draft>ICU 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public string Apply(CultureInfo locale, ReadOnlySpan<char> src)
+        {
+            return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src);
+        }
+
+        #endregion Apply(CultureInfo locale, ICharSequence src)
+
+
 
         // ICU4N specific - Apply<T>(
         //    CultureInfo locale, string src, T dest, Edits edits) where T : IAppendable moved to CaseMap.generated.tt
+
+        #region Apply<T>(CultureInfo locale, string src, T dest, Edits edits) where T : IAppendable
+
+        // ICU4N specific overload for convenience
+        /// <summary>
+        /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="src">The original string.</param>
+        /// <param name="dest">A buffer for the result string. Must not be null.</param>
+        /// <param name="edits">Records edits for index mapping, working with styled text,
+        /// and getting only changes (if any).
+        /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
+        /// </param>
+        /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
+        /// <seealso cref="UChar.ToUpper(CultureInfo, string)"/>
+        /// <draft>ICU4N 60.1.0</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public StringBuilder Apply(
+            ReadOnlySpan<char> src, StringBuilder dest, Edits edits)
+        {
+            return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src, dest, edits);
+        }
+
+        // ICU4N specific overload for convenience
+        /// <summary>
+        /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="src">The original string.</param>
+        /// <param name="dest">A buffer for the result string. Must not be null.</param>
+        /// <param name="edits">Records edits for index mapping, working with styled text,
+        /// and getting only changes (if any).
+        /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
+        /// </param>
+        /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
+        /// <seealso cref="UChar.ToUpper(CultureInfo, string)"/>
+        /// <draft>ICU4N 60.1.0</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public TAppendable Apply<TAppendable>(
+            ReadOnlySpan<char> src, TAppendable dest, Edits edits) where TAppendable : IAppendable
+        {
+            return CaseMapImpl.ToUpper(GetCaseLocale(null), internalOptions, src, dest, edits);
+        }
+
+
+        // ------------
+
+        /// <summary>
+        /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
+        /// <param name="src">The original string.</param>
+        /// <param name="dest">A buffer for the result string. Must not be null.</param>
+        /// <param name="edits">Records edits for index mapping, working with styled text,
+        /// and getting only changes (if any).
+        /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
+        /// </param>
+        /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
+        /// <seealso cref="UChar.ToUpper(CultureInfo, string)"/>
+        /// <draft>ICU 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public StringBuilder Apply(
+            CultureInfo locale, ReadOnlySpan<char> src, StringBuilder dest, Edits edits)
+        {
+            return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src, dest, edits);
+        }
+
+        /// <summary>
+        /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
+        /// <param name="src">The original string.</param>
+        /// <param name="dest">A buffer for the result string. Must not be null.</param>
+        /// <param name="edits">Records edits for index mapping, working with styled text,
+        /// and getting only changes (if any).
+        /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
+        /// </param>
+        /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
+        /// <seealso cref="UChar.ToUpper(CultureInfo, string)"/>
+        /// <draft>ICU 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public TAppendable Apply<TAppendable>(
+            CultureInfo locale, ReadOnlySpan<char> src, TAppendable dest, Edits edits) where TAppendable : IAppendable
+        {
+            return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src, dest, edits);
+        }
+
+        /// <summary>
+        /// Uppercases a string and optionally records edits (see <see cref="OmitUnchangedText"/>).
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
+        /// <param name="src">The original string.</param>
+        /// <param name="dest">A buffer for the result string. Must not be null.</param>
+        /// <param name="edits">Records edits for index mapping, working with styled text,
+        /// and getting only changes (if any).
+        /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
+        /// </param>
+        /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
+        /// <seealso cref="UChar.ToUpper(CultureInfo, string)"/>
+        /// <draft>ICU 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal void Apply(
+            CultureInfo locale, ReadOnlySpan<char> src, ref ValueStringBuilder dest, Edits edits)
+        {
+            return CaseMapImpl.ToUpper(GetCaseLocale(locale), internalOptions, src, ref dest, edits);
+        }
+
+        #endregion Apply<T>(CultureInfo locale, string src, T dest, Edits edits) where T : IAppendable
     }
 
     /// <summary>
@@ -162,7 +506,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>An options object with this option.</returns>
         /// <seealso cref="AdjustToCased()"/>
-        /// <draft>ICU 60</draft>
+        /// <draft>ICU 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public TitleCaseMap WholeString()
         {
@@ -180,7 +524,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>An options object with this option.</returns>
         /// <seealso cref="AdjustToCased()"/>
-        /// <draft>ICU 60</draft>
+        /// <draft>ICU 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public TitleCaseMap Sentences()
         {
@@ -261,7 +605,7 @@ namespace ICU4N.Text
         /// It is an error to specify multiple titlecasing adjustment options together.
         /// </remarks>
         /// <returns>An options object with this option.</returns>
-        /// <draft>ICU 60</draft>
+        /// <draft>ICU 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         /// <seealso cref="NoBreakAdjustment()"/>
         public TitleCaseMap AdjustToCased()
@@ -271,6 +615,76 @@ namespace ICU4N.Text
         }
 
         // ICU4N specific - Apply(CultureInfo locale, BreakIterator iter, ICharSequence src) moved to CaseMap.generated.tt
+
+        #region Apply(CultureInfo locale, BreakIterator iter, ICharSequence src)
+
+        // ICU4N specific overload for convenience
+        /// <summary>
+        /// Titlecases a string.
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <remarks>
+        /// Titlecasing uses a break iterator to find the first characters of words
+        /// that are to be titlecased. It titlecases those characters and lowercases
+        /// all others. (This can be modified with options bits.)
+        /// </remarks>
+        /// <param name="iter">
+        /// A break iterator to find the first characters of words that are to be titlecased.
+        /// It is set to the source string (SetText())
+        /// and used one or more times for iteration (First() and Next()).
+        /// If null, then a word break iterator for the locale is used
+        /// (or something equivalent).
+        /// </param>
+        /// <param name="src">The original string.</param>
+        /// <returns>The result string.</returns>
+        /// <seealso cref="UChar.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
+        /// <draft>ICU 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public string Apply(BreakIterator iter, ReadOnlyMemory<char> src)
+        {
+            CultureInfo locale = CultureInfo.CurrentCulture;
+            iter = CaseMapImpl.GetTitleBreakIterator(locale, internalOptions, iter);
+            iter.SetText(src);
+            return CaseMapImpl.ToTitle(GetCaseLocale(locale), internalOptions, iter, src);
+        }
+
+        /// <summary>
+        /// Titlecases a string.
+        /// Casing is locale-dependent and context-sensitive.
+        /// The result may be longer or shorter than the original.
+        /// </summary>
+        /// <remarks>
+        /// Titlecasing uses a break iterator to find the first characters of words
+        /// that are to be titlecased. It titlecases those characters and lowercases
+        /// all others. (This can be modified with options bits.)
+        /// </remarks>
+        /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
+        /// <param name="iter">
+        /// A break iterator to find the first characters of words that are to be titlecased.
+        /// It is set to the source string (SetText())
+        /// and used one or more times for iteration (First() and Next()).
+        /// If null, then a word break iterator for the locale is used
+        /// (or something equivalent).
+        /// </param>
+        /// <param name="src">The original string.</param>
+        /// <returns>The result string.</returns>
+        /// <seealso cref="UChar.ToTitleCase(CultureInfo, ReadOnlyMemory{char}, BreakIterator, int)"/>
+        /// <draft>ICU 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public string Apply(CultureInfo locale, BreakIterator iter, ReadOnlyMemory<char> src)
+        {
+            if (iter == null && locale == null)
+            {
+                locale = CultureInfo.CurrentCulture;
+            }
+            iter = CaseMapImpl.GetTitleBreakIterator(locale, internalOptions, iter);
+            iter.SetText(src);
+            return CaseMapImpl.ToTitle(GetCaseLocale(locale), internalOptions, iter, src);
+        }
+
+        #endregion Apply(CultureInfo locale, BreakIterator iter, ICharSequence src)
+
 
         // ICU4N specific - Apply<T>(
         //    CultureInfo locale, BreakIterator iter, ICharSequence src, T dest, Edits edits) where dest : IAppendable moved to CaseMap.generated.tt
