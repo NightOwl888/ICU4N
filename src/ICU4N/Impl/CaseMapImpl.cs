@@ -381,7 +381,7 @@ namespace ICU4N.Impl
                 length = newText.EndIndex;
             }
 
-            public override void SetText(ICharSequence newText)
+            public override void SetText(ReadOnlyMemory<char> newText)
             {
                 length = newText.Length;
             }

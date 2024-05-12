@@ -15,8 +15,8 @@ namespace ICU4N.Dev.Test.Impl
         {
             String text = "Hello, World";
 
-            ICharSequence cs = text.AsCharSequence();
-            CharacterIterator csci = new CharSequenceCharacterIterator(cs);
+            ReadOnlyMemory<char> cs = text.AsMemory();
+            CharacterIterator csci = new ReadOnlyMemoryCharacterIterator(cs);
             CharacterIterator sci = new StringCharacterIterator(text);
 
             assertEquals("", sci.SetIndex(6), csci.SetIndex(6));
