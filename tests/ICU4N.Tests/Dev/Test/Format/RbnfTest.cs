@@ -1210,7 +1210,7 @@ namespace ICU4N.Dev.Test.Format
                     string netNumberFormat = tempNetNumberFormat;
                     if (!AreAsciiDigits(digits))
                     {
-                        using var sb = new ICU4N.Support.Text.ValueStringBuilder(new char[64]);
+                        using var sb = new ICU4N.Text.ValueStringBuilder(new char[64]);
                         int charsWritten = 0;
                         foreach (char ch in tempNetNumberFormat)
                         {

@@ -12,7 +12,7 @@ namespace ICU4N.Text
     /// This more closely resembles the StringBuilder in Java than the .NET implementation of StringBuilder.
     /// <para/>
     /// <see cref="OpenStringBuilder"/> must be used when the builder instance is used as a local buffer, however,
-    /// if the StringBuilder lifetime can be put on the stack, <see cref="Support.Text.ValueStringBuilder"/> should
+    /// if the StringBuilder lifetime can be put on the stack, <see cref="Text.ValueStringBuilder"/> should
     /// be used instead.
     /// </summary>
     internal sealed partial class OpenStringBuilder : ICharSequence, ISpanAppendable

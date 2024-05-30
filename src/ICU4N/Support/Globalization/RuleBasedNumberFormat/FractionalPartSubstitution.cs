@@ -1,5 +1,5 @@
 ﻿using ICU4N.Numerics;
-using ICU4N.Support.Text;
+using ICU4N.Text;
 using System;
 using System.Diagnostics;
 #nullable enable

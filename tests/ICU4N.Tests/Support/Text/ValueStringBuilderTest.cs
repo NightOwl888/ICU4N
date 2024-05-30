@@ -4,7 +4,7 @@ using NUnit.Framework;
 using System;
 using System.Text;
 
-namespace ICU4N.Support.Text
+namespace ICU4N.Text
 {
     public class ValueStringBuilderTest
     {

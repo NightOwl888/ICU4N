@@ -1,5 +1,4 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;

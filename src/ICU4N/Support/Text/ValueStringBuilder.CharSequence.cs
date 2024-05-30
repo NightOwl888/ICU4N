@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Text;
 #nullable enable
 
-namespace ICU4N.Support.Text
+namespace ICU4N.Text
 {
     internal ref partial struct ValueStringBuilder
     {

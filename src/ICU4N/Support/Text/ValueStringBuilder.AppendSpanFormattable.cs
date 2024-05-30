@@ -6,7 +6,7 @@ using System;
 
 #if FEATURE_SPANFORMATTABLE
 
-namespace ICU4N.Support.Text
+namespace ICU4N.Text
 {
     internal ref partial struct ValueStringBuilder
     {
