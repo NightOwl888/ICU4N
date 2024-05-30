@@ -4,6 +4,7 @@ using ICU4N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
@@ -21,14 +22,14 @@ namespace ICU4N.Dev.Test.Translit
             Transliterator jamoLatin = latinJamo.GetInverse();
 
             String[] CASE = {
-            // Column 1 is the latin text L1 to be fed to Latin-Jamo
-            // to yield output J.
+                // Column 1 is the latin text L1 to be fed to Latin-Jamo
+                // to yield output J.
 
-            // Column 2 is expected value of J.  J is fed to
-            // Jamo-Latin to yield output L2.
+                // Column 2 is expected value of J.  J is fed to
+                // Jamo-Latin to yield output L2.
 
-            // Column 3 is expected value of L2.  If the expected
-            // value of L2 is L1, then L2 is null.
+                // Column 3 is expected value of L2.  If the expected
+                // value of L2 is L1, then L2 is null.
 
                 // add tests for the update to fix problems where it didn't follow the standard
                 // see also http://www.unicode.org/cldr/data/charts/transforms/Latin-Hangul.html
@@ -48,27 +49,27 @@ namespace ICU4N.Dev.Test.Translit
                 "gakkka", "(Gi)(A)(GGf)(Ki)(A)", null,
                 "gak-kka", "(Gi)(A)(Kf)(GGi)(A)", null,
 
-            "bab", "(Bi)(A)(Bf)", null,
-            "babb", "(Bi)(A)(Bf)(Bi)(EU)", "babbeu",
-            "babbba", "(Bi)(A)(Bf)(Bi)(EU)(Bi)(A)", "babbeuba",
-            "bagg", "(Bi)(A)(Gf)(Gi)(EU)", "baggeu",
-            "baggga", "(Bi)(A)(Gf)(Gi)(EU)(Gi)(A)", "baggeuga",
-            //"bag"+SEP+"gga", "(Bi)(A)(Gf)"+SEP+"(Gi)(EU)(Gi)(A)", "bag"+SEP+"geuga",
-            "kabsa", "(Ki)(A)(Bf)(Si)(A)", null,
-            "kabska", "(Ki)(A)(BS)(Ki)(A)", null,
-            "gabsbka", "(Gi)(A)(BS)(Bi)(EU)(Ki)(A)", "gabsbeuka", // not (Kf)
-            "gga", "(Gi)(EU)(Gi)(A)", "geuga",
-            "bsa", "(Bi)(EU)(Si)(A)", "beusa",
-            "agg", "(IEUNG)(A)(Gf)(Gi)(EU)", "aggeu",
-            "agga", "(IEUNG)(A)(Gf)(Gi)(A)", null,
-            "la", "(R)(A)", null,
-            "bs", "(Bi)(EU)(Sf)", "beus",
-            "kalgga", "(Ki)(A)(L)(Gi)(EU)(Gi)(A)", "kalgeuga",
+                "bab", "(Bi)(A)(Bf)", null,
+                "babb", "(Bi)(A)(Bf)(Bi)(EU)", "babbeu",
+                "babbba", "(Bi)(A)(Bf)(Bi)(EU)(Bi)(A)", "babbeuba",
+                "bagg", "(Bi)(A)(Gf)(Gi)(EU)", "baggeu",
+                "baggga", "(Bi)(A)(Gf)(Gi)(EU)(Gi)(A)", "baggeuga",
+                //"bag"+SEP+"gga", "(Bi)(A)(Gf)"+SEP+"(Gi)(EU)(Gi)(A)", "bag"+SEP+"geuga",
+                "kabsa", "(Ki)(A)(Bf)(Si)(A)", null,
+                "kabska", "(Ki)(A)(BS)(Ki)(A)", null,
+                "gabsbka", "(Gi)(A)(BS)(Bi)(EU)(Ki)(A)", "gabsbeuka", // not (Kf)
+                "gga", "(Gi)(EU)(Gi)(A)", "geuga",
+                "bsa", "(Bi)(EU)(Si)(A)", "beusa",
+                "agg", "(IEUNG)(A)(Gf)(Gi)(EU)", "aggeu",
+                "agga", "(IEUNG)(A)(Gf)(Gi)(A)", null,
+                "la", "(R)(A)", null,
+                "bs", "(Bi)(EU)(Sf)", "beus",
+                "kalgga", "(Ki)(A)(L)(Gi)(EU)(Gi)(A)", "kalgeuga",
 
-            // 'r' in a final position is treated like 'l'
-            "karka", "(Ki)(A)(L)(Ki)(A)", "kalka",
+                // 'r' in a final position is treated like 'l'
+                "karka", "(Ki)(A)(L)(Ki)(A)", "kalka",
 
-        };
+            };
 
             for (int i = 0; i < CASE.Length; i += 3)
             {

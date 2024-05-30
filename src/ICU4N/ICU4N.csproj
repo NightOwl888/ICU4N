@@ -422,11 +422,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>BMPSet.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Impl\CaseMapImpl.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CaseMapImpl.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Impl\Number\AffixUtils.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -574,10 +569,6 @@
     <None Update="Impl\BMPSet.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BMPSet.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Impl\CaseMapImpl.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CaseMapImpl.generated.cs</LastGenOutput>
     </None>
     <None Update="Impl\Number\AffixUtils.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

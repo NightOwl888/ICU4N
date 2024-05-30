@@ -10,7 +10,8 @@ namespace ICU4N.Support.Text
 {
     internal ref partial struct ValueStringBuilder
     {
-        public void AppendCodePoint(int codePoint)
+        // ICU4N: Returns the number of characters in the codepoint (eliminates a method in CaseMapImpl)
+        public int AppendCodePoint(int codePoint)
         {
             int count = Character.ToChars(codePoint, out char high, out char low);
 
@@ -24,9 +25,11 @@ namespace ICU4N.Support.Text
             if (count == 2)
                 _chars[pos++] = low;
             _pos += count;
+            return count;
         }
 
-        public void InsertCodePoint(int index, int codePoint)
+        // ICU4N: Returns the number of characters in the codepoint
+        public int InsertCodePoint(int index, int codePoint)
         {
             int count = Character.ToChars(codePoint, out char high, out char low);
 
@@ -41,6 +44,7 @@ namespace ICU4N.Support.Text
             if (count == 2)
                 _chars[index + 1] = low;
             _pos += count;
+            return count;
         }
 
         public int CodePointAt(int index) => AsSpan().CodePointAt(index);

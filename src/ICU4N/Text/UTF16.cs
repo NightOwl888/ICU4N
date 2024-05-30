@@ -4,6 +4,7 @@ using J2N;
 using J2N.Text;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -625,6 +626,27 @@ namespace ICU4N.Text
                 throw new ArgumentException("Illegal codepoint");
             }
             return ToString(char32);
+        }
+
+        /// <summary>
+        /// Convenience method corresponding to <c>char + ""</c>. Returns a one or two char span
+        /// containing the UTF-32 value in UTF16 format. If a validity check is required, use
+        /// <see cref="UChar.IsLegal(int)"/> on <paramref name="char32"/> before calling.
+        /// </summary>
+        /// <param name="char32">The input character.</param>
+        /// <param name="buffer">The memory location to store the chars. Typically, it should be <c>stackalloc char[2]</c>
+        /// since it will never be longer than 2 chars. We need this to be passed to keep it on the stack.</param>
+        /// <returns>A <see cref="ReadOnlySpan{Char}"/> containing the chars of <paramref name="char32"/> in UTF16 format.
+        /// Use <see cref="ReadOnlySpan{Char}.Length"/> to determine the number of characters returned.</returns>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="char32"/> is a invalid codepoint.</exception>
+        /// <draft>ICU 60.1</draft>
+        public static ReadOnlySpan<char> ValueOf(int char32, Span<char> buffer) // ICU4N TODO: API - Rename these overloads ToChars() to match J2N.Character. This name probably was chosen because it aligned with Java and the methods to convert codepoints didn't exist yet when these methods were created.
+        {
+            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
+            {
+                throw new ArgumentException("Illegal codepoint");
+            }
+            return ToSpan(char32, buffer);
         }
 
         /// <summary>
@@ -3022,15 +3044,114 @@ namespace ICU4N.Text
         {
             if (ch < SupplementaryMinValue)
             {
-                return "" + (char)ch;
+                return char.ToString((char)ch);
             }
 
-            unsafe
+            Span<char> buffer = stackalloc char[2];
+            buffer[0] = GetLeadSurrogate(ch);
+            buffer[1] = GetTrailSurrogate(ch);
+            return buffer.ToString();
+        }
+
+        /// <summary>
+        /// Converts argument code point and returns a <see cref="ReadOnlySpan{Char}"/> representing
+        /// the code point's value in UTF16 format.
+        /// <para/>
+        /// This method does not check for the validity of the codepoint, the results are not guaranteed
+        /// if a invalid codepoint is passed as argument.
+        /// <para/>
+        /// The result is a span whose length is 1 for non-supplementary code points, 2 otherwise.
+        /// </summary>
+        /// <param name="ch">Code point.</param>
+        /// <param name="buffer">The memory location to store the chars. Typically, it should be <c>stackalloc char[2]</c>
+        /// since it will never be longer than 2 chars. This must be passed in to allow allocation on the stack
+        /// and to hold a reference to the memory outside of this method.</param>
+        /// <returns>A <see cref="ReadOnlySpan{Char}"/> containing the chars of the code point.</returns>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        private static ReadOnlySpan<char> ToSpan(int ch, Span<char> buffer)
+        {
+            if (ch < SupplementaryMinValue)
             {
-                char* buffer = stackalloc char[2];
-                buffer[0] = GetLeadSurrogate(ch);
-                buffer[1] = GetTrailSurrogate(ch);
-                return new string(buffer, 0, 2);
+                buffer[0] = (char)ch;
+                return buffer.Slice(0, 1);
+            }
+
+            buffer[0] = GetLeadSurrogate(ch);
+            buffer[1] = GetTrailSurrogate(ch);
+            return buffer;
+        }
+
+        /// <summary>
+        /// Get a code point from a string at a code point boundary offset,
+        /// and advance the offset to the next code point boundary.
+        /// (Post-incrementing forward iteration.)
+        /// "Safe" macro, handles unpaired surrogates and checks for string boundaries.
+        /// <para/>
+        /// The length can be negative for a NUL-terminated string.
+        /// <para/>
+        /// The offset may point to the lead surrogate unit
+        /// for a supplementary code point, in which case the macro will read
+        /// the following trail surrogate as well.
+        /// If the offset points to a trail surrogate or
+        /// to a single, unpaired lead surrogate, then c is set to that unpaired surrogate.
+        /// </summary>
+        /// <param name="s">A pointer to an array of <see cref="char"/>s.</param>
+        /// <param name="i">String offset, must be i&lt;length</param>
+        /// <param name="length">String length</param>
+        /// <param name="c">Output code point</param>
+        // ICU4N: port signature from U16_NEXT in utf16.h.
+        internal unsafe static void Next(char* s, ref int i, int length, out int c)
+        {
+            Debug.Assert(s != null);
+            Debug.Assert(i >= 0 && i < length);
+            char ch = s[i++];
+            c = ch;
+            if (IsLeadSurrogate(ch))
+            {
+                char ch2;
+                if ((i != length) && IsTrailSurrogate((ch2 = s[i])))
+                {
+                    ++i;
+                    c = Character.ToCodePoint(ch, ch2);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Move the string offset from one code point boundary to the previous one
+        /// and get the code point between them.
+        /// (Pre-decrementing backward iteration.)
+        /// "Safe" macro, handles unpaired surrogates and checks for string boundaries.
+        /// <para/>
+        /// The input offset may be the same as the string length.
+        /// If the offset is behind a trail surrogate unit
+        /// for a supplementary code point, then the macro will read
+        /// the preceding lead surrogate as well.
+        /// If the offset is behind a lead surrogate or behind a single, unpaired
+        /// trail surrogate, then c is set to that unpaired surrogate.
+        /// </summary>
+        /// <param name="s">A pointer to an array of <see cref="char"/>s.</param>
+        /// <param name="start">Starting string offset (usually 0)</param>
+        /// <param name="i">string offset, must be start&lt;i</param>
+        /// <param name="c">Output code point</param>
+        // ICU4N: port signature from U16_PREV in utf16.h.
+        internal unsafe static void Previous(char* s, int start, ref int i, out int c)
+        {
+            Debug.Assert(s != null);
+            Debug.Assert(i > 0);
+            Debug.Assert(start < i);
+            char ch = s[--i];
+            c = ch;
+            if (IsTrailSurrogate(ch))
+            {
+                char ch2;
+                if (i > start && IsLeadSurrogate((ch2 = s[i - 1])))
+                {
+                    --i;
+                    c = Character.ToCodePoint(ch2, ch);
+                }
             }
         }
     }

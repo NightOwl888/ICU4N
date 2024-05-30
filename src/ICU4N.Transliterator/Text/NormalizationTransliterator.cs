@@ -11,8 +11,6 @@ namespace ICU4N.Text
     /// <author>Alan Liu, Markus Scherer</author>
     internal sealed class NormalizationTransliterator : Transliterator
     {
-        private const int CharStackBufferSize = 128;
-
         private readonly Normalizer2 norm2;
 
         /// <summary>

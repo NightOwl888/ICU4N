@@ -371,7 +371,10 @@ namespace ICU4N.Dev.Test.Lang
         // Not a [Test]. See ICU4C intltest strcase.cpp TestCasingImpl().
         void TestCasingImpl(String input, String output, TitleCaseMap toTitle, CultureInfo locale)
         {
-            String result = toTitle.Apply(locale, null, input, new StringBuilder(), null).ToString();
+            //String result = toTitle.Apply(locale, null, input, new StringBuilder(), null).ToString();
+            var sb = new ValueStringBuilder(stackalloc char[32]);
+            toTitle.Apply(locale, null, input.AsMemory(), ref sb, null);
+            string result = sb.ToString();
             assertEquals("toTitle(" + input + ')', output, result);
         }
 
@@ -407,7 +410,7 @@ namespace ICU4N.Dev.Test.Lang
             try
             {
                 CaseMap.ToTitle().NoBreakAdjustment().AdjustToCased().
-                        Apply(root, null, "", new StringBuilder(), null);
+                        Apply(root, null, "".AsMemory(), new StringBuilder(), null);
                 fail("CaseMap.toTitle(multiple adjustment options) " +
                         "did not throw an ArgumentException");
             }
@@ -417,7 +420,7 @@ namespace ICU4N.Dev.Test.Lang
             try
             {
                 CaseMap.ToTitle().WholeString().Sentences().
-                        Apply(root, null, "", new StringBuilder(), null);
+                        Apply(root, null, "".AsMemory(), new StringBuilder(), null);
                 fail("CaseMap.toTitle(multiple iterator options) " +
                         "did not throw an ArgumentException");
             }
@@ -427,7 +430,7 @@ namespace ICU4N.Dev.Test.Lang
             BreakIterator iter = BreakIterator.GetCharacterInstance(root);
             try
             {
-                CaseMap.ToTitle().WholeString().Apply(root, iter, "", new StringBuilder(), null);
+                CaseMap.ToTitle().WholeString().Apply(root, iter, "".AsMemory(), new StringBuilder(), null);
                 fail("CaseMap.toTitle(iterator option + iterator) " +
                         "did not throw an ArgumentException");
             }
@@ -1390,7 +1393,7 @@ namespace ICU4N.Dev.Test.Lang
             StringBuilder sb = new StringBuilder();
             Edits edits = new Edits();
 
-            sb = CaseMap.ToLower().OmitUnchangedText().Apply(TURKISH_LOCALE_, "IstanBul", sb, edits);
+            sb = CaseMap.ToLower().OmitUnchangedText().Apply(TURKISH_LOCALE_, "IstanBul".AsSpan(), sb, edits);
             assertEquals("toLower(Istanbul)", "ıb", sb.ToString());
             EditChange[] lowerExpectedChanges = new EditChange[] {
                 new EditChange(true, 1, 1),
@@ -1404,7 +1407,7 @@ namespace ICU4N.Dev.Test.Lang
 
             sb.Delete(0, sb.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
             edits.Reset();
-            sb = CaseMap.ToUpper().OmitUnchangedText().Apply(GREEK_LOCALE_, "Πατάτα", sb, edits);
+            sb = CaseMap.ToUpper().OmitUnchangedText().Apply(GREEK_LOCALE_, "Πατάτα".AsSpan(), sb, edits);
             assertEquals("toUpper(Πατάτα)", "ΑΤΑΤΑ", sb.ToString());
             EditChange[] upperExpectedChanges = new EditChange[] {
                 new EditChange(false, 1, 1),
@@ -1421,7 +1424,7 @@ namespace ICU4N.Dev.Test.Lang
             sb.Delete(0, sb.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
             edits.Reset();
             sb = CaseMap.ToTitle().OmitUnchangedText().NoBreakAdjustment().NoLowercase().Apply(
-                    DUTCH_LOCALE_, null, "IjssEL IglOo", sb, edits);
+                    DUTCH_LOCALE_, null, "IjssEL IglOo".AsMemory(), sb, edits);
             assertEquals("toTitle(IjssEL IglOo)", "J", sb.ToString());
             EditChange[] titleExpectedChanges = new EditChange[] {
                 new EditChange(false, 1, 1),
@@ -1434,7 +1437,7 @@ namespace ICU4N.Dev.Test.Lang
 
             sb.Delete(0, sb.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
             edits.Reset();
-            sb = CaseMap.ToFold().OmitUnchangedText().Turkic().Apply("IßtanBul", sb, edits);
+            sb = CaseMap.ToFold().OmitUnchangedText().Turkic().Apply("IßtanBul".AsSpan(), sb, edits);
             assertEquals("fold(IßtanBul)", "ıssb", sb.ToString());
             EditChange[] foldExpectedChanges = new EditChange[] {
                 new EditChange(true, 1, 1),
@@ -1454,25 +1457,25 @@ namespace ICU4N.Dev.Test.Lang
             // String apply(..., CharSequence)
             // Omit unchanged text.
             assertEquals("toLower(Istanbul)", "ıb",
-                    CaseMap.ToLower().OmitUnchangedText().Apply(TURKISH_LOCALE_, "IstanBul"));
+                    CaseMap.ToLower().OmitUnchangedText().Apply(TURKISH_LOCALE_, "IstanBul".AsSpan()));
             assertEquals("toUpper(Πατάτα)", "ΑΤΑΤΑ",
-                    CaseMap.ToUpper().OmitUnchangedText().Apply(GREEK_LOCALE_, "Πατάτα"));
+                    CaseMap.ToUpper().OmitUnchangedText().Apply(GREEK_LOCALE_, "Πατάτα".AsSpan()));
             assertEquals("toTitle(IjssEL IglOo)", "J",
                     CaseMap.ToTitle().OmitUnchangedText().NoBreakAdjustment().NoLowercase().Apply(
-                            DUTCH_LOCALE_, null, "IjssEL IglOo"));
+                            DUTCH_LOCALE_, null, "IjssEL IglOo".AsMemory()));
             assertEquals("fold(IßtanBul)", "ıssb",
-                    CaseMap.ToFold().OmitUnchangedText().Turkic().Apply("IßtanBul"));
+                    CaseMap.ToFold().OmitUnchangedText().Turkic().Apply("IßtanBul".AsSpan()));
 
             // Return the whole result string.
             assertEquals("toLower(Istanbul)", "ıstanbul",
-                    CaseMap.ToLower().Apply(TURKISH_LOCALE_, "IstanBul"));
+                    CaseMap.ToLower().Apply(TURKISH_LOCALE_, "IstanBul".AsSpan()));
             assertEquals("toUpper(Πατάτα)", "ΠΑΤΑΤΑ",
-                    CaseMap.ToUpper().Apply(GREEK_LOCALE_, "Πατάτα"));
+                    CaseMap.ToUpper().Apply(GREEK_LOCALE_, "Πατάτα".AsSpan()));
             assertEquals("toTitle(IjssEL IglOo)", "IJssEL IglOo",
                     CaseMap.ToTitle().NoBreakAdjustment().NoLowercase().Apply(
-                            DUTCH_LOCALE_, null, "IjssEL IglOo"));
+                            DUTCH_LOCALE_, null, "IjssEL IglOo".AsMemory()));
             assertEquals("fold(IßtanBul)", "ısstanbul",
-                    CaseMap.ToFold().Turkic().Apply("IßtanBul"));
+                    CaseMap.ToFold().Turkic().Apply("IßtanBul".AsSpan()));
         }
 
         // private data members - test data --------------------------------------

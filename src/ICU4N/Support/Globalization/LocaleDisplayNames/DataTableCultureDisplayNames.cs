@@ -1,5 +1,6 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Impl.Locale;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
@@ -19,6 +20,8 @@ namespace ICU4N.Globalization
 {
     public class DataTableCultureDisplayNames : CultureDisplayNames
     {
+        private const int CharStackBufferSize = 32;
+
         private static ILanguageDataTableProvider languageDataTableProvider = new DefaultLanguageDataTableProvider();
         private static IRegionDataTableProvider regionDataTableProvider = new DefaultRegionDataTableProvider();
 
@@ -94,8 +97,10 @@ namespace ICU4N.Globalization
 
         private static string ToTitleWholeStringNoLowercase(UCultureInfo culture, string s)
         {
-            return ToTitleWholeStringNoLower.Apply(
-                    culture.ToCultureInfo(), null, s, new StringBuilder(), null).ToString();
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            ToTitleWholeStringNoLower.Apply(
+                culture.ToCultureInfo(), null, s.AsMemory(), ref sb, null);
+            return sb.ToString();
         }
 
         // ICU4N: Removed static GetInstance() method and moved the cache to the DefaultCultureDisplayNamesFactory

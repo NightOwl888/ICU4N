@@ -7,6 +7,7 @@ using J2N;
 using J2N.Globalization;
 using J2N.Numerics;
 using System;
+using System.Buffers;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
@@ -786,10 +787,36 @@ namespace ICU4N
 
                 // ICU4N TODO: use threadlocal here so we can reuse this instance?
                 BreakIterator capitalizationBrkIter = (BreakIterator)info.SentenceBreakIterator.Clone(); // Clone to the current thread
-                string temp = sb.AsSpan().ToString(); // Do not call sb.ToString() because we don't want to Dispose() the ValueStringBuilder yet.
-                sb.Length = 0; // Replace the entire input with the capitalized text
-                capitalizationBrkIter.SetText(temp);
-                sb.Append(CaseMapImpl.ToTitle(info.CaseLocale, UChar.TitleCaseNoLowerCase | UChar.TitleCaseNoBreakAdjustment, capitalizationBrkIter, temp));
+
+                // ICU4N TODO: We use arraypool to move the chars to the heap so we can utilize BreakIterator.
+                // Ideally, we could pass in delegates (for next(), prev(), etc) and stack allocated state
+                // (to track the break iteration) so we don't have to move this to the heap. But we need to break
+                // apart the components of RuleBasedBreakIterator to accomplish that.
+                int length = sb.Length;
+                char[] buffer = ArrayPool<char>.Shared.Rent(length);
+                try
+                {
+                    sb.AsSpan().CopyTo(buffer); // Do not call sb.TryCopyTo() because we don't want to Dispose() the ValueStringBuilder yet.
+                    sb.Length = 0; // Replace the entire input with the capitalized text
+                    capitalizationBrkIter.SetText(buffer.AsMemory(0, length));
+                    ValueStringBuilder titleCaseStringBuilder = length <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(length);
+                    try
+                    {
+                        CaseMapImpl.ToTitle(info.CaseLocale, UChar.TitleCaseNoLowerCase | UChar.TitleCaseNoBreakAdjustment,
+                            capitalizationBrkIter, src: buffer.AsSpan(0, length), ref titleCaseStringBuilder, edits: null);
+                        titleCaseStringBuilder.AsSpan().CopyTo(sb.AppendSpan(titleCaseStringBuilder.Length));
+                    }
+                    finally
+                    {
+                        titleCaseStringBuilder.Dispose();
+                    }
+                }
+                finally
+                {
+                    ArrayPool<char>.Shared.Return(buffer);
+                }
             }
         }
 

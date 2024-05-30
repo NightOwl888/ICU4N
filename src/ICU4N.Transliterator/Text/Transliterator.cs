@@ -420,6 +420,8 @@ namespace ICU4N.Text
     /// <stable>ICU 2.0</stable>
     public abstract class Transliterator : IStringTransform
     {
+        internal const int CharStackBufferSize = 64;
+
         /// <summary>
         /// Direction constant indicating the forward direction in a transliterator,
         /// e.g., the forward rules of a RuleBasedTransliterator.  An "A-B"
