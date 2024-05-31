@@ -25,6 +25,7 @@ namespace ICU4N.Text
             if (count == 2)
                 _chars[pos++] = low;
             _pos += count;
+            UpdateMaxLength();
             return count;
         }
 
@@ -44,6 +45,7 @@ namespace ICU4N.Text
             if (count == 2)
                 _chars[index + 1] = low;
             _pos += count;
+            UpdateMaxLength();
             return count;
         }
 
@@ -95,6 +97,7 @@ namespace ICU4N.Text
                 value.CopyTo(startIndex, _arrayToReturnToPool, _pos, count);
             }
             _pos += count;
+            UpdateMaxLength();
         }
 
         public void Append(ICharSequence? value) => Append(value, 0, value?.Length ?? 0);
@@ -140,6 +143,7 @@ namespace ICU4N.Text
                     _chars[pos++] = value[i + startIndex];
                 }
                 _pos += count;
+                UpdateMaxLength();
             }
         }
 
@@ -177,6 +181,7 @@ namespace ICU4N.Text
                 value.CopyTo(0, _arrayToReturnToPool, index, count);
             }
             _pos += count;
+            UpdateMaxLength();
         }
 
         public void Insert(int index, ICharSequence? value)
@@ -223,6 +228,7 @@ namespace ICU4N.Text
                 _chars[index++] = value[i];
             }
             _pos += count;
+            UpdateMaxLength();
         }
 
         public void Reverse()

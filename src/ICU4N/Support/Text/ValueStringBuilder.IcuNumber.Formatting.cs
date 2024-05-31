@@ -6,6 +6,9 @@ using System.Runtime.CompilerServices;
 
 namespace ICU4N.Text
 {
+    // ICU4N TODO: Fix the below logic after updating IcuNumber to correctly return charsLength instead of charsWritten,
+    // since that will tell us exactly how much we need allocated to succeed and we will not have to resort to
+    // a heap allocation on the retry.
     internal ref partial struct ValueStringBuilder
     {
         private const int CharStackBufferSize = 32;
@@ -23,6 +26,7 @@ namespace ICU4N.Text
             if (IcuNumber.TryFormatInt64(value, format, info, _chars.Slice(_pos), out int charsWritten, numberGroupSizesOverride))
             {
                 _pos += charsWritten;
+                UpdateMaxLength();
             }
             else
             {
@@ -37,6 +41,7 @@ namespace ICU4N.Text
 
                     buffer.CopyTo(_chars.Slice(_pos));
                     _pos += charsWritten;
+                    UpdateMaxLength();
                 }
                 else
                 {
@@ -59,6 +64,7 @@ namespace ICU4N.Text
             if (IcuNumber.TryFormatDouble(value, format, info!, _chars.Slice(_pos), out int charsWritten, numberGroupSizesOverride))
             {
                 _pos += charsWritten;
+                UpdateMaxLength();
             }
             else
             {
@@ -73,6 +79,7 @@ namespace ICU4N.Text
 
                     buffer.CopyTo(_chars.Slice(_pos));
                     _pos += charsWritten;
+                    UpdateMaxLength();
                 }
                 else
                 {
@@ -104,6 +111,7 @@ namespace ICU4N.Text
                 _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + charsWritten));
                 buffer.Slice(0, charsWritten).CopyTo(_chars.Slice(index));
                 _pos += charsWritten;
+                UpdateMaxLength();
             }
             else
             {
@@ -134,6 +142,7 @@ namespace ICU4N.Text
                 _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + charsWritten));
                 buffer.Slice(0, charsWritten).CopyTo(_chars.Slice(index));
                 _pos += charsWritten;
+                UpdateMaxLength();
             }
             else
             {
@@ -158,6 +167,7 @@ namespace ICU4N.Text
                 _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + sb.Length));
                 sb.AsSpan().CopyTo(_chars.Slice(index));
                 _pos += sb.Length;
+                UpdateMaxLength();
             }
             finally
             {

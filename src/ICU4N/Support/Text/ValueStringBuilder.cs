@@ -16,12 +16,16 @@ namespace ICU4N.Text
         private char[]? _arrayToReturnToPool;
         private Span<char> _chars;
         private int _pos;
+        private bool _capacityExceeded;
+        private int _maxLength;
 
         public ValueStringBuilder(Span<char> initialBuffer)
         {
             _arrayToReturnToPool = null;
             _chars = initialBuffer;
             _pos = 0;
+            _maxLength = 0;
+            _capacityExceeded = false;
         }
 
         public ValueStringBuilder(int initialCapacity)
@@ -29,6 +33,8 @@ namespace ICU4N.Text
             _arrayToReturnToPool = ArrayPool<char>.Shared.Rent(initialCapacity);
             _chars = _arrayToReturnToPool;
             _pos = 0;
+            _maxLength = 0;
+            _capacityExceeded = false;
         }
 
         public int Length
@@ -39,10 +45,29 @@ namespace ICU4N.Text
                 Debug.Assert(value >= 0);
                 Debug.Assert(value <= _chars.Length);
                 _pos = value;
+                UpdateMaxLength();
             }
         }
 
         public int Capacity => _chars.Length;
+
+        public bool CapacityExceeded => _capacityExceeded;
+
+        /// <summary>
+        /// The maximum length that was reached during the lifetime of this instance.
+        /// This is the minimum buffer size required for the operation to succeed when
+        /// <see cref="CapacityExceeded"/> is <c>true</c>.
+        /// </summary>
+        public int MaxLength => _maxLength;
+
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        private void UpdateMaxLength()
+        {
+            if (_pos > _maxLength)
+                _maxLength = _pos;
+        }
 
         public void EnsureCapacity(int capacity)
         {
@@ -184,7 +209,7 @@ namespace ICU4N.Text
         public ReadOnlySpan<char> AsSpan(int start) => _chars.Slice(start, _pos - start);
         public ReadOnlySpan<char> AsSpan(int start, int length) => _chars.Slice(start, length);
 
-        public bool TryCopyTo(Span<char> destination, out int charsWritten)
+        public bool TryCopyTo(Span<char> destination, out int charsWritten) // ICU4N TODO: Change this to return charsLength (_maxLength) instead of charsWritten on failure. Need to update all callers to document and test the change.
         {
             if (_chars.Slice(0, _pos).TryCopyTo(destination))
             {
@@ -214,6 +239,7 @@ namespace ICU4N.Text
             _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
             _chars.Slice(index, count).Fill(value);
             _pos += count;
+            UpdateMaxLength();
         }
 
         public void Insert(int index, string? s)
@@ -243,6 +269,7 @@ namespace ICU4N.Text
 #endif
                 .CopyTo(_chars.Slice(index));
             _pos += count;
+            UpdateMaxLength();
         }
 
         public void Insert(int index, ReadOnlySpan<char> s)
@@ -263,6 +290,7 @@ namespace ICU4N.Text
             _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
             s.CopyTo(_chars.Slice(index));
             _pos += count;
+            UpdateMaxLength();
         }
 
 #if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
@@ -285,6 +313,7 @@ namespace ICU4N.Text
             int remaining = _pos - index;
             _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
             _pos += count;
+            UpdateMaxLength();
         }
 
 #if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
@@ -297,6 +326,7 @@ namespace ICU4N.Text
             {
                 _chars[pos] = c;
                 _pos = pos + 1;
+                UpdateMaxLength();
             }
             else
             {
@@ -319,6 +349,7 @@ namespace ICU4N.Text
             {
                 _chars[pos] = s[0];
                 _pos = pos + 1;
+                UpdateMaxLength();
             }
             else
             {
@@ -340,6 +371,7 @@ namespace ICU4N.Text
 #endif
                 .CopyTo(_chars.Slice(pos));
             _pos += s.Length;
+            UpdateMaxLength();
         }
 
         public void Append(char c, int count)
@@ -355,6 +387,7 @@ namespace ICU4N.Text
                 dst[i] = c;
             }
             _pos += count;
+            UpdateMaxLength();
         }
 
         public unsafe void Append(char* value, int length)
@@ -371,6 +404,7 @@ namespace ICU4N.Text
                 dst[i] = *value++;
             }
             _pos += length;
+            UpdateMaxLength();
         }
 
         public void Append(ReadOnlySpan<char> value)
@@ -383,6 +417,7 @@ namespace ICU4N.Text
 
             value.CopyTo(_chars.Slice(_pos));
             _pos += value.Length;
+            UpdateMaxLength();
         }
 
 #if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
@@ -397,6 +432,7 @@ namespace ICU4N.Text
             }
 
             _pos = origPos + length;
+            UpdateMaxLength();
             return _chars.Slice(origPos, length);
         }
 
@@ -438,6 +474,8 @@ namespace ICU4N.Text
             Debug.Assert(_pos > _chars.Length - additionalCapacityBeyondPos, "Grow called incorrectly, no resize is needed.");
 
             const uint ArrayMaxLength = 0x7FFFFFC7; // same as Array.MaxLength
+
+            _capacityExceeded = true;
 
             // Increase to at least the required size (_pos + additionalCapacityBeyondPos), but try
             // to double the size if possible, bounding the doubling to not go beyond the max array length.

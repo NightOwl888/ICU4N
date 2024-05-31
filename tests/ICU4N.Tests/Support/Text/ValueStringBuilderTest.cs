@@ -61,6 +61,28 @@ namespace ICU4N.Text
         }
 
         [Test]
+        public void Append_Char_CapacityExceeded_TracksMaxLength()
+        {
+            Span<char> output = stackalloc char[5];
+
+            var sb = new ValueStringBuilder(output);
+            Assert.AreEqual(5, sb.Capacity);
+            for (int i = 0; i < 9; i++)
+                sb.Append((char)i);
+
+            Assert.AreEqual(9, sb.Length);
+            Assert.AreEqual(9, sb.MaxLength);
+
+            sb.Length = 0;
+            Assert.AreEqual(0, sb.Length);
+            Assert.AreEqual(9, sb.MaxLength);
+
+            sb.Length = 5;
+            Assert.AreEqual(5, sb.Length);
+            Assert.AreEqual(9, sb.MaxLength);
+        }
+
+        [Test]
         public void Append_String_MatchesStringBuilder()
         {
             var sb = new StringBuilder();
@@ -94,6 +116,40 @@ namespace ICU4N.Text
         }
 
         [Test]
+        public void Append_String_BeyondCapacity_SetsCapacityExceeded()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[5]);
+            Assert.IsFalse(sb.CapacityExceeded);
+
+            sb.Append("012345678");
+            Assert.IsTrue(sb.CapacityExceeded);
+        }
+
+        [Test]
+        public void Append_String_BeyondCapacity_TracksMaxLength()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[5]);
+            Assert.AreEqual(0, sb.Length);
+            Assert.AreEqual(0, sb.MaxLength);
+
+            sb.Append("012345678");
+            Assert.AreEqual(9, sb.Length);
+            Assert.AreEqual(9, sb.MaxLength);
+
+            sb.Length = 4;
+            Assert.AreEqual(4, sb.Length);
+            Assert.AreEqual(9, sb.MaxLength);
+
+            sb.Append("012345678");
+            Assert.AreEqual(13, sb.Length);
+            Assert.AreEqual(13, sb.MaxLength);
+
+            sb.Length = 4;
+            Assert.AreEqual(4, sb.Length);
+            Assert.AreEqual(13, sb.MaxLength);
+        }
+
+        [Test]
         public void Append_CharInt_MatchesStringBuilder()
         {
             var sb = new StringBuilder();
@@ -108,7 +164,27 @@ namespace ICU4N.Text
             Assert.AreEqual(sb.ToString(), vsb.ToString());
         }
 
-#if FEATURE_STRINGBUILDER_APPEND_CHARPTR
+        [Test]
+        public void Append_CharInt_CapacityExeeded_SetsMaxLength()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[5]);
+            for (int i = 1; i <= 100; i++)
+            {
+                sb.Append((char)i, i);
+            }
+
+            Assert.AreEqual(5050, sb.Length);
+            Assert.AreEqual(5050, sb.MaxLength);
+
+            sb.Length = 0;
+            Assert.AreEqual(0, sb.Length);
+            Assert.AreEqual(5050, sb.MaxLength);
+
+            sb.Length = 5;
+            Assert.AreEqual(5, sb.Length);
+            Assert.AreEqual(5050, sb.MaxLength);
+        }
+
         [Test]
         public unsafe void Append_PtrInt_MatchesStringBuilder()
         {
@@ -119,7 +195,11 @@ namespace ICU4N.Text
                 string s = i.ToString();
                 fixed (char* p = s)
                 {
+#if FEATURE_STRINGBUILDER_APPEND_CHARPTR
                     sb.Append(p, s.Length);
+#else
+                    sb.Append(s);
+#endif
                     vsb.Append(p, s.Length);
                 }
             }
@@ -127,7 +207,6 @@ namespace ICU4N.Text
             Assert.AreEqual(sb.Length, vsb.Length);
             Assert.AreEqual(sb.ToString(), vsb.ToString());
         }
-#endif
 
         [Test]
         public void AppendSpan_DataAppendedCorrectly()
@@ -152,6 +231,30 @@ namespace ICU4N.Text
         }
 
         [Test]
+        public void AppendSpan_CapacityExceeded_TracksMaxLength()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[128]);
+
+            for (int i = 1; i <= 1000; i++)
+            {
+                string s = i.ToString();
+                Span<char> span = sb.AppendSpan(s.Length);
+                s.AsSpan().CopyTo(span);
+            }
+
+            Assert.AreEqual(2893, sb.Length);
+            Assert.AreEqual(2893, sb.MaxLength);
+
+            sb.Length = 0;
+            Assert.AreEqual(0, sb.Length);
+            Assert.AreEqual(2893, sb.MaxLength);
+
+            sb.Length = 5;
+            Assert.AreEqual(5, sb.Length);
+            Assert.AreEqual(2893, sb.MaxLength);
+        }
+
+        [Test]
         public void Insert_IntCharInt_MatchesStringBuilder()
         {
             var sb = new StringBuilder();
@@ -167,6 +270,30 @@ namespace ICU4N.Text
 
             Assert.AreEqual(sb.Length, vsb.Length);
             Assert.AreEqual(sb.ToString(), vsb.ToString());
+        }
+
+        [Test]
+        public void Insert_IntCharInt_TracksMaxLength()
+        {
+            var sb = new ValueStringBuilder();
+            var rand = new Random(42);
+
+            for (int i = 1; i <= 100; i++)
+            {
+                int index = rand.Next(sb.Length);
+                sb.Insert(index, (char)i, i);
+            }
+
+            Assert.AreEqual(5050, sb.Length);
+            Assert.AreEqual(5050, sb.MaxLength);
+
+            sb.Length = 0;
+            Assert.AreEqual(0, sb.Length);
+            Assert.AreEqual(5050, sb.MaxLength);
+
+            sb.Length = 5;
+            Assert.AreEqual(5, sb.Length);
+            Assert.AreEqual(5050, sb.MaxLength);
         }
 
         [Test]
@@ -294,6 +421,7 @@ namespace ICU4N.Text
             builder.EnsureCapacity(65);
 
             Assert.AreEqual(128, builder.Capacity);
+            Assert.IsTrue(builder.CapacityExceeded);
         }
 
         [Test]
@@ -304,6 +432,7 @@ namespace ICU4N.Text
             builder.EnsureCapacity(33);
 
             Assert.AreEqual(64, builder.Capacity);
+            Assert.IsTrue(builder.CapacityExceeded);
         }
 
         [Test]
@@ -316,6 +445,7 @@ namespace ICU4N.Text
             builder.EnsureCapacity(16);
 
             Assert.AreEqual(64, builder.Capacity);
+            Assert.IsFalse(builder.CapacityExceeded);
         }
 
 
@@ -332,6 +462,50 @@ namespace ICU4N.Text
             builder.Append(value);
             builder.Remove(startIndex, length);
             Assert.AreEqual(expected, builder.ToString());
+        }
+
+        [Test]
+        public void Remove_BeyondCapacity_TracksMaxLength()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[5]);
+            Assert.AreEqual(0, sb.Length);
+            Assert.AreEqual(0, sb.MaxLength);
+
+            sb.Append("012345678");
+            Assert.AreEqual(9, sb.Length);
+            Assert.AreEqual(9, sb.MaxLength);
+
+            sb.Remove(1, 5);
+            Assert.AreEqual(4, sb.Length);
+            Assert.AreEqual(9, sb.MaxLength);
+
+            sb.Append("012345678");
+            Assert.AreEqual(13, sb.Length);
+            Assert.AreEqual(13, sb.MaxLength);
+
+            sb.Remove(3, 9);
+            Assert.AreEqual(4, sb.Length);
+            Assert.AreEqual(13, sb.MaxLength);
+        }
+
+        [Test]
+        public void AppendCodePoint_CapacityExceeded_TracksMaxLength()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[7]);
+            sb.Append("foo bar");
+
+            int codePoint = 97; // a
+
+            sb.AppendCodePoint(codePoint);
+
+            Assert.AreEqual("foo bara", sb.AsSpan().ToString());
+            Assert.IsTrue(sb.CapacityExceeded);
+            Assert.AreEqual(8, sb.Length);
+            Assert.AreEqual(8, sb.MaxLength);
+
+            sb.Length = 5;
+            Assert.AreEqual(5, sb.Length);
+            Assert.AreEqual(8, sb.MaxLength);
         }
 
 
@@ -410,6 +584,26 @@ namespace ICU4N.Text
             }
         }
 
+
+        [Test]
+        public void InsertCodePoint_CapacityExceeded_TracksMaxLength()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[7]);
+            sb.Append("foo bar");
+
+            int codePoint = 97; // a
+
+            sb.InsertCodePoint(0, codePoint);
+
+            Assert.AreEqual("afoo bar", sb.AsSpan().ToString());
+            Assert.IsTrue(sb.CapacityExceeded);
+            Assert.AreEqual(8, sb.Length);
+            Assert.AreEqual(8, sb.MaxLength);
+
+            sb.Length = 5;
+            Assert.AreEqual(5, sb.Length);
+            Assert.AreEqual(8, sb.MaxLength);
+        }
 
         [Test]
         public virtual void TestInsertCodePointBmp()
@@ -1337,5 +1531,30 @@ namespace ICU4N.Text
                 //Assert.AreEqual(fixture.LastIndexOf(searchFor, LargeUnicodeString.Length - 20, StringComparison.InvariantCultureIgnoreCase), sb.LastIndexOf(searchFor, LargeUnicodeString.Length - 20, StringComparison.InvariantCultureIgnoreCase));
             }
         }
+
+        [Test]
+        public void Length_BeyondCapacity_TracksMaxLength()
+        {
+            var sb = new ValueStringBuilder(stackalloc char[5]);
+            Assert.AreEqual(0, sb.Length);
+            Assert.AreEqual(0, sb.MaxLength);
+
+            sb.Append("012345678");
+            Assert.AreEqual(9, sb.Length);
+            Assert.AreEqual(9, sb.MaxLength);
+
+            sb.Length = 4;
+            Assert.AreEqual(4, sb.Length);
+            Assert.AreEqual(9, sb.MaxLength);
+
+            sb.Append("012345678");
+            Assert.AreEqual(13, sb.Length);
+            Assert.AreEqual(13, sb.MaxLength);
+
+            sb.Length = 4;
+            Assert.AreEqual(4, sb.Length);
+            Assert.AreEqual(13, sb.MaxLength);
+        }
+
     }
 }

@@ -15,6 +15,7 @@ namespace ICU4N.Text
             if (value.TryFormat(_chars.Slice(_pos), out int charsWritten, format, provider))
             {
                 _pos += charsWritten;
+                UpdateMaxLength();
             }
             else
             {
