@@ -92,7 +92,7 @@ namespace ICU4N.Impl
         }
 
         public static BreakIterator GetTitleBreakIterator(
-                CultureInfo locale, int options, BreakIterator? iter)
+            CultureInfo? locale, int options, BreakIterator? iter)
         {
             options &= TITLECASE_ITERATOR_MASK;
             if (options != 0 && iter != null)
@@ -100,18 +100,21 @@ namespace ICU4N.Impl
                 throw new ArgumentException(
                         "titlecasing iterator option together with an explicit iterator");
             }
-            if (iter == null)
+            // ICU4N: added guard clause so we don't get a NullReferenceException
+            if (options != TitleCaseWholeString && locale is null && iter is null)
+                throw new ArgumentException($"Either {nameof(locale)} or {nameof(iter)} must be non-null when {nameof(TitleCaseWholeString)} is not used.");
+            if (iter is null)
             {
                 switch (options)
                 {
                     case 0:
-                        iter = BreakIterator.GetWordInstance(locale);
+                        iter = BreakIterator.GetWordInstance(locale!);
                         break;
                     case TitleCaseWholeString:
                         iter = new WholeStringBreakIterator();
                         break;
                     case TitleCaseSentences:
-                        iter = BreakIterator.GetSentenceInstance(locale);
+                        iter = BreakIterator.GetSentenceInstance(locale!);
                         break;
                     default:
                         throw new ArgumentException("unknown titlecasing iterator option");
@@ -121,7 +124,7 @@ namespace ICU4N.Impl
         }
 
         public static BreakIterator GetTitleBreakIterator(
-                UCultureInfo locale, int options, BreakIterator? iter)
+            UCultureInfo? locale, int options, BreakIterator? iter)
         {
             options &= TITLECASE_ITERATOR_MASK;
             if (options != 0 && iter != null)
@@ -129,18 +132,22 @@ namespace ICU4N.Impl
                 throw new ArgumentException(
                         "titlecasing iterator option together with an explicit iterator");
             }
-            if (iter == null)
+            // ICU4N: added guard clause so we don't get a NullReferenceException
+            if (options != TitleCaseWholeString && locale is null && iter is null)
+                throw new ArgumentException($"Either {nameof(locale)} or {nameof(iter)} must be non-null when {nameof(TitleCaseWholeString)} is not used.");
+
+            if (iter is null)
             {
                 switch (options)
                 {
                     case 0:
-                        iter = BreakIterator.GetWordInstance(locale);
+                        iter = BreakIterator.GetWordInstance(locale!);
                         break;
                     case TitleCaseWholeString:
                         iter = new WholeStringBreakIterator();
                         break;
                     case TitleCaseSentences:
-                        iter = BreakIterator.GetSentenceInstance(locale);
+                        iter = BreakIterator.GetSentenceInstance(locale!);
                         break;
                     default:
                         throw new ArgumentException("unknown titlecasing iterator option");
