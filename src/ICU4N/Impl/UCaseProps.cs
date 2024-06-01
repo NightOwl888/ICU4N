@@ -1755,19 +1755,10 @@ namespace ICU4N.Impl
 
         /* case mapping properties API ---------------------------------------------- */
 
+        // ICU4N: Removed dummyStringBuilder because we use ValueStringBuilder, which does the
+        // entire operation on the stack.
 
-        private static StringBuilder dummyStringBuilder = new StringBuilder();
-
-        /// <summary>
-        /// We need a <see cref="StringBuilder"/> for multi-code point output from the
-        /// full case mapping functions. However, we do not actually use that output,
-        /// we just check whether the input character was mapped to anything else.
-        /// We use a shared <see cref="StringBuilder"/> to avoid allocating a new one in each call.
-        /// We remove its contents each time so that it does not grow large over time.
-        /// </summary>
-        public static StringBuilder DummyStringBuilder => dummyStringBuilder;
-
-        public unsafe bool HasBinaryProperty(int c, UProperty which)
+        public bool HasBinaryProperty(int c, UProperty which)
         {
             switch (which)
             {
@@ -1798,23 +1789,74 @@ namespace ICU4N.Impl
                     * start sets for normalization and case mappings.
                     */
                 case UProperty.Changes_When_Lowercased:
-                    dummyStringBuilder.Length = 0;
-                    return ToFullLower(c, null, IntPtr.Zero, dummyStringBuilder, CaseLocale.Root) >= 0;
+                    return ChangesWhenLowercased(c);
                 case UProperty.Changes_When_Uppercased:
-                    dummyStringBuilder.Length = 0;
-                    return ToFullUpper(c, null, IntPtr.Zero, dummyStringBuilder, CaseLocale.Root) >= 0;
+                    return ChangesWhenUppercased(c);
                 case UProperty.Changes_When_Titlecased:
-                    dummyStringBuilder.Length = 0;
-                    return ToFullTitle(c, null, IntPtr.Zero, dummyStringBuilder, CaseLocale.Root) >= 0;
+                    return ChangesWhenTitlecased(c);
                 /* case UProperty.CHANGES_WHEN_CASEFOLDED: -- in UCharacterProperty.java */
                 case UProperty.Changes_When_Casemapped:
-                    dummyStringBuilder.Length = 0;
-                    return
-                        ToFullLower(c, null, IntPtr.Zero, dummyStringBuilder, CaseLocale.Root) >= 0 ||
-                        ToFullUpper(c, null, IntPtr.Zero, dummyStringBuilder, CaseLocale.Root) >= 0 ||
-                        ToFullTitle(c, null, IntPtr.Zero, dummyStringBuilder, CaseLocale.Root) >= 0;
+                    return ChangesWhenCasemapped(c);
                 default:
                     return false;
+            }
+        }
+
+        // ICU4N: Use helper methods to wrap ValueStringBuilder creation/destruction for these checks
+        // so we don't have to do this for the other HasBinaryProperty() options.
+        private bool ChangesWhenLowercased(int c)
+        {
+            var dummyStringBuilder = new ValueStringBuilder(stackalloc char[8]);
+            try
+            {
+                return ToFullLower(c, null, IntPtr.Zero, ref dummyStringBuilder, CaseLocale.Root) >= 0;
+            }
+            finally
+            {
+                dummyStringBuilder.Dispose();
+            }
+        }
+
+        private bool ChangesWhenUppercased(int c)
+        {
+            var dummyStringBuilder = new ValueStringBuilder(stackalloc char[8]);
+            try
+            {
+                return ToFullUpper(c, null, IntPtr.Zero, ref dummyStringBuilder, CaseLocale.Root) >= 0;
+            }
+            finally
+            {
+                dummyStringBuilder.Dispose();
+            }
+        }
+
+        private bool ChangesWhenTitlecased(int c)
+        {
+            var dummyStringBuilder = new ValueStringBuilder(stackalloc char[8]);
+            try
+            {
+                return ToFullTitle(c, null, IntPtr.Zero, ref dummyStringBuilder, CaseLocale.Root) >= 0;
+            }
+            finally
+            {
+                dummyStringBuilder.Dispose();
+            }
+        }
+
+        private bool ChangesWhenCasemapped(int c)
+        {
+            var dummyStringBuilder = new ValueStringBuilder(stackalloc char[8]);
+            try
+            {
+                if (ToFullLower(c, null, IntPtr.Zero, ref dummyStringBuilder, CaseLocale.Root) >= 0) return true;
+                dummyStringBuilder.Length = 0;
+                if (ToFullUpper(c, null, IntPtr.Zero, ref dummyStringBuilder, CaseLocale.Root) >= 0) return true;
+                dummyStringBuilder.Length = 0;
+                return ToFullTitle(c, null, IntPtr.Zero, ref dummyStringBuilder, CaseLocale.Root) >= 0;
+            }
+            finally
+            {
+                dummyStringBuilder.Dispose();
             }
         }
 

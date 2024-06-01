@@ -403,9 +403,16 @@ namespace ICU4N.Impl
                         {
                             /* single code point */
                             UCaseProperties csp = UCaseProperties.Instance;
-                            UCaseProperties.DummyStringBuilder.Length = 0;
-                            return csp.ToFullFolding(c, UCaseProperties.DummyStringBuilder,
+                            ValueStringBuilder dummyStringBuilder = new ValueStringBuilder(stackalloc char[8]);
+                            try
+                            {
+                                return csp.ToFullFolding(c, ref dummyStringBuilder,
                                                         UChar.FoldCaseDefault) >= 0;
+                            }
+                            finally
+                            {
+                                dummyStringBuilder.Dispose();
+                            }
                         }
                         else
                         {
