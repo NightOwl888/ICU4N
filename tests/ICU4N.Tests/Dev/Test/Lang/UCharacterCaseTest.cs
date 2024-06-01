@@ -404,6 +404,11 @@ namespace ICU4N.Dev.Test.Lang
             TestCasingImpl("«ijs»", "«İjs»",
                     CaseMap.ToTitle().WholeString(), new CultureInfo("tr-DE"));
 
+            // ICU4N TODO: API - Factor out these. We can enforce this at the API level
+            // using 2 enums, TitleCaseAdjustment and TitleCaseBreak. Each can only have
+            // 1 option. In the case where a BreakIterator parameter is passed, we just
+            // need a TitleCaseAdjustment parameter for the other option.
+
             // Test conflicting settings.
             // If & when we add more options, then the ORed combinations may become
             // indistinguishable from valid values.
@@ -1161,7 +1166,7 @@ namespace ICU4N.Dev.Test.Lang
             EditChange[] coarseExpectedChanges = new EditChange[] {
                 new EditChange(false, 10003, 10003),
                 new EditChange(true, 103106, 104013)
-        };
+            };
             CheckEditsIter("coarse",
                     edits.GetCoarseEnumerator(), edits.GetCoarseEnumerator(),
                     coarseExpectedChanges, true);
@@ -1178,7 +1183,7 @@ namespace ICU4N.Dev.Test.Lang
                 new EditChange(true, 100, 0),
                 new EditChange(true, 3000, 4000),
                 new EditChange(true, 100000, 100000)
-        };
+            };
             CheckEditsIter("fine",
                     edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     fineExpectedChanges, true);
@@ -1400,7 +1405,7 @@ namespace ICU4N.Dev.Test.Lang
                 new EditChange(false, 4, 4),
                 new EditChange(true, 1, 1),
                 new EditChange(false, 2, 2)
-        };
+            };
             CheckEditsIter("toLower(Istanbul)",
                     edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     lowerExpectedChanges, true);
@@ -1416,7 +1421,7 @@ namespace ICU4N.Dev.Test.Lang
                 new EditChange(true, 1, 1),
                 new EditChange(true, 1, 1),
                 new EditChange(true, 1, 1)
-        };
+            };
             CheckEditsIter("toUpper(Πατάτα)",
                     edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     upperExpectedChanges, true);
@@ -1430,7 +1435,7 @@ namespace ICU4N.Dev.Test.Lang
                 new EditChange(false, 1, 1),
                 new EditChange(true, 1, 1),
                 new EditChange(false, 10, 10)
-        };
+            };
             CheckEditsIter("toTitle(IjssEL IglOo)",
                     edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     titleExpectedChanges, true);
@@ -1445,7 +1450,7 @@ namespace ICU4N.Dev.Test.Lang
                 new EditChange(false, 3, 3),
                 new EditChange(true, 1, 1),
                 new EditChange(false, 2, 2)
-        };
+            };
             CheckEditsIter("fold(IßtanBul)",
                     edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     foldExpectedChanges, true);
@@ -1509,16 +1514,16 @@ namespace ICU4N.Dev.Test.Lang
          * See CaseFolding.txt and the Unicode Standard for how to apply the case foldings.
          */
         private static readonly int[] FOLDING_SIMPLE_ = {
-        // input, default, exclude special i
-        0x61,   0x61,  0x61,
-        0x49,   0x69,  0x131,
-        0x130,  0x130, 0x69,
-        0x131,  0x131, 0x131,
-        0xdf,   0xdf,  0xdf,
-        0xfb03, 0xfb03, 0xfb03,
-        0x1040e,0x10436,0x10436,
-        0x5ffff,0x5ffff,0x5ffff
-    };
+            // input, default, exclude special i
+            0x61,   0x61,  0x61,
+            0x49,   0x69,  0x131,
+            0x130,  0x130, 0x69,
+            0x131,  0x131, 0x131,
+            0xdf,   0xdf,  0xdf,
+            0xfb03, 0xfb03, 0xfb03,
+            0x1040e,0x10436,0x10436,
+            0x5ffff,0x5ffff,0x5ffff
+        };
         private static readonly String[] FOLDING_MIXED_ =
                               {"\u0061\u0042\u0130\u0049\u0131\u03d0\u00df\ufb03\ud93f\udfff",
                            "A\u00df\u00b5\ufb03\uD801\uDC0C\u0130\u0131"};
@@ -1579,120 +1584,120 @@ namespace ICU4N.Dev.Test.Lang
          * see ICU4C source/test/testdata/casing.txt
          */
         private static readonly String[] TITLE_DATA_ = {
-        "\u0061\u0042\u0020\u0069\u03c2\u0020\u00df\u03c3\u002f\ufb03\ud93f\udfff",
-        "\u0041\u0042\u0020\u0049\u03a3\u0020\u0053\u0073\u03a3\u002f\u0046\u0066\u0069\ud93f\udfff",
-        "",
-        "0",
-        "",
+            "\u0061\u0042\u0020\u0069\u03c2\u0020\u00df\u03c3\u002f\ufb03\ud93f\udfff",
+            "\u0041\u0042\u0020\u0049\u03a3\u0020\u0053\u0073\u03a3\u002f\u0046\u0066\u0069\ud93f\udfff",
+            "",
+            "0",
+            "",
 
-        "\u0061\u0042\u0020\u0069\u03c2\u0020\u00df\u03c3\u002f\ufb03\ud93f\udfff",
-        "\u0041\u0062\u0020\u0049\u03c2\u0020\u0053\u0073\u03c3\u002f\u0046\u0066\u0069\ud93f\udfff",
-        "",
-        "1",
-        "",
+            "\u0061\u0042\u0020\u0069\u03c2\u0020\u00df\u03c3\u002f\ufb03\ud93f\udfff",
+            "\u0041\u0062\u0020\u0049\u03c2\u0020\u0053\u0073\u03c3\u002f\u0046\u0066\u0069\ud93f\udfff",
+            "",
+            "1",
+            "",
 
-        "\u02bbaMeLikA huI P\u016b \u02bb\u02bb\u02bbiA", "\u02bbAmelika Hui P\u016b \u02bb\u02bb\u02bbIa", // titlecase first _cased_ letter, j4933
-        "",
-        "-1",
-        "",
+            "\u02bbaMeLikA huI P\u016b \u02bb\u02bb\u02bbiA", "\u02bbAmelika Hui P\u016b \u02bb\u02bb\u02bbIa", // titlecase first _cased_ letter, j4933
+            "",
+            "-1",
+            "",
 
-        " tHe QUIcK bRoWn", " The Quick Brown",
-        "",
-        "4",
-        "",
+            " tHe QUIcK bRoWn", " The Quick Brown",
+            "",
+            "4",
+            "",
 
-        "\u01c4\u01c5\u01c6\u01c7\u01c8\u01c9\u01ca\u01cb\u01cc",
-        "\u01c5\u01c5\u01c5\u01c8\u01c8\u01c8\u01cb\u01cb\u01cb", // UBRK_CHARACTER
-        "",
-        "0",
-        "",
+            "\u01c4\u01c5\u01c6\u01c7\u01c8\u01c9\u01ca\u01cb\u01cc",
+            "\u01c5\u01c5\u01c5\u01c8\u01c8\u01c8\u01cb\u01cb\u01cb", // UBRK_CHARACTER
+            "",
+            "0",
+            "",
 
-        "\u01c9ubav ljubav", "\u01c8ubav Ljubav", // Lj vs. L+j
-        "",
-        "-1",
-        "",
+            "\u01c9ubav ljubav", "\u01c8ubav Ljubav", // Lj vs. L+j
+            "",
+            "-1",
+            "",
 
-        "'oH dOn'T tItLeCaSe AfTeR lEtTeR+'",  "'Oh Don't Titlecase After Letter+'",
-        "",
-        "-1",
-        "",
+            "'oH dOn'T tItLeCaSe AfTeR lEtTeR+'",  "'Oh Don't Titlecase After Letter+'",
+            "",
+            "-1",
+            "",
 
-        "a \u02bbCaT. A \u02bbdOg! \u02bbeTc.",
-        "A \u02bbCat. A \u02bbDog! \u02bbEtc.",
-        "",
-        "-1",
-        "", // default
+            "a \u02bbCaT. A \u02bbdOg! \u02bbeTc.",
+            "A \u02bbCat. A \u02bbDog! \u02bbEtc.",
+            "",
+            "-1",
+            "", // default
 
-        "a \u02bbCaT. A \u02bbdOg! \u02bbeTc.",
-        "A \u02bbcat. A \u02bbdog! \u02bbetc.",
-        "",
-        "-1",
-        "A", // U_TITLECASE_NO_BREAK_ADJUSTMENT
+            "a \u02bbCaT. A \u02bbdOg! \u02bbeTc.",
+            "A \u02bbcat. A \u02bbdog! \u02bbetc.",
+            "",
+            "-1",
+            "A", // U_TITLECASE_NO_BREAK_ADJUSTMENT
 
-        "a \u02bbCaT. A \u02bbdOg! \u02bbeTc.",
-        "A \u02bbCaT. A \u02bbdOg! \u02bbETc.",
-        "",
-        "3",
-        "L", // UBRK_SENTENCE and U_TITLECASE_NO_LOWERCASE
+            "a \u02bbCaT. A \u02bbdOg! \u02bbeTc.",
+            "A \u02bbCaT. A \u02bbdOg! \u02bbETc.",
+            "",
+            "3",
+            "L", // UBRK_SENTENCE and U_TITLECASE_NO_LOWERCASE
 
 
-        "\u02bbcAt! \u02bbeTc.",
-        "\u02bbCat! \u02bbetc.",
-        "",
-        "-2",
-        "", // -2=Trivial break iterator
+            "\u02bbcAt! \u02bbeTc.",
+            "\u02bbCat! \u02bbetc.",
+            "",
+            "-2",
+            "", // -2=Trivial break iterator
 
-        "\u02bbcAt! \u02bbeTc.",
-        "\u02bbcat! \u02bbetc.",
-        "",
-        "-2",
-        "A", // U_TITLECASE_NO_BREAK_ADJUSTMENT
+            "\u02bbcAt! \u02bbeTc.",
+            "\u02bbcat! \u02bbetc.",
+            "",
+            "-2",
+            "A", // U_TITLECASE_NO_BREAK_ADJUSTMENT
 
-        "\u02bbcAt! \u02bbeTc.",
-        "\u02bbCAt! \u02bbeTc.",
-        "",
-        "-2",
-        "L", // U_TITLECASE_NO_LOWERCASE
+            "\u02bbcAt! \u02bbeTc.",
+            "\u02bbCAt! \u02bbeTc.",
+            "",
+            "-2",
+            "L", // U_TITLECASE_NO_LOWERCASE
 
-        "\u02bbcAt! \u02bbeTc.",
-        "\u02bbcAt! \u02bbeTc.",
-        "",
-        "-2",
-        "AL", // Both options
+            "\u02bbcAt! \u02bbeTc.",
+            "\u02bbcAt! \u02bbeTc.",
+            "",
+            "-2",
+            "AL", // Both options
 
-        // Test case for ticket #7251: UCharacter.toTitleCase() throws OutOfMemoryError
-        // when TITLECASE_NO_LOWERCASE encounters a single-letter word
-        "a b c",
-        "A B C",
-        "",
-        "1",
-        "L" // U_TITLECASE_NO_LOWERCASE
-    };
+            // Test case for ticket #7251: UCharacter.toTitleCase() throws OutOfMemoryError
+            // when TITLECASE_NO_LOWERCASE encounters a single-letter word
+            "a b c",
+            "A B C",
+            "",
+            "1",
+            "L" // U_TITLECASE_NO_LOWERCASE
+        };
 
 
         /**
          * <p>basic string, lower string, upper string, title string</p>
          */
         private static readonly String[] SPECIAL_DATA_ = {
-        UTF16.ValueOf(0x1043C) + UTF16.ValueOf(0x10414),
-        UTF16.ValueOf(0x1043C) + UTF16.ValueOf(0x1043C),
-        UTF16.ValueOf(0x10414) + UTF16.ValueOf(0x10414),
-        "ab'cD \uFB00i\u0131I\u0130 \u01C7\u01C8\u01C9 " +
-                         UTF16.ValueOf(0x1043C) + UTF16.ValueOf(0x10414),
-        "ab'cd \uFB00i\u0131ii\u0307 \u01C9\u01C9\u01C9 " +
-                              UTF16.ValueOf(0x1043C) + UTF16.ValueOf(0x1043C),
-        "AB'CD FFIII\u0130 \u01C7\u01C7\u01C7 " +
-                              UTF16.ValueOf(0x10414) + UTF16.ValueOf(0x10414),
-        // sigmas followed/preceded by cased letters
-        "i\u0307\u03a3\u0308j \u0307\u03a3\u0308j i\u00ad\u03a3\u0308 \u0307\u03a3\u0308 ",
-        "i\u0307\u03c3\u0308j \u0307\u03c3\u0308j i\u00ad\u03c2\u0308 \u0307\u03c3\u0308 ",
-        "I\u0307\u03a3\u0308J \u0307\u03a3\u0308J I\u00ad\u03a3\u0308 \u0307\u03a3\u0308 "
-    };
+            UTF16.ValueOf(0x1043C) + UTF16.ValueOf(0x10414),
+            UTF16.ValueOf(0x1043C) + UTF16.ValueOf(0x1043C),
+            UTF16.ValueOf(0x10414) + UTF16.ValueOf(0x10414),
+            "ab'cD \uFB00i\u0131I\u0130 \u01C7\u01C8\u01C9 " +
+                             UTF16.ValueOf(0x1043C) + UTF16.ValueOf(0x10414),
+            "ab'cd \uFB00i\u0131ii\u0307 \u01C9\u01C9\u01C9 " +
+                                  UTF16.ValueOf(0x1043C) + UTF16.ValueOf(0x1043C),
+            "AB'CD FFIII\u0130 \u01C7\u01C7\u01C7 " +
+                                  UTF16.ValueOf(0x10414) + UTF16.ValueOf(0x10414),
+            // sigmas followed/preceded by cased letters
+            "i\u0307\u03a3\u0308j \u0307\u03a3\u0308j i\u00ad\u03a3\u0308 \u0307\u03a3\u0308 ",
+            "i\u0307\u03c3\u0308j \u0307\u03c3\u0308j i\u00ad\u03c2\u0308 \u0307\u03c3\u0308 ",
+            "I\u0307\u03a3\u0308J \u0307\u03a3\u0308J I\u00ad\u03a3\u0308 \u0307\u03a3\u0308 "
+        };
         private static readonly CultureInfo[] SPECIAL_LOCALES_ = {
-        null,
-        ENGLISH_LOCALE_,
-        null,
-    };
+            null,
+            ENGLISH_LOCALE_,
+            null,
+        };
 
         private const String SPECIAL_DOTTED_ =
                 "I \u0130 I\u0307 I\u0327\u0307 I\u0301\u0307 I\u0327\u0307\u0301";
