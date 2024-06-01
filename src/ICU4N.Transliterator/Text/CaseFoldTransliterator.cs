@@ -84,6 +84,8 @@ namespace ICU4N.Text
                     int c;
                     int textPos, delta = 0, result;
 
+                    Span<char> codePointBuffer = stackalloc char[2];
+
                     // Walk through original string
                     // If there is a case change, modify corresponding position in replaceable
                     for (textPos = offsets.Start; textPos < offsets.Limit;)
@@ -117,7 +119,7 @@ namespace ICU4N.Text
                             else
                             {
                                 /* replace by single-code point mapping */
-                                ReadOnlySpan<char> utf32 = UTF16.ValueOf(result, stackalloc char[2]);
+                                ReadOnlySpan<char> utf32 = UTF16.ValueOf(result, codePointBuffer);
                                 delta = utf32.Length - UTF16.GetCharCount(c);
                                 text.Replace(csc.cpStart, textPos - csc.cpStart, utf32); // ICU4N: Corrected 2nd parameter
                             }
