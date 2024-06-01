@@ -4086,7 +4086,7 @@ namespace ICU4N.Text
 
         //  add the result of a full case mapping to the set
         //  use str as a temporary string to avoid constructing one
-        private static void AddCaseMapping(UnicodeSet set, int result, StringBuilder full)
+        private static void AddCaseMapping(UnicodeSet set, int result, ref ValueStringBuilder full)
         {
             if (result >= 0)
             {
@@ -4098,7 +4098,7 @@ namespace ICU4N.Text
                 else
                 {
                     // add a string case mapping from full with length result
-                    set.Add(full.ToString());
+                    set.Add(full.AsSpan());
                     full.Length = 0;
                 }
             }
@@ -4156,7 +4156,7 @@ namespace ICU4N.Text
 
                 int n = RangeCount;
                 int result;
-                StringBuilder full = new StringBuilder();
+                ValueStringBuilder full = new ValueStringBuilder(stackalloc char[8]);
 
                 for (int i = 0; i < n; ++i)
                 {
@@ -4177,17 +4177,17 @@ namespace ICU4N.Text
                         // (does not add long s for regular s, or Kelvin for k, for example)
                         for (int cp = start; cp <= end; ++cp)
                         {
-                            result = csp.ToFullLower(cp, null, IntPtr.Zero, full, CaseLocale.Root);
-                            AddCaseMapping(foldSet, result, full);
+                            result = csp.ToFullLower(cp, null, IntPtr.Zero, ref full, CaseLocale.Root);
+                            AddCaseMapping(foldSet, result, ref full);
 
-                            result = csp.ToFullTitle(cp, null, IntPtr.Zero, full, CaseLocale.Root);
-                            AddCaseMapping(foldSet, result, full);
+                            result = csp.ToFullTitle(cp, null, IntPtr.Zero, ref full, CaseLocale.Root);
+                            AddCaseMapping(foldSet, result, ref full);
 
-                            result = csp.ToFullUpper(cp, null, IntPtr.Zero, full, CaseLocale.Root);
-                            AddCaseMapping(foldSet, result, full);
+                            result = csp.ToFullUpper(cp, null, IntPtr.Zero, ref full, CaseLocale.Root);
+                            AddCaseMapping(foldSet, result, ref full);
 
-                            result = csp.ToFullFolding(cp, full, 0);
-                            AddCaseMapping(foldSet, result, full);
+                            result = csp.ToFullFolding(cp, ref full, 0);
+                            AddCaseMapping(foldSet, result, ref full);
                         }
                     }
                 }
@@ -4195,9 +4195,9 @@ namespace ICU4N.Text
                 {
                     if ((attribute & Case) != 0)
                     {
-                        foreach (String s in strings)
+                        foreach (string s in strings)
                         {
-                            string str = UChar.FoldCase(s, 0);
+                            string str = UChar.FoldCase(s, FoldCase.Default);
                             if (!csp.AddStringCaseClosure(str, foldSet))
                             {
                                 foldSet.Add(str); // does not map to code points: add the folded string itself
