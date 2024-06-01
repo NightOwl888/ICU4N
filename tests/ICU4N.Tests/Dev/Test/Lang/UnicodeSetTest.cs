@@ -2838,12 +2838,12 @@ namespace ICU4N.Dev.Test.Lang
             assertEquals("", "abc", m.DeleteFrom("_._a_._b_._c_._"));
             assertEquals("", "_.__.__.__._", m.DeleteFrom("_._a_._b_._c_._", SpanCondition.NotContained));
 
-            assertEquals("", "a_._b_._c", m.Trim("_._a_._b_._c_._"));
-            assertEquals("", "a_._b_._c_._", m.Trim("_._a_._b_._c_._", TrimOption.Leading));
-            assertEquals("", "_._a_._b_._c", m.Trim("_._a_._b_._c_._", TrimOption.Trailing));
+            assertEquals("", "a_._b_._c", m.Trim("_._a_._b_._c_._").ToString());
+            assertEquals("", "a_._b_._c_._", m.Trim("_._a_._b_._c_._", TrimOption.Leading).ToString());
+            assertEquals("", "_._a_._b_._c", m.Trim("_._a_._b_._c_._", TrimOption.Trailing).ToString());
 
             assertEquals("", "a??b??c", m.ReplaceFrom("a_._b_._c", "??", CountMethod.WholeSpan));
-            assertEquals("", "a??b??c", m.ReplaceFrom(m.Trim("_._a_._b_._c_._"), "??", CountMethod.WholeSpan));
+            assertEquals("", "a??b??c", m.ReplaceFrom(m.Trim("_._a_._b_._c_._"), "??".AsSpan(), CountMethod.WholeSpan));
             assertEquals("", "XYXYXYaXYXYXYbXYXYXYcXYXYXY", m.ReplaceFrom("_._a_._b_._c_._", "XY"));
             assertEquals("", "XYaXYbXYcXY", m.ReplaceFrom("_._a_._b_._c_._", "XY", CountMethod.WholeSpan));
 

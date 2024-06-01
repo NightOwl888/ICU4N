@@ -512,11 +512,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>UnicodeSet.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Text\UnicodeSetSpanner.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UnicodeSetSpanner.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Text\UTF16.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -641,10 +636,6 @@
     <None Update="Text\UnicodeSet.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UnicodeSet.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Text\UnicodeSetSpanner.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UnicodeSetSpanner.generated.cs</LastGenOutput>
     </None>
     <None Update="Text\UTF16.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
