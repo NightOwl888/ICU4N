@@ -209,7 +209,7 @@ namespace ICU4N.Text
         public ReadOnlySpan<char> AsSpan(int start) => _chars.Slice(start, _pos - start);
         public ReadOnlySpan<char> AsSpan(int start, int length) => _chars.Slice(start, length);
 
-        public bool TryCopyTo(Span<char> destination, out int charsWritten) // ICU4N TODO: Change this to return charsLength (_maxLength) instead of charsWritten on failure. Need to update all callers to document and test the change.
+        public bool TryCopyTo(Span<char> destination, out int charsWritten)
         {
             if (_chars.Slice(0, _pos).TryCopyTo(destination))
             {
@@ -223,6 +223,19 @@ namespace ICU4N.Text
                 Dispose();
                 return false;
             }
+        }
+
+        public bool FitsInitialBuffer(out int charsLength)
+        {
+            if (_capacityExceeded)
+            {
+                charsLength = _maxLength;
+                Dispose();
+                return false;
+            }
+            charsLength = _pos;
+            Dispose();
+            return true;
         }
 
         public void Insert(int index, char value)
@@ -407,7 +420,7 @@ namespace ICU4N.Text
             UpdateMaxLength();
         }
 
-        public void Append(ReadOnlySpan<char> value)
+        public void Append(scoped ReadOnlySpan<char> value)
         {
             int pos = _pos;
             if (pos > _chars.Length - value.Length)

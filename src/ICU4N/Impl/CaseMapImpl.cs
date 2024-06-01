@@ -341,12 +341,7 @@ namespace ICU4N.Impl
             return U_SENTINEL;
         }
 
-
-
-        // ICU4N specific - ApplyEdits(ICharSequence src, StringBuilder replacementChars, Edits edits) 
-        // moved to CaseMapImpl.generated.tt
-
-        private static void ApplyEdits(ReadOnlySpan<char> src, ReadOnlySpan<char> replacementChars, Edits edits, ref ValueStringBuilder result)
+        private static void ApplyEdits(ReadOnlySpan<char> src, scoped ReadOnlySpan<char> replacementChars, Edits edits, ref ValueStringBuilder result)
         {
             if (!edits.HasChanges)
             {
@@ -555,8 +550,8 @@ namespace ICU4N.Impl
 
                     int newLength = length + edits.LengthDelta;
                     ValueStringBuilder result = newLength <= CharStackBufferSize
-                    ? new ValueStringBuilder(stackalloc char[newLength])
-                    : new ValueStringBuilder(newLength);
+                        ? new ValueStringBuilder(stackalloc char[newLength])
+                        : new ValueStringBuilder(newLength);
                     ApplyEdits(src, replacementChars.AsSpan(), edits, ref result);
                     return result.ToString();
                 }
@@ -597,13 +592,9 @@ namespace ICU4N.Impl
                     Edits edits = new Edits();
                     ToLower(caseLocale, options | OmitUnchangedText, source, ref replacementChars, edits);
 
-                    int newLength = length + edits.LengthDelta;
-                    ValueStringBuilder result = newLength <= CharStackBufferSize
-                        ? new ValueStringBuilder(stackalloc char[newLength])
-                        : new ValueStringBuilder(newLength);
+                    ValueStringBuilder result = new ValueStringBuilder(destination);
                     ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
-                    charsLength = result.Length;
-                    return result.TryCopyTo(destination, out _);
+                    return result.FitsInitialBuffer(out charsLength);
                 }
                 finally
                 {
@@ -612,12 +603,9 @@ namespace ICU4N.Impl
             }
             else
             {
-                ValueStringBuilder result = length <= CharStackBufferSize
-                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                    : new ValueStringBuilder(length);
-                ToLower(caseLocale, options, source, ref result, null);
-                charsLength = result.Length;
-                return result.TryCopyTo(destination, out _);
+                ValueStringBuilder result = new ValueStringBuilder(destination);
+                ToLower(caseLocale, options, source, ref result, edits: null);
+                return result.FitsInitialBuffer(out charsLength);
             }
         }
 
@@ -629,14 +617,9 @@ namespace ICU4N.Impl
                 return ToLower(caseLocale, options, source, destination, out charsLength);
             }
 
-            int length = source.Length;
-            var sb = length <= CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                : new ValueStringBuilder(length);
-
-            ToLower(caseLocale, options, source, ref sb, edits);
-            charsLength = sb.Length;
-            return sb.TryCopyTo(destination, out _);
+            var result = new ValueStringBuilder(destination);
+            ToLower(caseLocale, options, source, ref result, edits);
+            return result.FitsInitialBuffer(out charsLength);
         }
 
         public static StringBuilder ToLower(CaseLocale caseLocale, int options,
@@ -754,13 +737,9 @@ namespace ICU4N.Impl
                     Edits edits = new Edits();
                     ToUpper(caseLocale, options | OmitUnchangedText, source, ref replacementChars, edits);
 
-                    int newLength = length + edits.LengthDelta;
-                    ValueStringBuilder result = newLength <= CharStackBufferSize
-                        ? new ValueStringBuilder(stackalloc char[newLength])
-                        : new ValueStringBuilder(newLength);
+                    ValueStringBuilder result = new ValueStringBuilder(destination);
                     ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
-                    charsLength = result.Length;
-                    return result.TryCopyTo(destination, out _);
+                    return result.FitsInitialBuffer(out charsLength);
                 }
                 finally
                 {
@@ -769,12 +748,9 @@ namespace ICU4N.Impl
             }
             else
             {
-                ValueStringBuilder result = length <= CharStackBufferSize
-                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                    : new ValueStringBuilder(length);
+                ValueStringBuilder result = new ValueStringBuilder(destination);
                 ToUpper(caseLocale, options, source, ref result, null);
-                charsLength = result.Length;
-                return result.TryCopyTo(destination, out _);
+                return result.FitsInitialBuffer(out charsLength);
             }
         }
 
@@ -786,14 +762,9 @@ namespace ICU4N.Impl
                 return ToUpper(caseLocale, options, source, destination, out charsLength);
             }
 
-            int length = source.Length;
-            var sb = length <= CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                : new ValueStringBuilder(length);
-
-            ToUpper(caseLocale, options, source, ref sb, edits);
-            charsLength = sb.Length;
-            return sb.TryCopyTo(destination, out _);
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            ToUpper(caseLocale, options, source, ref result, edits);
+            return result.FitsInitialBuffer(out charsLength);
         }
 
         public static StringBuilder ToUpper(CaseLocale caseLocale, int options,
@@ -869,8 +840,8 @@ namespace ICU4N.Impl
 
                     int newLength = length + edits.LengthDelta;
                     ValueStringBuilder result = newLength <= CharStackBufferSize
-                    ? new ValueStringBuilder(stackalloc char[newLength])
-                    : new ValueStringBuilder(newLength);
+                        ? new ValueStringBuilder(stackalloc char[newLength])
+                        : new ValueStringBuilder(newLength);
                     ApplyEdits(src, replacementChars.AsSpan(), edits, ref result);
                     return result.ToString();
                 }
@@ -911,13 +882,9 @@ namespace ICU4N.Impl
                     Edits edits = new Edits();
                     ToTitle(caseLocale, options | OmitUnchangedText, iter, source, ref replacementChars, edits);
 
-                    int newLength = length + edits.LengthDelta;
-                    ValueStringBuilder result = newLength <= CharStackBufferSize
-                        ? new ValueStringBuilder(stackalloc char[newLength])
-                        : new ValueStringBuilder(newLength);
+                    ValueStringBuilder result = new ValueStringBuilder(destination);
                     ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
-                    charsLength = result.Length;
-                    return result.TryCopyTo(destination, out _);
+                    return result.FitsInitialBuffer(out charsLength);
                 }
                 finally
                 {
@@ -926,12 +893,9 @@ namespace ICU4N.Impl
             }
             else
             {
-                ValueStringBuilder result = length <= CharStackBufferSize
-                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                    : new ValueStringBuilder(length);
+                ValueStringBuilder result = new ValueStringBuilder(destination);
                 ToTitle(caseLocale, options, iter, source, ref result, null);
-                charsLength = result.Length;
-                return result.TryCopyTo(destination, out _);
+                return result.FitsInitialBuffer(out charsLength);
             }
         }
 
@@ -939,19 +903,9 @@ namespace ICU4N.Impl
             CaseLocale caseLocale, int options, BreakIterator titleIter,
             ReadOnlySpan<char> source, Span<char> destination, out int charsLength, Edits? edits) // ICU4N TODO: Tests
         {
-            if (edits is null)
-            {
-                return ToTitle(caseLocale, options, titleIter, source, destination, out charsLength);
-            }
-
-            int length = source.Length;
-            var sb = length <= CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                : new ValueStringBuilder(length);
-
-            ToTitle(caseLocale, options, titleIter, source, ref sb, edits);
-            charsLength = sb.Length;
-            return sb.TryCopyTo(destination, out _);
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            ToTitle(caseLocale, options, titleIter, source, ref result, edits);
+            return result.FitsInitialBuffer(out charsLength);
         }
 
         public static StringBuilder ToTitle(
@@ -1033,8 +987,8 @@ namespace ICU4N.Impl
 
                     int newLength = length + edits.LengthDelta;
                     ValueStringBuilder result = newLength <= CharStackBufferSize
-                    ? new ValueStringBuilder(stackalloc char[newLength])
-                    : new ValueStringBuilder(newLength);
+                        ? new ValueStringBuilder(stackalloc char[newLength])
+                        : new ValueStringBuilder(newLength);
                     ApplyEdits(src, replacementChars.AsSpan(), edits, ref result);
                     return result.ToString();
                 }
@@ -1075,13 +1029,9 @@ namespace ICU4N.Impl
                     Edits edits = new Edits();
                     Fold(options | OmitUnchangedText, source, ref replacementChars, edits);
 
-                    int newLength = length + edits.LengthDelta;
-                    ValueStringBuilder result = newLength <= CharStackBufferSize
-                        ? new ValueStringBuilder(stackalloc char[newLength])
-                        : new ValueStringBuilder(newLength);
+                    ValueStringBuilder result = new ValueStringBuilder(destination);
                     ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
-                    charsLength = result.Length;
-                    return result.TryCopyTo(destination, out _);
+                    return result.FitsInitialBuffer(out charsLength);
                 }
                 finally
                 {
@@ -1090,31 +1040,18 @@ namespace ICU4N.Impl
             }
             else
             {
-                ValueStringBuilder result = length <= CharStackBufferSize
-                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                    : new ValueStringBuilder(length);
+                ValueStringBuilder result = new ValueStringBuilder(destination);
                 Fold(options, source, ref result, null);
-                charsLength = result.Length;
-                return result.TryCopyTo(destination, out _);
+                return result.FitsInitialBuffer(out charsLength);
             }
         }
 
         public static bool Fold(int options,
             ReadOnlySpan<char> source, Span<char> destination, out int charsLength, Edits? edits) // ICU4N TODO: Tests
         {
-            if (edits is null)
-            {
-                return Fold(options, source, destination, out charsLength);
-            }
-
-            int length = source.Length;
-            var sb = length <= CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                : new ValueStringBuilder(length);
-
-            Fold(options, source, ref sb, edits);
-            charsLength = sb.Length;
-            return sb.TryCopyTo(destination, out _);
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            Fold(options, source, ref result, edits);
+            return result.FitsInitialBuffer(out charsLength);
         }
 
         public static StringBuilder Fold(int options,

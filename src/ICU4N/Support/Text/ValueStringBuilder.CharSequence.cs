@@ -63,7 +63,7 @@ namespace ICU4N.Text
             Append(value.AsSpan(startIndex, count));
         }
 
-        public void Append(ReadOnlySpan<char> value, int startIndex, int count)
+        public void Append(scoped ReadOnlySpan<char> value, int startIndex, int count)
         {
             if (value == default || count == 0) return;
 
