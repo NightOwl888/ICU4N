@@ -7,7 +7,7 @@ namespace ICU4N.Text
 {
     internal sealed partial class OpenStringBuilder
     {
-        public void AppendCodePoint(int codePoint)
+        public OpenStringBuilder AppendCodePoint(int codePoint)
         {
             int count = Character.ToChars(codePoint, out char high, out char low);
 
@@ -21,9 +21,10 @@ namespace ICU4N.Text
             if (count == 2)
                 _chars[pos++] = low;
             _pos += count;
+            return this;
         }
 
-        public void InsertCodePoint(int index, int codePoint)
+        public OpenStringBuilder InsertCodePoint(int index, int codePoint)
         {
             int count = Character.ToChars(codePoint, out char high, out char low);
 
@@ -38,6 +39,7 @@ namespace ICU4N.Text
             if (count == 2)
                 _chars[index + 1] = low;
             _pos += count;
+            return this;
         }
 
         public int CodePointAt(int index) => AsSpan().CodePointAt(index);

@@ -370,7 +370,7 @@ namespace ICU4N.Dev.Test
 
         protected static string Prettify(string s)
         {
-            return Prettify(s.AsCharSequence());
+            return Prettify(s.AsSpan());
         }
 
         protected static string Prettify(StringBuffer s)
@@ -378,7 +378,38 @@ namespace ICU4N.Dev.Test
             return Prettify(s.AsCharSequence());
         }
 
-        internal static string Prettify(ICharSequence s)
+        protected static string Prettify(ICharSequence s)
+        {
+            StringBuilder result = new StringBuilder();
+            int ch;
+            for (int i = 0; i < s.Length; i += Character.CharCount(ch))
+            {
+                ch = Character.CodePointAt(s, i);
+                if (ch > 0xfffff)
+                {
+                    result.Append("\\U00");
+                    result.Append(Hex(ch));
+                }
+                else if (ch > 0xffff)
+                {
+                    result.Append("\\U000");
+                    result.Append(Hex(ch));
+                }
+                else if (ch < 0x20 || 0x7e < ch)
+                {
+                    result.Append("\\u");
+                    result.Append(Hex(ch));
+                }
+                else
+                {
+                    result.Append((char)ch);
+                }
+
+            }
+            return result.ToString();
+        }
+
+        protected static string Prettify(ReadOnlySpan<char> s)
         {
             StringBuilder result = new StringBuilder();
             int ch;

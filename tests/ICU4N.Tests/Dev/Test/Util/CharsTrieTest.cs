@@ -308,12 +308,12 @@ namespace ICU4N.Dev.Test.Util
                 value += ((value >> 5) & 0x7ff) * 3 + 1;
                 ++num;
             }
-            public ICharSequence GetString() { return s.AsCharSequence(); }
+            public ReadOnlySpan<char> GetString() { return s.AsSpan(); }
             public int GetValue() { return value; }
             public int countUniqueFirstChars() { return set.Count; }
             public int GetIndex() { return num; }
 
-            private StringBuilder s = new StringBuilder();
+            private OpenStringBuilder s = new OpenStringBuilder();
             private UnicodeSet set = new UnicodeSet();
             private int value;
             private int num;
@@ -329,7 +329,7 @@ namespace ICU4N.Dev.Test.Util
                 gen.Next();
             }
             Logln("buildLargeTrie(" + numUniqueFirst + ") added " + gen.GetIndex() + " strings");
-            ICharSequence trieChars = builder_.BuildCharSequence(TrieBuilderOption.Fast);
+            ReadOnlyMemory<char> trieChars = builder_.BuildCharSequence(TrieBuilderOption.Fast);
             Logln("serialized trie size: " + trieChars.Length + " chars\n");
             return new CharsTrie(trieChars, 0);
         }
@@ -342,7 +342,7 @@ namespace ICU4N.Dev.Test.Util
             Generator gen = new Generator();
             while (gen.countUniqueFirstChars() < 1111)
             {
-                ICharSequence x = gen.GetString();
+                ReadOnlySpan<char> x = gen.GetString();
                 int value = gen.GetValue();
                 int index;
                 if (x.Length == 0)
@@ -677,7 +677,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 builder_.Add(item.s, item.value);
             }
-            ICharSequence trieChars = builder_.BuildCharSequence(TrieBuilderOption.Fast);
+            ReadOnlyMemory<char> trieChars = builder_.BuildCharSequence(TrieBuilderOption.Fast);
             checkIterator(CharsTrie.GetEnumerator(trieChars, 0, 0), data);
         }
 
@@ -742,7 +742,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 // good
             }
-            ICharSequence trieChars = builder_.BuildCharSequence(buildOption);
+            ReadOnlyMemory<char> trieChars = builder_.BuildCharSequence(buildOption);
             Logln("serialized trie size: " + trieChars.Length + " chars");
             // Tries from either build() method should be identical but
             // CharsTrie does not implement equals().
@@ -1009,7 +1009,7 @@ namespace ICU4N.Dev.Test.Util
                 }
                 CharsTrieEntry entry = iter.Current;
                 String expectedString = data[i].s;
-                if (!expectedString.ContentEquals(entry.Chars))
+                if (!entry.Chars.Span.Equals(expectedString.AsSpan(), StringComparison.Ordinal))
                 {
                     Errln(String.Format("trie iterator next().getString()={0} but expected {1} for item {2}",
                                         entry.Chars, data[i].s, i));

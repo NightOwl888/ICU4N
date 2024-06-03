@@ -417,7 +417,7 @@ namespace ICU4N.Impl.Coll
                 while (suffixes.MoveNext())
                 {
                     CharsTrieEntry entry = suffixes.Current;
-                    ICharSequence suffix = entry.Chars;
+                    ReadOnlySpan<char> suffix = entry.Chars.Span;
                     int x = CollationFastLatin.GetCharIndex(suffix[0]);
                     if (x < 0) { continue; }  // ignore anything but fast Latin text
                     if (x == prevX)

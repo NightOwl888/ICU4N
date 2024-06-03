@@ -2,10 +2,14 @@
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ICU4N.Impl
@@ -272,10 +276,12 @@ namespace ICU4N.Impl
 
     public class SimpleFilteredSentenceBreakIteratorBuilder : FilteredBreakIteratorBuilder
     {
+        private const int CharStackBufferSize = 32;
+
         /// <summary>
         /// Filter set to store all exceptions.
         /// </summary>
-        private readonly HashSet<ICharSequence> filterSet = new HashSet<ICharSequence>();
+        private readonly HashSet<CharSequence> filterSet = new HashSet<CharSequence>();
 
         internal const int Partial = (1 << 0); // < partial - need to run through forward trie
         internal const int Match = (1 << 1); // < exact match - skip this one.
@@ -326,7 +332,7 @@ namespace ICU4N.Impl
                 {
                     ICUResourceBundle b = (ICUResourceBundle)breaks.Get(index);
                     string br = b.GetString();
-                    filterSet.Add(br.AsCharSequence());
+                    filterSet.Add(br.AsMemory());
                 }
             }
         }
@@ -341,12 +347,12 @@ namespace ICU4N.Impl
         {
         }
 
-        public override bool SuppressBreakAfter(ICharSequence str)
+        public override bool SuppressBreakAfter(ReadOnlyMemory<char> str)
         {
             return filterSet.Add(str);
         }
 
-        public override bool UnsuppressBreakAfter(ICharSequence str)
+        public override bool UnsuppressBreakAfter(ReadOnlyMemory<char> str)
         {
             return filterSet.Remove(str);
         }
@@ -366,23 +372,25 @@ namespace ICU4N.Impl
             int fwdCount = 0;
 
             int subCount = filterSet.Count;
-            ICharSequence[] ustrs = new ICharSequence[subCount];
+            ReadOnlyMemory<char>[] ustrs = new ReadOnlyMemory<char>[subCount];
             int[] partials = new int[subCount];
 
             CharsTrie backwardsTrie = null; // i.e. ".srM" for Mrs.
             CharsTrie forwardsPartialTrie = null; // Has ".a" for "a.M."
 
             int i = 0;
-            foreach (ICharSequence s in filterSet)
+            foreach (ReadOnlyMemory<char> s in filterSet)
             {
                 ustrs[i] = s; // copy by value?
                 partials[i] = 0; // default: no partial
                 i++;
             }
 
+            Span<char> stackBuffer = stackalloc char[CharStackBufferSize];
+
             for (i = 0; i < subCount; i++)
             {
-                string thisStr = ustrs[i].ToString(); // TODO: don't cast to String?
+                ReadOnlySpan<char> thisStr = ustrs[i].Span; // TODO: don't cast to String?
                 int nn = thisStr.IndexOf('.'); // TODO: non-'.' abbreviations
                 if (nn > -1 && (nn + 1) != thisStr.Length)
                 {
@@ -393,7 +401,8 @@ namespace ICU4N.Impl
                     {
                         if (j == i)
                             continue;
-                        if (thisStr.RegionMatches(0, ustrs[j].ToString() /* TODO */, 0, nn + 1, StringComparison.Ordinal))
+
+                        if (thisStr.RegionMatches(0, ustrs[j].Span, 0, nn + 1, StringComparison.Ordinal))
                         {
                             if (partials[j] == 0)
                             { // hasn't been processed yet
@@ -408,10 +417,14 @@ namespace ICU4N.Impl
 
                     if ((sameAs == -1) && (partials[i] == 0))
                     {
-                        StringBuilder prefix = new StringBuilder(thisStr.Substring(0, (nn + 1) - 0)); // ICU4N: Checked 2nd parameter
-                                                                                                      // first one - add the prefix to the reverse table.
+                        int length = nn + 1;
+                        using ValueStringBuilder prefix = length <= CharStackBufferSize
+                            ? new ValueStringBuilder(stackBuffer)
+                            : new ValueStringBuilder(length);
+                        prefix.Append(thisStr.Slice(0, length));
+                        // first one - add the prefix to the reverse table.
                         prefix.Reverse();
-                        builder.Add(prefix, Partial);
+                        builder.Add(prefix.AsSpan(), Partial);
                         revCount++;
                         partials[i] = SuppressInReverse | AddToForward;
                     }
@@ -420,11 +433,16 @@ namespace ICU4N.Impl
 
             for (i = 0; i < subCount; i++)
             {
-                string thisStr = ustrs[i].ToString(); // TODO
+                ReadOnlySpan<char> thisStr = ustrs[i].Span; // TODO
                 if (partials[i] == 0)
                 {
-                    StringBuilder reversed = new StringBuilder(thisStr).Reverse();
-                    builder.Add(reversed, Match);
+                    int length = thisStr.Length;
+                    using ValueStringBuilder reversed = length <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackBuffer)
+                        : new ValueStringBuilder(length);
+                    reversed.Append(thisStr);
+                    reversed.Reverse();
+                    builder.Add(reversed.AsSpan(), Match);
                     revCount++;
                 }
                 else

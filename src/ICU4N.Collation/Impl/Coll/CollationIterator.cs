@@ -637,7 +637,7 @@ namespace ICU4N.Impl.Coll
                                     break;
                                 }
                             }
-                            ce32 = NextCE32FromContraction(d, ce32, d.contexts, index + 2, defaultCE32, nextCp);
+                            ce32 = NextCE32FromContraction(d, ce32, d.contexts.AsMemory(), index + 2, defaultCE32, nextCp);
                             if (ce32 == Collation.NO_CE32)
                             {
                                 // CEs from a discontiguous contraction plus the skipped combining marks
@@ -826,7 +826,7 @@ namespace ICU4N.Impl.Coll
 
         private int NextCE32FromContraction(
                 CollationData d, int contractionCE32,
-                string trieChars, int trieOffset, int ce32, int c) // ICU4N specific - changed trieChars from ICharSequence to string
+                ReadOnlyMemory<char> trieChars, int trieOffset, int ce32, int c)
         {
             // c: next code point after the original one
 

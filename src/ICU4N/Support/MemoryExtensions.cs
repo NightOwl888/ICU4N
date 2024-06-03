@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -394,5 +395,57 @@ namespace ICU4N
                 throw new ArgumentOutOfRangeException(nameof(comparisonType));
         }
 #endif
+
+        // ICU4N TODO: Move to J2N...?
+        /// <summary>
+        /// Compares the specified <see cref="ReadOnlySpan{Char}"/> to this string and compares the specified
+        /// range of characters to determine if they are the same.
+        /// </summary>
+        /// <param name="text">This string.</param>
+        /// <param name="thisStartIndex">The starting offset in this string.</param>
+        /// <param name="other">The <see cref="ReadOnlySpan{Char}"/> to compare.</param>
+        /// <param name="otherStartIndex">The starting offset in the specified string.</param>
+        /// <param name="length">The number of characters to compare.</param>
+        /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
+        /// <returns><c>true</c> if the ranges of characters are equal, <c>false</c> otherwise.</returns>
+        /// <exception cref="ArgumentNullException">If <paramref name="text"/> is <c>null</c></exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="comparisonType"/> is not a <see cref="StringComparison"/> value.</exception>
+        public static bool RegionMatches(this ReadOnlySpan<char> text, int thisStartIndex, ReadOnlySpan<char> other, int otherStartIndex, int length, StringComparison comparisonType) // KEEP OVERLOADS FOR ReadOnlySpan<char>, ICharSequence, char[], StringBuilder, and string IN SYNC
+        {
+            if (other.Length - otherStartIndex < length || otherStartIndex < 0)
+                return false;
+            if (thisStartIndex < 0 || text.Length - thisStartIndex < length)
+                return false;
+            if (length <= 0)
+                return true;
+            
+            return text.Slice(thisStartIndex, length).Equals(other.Slice(otherStartIndex, length), comparisonType);
+        }
+
+        /// <summary>
+        /// Sets the supplied <paramref name="reference"/> to the underlying <see cref="string"/> or <see cref="T:char[]"/>
+        /// of this <see cref="ReadOnlyMemory{Char}"/>. This allows use of <see cref="ReadOnlyMemory{Char}"/> as a field
+        /// of a struct or class without having the underlying <see cref="string"/> or <see cref="T:char[]"/> go out of scope.
+        /// </summary>
+        /// <param name="text">This <see cref="ReadOnlyMemory{Char}"/>.</param>
+        /// <param name="reference">When this method returns successfully, the refernce will be set by ref to the
+        /// underlying <see cref="string"/> or <see cref="T:char[]"/> of <paramref name="text"/>.</param>
+        /// <returns><c>true</c> if the underlying reference could be retrieved; otherwise, <c>false</c>.
+        /// Note that if the underlying memory is not a <see cref="string"/> or <see cref="T:char[]"/>,
+        /// this method will always return <c>false</c>.</returns>
+        public static bool TryGetReference(this ReadOnlyMemory<char> text, [MaybeNullWhen(false)] ref object? reference)
+        {
+            if (MemoryMarshal.TryGetString(text, out string? stringValue, out _, out _) && stringValue is not null)
+            {
+                reference = stringValue;
+                return true;
+            }
+            else if (MemoryMarshal.TryGetArray(text, out ArraySegment<char> arraySegment) && arraySegment.Array is not null)
+            {
+                reference = arraySegment.Array;
+                return true;
+            }
+            return false;
+        }
     }
 }

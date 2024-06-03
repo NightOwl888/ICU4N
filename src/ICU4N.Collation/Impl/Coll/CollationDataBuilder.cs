@@ -1244,18 +1244,22 @@ namespace ICU4N.Impl.Coll
             Debug.Assert(head.Next >= 0);
             CharsTrieBuilder prefixBuilder = new CharsTrieBuilder();
             CharsTrieBuilder contractionBuilder = new CharsTrieBuilder();
+            Span<char> initialBuffer = stackalloc char[Collator.CharStackBufferSize];
             for (ConditionalCE32 cond = head; ; cond = GetConditionalCE32(cond.Next))
             {
                 // After the list head, the prefix or suffix can be empty, but not both.
                 Debug.Assert(cond == head || cond.HasContext);
                 int prefixLength = cond.PrefixLength;
-                StringBuilder prefix = new StringBuilder().Append(cond.Context, 0, (prefixLength + 1) - 0); // ICU4N: Checked 3rd parameter
-                string prefixString = prefix.ToString();
+                using ValueStringBuilder prefix = prefixLength < Collator.CharStackBufferSize
+                    ? new ValueStringBuilder(initialBuffer)
+                    : new ValueStringBuilder(prefixLength + 1);
+                prefix.Append(cond.Context, 0, prefixLength + 1); // ICU4N: Checked 3rd parameter
+                ReadOnlySpan<char> prefixSpan = prefix.AsSpan();
                 // Collect all contraction suffixes for one prefix.
                 ConditionalCE32 firstCond = cond;
                 ConditionalCE32 lastCond = cond;
                 while (cond.Next >= 0 &&
-                        (cond = GetConditionalCE32(cond.Next)).Context.StartsWith(prefixString, StringComparison.Ordinal))
+                        (cond = GetConditionalCE32(cond.Next)).Context.AsSpan().StartsWith(prefixSpan, StringComparison.Ordinal))
                 {
                     lastCond = cond;
                 }
@@ -1298,8 +1302,8 @@ namespace ICU4N.Impl.Coll
                             int length = cond.PrefixLength;
                             if (length == prefixLength) { break; }
                             if (cond.DefaultCE32 != Collation.NO_CE32 &&
-                                    (length == 0 || prefixString.RegionMatches(
-                                            prefix.Length - length, cond.Context, 1, length, StringComparison.Ordinal)
+                                    (length == 0 || prefixSpan.RegionMatches(
+                                            prefix.Length - length, cond.Context.AsSpan(), 1, length, StringComparison.Ordinal)
                                             /* C++: prefix.endsWith(cond.context, 1, length) */))
                             {
                                 emptySuffixCE32 = cond.DefaultCE32;
@@ -1353,7 +1357,7 @@ namespace ICU4N.Impl.Coll
                 {
                     prefix.Delete(0, 1 - 0);  // Remove the length unit. // ICU4N: Corrected 2nd parameter
                     prefix.Reverse();
-                    prefixBuilder.Add(prefix, ce32);
+                    prefixBuilder.Add(prefix.AsSpan(), ce32);
                     if (cond.Next < 0) { break; }
                 }
             }
@@ -1373,16 +1377,20 @@ namespace ICU4N.Impl.Coll
 
         private int AddContextTrie(int defaultCE32, CharsTrieBuilder trieBuilder)
         {
-            StringBuilder context = new StringBuilder();
-            context.Append((char)(defaultCE32 >> 16)).Append((char)defaultCE32);
-            context.Append(trieBuilder.BuildCharSequence(TrieBuilderOption.Small));
-            // ICU4N: IndexOf method on StringBuilder is extremely slow, so we call ToString() first,
-            // which generally gets better performance.
-            int index = contexts.ToString().IndexOf(context.ToString(), StringComparison.Ordinal);
+            ReadOnlyMemory<char> tbSequence = trieBuilder.BuildCharSequence(TrieBuilderOption.Small);
+            int length = 2 + tbSequence.Length;
+            using ValueStringBuilder context = length <= Collator.CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[length])
+                : new ValueStringBuilder(length);
+            context.Append((char)(defaultCE32 >> 16));
+            context.Append((char)defaultCE32);
+            context.Append(tbSequence.Span);
+            ReadOnlySpan<char> contextSpan = context.AsSpan();
+            int index = contexts.IndexOf(contextSpan, StringComparison.Ordinal);
             if (index < 0)
             {
                 index = contexts.Length;
-                contexts.Append(context);
+                contexts.Append(contextSpan);
             }
             return index;
         }
@@ -1618,7 +1626,7 @@ namespace ICU4N.Impl.Coll
                                                          // Characters that have context (prefixes or contraction suffixes).
         private UnicodeSet contextChars = new UnicodeSet();
         // Serialized UCharsTrie structures for finalized contexts.
-        private StringBuilder contexts = new StringBuilder();
+        private OpenStringBuilder contexts = new OpenStringBuilder();
         private UnicodeSet unsafeBackwardSet = new UnicodeSet();
         private bool modified;
 

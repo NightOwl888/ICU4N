@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using J2N.Text;
 using System;
 using System.Globalization;
 
@@ -84,6 +85,69 @@ namespace ICU4N.Text
         }
 
         // ICU4N specific - moved SuppressBreakAfter and UnsuppressBreakAfter methods to FilteredBreakIteratorBuilder.generated.tt
+
+        /// <summary>
+        /// Suppress a certain string from being the end of a segment.
+        /// For example, suppressing "Mr.", then segments ending in "Mr." will not be returned
+        /// by the iterator.
+        /// </summary>
+        /// <param name="str">The string to suppress, such as "Mr."</param>
+        /// <returns><c>true</c> if the string was not present and now added,
+        /// <c>false</c> if the call was a no-op because the string was already being suppressed.</returns>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool SuppressBreakAfter(string str) // ICU4N specific
+        {
+            if (str is null)
+                throw new ArgumentNullException(nameof(str));
+
+            return SuppressBreakAfter(str.AsMemory());
+        }
+
+        /// <summary>
+        /// Suppress a certain string from being the end of a segment.
+        /// For example, suppressing "Mr.", then segments ending in "Mr." will not be returned
+        /// by the iterator.
+        /// </summary>
+        /// <param name="str">The string to suppress, such as "Mr."</param>
+        /// <returns><c>true</c> if the string was not present and now added,
+        /// <c>false</c> if the call was a no-op because the string was already being suppressed.</returns>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public abstract bool SuppressBreakAfter(ReadOnlyMemory<char> str);
+
+        /// <summary>
+        /// Stop suppressing a certain string from being the end of the segment.
+        /// This function does not create any new segment boundaries, but only serves to un-do
+        /// the effect of earlier calls to <see cref="SuppressBreakAfter(ReadOnlyMemory{Char})"/>, or to un-do the effect of
+        /// locale data which may be suppressing certain strings.
+        /// </summary>
+        /// <param name="str">The str the string to unsuppress, such as "Mr."</param>
+        /// <returns>true if the string was present and now removed,
+        /// false if the call was a no-op because the string was not being suppressed.</returns>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool UnsuppressBreakAfter(string str) // ICU4N specific
+        {
+            if (str is null)
+                throw new ArgumentNullException(nameof(str));
+
+            return UnsuppressBreakAfter(str.AsMemory());
+        }
+
+        /// <summary>
+        /// Stop suppressing a certain string from being the end of the segment.
+        /// This function does not create any new segment boundaries, but only serves to un-do
+        /// the effect of earlier calls to <see cref="SuppressBreakAfter(ReadOnlyMemory{Char})"/>, or to un-do the effect of
+        /// locale data which may be suppressing certain strings.
+        /// </summary>
+        /// <param name="str">The str the string to unsuppress, such as "Mr."</param>
+        /// <returns>true if the string was present and now removed,
+        /// false if the call was a no-op because the string was not being suppressed.</returns>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public abstract bool UnsuppressBreakAfter(ReadOnlyMemory<char> str);
+
 
         /// <summary>
         /// Wrap (adopt) an existing break iterator in a new filtered instance.

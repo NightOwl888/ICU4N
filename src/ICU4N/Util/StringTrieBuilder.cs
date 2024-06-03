@@ -1,6 +1,4 @@
-﻿using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
-using J2N.Text;
+﻿using ICU4N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -48,7 +46,7 @@ namespace ICU4N.Util
 
 
         [Obsolete("This API is ICU internal only.")]
-        internal virtual void AddImpl(ICharSequence s, int value) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
+        internal virtual void AddImpl(ReadOnlySpan<char> s, int value) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             if (state != State.Adding)
             {
@@ -197,7 +195,7 @@ namespace ICU4N.Util
             /// and adds a new node where there is a mismatch.
             /// </summary>
             /// <returns>This or a replacement <see cref="Node"/>.</returns>
-            public virtual Node Add(StringTrieBuilder builder, ICharSequence s, int start, int sValue)
+            public virtual Node Add(StringTrieBuilder builder, ReadOnlySpan<char> s, int start, int sValue)
             {
                 return this;
             }
@@ -206,9 +204,9 @@ namespace ICU4N.Util
             /// Recursive method for registering unique nodes,
             /// after all (string, value) pairs have been added.
             /// Final-value nodes are pre-registered while 
-            /// <see cref="Add(StringTrieBuilder, ICharSequence, int, int)"/>ing 
+            /// <see cref="Add(StringTrieBuilder, ReadOnlySpan{char}, int, int)"/>ing 
             /// (string, value) pairs. Other nodes created while 
-            /// <see cref="Add(StringTrieBuilder, ICharSequence, int, int)"/>ing 
+            /// <see cref="Add(StringTrieBuilder, ReadOnlySpan{char}, int, int)"/>ing 
             /// <see cref="RegisterNode(Node)"/> themselves later and might replace 
             /// themselves with new types of nodes for <see cref="Write(StringTrieBuilder)"/>ing.
             /// </summary>
@@ -316,7 +314,7 @@ namespace ICU4N.Util
                 return hasValue == o.hasValue && (!hasValue || value == o.value);
             }
 
-            public override Node Add(StringTrieBuilder builder, ICharSequence s, int start, int sValue)
+            public override Node Add(StringTrieBuilder builder, ReadOnlySpan<char> s, int start, int sValue)
             {
                 if (start == s.Length)
                 {
@@ -390,7 +388,12 @@ namespace ICU4N.Util
 
         private sealed class LinearMatchNode : ValueNode
         {
-            public LinearMatchNode(ICharSequence builderStrings, int sOffset, int len, Node nextNode)
+            // ICU4N: While it would be better to decouple this from OpenStringBuilder, accepting
+            // OpenStringBuilder directly rather than using ReadOnlyMemory<char> ensures
+            // that when it grows we are not holding onto those shorter chunks of memory before the growth.
+            // .NET has no StringBuilder that is optimized for reading chars, so this is the only thing
+            // we can plug in here, anyway.
+            public LinearMatchNode(OpenStringBuilder builderStrings, int sOffset, int len, Node nextNode)
             {
                 strings = builderStrings;
                 stringOffset = sOffset;
@@ -415,17 +418,10 @@ namespace ICU4N.Util
                 {
                     return false;
                 }
-                for (int i = stringOffset, j = o.stringOffset, limit = stringOffset + length; i < limit; ++i, ++j)
-                {
-                    if (strings[i] != strings[j])
-                    {
-                        return false;
-                    }
-                }
-                return true;
+                return strings.AsSpan(stringOffset, length).Equals(o.strings.AsSpan(o.stringOffset, o.length), StringComparison.Ordinal);
             }
 
-            public override Node Add(StringTrieBuilder builder, ICharSequence s, int start, int sValue)
+            public override Node Add(StringTrieBuilder builder, ReadOnlySpan<char> s, int start, int sValue)
             {
                 if (start == s.Length)
                 {
@@ -439,6 +435,7 @@ namespace ICU4N.Util
                         return this;
                     }
                 }
+                ReadOnlySpan<char> stringsSpan = strings.AsSpan();
                 int limit = stringOffset + length;
                 for (int i = stringOffset; i < limit; ++i, ++start)
                 {
@@ -452,7 +449,7 @@ namespace ICU4N.Util
                         next = suffixNode;
                         return this;
                     }
-                    char thisChar = strings[i];
+                    char thisChar = stringsSpan[i];
                     char newChar = s[start];
                     if (thisChar != newChar)
                     {
@@ -562,6 +559,7 @@ namespace ICU4N.Util
             // Must be called just before registerNode(this).
             private void SetHashCode() /*const*/
             {
+                ReadOnlySpan<char> stringsSpan = strings.AsSpan();
                 hash = (0x333333 * 37 + length) * 37 + next.GetHashCode();
                 if (hasValue)
                 {
@@ -569,11 +567,11 @@ namespace ICU4N.Util
                 }
                 for (int i = stringOffset, limit = stringOffset + length; i < limit; ++i)
                 {
-                    hash = hash * 37 + strings[i];
+                    hash = hash * 37 + stringsSpan[i];
                 }
             }
 
-            private ICharSequence strings;
+            private OpenStringBuilder strings;
             private int stringOffset;
             private int length;
             private Node next;
@@ -591,7 +589,7 @@ namespace ICU4N.Util
                 equal.Insert(i, node);
             }
 
-            public override Node Add(StringTrieBuilder builder, ICharSequence s, int start, int sValue)
+            public override Node Add(StringTrieBuilder builder, ReadOnlySpan<char> s, int start, int sValue)
             {
                 if (start == s.Length)
                 {
@@ -971,7 +969,7 @@ namespace ICU4N.Util
             private Node next;  // A branch sub-node.
         }
 
-        private ValueNode CreateSuffixNode(ICharSequence s, int start, int sValue)
+        private ValueNode CreateSuffixNode(ReadOnlySpan<char> s, int start, int sValue)
         {
             ValueNode node = RegisterFinalValue(sValue);
             if (start < s.Length)
@@ -979,7 +977,7 @@ namespace ICU4N.Util
 #pragma warning disable 612, 618
                 int offset = strings.Length;
                 strings.Append(s, start, s.Length - start); // ICU4N: Corrected 3rd parameter
-                node = new LinearMatchNode(strings.AsCharSequence(), offset, s.Length - start, node);
+                node = new LinearMatchNode(strings, offset, s.Length - start, node);
 #pragma warning restore 612, 618
             }
             return node;
@@ -1014,7 +1012,7 @@ namespace ICU4N.Util
 
         // Strings and sub-strings for linear-match nodes.
         [Obsolete("This API is ICU internal only.")]
-        internal StringBuilder strings = new StringBuilder(); // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
+        internal OpenStringBuilder strings = new OpenStringBuilder(); // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         private Node root;
 
         // Hash set of nodes, maps from nodes to integer 1.

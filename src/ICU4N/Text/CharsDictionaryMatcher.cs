@@ -1,32 +1,26 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Util;
 using J2N.Text;
+using System;
 using System.Text;
+#nullable enable
 
 namespace ICU4N.Text
 {
     internal class CharsDictionaryMatcher : DictionaryMatcher
     {
-        private ICharSequence characters;
+        private readonly ReadOnlyMemory<char> characters;
+        private readonly object? reference;
 
         public CharsDictionaryMatcher(string chars)
-            : this(chars.AsCharSequence())
+            : this(chars.AsMemory())
         {
         }
 
-        public CharsDictionaryMatcher(StringBuilder chars)
-            : this(chars.AsCharSequence())
-        {
-        }
-
-        public CharsDictionaryMatcher(char[] chars)
-            : this(chars.AsCharSequence())
-        {
-        }
-
-        public CharsDictionaryMatcher(ICharSequence chars)
+        public CharsDictionaryMatcher(ReadOnlyMemory<char> chars)
         {
             characters = chars;
+            chars.TryGetReference(ref reference);
         }
 
         // ICU4N: Changed count parameter from int[] to out int

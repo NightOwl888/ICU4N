@@ -497,11 +497,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CaseMap.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Text\FilteredBreakIteratorBuilder.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>FilteredBreakIteratorBuilder.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Text\SimpleFormatter.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -516,16 +511,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>UTF16.generated.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Util\CharsTrieBuilder.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CharsTrieBuilder.generated.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Util\CharsTrie.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CharsTrie.generated.tt</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -625,10 +610,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CaseMap.generated.cs</LastGenOutput>
     </None>
-    <None Update="Text\FilteredBreakIteratorBuilder.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>FilteredBreakIteratorBuilder.generated.cs</LastGenOutput>
-    </None>
     <None Update="Text\SimpleFormatter.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SimpleFormatter.generated.cs</LastGenOutput>
@@ -640,14 +621,6 @@
     <None Update="Text\UTF16.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UTF16.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Util\CharsTrieBuilder.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CharsTrieBuilder.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Util\CharsTrie.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CharsTrie.generated.cs</LastGenOutput>
     </None>
   </ItemGroup>
 

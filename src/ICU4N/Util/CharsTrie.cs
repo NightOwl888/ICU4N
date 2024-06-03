@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Impl;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using J2N;
 using J2N.Numerics;
@@ -19,12 +20,23 @@ namespace ICU4N.Util
     /// <stable>ICU 4.8</stable>
     public sealed class CharsTrieState
     {
+        private ReadOnlyMemory<char> chars;
+        private object charsReference;
+
         /// <summary>
         /// Constructs an empty <see cref="CharsTrieState"/>.
         /// </summary>
         /// <stable>ICU 4.8</stable>
         public CharsTrieState() { }
-        internal ICharSequence Chars { get; set; }
+        internal ReadOnlyMemory<char> Chars
+        {
+            get => chars;
+            set
+            {
+                chars = value;
+                value.TryGetReference(ref charsReference);
+            }
+        }
         internal int Root { get; set; }
         internal int Pos { get; set; }
         internal int RemainingMatchLength { get; set; }
@@ -36,11 +48,22 @@ namespace ICU4N.Util
     /// <stable>ICU 4.8</stable>
     public sealed class CharsTrieEntry
     {
+        private ReadOnlyMemory<char> chars;
+        private object charsReference;
+
         /// <summary>
         /// The string.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public ICharSequence Chars { get; set; }
+        public ReadOnlyMemory<char> Chars
+        {
+            get => chars;
+            set
+            {
+                chars = value;
+                value.TryGetReference(ref charsReference);
+            }
+        }
 
         /// <summary>
         /// Gets or Sets the value associated with the string.
@@ -61,9 +84,10 @@ namespace ICU4N.Util
     {
         private CharsTrieEntry current = null;
 
-        internal CharsTrieEnumerator(ICharSequence trieChars, int offset, int remainingMatchLength, int maxStringLength)
+        internal CharsTrieEnumerator(ReadOnlyMemory<char> trieChars, int offset, int remainingMatchLength, int maxStringLength)
         {
             chars_ = trieChars;
+            trieChars.TryGetReference(ref charsReference_);
             pos_ = initialPos_ = offset;
             remainingMatchLength_ = initialRemainingMatchLength_ = remainingMatchLength;
             maxLength_ = maxStringLength;
@@ -76,7 +100,7 @@ namespace ICU4N.Util
                 {
                     length = maxLength_;  // This will leave remainingMatchLength>=0 as a signal.
                 }
-                str_.Append(chars_, pos_, (pos_ + length) - pos_); // ICU4N: Corrected 3rd parameter
+                str_.Append(chars_.Span.Slice(pos_, length)); // ICU4N: Corrected 3rd parameter (pos_ + length) - pos_) == length
                 pos_ += length;
                 remainingMatchLength_ -= length;
             }
@@ -124,6 +148,7 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         private CharsTrieEntry Next()
         {
+            ReadOnlySpan<char> chars_ = this.chars_.Span;
             int pos = pos_;
             if (pos < 0)
             {
@@ -194,7 +219,7 @@ namespace ICU4N.Util
                             pos_ = pos - 1;
                             skipValue_ = true;
                         }
-                        entry_.Chars = str_.AsCharSequence();
+                        entry_.Chars = str_.AsMemory();
                         return entry_;
                     }
                 }
@@ -236,13 +261,14 @@ namespace ICU4N.Util
             pos_ = -1;
             // We reset entry_.chars every time we return entry_
             // just because the caller might have modified the Entry.
-            entry_.Chars = str_.AsCharSequence();
+            entry_.Chars = str_.AsMemory();
             entry_.Value = -1;  // no real value for str
             return entry_;
         }
 
         private int BranchNext(int pos, int length)
         {
+            ReadOnlySpan<char> chars_ = this.chars_.Span;
             while (length > CharsTrie.kMaxBranchLinearSubNodeLength)
             {
                 ++pos;  // ignore the comparison unit
@@ -266,7 +292,7 @@ namespace ICU4N.Util
             if (isFinal)
             {
                 pos_ = -1;
-                entry_.Chars = str_.AsCharSequence();
+                entry_.Chars = str_.AsMemory();
                 entry_.Value = value;
                 return -1;
             }
@@ -313,14 +339,15 @@ namespace ICU4N.Util
             // nothing to do
         }
 
-        private ICharSequence chars_;
+        private ReadOnlyMemory<char> chars_;
+        private object charsReference_;
         private int pos_;
         private int initialPos_;
         private int remainingMatchLength_;
         private int initialRemainingMatchLength_;
         private bool skipValue_;  // Skip intermediate value which was already delivered.
 
-        private StringBuilder str_ = new StringBuilder();
+        private OpenStringBuilder str_ = new OpenStringBuilder();
         private int maxLength_;
         private CharsTrieEntry entry_ = new CharsTrieEntry();
 
@@ -348,7 +375,50 @@ namespace ICU4N.Util
         , ICloneable
 #endif
     {
-        // ICU4N specific - constructor moved to CharsTrie.generated.tt
+        /// <summary>
+        /// Constructs a CharsTrie reader instance.
+        /// </summary>
+        /// <remarks>
+        /// The <see cref="string"/> must contain a copy of a char sequence from the <see cref="CharsTrieBuilder"/>,
+        /// with the offset indicating the first char of that sequence.
+        /// The <see cref="CharsTrie"/> object will not read more chars than
+        /// the <see cref="CharsTrieBuilder"/> generated in the corresponding 
+        /// <see cref="CharsTrieBuilder.Build(TrieBuilderOption)"/> call.
+        /// <para/>
+        /// The <see cref="string"/> is not copied/cloned and must not be modified while
+        /// the <see cref="CharsTrie"/> object is in use.
+        /// </remarks>
+        /// <param name="trieChars"><see cref="string"/> that contains the serialized trie.</param>
+        /// <param name="offset">Root offset of the trie in the <see cref="string"/>.</param>
+        /// <stable>ICU 4.8</stable>
+        public CharsTrie(string trieChars, int offset)
+            : this(trieChars.AsMemory(), offset)
+        {
+        }
+
+        /// <summary>
+        /// Constructs a CharsTrie reader instance.
+        /// </summary>
+        /// <remarks>
+        /// The <see cref="string"/> must contain a copy of a char sequence from the <see cref="CharsTrieBuilder"/>,
+        /// with the offset indicating the first char of that sequence.
+        /// The <see cref="CharsTrie"/> object will not read more chars than
+        /// the <see cref="CharsTrieBuilder"/> generated in the corresponding 
+        /// <see cref="CharsTrieBuilder.Build(TrieBuilderOption)"/> call.
+        /// <para/>
+        /// The <see cref="string"/> is not copied/cloned and must not be modified while
+        /// the <see cref="CharsTrie"/> object is in use.
+        /// </remarks>
+        /// <param name="trieChars"><see cref="string"/> that contains the serialized trie.</param>
+        /// <param name="offset">Root offset of the trie in the <see cref="string"/>.</param>
+        /// <stable>ICU 4.8</stable>
+        public CharsTrie(ReadOnlyMemory<char> trieChars, int offset)
+        {
+            chars_ = trieChars;
+            trieChars.TryGetReference(ref charsReference_);
+            pos_ = root_ = offset;
+            remainingMatchLength_ = -1;
+        }
 
         /// <summary>
         /// Clones this trie reader object and its state,
@@ -403,7 +473,7 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public CharsTrie ResetToState(CharsTrieState state)
         {
-            if (chars_ == state.Chars && chars_ != null && root_ == state.Root)
+            if (chars_.Span.Equals(state.Chars.Span, StringComparison.Ordinal) && !chars_.IsEmpty && root_ == state.Root)
             {
                 pos_ = state.Pos;
                 remainingMatchLength_ = state.RemainingMatchLength;
@@ -433,7 +503,7 @@ namespace ICU4N.Util
                 else
                 {
                     int node;
-                    return (remainingMatchLength_ < 0 && (node = chars_[pos]) >= kMinValueLead) ?
+                    return (remainingMatchLength_ < 0 && (node = chars_.Span[pos]) >= kMinValueLead) ?
                             valueResults_[node >> 15] : Result.NoValue;
                 }
             }
@@ -483,6 +553,7 @@ namespace ICU4N.Util
                 return Result.NoMatch;
             }
             int length = remainingMatchLength_;  // Actual remaining match length minus 1.
+            ReadOnlySpan<char> chars_ = this.chars_.Span;
             if (length >= 0)
             {
                 // Remaining part of a linear-match node.
@@ -519,7 +590,135 @@ namespace ICU4N.Util
                     Result.NoMatch);
         }
 
-        // ICU4N specific - Next(ICharSequence s, int sIndex, int sLimit) moved to CharsTrie.generated.tt
+        /// <summary>
+        /// Traverses the trie from the current state for this string.
+        /// Equivalent to
+        /// <code>
+        ///     if(!result.HasNext()) return Result.NoMatch;
+        ///     result=Next(c);
+        ///     return result;
+        /// </code>
+        /// </summary>
+        /// <param name="s">Contains a string.</param>
+        /// <param name="sIndex">The start index of the string in <paramref name="s"/>.</param>
+        /// <param name="sLimit">The (exclusive) end index of the string in <paramref name="s"/>.</param>
+        /// <returns>The match/value <see cref="Result"/>.</returns>
+        /// <stable>ICU 4.8</stable>
+        public Result Next(string s, int sIndex, int sLimit)
+        {
+            return Next(s.AsSpan(), sIndex, sLimit);
+        }
+
+        /// <summary>
+        /// Traverses the trie from the current state for this string.
+        /// Equivalent to
+        /// <code>
+        ///     if(!result.HasNext()) return Result.NoMatch;
+        ///     result=Next(c);
+        ///     return result;
+        /// </code>
+        /// </summary>
+        /// <param name="s">Contains a string.</param>
+        /// <param name="sIndex">The start index of the string in <paramref name="s"/>.</param>
+        /// <param name="sLimit">The (exclusive) end index of the string in <paramref name="s"/>.</param>
+        /// <returns>The match/value <see cref="Result"/>.</returns>
+        /// <stable>ICU 4.8</stable>
+        public Result Next(ReadOnlySpan<char> s, int sIndex, int sLimit)
+        {
+            if (sIndex >= sLimit)
+            {
+                // Empty input.
+                return Current;
+            }
+            int pos = pos_;
+            if (pos < 0)
+            {
+                return Result.NoMatch;
+            }
+            int length = remainingMatchLength_;  // Actual remaining match length minus 1.
+            ReadOnlySpan<char> chars_ = this.chars_.Span;
+            for (; ; )
+            {
+                // Fetch the next input unit, if there is one.
+                // Continue a linear-match node.
+                char inUnit;
+                for (; ; )
+                {
+                    if (sIndex == sLimit)
+                    {
+                        remainingMatchLength_ = length;
+                        pos_ = pos;
+                        int node2;
+                        return (length < 0 && (node2 = chars_[pos]) >= kMinValueLead) ?
+                                valueResults_[node2 >> 15] : Result.NoValue;
+                    }
+                    inUnit = s[sIndex++];
+                    if (length < 0)
+                    {
+                        remainingMatchLength_ = length;
+                        break;
+                    }
+                    if (inUnit != chars_[pos])
+                    {
+                        Stop();
+                        return Result.NoMatch;
+                    }
+                    ++pos;
+                    --length;
+                }
+                int node = chars_[pos++];
+                for (; ; )
+                {
+                    if (node < kMinLinearMatch)
+                    {
+                        Result result = BranchNext(pos, node, inUnit);
+                        if (result == Result.NoMatch)
+                        {
+                            return Result.NoMatch;
+                        }
+                        // Fetch the next input unit, if there is one.
+                        if (sIndex == sLimit)
+                        {
+                            return result;
+                        }
+                        if (result == Result.FinalValue)
+                        {
+                            // No further matching units.
+                            Stop();
+                            return Result.NoMatch;
+                        }
+                        inUnit = s[sIndex++];
+                        pos = pos_;  // branchNext() advanced pos and wrote it to pos_ .
+                        node = chars_[pos++];
+                    }
+                    else if (node < kMinValueLead)
+                    {
+                        // Match length+1 units.
+                        length = node - kMinLinearMatch;  // Actual match length minus 1.
+                        if (inUnit != chars_[pos])
+                        {
+                            Stop();
+                            return Result.NoMatch;
+                        }
+                        ++pos;
+                        --length;
+                        break;
+                    }
+                    else if ((node & kValueIsFinal) != 0)
+                    {
+                        // No further matching units.
+                        Stop();
+                        return Result.NoMatch;
+                    }
+                    else
+                    {
+                        // Skip intermediate value.
+                        pos = SkipNodeValue(pos, node);
+                        node &= kNodeTypeMask;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Returns a matching string's value if called immediately after
@@ -533,6 +732,7 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public int GetValue() /*const*/
         {
+            ReadOnlySpan<char> chars_ = this.chars_.Span;
             int pos = pos_;
             int leadUnit = chars_[pos++];
             Debug.Assert(leadUnit >= kMinValueLead);
@@ -556,7 +756,7 @@ namespace ICU4N.Util
                 return 0;
             }
             // Skip the rest of a pending linear-match node.
-            long uniqueValue = FindUniqueValue(chars_, pos + remainingMatchLength_ + 1, 0);
+            long uniqueValue = FindUniqueValue(chars_.Span, pos + remainingMatchLength_ + 1, 0);
             // Ignore internally used bits 63..33; extend the actual value's sign bit from bit 32.
             return (uniqueValue << 31) >> 31;
         }
@@ -571,6 +771,8 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public int GetNextChars(StringBuilder output) /*const*/
         {
+            ReadOnlySpan<char> chars_ = this.chars_.Span;
+
             int pos = pos_;
             if (pos < 0)
             {
@@ -663,7 +865,10 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public static CharsTrieEnumerator GetEnumerator(string trieChars, int offset, int maxStringLength)
         {
-            return new CharsTrieEnumerator(trieChars.AsCharSequence(), offset, -1, maxStringLength);
+            if (trieChars is null)
+                throw new ArgumentNullException(nameof(trieChars));
+
+            return new CharsTrieEnumerator(trieChars.AsMemory(), offset, -1, maxStringLength);
         }
 
         /// <summary>
@@ -672,47 +877,13 @@ namespace ICU4N.Util
         /// <remarks>
         /// This is equivalent to iterator(ICharSequence, int, int) in ICU4J.
         /// </remarks>
-        /// <param name="trieChars"><see cref="StringBuilder"/> that contains the serialized trie.</param>
-        /// <param name="offset">Root offset of the trie in the <see cref="StringBuilder"/>.</param>
+        /// <param name="trieChars"><see cref="string"/> that contains the serialized trie.</param>
+        /// <param name="offset">Root offset of the trie in the <see cref="string"/>.</param>
         /// <param name="maxStringLength">If 0, the iterator returns full strings.
         /// Otherwise, the iterator returns strings with this maximum length.</param>
         /// <returns>A new <see cref="CharsTrieEnumerator"/>.</returns>
         /// <stable>ICU 4.8</stable>
-        public static CharsTrieEnumerator GetEnumerator(StringBuilder trieChars, int offset, int maxStringLength)
-        {
-            return new CharsTrieEnumerator(trieChars.AsCharSequence(), offset, -1, maxStringLength);
-        }
-
-        /// <summary>
-        /// Iterates from the root of a char-serialized <see cref="BytesTrie"/>.
-        /// </summary>
-        /// <remarks>
-        /// This is equivalent to iterator(ICharSequence, int, int) in ICU4J.
-        /// </remarks>
-        /// <param name="trieChars"><see cref="T:char[]"/> that contains the serialized trie.</param>
-        /// <param name="offset">Root offset of the trie in the <see cref="T:char[]"/>.</param>
-        /// <param name="maxStringLength">If 0, the iterator returns full strings.
-        /// Otherwise, the iterator returns strings with this maximum length.</param>
-        /// <returns>A new <see cref="CharsTrieEnumerator"/>.</returns>
-        /// <stable>ICU 4.8</stable>
-        public static CharsTrieEnumerator GetEnumerator(char[] trieChars, int offset, int maxStringLength)
-        {
-            return new CharsTrieEnumerator(trieChars.AsCharSequence(), offset, -1, maxStringLength);
-        }
-
-        /// <summary>
-        /// Iterates from the root of a char-serialized <see cref="BytesTrie"/>.
-        /// </summary>
-        /// <remarks>
-        /// This is equivalent to iterator(ICharSequence, int, int) in ICU4J.
-        /// </remarks>
-        /// <param name="trieChars"><see cref="ICharSequence"/> that contains the serialized trie.</param>
-        /// <param name="offset">Root offset of the trie in the <see cref="ICharSequence"/>.</param>
-        /// <param name="maxStringLength">If 0, the iterator returns full strings.
-        /// Otherwise, the iterator returns strings with this maximum length.</param>
-        /// <returns>A new <see cref="CharsTrieEnumerator"/>.</returns>
-        /// <stable>ICU 4.8</stable>
-        public static CharsTrieEnumerator GetEnumerator(ICharSequence trieChars, int offset, int maxStringLength)
+        public static CharsTrieEnumerator GetEnumerator(ReadOnlyMemory<char> trieChars, int offset, int maxStringLength)
         {
             return new CharsTrieEnumerator(trieChars, offset, -1, maxStringLength);
         }
@@ -728,7 +899,7 @@ namespace ICU4N.Util
 
         // Reads a compact 32-bit integer.
         // pos is already after the leadUnit, and the lead unit has bit 15 reset.
-        internal static int ReadValue(ICharSequence chars, int pos, int leadUnit)
+        internal static int ReadValue(ReadOnlySpan<char> chars, int pos, int leadUnit)
         {
             int value;
             if (leadUnit < kMinTwoUnitValueLead)
@@ -760,13 +931,13 @@ namespace ICU4N.Util
             }
             return pos;
         }
-        private static int SkipValue(ICharSequence chars, int pos)
+        private static int SkipValue(ReadOnlySpan<char> chars, int pos)
         {
             int leadUnit = chars[pos++];
             return SkipValue(pos, leadUnit & 0x7fff);
         }
 
-        internal static int ReadNodeValue(ICharSequence chars, int pos, int leadUnit)
+        internal static int ReadNodeValue(ReadOnlySpan<char> chars, int pos, int leadUnit)
         {
             Debug.Assert(kMinValueLead <= leadUnit && leadUnit < kValueIsFinal);
             int value;
@@ -801,7 +972,7 @@ namespace ICU4N.Util
             return pos;
         }
 
-        internal static int JumpByDelta(ICharSequence chars, int pos)
+        internal static int JumpByDelta(ReadOnlySpan<char> chars, int pos)
         {
             int delta = chars[pos++];
             if (delta >= kMinTwoUnitDeltaLead)
@@ -819,7 +990,7 @@ namespace ICU4N.Util
             return pos + delta;
         }
 
-        internal static int SkipDelta(ICharSequence chars, int pos)
+        internal static int SkipDelta(ReadOnlySpan<char> chars, int pos)
         {
             int delta = chars[pos++];
             if (delta >= kMinTwoUnitDeltaLead)
@@ -841,6 +1012,8 @@ namespace ICU4N.Util
         // Handles a branch node for both next(unit) and next(string).
         private Result BranchNext(int pos, int length, int inUnit)
         {
+            ReadOnlySpan<char> chars_ = this.chars_.Span;
+
             // Branch according to the current unit.
             if (length == 0)
             {
@@ -922,6 +1095,8 @@ namespace ICU4N.Util
         // Requires remainingLength_<0.
         private Result NextImpl(int pos, int inUnit)
         {
+            ReadOnlySpan<char> chars_ = this.chars_.Span;
+
             int node = chars_[pos++];
             for (; ; )
             {
@@ -967,7 +1142,7 @@ namespace ICU4N.Util
         // from a branch.
         // uniqueValue: On input, same as for getUniqueValue()/findUniqueValue().
         // On return, if not 0, then bits 63..33 contain the updated non-negative pos.
-        private static long FindUniqueValueFromBranch(ICharSequence chars, int pos, int length,
+        private static long FindUniqueValueFromBranch(ReadOnlySpan<char> chars, int pos, int length,
                                                       long uniqueValue)
         {
             while (length > kMaxBranchLinearSubNodeLength)
@@ -1020,7 +1195,7 @@ namespace ICU4N.Util
         // starting from a position on a node lead unit.
         // uniqueValue: If there is one, then bits 32..1 contain the value and bit 0 is set.
         // Otherwise, uniqueValue is 0. Bits 63..33 are ignored.
-        private static long FindUniqueValue(ICharSequence chars, int pos, long uniqueValue)
+        private static long FindUniqueValue(ReadOnlySpan<char> chars, int pos, long uniqueValue)
         {
             int node = chars[pos++];
             for (; ; )
@@ -1080,7 +1255,7 @@ namespace ICU4N.Util
 
         // Helper functions for getNextChars().
         // getNextChars() when pos is on a branch node.
-        private static void GetNextBranchChars(ICharSequence chars, int pos, int length, StringBuilder output)
+        private static void GetNextBranchChars(ReadOnlySpan<char> chars, int pos, int length, StringBuilder output)
         {
             while (length > kMaxBranchLinearSubNodeLength)
             {
@@ -1098,14 +1273,8 @@ namespace ICU4N.Util
         }
         private static void Append(StringBuilder output, int c)
         {
-            try
-            {
-                output.Append((char)c);
-            }
-            catch (IOException e)
-            {
-                throw new ICUUncheckedIOException(e);
-            }
+            // ICU4N: Removed unnecessary try/catch
+            output.Append((char)c);
         }
 
         // CharsTrie data structure
@@ -1208,7 +1377,8 @@ namespace ICU4N.Util
         internal const int kMaxTwoUnitDelta = ((kThreeUnitDeltaLead - kMinTwoUnitDeltaLead) << 16) - 1;  // 0x03feffff
 
         // Fixed value referencing the CharsTrie words.
-        private ICharSequence chars_;
+        private ReadOnlyMemory<char> chars_;
+        private object charsReference_;
         private int root_;
 
         // Iterator variables.
