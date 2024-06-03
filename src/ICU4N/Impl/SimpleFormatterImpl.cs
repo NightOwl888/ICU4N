@@ -1,10 +1,8 @@
-﻿using System.Text;
+﻿using ICU4N.Text;
+using System.Text;
 
 namespace ICU4N.Impl
 {
-    // ICU4N TODO: Remove once SimpleFormatter is ported. This stub is just for XML docs.
-    internal class SimpleFormatter { }
-
     /// <summary>
     /// Formats simple patterns like "{1} was born in {0}".
     /// Internal version of <see cref="SimpleFormatter"/>
@@ -22,7 +20,7 @@ namespace ICU4N.Impl
     /// A literal-text segment is stored as its length (at least 1) offset by <see cref="ARG_NUM_LIMIT"/>,
     /// followed by that many chars.
     /// </remarks>
-    public static partial class SimpleFormatterImpl
+    internal static partial class SimpleFormatterImpl // ICU4N: Removed from public API until this can be refactored. See SimpleFormatter.
     {
         /// <summary>
         /// Argument numbers must be smaller than this limit.

@@ -13,7 +13,7 @@ using System.Text;
 
 namespace ICU4N.Text
 {
-    public sealed partial class SimpleFormatter
+    internal sealed partial class SimpleFormatter
     {
 
         /// <summary>

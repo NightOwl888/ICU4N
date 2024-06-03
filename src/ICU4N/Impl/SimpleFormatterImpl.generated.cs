@@ -14,7 +14,7 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
-    public static partial class SimpleFormatterImpl
+    internal static partial class SimpleFormatterImpl
     {
 
         /// <summary>

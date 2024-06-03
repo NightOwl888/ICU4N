@@ -40,7 +40,7 @@ namespace ICU4N.Text
     /// <seealso cref="MessageFormat"/>
     /// <seealso cref="ApostropheMode"/>
     /// <stable>ICU 57</stable>
-    public sealed partial class SimpleFormatter
+    internal sealed partial class SimpleFormatter // ICU4N: Removed from public API until this can be refactored. Ideally, we would format using static methods and pass in a state object that is cloned to the current thread, and this sort of API would call the static API.
     {
         // For internal use in Java, use SimpleFormatterImpl directly instead:
         // It is most efficient to compile patterns to compiled-pattern strings
