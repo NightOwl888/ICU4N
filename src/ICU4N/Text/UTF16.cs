@@ -3089,6 +3089,39 @@ namespace ICU4N.Text
         /// (Post-incrementing forward iteration.)
         /// "Safe" macro, handles unpaired surrogates and checks for string boundaries.
         /// <para/>
+        /// The offset may point to the lead surrogate unit
+        /// for a supplementary code point, in which case the macro will read
+        /// the following trail surrogate as well.
+        /// If the offset points to a trail surrogate or
+        /// to a single, unpaired lead surrogate, then c is set to that unpaired surrogate.
+        /// </summary>
+        /// <param name="s">A pointer to an array of <see cref="char"/>s.</param>
+        /// <param name="i">String offset, must be i&lt;length</param>
+        /// <param name="c">Output code point</param>
+        // ICU4N: port signature from U16_NEXT in utf16.h.
+        internal static void Next(ReadOnlySpan<char> s, ref int i, out int c)
+        {
+            int length = s.Length;
+            Debug.Assert(i >= 0 && i < length);
+            char ch = s[i++];
+            c = ch;
+            if (IsLeadSurrogate(ch))
+            {
+                char ch2;
+                if ((i != length) && IsTrailSurrogate((ch2 = s[i])))
+                {
+                    ++i;
+                    c = Character.ToCodePoint(ch, ch2);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get a code point from a string at a code point boundary offset,
+        /// and advance the offset to the next code point boundary.
+        /// (Post-incrementing forward iteration.)
+        /// "Safe" macro, handles unpaired surrogates and checks for string boundaries.
+        /// <para/>
         /// The length can be negative for a NUL-terminated string.
         /// <para/>
         /// The offset may point to the lead surrogate unit
@@ -3115,6 +3148,39 @@ namespace ICU4N.Text
                 {
                     ++i;
                     c = Character.ToCodePoint(ch, ch2);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Move the string offset from one code point boundary to the previous one
+        /// and get the code point between them.
+        /// (Pre-decrementing backward iteration.)
+        /// "Safe" macro, handles unpaired surrogates and checks for string boundaries.
+        /// <para/>
+        /// The input offset may be the same as the string length.
+        /// If the offset is behind a trail surrogate unit
+        /// for a supplementary code point, then the macro will read
+        /// the preceding lead surrogate as well.
+        /// If the offset is behind a lead surrogate or behind a single, unpaired
+        /// trail surrogate, then c is set to that unpaired surrogate.
+        /// </summary>
+        /// <param name="s">A pointer to an array of <see cref="char"/>s.</param>
+        /// <param name="i">string offset, must be start&lt;i</param>
+        /// <param name="c">Output code point</param>
+        // ICU4N: port signature from U16_PREV in utf16.h.
+        internal static void Previous(ReadOnlySpan<char> s, ref int i, out int c)
+        {
+            Debug.Assert(i > 0);
+            char ch = s[--i];
+            c = ch;
+            if (IsTrailSurrogate(ch))
+            {
+                char ch2;
+                if (i > 0 && IsLeadSurrogate((ch2 = s[i - 1])))
+                {
+                    --i;
+                    c = Character.ToCodePoint(ch2, ch);
                 }
             }
         }

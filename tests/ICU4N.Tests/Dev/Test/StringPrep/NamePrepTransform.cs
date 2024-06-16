@@ -107,7 +107,7 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 if (transform.unassignedSet.Contains(ch) == true && allowUnassigned == false)
                 {
-                    throw new StringPrepParseException("An unassigned code point was found in the input",
+                    throw new StringPrepFormatException("An unassigned code point was found in the input",
                                              StringPrepErrorType.UnassignedError);
                 }
             }
@@ -131,7 +131,7 @@ namespace ICU4N.Dev.Test.StringPrep
 
                 if (transform.prohibitedSet.Contains(ch) == true && ch != 0x0020)
                 {
-                    throw new StringPrepParseException("A prohibited code point was found in the input",
+                    throw new StringPrepFormatException("A prohibited code point was found in the input",
                                              StringPrepErrorType.ProhibitedError,
                                              iter.GetText(), iter.Index);
                 }
@@ -156,7 +156,7 @@ namespace ICU4N.Dev.Test.StringPrep
             // satisfy 2
             if (leftToRight == true && rightToLeft == true)
             {
-                throw new StringPrepParseException("The input does not conform to the rules for BiDi code points.",
+                throw new StringPrepFormatException("The input does not conform to the rules for BiDi code points.",
                                          StringPrepErrorType.CheckBiDiError, iter.GetText(), (rtlPos > ltrPos) ? rtlPos : ltrPos);
             }
 
@@ -166,7 +166,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 (direction == UCharacterDirection.RightToLeft || direction == UCharacterDirection.RightToLeftArabic))
                )
             {
-                throw new StringPrepParseException("The input does not conform to the rules for BiDi code points.",
+                throw new StringPrepFormatException("The input does not conform to the rules for BiDi code points.",
                                           StringPrepErrorType.CheckBiDiError, iter.GetText(), (rtlPos > ltrPos) ? rtlPos : ltrPos);
             }
 

@@ -152,6 +152,11 @@ namespace ICU4N.Dev.Test.Translit
                 Chars.CopyTo(sourceIndex, destination, destinationIndex, count);
             }
 
+            public void CopyTo(int sourceIndex, Span<char> destination, int count)
+            {
+                Chars.CopyTo(sourceIndex, destination, count);
+            }
+
             public void Replace(int startIndex, int count, string text)
             {
                 if (Substring(startIndex, count).Equals(text)) return; // NO ACTION! // ICU4N: Corrected 2nd substring parameter (but since we changed to count, we are back to the original)

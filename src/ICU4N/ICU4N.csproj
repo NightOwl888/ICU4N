@@ -437,11 +437,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>PatternProps.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Impl\Punycode.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Punycode.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Impl\SimpleFormatterImpl.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -561,10 +556,6 @@
     <None Update="Impl\PatternProps.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>PatternProps.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Impl\Punycode.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Punycode.generated.cs</LastGenOutput>
     </None>
     <None Update="Impl\SimpleFormatterImpl.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

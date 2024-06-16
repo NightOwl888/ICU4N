@@ -3,7 +3,9 @@ using ICU4N.Text;
 using J2N;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Text;
+#nullable enable
 
 namespace ICU4N.Impl
 {
@@ -136,33 +138,58 @@ namespace ICU4N.Impl
             }
         }
 
-        // ICU4N specific - Encode(ICharSequence src, bool[] caseFlags) moved to Punycode.generated.tt
-
-        // ICU4N TODO: Since we are managing memory reuse internally, the below public methods should be changed
-        // to return string instead of StringBuilder. StringBuilder is not a form that is very useful because
-        // 1. It cannot be converted to ReadOnlySpan<char> without allocating again
-        // 2. Indexing the StringBuilder to read the chars is very slow in .NET
-        //
-        // We should also add a Try... version of each method so there is an end user path that allows use of the stack.
-        // Although, guessing the amount of memory to allocate up front isn't nearly as simple as using ValueStringBuilder.
+        /// <summary>
+        /// Converts Unicode to Punycode.
+        /// The input string must not contain single, unpaired surrogates.
+        /// The output will be represented as an array of ASCII code points.
+        /// </summary>
+        /// <param name="source">The source of the string Buffer passed.</param>
+        /// <param name="caseFlags">The boolean array of case flags.</param>
+        /// <returns>An array of ASCII code points.</returns>
+        public static string Encode(scoped ReadOnlySpan<char> source, bool[]? caseFlags) // ICU4N TODO: API - Tests
+        {
+            ValueStringBuilder sb = source.Length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(source.Length);
+            try
+            {
+                if (!Punycode.TryEncode(source, ref sb, caseFlags, out StringPrepErrorType errorType))
+                    ThrowHelper.ThrowStringPrepFormatException(errorType);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
 
         /// <summary>
         /// Converts Unicode to Punycode.
         /// The input string must not contain single, unpaired surrogates.
         /// The output will be represented as an array of ASCII code points.
         /// </summary>
-        /// <param name="src">The source of the string Buffer passed.</param>
+        /// <param name="source">The source of the string Buffer passed.</param>
+        /// <param name="destination">The destination. Upon return, will contain a set of ASCII code points.</param>
+        /// <param name="charsLength">Upon return, will contain the length of the encoded value (whether successuful or not).
+        /// If the method returns <c>false</c> and <paramref name="errorType"/> is <see cref="StringPrepErrorType.BufferOverflowError"/>,
+        /// it means that there was not enough space allocated and the <paramref name="charsLength"/> indicates the minimum number of chars
+        /// required to succeed.</param>
         /// <param name="caseFlags">The boolean array of case flags.</param>
-        /// <returns>An array of ASCII code points.</returns>
-        public static StringBuilder Encode(ReadOnlySpan<char> src, bool[] caseFlags)
+        /// <param name="errorType">Upon unsuccessful return (<c>false</c>), contains the type of error.</param>
+        /// <returns><c>true</c> if the operation succeeded; otherwise, <c>false</c>. Check the <paramref name="errorType"/> to determine what the error was.</returns>
+        public static bool TryEncode(ReadOnlySpan<char> source, Span<char> destination, out int charsLength,
+            bool[]? caseFlags, out StringPrepErrorType errorType) // ICU4N TODO: API - Tests
         {
-            ValueStringBuilder sb = src.Length <= CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                : new ValueStringBuilder(src.Length);
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
             try
             {
-                Encode(src, ref sb, caseFlags);
-                return new StringBuilder(sb.Length).Append(sb.AsSpan());
+                bool success = TryEncode(source, ref sb, caseFlags, out errorType);
+                if (!sb.FitsInitialBuffer(out charsLength) && success)
+                {
+                    errorType = StringPrepErrorType.BufferOverflowError;
+                    return false;
+                }
+                return success;
             }
             finally
             {
@@ -178,147 +205,162 @@ namespace ICU4N.Impl
         /// <param name="src">The source of the string Buffer passed.</param>
         /// <param name="dest">The destination. Upon return, will contain a set of ASCII code points.</param>
         /// <param name="caseFlags">The boolean array of case flags.</param>
-        /// <returns>An array of ASCII code points.</returns>
-        internal static void Encode(ReadOnlySpan<char> src, ref ValueStringBuilder dest, bool[] caseFlags)
+        /// <param name="errorType">Upon unsuccessful return (<c>false</c>), contains the type of error.</param>
+        /// <returns><c>true</c> if the operation succeeded; otherwise, <c>false</c>. Check the <paramref name="errorType"/> to determine what the error was.</returns>
+        internal static bool TryEncode(ReadOnlySpan<char> src, ref ValueStringBuilder dest, bool[]? caseFlags, out StringPrepErrorType errorType)
         {
             int n, delta, handledCPCount, basicLength, bias, j, m, q, k, t, srcCPCount;
             char c, c2;
             int srcLength = src.Length;
-            int[] cpBuffer = new int[srcLength];
-            //StringBuilder dest = new StringBuilder(srcLength);
-            /*
-             * Handle the basic code points and
-             * convert extended ones to UTF-32 in cpBuffer (caseFlag in sign bit):
-             */
-            srcCPCount = 0;
-
-            for (j = 0; j < srcLength; ++j)
+            const int Int32StackBufferSize = 32;
+            bool usePool = srcLength > Int32StackBufferSize;
+            int[]? arrayToReturnToPool = usePool ? ArrayPool<int>.Shared.Rent(srcLength) : null;
+            try
             {
-                c = src[j];
-                if (IsBasic(c))
-                {
-                    cpBuffer[srcCPCount++] = 0;
-                    dest.Append(caseFlags != null ? AsciiCaseMap(c, caseFlags[j]) : c);
-                }
-                else
-                {
-                    n = ((caseFlags != null && caseFlags[j]) ? 1 : 0) << 31; // ICU4N TODO: Check this conversion (changed from 31L to 31 (int))
-                    if (!UTF16.IsSurrogate(c))
-                    {
-                        n |= c;
-                    }
-                    else if (UTF16.IsLeadSurrogate(c) && (j + 1) < srcLength && UTF16.IsTrailSurrogate(c2 = src[j + 1]))
-                    {
-                        ++j;
+                Span<int> cpBuffer = usePool ? arrayToReturnToPool.AsSpan(0, srcLength) : stackalloc int[srcLength];
+                /*
+                 * Handle the basic code points and
+                 * convert extended ones to UTF-32 in cpBuffer (caseFlag in sign bit):
+                 */
+                srcCPCount = 0;
 
-                        n |= UChar.ConvertToUtf32(c, c2);
+                for (j = 0; j < srcLength; ++j)
+                {
+                    c = src[j];
+                    if (IsBasic(c))
+                    {
+                        cpBuffer[srcCPCount++] = 0;
+                        dest.Append(caseFlags != null ? AsciiCaseMap(c, caseFlags[j]) : c);
                     }
                     else
                     {
-                        /* error: unmatched surrogate */
-                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
-                    }
-                    cpBuffer[srcCPCount++] = n;
-                }
-            }
-
-            /* Finish the basic string - if it is not empty - with a delimiter. */
-            basicLength = dest.Length;
-            if (basicLength > 0)
-            {
-                dest.Append(DELIMITER);
-            }
-
-            /*
-             * handledCPCount is the number of code points that have been handled
-             * basicLength is the number of basic code points
-             * destLength is the number of chars that have been output
-             */
-
-            /* Initialize the state: */
-            n = INITIAL_N;
-            delta = 0;
-            bias = INITIAL_BIAS;
-
-            /* Main encoding loop: */
-            for (handledCPCount = basicLength; handledCPCount < srcCPCount; /* no op */)
-            {
-                /*
-                 * All non-basic code points < n have been handled already.
-                 * Find the next larger one:
-                 */
-                for (m = 0x7fffffff, j = 0; j < srcCPCount; ++j)
-                {
-                    q = cpBuffer[j] & 0x7fffffff; /* remove case flag from the sign bit */
-                    if (n <= q && q < m)
-                    {
-                        m = q;
-                    }
-                }
-
-                /*
-                 * Increase delta enough to advance the decoder's
-                 * <n,i> state to <m,0>, but guard against overflow:
-                 */
-                if (m - n > (0x7fffffff - delta) / (handledCPCount + 1))
-                {
-                    throw new InvalidOperationException("Internal program error");
-                }
-                delta += (m - n) * (handledCPCount + 1);
-                n = m;
-
-                /* Encode a sequence of same code points n */
-                for (j = 0; j < srcCPCount; ++j)
-                {
-                    q = cpBuffer[j] & 0x7fffffff; /* remove case flag from the sign bit */
-                    if (q < n)
-                    {
-                        ++delta;
-                    }
-                    else if (q == n)
-                    {
-                        /* Represent delta as a generalized variable-length integer: */
-                        for (q = delta, k = BASE; /* no condition */; k += BASE)
+                        n = ((caseFlags != null && caseFlags[j]) ? 1 : 0) << 31; // ICU4N TODO: Check this conversion (changed from 31L to 31 (int))
+                        if (!UTF16.IsSurrogate(c))
                         {
-
-                            /* RAM: comment out the old code for conformance with draft-ietf-idn-punycode-03.txt   
-
-                            t=k-bias;
-                            if(t<TMIN) {
-                                t=TMIN;
-                            } else if(t>TMAX) {
-                                t=TMAX;
-                            }
-                            */
-
-                            t = k - bias;
-                            if (t < TMIN)
-                            {
-                                t = TMIN;
-                            }
-                            else if (k >= (bias + TMAX))
-                            {
-                                t = TMAX;
-                            }
-
-                            if (q < t)
-                            {
-                                break;
-                            }
-
-                            dest.Append(DigitToBasic(t + (q - t) % (BASE - t), false));
-                            q = (q - t) / (BASE - t);
+                            n |= c;
                         }
+                        else if (UTF16.IsLeadSurrogate(c) && (j + 1) < srcLength && UTF16.IsTrailSurrogate(c2 = src[j + 1]))
+                        {
+                            ++j;
 
-                        dest.Append(DigitToBasic(q, (cpBuffer[j] < 0)));
-                        bias = AdaptBias(delta, handledCPCount + 1, (handledCPCount == basicLength));
-                        delta = 0;
-                        ++handledCPCount;
+                            n |= UChar.ConvertToUtf32(c, c2);
+                        }
+                        else
+                        {
+                            /* error: unmatched surrogate */
+                            errorType = StringPrepErrorType.IllegalCharFound;
+                            return false;
+                        }
+                        cpBuffer[srcCPCount++] = n;
                     }
                 }
 
-                ++delta;
-                ++n;
+                /* Finish the basic string - if it is not empty - with a delimiter. */
+                basicLength = dest.Length;
+                if (basicLength > 0)
+                {
+                    dest.Append(DELIMITER);
+                }
+
+                /*
+                 * handledCPCount is the number of code points that have been handled
+                 * basicLength is the number of basic code points
+                 * destLength is the number of chars that have been output
+                 */
+
+                /* Initialize the state: */
+                n = INITIAL_N;
+                delta = 0;
+                bias = INITIAL_BIAS;
+
+                /* Main encoding loop: */
+                for (handledCPCount = basicLength; handledCPCount < srcCPCount; /* no op */)
+                {
+                    /*
+                     * All non-basic code points < n have been handled already.
+                     * Find the next larger one:
+                     */
+                    for (m = 0x7fffffff, j = 0; j < srcCPCount; ++j)
+                    {
+                        q = cpBuffer[j] & 0x7fffffff; /* remove case flag from the sign bit */
+                        if (n <= q && q < m)
+                        {
+                            m = q;
+                        }
+                    }
+
+                    /*
+                     * Increase delta enough to advance the decoder's
+                     * <n,i> state to <m,0>, but guard against overflow:
+                     */
+                    if (m - n > (0x7fffffff - delta) / (handledCPCount + 1))
+                    {
+                        throw new InvalidOperationException("Internal program error");
+                    }
+                    delta += (m - n) * (handledCPCount + 1);
+                    n = m;
+
+                    /* Encode a sequence of same code points n */
+                    for (j = 0; j < srcCPCount; ++j)
+                    {
+                        q = cpBuffer[j] & 0x7fffffff; /* remove case flag from the sign bit */
+                        if (q < n)
+                        {
+                            ++delta;
+                        }
+                        else if (q == n)
+                        {
+                            /* Represent delta as a generalized variable-length integer: */
+                            for (q = delta, k = BASE; /* no condition */; k += BASE)
+                            {
+
+                                /* RAM: comment out the old code for conformance with draft-ietf-idn-punycode-03.txt   
+
+                                t=k-bias;
+                                if(t<TMIN) {
+                                    t=TMIN;
+                                } else if(t>TMAX) {
+                                    t=TMAX;
+                                }
+                                */
+
+                                t = k - bias;
+                                if (t < TMIN)
+                                {
+                                    t = TMIN;
+                                }
+                                else if (k >= (bias + TMAX))
+                                {
+                                    t = TMAX;
+                                }
+
+                                if (q < t)
+                                {
+                                    break;
+                                }
+
+                                dest.Append(DigitToBasic(t + (q - t) % (BASE - t), false));
+                                q = (q - t) / (BASE - t);
+                            }
+
+                            dest.Append(DigitToBasic(q, (cpBuffer[j] < 0)));
+                            bias = AdaptBias(delta, handledCPCount + 1, (handledCPCount == basicLength));
+                            delta = 0;
+                            ++handledCPCount;
+                        }
+                    }
+
+                    ++delta;
+                    ++n;
+                }
+
+                errorType = (StringPrepErrorType)(-1);
+                return true;
+            }
+            finally
+            {
+                if (arrayToReturnToPool is not null)
+                    ArrayPool<int>.Shared.Return(arrayToReturnToPool);
             }
         }
 
@@ -337,32 +379,56 @@ namespace ICU4N.Impl
             return (((ch) & 0xfffff800) == 0xd800);
         }
 
-        // ICU4N specific - Decode(ICharSequence src, bool[] caseFlags) moved to Punycode.generated.tt
-
-        // ICU4N TODO: Since we are managing memory reuse internally, the below public methods should be changed
-        // to return string instead of StringBuilder. StringBuilder is not a form that is very useful because
-        // 1. It cannot be converted to ReadOnlySpan<char> without allocating again
-        // 2. Indexing the StringBuilder to read the chars is very slow in .NET
-        //
-        // We should also add a Try... version of each method so there is an end user path that allows use of the stack.
-        // Although, guessing the amount of memory to allocate up front isn't nearly as simple as using ValueStringBuilder.
+        /// <summary>
+        /// Converts Punycode to Unicode.
+        /// The Unicode string will be at most as long as the Punycode string.
+        /// </summary>
+        /// <param name="source">The source of the string buffer being passed.</param>
+        /// <param name="caseFlags">The array of bool case flags.</param>
+        /// <returns><see cref="StringBuilder"/> string.</returns>
+        public static string Decode(ReadOnlySpan<char> source, bool[]? caseFlags) // ICU4N TODO: API - Tests
+        {
+            ValueStringBuilder sb = source.Length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(source.Length);
+            try
+            {
+                if (!TryDecode(source, ref sb, caseFlags, out StringPrepErrorType errorType))
+                    ThrowHelper.ThrowStringPrepFormatException(errorType);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
 
         /// <summary>
         /// Converts Punycode to Unicode.
         /// The Unicode string will be at most as long as the Punycode string.
         /// </summary>
-        /// <param name="src">The source of the string buffer being passed.</param>
+        /// <param name="source">The source of the string buffer being passed.</param>
+        /// <param name="destination">The destination where the output will be written</param>
+        /// <param name="charsLength">Upon return, will contain the length of the decoded value (whether successuful or not).
+        /// If the method returns <c>false</c> and <paramref name="errorType"/> is <see cref="StringPrepErrorType.BufferOverflowError"/>,
+        /// it means that there was not enough space allocated and the <paramref name="charsLength"/> indicates the minimum number of chars
+        /// required to succeed.</param>
         /// <param name="caseFlags">The array of bool case flags.</param>
-        /// <returns><see cref="StringBuilder"/> string.</returns>
-        public static StringBuilder Decode(ReadOnlySpan<char> src, bool[] caseFlags)
+        /// <param name="errorType">Upon unsuccessful return (<c>false</c>), contains the type of error.</param>
+        /// <returns><c>true</c> if the operation succeeded; otherwise, <c>false</c>. Check the <paramref name="errorType"/> to determine what the error was.</returns>
+        public static bool TryDecode(ReadOnlySpan<char> source, Span<char> destination, out int charsLength,
+            bool[]? caseFlags, out StringPrepErrorType errorType) // ICU4N TODO: API - Tests
         {
-            ValueStringBuilder sb = src.Length <= CharStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                : new ValueStringBuilder(src.Length);
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
             try
             {
-                Decode(src, ref sb, caseFlags);
-                return new StringBuilder(sb.Length).Append(sb.AsSpan());
+                bool success = TryDecode(source, ref sb, caseFlags, out errorType);
+                if (!sb.FitsInitialBuffer(out charsLength) && success)
+                {
+                    errorType = StringPrepErrorType.BufferOverflowError;
+                    return false;
+                }
+                return success;
             }
             finally
             {
@@ -377,10 +443,11 @@ namespace ICU4N.Impl
         /// <param name="src">The source of the string buffer being passed.</param>
         /// <param name="dest">The destination where the output will be written</param>
         /// <param name="caseFlags">The array of bool case flags.</param>
-        internal static void Decode(ReadOnlySpan<char> src, ref ValueStringBuilder dest, bool[] caseFlags)
+        /// <param name="errorType">Upon unsuccessful return (<c>false</c>), contains the type of error.</param>
+        /// <returns><c>true</c> if the operation succeeded; otherwise, <c>false</c>. Check the <paramref name="errorType"/> to determine what the error was.</returns>
+        internal static bool TryDecode(ReadOnlySpan<char> src, ref ValueStringBuilder dest, bool[]? caseFlags, out StringPrepErrorType errorType)
         {
             int srcLength = src.Length;
-            //..StringBuilder dest = new StringBuilder(src.Length);
             int n, i, bias, basicLength, j, input, oldi, w, k, digit, t,
                             destCPCount, firstSupplementaryIndex, cpLength;
             char b;
@@ -407,7 +474,8 @@ namespace ICU4N.Impl
                 b = src[j];
                 if (!IsBasic(b))
                 {
-                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.InvalidCharFound);
+                    errorType = StringPrepErrorType.InvalidCharFound;
+                    return false;
                 }
                 dest.Append(b);
 
@@ -443,18 +511,21 @@ namespace ICU4N.Impl
                 {
                     if (input >= srcLength)
                     {
-                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
+                        errorType = StringPrepErrorType.IllegalCharFound;
+                        return false;
                     }
 
                     digit = basicToDigit[src[input++] & 0xFF];
                     if (digit < 0)
                     {
-                        throw new StringPrepParseException("Invalid char found", StringPrepErrorType.InvalidCharFound);
+                        errorType = StringPrepErrorType.InvalidCharFound;
+                        return false;
                     }
                     if (digit > (0x7fffffff - i) / w)
                     {
                         /* integer overflow */
-                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
+                        errorType = StringPrepErrorType.IllegalCharFound;
+                        return false;
                     }
 
                     i += digit * w;
@@ -475,7 +546,8 @@ namespace ICU4N.Impl
                     if (w > 0x7fffffff / (BASE - t))
                     {
                         /* integer overflow */
-                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
+                        errorType = StringPrepErrorType.IllegalCharFound;
+                        return false;
                     }
                     w *= BASE - t;
                 }
@@ -495,7 +567,8 @@ namespace ICU4N.Impl
                 if (i / destCPCount > (0x7fffffff - n))
                 {
                     /* integer overflow */
-                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
+                    errorType = StringPrepErrorType.IllegalCharFound;
+                    return false;
                 }
 
                 n += i / destCPCount;
@@ -506,7 +579,8 @@ namespace ICU4N.Impl
                 if (n > 0x10ffff || IsSurrogate(n))
                 {
                     /* Unicode code point overflow */
-                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
+                    errorType = StringPrepErrorType.IllegalCharFound;
+                    return false;
                 }
 
                 /* Insert n at position i of the output: */
@@ -564,11 +638,14 @@ namespace ICU4N.Impl
                 else
                 {
                     /* supplementary character, insert two code units */
-                    dest.Insert(codeUnitIndex, UTF16.GetLeadSurrogate(n));
-                    dest.Insert(codeUnitIndex + 1, UTF16.GetTrailSurrogate(n));
+                    dest.InsertCodePoint(codeUnitIndex, n);
                 }
                 ++i;
             }
+
+            errorType = (StringPrepErrorType)(-1);
+            return true;
         }
+
     }
 }

@@ -255,7 +255,7 @@ namespace ICU4N.Text
             Replace(startIndex, count, newValue.AsSpan());
         }
 
-        public void Replace(int startIndex, int count, ReadOnlySpan<char> newValue)
+        public void Replace(int startIndex, int count, scoped ReadOnlySpan<char> newValue)
         {
             Debug.Assert(startIndex >= 0 || startIndex <= _pos);
             Debug.Assert(count >= 0);

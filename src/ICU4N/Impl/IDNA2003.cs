@@ -1,7 +1,6 @@
 ﻿using ICU4N.Text;
 using J2N.Text;
 using System;
-using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Impl
@@ -41,6 +40,8 @@ namespace ICU4N.Impl
     /// <author>Ram Viswanadha</author>
     public sealed class IDNA2003
     {
+        private const int CharStackBufferSize = 64;
+
         /* IDNA ACE Prefix is "xn--" */
         private static readonly char[] ACE_PREFIX = new char[] { (char)0x0078, (char)0x006E, (char)0x002d, (char)0x002d };
         //private static final int ACE_PREFIX_LENGTH      = ACE_PREFIX.Length;
@@ -56,7 +57,7 @@ namespace ICU4N.Impl
         // The NamePrep profile object
         private static readonly StringPrep namePrep = StringPrep.GetInstance(StringPrepProfile.Rfc3491NamePrep);
 
-        private static bool StartsWithPrefix(StringBuffer src)
+        private static bool StartsWithPrefix(ReadOnlySpan<char> src)
         {
             bool startsWithPrefix = true;
 
@@ -83,17 +84,15 @@ namespace ICU4N.Impl
             return ch;
         }
 
-        private static StringBuffer ToASCIILower(StringBuilder src) // ICU4N specific - changed src from ICharSequence to StringBuilder (only used in one place)
+        private static void ToASCIILower(ReadOnlySpan<char> source, ref ValueStringBuilder destination)
         {
-            StringBuffer dest = new StringBuffer();
-            for (int i = 0; i < src.Length; i++)
+            for (int i = 0; i < source.Length; i++)
             {
-                dest.Append(ToASCIILower(src[i]));
+                destination.Append(ToASCIILower(source[i]));
             }
-            return dest;
         }
 
-        private static int CompareCaseInsensitiveASCII(StringBuffer s1, StringBuffer s2)
+        private static int CompareCaseInsensitiveASCII(ReadOnlySpan<char> s1, ReadOnlySpan<char> s2)
         {
             char c1, c2;
             int rc;
@@ -120,7 +119,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private static int GetSeparatorIndex(char[] src, int start, int limit)
+        private static int GetSeparatorIndex(ReadOnlySpan<char> src, int start, int limit)
         {
             for (; start < limit; start++)
             {
@@ -172,14 +171,13 @@ namespace ICU4N.Impl
             return false;
         }
 
-        /**
-         * Ascertain if the given code point is a label separator as 
-         * defined by the IDNA RFC
-         * 
-         * @param ch The code point to be ascertained
-         * @return true if the char is a label separator
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Ascertain if the given code point is a label separator as
+        /// defined by the IDNA RFC
+        /// </summary>
+        /// <param name="ch">The code point to be ascertained</param>
+        /// <returns>true if the char is a label separator</returns>
+        /// <stable>ICU 2.8</stable>
         private static bool IsLabelSeparator(int ch)
         {
             switch (ch)
@@ -194,11 +192,44 @@ namespace ICU4N.Impl
             }
         }
 
-        public static StringBuffer ConvertToASCII(UCharacterIterator src, IDNA2003Options options)
+        public static string ConvertToASCII(ReadOnlySpan<char> source, IDNA2003Options options)
         {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                if (!TryConvertToASCII(source, ref sb, options, out StringPrepErrorType errorType, out string rules, out int errorPosition))
+                    ThrowHelper.ThrowStringPrepFormatException(errorType, rules, errorPosition);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
 
-            bool[]
-            caseFlags = null;
+        public static bool TryConvertToASCII(ReadOnlySpan<char> source, Span<char> destination, out int charsLength, IDNA2003Options options, out StringPrepErrorType errorType)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                bool success = TryConvertToASCII(source, ref sb, options, out errorType, out _, out _);
+                if (!sb.FitsInitialBuffer(out charsLength) && success)
+                {
+                    errorType = StringPrepErrorType.BufferOverflowError;
+                    return false;
+                }
+                return success;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        // ICU4N: Factored out UCharacterIterator. Ported from usprep.cpp/usprep_prepare().
+        internal static bool TryConvertToASCII(ReadOnlySpan<char> src, ref ValueStringBuilder destination, IDNA2003Options options, out StringPrepErrorType errorType, out string rules, out int errorPosition)
+        {
+            bool[] caseFlags = null;
 
             // the source contains all ascii codepoints
             bool srcIsASCII = true;
@@ -209,142 +240,212 @@ namespace ICU4N.Impl
             bool useSTD3ASCIIRules = ((options & IDNA2003Options.UseSTD3Rules) != 0);
             int ch;
             // step 1
-            while ((ch = src.Next()) != UCharacterIterator.Done)
+            for (int i = 0; i < src.Length; i++)
             {
+                ch = src[i];
                 if (ch > 0x7f)
                 {
                     srcIsASCII = false;
+                    break;
                 }
             }
             int failPos = -1;
-            src.SetToStart();
-            StringBuffer processOut = null;
-            // step 2 is performed only if the source contains non ASCII
-            if (!srcIsASCII)
+            ValueStringBuilder processOut = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            ValueStringBuilder dest = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                // step 2
-                processOut = namePrep.Prepare(src, (StringPrepOptions)options);
-            }
-            else
-            {
-                processOut = new StringBuffer(src.GetText());
-            }
-            int poLen = processOut.Length;
-
-            if (poLen == 0)
-            {
-                throw new StringPrepParseException("Found zero length lable after NamePrep.", StringPrepErrorType.ZeroLengthLabel);
-            }
-            StringBuffer dest = new StringBuffer();
-
-            // reset the variable to verify if output of prepare is ASCII or not
-            srcIsASCII = true;
-
-            // step 3 & 4
-            for (int j = 0; j < poLen; j++)
-            {
-                ch = processOut[j];
-                if (ch > 0x7F)
+                // step 2 is performed only if the source contains non ASCII
+                if (!srcIsASCII)
                 {
-                    srcIsASCII = false;
-                }
-                else if (IsLDHChar(ch) == false)
-                {
-                    // here we do not assemble surrogates
-                    // since we know that LDH code points
-                    // are in the ASCII range only
-                    srcIsLDH = false;
-                    failPos = j;
-                }
-            }
-
-            if (useSTD3ASCIIRules == true)
-            {
-                // verify 3a and 3b
-                if (srcIsLDH == false /* source contains some non-LDH characters */
-                    || processOut[0] == HYPHEN
-                    || processOut[processOut.Length - 1] == HYPHEN)
-                {
-
-                    /* populate the parseError struct */
-                    if (srcIsLDH == false)
-                    {
-                        throw new StringPrepParseException("The input does not conform to the STD 3 ASCII rules",
-                                                 StringPrepErrorType.STD3ASCIIRulesError,
-                                                 processOut.ToString(),
-                                                (failPos > 0) ? (failPos - 1) : failPos);
-                    }
-                    else if (processOut[0] == HYPHEN)
-                    {
-                        throw new StringPrepParseException("The input does not conform to the STD 3 ASCII rules",
-                                                  StringPrepErrorType.STD3ASCIIRulesError, processOut.ToString(), 0);
-
-                    }
-                    else
-                    {
-                        throw new StringPrepParseException("The input does not conform to the STD 3 ASCII rules",
-                                                 StringPrepErrorType.STD3ASCIIRulesError,
-                                                 processOut.ToString(),
-                                                 (poLen > 0) ? poLen - 1 : poLen);
-
-                    }
-                }
-            }
-            if (srcIsASCII)
-            {
-                dest = processOut;
-            }
-            else
-            {
-                // step 5 : verify the sequence does not begin with ACE prefix
-                if (!StartsWithPrefix(processOut))
-                {
-
-                    //step 6: encode the sequence with punycode
-                    caseFlags = new bool[poLen];
-
-                    StringBuilder punyout = Punycode.Encode(processOut, caseFlags);
-
-                    // convert all codepoints to lower case ASCII
-                    StringBuffer lowerOut = ToASCIILower(punyout);
-
-                    //Step 7: prepend the ACE prefix
-                    dest.Append(ACE_PREFIX, 0, ACE_PREFIX.Length - 0); // ICU4N: Checked 3rd parameter
-                                                                       //Step 6: copy the contents in b2 into dest
-                    dest.Append(lowerOut);
+                    // step 2
+                    if (!namePrep.TryPrepare(src, ref processOut, (StringPrepOptions)options, out errorType, out rules, out errorPosition))
+                        return false;
                 }
                 else
                 {
-
-                    throw new StringPrepParseException("The input does not start with the ACE Prefix.",
-                                             StringPrepErrorType.AcePrefixError, processOut.ToString(), 0);
+                    processOut.Append(src);
                 }
+                int poLen = processOut.Length;
+
+                if (poLen == 0)
+                {
+                    errorType = StringPrepErrorType.ZeroLengthLabel;
+                    rules = string.Empty;
+                    errorPosition = 0;
+                    return false;
+                }
+
+                // reset the variable to verify if output of prepare is ASCII or not
+                srcIsASCII = true;
+
+                // step 3 & 4
+                for (int j = 0; j < poLen; j++)
+                {
+                    ch = processOut[j];
+                    if (ch > 0x7F)
+                    {
+                        srcIsASCII = false;
+                    }
+                    else if (IsLDHChar(ch) == false)
+                    {
+                        // here we do not assemble surrogates
+                        // since we know that LDH code points
+                        // are in the ASCII range only
+                        srcIsLDH = false;
+                        failPos = j;
+                    }
+                }
+
+                if (useSTD3ASCIIRules == true)
+                {
+                    // verify 3a and 3b
+                    if (srcIsLDH == false /* source contains some non-LDH characters */
+                        || processOut[0] == HYPHEN
+                        || processOut[processOut.Length - 1] == HYPHEN)
+                    {
+
+                        /* populate the parseError struct */
+                        if (srcIsLDH == false)
+                        {
+                            errorType = StringPrepErrorType.STD3ASCIIRulesError;
+                            rules = processOut.AsSpan().ToString();
+                            errorPosition = (failPos > 0) ? (failPos - 1) : failPos;
+                            return false;
+                        }
+                        else if (processOut[0] == HYPHEN)
+                        {
+                            errorType = StringPrepErrorType.STD3ASCIIRulesError;
+                            rules = processOut.AsSpan().ToString();
+                            errorPosition = 0;
+                            return false;
+                        }
+                        else
+                        {
+                            errorType = StringPrepErrorType.STD3ASCIIRulesError;
+                            rules = processOut.AsSpan().ToString();
+                            errorPosition = (poLen > 0) ? poLen - 1 : poLen;
+                            return false;
+                        }
+                    }
+                }
+                if (srcIsASCII)
+                {
+                    dest.Append(processOut.AsSpan()); //dest = processOut;
+                }
+                else
+                {
+                    // step 5 : verify the sequence does not begin with ACE prefix
+                    if (!StartsWithPrefix(processOut.AsSpan()))
+                    {
+                        //step 6: encode the sequence with punycode
+                        caseFlags = new bool[poLen];
+
+                        ValueStringBuilder punyOut = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                        ValueStringBuilder lowerOut = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                        try
+                        {
+                            if (!Punycode.TryEncode(processOut.AsSpan(), ref punyOut, caseFlags, out errorType))
+                            {
+                                rules = string.Empty;
+                                errorPosition = 0;
+                                return false;
+                            }
+
+                            // convert all codepoints to lower case ASCII
+                            ToASCIILower(punyOut.AsSpan(), ref lowerOut);
+
+                            //Step 7: prepend the ACE prefix
+                            dest.Append(ACE_PREFIX, 0, ACE_PREFIX.Length - 0); // ICU4N: Checked 3rd parameter
+
+                            //Step 6: copy the contents in b2 into dest
+                            dest.Append(lowerOut.AsSpan());
+                        }
+                        finally
+                        {
+                            lowerOut.Dispose();
+                            punyOut.Dispose();
+                        }
+                    }
+                    else
+                    {
+                        errorType = StringPrepErrorType.AcePrefixError;
+                        rules = processOut.AsSpan().ToString();
+                        errorPosition = 0;
+                        return false;
+                    }
+                }
+                if (dest.Length > MAX_LABEL_LENGTH)
+                {
+                    errorType = StringPrepErrorType.LabelTooLongError;
+                    rules = processOut.AsSpan().ToString();
+                    errorPosition = 0;
+                    return false;
+                }
+                destination.Append(dest.AsSpan());
+
+                errorType = (StringPrepErrorType)(-1);
+                rules = default;
+                errorPosition = -1;
+                return true;
             }
-            if (dest.Length > MAX_LABEL_LENGTH)
+            finally
             {
-                throw new StringPrepParseException("The labels in the input are too long. Length > 63.",
-                                         StringPrepErrorType.LabelTooLongError, dest.ToString(), 0);
+                processOut.Dispose();
+                dest.Dispose();
             }
-            return dest;
         }
 
-        public static StringBuffer ConvertIDNToASCII(string src, IDNA2003Options options)
+        public static string ConvertIDNToASCII(ReadOnlySpan<char> source, IDNA2003Options options)
         {
-            char[] srcArr = src.ToCharArray();
-            StringBuffer result = new StringBuffer();
+            ValueStringBuilder sb = source.Length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(source.Length);
+            try
+            {
+                if (!TryConvertIDNToASCII(source, ref sb, options, out StringPrepErrorType errorType, out string rules, out int errorPosition))
+                    ThrowHelper.ThrowStringPrepFormatException(errorType, rules, errorPosition);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        public static bool TryConvertIDNToASCII(ReadOnlySpan<char> source, Span<char> destination, out int charsLength, IDNA2003Options options, out StringPrepErrorType errorType)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                bool success = TryConvertIDNToASCII(source, ref sb, options, out errorType, out _, out _);
+                if (!sb.FitsInitialBuffer(out charsLength) && success)
+                {
+                    errorType = StringPrepErrorType.BufferOverflowError;
+                    return false;
+                }
+                return success;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        internal static bool TryConvertIDNToASCII(ReadOnlySpan<char> src, ref ValueStringBuilder destination, IDNA2003Options options, out StringPrepErrorType errorType, out string rules, out int errorPosition)
+        {
             int sepIndex = 0;
             int oldSepIndex = 0;
             for (; ; )
             {
-                sepIndex = GetSeparatorIndex(srcArr, sepIndex, srcArr.Length);
-                string label = new string(srcArr, oldSepIndex, sepIndex - oldSepIndex);
+                sepIndex = GetSeparatorIndex(src, sepIndex, src.Length);
+                ReadOnlySpan<char> label = src.Slice(oldSepIndex, sepIndex - oldSepIndex);
                 //make sure this is not a root label separator.
-                if (!(label.Length == 0 && sepIndex == srcArr.Length))
+                if (!(label.Length == 0 && sepIndex == src.Length))
                 {
-                    UCharacterIterator iter = UCharacterIterator.GetInstance(label);
-                    result.Append(ConvertToASCII(iter, options));
+                    if (!TryConvertToASCII(label, ref destination, options, out errorType, out rules, out errorPosition))
+                        return false;
                 }
-                if (sepIndex == srcArr.Length)
+                if (sepIndex == src.Length)
                 {
                     break;
                 }
@@ -352,16 +453,58 @@ namespace ICU4N.Impl
                 // increment the sepIndex to skip past the separator
                 sepIndex++;
                 oldSepIndex = sepIndex;
-                result.Append((char)FULL_STOP);
+                destination.Append((char)FULL_STOP);
             }
-            if (result.Length > MAX_DOMAIN_NAME_LENGTH)
+            if (destination.Length > MAX_DOMAIN_NAME_LENGTH)
             {
-                throw new StringPrepParseException("The output exceed the max allowed length.", StringPrepErrorType.DomainNameTooLongError);
+                errorType = StringPrepErrorType.DomainNameTooLongError;
+                rules = string.Empty;
+                errorPosition = 0;
+                return false;
             }
-            return result;
+
+            errorType = (StringPrepErrorType)(-1);
+            rules = default;
+            errorPosition = 0;
+            return true;//return result;
         }
 
-        public static StringBuffer ConvertToUnicode(UCharacterIterator src, IDNA2003Options options)
+        public static string ConvertToUnicode(ReadOnlySpan<char> source, IDNA2003Options options)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                if (!TryConvertToUnicode(source, ref sb, options, out StringPrepErrorType errorType, out string rules, out int errorPosition))
+                    ThrowHelper.ThrowStringPrepFormatException(errorType, rules, errorPosition);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        public static bool TryConvertToUnicode(ReadOnlySpan<char> source, Span<char> destination, out int charsLength, IDNA2003Options options, out StringPrepErrorType errorType)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                bool success = TryConvertToUnicode(source, ref sb, options, out errorType, out _, out _);
+                if (!sb.FitsInitialBuffer(out charsLength) && success)
+                {
+                    errorType = StringPrepErrorType.BufferOverflowError;
+                    return false;
+                }
+                return success;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        // ICU4N: Factored out UCharacterIterator. Ported from usprep.cpp/_internal_toUnicode().
+        internal static bool TryConvertToUnicode(ReadOnlySpan<char> src, ref ValueStringBuilder destination, IDNA2003Options options, out StringPrepErrorType errorType, out string rules, out int errorPosition)
         {
             bool[] caseFlags = null;
 
@@ -375,154 +518,240 @@ namespace ICU4N.Impl
 
             //int failPos = -1;
             int ch;
-            int saveIndex = src.Index;
-            // step 1: find out if all the codepoints in src are ASCII  
-            while ((ch = src.Next()) != UCharacterIterator.Done)
+            int srcLength = src.Length;
+            // step 1: find out if all the codepoints in src are ASCII
+            for (int i = 0; i < srcLength; i++)
             {
-                if (ch > 0x7F)
+                ch = src[i];
+                if (ch > 0x7f)
                 {
                     srcIsASCII = false;
-                }/*else if((srcIsLDH = isLDHChar(ch))==false){
-                failPos = src.getIndex();
-            }*/
+                    break;
+                }
             }
-            StringBuffer processOut;
-
-            if (srcIsASCII == false)
+            ValueStringBuilder processOut = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                try
+                if (srcIsASCII == false)
                 {
                     // step 2: process the string
-                    src.Index = saveIndex;
-                    processOut = namePrep.Prepare(src, (StringPrepOptions)options);
-                }
-                catch (StringPrepParseException)
-                {
-                    return new StringBuffer(src.GetText());
-                }
-
-            }
-            else
-            {
-                //just point to source
-                processOut = new StringBuffer(src.GetText());
-            }
-            // TODO:
-            // The RFC states that 
-            // <quote>
-            // ToUnicode never fails. If any step fails, then the original input
-            // is returned immediately in that step.
-            // </quote>
-
-            //step 3: verify ACE Prefix
-            if (StartsWithPrefix(processOut))
-            {
-                OpenStringBuilder decodeOut = null;
-
-                //step 4: Remove the ACE Prefix
-                string temp = processOut.ToString(ACE_PREFIX.Length, processOut.Length - ACE_PREFIX.Length);
-
-                //step 5: Decode using punycode
-                try
-                {
-                    decodeOut = new OpenStringBuilder(Punycode.Decode(temp, caseFlags));
-                }
-                catch (StringPrepParseException)
-                {
-                    decodeOut = null;
-                }
-
-                //step 6:Apply toASCII
-                if (decodeOut != null)
-                {
-                    StringBuffer toASCIIOut = ConvertToASCII(UCharacterIterator.GetInstance(decodeOut), options);
-
-                    //step 7: verify
-                    if (CompareCaseInsensitiveASCII(processOut, toASCIIOut) != 0)
+                    if (!namePrep.TryPrepare(src, ref processOut, (StringPrepOptions)options, out _, out _, out _))
                     {
-                        //                    throw new StringPrepParseException("The verification step prescribed by the RFC 3491 failed",
-                        //                                             StringPrepParseException.VERIFICATION_ERROR); 
-                        decodeOut = null;
+                        destination.Append(src);
+                        errorType = (StringPrepErrorType)(-1);
+                        rules = default;
+                        errorPosition = -1;
+                        return true;
+                    }
+                }
+                else
+                {
+                    //just point to source
+                    processOut.Append(src);
+                }
+                // TODO:
+                // The RFC states that 
+                // <quote>
+                // ToUnicode never fails. If any step fails, then the original input
+                // is returned immediately in that step.
+                // </quote>
+
+                //step 3: verify ACE Prefix
+                if (StartsWithPrefix(processOut.AsSpan()))
+                {
+                    //OpenStringBuilder decodeOut = null;
+                    ValueStringBuilder decodeOut = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                    try
+                    {
+                        //step 4: Remove the ACE Prefix
+                        ReadOnlySpan<char> temp = processOut.AsSpan(ACE_PREFIX.Length, processOut.Length - ACE_PREFIX.Length);
+
+                        //step 5: Decode using punycode
+                        bool success = Punycode.TryDecode(temp, ref decodeOut, caseFlags, out _);
+
+                        //step 6:Apply toASCII
+                        if (success)
+                        {
+                            ValueStringBuilder toASCIIOut = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                            try
+                            {
+                                if (!TryConvertToASCII(decodeOut.AsSpan(), ref toASCIIOut, options, out errorType, out rules, out errorPosition))
+                                {
+                                    return false;
+                                }
+
+                                //step 7: verify
+                                if (CompareCaseInsensitiveASCII(processOut.AsSpan(), toASCIIOut.AsSpan()) != 0)
+                                {
+                                    //                    throw new StringPrepParseException("The verification step prescribed by the RFC 3491 failed",
+                                    //                                             StringPrepParseException.VERIFICATION_ERROR); 
+                                    success = false;
+                                }
+                            }
+                            finally
+                            {
+                                toASCIIOut.Dispose();
+                            }
+                        }
+
+                        //step 8: return output of step 5
+                        if (success)
+                        {
+                            destination.Append(decodeOut.AsSpan());
+                            errorType = (StringPrepErrorType)(-1);
+                            rules = default;
+                            errorPosition = -1;
+                            return true;
+                        }
+                    }
+                    finally
+                    {
+                        decodeOut.Dispose();
                     }
                 }
 
-                //step 8: return output of step 5
-                if (decodeOut != null)
-                {
-                    return new StringBuffer(decodeOut.Length).Append(decodeOut.AsSpan());
-                }
+                //        }else{
+                //            // verify that STD3 ASCII rules are satisfied
+                //            if(useSTD3ASCIIRules == true){
+                //                if( srcIsLDH == false /* source contains some non-LDH characters */
+                //                    || processOut.charAt(0) ==  HYPHEN 
+                //                    || processOut.charAt(processOut.Length-1) == HYPHEN){
+                //    
+                //                    if(srcIsLDH==false){
+                //                        throw new StringPrepParseException("The input does not conform to the STD 3 ASCII rules",
+                //                                                 StringPrepParseException.STD3_ASCII_RULES_ERROR,processOut.toString(),
+                //                                                 (failPos>0) ? (failPos-1) : failPos);
+                //                    }else if(processOut.charAt(0) == HYPHEN){
+                //                        throw new StringPrepParseException("The input does not conform to the STD 3 ASCII rules",
+                //                                                 StringPrepParseException.STD3_ASCII_RULES_ERROR,
+                //                                                 processOut.toString(),0);
+                //         
+                //                    }else{
+                //                        throw new StringPrepParseException("The input does not conform to the STD 3 ASCII rules",
+                //                                                 StringPrepParseException.STD3_ASCII_RULES_ERROR,
+                //                                                 processOut.toString(),
+                //                                                 processOut.Length);
+                //    
+                //                    }
+                //                }
+                //            }
+                //            // just return the source
+                //            return new StringBuffer(src.getText());
+                //        }  
+            }
+            finally
+            {
+                processOut.Dispose();
             }
 
-            //        }else{
-            //            // verify that STD3 ASCII rules are satisfied
-            //            if(useSTD3ASCIIRules == true){
-            //                if( srcIsLDH == false /* source contains some non-LDH characters */
-            //                    || processOut.charAt(0) ==  HYPHEN 
-            //                    || processOut.charAt(processOut.Length-1) == HYPHEN){
-            //    
-            //                    if(srcIsLDH==false){
-            //                        throw new StringPrepParseException("The input does not conform to the STD 3 ASCII rules",
-            //                                                 StringPrepParseException.STD3_ASCII_RULES_ERROR,processOut.toString(),
-            //                                                 (failPos>0) ? (failPos-1) : failPos);
-            //                    }else if(processOut.charAt(0) == HYPHEN){
-            //                        throw new StringPrepParseException("The input does not conform to the STD 3 ASCII rules",
-            //                                                 StringPrepParseException.STD3_ASCII_RULES_ERROR,
-            //                                                 processOut.toString(),0);
-            //         
-            //                    }else{
-            //                        throw new StringPrepParseException("The input does not conform to the STD 3 ASCII rules",
-            //                                                 StringPrepParseException.STD3_ASCII_RULES_ERROR,
-            //                                                 processOut.toString(),
-            //                                                 processOut.Length);
-            //    
-            //                    }
-            //                }
-            //            }
-            //            // just return the source
-            //            return new StringBuffer(src.getText());
-            //        }  
-
-            return new StringBuffer(src.GetText());
+            destination.Append(src);//return new StringBuffer(src.GetText());
+            errorType = (StringPrepErrorType)(-1);
+            rules = default;
+            errorPosition = -1;
+            return true;
         }
 
-        public static StringBuffer ConvertIDNToUnicode(String src, IDNA2003Options options)
+
+        public static string ConvertIDNToUnicode(ReadOnlySpan<char> source, IDNA2003Options options)
         {
-            char[] srcArr = src.ToCharArray();
-            StringBuffer result = new StringBuffer();
+            ValueStringBuilder sb = source.Length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(source.Length);
+            try
+            {
+                if (!TryConvertIDNToUnicode(source, ref sb, options, out StringPrepErrorType errorType, out string rules, out int errorPosition))
+                    ThrowHelper.ThrowStringPrepFormatException(errorType, rules, errorPosition);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        public static bool TryConvertIDNToUnicode(ReadOnlySpan<char> source, Span<char> destination, out int charsLength, IDNA2003Options options, out StringPrepErrorType errorType)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                bool success = TryConvertIDNToUnicode(source, ref sb, options, out errorType, out _, out _);
+                if (!sb.FitsInitialBuffer(out charsLength) && success)
+                {
+                    errorType = StringPrepErrorType.BufferOverflowError;
+                    return false;
+                }
+                return success;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        internal static bool TryConvertIDNToUnicode(ReadOnlySpan<char> src, ref ValueStringBuilder destination, IDNA2003Options options, out StringPrepErrorType errorType, out string rules, out int errorPosition)
+        {
             int sepIndex = 0;
             int oldSepIndex = 0;
             for (; ; )
             {
-                sepIndex = GetSeparatorIndex(srcArr, sepIndex, srcArr.Length);
-                string label = new string(srcArr, oldSepIndex, sepIndex - oldSepIndex);
-                if (label.Length == 0 && sepIndex != srcArr.Length)
+                sepIndex = GetSeparatorIndex(src, sepIndex, src.Length);
+                ReadOnlySpan<char> label = src.Slice(oldSepIndex, sepIndex - oldSepIndex);
+                if (label.Length == 0 && sepIndex != src.Length)
                 {
-                    throw new StringPrepParseException("Found zero length lable after NamePrep.", StringPrepErrorType.ZeroLengthLabel);
+                    errorType = StringPrepErrorType.ZeroLengthLabel;
+                    rules = string.Empty;
+                    errorPosition = 0;
+                    return false;
                 }
-                UCharacterIterator iter = UCharacterIterator.GetInstance(label);
-                result.Append(ConvertToUnicode(iter, options));
-                if (sepIndex == srcArr.Length)
+                if (!TryConvertToUnicode(label, ref destination, options, out errorType, out rules, out errorPosition))
+                    return false;
+                if (sepIndex == src.Length)
                 {
                     break;
                 }
                 // Unlike the ToASCII operation we don't normalize the label separators
-                result.Append(srcArr[sepIndex]);
+                destination.Append(src[sepIndex]);
                 // increment the sepIndex to skip past the separator
                 sepIndex++;
                 oldSepIndex = sepIndex;
             }
-            if (result.Length > MAX_DOMAIN_NAME_LENGTH)
+            if (destination.Length > MAX_DOMAIN_NAME_LENGTH)
             {
-                throw new StringPrepParseException("The output exceed the max allowed length.", StringPrepErrorType.DomainNameTooLongError);
+                errorType = StringPrepErrorType.DomainNameTooLongError;
+                rules = string.Empty;
+                errorPosition = 0;
+                return false;
             }
-            return result;
+            
+            errorType = (StringPrepErrorType)(-1);
+            rules = default;
+            errorPosition = -1;
+            return true;//return result;
         }
 
-        public static int Compare(string s1, string s2, IDNA2003Options options)
+        // ICU4N TODO: API - Comparers in .NET never throw exceptions. But need some sort of
+        // plan if the text cannot be converted as to what value to return if one or the other
+        // string is not convertible to ASCII.
+        public static int Compare(ReadOnlySpan<char> s1, ReadOnlySpan<char> s2, IDNA2003Options options)
         {
-            StringBuffer s1Out = ConvertIDNToASCII(s1, options);
-            StringBuffer s2Out = ConvertIDNToASCII(s2, options);
-            return CompareCaseInsensitiveASCII(s1Out, s2Out);
+            StringPrepErrorType errorType;
+            string rules;
+            int errorPosition;
+            ValueStringBuilder s1Out = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            ValueStringBuilder s2Out = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                if (!TryConvertIDNToASCII(s1, ref s1Out, options, out errorType, out rules, out errorPosition))
+                    ThrowHelper.ThrowStringPrepFormatException(errorType, rules, errorPosition);
+                if (!TryConvertIDNToASCII(s2, ref s2Out, options, out errorType, out rules, out errorPosition))
+                    ThrowHelper.ThrowStringPrepFormatException(errorType, rules, errorPosition);
+                return CompareCaseInsensitiveASCII(s1Out.AsSpan(), s2Out.AsSpan());
+            }
+            finally
+            {
+                s2Out.Dispose();
+                s1Out.Dispose();
+            }
         }
     }
 }

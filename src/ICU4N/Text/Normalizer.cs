@@ -1070,6 +1070,27 @@ namespace ICU4N.Text
         }
 
         /// <summary>
+        /// Normalizes a <see cref="string"/> using the given normalization operation.
+        /// </summary>
+        /// <param name="str">The input string to be normalized.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <param name="destination">The <see cref="ValueStringBuilder"/> in which to append the result.</param>
+        /// <returns>The normalized string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        // ICU4N overload to support StringPrep
+        internal static void Normalize(scoped ReadOnlySpan<char> str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion, ref ValueStringBuilder destination)
+        {
+#pragma warning disable 612, 618
+            GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Normalize(str, ref destination);
+#pragma warning restore 612, 618
+        }
+
+        /// <summary>
         /// Normalize a string.
         /// The string will be normalized according to the specified normalization
         /// mode and options.
@@ -2622,7 +2643,10 @@ namespace ICU4N.Text
         [Obsolete("ICU 56")]
         public int GetText(char[] fillIn)
         {
-            return text.GetText(fillIn);
+            if (!text.TryGetText(fillIn, out int charsLength))
+                throw new IndexOutOfRangeException(); // ICU4N TODO: API - For now, this is required by the contract. Need to eliminate this exception all the way up the call stack.
+
+            return charsLength;
         }
 
         /// <summary>
@@ -2647,7 +2671,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
-        public void SetText(StringBuffer newText)
+        public void SetText(StringBuffer newText) // ICU4N TODO: API - Factor out
         {
             UCharacterIterator newIter = UCharacterIterator.GetInstance(newText);
             text = newIter ?? throw new InvalidOperationException("Could not create a new UCharacterIterator");
@@ -2660,7 +2684,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
-        public void SetText(char[] newText)
+        public void SetText(char[] newText) // ICU4N TODO: API - Factor out
         {
             UCharacterIterator newIter = UCharacterIterator.GetInstance(newText);
             text = newIter ?? throw new InvalidOperationException("Could not create a new UCharacterIterator");
@@ -2674,6 +2698,19 @@ namespace ICU4N.Text
         /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
         public void SetText(string newText)
+        {
+            UCharacterIterator newIter = UCharacterIterator.GetInstance(newText);
+            text = newIter ?? throw new InvalidOperationException("Could not create a new UCharacterIterator");
+            Reset();
+        }
+
+        /// <summary>
+        /// Set the input text over which this <see cref="Normalizer"/> will iterate.
+        /// The iteration position is set to the beginning of the input text.
+        /// </summary>
+        /// <param name="newText">The new string to be normalized.</param>
+        [Obsolete("ICU 56")]
+        public void SetText(ReadOnlySpan<char> newText)
         {
             UCharacterIterator newIter = UCharacterIterator.GetInstance(newText);
             text = newIter ?? throw new InvalidOperationException("Could not create a new UCharacterIterator");

@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 
 namespace ICU4N.Text
 {
-    internal unsafe ref partial struct ValueStringBuilder
+    internal ref partial struct ValueStringBuilder
     {
         private char[]? _arrayToReturnToPool;
         private Span<char> _chars;
@@ -108,7 +108,7 @@ namespace ICU4N.Text
         // also work, but since that requires LangVersion=>11.0 and that causes more compiler
         // errors, we are going with this for now. Note we also marked this struct unsafe
         // just like NumberBuffer is (it wasn't that way originally).
-        public char* GetCharsPointer()
+        public unsafe char* GetCharsPointer()
         {
             // This is safe to do since we are a ref struct
             return (char*)Unsafe.AsPointer(ref _chars[0]);
@@ -230,12 +230,13 @@ namespace ICU4N.Text
             if (_capacityExceeded)
             {
                 charsLength = _maxLength;
-                Dispose();
                 return false;
             }
-            charsLength = _pos;
-            Dispose();
-            return true;
+            else
+            {
+                charsLength = _pos;
+                return true;
+            }
         }
 
         public void Insert(int index, char value)
@@ -285,7 +286,7 @@ namespace ICU4N.Text
             UpdateMaxLength();
         }
 
-        public void Insert(int index, ReadOnlySpan<char> s)
+        public void Insert(int index, scoped ReadOnlySpan<char> s)
         {
             int count = s.Length;
 

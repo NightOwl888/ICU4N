@@ -112,6 +112,25 @@ namespace ICU4N.Text
         void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count);
 
         /// <summary>
+        /// Copies characters from this object into the destination
+        /// character array.  The first character to be copied is at index
+        /// <paramref name="sourceIndex"/>; the last character to be copied is at
+        /// index <paramref name="count"/>-<paramref name="sourceIndex"/>.
+        /// The characters are copied into <paramref name="destination"/>,
+        /// which may be a slice of a larger <see cref="Span{Char}"/>.
+        /// </summary>
+        /// <remarks>
+        /// NOTE: This is roughly equivalent to GetChars(int srcStart, int srcLimit, char dst[], int dstStart)
+        /// in ICU4J with one important difference - the final parameter is the total
+        /// count of characters to be copied (srcLimit - srcStart).
+        /// </remarks>
+        /// <param name="sourceIndex">The index of the first character in this instance to copy.</param>
+        /// <param name="destination">An array of Unicode characters to which characters in this instance are copied.</param>
+        /// <param name="count">The number of characters in this instance to copy to <paramref name="destination"/>.</param>
+        /// <stable>ICU 2.0</stable>
+        void CopyTo(int sourceIndex, Span<char> destination, int count); // ICU4N TODO: API - mark draft??
+
+        /// <summary>
         /// Replaces a substring of this object with the given text.
         /// <para/>
         /// Implementations must ensure that if the text input

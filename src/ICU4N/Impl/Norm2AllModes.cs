@@ -24,7 +24,7 @@ namespace ICU4N.Impl
             return dest.Append(src);
         }
 
-        internal override void Normalize(ReadOnlySpan<char> src, ref ValueStringBuilder dest)
+        internal override void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest)
         {
             if (MemoryHelper.AreSame(src, dest.RawChars))
             {
@@ -300,7 +300,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        internal override void Normalize(ReadOnlySpan<char> src, ref ValueStringBuilder dest)
+        internal override void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest)
         {
             if (MemoryHelper.AreSame(src, dest.RawChars))
             {

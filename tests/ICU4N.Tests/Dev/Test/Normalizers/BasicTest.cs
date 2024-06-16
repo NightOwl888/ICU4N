@@ -1644,7 +1644,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 char[] fillIn1 = new char[clone.Length];
                 char[] fillIn2 = new char[iter.Length];
                 int len = clone.GetText(fillIn1);
-                iter.GetText(fillIn2, 0);
+                iter.TryGetText(fillIn2, out _);
                 if (!Utility.ArrayRegionMatches(fillIn1, 0, fillIn2, 0, len))
                 {
                     Errln("error in Normalizer.GetText(). Normalizer: " +
@@ -3069,7 +3069,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
             public override StringBuffer Normalize(ReadOnlySpan<char> src, StringBuffer dest) => null;
 
-            internal override void Normalize(ReadOnlySpan<char> src, ref ValueStringBuilder dest)
+            internal override void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest)
             {
             }
 

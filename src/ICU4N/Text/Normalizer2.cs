@@ -435,7 +435,7 @@ namespace ICU4N.Text
         /// <paramref name="src"/> and <paramref name="dest"/> refer to the same memory location.
         /// </exception>
         /// <draft>ICU 60.1</draft>
-        internal abstract void Normalize(ReadOnlySpan<char> src, ref ValueStringBuilder dest);
+        internal abstract void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest);
 
         #endregion Normalize(ICharSequence, StringBuilder)
 

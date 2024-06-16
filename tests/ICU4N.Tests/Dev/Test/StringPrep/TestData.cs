@@ -275,7 +275,7 @@ namespace ICU4N.Dev.Test.StringPrep
            
             },
             "www.xn--8mb5595fsoa28orucya378bqre2tcwop06c5qbw82a1rffmae0361dea96b.com",
-            new StringPrepParseException("", StringPrepErrorType.ProhibitedError),
+            new StringPrepFormatException("", StringPrepErrorType.ProhibitedError),
             false, true, true),
 
             new ErrorCase( new char[]{
@@ -287,7 +287,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 },
                 "www.xn--6la2bz548fj1gua391bf1gb1n59ab29a7ia.com",
 
-                new StringPrepParseException("", StringPrepErrorType.UnassignedError),
+                new StringPrepFormatException("", StringPrepErrorType.UnassignedError),
                 false, true, true
             ),
            new ErrorCase( new char[]{
@@ -299,7 +299,7 @@ namespace ICU4N.Dev.Test.StringPrep
                
                 },
                 "www.xn--ghBGI4851OiyA33VqrD6Az86C4qF83CtRv93D5xBk15AzfG0nAgA0578DeA71C.com",
-                new StringPrepParseException("", StringPrepErrorType.CheckBiDiError),
+                new StringPrepFormatException("", StringPrepErrorType.CheckBiDiError),
                 false, true, true
             ),
             new ErrorCase( new char[]{
@@ -313,7 +313,7 @@ namespace ICU4N.Dev.Test.StringPrep
             
                 },
                 "www.xn----b95Ew8SqA315Ao5FbuMlnNmhA.com",
-                new StringPrepParseException("", StringPrepErrorType.STD3ASCIIRulesError),
+                new StringPrepFormatException("", StringPrepErrorType.STD3ASCIIRulesError),
                 true, true, false
             ),
             new ErrorCase( new char[]{ 
@@ -329,7 +329,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 },
                 /* wrong ACE-prefix followed by valid ACE-encoded ASCII */ 
                 "www.XY-----b91I0V65S96C2A355Cw1E5yCeQr19CsnP1mFfmAE0361DeA96B.com",
-                new StringPrepParseException("", StringPrepErrorType.AcePrefixError),
+                new StringPrepFormatException("", StringPrepErrorType.AcePrefixError),
                 false, false, false
             ),
             /* cannot verify U_IDNA_VERIFICATION_ERROR */
@@ -343,7 +343,7 @@ namespace ICU4N.Dev.Test.StringPrep
            
               },
               "www.xn--989AoMsVi5E83Db1D2A355Cv1E0vAk1DwRv93D5xBh15A0Dt30A5JpSD879Ccm6FeA98C.com",
-              new StringPrepParseException("", StringPrepErrorType.LabelTooLongError),
+              new StringPrepFormatException("", StringPrepErrorType.LabelTooLongError),
               false, true, true
             ),
             new ErrorCase( new char[]{
@@ -353,7 +353,7 @@ namespace ICU4N.Dev.Test.StringPrep
            
               },
               "www.xn--01-tvdmo.com",
-              new StringPrepParseException("", StringPrepErrorType.CheckBiDiError),
+              new StringPrepFormatException("", StringPrepErrorType.CheckBiDiError),
               false, true, true
             ),
 
@@ -364,7 +364,7 @@ namespace ICU4N.Dev.Test.StringPrep
            
               },
               "www.XN--ghbgi278xia.com",
-              new StringPrepParseException("", StringPrepErrorType.ProhibitedError),
+              new StringPrepFormatException("", StringPrepErrorType.ProhibitedError),
               false, true, true
             ),
             new ErrorCase( new char[] {
@@ -374,7 +374,7 @@ namespace ICU4N.Dev.Test.StringPrep
            
               },
               "www.-abcde.com",
-              new StringPrepParseException("", StringPrepErrorType.STD3ASCIIRulesError),
+              new StringPrepFormatException("", StringPrepErrorType.STD3ASCIIRulesError),
               true, false /* ToUnicode preserves casing for this case */, false
             ),
             new ErrorCase( new char[] {
@@ -384,7 +384,7 @@ namespace ICU4N.Dev.Test.StringPrep
            
               },
               "www.abcde-.com",
-              new StringPrepParseException("", StringPrepErrorType.STD3ASCIIRulesError),
+              new StringPrepFormatException("", StringPrepErrorType.STD3ASCIIRulesError),
               true, false /* ToUnicode preserves casing for this case */, false
             ),
             new ErrorCase( new char[]{
@@ -394,7 +394,7 @@ namespace ICU4N.Dev.Test.StringPrep
            
               },
               "www.abcde@.com",
-              new StringPrepParseException("", StringPrepErrorType.STD3ASCIIRulesError),
+              new StringPrepFormatException("", StringPrepErrorType.STD3ASCIIRulesError),
               true, false /* ToUnicode preserves casing for this case */, false
             ),
             new ErrorCase( new char[]{
@@ -403,7 +403,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 (char)0x002e, (char)0x0063, (char)0x006f, (char)0x006d, // com. 
               },
               "www..com",
-              new StringPrepParseException("", StringPrepErrorType.ZeroLengthLabel),
+              new StringPrepFormatException("", StringPrepErrorType.ZeroLengthLabel),
               true, true, false
             ),
         };
@@ -473,55 +473,55 @@ namespace ICU4N.Dev.Test.StringPrep
                    "Non-ASCII multibyte space character U+1680",
                    "\u00E1\u009A\u0080", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Non-ASCII 8bit control character U+0085",
                    "\u00C2\u0085", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Non-ASCII multibyte control character U+180E",
                    "\u00E1\u00A0\u008E", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Non-ASCII control character U+1D175",
                    "\u00F0\u009D\u0085\u00B5", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Plane 0 private use character U+F123",
                    "\u00EF\u0084\u00A3", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Plane 15 private use character U+F1234",
                    "\u00F3\u00B1\u0088\u00B4", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Plane 16 private use character U+10F234",
                    "\u00F4\u008F\u0088\u00B4", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Non-character code point U+8FFFE",
                    "\u00F2\u008F\u00BF\u00BE", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Non-character code point U+10FFFF",
                    "\u00F4\u008F\u00BF\u00BF", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
              /* 
                  {
@@ -534,13 +534,13 @@ namespace ICU4N.Dev.Test.StringPrep
                    "Non-plain text character U+FFFD",
                    "\u00EF\u00BF\u00BD", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Ideographic description character U+2FF5",
                    "\u00E2\u00BF\u00B5", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Display property character U+0341",
@@ -554,38 +554,38 @@ namespace ICU4N.Dev.Test.StringPrep
                    "Left-to-right mark U+200E",
                    "\u00E2\u0080\u008E", "\u00CC\u0081",
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
 
                    "Deprecated U+202A",
                    "\u00E2\u0080\u00AA", "\u00CC\u0081",
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Language tagging character U+E0001",
                    "\u00F3\u00A0\u0080\u0081", "\u00CC\u0081",
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Language tagging character U+E0042",
                    "\u00F3\u00A0\u0081\u0082", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.ProhibitedError)
+                   new StringPrepFormatException("", StringPrepErrorType.ProhibitedError)
                  ),
                  new ConformanceTestCase(
                    "Bidi: RandALCat character U+05BE and LCat characters",
                    "\u0066\u006F\u006F\u00D6\u00BE\u0062\u0061\u0072", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.CheckBiDiError)
+                   new StringPrepFormatException("", StringPrepErrorType.CheckBiDiError)
                  ),
                  new ConformanceTestCase(
                    "Bidi: RandALCat character U+FD50 and LCat characters",
                    "\u0066\u006F\u006F\u00EF\u00B5\u0090\u0062\u0061\u0072", null,
                    "Nameprep", UTS46Options.Default ,
-                   new StringPrepParseException("", StringPrepErrorType.CheckBiDiError)
+                   new StringPrepFormatException("", StringPrepErrorType.CheckBiDiError)
                  ),
                  new ConformanceTestCase(
                    "Bidi: RandALCat character U+FB38 and LCat characters",
@@ -597,7 +597,7 @@ namespace ICU4N.Dev.Test.StringPrep
                    "Bidi: RandALCat without trailing RandALCat U+0627 U+0031",
                    "\u00D8\u00A7\u0031", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.CheckBiDiError)
+                   new StringPrepFormatException("", StringPrepErrorType.CheckBiDiError)
                  ),
                  new ConformanceTestCase(
                    "Bidi: RandALCat character U+0627 U+0031 U+0628",
@@ -609,7 +609,7 @@ namespace ICU4N.Dev.Test.StringPrep
                    "Unassigned code point U+E0002",
                    "\u00F3\u00A0\u0080\u0082", null,
                    "Nameprep", UTS46Options.Default,
-                   new StringPrepParseException("", StringPrepErrorType.UnassignedError)
+                   new StringPrepFormatException("", StringPrepErrorType.UnassignedError)
                  ),
 
             /*  // Invalid UTF-8

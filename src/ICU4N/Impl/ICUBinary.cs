@@ -830,8 +830,11 @@ namespace ICU4N.Impl
         /// <remarks>
         /// This was named getByteBufferFromInputStreamAndCloseStream() in ICU4J.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="input"/> is <c>null</c>.</exception>
         public static ByteBuffer GetByteBufferFromStreamAndDisposeStream(Stream input)
         {
+            if (input is null)
+                throw new ArgumentNullException(nameof(input));
             try
             {
                 // is.available() may return 0, or 1, or the total number of bytes in the stream,

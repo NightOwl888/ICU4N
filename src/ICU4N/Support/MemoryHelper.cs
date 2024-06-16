@@ -9,7 +9,7 @@ namespace ICU4N
         /// <summary>
         /// Compares two spans to determine if they are pointing to the same underlying memory location.
         /// </summary>
-        internal static unsafe bool AreSame<T>(ReadOnlySpan<T> span1, ReadOnlySpan<T> span2)
+        internal static unsafe bool AreSame<T>(scoped ReadOnlySpan<T> span1, scoped ReadOnlySpan<T> span2)
         {
             // Obtain pointers to the memory addresses of the first elements of the spans
             ref T firstElementSpan1 = ref MemoryMarshal.GetReference(span1);

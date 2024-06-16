@@ -23,11 +23,7 @@ namespace ICU4N.Impl
         /// <param name="replaceable">Text which the iterator will be based on.</param>
         public ReplaceableUCharacterIterator(IReplaceable replaceable)
         {
-            if (replaceable == null)
-            {
-                throw new ArgumentException();
-            }
-            this.replaceable = replaceable;
+            this.replaceable = replaceable ?? throw new ArgumentNullException(nameof(replaceable));
             this.currentIndex = 0;
         }
 
@@ -37,10 +33,19 @@ namespace ICU4N.Impl
         /// <param name="str">Text which the iterator will be based on.</param>
         public ReplaceableUCharacterIterator(string str)
         {
-            if (str == null)
-            {
-                throw new ArgumentException();
-            }
+            if (str is null)
+                throw new ArgumentNullException(nameof(str));
+
+            this.replaceable = new ReplaceableString(str);
+            this.currentIndex = 0;
+        }
+
+        /// <summary>
+        /// Public constructor.
+        /// </summary>
+        /// <param name="str">Text which the iterator will be based on.</param>
+        public ReplaceableUCharacterIterator(ReadOnlySpan<char> str)
+        {
             this.replaceable = new ReplaceableString(str);
             this.currentIndex = 0;
         }
@@ -51,10 +56,9 @@ namespace ICU4N.Impl
         /// <param name="buf">Buffer of text on which the iterator will be based.</param>
         public ReplaceableUCharacterIterator(StringBuffer buf)
         {
-            if (buf == null)
-            {
-                throw new ArgumentException();
-            }
+            if (buf is null)
+                throw new ArgumentNullException(nameof(buf));
+
             this.replaceable = new ReplaceableString(buf);
             this.currentIndex = 0;
         }
@@ -62,10 +66,9 @@ namespace ICU4N.Impl
         // ICU4N: This constructor can be used to improve performance by passing the OpenStringBuilder directly
         internal ReplaceableUCharacterIterator(OpenStringBuilder buf)
         {
-            if (buf == null)
-            {
-                throw new ArgumentException();
-            }
+            if (buf is null)
+                throw new ArgumentNullException(nameof(buf));
+
             this.replaceable = new ReplaceableString(buf);
             this.currentIndex = 0;
         }
@@ -190,15 +193,14 @@ namespace ICU4N.Impl
 
         // ICU4N specific - moved setter to the Index property
 
-        public override int GetText(char[] fillIn, int offset)
+        public override bool TryGetText(Span<char> destination, out int charsLength)
         {
-            int length = replaceable.Length;
-            if (offset < 0 || offset + length > fillIn.Length)
-            {
-                throw new IndexOutOfRangeException(length.ToString());
-            }
-            replaceable.CopyTo(0, fillIn, offset, length);
-            return length;
+            charsLength = replaceable.Length;
+            if (destination.Length < charsLength)
+                return false;
+
+            replaceable.CopyTo(0, destination, charsLength);
+            return true;
         }
 
         // private data members ----------------------------------------------------

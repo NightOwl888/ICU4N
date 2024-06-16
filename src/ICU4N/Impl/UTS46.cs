@@ -1,12 +1,9 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
-using J2N.Text;
 using System;
-using System.Collections.Generic;
-using System.Text;
+#nullable enable
 
 namespace ICU4N.Impl
 {
@@ -49,7 +46,7 @@ namespace ICU4N.Impl
         /// By default, ToASCII() uses transitional processing.
         /// </summary>
         /// <stable>ICU 4.6</stable>
-        NontransitionalToASCII = 0x10,
+        NontransitionalToASCII = 0x10, // 16
         /// <summary>
         /// IDNA option for nontransitional processing in ToUnicode().
         /// For use in static worker and factory methods.
@@ -57,7 +54,7 @@ namespace ICU4N.Impl
         /// By default, ToUnicode() uses transitional processing.
         /// </summary>
         /// <stable>ICU 4.6</stable>
-        NontransitionalToUnicode = 0x20,
+        NontransitionalToUnicode = 0x20, // 32
         /// <summary>
         /// IDNA option to check for whether the input conforms to the CONTEXTO rules.
         /// For use in static worker and factory methods.
@@ -66,10 +63,10 @@ namespace ICU4N.Impl
         /// UTS #46 does not require the CONTEXTO check.
         /// </summary>
         /// <stable>ICU 49</stable>
-        CheckContextO = 0x40,
+        CheckContextO = 0x40, // 64
     }
 
-    // Note about tests for IDNA.Error.DOMAIN_NAME_TOO_LONG:
+    // Note about tests for IDNAErrors.DomainNameTooLong:
     //
     // The domain name length limit is 255 octets in an internal DNS representation
     // where the last ("root") label is the empty label
@@ -92,16 +89,21 @@ namespace ICU4N.Impl
             this.options = options;
         }
 
-        // ICU4N specific - LabelToASCII(ICharSequence label, StringBuilder dest, Info info) moved to UTS46.generated.tt
-
-        public override StringBuilder LabelToASCII(ReadOnlySpan<char> label, StringBuilder dest, IDNAInfo info)
+        public override bool TryLabelToASCII(ReadOnlySpan<char> label, Span<char> destination, out int charsLength, out IDNAInfo info)
         {
-            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            var temp = new IDNAInfo();
+            var sb = new ValueStringBuilder(destination);
             try
             {
-                Process(label, true, true, ref sb, info);
-                dest.Length = 0;
-                return dest.Append(sb.AsSpan());
+                Process(label, isLabel: true, toASCII: true, ref sb, ref temp);
+                if (!sb.FitsInitialBuffer(out charsLength))
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    AddError(ref temp, IDNAErrors.BufferOverflow);
+#pragma warning restore CS0618 // Type or member is obsolete
+                }
+                info = temp;
+                return !info.HasErrors;
             }
             finally
             {
@@ -109,87 +111,121 @@ namespace ICU4N.Impl
             }
         }
 
-        internal override void LabelToASCII(ReadOnlySpan<char> label, ref ValueStringBuilder dest, IDNAInfo info)
-            => Process(label, true, true, ref dest, info);
-
-        // ICU4N specific - LabelToUnicode(ICharSequence label, StringBuilder dest, Info info) moved to UTS46.generated.tt
-
-        public override StringBuilder LabelToUnicode(ReadOnlySpan<char> label, StringBuilder dest, IDNAInfo info)
+        internal override bool TryLabelToASCII(ReadOnlySpan<char> label, ref ValueStringBuilder destination, out IDNAInfo info)
         {
-            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            var temp = new IDNAInfo();
+            Process(label, isLabel: true, toASCII: true, ref destination, ref temp);
+            info = temp;
+            return !info.HasErrors;
+        }
+
+        public override bool TryLabelToUnicode(ReadOnlySpan<char> label, Span<char> destination, out int charsLength, out IDNAInfo info)
+        {
+            var temp = new IDNAInfo();
+            var sb = new ValueStringBuilder(destination);
             try
             {
-                Process(label, true, false, ref sb, info);
-                dest.Length = 0;
-                return dest.Append(sb.AsSpan());
+                Process(label, isLabel: true, toASCII: false, ref sb, ref temp);
+                if (!sb.FitsInitialBuffer(out charsLength))
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    AddError(ref temp, IDNAErrors.BufferOverflow);
+#pragma warning restore CS0618 // Type or member is obsolete
+                }
+                info = temp;
+                return !info.HasErrors;
             }
             finally
             {
                 sb.Dispose();
             }
         }
-        internal override void LabelToUnicode(ReadOnlySpan<char> label, ref ValueStringBuilder dest, IDNAInfo info)
-            =>  Process(label, true, false, ref dest, info);
 
-        // ICU4N specific - NameToASCII(ICharSequence name, StringBuilder dest, Info info) moved to UTS46.generated.tt
-
-
-        public override StringBuilder NameToASCII(ReadOnlySpan<char> name, StringBuilder dest, IDNAInfo info)
+        internal override bool TryLabelToUnicode(ReadOnlySpan<char> label, ref ValueStringBuilder destination, out IDNAInfo info)
         {
-            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            var temp = new IDNAInfo();
+            Process(label, isLabel: true, toASCII: false, ref destination, ref temp);
+            info = temp;
+            return !info.HasErrors;
+        }
+
+        public override bool TryNameToASCII(ReadOnlySpan<char> name, Span<char> destination, out int charsLength, out IDNAInfo info)
+        {
+            var temp = new IDNAInfo();
+            var sb = new ValueStringBuilder(destination);
             try
             {
-                Process(name, false, true, ref sb, info);
-                dest.Length = 0;
-                dest.Append(sb.AsSpan());
-                if (dest.Length >= 254 && !info.Errors.Contains(IDNAError.DomainNameTooLong) &&
+                Process(name, isLabel: false, toASCII: true, ref sb, ref temp);
+                if (!sb.FitsInitialBuffer(out charsLength))
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    AddError(ref temp, IDNAErrors.BufferOverflow);
+#pragma warning restore CS0618 // Type or member is obsolete
+                }
+                if (charsLength >= 254 && (temp.errors & IDNAErrors.DomainNameTooLong) == 0 &&
                     IsASCIIString(sb.AsSpan()) &&
-                    (dest.Length > 254 || dest[253] != '.')
+                    (charsLength > 254 || sb[253] != '.')
                 )
                 {
 #pragma warning disable 612, 618
-                    AddError(info, IDNAError.DomainNameTooLong);
+                    AddError(ref temp, IDNAErrors.DomainNameTooLong);
 #pragma warning restore 612, 618
                 }
-                return dest;
+                info = temp;
+                return !info.HasErrors;
             }
             finally
             {
                 sb.Dispose();
             }
         }
-        internal override void NameToASCII(ReadOnlySpan<char> name, ref ValueStringBuilder dest, IDNAInfo info)
+
+        internal override bool TryNameToASCII(ReadOnlySpan<char> name, ref ValueStringBuilder destination, out IDNAInfo info)
         {
-            Process(name, false, true, ref dest, info);
-            if (dest.Length >= 254 && !info.Errors.Contains(IDNAError.DomainNameTooLong) &&
-                IsASCIIString(dest.AsSpan()) &&
-                (dest.Length > 254 || dest[253] != '.')
+            var temp = new IDNAInfo();
+            Process(name, isLabel: false, toASCII: true, ref destination, ref temp);
+            info = temp;
+            if (destination.Length >= 254 && (info.errors & IDNAErrors.DomainNameTooLong) == 0 &&
+                IsASCIIString(destination.AsSpan()) &&
+                (destination.Length > 254 || destination[253] != '.')
             )
             {
 #pragma warning disable 612, 618
-                AddError(info, IDNAError.DomainNameTooLong);
+                AddError(ref info, IDNAErrors.DomainNameTooLong);
 #pragma warning restore 612, 618
             }
+            return !info.HasErrors;
         }
 
-        // ICU4N specific - NameToUnicode(ICharSequence name, StringBuilder dest, Info info) moved to UTS46.generated.tt
-
-        public override StringBuilder NameToUnicode(ReadOnlySpan<char> name, StringBuilder dest, IDNAInfo info)
+        public override bool TryNameToUnicode(ReadOnlySpan<char> name, Span<char> destination, out int charsLength, out IDNAInfo info)
         {
-            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            var temp = new IDNAInfo();
+            var sb = new ValueStringBuilder(destination);
             try
             {
-                Process(name, false, false, ref sb, info);
-                dest.Length = 0;
-                return dest.Append(sb.AsSpan());
+                Process(name, isLabel: false, toASCII: false, ref sb, ref temp);
+                if (!sb.FitsInitialBuffer(out charsLength))
+                {
+#pragma warning disable CS0618 // Type or member is obsolete
+                    AddError(ref temp, IDNAErrors.BufferOverflow);
+#pragma warning restore CS0618 // Type or member is obsolete
+                }
+                info = temp;
+                return !info.HasErrors;
             }
             finally
             {
                 sb.Dispose();
             }
         }
-        internal override void NameToUnicode(ReadOnlySpan<char> name, ref ValueStringBuilder dest, IDNAInfo info)
-            => Process(name, false, false, ref dest, info);
+
+        internal override bool TryNameToUnicode(ReadOnlySpan<char> name, ref ValueStringBuilder destination, out IDNAInfo info)
+        {
+            var temp = new IDNAInfo();
+            Process(name, isLabel: false, toASCII: false, ref destination, ref temp);
+            info = temp;
+            return !info.HasErrors;
+        }
 
 
         private static readonly Normalizer2 uts46Norm2 =
@@ -197,16 +233,12 @@ namespace ICU4N.Impl
         internal readonly UTS46Options options;
 
         // Severe errors which usually result in a U+FFFD replacement character in the result string.
-        private static readonly ISet<IDNAError> severeErrors = new HashSet<IDNAError>
-        {
-            IDNAError.LeadingCombiningMark,
-            IDNAError.Disallowed,
-            IDNAError.Punycode,
-            IDNAError.LabelHasDot,
-            IDNAError.InvalidAceLabel
-        };
-
-        // ICU4N specific - IsASCIIString(ICharSequence dest) moved to UTS46.generated.tt
+        private const IDNAErrors severeErrors =
+            IDNAErrors.LeadingCombiningMark
+            | IDNAErrors.Disallowed
+            | IDNAErrors.Punycode
+            | IDNAErrors.LabelHasDot
+            | IDNAErrors.InvalidAceLabel;
 
         private static bool IsASCIIString(ReadOnlySpan<char> dest)
         {
@@ -243,15 +275,10 @@ namespace ICU4N.Impl
              0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, -1, -1, -1, -1, -1
         };
 
-        // ICU4N specific - Process(ICharSequence src,
-        //    bool isLabel, bool toASCII,
-        //    StringBuilder dest,
-        //    Info info) moved to UTS46.generated.tt
-
         private void Process(ReadOnlySpan<char> src,
             bool isLabel, bool toASCII,
             ref ValueStringBuilder dest,
-            IDNAInfo info)
+            ref IDNAInfo info)
         {
             // uts46Norm2.normalize() would do all of this error checking and setup,
             // but with the ASCII fastpath we do not always call it, and do not
@@ -262,14 +289,13 @@ namespace ICU4N.Impl
             }
             // Arguments are fine, reset output values.
             dest.Delete(0, 0x7fffffff - 0); // ICU4N: Corrected 2nd parameter
-#pragma warning disable 612, 618
-            ResetInfo(info);
-#pragma warning restore 612, 618
+            // ICU4N: No need to reset because IDNAInfo is on the stack
+
             int srcLength = src.Length;
             if (srcLength == 0)
             {
 #pragma warning disable 612, 618
-                AddError(info, IDNAError.EmptyLabel);
+                AddError(ref info, IDNAErrors.EmptyLabel);
 #pragma warning restore 612, 618
                 return;
             }
@@ -286,17 +312,17 @@ namespace ICU4N.Impl
                         if ((i - labelStart) > 63)
                         {
 #pragma warning disable 612, 618
-                            AddLabelError(info, IDNAError.LabelTooLong);
+                            AddLabelError(ref info, IDNAErrors.LabelTooLong);
 #pragma warning restore 612, 618
                         }
                         // There is a trailing dot if labelStart==i.
                         if (!isLabel && i >= 254 && (i > 254 || labelStart < i))
                         {
 #pragma warning disable 612, 618
-                            AddError(info, IDNAError.DomainNameTooLong);
+                            AddError(ref info, IDNAErrors.DomainNameTooLong);
                         }
                     }
-                    PromoteAndResetLabelErrors(info);
+                    PromoteAndResetLabelErrors(ref info);
 #pragma warning restore 612, 618
                     return;
                 }
@@ -329,12 +355,12 @@ namespace ICU4N.Impl
                         if (i == labelStart)
                         {
                             // label starts with "-"
-                            AddLabelError(info, IDNAError.LeadingHyphen);
+                            AddLabelError(ref info, IDNAErrors.LeadingHyphen);
                         }
                         if ((i + 1) == srcLength || src[i + 1] == '.')
                         {
                             // label ends with "-"
-                            AddLabelError(info, IDNAError.TrailingHyphen);
+                            AddLabelError(ref info, IDNAErrors.TrailingHyphen);
                         }
 #pragma warning restore 612, 618
                     }
@@ -349,43 +375,37 @@ namespace ICU4N.Impl
                         if (i == labelStart)
                         {
 #pragma warning disable 612, 618
-                            AddLabelError(info, IDNAError.EmptyLabel);
+                            AddLabelError(ref info, IDNAErrors.EmptyLabel);
 #pragma warning restore 612, 618
                         }
                         if (toASCII && (i - labelStart) > 63)
                         {
 #pragma warning disable 612, 618
-                            AddLabelError(info, IDNAError.LabelTooLong);
+                            AddLabelError(ref info, IDNAErrors.LabelTooLong);
                         }
-                        PromoteAndResetLabelErrors(info);
+                        PromoteAndResetLabelErrors(ref info);
 #pragma warning restore 612, 618
                         labelStart = i + 1;
                     }
                 }
             }
 #pragma warning disable 612, 618
-            PromoteAndResetLabelErrors(info);
-            ProcessUnicode(src, labelStart, i, isLabel, toASCII, ref dest, info);
-            if (IsBiDi(info) && !HasCertainErrors(info, severeErrors) &&
-                (!IsOkBiDi(info) || (labelStart > 0 && !IsASCIIOkBiDi(dest.AsSpan(), labelStart)))
+            PromoteAndResetLabelErrors(ref info);
+            ProcessUnicode(src, labelStart, i, isLabel, toASCII, ref dest, ref info);
+            if (IsBiDi(ref info) && !HasCertainErrors(ref info, severeErrors) &&
+                (!IsOkBiDi(ref info) || (labelStart > 0 && !IsASCIIOkBiDi(dest.AsSpan(), labelStart)))
             )
             {
-                AddError(info, IDNAError.BiDi);
+                AddError(ref info, IDNAErrors.BiDi);
 #pragma warning restore 612, 618
             }
         }
-
-        // ICU4N specific - ProcessUnicode(ICharSequence src,
-        //    int labelStart, int mappingStart,
-        //    bool isLabel, bool toASCII,
-        //    StringBuilder dest,
-        //    Info info) moved to UTS46.generated.tt
 
         private void ProcessUnicode(ReadOnlySpan<char> src,
             int labelStart, int mappingStart,
             bool isLabel, bool toASCII,
             ref ValueStringBuilder dest,
-            IDNAInfo info)
+            ref IDNAInfo info)
         {
             if (mappingStart == 0)
             {
@@ -407,9 +427,9 @@ namespace ICU4N.Impl
                 {
                     int labelLength = labelLimit - labelStart;
                     int newLength = ProcessLabel(ref dest, labelStart, labelLength,
-                                                    toASCII, info);
+                                                    toASCII, ref info);
 #pragma warning disable 612, 618
-                    PromoteAndResetLabelErrors(info);
+                    PromoteAndResetLabelErrors(ref info);
 #pragma warning restore 612, 618
                     destLength += newLength - labelLength;
                     labelLimit = labelStart += newLength + 1;
@@ -417,7 +437,7 @@ namespace ICU4N.Impl
                 else if (0xdf <= c && c <= 0x200d && (c == 0xdf || c == 0x3c2 || c >= 0x200c))
                 {
 #pragma warning disable 612, 618
-                    SetTransitionalDifferent(info);
+                    SetTransitionalDifferent(ref info);
 #pragma warning restore 612, 618
                     if (doMapDevChars)
                     {
@@ -441,9 +461,9 @@ namespace ICU4N.Impl
             // processLabel() sets UIDNA_ERROR_EMPTY_LABEL when labelLength==0.
             if (0 == labelStart || labelStart < labelLimit)
             {
-                ProcessLabel(ref dest, labelStart, labelLimit - labelStart, toASCII, info);
+                ProcessLabel(ref dest, labelStart, labelLimit - labelStart, toASCII, ref info);
 #pragma warning disable 612, 618
-                PromoteAndResetLabelErrors(info);
+                PromoteAndResetLabelErrors(ref info);
 #pragma warning restore 612, 618
             }
         }
@@ -493,10 +513,7 @@ namespace ICU4N.Impl
                     // We could use either the NFC or the UTS #46 normalizer.
                     // By using the UTS #46 normalizer again, we avoid having to load a second .nrm data file.
                     uts46Norm2.Normalize(dest.AsSpan(labelStart, dest.Length - labelStart), ref normalized); // ICU4N: Corrected 2nd parameter
-                    unsafe
-                    {
-                        dest.Replace(labelStart, 0x7fffffff - labelStart, new ReadOnlySpan<char>(normalized.GetCharsPointer(), normalized.Length)); // ICU4N: Corrected 2nd parameter
-                    }
+                    dest.Replace(labelStart, 0x7fffffff - labelStart, normalized.AsSpan());
                     return dest.Length;
                 }
                 finally
@@ -514,23 +531,18 @@ namespace ICU4N.Impl
             return c == 0x2260 || c == 0x226E || c == 0x226F;
         }
 
-        // ICU4N specific - ReplaceLabel(StringBuilder dest, int destLabelStart, int destLabelLength,
-        //    ICharSequence label, int labelLength) moved to UTS46.generated.tt
-
         // Replace the label in dest with the label string, if the label was modified.
         // If label==dest then the label was modified in-place and labelLength
         // is the new label length, different from label.Length.
         // If label!=dest then labelLength==label.Length.
         // Returns labelLength (= the new label length).
         private static int ReplaceLabel(ref ValueStringBuilder dest, int destLabelStart, int destLabelLength,
-            ReadOnlySpan<char> label, int labelLength)
+            scoped ReadOnlySpan<char> label, int labelLength)
         {
             if (!MemoryHelper.AreSame(label, dest.RawChars))
             {
-                dest.Delete(destLabelStart, destLabelLength); // ICU4N: Corrected 2nd parameter of Delete
-                dest.Insert(destLabelStart, label);
-                // or dest.Replace(destLabelStart, destLabelLength, label.ToString());
-                // which would create a String rather than moving characters in the StringBuilder.
+                // ICU4N: Using Replace instead of Delete/Insert, since we can do it without allocating in .NET
+                dest.Replace(destLabelStart, destLabelLength, label);
             }
             return labelLength;
         }
@@ -539,10 +551,10 @@ namespace ICU4N.Impl
         private int ProcessLabel(ref ValueStringBuilder dest,
                      int labelStart, int labelLength,
                      bool toASCII,
-                     IDNAInfo info)
+                     ref IDNAInfo info)
         {
             ValueStringBuilder fromPunycode = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            Span<char> labelString;
+            scoped Span<char> labelString;
             int destLabelStart = labelStart;
             int destLabelLength = labelLength;
             bool wasPunycode;
@@ -553,17 +565,14 @@ namespace ICU4N.Impl
             {
                 // Label starts with "xn--", try to un-Punycode it.
                 wasPunycode = true;
-                try
-                {
-                    Punycode.Decode(dest.AsSpan(labelStart + 4, labelLength - 4), ref fromPunycode, null); // ICU4N: (labelStart + labelLength) - (labelStart + 4) == (labelLength - 4)
-                }
-                catch (StringPrepParseException)
+                if (!Punycode.TryDecode(dest.AsSpan(labelStart + 4, labelLength - 4), ref fromPunycode, null, out _)) // ICU4N: (labelStart + labelLength) - (labelStart + 4) == (labelLength - 4)
                 {
 #pragma warning disable 612, 618
-                    AddLabelError(info, IDNAError.Punycode);
+                    AddLabelError(ref info, IDNAErrors.Punycode);
 #pragma warning restore 612, 618
-                    return MarkBadACELabel(ref dest, labelStart, labelLength, toASCII, info);
+                    return MarkBadACELabel(ref dest, labelStart, labelLength, toASCII, ref info);
                 }
+
                 // Check for NFC, and for characters that are not
                 // valid or deviation characters according to the normalizer.
                 // If there is something wrong, then the string will change.
@@ -575,47 +584,41 @@ namespace ICU4N.Impl
                 if (!isValid)
                 {
 #pragma warning disable 612, 618
-                    AddLabelError(info, IDNAError.InvalidAceLabel);
+                    AddLabelError(ref info, IDNAErrors.InvalidAceLabel);
 #pragma warning restore 612, 618
-                    return MarkBadACELabel(ref dest, labelStart, labelLength, toASCII, info);
+                    return MarkBadACELabel(ref dest, labelStart, labelLength, toASCII, ref info);
                 }
-                unsafe
-                {
-                    labelString = new Span<char>(fromPunycode.GetCharsPointer(), fromPunycode.Length);
-                }
+                labelString = fromPunycode.RawChars.Slice(0, fromPunycode.Length);
                 labelStart = 0;
                 labelLength = fromPunycode.Length;
             }
             else
             {
                 wasPunycode = false;
-                unsafe
-                {
-                    labelString = new Span<char>(dest.GetCharsPointer(), dest.Length); //dest;
-                }
+                labelString = dest.RawChars.Slice(0, dest.Length);
             }
             // Validity check
             if (labelLength == 0)
             {
 #pragma warning disable 612, 618
-                AddLabelError(info, IDNAError.EmptyLabel);
+                AddLabelError(ref info, IDNAErrors.EmptyLabel);
                 return ReplaceLabel(ref dest, destLabelStart, destLabelLength, labelString, labelLength);
             }
             // labelLength>0
             if (labelLength >= 4 && labelString[labelStart + 2] == '-' && labelString[labelStart + 3] == '-')
             {
                 // label starts with "??--"
-                AddLabelError(info, IDNAError.Hyphen_3_4);
+                AddLabelError(ref info, IDNAErrors.Hyphen_3_4);
             }
             if (labelString[labelStart] == '-')
             {
                 // label starts with "-"
-                AddLabelError(info, IDNAError.LeadingHyphen);
+                AddLabelError(ref info, IDNAErrors.LeadingHyphen);
             }
             if (labelString[labelStart + labelLength - 1] == '-')
             {
                 // label ends with "-"
-                AddLabelError(info, IDNAError.TrailingHyphen);
+                AddLabelError(ref info, IDNAErrors.TrailingHyphen);
             }
 #pragma warning restore 612, 618
             // If the label was not a Punycode label, then it was the result of
@@ -640,14 +643,14 @@ namespace ICU4N.Impl
                     if (c == '.')
                     {
 #pragma warning disable 612, 618
-                        AddLabelError(info, IDNAError.LabelHasDot);
+                        AddLabelError(ref info, IDNAErrors.LabelHasDot);
 #pragma warning restore 612, 618
                         labelString[i] = '\ufffd';
                     }
                     else if (disallowNonLDHDot && asciiData[c] < 0)
                     {
 #pragma warning disable 612, 618
-                        AddLabelError(info, IDNAError.Disallowed);
+                        AddLabelError(ref info, IDNAErrors.Disallowed);
 #pragma warning restore 612, 618
                         labelString[i] = '\ufffd';
                     }
@@ -658,14 +661,14 @@ namespace ICU4N.Impl
                     if (disallowNonLDHDot && IsNonASCIIDisallowedSTD3Valid(c))
                     {
 #pragma warning disable 612, 618
-                        AddLabelError(info, IDNAError.Disallowed);
+                        AddLabelError(ref info, IDNAErrors.Disallowed);
 #pragma warning restore 612, 618
                         labelString[i] = '\ufffd';
                     }
                     else if (c == 0xfffd)
                     {
 #pragma warning disable 612, 618
-                        AddLabelError(info, IDNAError.Disallowed);
+                        AddLabelError(ref info, IDNAErrors.Disallowed);
 #pragma warning restore 612, 618
                     }
                 }
@@ -675,11 +678,11 @@ namespace ICU4N.Impl
             // so that we don't report IDNA.Error.DISALLOWED for the U+FFFD from here.
             int c2;
             // "Unsafe" is ok because unpaired surrogates were mapped to U+FFFD.
-            c2 = ((ReadOnlySpan<char>)labelString).CodePointAt(labelStart);
+            c2 = Character.CodePointAt(labelString, labelStart);
             if ((U_GET_GC_MASK(c2) & U_GC_M_MASK) != 0)
             {
 #pragma warning disable 612, 618
-                AddLabelError(info, IDNAError.LeadingCombiningMark);
+                AddLabelError(ref info, IDNAErrors.LeadingCombiningMark);
 #pragma warning restore 612, 618
                 labelString[labelStart] = '\ufffd';
                 if (c2 > 0xffff)
@@ -700,29 +703,29 @@ namespace ICU4N.Impl
                 }
             }
 #pragma warning disable 612, 618
-            if (!HasCertainLabelErrors(info, severeErrors))
+            if (!HasCertainLabelErrors(ref info, severeErrors))
 #pragma warning restore 612, 618
             {
                 // Do contextual checks only if we do not have U+FFFD from a severe error
                 // because U+FFFD can make these checks fail.
                 if ((options & UTS46Options.CheckBiDi) != 0 &&
 #pragma warning disable 612, 618
-                    (!IsBiDi(info) || IsOkBiDi(info)))
+                    (!IsBiDi(ref info) || IsOkBiDi(ref info)))
 #pragma warning restore 612, 618
                 {
-                    CheckLabelBiDi(labelString.Slice(labelStart, labelLength), info);
+                    CheckLabelBiDi(labelString.Slice(labelStart, labelLength), ref info);
                 }
                 if ((options & UTS46Options.CheckContextJ) != 0 && (oredChars & 0x200c) == 0x200c &&
                     !IsLabelOkContextJ(labelString.Slice(labelStart, labelLength))
                 )
                 {
 #pragma warning disable 612, 618
-                    AddLabelError(info, IDNAError.ContextJ);
+                    AddLabelError(ref info, IDNAErrors.ContextJ);
 #pragma warning restore 612, 618
                 }
                 if ((options & UTS46Options.CheckContextO) != 0 && oredChars >= 0xb7)
                 {
-                    CheckLabelContextO(labelString.Slice(labelStart, labelLength), info);
+                    CheckLabelContextO(labelString.Slice(labelStart, labelLength), ref info);
                 }
                 if (toASCII)
                 {
@@ -732,7 +735,7 @@ namespace ICU4N.Impl
                         if (destLabelLength > 63)
                         {
 #pragma warning disable 612, 618
-                            AddLabelError(info, IDNAError.LabelTooLong);
+                            AddLabelError(ref info, IDNAErrors.LabelTooLong);
 #pragma warning restore 612, 618
                         }
                         return destLabelLength;
@@ -741,27 +744,17 @@ namespace ICU4N.Impl
                     {
                         // Contains non-ASCII characters.
                         ValueStringBuilder punycode = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-                        try
-                        {
-                            Punycode.Encode(labelString.Slice(labelStart, labelLength), ref punycode, null); // ICU4N: (labelStart + labelLength) - labelStart == labelLength
-                        }
-                        catch (StringPrepParseException e)
-                        {
-                            throw new ICUException(e);  // unexpected
-                        }
+                        if (!Punycode.TryEncode(labelString.Slice(labelStart, labelLength), ref punycode, null, out StringPrepErrorType errorType)) // ICU4N: (labelStart + labelLength) - labelStart == labelLength
+                            throw new ICUException(new StringPrepFormatException(errorType.GetErrorMessage(), errorType)); // unexpected
                         punycode.Insert(0, "xn--");
                         if (punycode.Length > 63)
                         {
 #pragma warning disable 612, 618
-                            AddLabelError(info, IDNAError.LabelTooLong);
+                            AddLabelError(ref info, IDNAErrors.LabelTooLong);
 #pragma warning restore 612, 618
                         }
-                        unsafe
-                        {
-                            ReadOnlySpan<char> punycodeSpan = new ReadOnlySpan<char>(punycode.GetCharsPointer(), punycode.Length);
-                            return ReplaceLabel(ref dest, destLabelStart, destLabelLength,
-                                            punycodeSpan, punycode.Length);
-                        }
+                        return ReplaceLabel(ref dest, destLabelStart, destLabelLength,
+                                            punycode.AsSpan(), punycode.Length);
                     }
                     else
                     {
@@ -769,7 +762,7 @@ namespace ICU4N.Impl
                         if (labelLength > 63)
                         {
 #pragma warning disable 612, 618
-                            AddLabelError(info, IDNAError.LabelTooLong);
+                            AddLabelError(ref info, IDNAErrors.LabelTooLong);
 #pragma warning restore 612, 618
                         }
                     }
@@ -782,9 +775,9 @@ namespace ICU4N.Impl
                 if (wasPunycode)
                 {
 #pragma warning disable 612, 618
-                    AddLabelError(info, IDNAError.InvalidAceLabel);
+                    AddLabelError(ref info, IDNAErrors.InvalidAceLabel);
 #pragma warning restore 612, 618
-                    return MarkBadACELabel(ref dest, destLabelStart, destLabelLength, toASCII, info);
+                    return MarkBadACELabel(ref dest, destLabelStart, destLabelLength, toASCII, ref info);
                 }
             }
             return ReplaceLabel(ref dest, destLabelStart, destLabelLength, labelString, labelLength);
@@ -792,7 +785,7 @@ namespace ICU4N.Impl
 
         private int MarkBadACELabel(ref ValueStringBuilder dest,
                         int labelStart, int labelLength,
-                        bool toASCII, IDNAInfo info)
+                        bool toASCII, ref IDNAInfo info)
         {
             bool disallowNonLDHDot = (options & UTS46Options.UseSTD3Rules) != 0;
             bool isASCII = true;
@@ -807,7 +800,7 @@ namespace ICU4N.Impl
                     if (c == '.')
                     {
 #pragma warning disable 612, 618
-                        AddLabelError(info, IDNAError.LabelHasDot);
+                        AddLabelError(ref info, IDNAErrors.LabelHasDot);
 #pragma warning restore 612, 618
                         dest[i] = '\ufffd';
                         isASCII = onlyLDH = false;
@@ -837,7 +830,7 @@ namespace ICU4N.Impl
                 if (toASCII && isASCII && labelLength > 63)
                 {
 #pragma warning disable 612, 618
-                    AddLabelError(info, IDNAError.LabelTooLong);
+                    AddLabelError(ref info, IDNAErrors.LabelTooLong);
 #pragma warning restore 612, 618
                 }
             }
@@ -868,14 +861,12 @@ namespace ICU4N.Impl
         private static readonly int L_EN_ES_CS_ET_ON_BN_NSM_MASK = L_EN_MASK | ES_CS_ET_ON_BN_NSM_MASK;
         private static readonly int R_AL_AN_EN_ES_CS_ET_ON_BN_NSM_MASK = R_AL_MASK | EN_AN_MASK | ES_CS_ET_ON_BN_NSM_MASK;
 
-        // ICU4N specific - CheckLabelBiDi(ICharSequence label, int labelStart, int labelLength, Info info) moved to UTS46.generated.tt
-
         // We scan the whole label and check both for whether it contains RTL characters
         // and whether it passes the BiDi Rule.
         // In a BiDi domain name, all labels must pass the BiDi Rule, but we might find
         // that a domain name is a BiDi domain name (has an RTL label) only after
         // processing several earlier labels.
-        private void CheckLabelBiDi(ReadOnlySpan<char> label, /*int labelStart, int labelLength,*/ IDNAInfo info)
+        private void CheckLabelBiDi(scoped ReadOnlySpan<char> label, /*int labelStart, int labelLength,*/ ref IDNAInfo info)
         {
             int labelStart = 0, labelLength = label.Length;
 
@@ -892,7 +883,7 @@ namespace ICU4N.Impl
             if ((firstMask & ~L_R_AL_MASK) != 0)
             {
 #pragma warning disable 612, 618
-                SetNotOkBiDi(info);
+                SetNotOkBiDi(ref info);
 #pragma warning restore 612, 618
             }
             // Get the directionality of the last non-NSM character.
@@ -926,7 +917,7 @@ namespace ICU4N.Impl
             )
             {
 #pragma warning disable 612, 618
-                SetNotOkBiDi(info);
+                SetNotOkBiDi(ref info);
 #pragma warning restore 612, 618
             }
             // Add the directionalities of the intervening characters.
@@ -944,7 +935,7 @@ namespace ICU4N.Impl
                 if ((mask & ~L_EN_ES_CS_ET_ON_BN_NSM_MASK) != 0)
                 {
 #pragma warning disable 612, 618
-                    SetNotOkBiDi(info);
+                    SetNotOkBiDi(ref info);
 #pragma warning restore 612, 618
                 }
             }
@@ -955,7 +946,7 @@ namespace ICU4N.Impl
                 if ((mask & ~R_AL_AN_EN_ES_CS_ET_ON_BN_NSM_MASK) != 0)
                 {
 #pragma warning disable 612, 618
-                    SetNotOkBiDi(info);
+                    SetNotOkBiDi(ref info);
 #pragma warning restore 612, 618
                 }
                 // 4. In an RTL label, if an EN is present, no AN may be present, and
@@ -963,7 +954,7 @@ namespace ICU4N.Impl
                 if ((mask & EN_AN_MASK) == EN_AN_MASK)
                 {
 #pragma warning disable 612, 618
-                    SetNotOkBiDi(info);
+                    SetNotOkBiDi(ref info);
 #pragma warning restore 612, 618
                 }
             }
@@ -976,12 +967,10 @@ namespace ICU4N.Impl
             if ((mask & R_AL_AN_MASK) != 0)
             {
 #pragma warning disable 612, 618
-                SetBiDi(info);
+                SetBiDi(ref info);
 #pragma warning restore 612, 618
             }
         }
-
-        // ICU4N specific - IsASCIIOkBiDi(ICharSequence s, int length) moved to UTS46.generated.tt
 
         // Special code for the ASCII prefix of a BiDi domain name.
         // The ASCII prefix is all-LTR.
@@ -1035,9 +1024,7 @@ namespace ICU4N.Impl
             return true;
         }
 
-        // ICU4N specific - IsLabelOkContextJ(ICharSequence label, int labelStart, int labelLength) moved to UTS46.generated.tt
-
-        private bool IsLabelOkContextJ(ReadOnlySpan<char> label)
+        private bool IsLabelOkContextJ(scoped ReadOnlySpan<char> label)
         {
             // [IDNA2008-Tables]
             // 200C..200D  ; CONTEXTJ    # ZERO WIDTH NON-JOINER..ZERO WIDTH JOINER
@@ -1133,10 +1120,7 @@ namespace ICU4N.Impl
             return true;
         }
 
-
-        // ICU4N specific - CheckLabelContextO(ICharSequence label, int labelStart, int labelLength, Info info) moved to UTS46.generated.tt
-
-        private void CheckLabelContextO(ReadOnlySpan<char> label, IDNAInfo info)
+        private void CheckLabelContextO(scoped ReadOnlySpan<char> label, ref IDNAInfo info)
         {
             int labelStart = 0, labelLength = label.Length;
             int labelEnd = labelStart + labelLength - 1;  // inclusive
@@ -1161,7 +1145,7 @@ namespace ICU4N.Impl
                              i < labelEnd && label[i + 1] == 'l'))
                         {
 #pragma warning disable 612, 618
-                            AddLabelError(info, IDNAError.ContextOPunctuation);
+                            AddLabelError(ref info, IDNAErrors.ContextOPunctuation);
 #pragma warning restore 612, 618
                         }
                     }
@@ -1175,7 +1159,7 @@ namespace ICU4N.Impl
                              UScript.Greek == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
 #pragma warning disable 612, 618
-                            AddLabelError(info, IDNAError.ContextOPunctuation);
+                            AddLabelError(ref info, IDNAErrors.ContextOPunctuation);
 #pragma warning restore 612, 618
                         }
                     }
@@ -1194,7 +1178,7 @@ namespace ICU4N.Impl
                              UScript.Hebrew == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
 #pragma warning disable 612, 618
-                            AddLabelError(info, IDNAError.ContextOPunctuation);
+                            AddLabelError(ref info, IDNAErrors.ContextOPunctuation);
 #pragma warning restore 612, 618
                         }
                     }
@@ -1218,7 +1202,7 @@ namespace ICU4N.Impl
                             if (arabicDigits > 0)
                             {
 #pragma warning disable 612, 618
-                                AddLabelError(info, IDNAError.ContextODigits);
+                                AddLabelError(ref info, IDNAErrors.ContextODigits);
 #pragma warning restore 612, 618
                             }
                             arabicDigits = -1;
@@ -1228,7 +1212,7 @@ namespace ICU4N.Impl
                             if (arabicDigits < 0)
                             {
 #pragma warning disable 612, 618
-                                AddLabelError(info, IDNAError.ContextODigits);
+                                AddLabelError(ref info, IDNAErrors.ContextODigits);
 #pragma warning restore 612, 618
                             }
                             arabicDigits = 1;
@@ -1248,7 +1232,7 @@ namespace ICU4N.Impl
                         if (j > labelEnd)
                         {
 #pragma warning disable 612, 618
-                            AddLabelError(info, IDNAError.ContextOPunctuation);
+                            AddLabelError(ref info, IDNAErrors.ContextOPunctuation);
 #pragma warning restore 612, 618
                             break;
                         }

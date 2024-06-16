@@ -55,19 +55,14 @@ namespace ICU4N.Impl
             return pos > start ? text[--pos] : Done;
         }
 
-
-        public override int GetText(char[] fillIn, int offset)
+        public override bool TryGetText(Span<char> destination, out int charsLength)
         {
-            int len = limit - start;
-            if (offset + len > fillIn.Length)
-            {
-                // ICU4N specific - IndexOutOfRangeException expected
-                // when the array length is exceeded, but Array.Copy throws
-                // ArgumentException in this case.
-                throw new IndexOutOfRangeException();
-            }
-            System.Array.Copy(text, start, fillIn, offset, len);
-            return len;
+            charsLength = limit - start;
+            if (destination.Length < charsLength)
+                return false;
+
+            text.AsSpan(start, charsLength).CopyTo(destination);
+            return true;
         }
 
         /// <summary>

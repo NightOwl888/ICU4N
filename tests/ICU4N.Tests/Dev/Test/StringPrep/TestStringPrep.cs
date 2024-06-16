@@ -229,9 +229,9 @@ namespace ICU4N.Dev.Test.StringPrep
         [Test]
         public void TestCoverage()
         {
-            if (new StringPrepParseException("coverage", 0, "", 0, 0) == null)
+            if (new StringPrepFormatException("coverage", 0, "", 0, 0) == null)
             {
-                Errln("Construct StringPrepParseException(String, int, String, int, int)");
+                Errln("Construct StringPrepFormatException(String, int, String, int, int)");
             }
         }
 
@@ -303,61 +303,61 @@ namespace ICU4N.Dev.Test.StringPrep
         }
 
         /*
-         * Tests the constructor public StringPrepParseException(String message, int error, String rules, int pos, int
+         * Tests the constructor public StringPrepFormatException(String message, int error, String rules, int pos, int
          * lineNumber)
          */
         [Test]
-        public void TestStringPrepParseException()
+        public void TestStringPrepFormatException()
         {
             CultureInfo[] locales = { new CultureInfo("en-US"), new CultureInfo("fr"), new CultureInfo("zh-Hans") };
             String rules = "This is a very odd little set of rules, just for testing, you know...";
-            StringPrepParseException[] exceptions = new StringPrepParseException[locales.Length];
+            StringPrepFormatException[] exceptions = new StringPrepFormatException[locales.Length];
 
             for (int i = 0; i < locales.Length; i += 1)
             {
-                exceptions[i] = new StringPrepParseException(locales[i].ToString(), (StringPrepErrorType)i, rules, i, i);
+                exceptions[i] = new StringPrepFormatException(locales[i].ToString(), (StringPrepErrorType)i, rules, i, i);
             }
         }
 
-        /* Tests the method public bool equals(Object other) for StringPrepParseException */
+        /* Tests the method public bool equals(Object other) for StringPrepFormatException */
         [Test]
-        public void TestStringPrepParseExceptionEquals()
+        public void TestStringPrepFormatExceptionEquals()
         {
-            StringPrepParseException sppe = new StringPrepParseException("dummy", 0, "dummy", 0, 0);
-            StringPrepParseException sppe_clone = new StringPrepParseException("dummy", 0, "dummy", 0, 0);
-            StringPrepParseException sppe1 = new StringPrepParseException("dummy1", (StringPrepErrorType)1, "dummy1", 0, 0);
+            StringPrepFormatException sppe = new StringPrepFormatException("dummy", 0, "dummy", 0, 0);
+            StringPrepFormatException sppe_clone = new StringPrepFormatException("dummy", 0, "dummy", 0, 0);
+            StringPrepFormatException sppe1 = new StringPrepFormatException("dummy1", (StringPrepErrorType)1, "dummy1", 0, 0);
 
-            // Tests when "if(!(other instanceof StringPrepParseException))" is true
+            // Tests when "if(!(other instanceof StringPrepFormatException))" is true
             if (sppe.Equals(0))
             {
-                Errln("StringPrepParseException.Equals(Object) is suppose to return false when " +
+                Errln("StringPrepFormatException.Equals(Object) is suppose to return false when " +
                         "passing integer '0'");
             }
             if (sppe.Equals(0.0))
             {
-                Errln("StringPrepParseException.Equals(Object) is suppose to return false when " +
+                Errln("StringPrepFormatException.Equals(Object) is suppose to return false when " +
                         "passing float/double '0.0'");
             }
             if (sppe.Equals("0"))
             {
-                Errln("StringPrepParseException.Equals(Object) is suppose to return false when " +
+                Errln("StringPrepFormatException.Equals(Object) is suppose to return false when " +
                         "passing string '0'");
             }
 
-            // Tests when "if(!(other instanceof StringPrepParseException))" is true
+            // Tests when "if(!(other instanceof StringPrepFormatException))" is true
             if (!sppe.Equals(sppe))
             {
-                Errln("StringPrepParseException.Equals(Object) is suppose to return true when " +
+                Errln("StringPrepFormatException.Equals(Object) is suppose to return true when " +
                 "comparing to the same object");
             }
             if (!sppe.Equals(sppe_clone))
             {
-                Errln("StringPrepParseException.Equals(Object) is suppose to return true when " +
+                Errln("StringPrepFormatException.Equals(Object) is suppose to return true when " +
                 "comparing to the same initiated object");
             }
             if (sppe.Equals(sppe1))
             {
-                Errln("StringPrepParseException.Equals(Object) is suppose to return false when " +
+                Errln("StringPrepFormatException.Equals(Object) is suppose to return false when " +
                 "comparing to another object that isn't the same");
             }
         }
@@ -368,7 +368,7 @@ namespace ICU4N.Dev.Test.StringPrep
         {
             for (int i = 0; i < 5; i++)
             {
-                StringPrepParseException sppe = new StringPrepParseException("dummy", (StringPrepErrorType)i, "dummy", 0, 0);
+                StringPrepFormatException sppe = new StringPrepFormatException("dummy", (StringPrepErrorType)i, "dummy", 0, 0);
                 if ((int)sppe.Error != i)
                 {
                     Errln("StringPrepParseExcpetion.getError() was suppose to return " + i + " but got " + sppe.Error);
@@ -385,12 +385,14 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 try
                 {
-                    StringPrepParseException sppe = new StringPrepParseException("dummy", (StringPrepErrorType)i, WordAtLeast16Characters, 0, 0);
-                    sppe = new StringPrepParseException(WordAtLeast16Characters, (StringPrepErrorType)i, "dummy", 0, 0);
+                    StringPrepFormatException sppe = new StringPrepFormatException("dummy", (StringPrepErrorType)i, WordAtLeast16Characters, 0, 0);
+                    sppe.ToString(); // ICU4N: We don't execute this logic until ToString() is called so we don't have to allocate in the constructor.
+                    sppe = new StringPrepFormatException(WordAtLeast16Characters, (StringPrepErrorType)i, "dummy", 0, 0);
+                    sppe.ToString(); // ICU4N: We don't execute this logic until ToString() is called so we don't have to allocate in the constructor.
                 }
                 catch (Exception e)
                 {
-                    Errln("StringPrepParseException.setPreContext was not suppose to return an exception");
+                    Errln("StringPrepFormatException.PreContext was not suppose to return an exception");
                 }
             }
         }

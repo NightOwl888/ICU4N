@@ -60,7 +60,7 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.4</stable>
-        internal override void Normalize(ReadOnlySpan<char> src, ref ValueStringBuilder dest)
+        internal override void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest)
         {
             if (MemoryHelper.AreSame(src, dest.RawChars))
             {
@@ -565,7 +565,7 @@ namespace ICU4N.Text
         // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
         // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
-        private void Normalize(ReadOnlySpan<char> src, ref ValueStringBuilder dest,
+        private void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest,
                                      SpanCondition spanCondition)
         {
             // Don't throw away destination buffer between iterations.

@@ -574,38 +574,44 @@ namespace ICU4N.Impl
         // charsLength will return either the number of characters that were copied, or on failure, will return the number of chars to allocate to execute successfully.
         public static bool ToLower(CaseLocale caseLocale, int options, ReadOnlySpan<char> source, Span<char> destination, out int charsLength) // ICU4N TODO: Tests
         {
-            int length = source.Length;
-            if (length <= 100 && (options & OmitUnchangedText) == 0)
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
             {
-                if (length == 0)
+                int length = source.Length;
+                if (length <= 100 && (options & OmitUnchangedText) == 0)
                 {
-                    charsLength = 0;
-                    return true;
-                }
-                // Collect and apply only changes.
-                // Good if no or few changes. Bad (slow) if many changes.
-                ValueStringBuilder replacementChars = length <= CharStackBufferSize
-                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                    : new ValueStringBuilder(length);
-                try
-                {
-                    Edits edits = new Edits();
-                    ToLower(caseLocale, options | OmitUnchangedText, source, ref replacementChars, edits);
+                    if (length == 0)
+                    {
+                        charsLength = 0;
+                        return true;
+                    }
+                    // Collect and apply only changes.
+                    // Good if no or few changes. Bad (slow) if many changes.
+                    ValueStringBuilder replacementChars = length <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(length);
+                    try
+                    {
+                        Edits edits = new Edits();
+                        ToLower(caseLocale, options | OmitUnchangedText, source, ref replacementChars, edits);
 
-                    ValueStringBuilder result = new ValueStringBuilder(destination);
-                    ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
+                        ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
+                        return result.FitsInitialBuffer(out charsLength);
+                    }
+                    finally
+                    {
+                        replacementChars.Dispose();
+                    }
+                }
+                else
+                {
+                    ToLower(caseLocale, options, source, ref result, edits: null);
                     return result.FitsInitialBuffer(out charsLength);
                 }
-                finally
-                {
-                    replacementChars.Dispose();
-                }
             }
-            else
+            finally
             {
-                ValueStringBuilder result = new ValueStringBuilder(destination);
-                ToLower(caseLocale, options, source, ref result, edits: null);
-                return result.FitsInitialBuffer(out charsLength);
+                result.Dispose();
             }
         }
 
@@ -618,8 +624,15 @@ namespace ICU4N.Impl
             }
 
             var result = new ValueStringBuilder(destination);
-            ToLower(caseLocale, options, source, ref result, edits);
-            return result.FitsInitialBuffer(out charsLength);
+            try
+            {
+                ToLower(caseLocale, options, source, ref result, edits);
+                return result.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                result.Dispose();
+            }
         }
 
         public static StringBuilder ToLower(CaseLocale caseLocale, int options,
@@ -719,38 +732,45 @@ namespace ICU4N.Impl
         // charsLength will return either the number of characters that were copied, or on failure, will return the number of chars to allocate to execute successfully.
         public static bool ToUpper(CaseLocale caseLocale, int options, ReadOnlySpan<char> source, Span<char> destination, out int charsLength) // ICU4N TODO: Tests
         {
-            int length = source.Length;
-            if (length <= 100 && (options & OmitUnchangedText) == 0)
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
             {
-                if (length == 0)
+                int length = source.Length;
+                if (length <= 100 && (options & OmitUnchangedText) == 0)
                 {
-                    charsLength = 0;
-                    return true;
-                }
-                // Collect and apply only changes.
-                // Good if no or few changes. Bad (slow) if many changes.
-                ValueStringBuilder replacementChars = length <= CharStackBufferSize
-                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                    : new ValueStringBuilder(length);
-                try
-                {
-                    Edits edits = new Edits();
-                    ToUpper(caseLocale, options | OmitUnchangedText, source, ref replacementChars, edits);
+                    if (length == 0)
+                    {
+                        charsLength = 0;
+                        return true;
+                    }
+                    // Collect and apply only changes.
+                    // Good if no or few changes. Bad (slow) if many changes.
+                    ValueStringBuilder replacementChars = length <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(length);
+                    try
+                    {
+                        Edits edits = new Edits();
+                        ToUpper(caseLocale, options | OmitUnchangedText, source, ref replacementChars, edits);
 
-                    ValueStringBuilder result = new ValueStringBuilder(destination);
-                    ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
+                        ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
+                        return result.FitsInitialBuffer(out charsLength);
+                    }
+                    finally
+                    {
+                        replacementChars.Dispose();
+                    }
+                }
+                else
+                {
+
+                    ToUpper(caseLocale, options, source, ref result, null);
                     return result.FitsInitialBuffer(out charsLength);
                 }
-                finally
-                {
-                    replacementChars.Dispose();
-                }
             }
-            else
+            finally
             {
-                ValueStringBuilder result = new ValueStringBuilder(destination);
-                ToUpper(caseLocale, options, source, ref result, null);
-                return result.FitsInitialBuffer(out charsLength);
+                result.Dispose();
             }
         }
 
@@ -763,8 +783,15 @@ namespace ICU4N.Impl
             }
 
             ValueStringBuilder result = new ValueStringBuilder(destination);
-            ToUpper(caseLocale, options, source, ref result, edits);
-            return result.FitsInitialBuffer(out charsLength);
+            try
+            {
+                ToUpper(caseLocale, options, source, ref result, edits);
+                return result.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                result.Dispose();
+            }
         }
 
         public static StringBuilder ToUpper(CaseLocale caseLocale, int options,
@@ -864,38 +891,45 @@ namespace ICU4N.Impl
         // charsLength will return either the number of characters that were copied, or on failure, will return the number of chars to allocate to execute successfully.
         public static bool ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, ReadOnlySpan<char> source, Span<char> destination, out int charsLength) // ICU4N TODO: Tests
         {
-            int length = source.Length;
-            if (length <= 100 && (options & OmitUnchangedText) == 0)
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
             {
-                if (length == 0)
+                int length = source.Length;
+                if (length <= 100 && (options & OmitUnchangedText) == 0)
                 {
-                    charsLength = 0;
-                    return true;
-                }
-                // Collect and apply only changes.
-                // Good if no or few changes. Bad (slow) if many changes.
-                ValueStringBuilder replacementChars = length <= CharStackBufferSize
-                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                    : new ValueStringBuilder(length);
-                try
-                {
-                    Edits edits = new Edits();
-                    ToTitle(caseLocale, options | OmitUnchangedText, iter, source, ref replacementChars, edits);
+                    if (length == 0)
+                    {
+                        charsLength = 0;
+                        return true;
+                    }
+                    // Collect and apply only changes.
+                    // Good if no or few changes. Bad (slow) if many changes.
+                    ValueStringBuilder replacementChars = length <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(length);
+                    try
+                    {
+                        Edits edits = new Edits();
+                        ToTitle(caseLocale, options | OmitUnchangedText, iter, source, ref replacementChars, edits);
 
-                    ValueStringBuilder result = new ValueStringBuilder(destination);
-                    ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
+                        ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
+                        return result.FitsInitialBuffer(out charsLength);
+                    }
+                    finally
+                    {
+                        replacementChars.Dispose();
+                    }
+                }
+                else
+                {
+
+                    ToTitle(caseLocale, options, iter, source, ref result, null);
                     return result.FitsInitialBuffer(out charsLength);
                 }
-                finally
-                {
-                    replacementChars.Dispose();
-                }
             }
-            else
+            finally
             {
-                ValueStringBuilder result = new ValueStringBuilder(destination);
-                ToTitle(caseLocale, options, iter, source, ref result, null);
-                return result.FitsInitialBuffer(out charsLength);
+                result.Dispose();
             }
         }
 
@@ -904,8 +938,15 @@ namespace ICU4N.Impl
             ReadOnlySpan<char> source, Span<char> destination, out int charsLength, Edits? edits) // ICU4N TODO: Tests
         {
             ValueStringBuilder result = new ValueStringBuilder(destination);
-            ToTitle(caseLocale, options, titleIter, source, ref result, edits);
-            return result.FitsInitialBuffer(out charsLength);
+            try
+            {
+                ToTitle(caseLocale, options, titleIter, source, ref result, edits);
+                return result.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                result.Dispose();
+            }
         }
 
         public static StringBuilder ToTitle(
@@ -1011,38 +1052,45 @@ namespace ICU4N.Impl
         // charsLength will return either the number of characters that were copied, or on failure, will return the number of chars to allocate to execute successfully.
         public static bool Fold(int options, ReadOnlySpan<char> source, Span<char> destination, out int charsLength) // ICU4N TODO: Tests
         {
-            int length = source.Length;
-            if (length <= 100 && (options & OmitUnchangedText) == 0)
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
             {
-                if (length == 0)
+                int length = source.Length;
+                if (length <= 100 && (options & OmitUnchangedText) == 0)
                 {
-                    charsLength = 0;
-                    return true;
-                }
-                // Collect and apply only changes.
-                // Good if no or few changes. Bad (slow) if many changes.
-                ValueStringBuilder replacementChars = length <= CharStackBufferSize
-                    ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
-                    : new ValueStringBuilder(length);
-                try
-                {
-                    Edits edits = new Edits();
-                    Fold(options | OmitUnchangedText, source, ref replacementChars, edits);
+                    if (length == 0)
+                    {
+                        charsLength = 0;
+                        return true;
+                    }
+                    // Collect and apply only changes.
+                    // Good if no or few changes. Bad (slow) if many changes.
+                    ValueStringBuilder replacementChars = length <= CharStackBufferSize
+                        ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                        : new ValueStringBuilder(length);
+                    try
+                    {
+                        Edits edits = new Edits();
+                        Fold(options | OmitUnchangedText, source, ref replacementChars, edits);
 
-                    ValueStringBuilder result = new ValueStringBuilder(destination);
-                    ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
+                        ApplyEdits(source, replacementChars.AsSpan(), edits, ref result);
+                        return result.FitsInitialBuffer(out charsLength);
+                    }
+                    finally
+                    {
+                        replacementChars.Dispose();
+                    }
+                }
+                else
+                {
+
+                    Fold(options, source, ref result, null);
                     return result.FitsInitialBuffer(out charsLength);
                 }
-                finally
-                {
-                    replacementChars.Dispose();
-                }
             }
-            else
+            finally
             {
-                ValueStringBuilder result = new ValueStringBuilder(destination);
-                Fold(options, source, ref result, null);
-                return result.FitsInitialBuffer(out charsLength);
+                result.Dispose();
             }
         }
 
@@ -1050,8 +1098,15 @@ namespace ICU4N.Impl
             ReadOnlySpan<char> source, Span<char> destination, out int charsLength, Edits? edits) // ICU4N TODO: Tests
         {
             ValueStringBuilder result = new ValueStringBuilder(destination);
-            Fold(options, source, ref result, edits);
-            return result.FitsInitialBuffer(out charsLength);
+            try
+            {
+                Fold(options, source, ref result, edits);
+                return result.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                result.Dispose();
+            }
         }
 
         public static StringBuilder Fold(int options,
