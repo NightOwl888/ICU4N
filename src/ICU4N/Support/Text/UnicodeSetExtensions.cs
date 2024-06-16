@@ -8,7 +8,7 @@ namespace ICU4N.Support.Text
     /// <summary>
     /// ICU4J compatible method names, in case you don't like the rewiring of ICU4N.
     /// </summary>
-    internal static partial class UnicodeSetExtensions
+    internal static partial class UnicodeSetExtensions // ICU4N TODO: API - factor out. We want to use .NET names. But we need to ensure the docs are clear what maps to what.
     {
         /// <summary>
         /// Add a collection (as strings) into this <see cref="UnicodeSet"/>.

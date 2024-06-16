@@ -2982,7 +2982,7 @@ namespace ICU4N.Text
             CheckFrozen();
             foreach (var o in source)
             {
-                Add(o);
+                Add(o.AsSpan());
             }
             return this;
         }
@@ -4532,15 +4532,74 @@ namespace ICU4N.Text
 
         // ICU4N specific - ContainsAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSet.generated.tt
 
+        /// <seealso cref="ContainsAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal virtual bool ContainsAll(IEnumerable<char[]> collection) // ICU4N specific - changed from public to internal (we are using IsSupersetOf in .NET)
+        {
+            foreach (var o in collection)
+            {
+                if (!Contains(o))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         // ICU4N specific - ContainsNone<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSet.generated.tt
 
+        /// <seealso cref="ContainsNone(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        public virtual bool ContainsNone(IEnumerable<char[]> collection) // ICU4N TODO: API - since this is just !Overlaps(), we can exclude this (and overloads) from the public API
+        {
+            foreach (var o in collection)
+            {
+                if (Contains(o))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         // ICU4N specific - ContainsSome<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSet.generated.tt
+
+        /// <seealso cref="ContainsSome(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal bool ContainsSome(IEnumerable<char[]> collection) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
+        {
+            return !ContainsNone(collection);
+        }
 
         // ICU4N specific - AddAll(params ICharSequence[] collection) moved to UnicodeSet.generated.tt
 
         // ICU4N specific - RemoveAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSet.generated.tt
 
+        /// <seealso cref="RemoveAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal virtual UnicodeSet RemoveAll(IEnumerable<char[]> collection) // ICU4N specific - changed from public to internal (we are using ExceptWith in .NET)
+        {
+            CheckFrozen();
+            foreach (var o in collection)
+            {
+                Remove(o);
+            }
+            return this;
+        }
+
         // ICU4N specific - RetainAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSet.generated.tt
+
+        /// <seealso cref="RetainAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        internal virtual UnicodeSet RetainAll(IEnumerable<char[]> collection) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
+        {
+            CheckFrozen();
+            // TODO optimize
+            UnicodeSet toRetain = new UnicodeSet();
+            toRetain.AddAll(collection);
+            RetainAll(toRetain);
+            return this;
+        }
 
         // ICU4N specific - De-nested ComparisonStyle enum
 

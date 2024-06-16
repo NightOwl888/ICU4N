@@ -228,6 +228,8 @@ namespace ICU4N.Text
             return ComplementAll(c);
         }
 
+        // ICU4N TODO: API - need overload for IsProperSupersetOf(UnicodeSet)
+
         /// <summary>
         /// Returns true if there is a partition of the string such that this set contains each of the partitioned strings.
         /// For example, for the Unicode set [a{bc}{cd}]

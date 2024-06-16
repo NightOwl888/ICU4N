@@ -3677,9 +3677,9 @@ namespace ICU4N.Dev.Test.Lang
 
                 try
                 {
-                    UChar.CodePointCount(one_char_text, 0, limitCases[i]);
+                    UChar.CodePointCount(one_char_text.AsSpan(0, limitCases[i]));
                     Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UChar.CodePointCount(one_char_text, 0, limitCases[i]) +
+                            "but got " + UChar.CodePointCount(one_char_text.AsSpan(0, limitCases[i])) +
                             ". The following passed parameters were Text: " + new string(one_char_text) + ", Start: " +
                             0 + ", Limit: " + limitCases[i] + ".");
                 }
@@ -3846,6 +3846,7 @@ namespace ICU4N.Dev.Test.Lang
          *      public static int codePointCount(char[] text, int start, int limit)
          */
         [Test]
+        // ICU4N TODO: API Need to test string overload
         public void TestCodePointCount()
         {
             // The following tests the first if statement to make it true:
@@ -3862,9 +3863,9 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UChar.CodePointCount(reg_text, invalid_startCases[i], 1);
+                    UChar.CodePointCount(reg_text.AsSpan(invalid_startCases[i], 1));
                     Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UChar.CodePointCount(reg_text, invalid_startCases[i], 1) +
+                            "but got " + UChar.CodePointCount(reg_text.AsSpan(invalid_startCases[i], 1)) +
                             ". The following passed parameters were Text: " + new string(reg_text) + ", Start: " +
                             invalid_startCases[i] + ", Limit: " + 1 + ".");
                 }
@@ -3873,49 +3874,50 @@ namespace ICU4N.Dev.Test.Lang
                 }
             }
 
-            // When limit < start
-            for (int i = 0; i < limitCases.Length; i++)
-            {
-                try
-                {
-                    UChar.CodePointCount(reg_text, 100, limitCases[i]);
-                    Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UChar.CodePointCount(reg_text, 100, limitCases[i]) +
-                            ". The following passed parameters were Text: " + new string(reg_text) + ", Start: " +
-                            100 + ", Limit: " + limitCases[i] + ".");
-                }
-                catch (Exception e)
-                {
-                }
-            }
+            // ICU4N TODO: API Need to test string overload using the below code
+            //// When limit < start
+            //for (int i = 0; i < limitCases.Length; i++)
+            //{
+            //    try
+            //    {
+            //        UChar.CodePointCount(reg_text, 100, limitCases[i]);
+            //        Errln("UCharacter.codePointCount was suppose to return an exception " +
+            //                "but got " + UChar.CodePointCount(reg_text, 100, limitCases[i]) +
+            //                ". The following passed parameters were Text: " + new string(reg_text) + ", Start: " +
+            //                100 + ", Limit: " + limitCases[i] + ".");
+            //    }
+            //    catch (Exception e)
+            //    {
+            //    }
+            //}
 
-            // When limit > text.Length
-            for (int i = 0; i < limitCases.Length; i++)
-            {
-                try
-                {
-                    UChar.CodePointCount(empty_text, 0, limitCases[i]);
-                    Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UChar.CodePointCount(empty_text, 0, limitCases[i]) +
-                            ". The following passed parameters were Text: " + new string(empty_text) + ", Start: " +
-                            0 + ", Limit: " + limitCases[i] + ".");
-                }
-                catch (Exception e)
-                {
-                }
+            //// When limit > text.Length
+            //for (int i = 0; i < limitCases.Length; i++)
+            //{
+            //    try
+            //    {
+            //        UChar.CodePointCount(empty_text, 0, limitCases[i]);
+            //        Errln("UCharacter.codePointCount was suppose to return an exception " +
+            //                "but got " + UChar.CodePointCount(empty_text, 0, limitCases[i]) +
+            //                ". The following passed parameters were Text: " + new string(empty_text) + ", Start: " +
+            //                0 + ", Limit: " + limitCases[i] + ".");
+            //    }
+            //    catch (Exception e)
+            //    {
+            //    }
 
-                try
-                {
-                    UChar.CodePointCount(one_char_text, 0, limitCases[i]);
-                    Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UChar.CodePointCount(one_char_text, 0, limitCases[i]) +
-                            ". The following passed parameters were Text: " + new string(one_char_text) + ", Start: " +
-                            0 + ", Limit: " + limitCases[i] + ".");
-                }
-                catch (Exception e)
-                {
-                }
-            }
+            //    try
+            //    {
+            //        UChar.CodePointCount(one_char_text, 0, limitCases[i]);
+            //        Errln("UCharacter.codePointCount was suppose to return an exception " +
+            //                "but got " + UChar.CodePointCount(one_char_text, 0, limitCases[i]) +
+            //                ". The following passed parameters were Text: " + new string(one_char_text) + ", Start: " +
+            //                0 + ", Limit: " + limitCases[i] + ".");
+            //    }
+            //    catch (Exception e)
+            //    {
+            //    }
+            //}
         }
 
         /*

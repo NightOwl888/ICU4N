@@ -3873,7 +3873,7 @@ namespace ICU4N
         /// <param name="limit">The limit of the valid text.</param>
         /// <returns>The code point at the index.</returns>
         /// <stable>ICU 3.0</stable>
-        public static int CodePointAt(char[] text, int index, int limit)
+        public static int CodePointAt(char[] text, int index, int limit) // ICU4N TODO: API - Change to length instead of limit
         {
             if (index >= limit || limit > text.Length)
             {
@@ -3971,6 +3971,35 @@ namespace ICU4N
         // ICU4N specific - CodePointCount(ICharSequence text, int start, int limit) moved to UCharacter.generated.tt
 
         // ICU4N specific - CodePointCount(char[] text, int start, int limit) moved to UCharacter.generated.tt
+
+        /// <summary>
+        /// Equivalent to the <see cref="Character.CodePointCount(ReadOnlySpan{Char})"/>
+        /// method, for convenience.  Counts the number of code points in the range
+        /// of text.
+        /// </summary>
+        /// <param name="text">the characters to check</param>
+        /// <returns>the number of code points in the range</returns>
+        /// <stable>ICU 3.0</stable>
+        public static int CodePointCount(ReadOnlySpan<char> text)
+        {
+            int start = 0, limit = text.Length;
+            int len = text.Length;
+            while (limit > start)
+            {
+                char ch = text[--limit];
+                while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && limit > start)
+                {
+                    ch = text[--limit];
+                    if (ch >= MinHighSurrogate && ch <= MaxHighSurrogate)
+                    {
+                        --len;
+                        break;
+                    }
+                }
+            }
+            return len;
+        }
+
 
         // ICU4N specific - OffsetByCodePoints(ICharSequence text, int index, int codePointOffset) moved to UCharacter.generated.tt
 

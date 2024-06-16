@@ -251,8 +251,9 @@ namespace ICU4N.Dev.Test.Lang
 
             internal void Test(String s, int start, int limit, int expected)
             {
-                int val1 = UChar.CodePointCount(s.ToCharArray(), start,
-                        limit);
+                int length = limit - start;
+                int val1 = UChar.CodePointCount(s.AsSpan(start,
+                        length));
                 int val2 = UChar.CodePointCount(s, start, limit);
                 if (val1 != expected)
                 {
