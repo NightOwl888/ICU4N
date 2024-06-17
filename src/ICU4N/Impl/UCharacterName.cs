@@ -532,7 +532,7 @@ namespace ICU4N.Impl
         public string GetAlgorithmName(int index, int codepoint)
         {
             string result = null;
-            lock (m_utilStringBuffer_)
+            lock (m_utilStringBuffer_) // ICU4N TODO: Need to check here whether this lock applies to the StringBuffer. We may actually need to lock it here.
             {
                 m_utilStringBuffer_.Length = 0;
                 m_algorithm_[index].AppendName(codepoint, m_utilStringBuffer_);
@@ -1267,7 +1267,7 @@ namespace ICU4N.Impl
             )
             {
                 // index in terms integer index
-                lock (m_utilStringBuffer_)
+                lock (m_utilStringBuffer_) // ICU4N TODO: Need to check here whether this lock applies to the StringBuffer. We may actually need to lock it here.
                 {
                     m_utilStringBuffer_.Length = 0;
 

@@ -718,7 +718,7 @@ namespace ICU4N.Impl
                 {
                     bool four = c <= 0xFFFF;
                     buf.Append(four ? "\\u" : "\\U");
-                    buf.Append(Hex(c, four ? 4 : 8));
+                    buf.AppendFormatHex(c, four ? 4 : 8);
                 }
             }
             return buf.ToString();
@@ -1012,14 +1012,55 @@ namespace ICU4N.Impl
         /// </summary>
         public static string Hex(long i, int places) // ICU4N TODO: API - create overload that writes to Span<char> and use throughout ICU4N. Do not throw excpetions.
         {
-            if (i == long.MinValue) return Int64MinHexValue;
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                sb.AppendFormatHex(i, places);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Supplies a zero-padded hex representation of an integer (without 0x).
+        /// </summary>
+        /// <param name="i">The number to convert.</param>
+        /// <param name="places">The number of places to pad the hexadecimal number to.</param>
+        /// <param name="destination">Upon successful return, will contain the result of the conversion.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters
+        /// that are usable in destination; otherwise, this is the length of buffer that will need to be allocated
+        /// to succeed in another attempt.</param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        public static bool TryFormatHex(long i, int places, Span<char> destination, out int charsLength) // ICU4N specific so we don't have to use heap
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                sb.AppendFormatHex(i, places);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        // ICU4N: Extracted business logic from Hex() so it can be used without allocating strings
+        internal static void AppendFormatHex(this ref ValueStringBuilder destination, long i, int places)
+        {
+            if (i == long.MinValue)
+            {
+                destination.Append(Int64MinHexValue);
+                return;
+            }
             bool negative = i < 0;
             if (negative)
             {
                 i = -i;
             }
-            //string result = Long.toString(i, 16).toUpperCase(Locale.ENGLISH);
-
             // ICU4N: Use built-in precision specifier instead of substring
             int length = places + (negative ? 1 : 0) + 16;
             bool usePool = length > CharStackBufferSize;
@@ -1031,11 +1072,13 @@ namespace ICU4N.Impl
 
                 Span<char> format = stackalloc char[16]; // ICU4N: This is more than enough for the longest positive integer
                 format[0] = 'X';
-                J2N.Numerics.Int32.TryFormat(places, format.Slice(1), out int intLength, provider: CultureInfo.InvariantCulture);
-
-                bool success = J2N.Numerics.Int64.TryFormat(i, buffer.Slice(1), out int charsWritten, format.Slice(0, intLength + 1), CultureInfo.InvariantCulture);
+                bool success = J2N.Numerics.Int32.TryFormat(places, format.Slice(1), out int intLength, provider: CultureInfo.InvariantCulture);
                 if (!success)
-                    throw new ArgumentException("Not enough characters in buffer.");
+                    throw new InvalidOperationException("Not enough characters in format."); // Unexpected
+
+                success = J2N.Numerics.Int64.TryFormat(i, buffer.Slice(1), out int charsWritten, format.Slice(0, intLength + 1), CultureInfo.InvariantCulture);
+                if (!success)
+                    throw new InvalidOperationException("Not enough characters in buffer."); // Unexpected
 
                 int start = 1, totalLength = charsWritten;
                 if (negative)
@@ -1043,7 +1086,7 @@ namespace ICU4N.Impl
                     start -= 1;
                     totalLength += 1;
                 }
-                return buffer.Slice(start, totalLength).ToString();
+                destination.Append(buffer.Slice(start, totalLength));
             }
             finally
             {
@@ -1052,14 +1095,136 @@ namespace ICU4N.Impl
             }
         }
 
-#nullable restore
-
         // ICU4N specific - Hex(ICharSequence s) moved to Utility.generated.tt
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            return Hex(s.AsSpan());
+        }
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(ReadOnlySpan<char> s)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Hex(s, 4, ",".AsSpan(), true, ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
 
         // ICU4N specific - Hex(ICharSequence s, int width, ICharSequence separator, bool useCodePoints, 
         //      StringBuilder result) moved to Utility.generated.tt
 
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static StringBuilder Hex(ReadOnlySpan<char> s, int width, ReadOnlySpan<char> separator, bool useCodePoints, StringBuilder result) // ICU4N TODO: Factor out and replace with Span<char> overload
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Hex(s, width, separator, useCodePoints, ref sb);
+                return result.Append(sb.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="IAppendable"/>.
+        /// </summary>
+        public static T Hex<T>(ReadOnlySpan<char> s, int width, ReadOnlySpan<char> separator, bool useCodePoints, T result) where T : IAppendable // ICU4N TODO: Factor out and replace with Span<char> overload
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Hex(s, width, separator, useCodePoints, ref sb);
+                return result.Append(sb.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Convert a string to separated groups of hex uppercase
+        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
+        /// to the given <see cref="ValueStringBuilder"/>.
+        /// </summary>
+        internal static void Hex(ReadOnlySpan<char> s, int width, ReadOnlySpan<char> separator, bool useCodePoints, ref ValueStringBuilder result)
+        {
+            // ICU4N: Removed unnecessary try/catch
+            if (useCodePoints)
+            {
+                int cp;
+                for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+                {
+                    cp = Character.CodePointAt(s, i);
+                    if (i != 0)
+                    {
+                        result.Append(separator);
+                    }
+                    result.AppendFormatHex(cp, width);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < s.Length; ++i)
+                {
+                    if (i != 0)
+                    {
+                        result.Append(separator);
+                    }
+                    result.AppendFormatHex(s[i], width);
+                }
+            }
+        }
+
         // ICU4N specific - Hex(ICharSequence s, int width, ICharSequence separator) moved to Utility.generated.tt
+
+        /// <summary>
+        /// Convert a string to comma-separated groups of 4 hex uppercase
+        /// digits.  E.g., hex('ab') => "0041,0042".
+        /// </summary>
+        public static string Hex(ReadOnlySpan<char> s, int width, ReadOnlySpan<char> separator)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Hex(s, width, separator, true, ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+
+#nullable restore
 
         /// <summary>
         /// Split a string into pieces based on the given <paramref name="divider"/> character

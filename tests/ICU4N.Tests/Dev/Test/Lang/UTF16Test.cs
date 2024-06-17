@@ -1860,7 +1860,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 for (int i = 0; i <= length; ++i)
                 {
-                    StringBuffer s = new StringBuffer(str.Substring(0, i)); // ICU4N: Checked 2nd parameter
+                    ReadOnlySpan<char> s = str.AsSpan(0, i); // ICU4N: Checked 2nd parameter
                     for (int number = -1; number <= ((length - i) + 2); ++number)
                     {
                         bool flag = UTF16.HasMoreCodePointsThan(s, number);

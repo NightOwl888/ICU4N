@@ -405,7 +405,7 @@ namespace ICU4N.Text
         /// </returns>
         /// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is out of bounds.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int Bounds(StringBuilder source, int offset16)
+        public static int Bounds(StringBuilder source, int offset16) // ICU4N TODO: API - Factor out (StringBuilder is too slow)
         {
             char ch = source[offset16];
             if (IsSurrogate(ch))
@@ -686,7 +686,7 @@ namespace ICU4N.Text
         /// <param name="offset16">The UTF16 index to the codepoint in source.</param>
         /// <returns>String value of the codepoint at <paramref name="offset16"/> in UTF16 format.</returns>
         /// <stable>ICU 2.1</stable>
-        public static string ValueOf(StringBuilder source, int offset16)
+        public static string ValueOf(StringBuilder source, int offset16) // ICU4N TODO: API - Factor out (StringBuilder is too slow)
         {
             switch (Bounds(source, offset16))
             {
@@ -772,7 +772,7 @@ namespace ICU4N.Text
         /// <returns>UTF-16 offset.</returns>
         /// <exception cref="IndexOutOfRangeException">If <paramref name="offset32"/> is out of bounds.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int FindOffsetFromCodePoint(StringBuilder source, int offset32)
+        public static int FindOffsetFromCodePoint(StringBuilder source, int offset32) // ICU4N TODO: API - Factor out (StringBuilder is too slow)
         {
             char ch;
             int size = source.Length, result = 0, count = offset32;
@@ -896,6 +896,64 @@ namespace ICU4N.Text
         }
 
         /// <summary>
+        /// Returns the UTF-32 offset corresponding to the first UTF-32 boundary at or after the given
+        /// UTF-16 offset. Used for random access. See the <see cref="UTF16"/> class description for
+        /// notes on roundtripping.
+        /// <para/>
+        /// <i>Note: If the UTF-16 offset is into the middle of a surrogate pair, then the UTF-32 offset
+        /// of the <strong>lead</strong> of the pair is returned. </i>
+        /// <para/>
+        /// To find the UTF-32 length of a string, use:
+        /// <code>
+        /// len32 = UTF16.CountCodePoint(source, source.Length);
+        /// </code>
+        /// </summary>
+        /// <param name="source">Text to analyze.</param>
+        /// <param name="offset16">UTF-16 offset &lt; source text length.</param>
+        /// <returns>UTF-32 offset.</returns>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is out of bounds.</exception>
+        /// <stable>ICU 2.1</stable>
+        public static int FindCodePointOffset(ReadOnlySpan<char> source, int offset16) // ICU4N TODO: API - review whether it makes sense to make this public and/or to remove the offset parameter
+        {
+            if (offset16 < 0 || offset16 > source.Length)
+            {
+                throw new IndexOutOfRangeException(nameof(offset16)); // ICU4N TODO: API - fix exception type
+            }
+
+            int result = 0;
+            char ch;
+            bool hadLeadSurrogate = false;
+
+            for (int i = 0; i < offset16; ++i)
+            {
+                ch = source[i];
+                if (hadLeadSurrogate && IsTrailSurrogate(ch))
+                {
+                    hadLeadSurrogate = false; // count valid trail as zero
+                }
+                else
+                {
+                    hadLeadSurrogate = IsLeadSurrogate(ch);
+                    ++result; // count others as 1
+                }
+            }
+
+            if (offset16 == source.Length)
+            {
+                return result;
+            }
+
+            // end of source being the less significant surrogate character
+            // shift result back to the start of the supplementary character
+            if (hadLeadSurrogate && (IsTrailSurrogate(source[offset16])))
+            {
+                result--;
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Returns the UTF-32 offset corresponding to the first UTF-32 boundary at the given UTF-16
         /// offset. Used for random access. See the <see cref="UTF16"/> class description for notes on
         /// roundtripping.
@@ -913,7 +971,7 @@ namespace ICU4N.Text
         /// <returns>UTF-32 offset.</returns>
         /// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is out of bounds.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int FindCodePointOffset(StringBuilder source, int offset16)
+        public static int FindCodePointOffset(StringBuilder source, int offset16) // ICU4N TODO: Factor out (StringBuilder is too slow)
         {
             if (offset16 < 0 || offset16 > source.Length)
             {
@@ -1025,7 +1083,7 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">Thrown when <paramref name="char32"/> does not 
         /// lie within the range of the Unicode codepoints.</exception>
         /// <stable>ICU 2.1</stable>
-        public static StringBuilder Append(StringBuilder target, int char32)
+        public static StringBuilder Append(StringBuilder target, int char32) // ICU4N TODO: API - Factor out (this is identical to AppendCodePoint())
         {
             // Check for irregular values
             if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
@@ -1055,7 +1113,7 @@ namespace ICU4N.Text
         /// <returns>The updated <see cref="StringBuilder"/>.</returns>
         /// <exception cref="ArgumentException">If cp is not a valid code point.</exception>
         /// <stable>ICU 3.0</stable>
-        public static StringBuilder AppendCodePoint(StringBuilder target, int cp)
+        public static StringBuilder AppendCodePoint(StringBuilder target, int cp) // ICU4N TODO: API - we probably don't need this
         {
             return Append(target, cp);
         }
@@ -1070,7 +1128,7 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">Thrown if there is not enough space for the append, or when 
         /// <paramref name="char32"/> does not lie within the range of the Unicode codepoints.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int Append(char[] target, int limit, int char32)
+        public static int Append(char[] target, int limit, int char32) // ICU4N TODO: API - Factor out (we have ValueStringBuilder/OpenStringBuilder for this)
         {
             // Check for irregular values
             if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
@@ -1099,6 +1157,21 @@ namespace ICU4N.Text
         public static int CountCodePoint(string source)
         {
             if (source == null || source.Length == 0)
+            {
+                return 0;
+            }
+            return FindCodePointOffset(source, source.Length);
+        }
+
+        /// <summary>
+        /// Number of codepoints in a UTF16 string.
+        /// </summary>
+        /// <param name="source">UTF16 string.</param>
+        /// <returns>Number of codepoint in string.</returns>
+        /// <stable>ICU 2.1</stable>
+        public static int CountCodePoint(ReadOnlySpan<char> source)
+        {
+            if (source.Length == 0)
             {
                 return 0;
             }
@@ -2437,9 +2510,31 @@ namespace ICU4N.Text
             {
                 return true;
             }
-            if (source == null)
+            if (source is null)
             {
                 return false;
+            }
+
+            return HasMoreCodePointsThan(source.AsSpan(), number);
+        }
+
+        /// <summary>
+        /// Check if the string contains more Unicode code points than a certain <paramref name="number"/>. This is more
+        /// efficient than counting all code points in the entire string and comparing that <paramref name="number"/> with a
+        /// threshold. This function may not need to scan the string at all if the length is within a
+        /// certain range, and never needs to count more than '<paramref name="number"/> + 1' code points. Logically
+        /// equivalent to (UTF16.CountCodePoint(s) &gt; <paramref name="number"/>). A Unicode code point may occupy either one or two
+        /// code units.
+        /// </summary>
+        /// <param name="source">The input string.</param>
+        /// <param name="number">The number of code points in the string is compared against the '<paramref name="number"/>' parameter.</param>
+        /// <returns>Boolean value for whether the string contains more Unicode code points than '<paramref name="number"/>'.</returns>
+        /// <stable>ICU 2.4</stable>
+        public static bool HasMoreCodePointsThan(ReadOnlySpan<char> source, int number)
+        {
+            if (number < 0)
+            {
+                return true;
             }
             int length = source.Length;
 
@@ -2504,7 +2599,7 @@ namespace ICU4N.Text
         /// <returns>Boolean value for whether the string contains more Unicode code points than '<paramref name="number"/>'.</returns>
         /// <exception cref="IndexOutOfRangeException">Thrown when <paramref name="limit"/> &lt; <paramref name="start"/>.</exception>
         /// <stable>ICU 2.4</stable>
-        public static bool HasMoreCodePointsThan(char[] source, int start, int limit, int number)
+        public static bool HasMoreCodePointsThan(char[] source, int start, int limit, int number) // ICU4N TODO: API - factor out and replace with ReadOnlySpan<char> overload
         {
             int length = limit - start;
             if (length < 0 || start < 0 || limit < 0)
@@ -2577,7 +2672,7 @@ namespace ICU4N.Text
         /// <param name="number">The number of code points in the string buffer is compared against the '<paramref name="number"/>' parameter.</param>
         /// <returns>Boolean value for whether the string buffer contains more Unicode code points than '<paramref name="number"/>'.</returns>
         /// <stable>ICU 2.4</stable>
-        public static bool HasMoreCodePointsThan(StringBuilder source, int number)
+        public static bool HasMoreCodePointsThan(StringBuilder source, int number) // ICU4N TODO: API - Factor out (StringBuilder is too slow)
         {
             if (number < 0)
             {
