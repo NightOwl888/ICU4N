@@ -7,6 +7,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -1004,12 +1005,14 @@ namespace ICU4N.Impl
 
 #nullable enable
 
+        private const string Int64MinHexValue = "-8000000000000000";
+
         /// <summary>
         /// Supplies a zero-padded hex representation of an integer (without 0x)
         /// </summary>
-        static public string Hex(long i, int places)
+        public static string Hex(long i, int places) // ICU4N TODO: API - create overload that writes to Span<char> and use throughout ICU4N. Do not throw excpetions.
         {
-            if (i == long.MinValue) return "-8000000000000000";
+            if (i == long.MinValue) return Int64MinHexValue;
             bool negative = i < 0;
             if (negative)
             {
@@ -1069,7 +1072,7 @@ namespace ICU4N.Impl
         /// accomodate all output.  Adjacent instances of the <paramref name="divider"/>
         /// character will place empty strings into output.  Before
         /// returning, output is padded out with empty strings.</param>
-        public static void Split(string s, char divider, string[] output)
+        public static void Split(string s, char divider, string[] output) // ICU4N TODO: API - factor out (we don't want to use string[])
         {
             int last = 0;
             int current = 0;
@@ -1098,7 +1101,7 @@ namespace ICU4N.Impl
         /// <returns>An array of the substrings between
         /// instances of <paramref name="divider"/>. Adjacent instances of the <paramref name="divider"/>
         /// character will place empty strings into output.</returns>
-        public static string[] Split(string s, char divider)
+        public static string[] Split(string s, char divider) // ICU4N TODO: API - factor out (we don't want to use string[])
         {
             int last = 0;
             int i;
@@ -1125,7 +1128,7 @@ namespace ICU4N.Impl
         /// look for source.</param>
         /// <returns>The index of target at which source first occurs, or -1
         /// if not found.</returns>
-        public static int Lookup(string source, string[] target)
+        public static int Lookup(string source, string[] target) // ICU4N TODO: API - factor out (we don't want to use string[])
         {
             for (int i = 0; i < target.Length; ++i)
             {
@@ -1422,7 +1425,7 @@ namespace ICU4N.Impl
             return buf.ToString();
         }
 
-        internal static readonly char[] DIGITS = {
+        private static readonly char[] DIGITS = new char[] {
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
             'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
@@ -1495,6 +1498,85 @@ namespace ICU4N.Impl
 
         // ICU4N specific - EscapeUnprintable(IAppendable result, int c)
         //    moved to Utility.generated.tt
+
+        /// <summary>
+        /// Escape unprintable characters using \uxxxx notation
+        /// for U+0000 to U+FFFF and \Uxxxxxxxx for U+10000 and
+        /// above. If the character is printable ASCII, then do nothing
+        /// and return FALSE. Otherwise, append the escaped notation and
+        /// return TRUE.
+        /// </summary>
+        public static bool EscapeUnprintable(StringBuilder result, int c) // ICU4N TODO: API - Rename TryEscapeUnprintable, since this does nothing if it fails
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                bool success = EscapeUnprintable(ref sb, c);
+                result.Append(sb.AsSpan());
+                return success;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Escape unprintable characters using \uxxxx notation
+        /// for U+0000 to U+FFFF and \Uxxxxxxxx for U+10000 and
+        /// above. If the character is printable ASCII, then do nothing
+        /// and return FALSE. Otherwise, append the escaped notation and
+        /// return TRUE.
+        /// </summary>
+        public static bool EscapeUnprintable(IAppendable result, int c) // ICU4N TODO: API - Rename TryEscapeUnprintable, since this does nothing if it fails
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                bool success = EscapeUnprintable(ref sb, c);
+                result.Append(sb.AsSpan());
+                return success;
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Escape unprintable characters using \uxxxx notation
+        /// for U+0000 to U+FFFF and \Uxxxxxxxx for U+10000 and
+        /// above. If the character is printable ASCII, then do nothing
+        /// and return FALSE. Otherwise, append the escaped notation and
+        /// return TRUE.
+        /// </summary>
+        internal static bool EscapeUnprintable(ref ValueStringBuilder result, int c) // ICU4N TODO: API - Rename TryEscapeUnprintable, since this does nothing if it fails
+        {
+            // ICU4N TODO: API - Make an overload named Escape that writes to a Span<char> (6 chars).
+            // ICU4N: Removed unnecessary try/catch
+            if (IsUnprintable(c))
+            {
+                result.Append('\\');
+                if ((c & ~0xFFFF) != 0)
+                {
+                    result.Append('U');
+                    result.Append(DIGITS[0xF & (c >> 28)]);
+                    result.Append(DIGITS[0xF & (c >> 24)]);
+                    result.Append(DIGITS[0xF & (c >> 20)]);
+                    result.Append(DIGITS[0xF & (c >> 16)]);
+                }
+                else
+                {
+                    result.Append('u');
+                }
+                result.Append(DIGITS[0xF & (c >> 12)]);
+                result.Append(DIGITS[0xF & (c >> 8)]);
+                result.Append(DIGITS[0xF & (c >> 4)]);
+                result.Append(DIGITS[0xF & c]);
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Returns the index of the first character in a set, ignoring quoted text.
