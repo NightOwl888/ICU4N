@@ -106,13 +106,24 @@ namespace ICU4N.Text
         /// <param name="first">First string, should be normalized.</param>
         /// <param name="second">Second string, will be normalized.</param>
         /// <returns><paramref name="first"/></returns>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override StringBuilder NormalizeSecondAndAppend(
             StringBuilder first, ReadOnlySpan<char> second)
         {
-            return NormalizeSecondAndAppend(first, second, doNormalize: true);
+            int length = first.Length + second.Length + 16;
+            ValueStringBuilder sb = length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(length);
+            try
+            {
+                sb.Append(first);
+                NormalizeSecondAndAppend(ref sb, second, doNormalize: true);
+                first.Length = 0;
+                return first.Append(sb.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
 #if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
@@ -138,12 +149,23 @@ namespace ICU4N.Text
         /// <param name="second">Second string, should be normalized.</param>
         /// <returns><paramref name="first"/></returns>
         /// <stable>ICU 4.4</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override StringBuilder Append(StringBuilder first, ReadOnlySpan<char> second)
         {
-            return NormalizeSecondAndAppend(first, second, doNormalize: false);
+            int length = first.Length + second.Length + 16;
+            ValueStringBuilder sb = length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(length);
+            try
+            {
+                sb.Append(first);
+                NormalizeSecondAndAppend(ref sb, second, doNormalize: false);
+                first.Length = 0;
+                return first.Append(sb.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
 #if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
@@ -662,67 +684,6 @@ namespace ICU4N.Text
         #endregion Normalize(ICharSequence, IAppendable, SpanCondition)
 
         #region NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool)
-
-        private StringBuilder NormalizeSecondAndAppend(StringBuilder first, ReadOnlySpan<char> second,
-                                                       bool doNormalize)
-        {
-            if (first.Length == 0)
-            {
-                if (doNormalize)
-                {
-                    return Normalize(second, first);
-                }
-                else
-                {
-                    return first.Append(second);
-                }
-            }
-            // merge the in-filter suffix of the first string with the in-filter prefix of the second
-            int prefixLimit = set.Span(second, 0, SpanCondition.Simple);
-            if (prefixLimit != 0)
-            {
-                var prefix = second.Slice(0, prefixLimit - 0); // ICU4N: Checked 2nd parameter
-                int suffixStart = set.SpanBack(first, 0x7fffffff, SpanCondition.Simple);
-                if (suffixStart == 0)
-                {
-                    if (doNormalize)
-                    {
-                        norm2.NormalizeSecondAndAppend(first, prefix);
-                    }
-                    else
-                    {
-                        norm2.Append(first, prefix);
-                    }
-                }
-                else
-                {
-                    StringBuilder middle = new StringBuilder(
-                            first.ToString(suffixStart, first.Length - suffixStart)); // ICU4N: Changed 2nd parameter
-                    if (doNormalize)
-                    {
-                        norm2.NormalizeSecondAndAppend(middle, prefix);
-                    }
-                    else
-                    {
-                        norm2.Append(middle, prefix);
-                    }
-                    first.Delete(suffixStart, 0x7fffffff - suffixStart).Append(middle); // ICU4N: Corrected 2nd parameter of Delete
-                }
-            }
-            if (prefixLimit < second.Length)
-            {
-                var rest = second.Slice(prefixLimit, second.Length - prefixLimit); // ICU4N: Corrected 2nd parameter
-                if (doNormalize)
-                {
-                    Normalize(rest, first, SpanCondition.NotContained);
-                }
-                else
-                {
-                    first.Append(rest);
-                }
-            }
-            return first;
-        }
 
         private void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second,
                                                bool doNormalize)
