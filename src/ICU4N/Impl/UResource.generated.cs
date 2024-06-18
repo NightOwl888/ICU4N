@@ -38,13 +38,13 @@ namespace ICU4N.Impl
 
         private bool RegionMatches(int start, ICharSequence cs, int n)
         {
-            if (cs is StringBuilderCharSequence stringBuilder)
-            {
-                if (!stringBuilder.HasValue) return false;
-                // ICU4N: Indexing StringBuilder is really slow,
-                // so we cascade the call.
-                return RegionMatches(start, stringBuilder.Value, n);
-            }
+            //if (cs is StringBuilderCharSequence stringBuilder)
+            //{
+            //    if (!stringBuilder.HasValue) return false;
+            //    // ICU4N: Indexing StringBuilder is really slow,
+            //    // so we cascade the call.
+            //    return RegionMatches(start, stringBuilder.Value, n);
+            //}
             for (int i = 0; i < n; ++i)
             {
                 if (bytes[offset + start + i] != cs[i])
@@ -272,10 +272,10 @@ namespace ICU4N.Impl
         {
             if (cs is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
             if (!cs.HasValue) return 1;
-            if (cs is StringBuilderCharSequence stringBuilder)
-            {
-                return CompareTo(stringBuilder.Value);
-            }
+            //if (cs is StringBuilderCharSequence stringBuilder)
+            //{
+            //    return CompareTo(stringBuilder.Value);
+            //}
 
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;

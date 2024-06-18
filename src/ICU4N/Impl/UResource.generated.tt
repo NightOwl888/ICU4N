@@ -58,13 +58,13 @@ namespace ICU4N.Impl
             return RegionMatches(0, cs.ToString(start, n), n);
 <# } else { #>
 <# if (charSequence == "ICharSequence") { #>
-            if (cs is StringBuilderCharSequence stringBuilder)
-            {
-                if (!stringBuilder.HasValue) return false;
-                // ICU4N: Indexing StringBuilder is really slow,
-                // so we cascade the call.
-                return RegionMatches(start, stringBuilder.Value, n);
-            }
+            //if (cs is StringBuilderCharSequence stringBuilder)
+            //{
+            //    if (!stringBuilder.HasValue) return false;
+            //    // ICU4N: Indexing StringBuilder is really slow,
+            //    // so we cascade the call.
+            //    return RegionMatches(start, stringBuilder.Value, n);
+            //}
 <# } #>
             for (int i = 0; i < n; ++i)
             {
@@ -172,10 +172,10 @@ namespace ICU4N.Impl
 <# } else { #>
 <# if (charSequence == "ICharSequence") { #>
             if (!cs.HasValue) return 1;
-            if (cs is StringBuilderCharSequence stringBuilder)
-            {
-                return CompareTo(stringBuilder.Value);
-            }
+            //if (cs is StringBuilderCharSequence stringBuilder)
+            //{
+            //    return CompareTo(stringBuilder.Value);
+            //}
 <# } #>
 
             int csLength = cs.Length;
