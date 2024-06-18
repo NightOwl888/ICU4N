@@ -29,6 +29,7 @@
   <!-- Features in .NET Core 3.x, .NET 5.x, .NET 6.x, and .NET 7.x -->
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('netcoreapp3.')) Or $(TargetFramework.StartsWith('net5.')) Or $(TargetFramework.StartsWith('net6.')) Or $(TargetFramework.StartsWith('net7.')) ">
 
+    <DefineConstants>$(DefineConstants);FEATURE_MEMORYEXTENSIONS_LASTINDEXOF_COMPARISONTYPE</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_RUNE</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_STRING_CONCAT_READONLYSPAN</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_STRING_GETHASHCODE_READONLYSPAN</DefineConstants>

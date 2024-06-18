@@ -374,6 +374,25 @@ namespace ICU4N.Impl
         /// </summary>
         public static int Compare(string stra, string strb)
         {
+            // ICU4N: Added null logic so we don't throw
+            if (stra is null)
+            {
+                if (strb is null) return 0;
+                return 1;
+            }
+            else if (strb is null)
+                return -1;
+
+            return Compare(stra.AsSpan(), strb.AsSpan());
+        }
+
+        /// <summary>
+        /// Compare two property names, returning &lt;0, 0, or >0.  The
+        /// comparison is that described as "loose" matching in the
+        /// Property*Aliases.txt files.
+        /// </summary>
+        public static int Compare(ReadOnlySpan<char> stra, ReadOnlySpan<char> strb)
+        {
             // Note: This implementation is a literal copy of
             // uprv_comparePropertyNames.  It can probably be improved.
             int istra = 0, istrb = 0, rc;

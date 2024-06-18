@@ -1,6 +1,5 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
-using ICU4N.Support.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Collections.Generic.Extensions;
@@ -10,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -127,11 +127,25 @@ namespace ICU4N.Text
         /// <stable>ICU 54</stable>
         public override string ToString()
         {
-            StringBuilder b = new StringBuilder();
-            return (
-                    Codepoint == CodepointEnd ? UnicodeSet.AppendToPat(b, Codepoint, false)
-                            : UnicodeSet.AppendToPat(UnicodeSet.AppendToPat(b, Codepoint, false).Append('-'), CodepointEnd, false))
-                            .ToString();
+            ValueStringBuilder b = new ValueStringBuilder(stackalloc char[UnicodeSet.CharStackBufferSize]);
+            try
+            {
+                if (Codepoint == CodepointEnd)
+                {
+                    UnicodeSet.AppendToPat(ref b, Codepoint, false);
+                }
+                else
+                {
+                    UnicodeSet.AppendToPat(ref b, Codepoint, false);
+                    b.Append('-');
+                    UnicodeSet.AppendToPat(ref b, CodepointEnd, false);
+                }
+                return b.ToString();
+            }
+            finally
+            {
+                b.Dispose();
+            }
         }
     }
 
@@ -243,7 +257,7 @@ namespace ICU4N.Text
     /// <c><see cref="MinValue"/>-<see cref="MaxValue"/></c>.
     /// <para/>
     /// The second API is the
-    /// <see cref="ApplyPattern(string)"/>/<see cref="ToPattern(StringBuilder, bool)"/> API from the
+    /// <see cref="ApplyPattern(string)"/>/<see cref="ToPattern(bool)"/> API from the
     /// <c>java.text.Format</c>-derived classes.  Unlike the
     /// methods that add characters, add categories, and control the logic
     /// of the set, the method <see cref="ApplyPattern(string)"/> sets all
@@ -256,7 +270,7 @@ namespace ICU4N.Text
     /// <para/>
     /// Patterns are accepted by the constructors and the
     /// <see cref="ApplyPattern(string)"/> methods and returned by the
-    /// <see cref="ToPattern(StringBuilder, bool)"/> method.  These patterns follow a syntax
+    /// <see cref="ToPattern(bool)"/> method.  These patterns follow a syntax
     /// similar to that employed by .NET regular expression character
     /// classes.  Here are some simple examples:
     /// 
@@ -485,8 +499,11 @@ namespace ICU4N.Text
     /// <stable>ICU 2.0</stable>
     // ICU4N TODO: API - mark sealed (not sure why this wasn't done)
     // ICU4N TODO: API - change ToPattern() to ICustomFormatter.Format(string, object, IFormatProvider) ? Need to find corresponding API in .NET and change accordingly (see the "second API") in documentation above
+    // ICU4N TODO: Review and update above docs (they have some Java related stuff).
     public partial class UnicodeSet : UnicodeFilter, IEnumerable<string>, IComparable<UnicodeSet>, IFreezable<UnicodeSet>
     {
+        internal const int CharStackBufferSize = 32;
+
         private static readonly object syncLock = new object();
 
         /// <summary>
@@ -535,7 +552,7 @@ namespace ICU4N.Text
         /// <see cref="ApplyPattern(string)"/>, with variables substituted and whitespace
         /// removed.  For sets constructed without <see cref="ApplyPattern(string)"/>, or
         /// modified using the non-pattern API, this string will be null,
-        /// indicating that <see cref="ToPattern(StringBuilder, bool)"/> must generate a pattern
+        /// indicating that <see cref="ToPattern(bool)"/> must generate a pattern
         /// representation from the inversion list.
         /// </summary>
         private string pat = null;
@@ -837,13 +854,65 @@ namespace ICU4N.Text
                     ResemblesPropertyPattern(pattern, pos);
         }
 
-        // ICU4N specific - AppendCodePoint(IAppendable app, int c) moved to UnicodeSet.generated.tt
+        // ICU4N specific - AppendCodePoint(IAppendable app, int c) factored out because we aren't expecting exceptions from a StringBuilder
 
-        // ICU4N specific - Append(IAppendable app, ICharSequence s) moved to UnicodeSet.generated.tt
+        // ICU4N specific - Append(IAppendable app, ICharSequence s) factored out because we aren't expecting exceptions from a StringBuilder
 
-        // ICU4N specific - AppendToPat(IAppendable buf, string s, bool escapeUnprintable) moved to UnicodeSet.generated.tt
+        /// <summary>
+        /// Append the <see cref="ToPattern(bool)"/> representation of a
+        /// string to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        private static void AppendToPat(ref ValueStringBuilder buf, string s, bool escapeUnprintable)
+        {
+            int cp;
+            for (int i = 0; i < s.Length; i += Character.CharCount(cp))
+            {
+                cp = s.CodePointAt(i);
+                AppendToPat(ref buf, cp, escapeUnprintable);
+            }
+        }
 
-        // ICU4N specific - AppendToPat(IAppendable buf, int c, bool escapeUnprintable) moved to UnicodeSet.generated.tt
+        /// <summary>
+        /// Append the <see cref="ToPattern(bool)"/> representation of a
+        /// character to the given <see cref="StringBuilder"/>.
+        /// </summary>
+        internal static void AppendToPat(ref ValueStringBuilder buf, int c, bool escapeUnprintable)
+        {
+            // ICU4N: Removed unnecessary try/catch
+            if (escapeUnprintable && Utility.IsUnprintable(c))
+            {
+                // Use hex escape notation (<backslash>uxxxx or <backslash>Uxxxxxxxx) for anything
+                // unprintable
+                if (Utility.EscapeUnprintable(ref buf, c))
+                {
+                    return;
+                }
+            }
+            // Okay to let ':' pass through
+            switch (c)
+            {
+                case '[': // SET_OPEN:
+                case ']': // SET_CLOSE:
+                case '-': // HYPHEN:
+                case '^': // COMPLEMENT:
+                case '&': // INTERSECTION:
+                case '\\': //BACKSLASH:
+                case '{':
+                case '}':
+                case '$':
+                case ':':
+                    buf.Append('\\');
+                    break;
+                default:
+                    // Escape whitespace
+                    if (PatternProps.IsWhiteSpace(c))
+                    {
+                        buf.Append('\\');
+                    }
+                    break;
+            }
+            buf.AppendCodePoint(c);
+        }
 
         /// <summary>
         /// Returns a string representation of this set.  If the result of
@@ -857,11 +926,70 @@ namespace ICU4N.Text
             {
                 return pat;
             }
-            StringBuilder result = new StringBuilder();
-            return ToPattern(result, escapeUnprintable).ToString();
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToPattern(ref result, escapeUnprintable);
+                return result.ToString();
+            }
+            finally
+            {
+                result.Dispose();
+            }
         }
 
-        // ICU4N specific - ToPattern(IAppendable result, bool escapeUnprintable) moved to UnicodeSet.generated.tt
+        /// <summary>
+        /// Append a string representation of this set to result.  This will be
+        /// a cleaned version of the string passed to ApplyPattern(), if there
+        /// is one.  Otherwise it will be generated.
+        /// </summary>
+        private void ToPattern(ref ValueStringBuilder result, bool escapeUnprintable)
+        {
+            if (pat == null)
+            {
+                AppendNewPattern(ref result, escapeUnprintable, true);
+                return;
+            }
+            // ICU4N: Removed unnecessary try/catch
+            if (!escapeUnprintable)
+            {
+                result.Append(pat);
+                return;
+            }
+            bool oddNumberOfBackslashes = false;
+            for (int i = 0; i < pat.Length;)
+            {
+                int c = pat.CodePointAt(i);
+                i += Character.CharCount(c);
+                if (Utility.IsUnprintable(c))
+                {
+                    // If the unprintable character is preceded by an odd
+                    // number of backslashes, then it has been escaped
+                    // and we omit the last backslash.
+                    Utility.EscapeUnprintable(ref result, c);
+                    oddNumberOfBackslashes = false;
+                }
+                else if (!oddNumberOfBackslashes && c == '\\')
+                {
+                    // Temporarily withhold an odd-numbered backslash.
+                    oddNumberOfBackslashes = true;
+                }
+                else
+                {
+                    if (oddNumberOfBackslashes)
+                    {
+                        result.Append('\\');
+                    }
+                    result.AppendCodePoint(c);
+                    oddNumberOfBackslashes = false;
+                }
+            }
+            if (oddNumberOfBackslashes)
+            {
+                result.Append('\\');
+            }
+        }
+
 
         /// <summary>
         /// Generate and append a string representation of this set to result.
@@ -871,7 +999,7 @@ namespace ICU4N.Text
         /// <param name="result">The buffer into which to generate the pattern.</param>
         /// <param name="escapeUnprintable">Escape unprintable characters if true.</param>
         /// <stable>ICU 3.8</stable>
-        public virtual StringBuilder GeneratePattern(StringBuilder result, bool escapeUnprintable)
+        public virtual StringBuilder GeneratePattern(StringBuilder result, bool escapeUnprintable) // ICU4N TODO: API - Create primary overloads that write to Span<char> and return string, then factor out.
         {
             return GeneratePattern(result, escapeUnprintable, true);
         }
@@ -886,12 +1014,84 @@ namespace ICU4N.Text
         /// <param name="includeStrings">If false, doesn't include the strings.</param>
         /// <stable>ICU 3.8</stable>
         public virtual StringBuilder GeneratePattern(StringBuilder result,
-                bool escapeUnprintable, bool includeStrings)
+                bool escapeUnprintable, bool includeStrings) // ICU4N TODO: API - Create primary overloads that write to Span<char> and return string, then factor out.
         {
-            return AppendNewPattern(result, escapeUnprintable, includeStrings);
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                AppendNewPattern(ref sb, escapeUnprintable, includeStrings);
+                return result.Append(sb.AsSpan());
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
-        // ICU4N specific - AppendNewPattern(IAppendable result, bool escapeUnprintable, bool includeStrings) moved to UnicodeSet.generated.tt
+        private void AppendNewPattern(ref ValueStringBuilder result, bool escapeUnprintable, bool includeStrings)
+        {
+            // ICU4N: Removed unnecessary try/catch
+            result.Append('[');
+
+            int count = RangeCount;
+
+            // If the set contains at least 2 intervals and includes both
+            // MIN_VALUE and MAX_VALUE, then the inverse representation will
+            // be more economical.
+            if (count > 1 &&
+                    GetRangeStart(0) == MinValue &&
+                    GetRangeEnd(count - 1) == MaxValue)
+            {
+
+                // Emit the inverse
+                result.Append('^');
+
+                for (int i = 1; i < count; ++i)
+                {
+                    int start = GetRangeEnd(i - 1) + 1;
+                    int end = GetRangeStart(i) - 1;
+                    AppendToPat(ref result, start, escapeUnprintable);
+                    if (start != end)
+                    {
+                        if ((start + 1) != end)
+                        {
+                            result.Append('-');
+                        }
+                        AppendToPat(ref result, end, escapeUnprintable);
+                    }
+                }
+            }
+
+            // Default; emit the ranges as pairs
+            else
+            {
+                for (int i = 0; i < count; ++i)
+                {
+                    int start = GetRangeStart(i);
+                    int end = GetRangeEnd(i);
+                    AppendToPat(ref result, start, escapeUnprintable);
+                    if (start != end)
+                    {
+                        if ((start + 1) != end)
+                        {
+                            result.Append('-');
+                        }
+                        AppendToPat(ref result, end, escapeUnprintable);
+                    }
+                }
+            }
+
+            if (includeStrings && strings.Count > 0)
+            {
+                foreach (string s in strings)
+                {
+                    result.Append('{');
+                    AppendToPat(ref result, s, escapeUnprintable);
+                    result.Append('}');
+                }
+            }
+            result.Append(']');
+        }
 
         /// <summary>
         /// Returns the number of elements in this set (its cardinality)
@@ -1966,14 +2166,23 @@ namespace ICU4N.Text
             {
                 return ToString();
             }
-            StringBuilder result = new StringBuilder("(?:");
-            AppendNewPattern(result, true, false);
-            foreach (string s in strings)
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                result.Append('|');
-                AppendToPat(result, s, true);
+                result.Append("(?:");
+                AppendNewPattern(ref result, true, false);
+                foreach (string s in strings)
+                {
+                    result.Append('|');
+                    AppendToPat(ref result, s, true);
+                }
+                result.Append(')');
+                return result.ToString();
             }
-            return result.Append(")").ToString();
+            finally
+            {
+                result.Dispose();
+            }
         }
 
         /// <summary>
@@ -2364,13 +2573,13 @@ namespace ICU4N.Text
             bool parsePositionWasNull = pos == null;
             if (parsePositionWasNull)
             {
-                pos = new ParsePosition(0);
+                pos = new ParsePosition(0); // ICU4N TODO: Figure out how to factor this Java component out.
             }
 
-            StringBuilder rebuiltPat = new StringBuilder();
+            ValueStringBuilder rebuiltPat = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             RuleCharacterIterator chars =
                     new RuleCharacterIterator(pattern, symbols, pos);
-            ApplyPattern(chars, symbols, rebuiltPat.AsAppendable(), options);
+            ApplyPattern(chars, symbols, ref rebuiltPat, options);
             if (chars.InVariable)
             {
                 SyntaxError(chars, "Extra chars in variable value");
@@ -2433,7 +2642,7 @@ namespace ICU4N.Text
         /// <see cref="IgnoreSpace"/>, <see cref="Case"/>.
         /// </param>
         private void ApplyPattern(RuleCharacterIterator chars, ISymbolTable symbols,
-            IAppendable rebuiltPat, PatternOptions options)
+            ref ValueStringBuilder rebuiltPat, PatternOptions options)
         {
 
             // Syntax characters: [ ] ^ - & { }
@@ -2447,457 +2656,469 @@ namespace ICU4N.Text
                 opts |= RuleCharacterIteratorOptions.SkipWhitespace;
             }
 
-            StringBuilder patBuf = new StringBuilder(), buf = null;
-            bool usePat = false;
-            UnicodeSet scratch = null;
-            object backup = null;
-
-            // mode: 0=before [, 1=between [...], 2=after ]
-            // lastItem: 0=none, 1=char, 2=set
-            int lastItem = LAST0_START, lastChar = 0, mode = MODE0_NONE;
-            char op = (char)0;
-
-            bool invert = false;
-
-            Clear();
-            string lastString = null;
-
-            while (mode != MODE2_OUTBRACKET && !chars.AtEnd)
+            ValueStringBuilder patBuf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]),
+                buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                //Eclipse stated the following is "dead code"
-                /*
-                if (false) {
-                    // Debugging assertion
-                    if (!((lastItem == 0 && op == 0) ||
-                            (lastItem == 1 && (op == 0 || op == '-')) ||
-                            (lastItem == 2 && (op == 0 || op == '-' || op == '&')))) {
-                        throw new ArgumentException();
-                    }
-                }*/
+                bool usePat = false;
+                UnicodeSet scratch = null;
+                object backup = null;
 
-                int c = 0;
-                bool literal = false;
-                UnicodeSet nested = null;
+                // mode: 0=before [, 1=between [...], 2=after ]
+                // lastItem: 0=none, 1=char, 2=set
+                int lastItem = LAST0_START, lastChar = 0, mode = MODE0_NONE;
+                char op = (char)0;
 
-                // -------- Check for property pattern
+                bool invert = false;
 
-                // setMode: 0=none, 1=unicodeset, 2=propertypat, 3=preparsed
-                int setMode = SETMODE0_NONE;
-                if (ResemblesPropertyPattern(chars, opts))
+                Clear();
+                string lastString = null;
+
+                while (mode != MODE2_OUTBRACKET && !chars.AtEnd)
                 {
-                    setMode = SETMODE2_PROPERTYPAT;
-                }
-
-                // -------- Parse '[' of opening delimiter OR nested set.
-                // If there is a nested set, use `setMode' to define how
-                // the set should be parsed.  If the '[' is part of the
-                // opening delimiter for this pattern, parse special
-                // strings "[", "[^", "[-", and "[^-".  Check for stand-in
-                // characters representing a nested set in the symbol
-                // table.
-
-                else
-                {
-                    // Prepare to backup if necessary
-                    backup = chars.GetPos(backup);
-                    c = chars.Next(opts);
-                    literal = chars.IsEscaped;
-
-                    if (c == '[' && !literal)
-                    {
-                        if (mode == MODE1_INBRACKET)
-                        {
-                            chars.SetPos(backup); // backup
-                            setMode = SETMODE1_UNICODESET;
+                    //Eclipse stated the following is "dead code"
+                    /*
+                    if (false) {
+                        // Debugging assertion
+                        if (!((lastItem == 0 && op == 0) ||
+                                (lastItem == 1 && (op == 0 || op == '-')) ||
+                                (lastItem == 2 && (op == 0 || op == '-' || op == '&')))) {
+                            throw new ArgumentException();
                         }
-                        else
+                    }*/
+
+                    int c = 0;
+                    bool literal = false;
+                    UnicodeSet nested = null;
+
+                    // -------- Check for property pattern
+
+                    // setMode: 0=none, 1=unicodeset, 2=propertypat, 3=preparsed
+                    int setMode = SETMODE0_NONE;
+                    if (ResemblesPropertyPattern(chars, opts))
+                    {
+                        setMode = SETMODE2_PROPERTYPAT;
+                    }
+
+                    // -------- Parse '[' of opening delimiter OR nested set.
+                    // If there is a nested set, use `setMode' to define how
+                    // the set should be parsed.  If the '[' is part of the
+                    // opening delimiter for this pattern, parse special
+                    // strings "[", "[^", "[-", and "[^-".  Check for stand-in
+                    // characters representing a nested set in the symbol
+                    // table.
+
+                    else
+                    {
+                        // Prepare to backup if necessary
+                        backup = chars.GetPos(backup);
+                        c = chars.Next(opts);
+                        literal = chars.IsEscaped;
+
+                        if (c == '[' && !literal)
                         {
-                            // Handle opening '[' delimiter
-                            mode = MODE1_INBRACKET;
-                            patBuf.Append('[');
-                            backup = chars.GetPos(backup); // prepare to backup
-                            c = chars.Next(opts);
-                            literal = chars.IsEscaped;
-                            if (c == '^' && !literal)
+                            if (mode == MODE1_INBRACKET)
                             {
-                                invert = true;
-                                patBuf.Append('^');
+                                chars.SetPos(backup); // backup
+                                setMode = SETMODE1_UNICODESET;
+                            }
+                            else
+                            {
+                                // Handle opening '[' delimiter
+                                mode = MODE1_INBRACKET;
+                                patBuf.Append('[');
                                 backup = chars.GetPos(backup); // prepare to backup
                                 c = chars.Next(opts);
                                 literal = chars.IsEscaped;
+                                if (c == '^' && !literal)
+                                {
+                                    invert = true;
+                                    patBuf.Append('^');
+                                    backup = chars.GetPos(backup); // prepare to backup
+                                    c = chars.Next(opts);
+                                    literal = chars.IsEscaped;
+                                }
+                                // Fall through to handle special leading '-';
+                                // otherwise restart loop for nested [], \p{}, etc.
+                                if (c == '-')
+                                {
+                                    literal = true;
+                                    // Fall through to handle literal '-' below
+                                }
+                                else
+                                {
+                                    chars.SetPos(backup); // backup
+                                    continue;
+                                }
                             }
-                            // Fall through to handle special leading '-';
-                            // otherwise restart loop for nested [], \p{}, etc.
-                            if (c == '-')
+                        }
+                        else if (symbols != null)
+                        {
+                            IUnicodeMatcher m = symbols.LookupMatcher(c); // may be null
+                            if (m != null)
                             {
-                                literal = true;
-                                // Fall through to handle literal '-' below
-                            }
-                            else
-                            {
-                                chars.SetPos(backup); // backup
-                                continue;
+                                try
+                                {
+                                    nested = (UnicodeSet)m;
+                                    setMode = SETMODE3_PREPARSED;
+                                }
+                                catch (InvalidCastException e)
+                                {
+                                    SyntaxError(chars, "Syntax error", e);
+                                }
                             }
                         }
                     }
-                    else if (symbols != null)
-                    {
-                        IUnicodeMatcher m = symbols.LookupMatcher(c); // may be null
-                        if (m != null)
-                        {
-                            try
-                            {
-                                nested = (UnicodeSet)m;
-                                setMode = SETMODE3_PREPARSED;
-                            }
-                            catch (InvalidCastException e)
-                            {
-                                SyntaxError(chars, "Syntax error", e);
-                            }
-                        }
-                    }
-                }
 
-                // -------- Handle a nested set.  This either is inline in
-                // the pattern or represented by a stand-in that has
-                // previously been parsed and was looked up in the symbol
-                // table.
+                    // -------- Handle a nested set.  This either is inline in
+                    // the pattern or represented by a stand-in that has
+                    // previously been parsed and was looked up in the symbol
+                    // table.
 
-                if (setMode != SETMODE0_NONE)
-                {
-                    if (lastItem == LAST1_RANGE)
+                    if (setMode != SETMODE0_NONE)
                     {
-                        if (op != 0)
+                        if (lastItem == LAST1_RANGE)
                         {
-                            SyntaxError(chars, "Char expected after operator");
+                            if (op != 0)
+                            {
+                                SyntaxError(chars, "Char expected after operator");
+                            }
+                            AddUnchecked(lastChar, lastChar);
+                            AppendToPat(ref patBuf, lastChar, false);
+                            lastItem = LAST0_START;
+                            op = (char)0;
                         }
-                        AddUnchecked(lastChar, lastChar);
-                        AppendToPat(patBuf, lastChar, false);
-                        lastItem = LAST0_START;
+
+                        if (op == '-' || op == '&')
+                        {
+                            patBuf.Append(op);
+                        }
+
+                        if (nested == null)
+                        {
+                            if (scratch == null) scratch = new UnicodeSet();
+                            nested = scratch;
+                        }
+                        switch (setMode)
+                        {
+                            case SETMODE1_UNICODESET:
+                                nested.ApplyPattern(chars, symbols, ref patBuf, options);
+                                break;
+                            case SETMODE2_PROPERTYPAT:
+                                chars.SkipIgnored(opts);
+                                nested.ApplyPropertyPattern(chars, ref patBuf, symbols);
+                                break;
+                            case SETMODE3_PREPARSED: // `nested' already parsed
+                                nested.ToPattern(ref patBuf, false);
+                                break;
+                        }
+
+                        usePat = true;
+
+                        if (mode == MODE0_NONE)
+                        {
+                            // Entire pattern is a category; leave parse loop
+                            Set(nested);
+                            mode = MODE2_OUTBRACKET;
+                            break;
+                        }
+
+                        switch (op)
+                        {
+                            case '-':
+                                RemoveAll(nested);
+                                break;
+                            case '&':
+                                RetainAll(nested);
+                                break;
+                            case (char)0:
+                                AddAll(nested);
+                                break;
+                        }
+
                         op = (char)0;
-                    }
+                        lastItem = LAST2_SET;
 
-                    if (op == '-' || op == '&')
-                    {
-                        patBuf.Append(op);
+                        continue;
                     }
-
-                    if (nested == null)
-                    {
-                        if (scratch == null) scratch = new UnicodeSet();
-                        nested = scratch;
-                    }
-                    switch (setMode)
-                    {
-                        case SETMODE1_UNICODESET:
-                            nested.ApplyPattern(chars, symbols, patBuf.AsAppendable(), options);
-                            break;
-                        case SETMODE2_PROPERTYPAT:
-                            chars.SkipIgnored(opts);
-                            nested.ApplyPropertyPattern(chars, patBuf.AsAppendable(), symbols);
-                            break;
-                        case SETMODE3_PREPARSED: // `nested' already parsed
-                            nested.ToPattern(patBuf, false);
-                            break;
-                    }
-
-                    usePat = true;
 
                     if (mode == MODE0_NONE)
                     {
-                        // Entire pattern is a category; leave parse loop
-                        Set(nested);
-                        mode = MODE2_OUTBRACKET;
-                        break;
+                        SyntaxError(chars, "Missing '['");
                     }
 
-                    switch (op)
+                    // -------- Parse special (syntax) characters.  If the
+                    // current character is not special, or if it is escaped,
+                    // then fall through and handle it below.
+
+                    if (!literal)
                     {
-                        case '-':
-                            RemoveAll(nested);
-                            break;
-                        case '&':
-                            RetainAll(nested);
-                            break;
-                        case (char)0:
-                            AddAll(nested);
-                            break;
-                    }
-
-                    op = (char)0;
-                    lastItem = LAST2_SET;
-
-                    continue;
-                }
-
-                if (mode == MODE0_NONE)
-                {
-                    SyntaxError(chars, "Missing '['");
-                }
-
-                // -------- Parse special (syntax) characters.  If the
-                // current character is not special, or if it is escaped,
-                // then fall through and handle it below.
-
-                if (!literal)
-                {
-                    switch (c)
-                    {
-                        case ']':
-                            if (lastItem == LAST1_RANGE)
-                            {
-                                AddUnchecked(lastChar, lastChar);
-                                AppendToPat(patBuf, lastChar, false);
-                            }
-                            // Treat final trailing '-' as a literal
-                            if (op == '-')
-                            {
-                                AddUnchecked(op, op);
-                                patBuf.Append(op);
-                            }
-                            else if (op == '&')
-                            {
-                                SyntaxError(chars, "Trailing '&'");
-                            }
-                            patBuf.Append(']');
-                            mode = MODE2_OUTBRACKET;
-                            continue;
-                        case '-':
-                            if (op == 0)
-                            {
-                                if (lastItem != LAST0_START)
+                        switch (c)
+                        {
+                            case ']':
+                                if (lastItem == LAST1_RANGE)
                                 {
-                                    op = (char)c;
-                                    continue;
+                                    AddUnchecked(lastChar, lastChar);
+                                    AppendToPat(ref patBuf, lastChar, false);
                                 }
-                                else if (lastString != null)
+                                // Treat final trailing '-' as a literal
+                                if (op == '-')
                                 {
-                                    op = (char)c;
-                                    continue;
+                                    AddUnchecked(op, op);
+                                    patBuf.Append(op);
                                 }
-                                else
+                                else if (op == '&')
                                 {
-                                    // Treat final trailing '-' as a literal
-                                    AddUnchecked(c, c);
-                                    c = chars.Next(opts);
-                                    literal = chars.IsEscaped;
-                                    if (c == ']' && !literal)
+                                    SyntaxError(chars, "Trailing '&'");
+                                }
+                                patBuf.Append(']');
+                                mode = MODE2_OUTBRACKET;
+                                continue;
+                            case '-':
+                                if (op == 0)
+                                {
+                                    if (lastItem != LAST0_START)
                                     {
-                                        patBuf.Append("-]");
-                                        mode = MODE2_OUTBRACKET;
+                                        op = (char)c;
                                         continue;
                                     }
+                                    else if (lastString != null)
+                                    {
+                                        op = (char)c;
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        // Treat final trailing '-' as a literal
+                                        AddUnchecked(c, c);
+                                        c = chars.Next(opts);
+                                        literal = chars.IsEscaped;
+                                        if (c == ']' && !literal)
+                                        {
+                                            patBuf.Append("-]");
+                                            mode = MODE2_OUTBRACKET;
+                                            continue;
+                                        }
+                                    }
                                 }
-                            }
-                            SyntaxError(chars, "'-' not after char, string, or set");
-                            break;
-                        case '&':
-                            if (lastItem == LAST2_SET && op == 0)
-                            {
-                                op = (char)c;
-                                continue;
-                            }
-                            SyntaxError(chars, "'&' not after set");
-                            break;
-                        case '^':
-                            SyntaxError(chars, "'^' not after '['");
-                            break;
-                        case '{':
-                            if (op != 0 && op != '-')
-                            {
-                                SyntaxError(chars, "Missing operand after operator");
-                            }
-                            if (lastItem == LAST1_RANGE)
-                            {
-                                AddUnchecked(lastChar, lastChar);
-                                AppendToPat(patBuf, lastChar, false);
-                            }
-                            lastItem = LAST0_START;
-                            if (buf == null)
-                            {
-                                buf = new StringBuilder();
-                            }
-                            else
-                            {
+                                SyntaxError(chars, "'-' not after char, string, or set");
+                                break;
+                            case '&':
+                                if (lastItem == LAST2_SET && op == 0)
+                                {
+                                    op = (char)c;
+                                    continue;
+                                }
+                                SyntaxError(chars, "'&' not after set");
+                                break;
+                            case '^':
+                                SyntaxError(chars, "'^' not after '['");
+                                break;
+                            case '{':
+                                if (op != 0 && op != '-')
+                                {
+                                    SyntaxError(chars, "Missing operand after operator");
+                                }
+                                if (lastItem == LAST1_RANGE)
+                                {
+                                    AddUnchecked(lastChar, lastChar);
+                                    AppendToPat(ref patBuf, lastChar, false);
+                                }
+                                lastItem = LAST0_START;
+                                //if (buf == null)
+                                //{
+                                //    buf = new StringBuilder();
+                                //}
+                                //else
+                                //{
+                                //    buf.Length = 0;
+                                //}
                                 buf.Length = 0;
-                            }
-                            bool ok = false;
-                            while (!chars.AtEnd)
-                            {
-                                c = chars.Next(opts);
-                                literal = chars.IsEscaped;
-                                if (c == '}' && !literal)
+                                bool ok = false;
+                                while (!chars.AtEnd)
                                 {
-                                    ok = true;
-                                    break;
+                                    c = chars.Next(opts);
+                                    literal = chars.IsEscaped;
+                                    if (c == '}' && !literal)
+                                    {
+                                        ok = true;
+                                        break;
+                                    }
+                                    buf.AppendCodePoint(c);
                                 }
-                                AppendCodePoint(buf, c);
-                            }
-                            if (buf.Length < 1 || !ok)
-                            {
-                                SyntaxError(chars, "Invalid multicharacter string");
-                            }
-                            // We have new string. Add it to set and continue;
-                            // we don't need to drop through to the further
-                            // processing
-                            string curString = buf.ToString();
-                            if (op == '-')
-                            {
-#pragma warning disable 612, 618
-                                int lastSingle = CharSequences.GetSingleCodePoint((lastString == null ? "" : lastString));
-                                int curSingle = CharSequences.GetSingleCodePoint(curString);
-#pragma warning restore 612, 618
-                                if (lastSingle != int.MaxValue && curSingle != int.MaxValue)
+                                if (buf.Length < 1 || !ok)
                                 {
-                                    Add(lastSingle, curSingle);
+                                    SyntaxError(chars, "Invalid multicharacter string");
+                                }
+                                // We have new string. Add it to set and continue;
+                                // we don't need to drop through to the further
+                                // processing
+                                string curString = buf.AsSpan().ToString();
+                                if (op == '-')
+                                {
+#pragma warning disable 612, 618
+                                    int lastSingle = CharSequences.GetSingleCodePoint((lastString == null ? "" : lastString));
+                                    int curSingle = CharSequences.GetSingleCodePoint(curString);
+#pragma warning restore 612, 618
+                                    if (lastSingle != int.MaxValue && curSingle != int.MaxValue)
+                                    {
+                                        Add(lastSingle, curSingle);
+                                    }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            StringRange.Expand(lastString, curString, true, strings);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            SyntaxError(chars, e.Message);
+                                        }
+                                    }
+                                    lastString = null;
+                                    op = (char)0;
                                 }
                                 else
                                 {
-                                    try
-                                    {
-                                        StringRange.Expand(lastString, curString, true, strings);
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        SyntaxError(chars, e.Message);
-                                    }
+                                    Add(curString);
+                                    lastString = curString;
                                 }
-                                lastString = null;
+                                patBuf.Append('{');
+                                AppendToPat(ref patBuf, curString, false);
+                                patBuf.Append('}');
+                                continue;
+                            case SymbolTable.SymbolReference:
+                                //         symbols  nosymbols
+                                // [a-$]   error    error (ambiguous)
+                                // [a$]    anchor   anchor
+                                // [a-$x]  var "x"* literal '$'
+                                // [a-$.]  error    literal '$'
+                                // *We won't get here in the case of var "x"
+                                backup = chars.GetPos(backup);
+                                c = chars.Next(opts);
+                                literal = chars.IsEscaped;
+                                bool anchor = (c == ']' && !literal);
+                                if (symbols == null && !anchor)
+                                {
+                                    c = SymbolTable.SymbolReference;
+                                    chars.SetPos(backup);
+                                    break; // literal '$'
+                                }
+                                if (anchor && op == 0)
+                                {
+                                    if (lastItem == LAST1_RANGE)
+                                    {
+                                        AddUnchecked(lastChar, lastChar);
+                                        AppendToPat(ref patBuf, lastChar, false);
+                                    }
+                                    AddUnchecked(UnicodeMatcher.Ether);
+                                    usePat = true;
+                                    patBuf.Append(SymbolTable.SymbolReference);
+                                    patBuf.Append(']');
+                                    mode = MODE2_OUTBRACKET;
+                                    continue;
+                                }
+                                SyntaxError(chars, "Unquoted '$'");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    // -------- Parse literal characters.  This includes both
+                    // escaped chars ("\u4E01") and non-syntax characters
+                    // ("a").
+
+                    switch (lastItem)
+                    {
+                        case LAST0_START:
+                            if (op == '-' && lastString != null)
+                            {
+                                SyntaxError(chars, "Invalid range");
+                            }
+                            lastItem = LAST1_RANGE;
+                            lastChar = c;
+                            lastString = null;
+                            break;
+                        case LAST1_RANGE:
+                            if (op == '-')
+                            {
+                                if (lastString != null)
+                                {
+                                    SyntaxError(chars, "Invalid range");
+                                }
+                                if (lastChar >= c)
+                                {
+                                    // Don't allow redundant (a-a) or empty (b-a) ranges;
+                                    // these are most likely typos.
+                                    SyntaxError(chars, "Invalid range");
+                                }
+                                AddUnchecked(lastChar, c);
+                                AppendToPat(ref patBuf, lastChar, false);
+                                patBuf.Append(op);
+                                AppendToPat(ref patBuf, c, false);
+                                lastItem = LAST0_START;
                                 op = (char)0;
                             }
                             else
                             {
-                                Add(curString);
-                                lastString = curString;
+                                AddUnchecked(lastChar, lastChar);
+                                AppendToPat(ref patBuf, lastChar, false);
+                                lastChar = c;
                             }
-                            patBuf.Append('{');
-                            AppendToPat(patBuf, curString, false);
-                            patBuf.Append('}');
-                            continue;
-                        case SymbolTable.SymbolReference:
-                            //         symbols  nosymbols
-                            // [a-$]   error    error (ambiguous)
-                            // [a$]    anchor   anchor
-                            // [a-$x]  var "x"* literal '$'
-                            // [a-$.]  error    literal '$'
-                            // *We won't get here in the case of var "x"
-                            backup = chars.GetPos(backup);
-                            c = chars.Next(opts);
-                            literal = chars.IsEscaped;
-                            bool anchor = (c == ']' && !literal);
-                            if (symbols == null && !anchor)
-                            {
-                                c = SymbolTable.SymbolReference;
-                                chars.SetPos(backup);
-                                break; // literal '$'
-                            }
-                            if (anchor && op == 0)
-                            {
-                                if (lastItem == LAST1_RANGE)
-                                {
-                                    AddUnchecked(lastChar, lastChar);
-                                    AppendToPat(patBuf, lastChar, false);
-                                }
-                                AddUnchecked(UnicodeMatcher.Ether);
-                                usePat = true;
-                                patBuf.Append(SymbolTable.SymbolReference).Append(']');
-                                mode = MODE2_OUTBRACKET;
-                                continue;
-                            }
-                            SyntaxError(chars, "Unquoted '$'");
                             break;
-                        default:
+                        case LAST2_SET:
+                            if (op != 0)
+                            {
+                                SyntaxError(chars, "Set expected after operator");
+                            }
+                            lastChar = c;
+                            lastItem = LAST1_RANGE;
                             break;
                     }
                 }
 
-                // -------- Parse literal characters.  This includes both
-                // escaped chars ("\u4E01") and non-syntax characters
-                // ("a").
-
-                switch (lastItem)
+                if (mode != MODE2_OUTBRACKET)
                 {
-                    case LAST0_START:
-                        if (op == '-' && lastString != null)
-                        {
-                            SyntaxError(chars, "Invalid range");
-                        }
-                        lastItem = LAST1_RANGE;
-                        lastChar = c;
-                        lastString = null;
-                        break;
-                    case LAST1_RANGE:
-                        if (op == '-')
-                        {
-                            if (lastString != null)
-                            {
-                                SyntaxError(chars, "Invalid range");
-                            }
-                            if (lastChar >= c)
-                            {
-                                // Don't allow redundant (a-a) or empty (b-a) ranges;
-                                // these are most likely typos.
-                                SyntaxError(chars, "Invalid range");
-                            }
-                            AddUnchecked(lastChar, c);
-                            AppendToPat(patBuf, lastChar, false);
-                            patBuf.Append(op);
-                            AppendToPat(patBuf, c, false);
-                            lastItem = LAST0_START;
-                            op = (char)0;
-                        }
-                        else
-                        {
-                            AddUnchecked(lastChar, lastChar);
-                            AppendToPat(patBuf, lastChar, false);
-                            lastChar = c;
-                        }
-                        break;
-                    case LAST2_SET:
-                        if (op != 0)
-                        {
-                            SyntaxError(chars, "Set expected after operator");
-                        }
-                        lastChar = c;
-                        lastItem = LAST1_RANGE;
-                        break;
+                    SyntaxError(chars, "Missing ']'");
+                }
+
+                chars.SkipIgnored(opts);
+
+                /*
+                 * Handle global flags (invert, case insensitivity).  If this
+                 * pattern should be compiled case-insensitive, then we need
+                 * to close over case BEFORE COMPLEMENTING.  This makes
+                 * patterns like /[^abc]/i work.
+                 */
+                if ((options & Case) != 0)
+                {
+                    CloseOver(Case);
+                }
+                if (invert)
+                {
+                    Complement();
+                }
+
+                // Use the rebuilt pattern (pat) only if necessary.  Prefer the
+                // generated pattern.
+                if (usePat)
+                {
+                    rebuiltPat.Append(patBuf.AsSpan());
+                }
+                else
+                {
+                    AppendNewPattern(ref rebuiltPat, false, true);
                 }
             }
-
-            if (mode != MODE2_OUTBRACKET)
+            finally
             {
-                SyntaxError(chars, "Missing ']'");
-            }
-
-            chars.SkipIgnored(opts);
-
-            /*
-             * Handle global flags (invert, case insensitivity).  If this
-             * pattern should be compiled case-insensitive, then we need
-             * to close over case BEFORE COMPLEMENTING.  This makes
-             * patterns like /[^abc]/i work.
-             */
-            if ((options & Case) != 0)
-            {
-                CloseOver(Case);
-            }
-            if (invert)
-            {
-                Complement();
-            }
-
-            // Use the rebuilt pattern (pat) only if necessary.  Prefer the
-            // generated pattern.
-            if (usePat)
-            {
-                Append(rebuiltPat, patBuf);
-            }
-            else
-            {
-                AppendNewPattern(rebuiltPat, false, true);
+                patBuf.Dispose();
+                buf.Dispose();
             }
         }
 
+        [DoesNotReturn]
         private static void SyntaxError(RuleCharacterIterator chars, string msg, Exception innerException)
         {
             throw new ArgumentException("Error: " + msg + " at \"" +
@@ -2905,6 +3126,7 @@ namespace ICU4N.Text
                     '"', innerException);
         }
 
+        [DoesNotReturn]
         private static void SyntaxError(RuleCharacterIterator chars, string msg)
         {
             throw new ArgumentException("Error: " + msg + " at \"" +
@@ -3889,7 +4111,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Parse the given property pattern at the given parse position.
         /// </summary>
-        private UnicodeSet ApplyPropertyPattern(string pattern, ParsePosition ppos, ISymbolTable symbols)
+        private UnicodeSet ApplyPropertyPattern(ReadOnlySpan<char> pattern, ParsePosition ppos, ISymbolTable symbols)
         {
             int pos = ppos.Index;
 
@@ -3905,9 +4127,11 @@ namespace ICU4N.Text
             bool isName = false; // true for \N{pat}, o/w false
             bool invert = false;
 
+
+            ReadOnlySpan<char> patternRegion = pattern.Slice(pos, 2);
             // Look for an opening [:, [:^, \p, or \P
             //if (pattern.RegionMatches(pos, "[:", 0, 2))
-            if (pattern.IndexOf("[:", pos, 2, StringComparison.Ordinal) == pos)
+            if (patternRegion.Equals("[:", StringComparison.Ordinal))
             {
                 posix = true;
                 pos = PatternProps.SkipWhiteSpace(pattern, (pos + 2));
@@ -3919,8 +4143,8 @@ namespace ICU4N.Text
             }
             //else if (pattern.RegionMatches(true, pos, "\\p", 0, 2) ||
             //      pattern.RegionMatches(pos, "\\N", 0, 2))
-            else if (pattern.IndexOf("\\p", pos, 2, StringComparison.OrdinalIgnoreCase) == pos ||
-                  pattern.IndexOf("\\N", pos, 2, StringComparison.Ordinal) == pos)
+            else if (patternRegion.Equals("\\p", StringComparison.OrdinalIgnoreCase) ||
+                patternRegion.Equals("\\N", StringComparison.Ordinal))
             {
                 char c = pattern[pos + 1];
                 invert = (c == 'P');
@@ -3939,7 +4163,7 @@ namespace ICU4N.Text
             }
 
             // Look for the matching close delimiter, either :] or }
-            int close = pattern.IndexOf(posix ? ":]" : "}", pos, StringComparison.Ordinal);
+            int close = pattern.IndexOf((posix ? ":]" : "}"), pos, StringComparison.Ordinal);
             if (close < 0)
             {
                 // Syntax error; close delimiter missing
@@ -3954,15 +4178,15 @@ namespace ICU4N.Text
             if (equals >= 0 && equals < close && !isName)
             {
                 // Equals seen; parse medium/long pattern
-                propName = pattern.Substring(pos, equals - pos); // ICU4N: Corrected 2nd parameter
-                valueName = pattern.Substring(equals + 1, close - (equals + 1)); // ICU4N: Corrected 2nd parameter
+                propName = pattern.Slice(pos, equals - pos).ToString(); // ICU4N: Corrected 2nd parameter
+                valueName = pattern.Slice(equals + 1, close - (equals + 1)).ToString(); // ICU4N: Corrected 2nd parameter
             }
 
             else
             {
                 // Handle case where no '=' is seen, and \N{}
-                propName = pattern.Substring(pos, close - pos); // ICU4N: Corrected 2nd parameter
-                valueName = "";
+                propName = pattern.Slice(pos, close - pos).ToString(); // ICU4N: Corrected 2nd parameter
+                valueName = string.Empty;
 
                 // Handle \N{name}
                 if (isName)
@@ -3977,6 +4201,7 @@ namespace ICU4N.Text
                 }
             }
 
+            // ICU4N TODO: Refactor ApplyPropertyAlias to accept ReadOnlySpan<char> params
             ApplyPropertyAlias(propName, valueName, symbols);
 
             if (invert)
@@ -4002,9 +4227,9 @@ namespace ICU4N.Text
         /// copied from the input pattern, as appropriate.</param>
         /// <param name="symbols">TODO</param>
         private void ApplyPropertyPattern(RuleCharacterIterator chars,
-            IAppendable rebuiltPat, ISymbolTable symbols)
+            ref ValueStringBuilder rebuiltPat, ISymbolTable symbols)
         {
-            string patStr = chars.Lookahead().ToString();
+            ReadOnlySpan<char> patStr = chars.Lookahead();
             ParsePosition pos = new ParsePosition(0);
             ApplyPropertyPattern(patStr, pos, symbols);
             if (pos.Index == 0)
@@ -4012,7 +4237,7 @@ namespace ICU4N.Text
                 SyntaxError(chars, "Invalid property pattern");
             }
             chars.Jumpahead(pos.Index);
-            Append(rebuiltPat, patStr.Substring(0, pos.Index - 0)); // ICU4N: Checked 2nd substring parameter
+            rebuiltPat.Append(patStr.Slice(0, pos.Index - 0)); // ICU4N: Checked 2nd substring parameter
         }
 
         //----------------------------------------------------------------

@@ -1021,7 +1021,7 @@ namespace ICU4N.Impl.Coll
                 while (stringIter.MoveNext())
                 {
                     string str = stringIter.Current;
-                    if (IgnoreString(str.AsSpan()) || nfdString.Equals(str, StringComparison.Ordinal)) { continue; }
+                    if (IgnoreString(str) || nfdString.Equals(str, StringComparison.Ordinal)) { continue; }
                     ce32 = AddIfDifferent(prefix, str.AsMemory(), newCEs, newCEsLength, ce32);
                 }
             }

@@ -1138,12 +1138,12 @@ namespace ICU4N.Dev.Test.Lang
             Span<char> actual = stackalloc char[2];
             int length;
             length = UTF16.ValueOf(0x61, actual, 0);
-            if (!MemoryExtensions.Equals(actual.Slice(0, length), "a", StringComparison.Ordinal))
+            if (!System.MemoryExtensions.Equals(actual.Slice(0, length), "a".AsSpan(), StringComparison.Ordinal))
             { 
                 Errln("FAIL: valueof(char32, destination, destinationIndex)");
             }
             length = UTF16.ValueOf(0x10000, actual, 0);
-            if (!MemoryExtensions.Equals(actual.Slice(0, length), "\ud800\udc00", StringComparison.Ordinal))
+            if (!System.MemoryExtensions.Equals(actual.Slice(0, length), "\ud800\udc00".AsSpan(), StringComparison.Ordinal))
             {
                 Errln("FAIL: valueof(char32, destination, destinationIndex)");
             }
