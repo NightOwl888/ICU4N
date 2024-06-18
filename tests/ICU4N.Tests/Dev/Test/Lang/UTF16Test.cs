@@ -183,21 +183,22 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestCharAt()
         {
-            StringBuffer strbuff =
-          new StringBuffer("12345\ud800\udc0167890\ud800\udc02");
-            if (UTF16.CharAt(strbuff, 0) != '1' || UTF16.CharAt(strbuff, 2) != '3'
-                || UTF16.CharAt(strbuff, 5) != 0x10001 ||
-          UTF16.CharAt(strbuff, 6) != 0x10001 ||
-          UTF16.CharAt(strbuff, 12) != 0x10002 ||
-          UTF16.CharAt(strbuff, 13) != 0x10002)
+            using ValueStringBuilder strbuff =
+                new ValueStringBuilder(stackalloc char[32]);
+            strbuff.Append("12345\ud800\udc0167890\ud800\udc02");
+            if (UTF16.CharAt(strbuff.AsSpan(), 0) != '1' || UTF16.CharAt(strbuff.AsSpan(), 2) != '3'
+                || UTF16.CharAt(strbuff.AsSpan(), 5) != 0x10001 ||
+                  UTF16.CharAt(strbuff.AsSpan(), 6) != 0x10001 ||
+                  UTF16.CharAt(strbuff.AsSpan(), 12) != 0x10002 ||
+                  UTF16.CharAt(strbuff.AsSpan(), 13) != 0x10002)
             {
                 Errln("FAIL Getting character from string buffer error");
             }
             String str = strbuff.ToString();
             if (UTF16.CharAt(str, 0) != '1' || UTF16.CharAt(str, 2) != '3' ||
-          UTF16.CharAt(str, 5) != 0x10001 || UTF16.CharAt(str, 6) != 0x10001
-          || UTF16.CharAt(str, 12) != 0x10002 ||
-          UTF16.CharAt(str, 13) != 0x10002)
+                UTF16.CharAt(str, 5) != 0x10001 || UTF16.CharAt(str, 6) != 0x10001
+                || UTF16.CharAt(str, 12) != 0x10002 ||
+                UTF16.CharAt(str, 13) != 0x10002)
             {
                 Errln("FAIL Getting character from string error");
             }
@@ -205,11 +206,11 @@ namespace ICU4N.Dev.Test.Lang
             int start = 0;
             int limit = str.Length;
             if (UTF16.CharAt(array, start, limit, 0) != '1' ||
-          UTF16.CharAt(array, start, limit, 2) != '3' ||
-          UTF16.CharAt(array, start, limit, 5) != 0x10001 ||
-          UTF16.CharAt(array, start, limit, 6) != 0x10001 ||
-          UTF16.CharAt(array, start, limit, 12) != 0x10002 ||
-          UTF16.CharAt(array, start, limit, 13) != 0x10002)
+                UTF16.CharAt(array, start, limit, 2) != '3' ||
+                UTF16.CharAt(array, start, limit, 5) != 0x10001 ||
+                UTF16.CharAt(array, start, limit, 6) != 0x10001 ||
+                UTF16.CharAt(array, start, limit, 12) != 0x10002 ||
+                UTF16.CharAt(array, start, limit, 13) != 0x10002)
             {
                 Errln("FAIL Getting character from array error");
             }
@@ -245,10 +246,10 @@ namespace ICU4N.Dev.Test.Lang
             ReplaceableString replaceable = new ReplaceableString(str);
             if (UTF16.CharAt(replaceable, 0) != '1' ||
                 UTF16.CharAt(replaceable, 2) != '3' ||
-          UTF16.CharAt(replaceable, 5) != 0x10001 ||
-          UTF16.CharAt(replaceable, 6) != 0x10001 ||
-          UTF16.CharAt(replaceable, 12) != 0x10002 ||
-          UTF16.CharAt(replaceable, 13) != 0x10002)
+                UTF16.CharAt(replaceable, 5) != 0x10001 ||
+                UTF16.CharAt(replaceable, 6) != 0x10001 ||
+                UTF16.CharAt(replaceable, 12) != 0x10002 ||
+                UTF16.CharAt(replaceable, 13) != 0x10002)
             {
                 Errln("FAIL Getting character from replaceable error");
             }
@@ -1624,7 +1625,7 @@ namespace ICU4N.Dev.Test.Lang
         }
 
         [Test]
-        public void TestReverse()
+        public void TestReverse() // ICU4N TODO: API - Reversing a StringBuilder is nonsensical in .NET, so we can eliminate this API. Better to reverse ValueStringBuilder/OpenStringBuilder/Span<char> instead.
         {
             StringBuffer test = new StringBuffer(
                              "backwards words say to used I");
@@ -1641,10 +1642,11 @@ namespace ICU4N.Dev.Test.Lang
             UTF16.Append(testbuffer, 0x00c4);
             UTF16.Append(testbuffer, 0x1ed0);
             result = UTF16.Reverse(testbuffer);
+            string resultString = result.ToString();
             if (result[0] != 0x1ed0 ||
                 result[1] != 0xc4 ||
-                UTF16.CharAt(result, 2) != 0x1d15f ||
-                UTF16.CharAt(result, 4) != 0x2f999)
+                UTF16.CharAt(resultString, 2) != 0x1d15f ||
+                UTF16.CharAt(resultString, 4) != 0x2f999)
             {
                 Errln("reverse() failed with supplementary characters");
             }

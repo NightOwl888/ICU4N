@@ -122,23 +122,6 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Add the contents of the UnicodeSet (as <see cref="StringBuilder"/>s) into a collection.
-        /// </summary>
-        /// <param name="target">Collection to add into.</param>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual ICollection<StringBuilder> CopyTo(ICollection<StringBuilder> target)
-        {
-            if (target == null)
-                throw new ArgumentNullException(nameof(target));
-            foreach (var item in this)
-            {
-                target.Add(new StringBuilder(item));
-            }
-            return target;
-        }
-
-        /// <summary>
         /// Add the contents of the UnicodeSet (as <see cref="StringCharSequence"/>s) into a collection.
         /// </summary>
         /// <param name="target">Collection to add into.</param>

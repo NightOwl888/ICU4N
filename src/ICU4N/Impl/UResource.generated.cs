@@ -28,14 +28,6 @@ namespace ICU4N.Impl
         }
 
 
-        private bool RegionMatches(int start, StringBuilder cs, int n)
-        {
-            // ICU4N: Indexing StringBuilder is really slow,
-            // so we convert to a substring and cascade the call.
-            return RegionMatches(0, cs.ToString(start, n), n);
-        }
-
-
         private bool RegionMatches(int start, ICharSequence cs, int n)
         {
             //if (cs is StringBuilderCharSequence stringBuilder)
@@ -70,16 +62,6 @@ namespace ICU4N.Impl
 
 
         public bool ContentEquals(string cs)
-        {
-            if (cs == null)
-            {
-                return false;
-            }
-            return (cs.Length == length && RegionMatches(0, cs, length));
-        }
-
-
-        public bool ContentEquals(StringBuilder cs)
         {
             if (cs == null)
             {
@@ -124,17 +106,6 @@ namespace ICU4N.Impl
         }
 
 
-        public bool StartsWith(StringBuilder cs)
-        {
-            // ICU4N: Added guard clause
-            if (cs is null)
-                throw new ArgumentNullException(nameof(cs));
-
-            int csLength = cs.Length;
-            return csLength <= length && RegionMatches(0, cs, csLength);
-        }
-
-
         public bool StartsWith(ICharSequence cs)
         {
             // ICU4N: Added guard clause
@@ -154,17 +125,6 @@ namespace ICU4N.Impl
 
 
         public bool EndsWith(string cs)
-        {
-            // ICU4N: Added guard clause
-            if (cs is null)
-                throw new ArgumentNullException(nameof(cs));
-
-            int csLength = cs.Length;
-            return csLength <= length && RegionMatches(length - csLength, cs, csLength);
-        }
-
-
-        public bool EndsWith(StringBuilder cs)
         {
             // ICU4N: Added guard clause
             if (cs is null)
@@ -196,19 +156,6 @@ namespace ICU4N.Impl
         /// <returns>true if the substring of this key starting from the offset
         /// contains the same characters as the other sequence.</returns>
         public bool RegionMatches(int start, string cs)
-        {
-            // ICU4N: Added guard clause
-            if (cs is null)
-                throw new ArgumentNullException(nameof(cs));
-
-            int csLength = cs.Length;
-            return csLength == (length - start) && RegionMatches(start, cs, csLength);
-        }
-
-
-        /// <returns>true if the substring of this key starting from the offset
-        /// contains the same characters as the other sequence.</returns>
-        public bool RegionMatches(int start, StringBuilder cs)
         {
             // ICU4N: Added guard clause
             if (cs is null)
@@ -256,15 +203,6 @@ namespace ICU4N.Impl
                 }
             }
             return length - csLength;
-        }
-
-
-        public int CompareTo(StringBuilder cs)
-        {
-            if (cs is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
-            // ICU4N: Indexing StringBuilder is really slow,
-            // so we cascade the call.
-            return CompareTo(cs.ToString());
         }
 
 

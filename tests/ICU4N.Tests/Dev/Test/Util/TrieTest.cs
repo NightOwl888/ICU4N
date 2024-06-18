@@ -124,7 +124,7 @@ namespace ICU4N.Dev.Test.Util
         {
             // write a string
             int countValues = 0;
-            StringBuffer s = new StringBuffer();
+            OpenStringBuilder s = new OpenStringBuilder();
             int[] values = new int[30];
             for (int i = 0; i < countCheckRanges; ++i)
             {
@@ -132,7 +132,8 @@ namespace ICU4N.Dev.Test.Util
                 if (c != 0)
                 {
                     --c;
-                    UTF16.Append(s, c);
+                    //UTF16.Append(s, c);
+                    s.AppendCodePoint(c);
                     values[countValues++] = checkRanges[i].Value;
                 }
             }

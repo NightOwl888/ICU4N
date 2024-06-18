@@ -40,7 +40,7 @@ namespace ICU4N.Dev.Test.Rbbi
             internal abstract IList<object> CharClasses { get; }
 
             // Set the test text on which subsequent calls to next() will operate
-            internal abstract void SetText(StringBuffer text);
+            internal abstract void SetText(OpenStringBuilder text);
 
             // Find the next break position, starting from the specified position.
             // Return -1 after reaching end of string.
@@ -110,7 +110,7 @@ namespace ICU4N.Dev.Test.Rbbi
             internal UnicodeSet fAnySet;
 
 
-            internal StringBuffer fText;
+            internal OpenStringBuilder fText;
 
 
             internal RBBICharMonkey()
@@ -165,7 +165,7 @@ namespace ICU4N.Dev.Test.Rbbi
             }
 
 
-            internal override void SetText(StringBuffer s)
+            internal override void SetText(OpenStringBuilder s)
             {
                 fText = s;
             }
@@ -203,8 +203,8 @@ namespace ICU4N.Dev.Test.Rbbi
                     p2 = p3; c2 = c3;
 
                     // Advance p3 by one codepoint
-                    p3 = MoveIndex32(fText, p3, 1);
-                    c3 = (p3 >= fText.Length) ? -1 : UTF16.CharAt(fText, p3);
+                    p3 = MoveIndex32(fText.AsSpan(), p3, 1);
+                    c3 = (p3 >= fText.Length) ? -1 : UTF16.CharAt(fText.AsSpan(), p3);
 
                     if (p1 == p2)
                     {
@@ -347,7 +347,7 @@ namespace ICU4N.Dev.Test.Rbbi
         internal class RBBIWordMonkey : RBBIMonkeyKind
         {
             List<object> fSets;
-            StringBuffer fText;
+            OpenStringBuilder fText;
 
             internal UnicodeSet fCRSet;
             internal UnicodeSet fLFSet;
@@ -469,7 +469,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             internal override IList<object> CharClasses => fSets;
 
-            internal override void SetText(StringBuffer s)
+            internal override void SetText(OpenStringBuilder s)
             {
                 fText = s;
             }
@@ -490,7 +490,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 }
                 /*p0 =*/
                 p1 = p2 = p3 = prevPos;
-                c3 = UTF16.CharAt(fText, prevPos);
+                c3 = UTF16.CharAt(fText.AsSpan(), prevPos);
                 c0 = c1 = c2 = 0;
 
 
@@ -508,13 +508,13 @@ namespace ICU4N.Dev.Test.Rbbi
                     //    But do not advance over Extend & Format following a new line. (Unicode 5.1 change)
                     do
                     {
-                        p3 = MoveIndex32(fText, p3, 1);
+                        p3 = MoveIndex32(fText.AsSpan(), p3, 1);
                         c3 = -1;
                         if (p3 >= fText.Length)
                         {
                             break;
                         }
-                        c3 = UTF16.CharAt(fText, p3);
+                        c3 = UTF16.CharAt(fText.AsSpan(), p3);
                         if (fCRSet.Contains(c2) || fLFSet.Contains(c2) || fNewlineSet.Contains(c2))
                         {
                             break;
@@ -747,7 +747,7 @@ namespace ICU4N.Dev.Test.Rbbi
             internal UnicodeSet fExtendedPict;
             internal UnicodeSet fEmojiNRK;
 
-            internal StringBuffer fText;
+            internal OpenStringBuilder fText;
             //internal int fOrigPositions; // ICU4N: Not used
 
 
@@ -861,7 +861,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 fSets.Add(fEmojiNRK);
             }
 
-            internal override void SetText(StringBuffer s)
+            internal override void SetText(OpenStringBuilder s)
             {
                 fText = s;
             }
@@ -912,7 +912,7 @@ namespace ICU4N.Dev.Test.Rbbi
                     prevPos = pos;
                     prevChar = thisChar;
                     pos = nextPos;
-                    nextPos = MoveIndex32(fText, pos, 1);
+                    nextPos = MoveIndex32(fText.AsSpan(), pos, 1);
 
                     // Rule LB2 - Break at end of text.
                     if (pos >= fText.Length)
@@ -930,7 +930,7 @@ namespace ICU4N.Dev.Test.Rbbi
                     // LB 9         Keep combining sequences together.
                     //              advance over any CM class chars at "pos",
                     //              result is "nextPos" for the following loop iteration.
-                    thisChar = UTF16.CharAt(fText, pos);
+                    thisChar = UTF16.CharAt(fText.AsSpan(), pos);
                     if (!(fSP.Contains(thisChar) || fBK.Contains(thisChar) || thisChar == 0x0d ||
                             thisChar == 0x0a || fNL.Contains(thisChar) || fZW.Contains(thisChar)))
                     {
@@ -940,12 +940,12 @@ namespace ICU4N.Dev.Test.Rbbi
                             {
                                 break;
                             }
-                            int nextChar = UTF16.CharAt(fText, nextPos);
+                            int nextChar = UTF16.CharAt(fText.AsSpan(), nextPos);
                             if (!fCM.Contains(nextChar))
                             {
                                 break;
                             }
-                            nextPos = MoveIndex32(fText, nextPos, 1);
+                            nextPos = MoveIndex32(fText.AsSpan(), nextPos, 1);
                         }
                     }
 
@@ -1073,16 +1073,16 @@ namespace ICU4N.Dev.Test.Rbbi
                     tPos = prevPos;
                     if (fSP.Contains(prevChar))
                     {
-                        while (tPos > 0 && fSP.Contains(UTF16.CharAt(fText, tPos)))
+                        while (tPos > 0 && fSP.Contains(UTF16.CharAt(fText.AsSpan(), tPos)))
                         {
-                            tPos = MoveIndex32(fText, tPos, -1);
+                            tPos = MoveIndex32(fText.AsSpan(), tPos, -1);
                         }
                     }
-                    while (tPos > 0 && fCM.Contains(UTF16.CharAt(fText, tPos)))
+                    while (tPos > 0 && fCM.Contains(UTF16.CharAt(fText.AsSpan(), tPos)))
                     {
-                        tPos = MoveIndex32(fText, tPos, -1);
+                        tPos = MoveIndex32(fText.AsSpan(), tPos, -1);
                     }
-                    if (fOP.Contains(UTF16.CharAt(fText, tPos)))
+                    if (fOP.Contains(UTF16.CharAt(fText.AsSpan(), tPos)))
                     {
                         continue;
                     }
@@ -1093,15 +1093,15 @@ namespace ICU4N.Dev.Test.Rbbi
                     {
                         // Scan backwards from prevChar to see if it is preceded by QU CM* SP*
                         tPos = prevPos;
-                        while (tPos > 0 && fSP.Contains(UTF16.CharAt(fText, tPos)))
+                        while (tPos > 0 && fSP.Contains(UTF16.CharAt(fText.AsSpan(), tPos)))
                         {
-                            tPos = MoveIndex32(fText, tPos, -1);
+                            tPos = MoveIndex32(fText.AsSpan(), tPos, -1);
                         }
-                        while (tPos > 0 && fCM.Contains(UTF16.CharAt(fText, tPos)))
+                        while (tPos > 0 && fCM.Contains(UTF16.CharAt(fText.AsSpan(), tPos)))
                         {
-                            tPos = MoveIndex32(fText, tPos, -1);
+                            tPos = MoveIndex32(fText.AsSpan(), tPos, -1);
                         }
-                        if (fQU.Contains(UTF16.CharAt(fText, tPos)))
+                        if (fQU.Contains(UTF16.CharAt(fText.AsSpan(), tPos)))
                         {
                             continue;
                         }
@@ -1111,15 +1111,15 @@ namespace ICU4N.Dev.Test.Rbbi
                     if (fNS.Contains(thisChar))
                     {
                         tPos = prevPos;
-                        while (tPos > 0 && fSP.Contains(UTF16.CharAt(fText, tPos)))
+                        while (tPos > 0 && fSP.Contains(UTF16.CharAt(fText.AsSpan(), tPos)))
                         {
-                            tPos = MoveIndex32(fText, tPos, -1);
+                            tPos = MoveIndex32(fText.AsSpan(), tPos, -1);
                         }
-                        while (tPos > 0 && fCM.Contains(UTF16.CharAt(fText, tPos)))
+                        while (tPos > 0 && fCM.Contains(UTF16.CharAt(fText.AsSpan(), tPos)))
                         {
-                            tPos = MoveIndex32(fText, tPos, -1);
+                            tPos = MoveIndex32(fText.AsSpan(), tPos, -1);
                         }
-                        if (fCL.Contains(UTF16.CharAt(fText, tPos)) || fCP.Contains(UTF16.CharAt(fText, tPos)))
+                        if (fCL.Contains(UTF16.CharAt(fText.AsSpan(), tPos)) || fCP.Contains(UTF16.CharAt(fText.AsSpan(), tPos)))
                         {
                             continue;
                         }
@@ -1130,15 +1130,15 @@ namespace ICU4N.Dev.Test.Rbbi
                     if (fB2.Contains(thisChar))
                     {
                         tPos = prevPos;
-                        while (tPos > 0 && fSP.Contains(UTF16.CharAt(fText, tPos)))
+                        while (tPos > 0 && fSP.Contains(UTF16.CharAt(fText.AsSpan(), tPos)))
                         {
-                            tPos = MoveIndex32(fText, tPos, -1);
+                            tPos = MoveIndex32(fText.AsSpan(), tPos, -1);
                         }
-                        while (tPos > 0 && fCM.Contains(UTF16.CharAt(fText, tPos)))
+                        while (tPos > 0 && fCM.Contains(UTF16.CharAt(fText.AsSpan(), tPos)))
                         {
-                            tPos = MoveIndex32(fText, tPos, -1);
+                            tPos = MoveIndex32(fText.AsSpan(), tPos, -1);
                         }
-                        if (fB2.Contains(UTF16.CharAt(fText, tPos)))
+                        if (fB2.Contains(UTF16.CharAt(fText.AsSpan(), tPos)))
                         {
                             continue;
                         }
@@ -1237,7 +1237,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
 
                     // LB 25    Numbers
-                    matchVals = LBNumberCheck(fText, prevPos, matchVals);
+                    matchVals = LBNumberCheck(fText.AsSpan(), prevPos, matchVals);
                     if (matchVals[0] != -1)
                     {
                         // Matched a number.  But could have been just a single digit, which would
@@ -1255,8 +1255,8 @@ namespace ICU4N.Dev.Test.Rbbi
                                 pos = numEndIdx;
                                 do
                                 {
-                                    pos = MoveIndex32(fText, pos, -1);
-                                    thisChar = UTF16.CharAt(fText, pos);
+                                    pos = MoveIndex32(fText.AsSpan(), pos, -1);
+                                    thisChar = UTF16.CharAt(fText.AsSpan(), pos);
                                 }
                                 while (fCM.Contains(thisChar));
                             }
@@ -1365,7 +1365,7 @@ namespace ICU4N.Dev.Test.Rbbi
             //  Can not use Java regex because need supplementary character support,
             //     and because Unicode char properties version must be the same as in
             //     the version of ICU being tested.
-            private int[] LBNumberCheck(StringBuffer s, int startIdx, int[] retVals)
+            private int[] LBNumberCheck(ReadOnlySpan<char> s, int startIdx, int[] retVals)
             {
                 if (retVals == null)
                 {
@@ -1538,7 +1538,7 @@ namespace ICU4N.Dev.Test.Rbbi
         internal class RBBISentenceMonkey : RBBIMonkeyKind
         {
             internal List<object> fSets;
-            internal StringBuffer fText;
+            internal OpenStringBuilder fText;
 
             internal UnicodeSet fSepSet;
             internal UnicodeSet fFormatSet;
@@ -1613,7 +1613,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             internal override IList<object> CharClasses => fSets;
 
-            internal override void SetText(StringBuffer s)
+            internal override void SetText(OpenStringBuilder s)
             {
                 fText = s;
             }
@@ -1634,8 +1634,8 @@ namespace ICU4N.Dev.Test.Rbbi
                 int j = i;
                 do
                 {
-                    j = MoveIndex32(fText, j, -1);
-                    c = UTF16.CharAt(fText, j);
+                    j = MoveIndex32(fText.AsSpan(), j, -1);
+                    c = UTF16.CharAt(fText.AsSpan(), j);
                 }
                 while (j > 0 && (fFormatSet.Contains(c) || fExtendSet.Contains(c)));
                 return j;
@@ -1652,7 +1652,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 int j = i;
                 do
                 {
-                    j = MoveIndex32(fText, j, 1);
+                    j = MoveIndex32(fText.AsSpan(), j, 1);
                     c = CAt(j);
                 }
                 while (c >= 0 && (fFormatSet.Contains(c) || fExtendSet.Contains(c)));
@@ -1666,7 +1666,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 {
                     return -1;
                 }
-                return UTF16.CharAt(fText, pos);
+                return UTF16.CharAt(fText.AsSpan(), pos);
             }
 
             internal override int Next(int prevPos)
@@ -1686,7 +1686,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 }
                 /*p0 =*/
                 p1 = p2 = p3 = prevPos;
-                c3 = UTF16.CharAt(fText, prevPos);
+                c3 = UTF16.CharAt(fText.AsSpan(), prevPos);
                 c0 = c1 = c2 = 0;
 
                 // Loop runs once per "significant" character position in the input text.
@@ -1866,7 +1866,7 @@ namespace ICU4N.Dev.Test.Rbbi
          * @return    The adjusted code unit index, pinned to the string's length, or
          *            unchanged if input index was outside of the string.
          */
-        internal static int MoveIndex32(StringBuffer s, int pos, int amt)
+        internal static int MoveIndex32(ReadOnlySpan<char> s, int pos, int amt)
         {
             int i;
             char c;
@@ -1934,7 +1934,7 @@ namespace ICU4N.Dev.Test.Rbbi
          * return the index of the next code point in the input text.
          * @param i the preceding index
          */
-        internal static int NextCP(StringBuffer s, int i)
+        internal static int NextCP(ReadOnlySpan<char> s, int i)
         {
             if (i == -1)
             {
@@ -1973,7 +1973,7 @@ namespace ICU4N.Dev.Test.Rbbi
         //   Blank-pad the string if it is shorter than the field.
         //   Truncate the source string if it is too long.
         //
-        private static void appendToBuf(StringBuffer dest, String src, int fieldLen)
+        private static void appendToBuf(OpenStringBuilder dest, String src, int fieldLen)
         {
             int appendLen = src.Length;
             if (appendLen >= fieldLen)
@@ -1993,7 +1993,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
         // Helper function for formatting error output.
         // Display a code point in "\\uxxxx" or "\Uxxxxxxxx" format
-        private static void appendCharToBuf(StringBuffer dest, int c, int fieldLen)
+        private static void appendCharToBuf(OpenStringBuilder dest, int c, int fieldLen)
         {
             String hexChars = "0123456789abcdef";
             if (c < 0x10000)
@@ -2029,7 +2029,7 @@ namespace ICU4N.Dev.Test.Rbbi
         internal void RunMonkey(BreakIterator bi, RBBIMonkeyKind mk, String name, int seed, int numIterations)
         {
             int TESTSTRINGLEN = 500;
-            StringBuffer testText = new StringBuffer();
+            OpenStringBuilder testText = new OpenStringBuilder();
             int numCharClasses;
             IList<object> chClasses;
             int[] expected = new int[TESTSTRINGLEN * 2 + 1];
@@ -2115,7 +2115,8 @@ namespace ICU4N.Dev.Test.Rbbi
                     {   // TODO:  deal with sets containing strings.
                         Errln("c < 0");
                     }
-                    UTF16.AppendCodePoint(testText, c);
+                    //UTF16.AppendCodePoint(testText, c);
+                    testText.AppendCodePoint(c);
                     if (printTestData)
                     {
                         Console.Out.Write((c).ToHexString() + " ");
@@ -2316,10 +2317,10 @@ namespace ICU4N.Dev.Test.Rbbi
                         }
 
                         // Format looks like   "<data><>\uabcd\uabcd<>\U0001abcd...</data>"
-                        StringBuffer errorText = new StringBuffer();
+                        OpenStringBuilder errorText = new OpenStringBuilder();
 
                         int c;    // Char from test data
-                        for (ci = startContext; ci <= endContext && ci != -1; ci = NextCP(testText, ci))
+                        for (ci = startContext; ci <= endContext && ci != -1; ci = NextCP(testText.AsSpan(), ci))
                         {
                             if (ci == i)
                             {
@@ -2333,7 +2334,7 @@ namespace ICU4N.Dev.Test.Rbbi
                             }
                             if (ci < testText.Length)
                             {
-                                c = UTF16.CharAt(testText, ci);
+                                c = UTF16.CharAt(testText.AsSpan(), ci);
                                 appendCharToBuf(errorText, c, 11);
                                 String gc = UChar.GetPropertyValueName(UProperty.General_Category, UChar.GetUnicodeCategory(c).ToInt32(), NameChoice.Short);
                                 appendToBuf(errorText, gc, 8);

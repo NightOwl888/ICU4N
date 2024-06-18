@@ -35,19 +35,6 @@ namespace ICU4N.Text
         /// <provisional>This API might change or be removed in a future release.</provisional>
         // See ticket #11395, this is safe.
 
-        public virtual UnicodeSet UnionWith(params StringBuilder[] collection)
-        {
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
-            return AddAll(collection);
-        }
-
-        
-        /// <seealso cref="UnionWith(UnicodeSet)"/>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        // See ticket #11395, this is safe.
-
         public virtual UnicodeSet UnionWith(params ICharSequence[] collection)
         {
             if (collection == null)
@@ -65,22 +52,6 @@ namespace ICU4N.Text
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual UnicodeSet UnionWithChars(string s)
-        {
-            if (s == null)
-                throw new ArgumentNullException(nameof(s));
-            return AddAll(s);
-        }
-
-
-        /// <summary>
-        /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
-        /// If this set already any particular character, it has no effect on that character.
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>this object, for chaining.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual UnicodeSet UnionWithChars(StringBuilder s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -150,25 +121,6 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual UnicodeSet SymmetricExceptWith(StringBuilder s)
-        {
-            if (s == null)
-                throw new ArgumentNullException(nameof(s));
-            return Complement(s);
-        }
-
-
-        /// <summary>
-        /// Complement the specified string in this set.
-        /// The set will not contain the specified string once the call
-        /// returns.
-        /// <para/>
-        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
-        /// </summary>
-        /// <param name="s">The string to complement.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual UnicodeSet SymmetricExceptWith(ICharSequence s)
         {
             if (s == null)
@@ -205,22 +157,6 @@ namespace ICU4N.Text
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual UnicodeSet SymmetricExceptWithChars(string s)
-        {
-            if (s == null)
-                throw new ArgumentNullException(nameof(s));
-            return ComplementAll(s);
-        }
-
-
-        /// <summary>
-        /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
-        /// If this set already any particular character, it has no effect on that character.
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual UnicodeSet SymmetricExceptWithChars(StringBuilder s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -274,17 +210,6 @@ namespace ICU4N.Text
         /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool IsSupersetOf(IEnumerable<StringBuilder> collection)
-        {
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
-            return ContainsAll(collection);
-        }
-
-        
-        /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual bool IsSupersetOf<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             if (collection == null)
@@ -302,22 +227,6 @@ namespace ICU4N.Text
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual bool Overlaps(string s)
-        {
-            if (s == null)
-                throw new ArgumentNullException(nameof(s));
-            return ContainsSome(s);
-        }
-
-
-        /// <summary>
-        /// Returns true if this set contains one or more of the characters
-        /// of the given string.
-        /// </summary>
-        /// <param name="s">String containing characters to be checked for containment.</param>
-        /// <returns>true if the condition is met.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool Overlaps(StringBuilder s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -371,17 +280,6 @@ namespace ICU4N.Text
         /// <seealso cref="Overlaps(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool Overlaps(IEnumerable<StringBuilder> collection)
-        {
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
-            return ContainsSome(collection);
-        }
-
-        
-        /// <seealso cref="Overlaps(UnicodeSet)"/>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual bool Overlaps<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             if (collection == null)
@@ -394,17 +292,6 @@ namespace ICU4N.Text
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual UnicodeSet ExceptWith(IEnumerable<string> collection)
-        {
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
-            return RemoveAll(collection);
-        }
-
-        
-        /// <seealso cref="ExceptWith(UnicodeSet)"/>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual UnicodeSet ExceptWith(IEnumerable<StringBuilder> collection)
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -432,22 +319,6 @@ namespace ICU4N.Text
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual UnicodeSet ExceptWithChars(string s)
-        {
-            if (s == null)
-                throw new ArgumentNullException(nameof(s));
-            return RemoveAll(s);
-        }
-
-
-        /// <summary>
-        /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
-        /// If this set already any particular character, it has no effect on that character.
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual UnicodeSet ExceptWithChars(StringBuilder s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -513,23 +384,6 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual UnicodeSet IntersectWith(StringBuilder cs)
-        {
-            if (cs == null)
-                throw new ArgumentNullException(nameof(cs));
-            return Retain(cs);
-        }
-
-
-        /// <summary>
-        /// Retain the specified string in this set if it is present.
-        /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
-        /// will only contain <paramref name="cs"/> if it did contain <paramref name="cs"/>.
-        /// </summary>
-        /// <param name="cs">The string to be retained.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual UnicodeSet IntersectWith(ICharSequence cs)
         {
             if (cs == null)
@@ -559,17 +413,6 @@ namespace ICU4N.Text
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual UnicodeSet IntersectWith(IEnumerable<string> collection)
-        {
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
-            return RetainAll(collection);
-        }
-
-        
-        /// <seealso cref="IntersectWith(UnicodeSet)"/>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual UnicodeSet IntersectWith(IEnumerable<StringBuilder> collection)
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -612,22 +455,6 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual UnicodeSet IntersectWithChars(StringBuilder s)
-        {
-            if (s == null)
-                throw new ArgumentNullException(nameof(s));
-            return RetainAll(s);
-        }
-
-
-        /// <summary>
-        /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
-        /// If this set already any particular character, it has no effect on that character.
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual UnicodeSet IntersectWithChars(ICharSequence s)
         {
             if (s == null)
@@ -655,24 +482,6 @@ namespace ICU4N.Text
 // ***** .NET ISet<T> overloads that are missing from ICU4J *****
 
 
-    
-
-    
-        /// <summary>
-        /// Returns true if this set contains all of the characters
-        /// of the given <see cref="StringBuilder"/>.
-        /// </summary>
-        /// <param name="s"><see cref="StringBuilder"/> containing characters to be checked for a superset.</param>
-        /// <returns>true if the <see cref="UnicodeSet"/> object is a superset of <paramref name="s"/>; otherwise, false.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool IsSupersetOf(StringBuilder s)
-        {
-            if (s == null)
-                throw new ArgumentNullException(nameof(s));
-
-            return Span(s, SpanCondition.Contained) == s.Length;
-        }
     
 
     
@@ -721,24 +530,6 @@ namespace ICU4N.Text
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual bool IsProperSupersetOf(string s)
-        {
-            if (s == null)
-                throw new ArgumentNullException(nameof(s));
-
-            int contained = Span(s, SpanCondition.Contained);
-            return contained == s.Length && contained < this.Count;
-        }
-
-
-        /// <summary>
-        /// Returns true if this set contains all of the characters
-        /// of the given <see cref="StringBuilder"/> plus at least one additional character.
-        /// </summary>
-        /// <param name="s"><see cref="StringBuilder"/> containing characters to be checked for a proper superset.</param>
-        /// <returns>true if the <see cref="UnicodeSet"/> object is a proper superset of <paramref name="s"/>; otherwise, false.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool IsProperSupersetOf(StringBuilder s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -823,38 +614,6 @@ namespace ICU4N.Text
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper superset of <paramref name="collection"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool IsProperSupersetOf(IEnumerable<StringBuilder> collection)
-        {
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
-
-            int count = this.Count;
-            if (count == 0) // empty set isn't a proper superset of any set.
-                return false;
-
-            ICollection<StringBuilder> otherAsCollection = collection as ICollection<StringBuilder>;
-            if (otherAsCollection != null && otherAsCollection.Count == 0)
-                return true; // note that this has at least one element, based on above check
-
-            int contained = 0;
-            foreach (var o in collection)
-            {
-                if (!Contains(o))
-                    return false;
-                else
-                    contained++;
-            }
-            return contained < count;
-        }
-
-        
-        /// <summary>
-        /// Determines whether a <see cref="UnicodeSet"/> object is a proper superset of the specified collection.
-        /// </summary>
-        /// <param name="collection">The collection to compare to the current <see cref="UnicodeSet"/> object.</param>
-        /// <returns>true if the <see cref="UnicodeSet"/> object is a proper superset of <paramref name="collection"/>; otherwise, false.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual bool IsProperSupersetOf<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             if (collection == null)
@@ -890,23 +649,6 @@ namespace ICU4N.Text
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual bool IsSubsetOf(string s)
-        {
-            if (s == null)
-                throw new ArgumentNullException(nameof(s));
-
-            return Span(s, SpanCondition.Contained) == this.Count;
-        }
-
-
-        /// <summary>
-        /// Returns true if this set contains all of the characters
-        /// of the given <see cref="StringBuilder"/> plus at least one additional character.
-        /// </summary>
-        /// <param name="s"><see cref="StringBuilder"/> containing characters to be checked for a subset.</param>
-        /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool IsSubsetOf(StringBuilder s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -957,52 +699,6 @@ namespace ICU4N.Text
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual bool IsSubsetOf(IEnumerable<string> collection)
-        {
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
-
-            int count = this.Count;
-            if (count == 0)
-                return true;
-
-            var otherAsSet = collection as UnicodeSet;
-            if (otherAsSet != null)
-            {
-                // if this has more elements then it can't be a subset
-                if (count > otherAsSet.Count)
-                    return false;
-
-                return IsSubsetOf(otherAsSet);
-            }
-
-            // ICU4N TODO: This could be optimized better
-            // if we had overloads of IndexOf() for each charSequence type.
-            // See implementation of System.Collections.Generic.HashSet<T>.
-
-            // count of items in other not found in this
-            int unfoundCount = 0;
-            // unique items in other found in this
-            var found = new HashSet<string>(StringComparer.Ordinal);
-
-            foreach (var o in collection)
-            {
-                if (Contains(o))
-                    found.Add(o.ToString());
-                else
-                    unfoundCount++;
-            }
-            return unfoundCount >= 0 && found.Count == this.Count;
-        }
-
-        
-        /// <summary>
-        /// Determines whether a <see cref="UnicodeSet"/> object is a subset of the specified collection.
-        /// </summary>
-        /// <param name="collection">The collection to compare to the current <see cref="UnicodeSet"/> object.</param>
-        /// <returns>true if the <see cref="UnicodeSet"/> object is a subset of <paramref name="collection"/>; otherwise, false.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool IsSubsetOf(IEnumerable<StringBuilder> collection)
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -1108,24 +804,6 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given <see cref="StringBuilder"/> plus at least one additional character.
-        /// </summary>
-        /// <param name="s"><see cref="StringBuilder"/> containing characters to be checked for a proper subset.</param>
-        /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool IsProperSubsetOf(StringBuilder s)
-        {
-            if (s == null)
-                throw new ArgumentNullException(nameof(s));
-
-            int count = this.Count;
-            return count < s.Length && Span(s, SpanCondition.Contained) == count;
-        }
-
-
-        /// <summary>
-        /// Returns true if this set contains all of the characters
         /// of the given <see cref="ICharSequence"/> plus at least one additional character.
         /// </summary>
         /// <param name="s"><see cref="ICharSequence"/> containing characters to be checked for a proper subset.</param>
@@ -1175,51 +853,6 @@ namespace ICU4N.Text
             int count = this.Count;
 
             ICollection<string> otherAsCollection = collection as ICollection<string>;
-            if (otherAsCollection != null)
-            {
-                if (count == 0)
-                    return otherAsCollection.Count > 0; // the empty set is a proper subset of anything but the empty set
-
-                var otherAsSet = collection as UnicodeSet;
-                if (otherAsSet != null)
-                    return IsProperSubsetOf(otherAsSet);
-            }
-
-            // ICU4N TODO: This could be optimized better
-            // if we had overloads of IndexOf() for each charSequence type.
-            // See implementation of System.Collections.Generic.HashSet<T>.
-
-            // count of items in other not found in this
-            int unfoundCount = 0;
-            // unique items in other found in this
-            var found = new HashSet<string>(StringComparer.Ordinal);
-
-            foreach (var o in collection)
-            {
-                if (Contains(o))
-                    found.Add(o.ToString());
-                else
-                    unfoundCount++;
-            }
-            return unfoundCount > 0 && found.Count == this.Count;
-        }
-
-        
-        /// <summary>
-        /// Determines whether a <see cref="UnicodeSet"/> object is a proper subset of the specified collection.
-        /// </summary>
-        /// <param name="collection">The collection to compare to the current <see cref="UnicodeSet"/> object.</param>
-        /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="collection"/>; otherwise, false.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool IsProperSubsetOf(IEnumerable<StringBuilder> collection)
-        {
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
-
-            int count = this.Count;
-
-            ICollection<StringBuilder> otherAsCollection = collection as ICollection<StringBuilder>;
             if (otherAsCollection != null)
             {
                 if (count == 0)
@@ -1315,23 +948,6 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns true if this set contains all of the characters
-        /// of the given <see cref="StringBuilder"/> and contains no aditional characters.
-        /// </summary>
-        /// <param name="s"><see cref="StringBuilder"/> containing characters to be checked for set equality.</param>
-        /// <returns>true if the <see cref="UnicodeSet"/> object contains the same characters as <paramref name="s"/>; otherwise, false.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool SetEquals(StringBuilder s)
-        {
-            if (s == null)
-                throw new ArgumentNullException(nameof(s));
-
-            return s.Length == this.Count && Span(s, SpanCondition.Contained) == s.Length;
-        }
-
-
-        /// <summary>
-        /// Returns true if this set contains all of the characters
         /// of the given <see cref="ICharSequence"/> and contains no aditional characters.
         /// </summary>
         /// <param name="s"><see cref="ICharSequence"/> containing characters to be checked for set equality.</param>
@@ -1391,50 +1007,6 @@ namespace ICU4N.Text
             else
             {
                 var otherAsCollection = collection as ICollection<string>;
-                if (otherAsCollection != null)
-                {
-                    if (this.Count == 0 && otherAsCollection.Count > 0)
-                        return false;
-                }
-                int countOfOther = 0;
-                foreach (var item in collection)
-                {
-                    if (!this.Contains(item))
-                        return false;
-                    countOfOther++;
-                }
-                return countOfOther == this.Count;
-            }
-        }
-
-        
-        /// <summary>
-        /// Checks if this and other contain the same elements. This is set equality: 
-        /// duplicates and order are ignored
-        /// </summary>
-        /// <param name="collection">The collection to compare to the current <see cref="UnicodeSet"/> object.</param>
-        /// <returns><c>true</c> if the sets contain the same elements; otherwise <c>false</c>.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool SetEquals(IEnumerable<StringBuilder> collection)
-        {
-            if (collection == null)
-                return false;
-
-            if (this == collection)
-                return true;
-
-            UnicodeSet otherAsSet = collection as UnicodeSet;
-            if (otherAsSet != null)
-            {
-                if (this.Count != otherAsSet.Count)
-                    return false;
-
-                return ContainsAll(otherAsSet);
-            }
-            else
-            {
-                var otherAsCollection = collection as ICollection<StringBuilder>;
                 if (otherAsCollection != null)
                 {
                     if (this.Count == 0 && otherAsCollection.Count > 0)
@@ -1525,40 +1097,6 @@ namespace ICU4N.Text
             }
 
             var temp = new SortedSet<string>(collection, StringComparer.Ordinal);
-            temp.ExceptWith(this);
-            this.ExceptWith(collection);
-            return this.UnionWith(temp);
-        }
-
-        
-        /// <summary>
-        /// Complement the specified <paramref name="collection"/> with this set.
-        /// The set will not contain the specified set once the call
-        /// returns.
-        /// <para/>
-        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
-        /// </summary>
-        /// <param name="collection">The collection to complement.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual UnicodeSet SymmetricExceptWith(IEnumerable<StringBuilder> collection)
-        {
-            if (collection == null)
-                throw new ArgumentNullException(nameof(collection));
-
-            // if set is empty, then symmetric difference is other
-            if (this.Count == 0)
-                return UnionWith(collection);
-
-            // special case this; the symmetric difference of a set with itself is the empty set
-            if (collection == this)
-            {
-                Clear();
-                return this;
-            }
-
-            var temp = new SortedSet<string>(collection.Select(x => x.ToString()), StringComparer.Ordinal);
             temp.ExceptWith(this);
             this.ExceptWith(collection);
             return this.UnionWith(temp);

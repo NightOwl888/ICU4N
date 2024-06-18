@@ -184,21 +184,22 @@ namespace ICU4N.Dev.Test.Lang
                 UChar.ToCodePoint(UChar.MinHighSurrogate,
                         UChar.MinLowSurrogate),
                 UChar.MinLowSurrogate,};
-            StringBuffer b = new StringBuffer(s);
+            //StringBuffer b = new StringBuffer(s);
+            ReadOnlySpan<char> sp = s.AsSpan();
             for (int i = 0; i < avalues.Length; ++i)
             {
                 if (UChar.CodePointAt(s, i) != avalues[i])
                     Errln("string at: " + i);
                 if (UChar.CodePointAt(c, i) != avalues[i])
                     Errln("chars at: " + i);
-                if (UChar.CodePointAt(b, i) != avalues[i])
+                if (UChar.CodePointAt(sp, i) != avalues[i])
                     Errln("stringbuffer at: " + i);
 
                 if (UChar.CodePointBefore(s, i + 1) != bvalues[i])
                     Errln("string before: " + i);
                 if (UChar.CodePointBefore(c, i + 1) != bvalues[i])
                     Errln("chars before: " + i);
-                if (UChar.CodePointBefore(b, i + 1) != bvalues[i])
+                if (UChar.CodePointBefore(sp, i + 1) != bvalues[i])
                     Errln("stringbuffer before: " + i);
             }
 

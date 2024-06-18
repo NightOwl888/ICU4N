@@ -165,149 +165,6 @@ namespace ICU4N.Impl
         /// The number of arguments checked against the given limits is the
         /// highest argument number plus one, not the number of occurrences of arguments.
         /// </summary>
-        /// <param name="pattern">The pattern StringBuilder.</param>
-        /// <param name="sb">A <see cref="StringBuilder"/> buffer that will contain the output in immutable form.</param>
-        /// <param name="min">The pattern must have at least this many arguments.</param>
-        /// <param name="max">The pattern must have at most this many arguments.</param>
-        /// <returns>The compiled-pattern string.</returns>
-        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
-        public static string CompileToStringMinMaxArguments(
-            StringBuilder pattern, StringBuilder sb, int min, int max)
-        {
-            // Return some precompiled common two-argument patterns.
-            if (min <= 2 && 2 <= max)
-            {
-                foreach (string[] pair in COMMON_PATTERNS)
-                {
-                    if (pair[0].ContentEquals(pattern))
-                    {
-                        Debug.Assert(pair[1][0] == 2);
-                        return pair[1];
-                    }
-                }
-            }
-            // Parse consistent with MessagePattern, but
-            // - support only simple numbered arguments
-            // - build a simple binary structure into the result string
-            int patternLength = pattern.Length;
-            sb.EnsureCapacity(patternLength);
-            // Reserve the first char for the number of arguments.
-            sb.Length = 1;
-            int textLength = 0;
-            int maxArg = -1;
-            bool inQuote = false;
-            for (int i = 0; i < patternLength;)
-            {
-                char c = pattern[i++];
-                if (c == '\'')
-                {
-                    if (i < patternLength && (c = pattern[i]) == '\'')
-                    {
-                        // double apostrophe, skip the second one
-                        ++i;
-                    }
-                    else if (inQuote)
-                    {
-                        // skip the quote-ending apostrophe
-                        inQuote = false;
-                        continue;
-                    }
-                    else if (c == '{' || c == '}')
-                    {
-                        // Skip the quote-starting apostrophe, find the end of the quoted literal text.
-                        ++i;
-                        inQuote = true;
-                    }
-                    else
-                    {
-                        // The apostrophe is part of literal text.
-                        c = '\'';
-                    }
-                }
-                else if (!inQuote && c == '{')
-                {
-                    if (textLength > 0)
-                    {
-                        sb[sb.Length - textLength - 1] = (char)(ARG_NUM_LIMIT + textLength);
-                        textLength = 0;
-                    }
-                    int argNumber;
-                    if ((i + 1) < patternLength &&
-                            0 <= (argNumber = pattern[i] - '0') && argNumber <= 9 &&
-                            pattern[i + 1] == '}')
-                    {
-                        i += 2;
-                    }
-                    else
-                    {
-                        // Multi-digit argument number (no leading zero) or syntax error.
-                        // MessagePattern permits PatternProps.skipWhiteSpace(pattern, index)
-                        // around the number, but this class does not.
-                        int argStart = i - 1;
-                        argNumber = -1;
-                        if (i < patternLength && '1' <= (c = pattern[i++]) && c <= '9')
-                        {
-                            argNumber = c - '0';
-                            while (i < patternLength && '0' <= (c = pattern[i++]) && c <= '9')
-                            {
-                                argNumber = argNumber * 10 + (c - '0');
-                                if (argNumber >= ARG_NUM_LIMIT)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        if (argNumber < 0 || c != '}')
-                        {
-                            throw new ArgumentException(
-                                    "Argument syntax error in pattern \"" + pattern +
-                                    "\" at index " + argStart +
-                                    ": " + pattern.Subsequence(argStart, i - argStart)); // ICU4N: Corrected 2nd parameter
-                        }
-                    }
-                    if (argNumber > maxArg)
-                    {
-                        maxArg = argNumber;
-                    }
-                    sb.Append((char)argNumber);
-                    continue;
-                }  // else: c is part of literal text
-                   // Append c and track the literal-text segment length.
-                if (textLength == 0)
-                {
-                    // Reserve a char for the length of a new text segment, preset the maximum length.
-                    sb.Append(SEGMENT_LENGTH_ARGUMENT_CHAR);
-                }
-                sb.Append(c);
-                if (++textLength == MAX_SEGMENT_LENGTH)
-                {
-                    textLength = 0;
-                }
-            }
-            if (textLength > 0)
-            {
-                sb[sb.Length - textLength - 1] = (char)(ARG_NUM_LIMIT + textLength);
-            }
-            int argCount = maxArg + 1;
-            if (argCount < min)
-            {
-                throw new ArgumentException(
-                        "Fewer than minimum " + min + " arguments in pattern \"" + pattern + "\"");
-            }
-            if (argCount > max)
-            {
-                throw new ArgumentException(
-                        "More than maximum " + max + " arguments in pattern \"" + pattern + "\"");
-            }
-            sb[0] = (char)argCount;
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Creates a compiled form of the pattern string, for use with appropriate static methods.
-        /// The number of arguments checked against the given limits is the
-        /// highest argument number plus one, not the number of occurrences of arguments.
-        /// </summary>
         /// <param name="pattern">The pattern ICharSequence.</param>
         /// <param name="sb">A <see cref="StringBuilder"/> buffer that will contain the output in immutable form.</param>
         /// <param name="min">The pattern must have at least this many arguments.</param>
@@ -461,16 +318,6 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="compiledPattern">Compiled form of a pattern string.</param>
         /// <param name="values"></param>
-        public static string FormatCompiledPattern(string compiledPattern, params StringBuilder[] values)
-        {
-            return FormatAndAppend(compiledPattern, new StringBuilder(), null, values).ToString();
-        }
-
-        /// <summary>
-        /// Formats the given values.
-        /// </summary>
-        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
-        /// <param name="values"></param>
         public static string FormatCompiledPattern(string compiledPattern, params ICharSequence[] values)
         {
             return FormatAndAppend(compiledPattern, new StringBuilder(), null, values).ToString();
@@ -490,27 +337,6 @@ namespace ICU4N.Impl
         /// <returns>The compiled-pattern string.</returns>
         /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
         public static string FormatRawPattern(string pattern, int min, int max, params string[] values)
-        {
-            StringBuilder sb = new StringBuilder();
-            string compiledPattern = CompileToStringMinMaxArguments(pattern, sb, min, max);
-            sb.Length = 0;
-            return FormatAndAppend(compiledPattern, sb, null, values).ToString();
-        }
-
-        /// <summary>
-        /// Formats the not-compiled pattern with the given values.
-        /// Equivalent to <see cref="CompileToStringMinMaxArguments(StringBuilder, StringBuilder, int, int)"/> 
-        /// followed by <see cref="FormatCompiledPattern(string, StringBuilder[])"/>.
-        /// The number of arguments checked against the given limits is the
-        /// highest argument number plus one, not the number of occurrences of arguments.
-        /// </summary>
-        /// <param name="pattern">Not-compiled form of a pattern string.</param>
-        /// <param name="min">The pattern must have at least this many arguments.</param>
-        /// <param name="max">The pattern must have at most this many arguments.</param>
-        /// <param name="values"></param>
-        /// <returns>The compiled-pattern string.</returns>
-        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
-        public static string FormatRawPattern(string pattern, int min, int max, params StringBuilder[] values)
         {
             StringBuilder sb = new StringBuilder();
             string compiledPattern = CompileToStringMinMaxArguments(pattern, sb, min, max);
@@ -559,35 +385,6 @@ namespace ICU4N.Impl
         /// <returns></returns>
         public static StringBuilder FormatAndAppend(
             string compiledPattern, StringBuilder appendTo, int[] offsets, params string[] values)
-        {
-            int valuesLength = values != null ? values.Length : 0;
-            if (valuesLength < GetArgumentLimit(compiledPattern))
-            {
-                throw new ArgumentException("Too few values.");
-            }
-            return Format(compiledPattern, values, appendTo, null, true, offsets);
-        }
-
-        /// <summary>
-        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
-        /// </summary>
-        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
-        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
-        /// <param name="offsets">
-        /// offsets[i] receives the offset of where
-        /// values[i] replaced pattern argument {i}.
-        /// Can be null, or can be shorter or longer than values.
-        /// If there is no {i} in the pattern, then offsets[i] is set to -1.
-        /// </param>
-        /// <param name="values">
-        /// The argument values.
-        /// An argument value must not be the same object as <paramref name="appendTo"/>.
-        /// values.Length must be at least <see cref="GetArgumentLimit(string)"/>.
-        /// Can be null if <see cref="GetArgumentLimit(string)"/>==0.
-        /// </param>
-        /// <returns></returns>
-        public static StringBuilder FormatAndAppend(
-            string compiledPattern, StringBuilder appendTo, int[] offsets, params StringBuilder[] values)
         {
             int valuesLength = values != null ? values.Length : 0;
             if (valuesLength < GetArgumentLimit(compiledPattern))
@@ -700,71 +497,6 @@ namespace ICU4N.Impl
         /// </param>
         /// <returns><paramref name="result"/></returns>
         public static StringBuilder FormatAndReplace(
-            string compiledPattern, StringBuilder result, int[] offsets, params StringBuilder[] values)
-        {
-            int valuesLength = values != null ? values.Length : 0;
-            if (valuesLength < GetArgumentLimit(compiledPattern))
-            {
-                throw new ArgumentException("Too few values.");
-            }
-
-            // If the pattern starts with an argument whose value is the same object
-            // as the result, then we keep the result contents and append to it.
-            // Otherwise we replace its contents.
-            int firstArg = -1;
-            // If any non-initial argument value is the same object as the result,
-            // then we first copy its contents and use that instead while formatting.
-            string resultCopy = null;
-            if (GetArgumentLimit(compiledPattern) > 0)
-            {
-                for (int i = 1; i < compiledPattern.Length;)
-                {
-                    int n = compiledPattern[i++];
-                    if (n >= ARG_NUM_LIMIT)
-                    {
-                        i += n - ARG_NUM_LIMIT;
-                        
-                    }
-                    else if (values[n] == result)
-                    {
-                        if (i == 2)
-                        {
-                            firstArg = n;
-                        }
-                        else if (resultCopy == null)
-                        {
-                            resultCopy = result.ToString();
-                        }
-                    }
-                }
-            }
-            if (firstArg < 0)
-            {
-                result.Length = 0;
-            }
-            return Format(compiledPattern, values, result, resultCopy, false, offsets);
-        }
-
-        /// <summary>
-        /// Formats the given values, replacing the contents of the result builder.
-        /// May optimize by actually appending to the result if it is the same object
-        /// as the value corresponding to the initial argument in the pattern.
-        /// </summary>
-        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
-        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
-        /// <param name="offsets">
-        /// offsets[i] receives the offset of where
-        /// values[i] replaced pattern argument {i}.
-        /// Can be null, or can be shorter or longer than values.
-        /// If there is no {i} in the pattern, then offsets[i] is set to -1.
-        /// </param>
-        /// <param name="values">
-        /// The argument values.
-        /// An argument value may be the same object as result.
-        /// values.Length must be at least <see cref="GetArgumentLimit(string)"/>.
-        /// </param>
-        /// <returns><paramref name="result"/></returns>
-        public static StringBuilder FormatAndReplace(
             string compiledPattern, StringBuilder result, int[] offsets, params ICharSequence[] values)
         {
             int valuesLength = values != null ? values.Length : 0;
@@ -839,72 +571,6 @@ namespace ICU4N.Impl
                         offsets[n] = result.Length;
                     }
                     result.Append(value);
-                }
-                else
-                {
-                    int limit = i + (n - ARG_NUM_LIMIT); 
-                    result.Append(compiledPattern, i, limit - i); // ICU4N: Corrected 3rd parameter logic
-                    i = limit;
-                }
-            }
-            return result;
-        }
-
-        private static StringBuilder Format(
-            string compiledPattern, StringBuilder[] values,
-            StringBuilder result, string resultCopy, bool forbidResultAsValue,
-            int[] offsets)
-        {
-            int offsetsLength;
-            if (offsets == null)
-            {
-                offsetsLength = 0;
-            }
-            else
-            {
-                offsetsLength = offsets.Length;
-                for (int i = 0; i < offsetsLength; i++)
-                {
-                    offsets[i] = -1;
-                }
-            }
-            for (int i = 1; i < compiledPattern.Length;)
-            {
-                int n = compiledPattern[i++];
-                if (n < ARG_NUM_LIMIT)
-                {
-                    var value = values[n];
-                    if (value == result)
-                    {
-                        if (forbidResultAsValue)
-                        {
-                            throw new ArgumentException("Value must not be same object as result");
-                        }
-                        if (i == 2)
-                        {
-                            // We are appending to result which is also the first value object.
-                            if (n < offsetsLength)
-                            {
-                                offsets[n] = 0;
-                            }
-                        }
-                        else
-                        {
-                            if (n < offsetsLength)
-                            {
-                                offsets[n] = result.Length;
-                            }
-                            result.Append(resultCopy);
-                        }
-                    }
-                    else
-                    {
-                        if (n < offsetsLength)
-                        {
-                            offsets[n] = result.Length;
-                        }
-                        result.Append(value);
-                    }
                 }
                 else
                 {

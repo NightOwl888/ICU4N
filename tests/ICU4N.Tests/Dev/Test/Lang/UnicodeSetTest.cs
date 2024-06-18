@@ -2998,57 +2998,63 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestCharSequenceArgs()
         {
+            // ICU4N: Converted from usage of StringBuffer/StringBuilder
+
             // statics
-            assertEquals("CharSequence from", new UnicodeSet("[{abc}]"), UnicodeSet.From(new StringBuilder("abc")));
-            assertEquals("CharSequence fromAll", new UnicodeSet("[a-c]"), UnicodeSet.FromAll(new StringBuilder("abc")));
-            assertEquals("CharSequence compare", 1.0f, Math.Sign(UnicodeSet.Compare(new StringBuilder("abc"), 0x61)));
-            assertEquals("CharSequence compare", -1.0f, Math.Sign(UnicodeSet.Compare(0x61, new StringBuilder("abc"))));
-            assertEquals("CharSequence compare", 0.0f, Math.Sign(UnicodeSet.Compare(new StringBuilder("a"), 0x61)));
-            assertEquals("CharSequence compare", 0.0f, Math.Sign(UnicodeSet.Compare(0x61, new StringBuilder("a"))));
-            assertEquals("CharSequence getSingleCodePoint", 0x1F466, UnicodeSet.GetSingleCodePoint(new StringBuilder("👦")));
+            assertEquals("CharSequence from", new UnicodeSet("[{abc}]"), UnicodeSet.From("abc".AsSpan()));
+            assertEquals("CharSequence fromAll", new UnicodeSet("[a-c]"), UnicodeSet.FromAll("abc".AsSpan()));
+            assertEquals("CharSequence compare", 1.0f, Math.Sign(UnicodeSet.Compare("abc".AsSpan(), 0x61)));
+            assertEquals("CharSequence compare", -1.0f, Math.Sign(UnicodeSet.Compare(0x61, "abc".AsSpan())));
+            assertEquals("CharSequence compare", 0.0f, Math.Sign(UnicodeSet.Compare("a".AsSpan(), 0x61)));
+            assertEquals("CharSequence compare", 0.0f, Math.Sign(UnicodeSet.Compare(0x61, "a".AsSpan())));
+            assertEquals("CharSequence getSingleCodePoint", 0x1F466, UnicodeSet.GetSingleCodePoint("👦".AsSpan()));
 
             // iterables/arrays
-            IEnumerable<StringBuilder> iterable = new List<StringBuilder> { new StringBuilder("A"), new StringBuilder("B") };
-            assertEquals("CharSequence containsAll", true, new UnicodeSet("[AB]").ContainsAll(iterable));
-            assertEquals("CharSequence containsAll", false, new UnicodeSet("[a-cA]").ContainsAll(iterable));
+            IEnumerable<char[]> iterable = new List<char[]> { "A".ToCharArray(), "B".ToCharArray() };
+            assertEquals("CharSequence containsAll", true, new UnicodeSet("[AB]").IsSupersetOf(iterable));
+            assertEquals("CharSequence containsAll", false, new UnicodeSet("[a-cA]").IsSupersetOf(iterable));
             assertEquals("CharSequence containsNone", true, new UnicodeSet("[a-c]").ContainsNone(iterable));
             assertEquals("CharSequence containsNone", false, new UnicodeSet("[a-cA]").ContainsNone(iterable));
-            assertEquals("CharSequence containsSome", true, new UnicodeSet("[a-cA]").ContainsSome(iterable));
-            assertEquals("CharSequence containsSome", false, new UnicodeSet("[a-c]").ContainsSome(iterable));
-            assertEquals("CharSequence addAll", new UnicodeSet("[a-cAB]"), new UnicodeSet("[a-cA]").AddAll(new StringBuilder("A"), new StringBuilder("B")));
-            assertEquals("CharSequence removeAll", new UnicodeSet("[a-c]"), new UnicodeSet("[a-cA]").RemoveAll(iterable));
-            assertEquals("CharSequence retainAll", new UnicodeSet("[A]"), new UnicodeSet("[a-cA]").RetainAll(iterable));
+            assertEquals("CharSequence containsSome", true, new UnicodeSet("[a-cA]").Overlaps(iterable));
+            assertEquals("CharSequence containsSome", false, new UnicodeSet("[a-c]").Overlaps(iterable));
+            //assertEquals("CharSequence addAll", new UnicodeSet("[a-cAB]"), new UnicodeSet("[a-cA]").AddAll("A".ToCharArray(), "B".ToCharArray())); // ICU4N TODO: API - put this back in?
+            
+            // ICU4N TODO: API The following tests are supposed to be named UnionWithChars, ExceptWithChars, and IntersectWithChars,
+            // but those overloads do not exist.
+            assertEquals("CharSequence addAll", new UnicodeSet("[a-cAB]"), new UnicodeSet("[a-cA]").UnionWith("A".ToCharArray(), "B".ToCharArray())); // ICU4N TODO: API - put this back in?
+            assertEquals("CharSequence removeAll", new UnicodeSet("[a-c]"), new UnicodeSet("[a-cA]").ExceptWith(iterable));
+            assertEquals("CharSequence retainAll", new UnicodeSet("[A]"), new UnicodeSet("[a-cA]").IntersectWith(iterable));
 
             // UnicodeSet results
-            assertEquals("CharSequence add", new UnicodeSet("[Aa-c{abc}{qr}]"), new UnicodeSet("[a-cA{qr}]").Add(new StringBuilder("abc")));
-            assertEquals("CharSequence retain", new UnicodeSet("[{abc}]"), new UnicodeSet("[a-cA{abc}{qr}]").Retain(new StringBuilder("abc")));
-            assertEquals("CharSequence remove", new UnicodeSet("[Aa-c{qr}]"), new UnicodeSet("[a-cA{abc}{qr}]").Remove(new StringBuilder("abc")));
-            assertEquals("CharSequence complement", new UnicodeSet("[Aa-c{qr}]"), new UnicodeSet("[a-cA{abc}{qr}]").Complement(new StringBuilder("abc")));
-            assertEquals("CharSequence complement", new UnicodeSet("[Aa-c{abc}{qr}]"), new UnicodeSet("[a-cA{qr}]").Complement(new StringBuilder("abc")));
+            assertEquals("CharSequence add", new UnicodeSet("[Aa-c{abc}{qr}]"), new UnicodeSet("[a-cA{qr}]").Add("abc".AsSpan()));
+            assertEquals("CharSequence retain", new UnicodeSet("[{abc}]"), new UnicodeSet("[a-cA{abc}{qr}]").IntersectWith("abc".AsSpan()));
+            assertEquals("CharSequence remove", new UnicodeSet("[Aa-c{qr}]"), new UnicodeSet("[a-cA{abc}{qr}]").Remove("abc".AsSpan()));
+            assertEquals("CharSequence complement", new UnicodeSet("[Aa-c{qr}]"), new UnicodeSet("[a-cA{abc}{qr}]").SymmetricExceptWith("abc".AsSpan()));
+            assertEquals("CharSequence complement", new UnicodeSet("[Aa-c{abc}{qr}]"), new UnicodeSet("[a-cA{qr}]").SymmetricExceptWith("abc".AsSpan()));
 
-            assertEquals("CharSequence addAll", new UnicodeSet("[a-cABC]"), new UnicodeSet("[a-cA]").AddAll(new StringBuilder("ABC")));
-            assertEquals("CharSequence retainAll", new UnicodeSet("[a-c]"), new UnicodeSet("[a-cA]").RetainAll(new StringBuilder("abcB")));
-            assertEquals("CharSequence removeAll", new UnicodeSet("[Aab]"), new UnicodeSet("[a-cA]").RemoveAll(new StringBuilder("cC")));
-            assertEquals("CharSequence complementAll", new UnicodeSet("[ABbc]"), new UnicodeSet("[a-cA]").ComplementAll(new StringBuilder("aB")));
+            assertEquals("CharSequence addAll", new UnicodeSet("[a-cABC]"), new UnicodeSet("[a-cA]").UnionWithChars("ABC".AsSpan()));
+            assertEquals("CharSequence retainAll", new UnicodeSet("[a-c]"), new UnicodeSet("[a-cA]").IntersectWithChars("abcB".AsSpan()));
+            assertEquals("CharSequence removeAll", new UnicodeSet("[Aab]"), new UnicodeSet("[a-cA]").ExceptWithChars("cC".AsSpan()));
+            assertEquals("CharSequence complementAll", new UnicodeSet("[ABbc]"), new UnicodeSet("[a-cA]").SymmetricExceptWithChars("aB".AsSpan()));
 
             // containment
-            assertEquals("CharSequence contains", true, new UnicodeSet("[a-cA{ab}]").Contains(new StringBuilder("ab")));
-            assertEquals("CharSequence containsNone", false, new UnicodeSet("[a-cA]").ContainsNone(new StringBuilder("ab")));
-            assertEquals("CharSequence containsSome", true, new UnicodeSet("[a-cA{ab}]").ContainsSome(new StringBuilder("ab")));
+            assertEquals("CharSequence contains", true, new UnicodeSet("[a-cA{ab}]").Contains("ab".AsSpan()));
+            assertEquals("CharSequence containsNone", false, new UnicodeSet("[a-cA]").ContainsNone("ab".AsSpan())); // ICU4N TODO: API Remove (we can use !Overlaps)
+            assertEquals("CharSequence containsSome", true, new UnicodeSet("[a-cA{ab}]").Overlaps("ab".AsSpan()));
 
             // spanning
-            assertEquals("CharSequence span", 3, new UnicodeSet("[a-cA]").Span(new StringBuilder("abc"), SpanCondition.Simple));
-            assertEquals("CharSequence span", 3, new UnicodeSet("[a-cA]").Span(new StringBuilder("abc"), 1, SpanCondition.Simple));
-            assertEquals("CharSequence spanBack", 0, new UnicodeSet("[a-cA]").SpanBack(new StringBuilder("abc"), SpanCondition.Simple));
-            assertEquals("CharSequence spanBack", 0, new UnicodeSet("[a-cA]").SpanBack(new StringBuilder("abc"), 1, SpanCondition.Simple));
+            assertEquals("CharSequence span", 3, new UnicodeSet("[a-cA]").Span("abc".AsSpan(), SpanCondition.Simple));
+            assertEquals("CharSequence span", 3, new UnicodeSet("[a-cA]").Span("abc".AsSpan(), 1, SpanCondition.Simple));
+            assertEquals("CharSequence spanBack", 0, new UnicodeSet("[a-cA]").SpanBack("abc".AsSpan(), SpanCondition.Simple));
+            assertEquals("CharSequence spanBack", 0, new UnicodeSet("[a-cA]").SpanBack("abc".AsSpan(), 1, SpanCondition.Simple));
 
             // internal
             int outCount;
-            assertEquals("CharSequence matchesAt", 2, new UnicodeSet("[a-cA]").MatchesAt(new StringBuilder("abc"), 1));
-            assertEquals("CharSequence spanAndCount", 3, new UnicodeSet("[a-cA]").SpanAndCount(new StringBuilder("abc"), 1, SpanCondition.Simple, out outCount));
-            assertEquals("CharSequence findIn", 3, new UnicodeSet("[a-cA]").FindIn(new StringBuilder("abc"), 1, true));
-            assertEquals("CharSequence findLastIn", -1, new UnicodeSet("[a-cA]").FindLastIn(new StringBuilder("abc"), 1, true));
-            assertEquals("CharSequence add", "c", new UnicodeSet("[abA]").StripFrom(new StringBuilder("abc"), true));
+            assertEquals("CharSequence matchesAt", 2, new UnicodeSet("[a-cA]").MatchesAt("abc".AsSpan(), 1));
+            assertEquals("CharSequence spanAndCount", 3, new UnicodeSet("[a-cA]").SpanAndCount("abc".AsSpan(), 1, SpanCondition.Simple, out outCount));
+            assertEquals("CharSequence findIn", 3, new UnicodeSet("[a-cA]").FindIn("abc".AsSpan(), 1, true));
+            assertEquals("CharSequence findLastIn", -1, new UnicodeSet("[a-cA]").FindLastIn("abc".AsSpan(), 1, true));
+            assertEquals("CharSequence add", "c", new UnicodeSet("[abA]").StripFrom("abc".AsSpan(), true));
         }
 
         [Test]
