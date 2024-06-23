@@ -2397,17 +2397,17 @@ namespace ICU4N
 
         // ICU4N specific - GetPropertyValueEnum(UProperty property, ICharSequence valueAlias) moved to UCharacter.generated.tt
 
-        /// <summary>
-        /// Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>, except doesn't throw exception. Instead, returns <see cref="UPropertyConstants.Undefined"/>.
-        /// </summary>
-        /// <param name="property">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
-        /// <param name="valueAlias">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
-        /// <returns>Returns <see cref="UPropertyConstants.Undefined"/> if the value is not valid, otherwise the value.</returns>
-        [Obsolete("ICU4N 60.1.0 Use TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias) instead.")]
-        internal static int GetPropertyValueEnumNoThrow(UProperty property, ICharSequence valueAlias) // ICU4N specific - marked internal, since the functionality is obsolete
-        {
-            return UPropertyAliases.Instance.GetPropertyValueEnumNoThrow((int)property, valueAlias);
-        }
+        ///// <summary>
+        ///// Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>, except doesn't throw exception. Instead, returns <see cref="UPropertyConstants.Undefined"/>.
+        ///// </summary>
+        ///// <param name="property">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
+        ///// <param name="valueAlias">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
+        ///// <returns>Returns <see cref="UPropertyConstants.Undefined"/> if the value is not valid, otherwise the value.</returns>
+        //[Obsolete("ICU4N 60.1.0 Use TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias) instead.")]
+        //internal static int GetPropertyValueEnumNoThrow(UProperty property, ICharSequence valueAlias) // ICU4N specific - marked internal, since the functionality is obsolete
+        //{
+        //    return UPropertyAliases.Instance.GetPropertyValueEnumNoThrow((int)property, valueAlias);
+        //}
 
         /// <icu/>
         /// <summary>
