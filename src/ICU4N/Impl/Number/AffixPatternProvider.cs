@@ -20,6 +20,8 @@ namespace ICU4N.Numerics
         public bool NegativeHasMinusSign { get; }
 
         public bool ContainsSymbolType(AffixUtils.Type type);
+
+        ReadOnlySpan<char> AsSpan(AffixPatternProviderFlags flags); // ICU4N: Added so we don't need to rely on ICharSequence
     }
 
     [Flags]
