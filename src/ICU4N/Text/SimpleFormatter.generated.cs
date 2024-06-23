@@ -13,184 +13,1063 @@ using System.Text;
 
 namespace ICU4N.Text
 {
-    internal sealed partial class SimpleFormatter
+    public sealed partial class SimpleFormatter
     {
+        #region Format
 
         /// <summary>
-        /// Creates a formatter from the pattern string.
+        /// Formats the given values.
         /// </summary>
-        /// <param name="pattern">The pattern string.</param>
-        /// <returns>The new <see cref="SimpleFormatter"/> object.</returns>
-        /// <exception cref="ArgumentException">For bad argument syntax.</exception>
+        /// <param name="value0">The first argument value.</param>
         /// <stable>ICU 57</stable>
-        public static SimpleFormatter Compile(string pattern)
+        public string Format(ReadOnlySpan<char> value0)
         {
-            return CompileMinMaxArguments(pattern, 0, int.MaxValue);
-        }
-
-        /// <summary>
-        /// Creates a formatter from the pattern string.
-        /// </summary>
-        /// <param name="pattern">The pattern string.</param>
-        /// <returns>The new <see cref="SimpleFormatter"/> object.</returns>
-        /// <exception cref="ArgumentException">For bad argument syntax.</exception>
-        /// <stable>ICU 57</stable>
-        public static SimpleFormatter Compile(ICharSequence pattern)
-        {
-            return CompileMinMaxArguments(pattern, 0, int.MaxValue);
-        }
-
-        /// <summary>
-        /// Creates a formatter from the pattern string.
-        /// The number of arguments checked against the given limits is the
-        /// highest argument number plus one, not the number of occurrences of arguments.
-        /// </summary>
-        /// <param name="pattern">The pattern string.</param>
-        /// <param name="min">The pattern must have at least this many arguments.</param>
-        /// <param name="max">The pattern must have at most this many arguments.</param>
-        /// <returns>The new <see cref="SimpleFormatter"/> object.</returns>
-        /// <exception cref="ArgumentException">For bad argument syntax and too few or too many arguments.</exception>
-        /// <stable>ICU 57</stable>
-        public static SimpleFormatter CompileMinMaxArguments(string pattern, int min, int max)
-        {
-            StringBuilder sb = new StringBuilder();
-            string compiledPattern = SimpleFormatterImpl.CompileToStringMinMaxArguments(pattern, sb, min, max);
-            return new SimpleFormatter(compiledPattern);
-        }
-
-        /// <summary>
-        /// Creates a formatter from the pattern string.
-        /// The number of arguments checked against the given limits is the
-        /// highest argument number plus one, not the number of occurrences of arguments.
-        /// </summary>
-        /// <param name="pattern">The pattern string.</param>
-        /// <param name="min">The pattern must have at least this many arguments.</param>
-        /// <param name="max">The pattern must have at most this many arguments.</param>
-        /// <returns>The new <see cref="SimpleFormatter"/> object.</returns>
-        /// <exception cref="ArgumentException">For bad argument syntax and too few or too many arguments.</exception>
-        /// <stable>ICU 57</stable>
-        public static SimpleFormatter CompileMinMaxArguments(ICharSequence pattern, int min, int max)
-        {
-            StringBuilder sb = new StringBuilder();
-            string compiledPattern = SimpleFormatterImpl.CompileToStringMinMaxArguments(pattern, sb, min, max);
-            return new SimpleFormatter(compiledPattern);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0);
         }
 
         /// <summary>
         /// Formats the given values.
         /// </summary>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
         /// <stable>ICU 57</stable>
-        public string Format(params string[] values)
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, values);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1);
         }
 
         /// <summary>
         /// Formats the given values.
         /// </summary>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
         /// <stable>ICU 57</stable>
-        public string Format(params ICharSequence[] values)
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2)
         {
-            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, values);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2);
         }
 
         /// <summary>
-        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// Formats the given values.
         /// </summary>
-        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
-        /// <param name="offsets">
-        /// offsets[i] receives the offset of where
-        /// values[i] replaced pattern argument {i}.
-        /// Can be null, or can be shorter or longer than values.
-        /// If there is no {i} in the pattern, then offsets[i] is set to -1.
-        /// </param>
-        /// <param name="values">
-        /// The argument values.
-        /// An argument value must not be the same object as appendTo.
-        /// values.Length must be at least <see cref="ArgumentLimit"/>.
-        /// Can be null if <see cref="ArgumentLimit"/>==0.
-        /// </param>
-        /// <returns><paramref name="appendTo"/></returns>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
         /// <stable>ICU 57</stable>
-        public StringBuilder FormatAndAppend(
-            StringBuilder appendTo, int[] offsets, params string[] values)
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
         {
-            return SimpleFormatterImpl.FormatAndAppend(compiledPattern, appendTo, offsets, values);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3);
         }
 
         /// <summary>
-        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// Formats the given values.
         /// </summary>
-        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
-        /// <param name="offsets">
-        /// offsets[i] receives the offset of where
-        /// values[i] replaced pattern argument {i}.
-        /// Can be null, or can be shorter or longer than values.
-        /// If there is no {i} in the pattern, then offsets[i] is set to -1.
-        /// </param>
-        /// <param name="values">
-        /// The argument values.
-        /// An argument value must not be the same object as appendTo.
-        /// values.Length must be at least <see cref="ArgumentLimit"/>.
-        /// Can be null if <see cref="ArgumentLimit"/>==0.
-        /// </param>
-        /// <returns><paramref name="appendTo"/></returns>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
         /// <stable>ICU 57</stable>
-        public StringBuilder FormatAndAppend(
-            StringBuilder appendTo, int[] offsets, params ICharSequence[] values)
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
         {
-            return SimpleFormatterImpl.FormatAndAppend(compiledPattern, appendTo, offsets, values);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4);
         }
 
         /// <summary>
-        /// Formats the given values, replacing the contents of the result builder.
-        /// May optimize by actually appending to the result if it is the same object
-        /// as the value corresponding to the initial argument in the pattern.
+        /// Formats the given values.
         /// </summary>
-        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
-        /// <param name="offsets">
-        /// offsets[i] receives the offset of where
-        /// values[i] replaced pattern argument {i}.
-        /// Can be null, or can be shorter or longer than values.
-        /// If there is no {i} in the pattern, then offsets[i] is set to -1.
-        /// </param>
-        /// <param name="values">
-        /// The argument values.
-        /// An argument value may be the same object as result.
-        /// values.Length must be at least <see cref="ArgumentLimit"/>.
-        /// </param>
-        /// <returns><paramref name="result"/></returns>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
         /// <stable>ICU 57</stable>
-        public StringBuilder FormatAndReplace(
-            StringBuilder result, int[] offsets, params string[] values)
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
         {
-            return SimpleFormatterImpl.FormatAndReplace(compiledPattern, result, offsets, values);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5);
         }
 
         /// <summary>
-        /// Formats the given values, replacing the contents of the result builder.
-        /// May optimize by actually appending to the result if it is the same object
-        /// as the value corresponding to the initial argument in the pattern.
+        /// Formats the given values.
         /// </summary>
-        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
-        /// <param name="offsets">
-        /// offsets[i] receives the offset of where
-        /// values[i] replaced pattern argument {i}.
-        /// Can be null, or can be shorter or longer than values.
-        /// If there is no {i} in the pattern, then offsets[i] is set to -1.
-        /// </param>
-        /// <param name="values">
-        /// The argument values.
-        /// An argument value may be the same object as result.
-        /// values.Length must be at least <see cref="ArgumentLimit"/>.
-        /// </param>
-        /// <returns><paramref name="result"/></returns>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
         /// <stable>ICU 57</stable>
-        public StringBuilder FormatAndReplace(
-            StringBuilder result, int[] offsets, params ICharSequence[] values)
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
         {
-            return SimpleFormatterImpl.FormatAndReplace(compiledPattern, result, offsets, values);
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6);
         }
 
-	}
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <stable>ICU 57</stable>
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
+        {
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <stable>ICU 57</stable>
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
+        {
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <stable>ICU 57</stable>
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
+        {
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <stable>ICU 57</stable>
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
+        {
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <stable>ICU 57</stable>
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
+        {
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <param name="value12">The thirteenth argument value.</param>
+        /// <stable>ICU 57</stable>
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
+        {
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <param name="value12">The thirteenth argument value.</param>
+        /// <param name="value13">The fourteenth argument value.</param>
+        /// <stable>ICU 57</stable>
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
+        {
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <param name="value12">The thirteenth argument value.</param>
+        /// <param name="value13">The fourteenth argument value.</param>
+        /// <param name="value14">The fifteenth argument value.</param>
+        /// <stable>ICU 57</stable>
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
+        {
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <param name="value12">The thirteenth argument value.</param>
+        /// <param name="value13">The fourteenth argument value.</param>
+        /// <param name="value14">The fifteenth argument value.</param>
+        /// <param name="value15">The sixteenth argument value.</param>
+        /// <stable>ICU 57</stable>
+        public string Format(ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
+        {
+            return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern.AsSpan(), value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
+        }
+
+        #endregion Format
+
+        #region TryFormat
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value15">
+        /// The sixteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <draft>ICU 60.1</draft>
+        public bool TryFormat(Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
+        {
+            return SimpleFormatterImpl.TryFormatCompiledPattern(compiledPattern.AsSpan(), destination, out charsLength, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
+        }
+
+
+        #endregion TryFormat
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Text;
@@ -8,11 +9,11 @@ using System.Text;
 
 namespace ICU4N.Dev.Test.Util
 {
-    public class SimpleFormatterTest : TestFmwk
+    public partial class SimpleFormatterTest : TestFmwk
     {
         /**
-     * Constructor
-     */
+         * Constructor
+         */
         public SimpleFormatterTest()
         {
         }
@@ -23,6 +24,7 @@ namespace ICU4N.Dev.Test.Util
         public void TestWithNoArguments()
         {
             SimpleFormatter fmt = SimpleFormatter.Compile("This doesn''t have templates '{0}");
+            Span<char> buffer = stackalloc char[64];
             assertEquals(
                     "getArgumentLimit",
                     0,
@@ -32,9 +34,17 @@ namespace ICU4N.Dev.Test.Util
                     "This doesn't have templates {0}",
                     fmt.Format("unused"));
             assertEquals(
+                    "format",
+                    "This doesn't have templates {0}",
+                    fmt.TryFormat(buffer, out int charsLength, "unused") ? buffer.Slice(0, charsLength).ToString() : string.Empty); // ICU4N specific
+            assertEquals(
                     "format with values=null",
                     "This doesn't have templates {0}",
-                    fmt.Format((ICharSequence[])null));
+                    fmt.Format((string[])null));
+            assertEquals(
+                    "format with values=null",
+                    "This doesn't have templates {0}",
+                    fmt.TryFormat(buffer, out charsLength, (string[])null) ? buffer.Slice(0, charsLength).ToString() : string.Empty); // ICU4N specific
             assertEquals(
                     "toString",
                     "This doesn't have templates {0}",
@@ -51,11 +61,11 @@ namespace ICU4N.Dev.Test.Util
             assertEquals(
                     "formatAndAppend with values=null",
                     "This doesn't have templates {0}",
-                    fmt.FormatAndAppend(new StringBuilder(), null, (ICharSequence[])null).ToString());
+                    fmt.FormatAndAppend(new StringBuilder(), null, (string[])null).ToString());
             assertEquals(
                     "formatAndReplace with values=null",
                     "This doesn't have templates {0}",
-                    fmt.FormatAndReplace(new StringBuilder(), null, (ICharSequence[])null).ToString());
+                    fmt.FormatAndReplace(new StringBuilder(), null, (string[])null).ToString());
         }
 
         [Test]
@@ -82,9 +92,19 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void TestOneArgument()
         {
-            assertEquals("TestOneArgument",
-                    "1 meter",
-                    SimpleFormatter.Compile("{0} meter").Format("1"));
+            string expected = "1 meter";
+            SimpleFormatter fmt = SimpleFormatter.Compile("{0} meter");
+            assertEquals("TestOneArgument Format",
+                    expected,
+                    fmt.Format("1"));
+
+            // ICU4N specific
+            Span<char> buffer = stackalloc char[32];
+            assertTrue("TestOneArgument TryFormat result",
+                fmt.TryFormat(buffer, out int charsLength, "1"));
+            assertEquals("TestOneArgument TryFormat",
+                    expected,
+                    buffer.Slice(0, charsLength).ToString());
         }
 
         [Test]
@@ -92,19 +112,28 @@ namespace ICU4N.Dev.Test.Util
         {
             SimpleFormatter fmt = SimpleFormatter.Compile("a{20}c");
             assertEquals("{20} count", 21, fmt.ArgumentLimit);
-            ICharSequence[] values = new ICharSequence[21];
-            values[20] = "b".AsCharSequence();
+            string[] values = new string[21];
+            values[20] = "b";
             assertEquals("{20}=b", "abc", fmt.Format(values));
         }
 
         [Test]
         public void TestGetTextWithNoArguments()
         {
+            SimpleFormatter fmt = SimpleFormatter.Compile("Templates {1}{2} and {3} are here.");
+            string expected = "Templates  and  are here.";
             assertEquals(
                     "",
-                    "Templates  and  are here.",
-                    SimpleFormatter.Compile(
-                            "Templates {1}{2} and {3} are here.").GetTextWithNoArguments());
+                    expected,
+                    fmt.GetTextWithNoArguments());
+
+            // ICU4N specific
+            Span<char> buffer = stackalloc char[40];
+            assertTrue("", fmt.TryGetTextWithNoArguments(buffer, out int charsLength));
+            assertEquals(
+                    "",
+                    expected,
+                    buffer.Slice(0, charsLength).ToString());
         }
 
         [Test]
@@ -112,9 +141,19 @@ namespace ICU4N.Dev.Test.Util
         {
             SimpleFormatter fmt = SimpleFormatter.Compile(
                     "Templates {2}{1} and {4} are out of order.");
+            Span<char> buffer = stackalloc char[64];
             try
             {
                 fmt.Format("freddy", "tommy", "frog", "leg");
+                fail("Expected IllegalArgumentException");
+            }
+            catch (ArgumentException e)
+            {
+                // Expected
+            }
+            try // ICU4N specific
+            {
+                fmt.TryFormat(buffer, out int charsLength, "freddy", "tommy", "frog", "leg");
                 fail("Expected IllegalArgumentException");
             }
             catch (ArgumentException e)
@@ -174,10 +213,27 @@ namespace ICU4N.Dev.Test.Util
         {
             SimpleFormatter fmt = SimpleFormatter.Compile(
                     "Arguments {0} and {1}");
-            StringBuilder appendTo = new StringBuilder("previous:");
+            //StringBuilder appendTo = new StringBuilder("previous:");
+            //try
+            //{
+            //    fmt.FormatAndAppend(appendTo, null, appendTo.ToString(), "frog");
+            //    fail("IllegalArgumentException expected.");
+            //}
+            //catch (ArgumentException e)
+            //{
+            //    // expected.
+            //}
+
+            // ICU4N: We can only have a "same object" situation when referring to the same
+            // memory location.
+            // We don't have a SimpleFormatter.FormatAndAppend() method for this test because ValueStringBuilder
+            // is internal and we don't use the SimpleFormatter instance internally, anyway. Instead,
+            // we use SimpleFormatterImpl.
+            Span<char> appendTo = stackalloc char[32];
+            "previous:".AsSpan().CopyTo(appendTo);
             try
             {
-                fmt.FormatAndAppend(appendTo, null, appendTo.AsCharSequence(), "frog".AsCharSequence());
+                fmt.TryFormat(appendTo, out int charsLength, appendTo, "frog".AsSpan());
                 fail("IllegalArgumentException expected.");
             }
             catch (ArgumentException e)

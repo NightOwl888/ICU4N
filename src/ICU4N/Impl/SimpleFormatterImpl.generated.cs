@@ -6,364 +6,4801 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using ICU4N.Support.Text;
+using ICU4N.Text;
 using J2N.Text;
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ICU4N.Impl
 {
-    internal static partial class SimpleFormatterImpl
+    public static partial class SimpleFormatterImpl
     {
+        #region FormatCompiledPattern/TryFormatCompiledPattern
 
         /// <summary>
-        /// Creates a compiled form of the pattern string, for use with appropriate static methods.
-        /// The number of arguments checked against the given limits is the
-        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// Formats the given values.
         /// </summary>
-        /// <param name="pattern">The pattern string.</param>
-        /// <param name="sb">A <see cref="StringBuilder"/> buffer that will contain the output in immutable form.</param>
-        /// <param name="min">The pattern must have at least this many arguments.</param>
-        /// <param name="max">The pattern must have at most this many arguments.</param>
-        /// <returns>The compiled-pattern string.</returns>
-        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
-        public static string CompileToStringMinMaxArguments(
-            string pattern, StringBuilder sb, int min, int max)
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0)
         {
-            // Return some precompiled common two-argument patterns.
-            if (min <= 2 && 2 <= max)
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                foreach (string[] pair in COMMON_PATTERNS)
-                {
-                    if (pair[0].ContentEquals(pattern))
-                    {
-                        Debug.Assert(pair[1][0] == 2);
-                        return pair[1];
-                    }
-                }
+                FormatCompiledPattern(compiledPattern, ref sb, value0);
+                return sb.ToString();
             }
-            // Parse consistent with MessagePattern, but
-            // - support only simple numbered arguments
-            // - build a simple binary structure into the result string
-            int patternLength = pattern.Length;
-            sb.EnsureCapacity(patternLength);
-            // Reserve the first char for the number of arguments.
-            sb.Length = 1;
-            int textLength = 0;
-            int maxArg = -1;
-            bool inQuote = false;
-            for (int i = 0; i < patternLength;)
+            finally
             {
-                char c = pattern[i++];
-                if (c == '\'')
-                {
-                    if (i < patternLength && (c = pattern[i]) == '\'')
-                    {
-                        // double apostrophe, skip the second one
-                        ++i;
-                    }
-                    else if (inQuote)
-                    {
-                        // skip the quote-ending apostrophe
-                        inQuote = false;
-                        continue;
-                    }
-                    else if (c == '{' || c == '}')
-                    {
-                        // Skip the quote-starting apostrophe, find the end of the quoted literal text.
-                        ++i;
-                        inQuote = true;
-                    }
-                    else
-                    {
-                        // The apostrophe is part of literal text.
-                        c = '\'';
-                    }
-                }
-                else if (!inQuote && c == '{')
-                {
-                    if (textLength > 0)
-                    {
-                        sb[sb.Length - textLength - 1] = (char)(ARG_NUM_LIMIT + textLength);
-                        textLength = 0;
-                    }
-                    int argNumber;
-                    if ((i + 1) < patternLength &&
-                            0 <= (argNumber = pattern[i] - '0') && argNumber <= 9 &&
-                            pattern[i + 1] == '}')
-                    {
-                        i += 2;
-                    }
-                    else
-                    {
-                        // Multi-digit argument number (no leading zero) or syntax error.
-                        // MessagePattern permits PatternProps.skipWhiteSpace(pattern, index)
-                        // around the number, but this class does not.
-                        int argStart = i - 1;
-                        argNumber = -1;
-                        if (i < patternLength && '1' <= (c = pattern[i++]) && c <= '9')
-                        {
-                            argNumber = c - '0';
-                            while (i < patternLength && '0' <= (c = pattern[i++]) && c <= '9')
-                            {
-                                argNumber = argNumber * 10 + (c - '0');
-                                if (argNumber >= ARG_NUM_LIMIT)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        if (argNumber < 0 || c != '}')
-                        {
-                            throw new ArgumentException(
-                                    "Argument syntax error in pattern \"" + pattern +
-                                    "\" at index " + argStart +
-                                    ": " + pattern.Subsequence(argStart, i - argStart)); // ICU4N: Corrected 2nd parameter
-                        }
-                    }
-                    if (argNumber > maxArg)
-                    {
-                        maxArg = argNumber;
-                    }
-                    sb.Append((char)argNumber);
-                    continue;
-                }  // else: c is part of literal text
-                   // Append c and track the literal-text segment length.
-                if (textLength == 0)
-                {
-                    // Reserve a char for the length of a new text segment, preset the maximum length.
-                    sb.Append(SEGMENT_LENGTH_ARGUMENT_CHAR);
-                }
-                sb.Append(c);
-                if (++textLength == MAX_SEGMENT_LENGTH)
-                {
-                    textLength = 0;
-                }
+                sb.Dispose();
             }
-            if (textLength > 0)
-            {
-                sb[sb.Length - textLength - 1] = (char)(ARG_NUM_LIMIT + textLength);
-            }
-            int argCount = maxArg + 1;
-            if (argCount < min)
-            {
-                throw new ArgumentException(
-                        "Fewer than minimum " + min + " arguments in pattern \"" + pattern + "\"");
-            }
-            if (argCount > max)
-            {
-                throw new ArgumentException(
-                        "More than maximum " + max + " arguments in pattern \"" + pattern + "\"");
-            }
-            sb[0] = (char)argCount;
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Creates a compiled form of the pattern string, for use with appropriate static methods.
-        /// The number of arguments checked against the given limits is the
-        /// highest argument number plus one, not the number of occurrences of arguments.
-        /// </summary>
-        /// <param name="pattern">The pattern ICharSequence.</param>
-        /// <param name="sb">A <see cref="StringBuilder"/> buffer that will contain the output in immutable form.</param>
-        /// <param name="min">The pattern must have at least this many arguments.</param>
-        /// <param name="max">The pattern must have at most this many arguments.</param>
-        /// <returns>The compiled-pattern string.</returns>
-        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
-        public static string CompileToStringMinMaxArguments(
-            ICharSequence pattern, StringBuilder sb, int min, int max)
-        {
-            // Return some precompiled common two-argument patterns.
-            if (min <= 2 && 2 <= max)
-            {
-                foreach (string[] pair in COMMON_PATTERNS)
-                {
-                    if (pair[0].ContentEquals(pattern))
-                    {
-                        Debug.Assert(pair[1][0] == 2);
-                        return pair[1];
-                    }
-                }
-            }
-            // Parse consistent with MessagePattern, but
-            // - support only simple numbered arguments
-            // - build a simple binary structure into the result string
-            int patternLength = pattern.Length;
-            sb.EnsureCapacity(patternLength);
-            // Reserve the first char for the number of arguments.
-            sb.Length = 1;
-            int textLength = 0;
-            int maxArg = -1;
-            bool inQuote = false;
-            for (int i = 0; i < patternLength;)
-            {
-                char c = pattern[i++];
-                if (c == '\'')
-                {
-                    if (i < patternLength && (c = pattern[i]) == '\'')
-                    {
-                        // double apostrophe, skip the second one
-                        ++i;
-                    }
-                    else if (inQuote)
-                    {
-                        // skip the quote-ending apostrophe
-                        inQuote = false;
-                        continue;
-                    }
-                    else if (c == '{' || c == '}')
-                    {
-                        // Skip the quote-starting apostrophe, find the end of the quoted literal text.
-                        ++i;
-                        inQuote = true;
-                    }
-                    else
-                    {
-                        // The apostrophe is part of literal text.
-                        c = '\'';
-                    }
-                }
-                else if (!inQuote && c == '{')
-                {
-                    if (textLength > 0)
-                    {
-                        sb[sb.Length - textLength - 1] = (char)(ARG_NUM_LIMIT + textLength);
-                        textLength = 0;
-                    }
-                    int argNumber;
-                    if ((i + 1) < patternLength &&
-                            0 <= (argNumber = pattern[i] - '0') && argNumber <= 9 &&
-                            pattern[i + 1] == '}')
-                    {
-                        i += 2;
-                    }
-                    else
-                    {
-                        // Multi-digit argument number (no leading zero) or syntax error.
-                        // MessagePattern permits PatternProps.skipWhiteSpace(pattern, index)
-                        // around the number, but this class does not.
-                        int argStart = i - 1;
-                        argNumber = -1;
-                        if (i < patternLength && '1' <= (c = pattern[i++]) && c <= '9')
-                        {
-                            argNumber = c - '0';
-                            while (i < patternLength && '0' <= (c = pattern[i++]) && c <= '9')
-                            {
-                                argNumber = argNumber * 10 + (c - '0');
-                                if (argNumber >= ARG_NUM_LIMIT)
-                                {
-                                    break;
-                                }
-                            }
-                        }
-                        if (argNumber < 0 || c != '}')
-                        {
-                            throw new ArgumentException(
-                                    "Argument syntax error in pattern \"" + pattern +
-                                    "\" at index " + argStart +
-                                    ": " + pattern.Subsequence(argStart, i - argStart)); // ICU4N: Corrected 2nd parameter
-                        }
-                    }
-                    if (argNumber > maxArg)
-                    {
-                        maxArg = argNumber;
-                    }
-                    sb.Append((char)argNumber);
-                    continue;
-                }  // else: c is part of literal text
-                   // Append c and track the literal-text segment length.
-                if (textLength == 0)
-                {
-                    // Reserve a char for the length of a new text segment, preset the maximum length.
-                    sb.Append(SEGMENT_LENGTH_ARGUMENT_CHAR);
-                }
-                sb.Append(c);
-                if (++textLength == MAX_SEGMENT_LENGTH)
-                {
-                    textLength = 0;
-                }
-            }
-            if (textLength > 0)
-            {
-                sb[sb.Length - textLength - 1] = (char)(ARG_NUM_LIMIT + textLength);
-            }
-            int argCount = maxArg + 1;
-            if (argCount < min)
-            {
-                throw new ArgumentException(
-                        "Fewer than minimum " + min + " arguments in pattern \"" + pattern + "\"");
-            }
-            if (argCount > max)
-            {
-                throw new ArgumentException(
-                        "More than maximum " + max + " arguments in pattern \"" + pattern + "\"");
-            }
-            sb[0] = (char)argCount;
-            return sb.ToString();
         }
 
         /// <summary>
         /// Formats the given values.
         /// </summary>
         /// <param name="compiledPattern">Compiled form of a pattern string.</param>
-        /// <param name="values"></param>
-        public static string FormatCompiledPattern(string compiledPattern, params string[] values)
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1)
         {
-            return FormatAndAppend(compiledPattern, new StringBuilder(), null, values).ToString();
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         /// <summary>
         /// Formats the given values.
         /// </summary>
         /// <param name="compiledPattern">Compiled form of a pattern string.</param>
-        /// <param name="values"></param>
-        public static string FormatCompiledPattern(string compiledPattern, params ICharSequence[] values)
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2)
         {
-            return FormatAndAppend(compiledPattern, new StringBuilder(), null, values).ToString();
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <param name="value12">The thirteenth argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <param name="value12">The thirteenth argument value.</param>
+        /// <param name="value13">The fourteenth argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <param name="value12">The thirteenth argument value.</param>
+        /// <param name="value13">The fourteenth argument value.</param>
+        /// <param name="value14">The fifteenth argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <param name="value12">The thirteenth argument value.</param>
+        /// <param name="value13">The fourteenth argument value.</param>
+        /// <param name="value14">The fifteenth argument value.</param>
+        /// <param name="value15">The sixteenth argument value.</param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static string FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value15">
+        /// The sixteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+        public static bool TryFormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, Span<char> destination, out int charsLength, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatCompiledPattern(compiledPattern, ref sb, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
+
+        /// <summary>
+        /// Formats the given values.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns, contains the formatted text.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value15">
+        /// The sixteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
+            => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
+
+
+        #endregion FormatCompiledPattern/TryFormatCompiledPattern
+
+        #region FormatRawPattern/TryFormatRawPattern
+
+        /// <summary>
         /// Formats the not-compiled pattern with the given values.
-        /// Equivalent to <see cref="CompileToStringMinMaxArguments(string, StringBuilder, int, int)"/> 
-        /// followed by <see cref="FormatCompiledPattern(string, string[])"/>.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
         /// The number of arguments checked against the given limits is the
         /// highest argument number plus one, not the number of occurrences of arguments.
         /// </summary>
         /// <param name="pattern">Not-compiled form of a pattern string.</param>
         /// <param name="min">The pattern must have at least this many arguments.</param>
         /// <param name="max">The pattern must have at most this many arguments.</param>
-        /// <param name="values"></param>
-        /// <returns>The compiled-pattern string.</returns>
+        /// <param name="value0">The first argument value.</param>
+        /// <returns>The formatted text.</returns>
         /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
-        public static string FormatRawPattern(string pattern, int min, int max, params string[] values)
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0)
         {
-            StringBuilder sb = new StringBuilder();
-            string compiledPattern = CompileToStringMinMaxArguments(pattern, sb, min, max);
-            sb.Length = 0;
-            return FormatAndAppend(compiledPattern, sb, null, values).ToString();
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         /// <summary>
         /// Formats the not-compiled pattern with the given values.
-        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ICharSequence, StringBuilder, int, int)"/> 
-        /// followed by <see cref="FormatCompiledPattern(string, ICharSequence[])"/>.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
         /// The number of arguments checked against the given limits is the
         /// highest argument number plus one, not the number of occurrences of arguments.
         /// </summary>
         /// <param name="pattern">Not-compiled form of a pattern string.</param>
         /// <param name="min">The pattern must have at least this many arguments.</param>
         /// <param name="max">The pattern must have at most this many arguments.</param>
-        /// <param name="values"></param>
-        /// <returns>The compiled-pattern string.</returns>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <returns>The formatted text.</returns>
         /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
-        public static string FormatRawPattern(string pattern, int min, int max, params ICharSequence[] values)
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1)
         {
-            StringBuilder sb = new StringBuilder();
-            string compiledPattern = CompileToStringMinMaxArguments(pattern, sb, min, max);
-            sb.Length = 0;
-            return FormatAndAppend(compiledPattern, sb, null, values).ToString();
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <param name="value12">The thirteenth argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <param name="value12">The thirteenth argument value.</param>
+        /// <param name="value13">The fourteenth argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <param name="value12">The thirteenth argument value.</param>
+        /// <param name="value13">The fourteenth argument value.</param>
+        /// <param name="value14">The fifteenth argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">The first argument value.</param>
+        /// <param name="value1">The second argument value.</param>
+        /// <param name="value2">The third argument value.</param>
+        /// <param name="value3">The fourth argument value.</param>
+        /// <param name="value4">The fifth argument value.</param>
+        /// <param name="value5">The sixth argument value.</param>
+        /// <param name="value6">The seventh argument value.</param>
+        /// <param name="value7">The eighth argument value.</param>
+        /// <param name="value8">The ninth argument value.</param>
+        /// <param name="value9">The tenth argument value.</param>
+        /// <param name="value10">The eleventh argument value.</param>
+        /// <param name="value11">The twelveth argument value.</param>
+        /// <param name="value12">The thirteenth argument value.</param>
+        /// <param name="value13">The fourteenth argument value.</param>
+        /// <param name="value14">The fifteenth argument value.</param>
+        /// <param name="value15">The sixteenth argument value.</param>
+        /// <returns>The formatted text.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static string FormatRawPattern(ReadOnlySpan<char> pattern, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="destination">When this method returns successfully, contains the formatted text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <param name="value15">
+        /// The sixteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="destination"/>.
+        /// </param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        public static bool TryFormatRawPattern(ReadOnlySpan<char> pattern, Span<char> destination, out int charsLength, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
+        {
+            ValueStringBuilder sb = new ValueStringBuilder(destination);
+            try
+            {
+                FormatRawPattern(pattern, ref sb, min, max, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3, value4);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3, value4, value5);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3, value4, value5, value6);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3, value4, value5, value6, value7);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3, value4, value5, value6, value7, value8);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Formats the not-compiled pattern with the given values.
+        /// Equivalent to <see cref="CompileToStringMinMaxArguments(ReadOnlySpan{Char}, int, int)"/> 
+        /// followed by <see cref="FormatCompiledPattern(ReadOnlySpan{Char}, string[])"/>.
+        /// The number of arguments checked against the given limits is the
+        /// highest argument number plus one, not the number of occurrences of arguments.
+        /// </summary>
+        /// <param name="pattern">Not-compiled form of a pattern string.</param>
+        /// <param name="appendTo">The builder to append the formatted text to.</param>
+        /// <param name="min">The pattern must have at least this many arguments.</param>
+        /// <param name="max">The pattern must have at most this many arguments.</param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value15">
+        /// The sixteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
+        internal static void FormatRawPattern(ReadOnlySpan<char> pattern, ref ValueStringBuilder appendTo, int min, int max, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
+        {
+            ValueStringBuilder compiledPattern = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                CompileToStringMinMaxArguments(pattern, ref compiledPattern, min, max);
+                FormatAndAppend(compiledPattern.AsSpan(), ref appendTo, offsets: null, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
+            }
+            finally
+            {
+                compiledPattern.Dispose();
+            }
+        }
+
+
+        #endregion FormatRawPattern/TryFormatRawPattern
+
+        #region FormatAndAppend
 
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
@@ -371,28 +4808,36 @@ namespace ICU4N.Impl
         /// <param name="compiledPattern">Compiled form of a pattern string.</param>
         /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
         /// <param name="offsets">
-        /// offsets[i] receives the offset of where
-        /// values[i] replaced pattern argument {i}.
-        /// Can be null, or can be shorter or longer than values.
-        /// If there is no {i} in the pattern, then offsets[i] is set to -1.
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
         /// </param>
-        /// <param name="values">
-        /// The argument values.
-        /// An argument value must not be the same object as <paramref name="appendTo"/>.
-        /// values.Length must be at least <see cref="GetArgumentLimit(string)"/>.
-        /// Can be null if <see cref="GetArgumentLimit(string)"/>==0.
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
         /// </param>
-        /// <returns></returns>
-        public static StringBuilder FormatAndAppend(
-            string compiledPattern, StringBuilder appendTo, int[] offsets, params string[] values)
-        {
-            int valuesLength = values != null ? values.Length : 0;
-            if (valuesLength < GetArgumentLimit(compiledPattern))
-            {
-                throw new ArgumentException("Too few values.");
-            }
-            return Format(compiledPattern, values, appendTo, null, true, offsets);
-        }
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3));
 
         /// <summary>
         /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
@@ -400,28 +4845,761 @@ namespace ICU4N.Impl
         /// <param name="compiledPattern">Compiled form of a pattern string.</param>
         /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
         /// <param name="offsets">
-        /// offsets[i] receives the offset of where
-        /// values[i] replaced pattern argument {i}.
-        /// Can be null, or can be shorter or longer than values.
-        /// If there is no {i} in the pattern, then offsets[i] is set to -1.
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
         /// </param>
-        /// <param name="values">
-        /// The argument values.
-        /// An argument value must not be the same object as <paramref name="appendTo"/>.
-        /// values.Length must be at least <see cref="GetArgumentLimit(string)"/>.
-        /// Can be null if <see cref="GetArgumentLimit(string)"/>==0.
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
         /// </param>
-        /// <returns></returns>
-        public static StringBuilder FormatAndAppend(
-            string compiledPattern, StringBuilder appendTo, int[] offsets, params ICharSequence[] values)
-        {
-            int valuesLength = values != null ? values.Length : 0;
-            if (valuesLength < GetArgumentLimit(compiledPattern))
-            {
-                throw new ArgumentException("Too few values.");
-            }
-            return Format(compiledPattern, values, appendTo, null, true, offsets);
-        }
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4));
+
+        /// <summary>
+        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5));
+
+        /// <summary>
+        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6));
+
+        /// <summary>
+        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7));
+
+        /// <summary>
+        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8));
+
+        /// <summary>
+        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9));
+
+        /// <summary>
+        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10));
+
+        /// <summary>
+        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11));
+
+        /// <summary>
+        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12));
+
+        /// <summary>
+        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13));
+
+        /// <summary>
+        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14));
+
+        /// <summary>
+        /// Formats the given values, appending to the <paramref name="appendTo"/> builder.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="appendTo">Gets the formatted pattern and values appended.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <param name="value15">
+        /// The sixteenth argument value.
+        /// An argument value must not be the same memory location as <paramref name="appendTo"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
+            => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15));
+
+
+        #endregion FormatAndAppend
+
+        #region FormatAndReplace
+
 
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
@@ -431,51 +5609,36 @@ namespace ICU4N.Impl
         /// <param name="compiledPattern">Compiled form of a pattern string.</param>
         /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
         /// <param name="offsets">
-        /// offsets[i] receives the offset of where
-        /// values[i] replaced pattern argument {i}.
-        /// Can be null, or can be shorter or longer than values.
-        /// If there is no {i} in the pattern, then offsets[i] is set to -1.
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
         /// </param>
-        /// <param name="values">
-        /// The argument values.
-        /// An argument value may be the same object as result.
-        /// values.Length must be at least <see cref="GetArgumentLimit(string)"/>.
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
         /// </param>
-        /// <returns><paramref name="result"/></returns>
-        public static StringBuilder FormatAndReplace(
-            string compiledPattern, StringBuilder result, int[] offsets, params string[] values)
-        {
-            int valuesLength = values != null ? values.Length : 0;
-            if (valuesLength < GetArgumentLimit(compiledPattern))
-            {
-                throw new ArgumentException("Too few values.");
-            }
-
-            // If the pattern starts with an argument whose value is the same object
-            // as the result, then we keep the result contents and append to it.
-            // Otherwise we replace its contents.
-            int firstArg = -1;
-            // If any non-initial argument value is the same object as the result,
-            // then we first copy its contents and use that instead while formatting.
-            string resultCopy = null;
-            if (GetArgumentLimit(compiledPattern) > 0)
-            {
-                for (int i = 1; i < compiledPattern.Length;)
-                {
-                    int n = compiledPattern[i++];
-                    if (n >= ARG_NUM_LIMIT)
-                    {
-                        i += n - ARG_NUM_LIMIT;
-                        
-                    }
-                }
-            }
-            if (firstArg < 0)
-            {
-                result.Length = 0;
-            }
-            return Format(compiledPattern, values, result, resultCopy, false, offsets);
-        }
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3));
 
         /// <summary>
         /// Formats the given values, replacing the contents of the result builder.
@@ -485,168 +5648,779 @@ namespace ICU4N.Impl
         /// <param name="compiledPattern">Compiled form of a pattern string.</param>
         /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
         /// <param name="offsets">
-        /// offsets[i] receives the offset of where
-        /// values[i] replaced pattern argument {i}.
-        /// Can be null, or can be shorter or longer than values.
-        /// If there is no {i} in the pattern, then offsets[i] is set to -1.
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
         /// </param>
-        /// <param name="values">
-        /// The argument values.
-        /// An argument value may be the same object as result.
-        /// values.Length must be at least <see cref="GetArgumentLimit(string)"/>.
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
         /// </param>
-        /// <returns><paramref name="result"/></returns>
-        public static StringBuilder FormatAndReplace(
-            string compiledPattern, StringBuilder result, int[] offsets, params ICharSequence[] values)
-        {
-            int valuesLength = values != null ? values.Length : 0;
-            if (valuesLength < GetArgumentLimit(compiledPattern))
-            {
-                throw new ArgumentException("Too few values.");
-            }
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4));
 
-            // If the pattern starts with an argument whose value is the same object
-            // as the result, then we keep the result contents and append to it.
-            // Otherwise we replace its contents.
-            int firstArg = -1;
-            // If any non-initial argument value is the same object as the result,
-            // then we first copy its contents and use that instead while formatting.
-            string resultCopy = null;
-            if (GetArgumentLimit(compiledPattern) > 0)
-            {
-                for (int i = 1; i < compiledPattern.Length;)
-                {
-                    int n = compiledPattern[i++];
-                    if (n >= ARG_NUM_LIMIT)
-                    {
-                        i += n - ARG_NUM_LIMIT;
-                        
-                    }
-                    else if (values[n] is StringBuilderCharSequence && ((StringBuilderCharSequence)values[n]).Value == result)
-                    {
-                        if (i == 2)
-                        {
-                            firstArg = n;
-                        }
-                        else if (resultCopy == null)
-                        {
-                            resultCopy = result.ToString();
-                        }
-                    }
-                }
-            }
-            if (firstArg < 0)
-            {
-                result.Length = 0;
-            }
-            return Format(compiledPattern, values, result, resultCopy, false, offsets);
-        }
+        /// <summary>
+        /// Formats the given values, replacing the contents of the result builder.
+        /// May optimize by actually appending to the result if it is the same object
+        /// as the value corresponding to the initial argument in the pattern.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5));
 
-        private static StringBuilder Format(
-            string compiledPattern, string[] values,
-            StringBuilder result, string resultCopy, bool forbidResultAsValue,
-            int[] offsets)
-        {
-            int offsetsLength;
-            if (offsets == null)
-            {
-                offsetsLength = 0;
-            }
-            else
-            {
-                offsetsLength = offsets.Length;
-                for (int i = 0; i < offsetsLength; i++)
-                {
-                    offsets[i] = -1;
-                }
-            }
-            for (int i = 1; i < compiledPattern.Length;)
-            {
-                int n = compiledPattern[i++];
-                if (n < ARG_NUM_LIMIT)
-                {
-                    var value = values[n];
-                    if (n < offsetsLength)
-                    {
-                        offsets[n] = result.Length;
-                    }
-                    result.Append(value);
-                }
-                else
-                {
-                    int limit = i + (n - ARG_NUM_LIMIT); 
-                    result.Append(compiledPattern, i, limit - i); // ICU4N: Corrected 3rd parameter logic
-                    i = limit;
-                }
-            }
-            return result;
-        }
+        /// <summary>
+        /// Formats the given values, replacing the contents of the result builder.
+        /// May optimize by actually appending to the result if it is the same object
+        /// as the value corresponding to the initial argument in the pattern.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6));
 
-        private static StringBuilder Format(
-            string compiledPattern, ICharSequence[] values,
-            StringBuilder result, string resultCopy, bool forbidResultAsValue,
-            int[] offsets)
-        {
-            int offsetsLength;
-            if (offsets == null)
-            {
-                offsetsLength = 0;
-            }
-            else
-            {
-                offsetsLength = offsets.Length;
-                for (int i = 0; i < offsetsLength; i++)
-                {
-                    offsets[i] = -1;
-                }
-            }
-            for (int i = 1; i < compiledPattern.Length;)
-            {
-                int n = compiledPattern[i++];
-                if (n < ARG_NUM_LIMIT)
-                {
-                    var value = values[n];
-                    if (value is StringBuilderCharSequence && ((StringBuilderCharSequence)value).Value == result)
-                    {
-                        if (forbidResultAsValue)
-                        {
-                            throw new ArgumentException("Value must not be same object as result");
-                        }
-                        if (i == 2)
-                        {
-                            // We are appending to result which is also the first value object.
-                            if (n < offsetsLength)
-                            {
-                                offsets[n] = 0;
-                            }
-                        }
-                        else
-                        {
-                            if (n < offsetsLength)
-                            {
-                                offsets[n] = result.Length;
-                            }
-                            result.Append(resultCopy);
-                        }
-                    }
-                    else
-                    {
-                        if (n < offsetsLength)
-                        {
-                            offsets[n] = result.Length;
-                        }
-                        result.Append(value);
-                    }
-                }
-                else
-                {
-                    int limit = i + (n - ARG_NUM_LIMIT); 
-                    result.Append(compiledPattern, i, limit - i); // ICU4N: Corrected 3rd parameter logic
-                    i = limit;
-                }
-            }
-            return result;
-        }
+        /// <summary>
+        /// Formats the given values, replacing the contents of the result builder.
+        /// May optimize by actually appending to the result if it is the same object
+        /// as the value corresponding to the initial argument in the pattern.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7));
 
+        /// <summary>
+        /// Formats the given values, replacing the contents of the result builder.
+        /// May optimize by actually appending to the result if it is the same object
+        /// as the value corresponding to the initial argument in the pattern.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8));
+
+        /// <summary>
+        /// Formats the given values, replacing the contents of the result builder.
+        /// May optimize by actually appending to the result if it is the same object
+        /// as the value corresponding to the initial argument in the pattern.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9));
+
+        /// <summary>
+        /// Formats the given values, replacing the contents of the result builder.
+        /// May optimize by actually appending to the result if it is the same object
+        /// as the value corresponding to the initial argument in the pattern.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10));
+
+        /// <summary>
+        /// Formats the given values, replacing the contents of the result builder.
+        /// May optimize by actually appending to the result if it is the same object
+        /// as the value corresponding to the initial argument in the pattern.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11));
+
+        /// <summary>
+        /// Formats the given values, replacing the contents of the result builder.
+        /// May optimize by actually appending to the result if it is the same object
+        /// as the value corresponding to the initial argument in the pattern.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12));
+
+        /// <summary>
+        /// Formats the given values, replacing the contents of the result builder.
+        /// May optimize by actually appending to the result if it is the same object
+        /// as the value corresponding to the initial argument in the pattern.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13));
+
+        /// <summary>
+        /// Formats the given values, replacing the contents of the result builder.
+        /// May optimize by actually appending to the result if it is the same object
+        /// as the value corresponding to the initial argument in the pattern.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14));
+
+        /// <summary>
+        /// Formats the given values, replacing the contents of the result builder.
+        /// May optimize by actually appending to the result if it is the same object
+        /// as the value corresponding to the initial argument in the pattern.
+        /// </summary>
+        /// <param name="compiledPattern">Compiled form of a pattern string.</param>
+        /// <param name="result">Gets its contents replaced by the formatted pattern and values.</param>
+        /// <param name="offsets">
+        /// <c>offsets[i]</c> receives the offset of where
+        /// <c>value</c><i><b>i</b></i> replaced pattern argument <c>{i}</c>.
+        /// Can be <c>null</c>, or can be shorter or longer than values.
+        /// If there is no <c>{i}</c> in the pattern, then <c>offsets[i]</c> is set to <c>-1</c>.
+        /// </param>
+        /// <param name="value0">
+        /// The first argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value1">
+        /// The second argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value2">
+        /// The third argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value3">
+        /// The fourth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value4">
+        /// The fifth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value5">
+        /// The sixth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value6">
+        /// The seventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value7">
+        /// The eighth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value8">
+        /// The ninth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value9">
+        /// The tenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value10">
+        /// The eleventh argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value11">
+        /// The twelveth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value12">
+        /// The thirteenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value13">
+        /// The fourteenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value14">
+        /// The fifteenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <param name="value15">
+        /// The sixteenth argument value.
+        /// An argument value may be the same memory location as <paramref name="result"/>.
+        /// </param>
+        /// <remarks>
+        /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
+        /// with <paramref name="compiledPattern"/> as the argument.
+        /// </remarks>
+#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
+            => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15));
+
+
+        #endregion FormatAndReplace
     }
 }

@@ -50,6 +50,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>BasicTest.generated.tt</DependentUpon>
     </None>
+    <None Include="Dev\Test\Util\SimpleFormatterTest.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SimpleFormatterTest.generated.tt</DependentUpon>
+    </None>
   </ItemGroup>
   
   <ItemGroup>
@@ -68,6 +73,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BasicTest.generated.cs</LastGenOutput>
     </None>
+    <None Update="Dev\Test\Util\SimpleFormatterTest.generated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>SimpleFormatterTest.generated.cs</LastGenOutput>
+    </None>
     <None Update="Support\Text\UnicodeSetPartialTest.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UnicodeSetPartialTest.generated.cs</LastGenOutput>
@@ -83,6 +92,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>BasicTest.generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Dev\Test\Util\SimpleFormatterTest.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SimpleFormatterTest.generated.tt</DependentUpon>
     </Compile>
     <Compile Update="Support\Text\UnicodeSetPartialTest.generated.cs">
       <DesignTime>True</DesignTime>

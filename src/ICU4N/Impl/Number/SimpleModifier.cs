@@ -30,7 +30,7 @@ namespace ICU4N.Numerics
             this.compiledPattern = compiledPattern ?? throw new ArgumentNullException(nameof(compiledPattern));
             this.field = field;
             this.strong = strong;
-            Debug.Assert(SimpleFormatterImpl.GetArgumentLimit(compiledPattern) == 1);
+            Debug.Assert(SimpleFormatterImpl.GetArgumentLimit(compiledPattern.AsSpan()) == 1);
             if (compiledPattern[1] != '\u0000')
             {
                 prefixLength = compiledPattern[1] - ARG_NUM_LIMIT;
