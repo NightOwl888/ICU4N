@@ -254,8 +254,8 @@ namespace ICU4N.Dev.Test.Lang
                 Errln("FAIL Getting character from replaceable error");
             }
 
-            StringBuffer strbuffer = new StringBuffer("0xD805");
-            UTF16.CharAt(strbuffer.AsCharSequence(), 0);
+            OpenStringBuilder strbuffer = new OpenStringBuilder("0xD805");
+            UTF16.CharAt(strbuffer.AsSpan(), 0);
         }
 
         /**

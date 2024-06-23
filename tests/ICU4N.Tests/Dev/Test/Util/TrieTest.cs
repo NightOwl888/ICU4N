@@ -145,7 +145,7 @@ namespace ICU4N.Dev.Test.Util
                 int i = 0;
                 while (p < limit)
                 {
-                    int c = UTF16.CharAt(s, p);
+                    int c = UTF16.CharAt(s.AsSpan(), p);
                     p += UTF16.GetCharCount(c);
                     int value = trie.GetCodePointValue(c);
                     if (value != values[i])

@@ -190,7 +190,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 }
                 /* p0 = */
                 p1 = p2 = p3 = prevPos;
-                c3 = UTF16.CharAt(fText, prevPos);
+                c3 = UTF16.CharAt(fText.AsSpan(), prevPos);
                 c0 = c1 = c2 = cBase = 0;
 
                 // Loop runs once per "significant" character position in the input text.
