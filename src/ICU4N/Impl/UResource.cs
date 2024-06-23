@@ -5,6 +5,7 @@ using J2N.Text;
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ICU4N.Impl
@@ -18,6 +19,8 @@ namespace ICU4N.Impl
     /// Mutable, not thread-safe.
     /// For permanent storage, use <see cref="Clone()"/> or <see cref="ToString()"/>.
     /// </summary>
+    // ICU4N TODO: Use AsSpan() to implement StartsWith, EndsWith, Equals
+    // ICU4N TODO: Use Memory<byte> so we don't have to track offset, length, and string
     public sealed partial class ResourceKey : ICharSequence, IComparable<ResourceKey> // ICU4N: Renamed from Key
 #if FEATURE_CLONEABLE
         , ICloneable
@@ -54,6 +57,22 @@ namespace ICU4N.Impl
             bytes = keyBytes;
             offset = keyOffset;
             length = keyLength;
+        }
+
+        public ReadOnlySpan<char> AsSpan() // ICU4N TODO: API Tests
+        {
+            return MemoryMarshal.Cast<byte, char>(bytes).Slice(offset, length);
+        }
+
+        public ReadOnlySpan<char> AsSpan(int start) // ICU4N TODO: API Tests
+        {
+            int begin = offset + start;
+            return MemoryMarshal.Cast<byte, char>(bytes).Slice(begin, length - begin);
+        }
+
+        public ReadOnlySpan<char> AsSpan(int start, int length) // ICU4N TODO: API Tests
+        {
+            return MemoryMarshal.Cast<byte, char>(bytes).Slice(offset + start, length);
         }
 
         /// <summary>
@@ -262,7 +281,7 @@ namespace ICU4N.Impl
 
         public int CompareTo(ResourceKey other)
         {
-            return CompareTo((ICharSequence)other);
+            return CompareTo(other.AsSpan());
         }
 
         // ICU4N specific - CompareTo(ICharSequence cs) moved to UResource.generated.tt
