@@ -4,7 +4,7 @@
     <charSequence>string</charSequence>
     <!--<charSequence>StringBuilder</charSequence>-->
     <!--<charSequence>char[]</charSequence>-->
-    <charSequence>ICharSequence</charSequence>
+    <!--<charSequence>ICharSequence</charSequence>-->
     <charSequence>ReadOnlySpan&lt;char&gt;</charSequence>
   </charSequences>
   <!-- Accessibility of ICharSequence interface -->

@@ -37,20 +37,6 @@ namespace ICU4N.Text
         }
 
         
-        /// <seealso cref="AddAll(UnicodeSet)"/>
-        /// <stable>ICU 4.4</stable>
-        // See ticket #11395, this is safe.
-        internal virtual UnicodeSet AddAll(params ICharSequence[] collection) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
-        {
-            CheckFrozen();
-            foreach (var csq in collection)
-            {
-                Add(csq);
-            }
-            return this;
-        }
-
-        
         /// <summary>
         /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -59,26 +45,6 @@ namespace ICU4N.Text
         /// <returns>this object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
         internal UnicodeSet AddAll(string s) // ICU4N specific - changed from public to internal (we are using UnionWithChars in .NET)
-        {
-            CheckFrozen();
-            int cp;
-            for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
-            {
-                cp = UTF16.CharAt(s, i);
-                AddUnchecked(cp, cp);
-            }
-            return this;
-        }
-
-
-        /// <summary>
-        /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
-        /// If this set already any particular character, it has no effect on that character.
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>this object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
-        internal UnicodeSet AddAll(ICharSequence s) // ICU4N specific - changed from public to internal (we are using UnionWithChars in .NET)
         {
             CheckFrozen();
             int cp;
@@ -122,41 +88,6 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
         internal UnicodeSet Complement(string s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWith in .NET)
-        {
-            CheckFrozen();
-            int cp = GetSingleCP(s);
-            if (cp < 0)
-            {
-                string s2 = s.ToString();
-                if (strings.Contains(s2))
-                {
-                    strings.Remove(s2);
-                }
-                else
-                {
-                    strings.Add(s2);
-                }
-                pat = null;
-            }
-            else
-            {
-                Complement(cp, cp);
-            }
-            return this;
-        }
-
-
-        /// <summary>
-        /// Complement the specified string in this set.
-        /// The set will not contain the specified string once the call
-        /// returns.
-        /// <para/>
-        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
-        /// </summary>
-        /// <param name="s">The string to complement.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
-        internal UnicodeSet Complement(ICharSequence s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWith in .NET)
         {
             CheckFrozen();
             int cp = GetSingleCP(s);
@@ -236,19 +167,6 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
-        internal UnicodeSet ComplementAll(ICharSequence s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWithChars in .NET)
-        {
-            return ComplementAll(FromAll(s));
-        }
-
-
-        /// <summary>
-        /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
-        /// If this set already any particular character, it has no effect on that character.
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
         internal UnicodeSet ComplementAll(ReadOnlySpan<char> s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWithChars in .NET)
         {
             return ComplementAll(FromAll(s));
@@ -258,21 +176,6 @@ namespace ICU4N.Text
         /// <seealso cref="ContainsAll(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
         internal virtual bool ContainsAll(IEnumerable<string> collection) // ICU4N specific - changed from public to internal (we are using IsSupersetOf in .NET)
-        {
-            foreach (var o in collection)
-            {
-                if (!Contains(o))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        
-        /// <seealso cref="ContainsAll(UnicodeSet)"/>
-        /// <stable>ICU 4.4</stable>
-        internal virtual bool ContainsAll<T>(IEnumerable<T> collection) where T : ICharSequence // ICU4N specific - changed from public to internal (we are using IsSupersetOf in .NET)
         {
             foreach (var o in collection)
             {
@@ -305,19 +208,6 @@ namespace ICU4N.Text
         /// <param name="s">String containing characters to be checked for containment.</param>
         /// <returns>true if the condition is met.</returns>
         /// <stable>ICU 2.0</stable>
-        internal bool ContainsSome(ICharSequence s) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
-        {
-            return !ContainsNone(s);
-        }
-
-
-        /// <summary>
-        /// Returns true if this set contains one or more of the characters
-        /// of the given string.
-        /// </summary>
-        /// <param name="s">String containing characters to be checked for containment.</param>
-        /// <returns>true if the condition is met.</returns>
-        /// <stable>ICU 2.0</stable>
         internal bool ContainsSome(ReadOnlySpan<char> s) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
         {
             return !ContainsNone(s);
@@ -331,31 +221,10 @@ namespace ICU4N.Text
             return !ContainsNone(collection);
         }
 
-        
-        /// <seealso cref="ContainsSome(UnicodeSet)"/>
-        /// <stable>ICU 4.4</stable>
-        internal bool ContainsSome<T>(IEnumerable<T> collection) where T : ICharSequence // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
-        {
-            return !ContainsNone(collection);
-        }
-
             
         /// <seealso cref="RemoveAll(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
         internal virtual UnicodeSet RemoveAll(IEnumerable<string> collection) // ICU4N specific - changed from public to internal (we are using ExceptWith in .NET)
-        {
-            CheckFrozen();
-            foreach (var o in collection)
-            {
-                Remove(o);
-            }
-            return this;
-        }
-
-        
-        /// <seealso cref="RemoveAll(UnicodeSet)"/>
-        /// <stable>ICU 4.4</stable>
-        internal virtual UnicodeSet RemoveAll<T>(IEnumerable<T> collection) where T : ICharSequence // ICU4N specific - changed from public to internal (we are using ExceptWith in .NET)
         {
             CheckFrozen();
             foreach (var o in collection)
@@ -386,19 +255,6 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
-        internal UnicodeSet RemoveAll(ICharSequence s) // ICU4N specific - changed from public to internal (we are using ExceptWithChars in .NET)
-        {
-            return RemoveAll(FromAll(s));
-        }
-
-
-        /// <summary>
-        /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
-        /// If this set already any particular character, it has no effect on that character.
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
         internal UnicodeSet RemoveAll(ReadOnlySpan<char> s) // ICU4N specific - changed from public to internal (we are using ExceptWithChars in .NET)
         {
             return RemoveAll(FromAll(s));
@@ -414,37 +270,6 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
         internal UnicodeSet Retain(string cs) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
-        {
-            int cp = GetSingleCP(cs);
-            if (cp < 0)
-            {
-                string s = cs.ToString();
-                bool isIn = strings.Contains(s);
-                if (isIn && Count == 1)
-                {
-                    return this;
-                }
-                Clear();
-                strings.Add(s);
-                pat = null;
-            }
-            else
-            {
-                Retain(cp, cp);
-            }
-            return this;
-        }
-
-
-        /// <summary>
-        /// Retain the specified string in this set if it is present.
-        /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
-        /// will only contain <paramref name="cs"/> if it did contain <paramref name="cs"/>.
-        /// </summary>
-        /// <param name="cs">The string to be retained.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
-        internal UnicodeSet Retain(ICharSequence cs) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
         {
             int cp = GetSingleCP(cs);
             if (cp < 0)
@@ -511,19 +336,6 @@ namespace ICU4N.Text
         }
 
         
-        /// <seealso cref="RetainAll(UnicodeSet)"/>
-        /// <stable>ICU 4.4</stable>
-        internal virtual UnicodeSet RetainAll<T>(IEnumerable<T> collection) where T : ICharSequence // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
-        {
-            CheckFrozen();
-            // TODO optimize
-            UnicodeSet toRetain = new UnicodeSet();
-            toRetain.AddAll(collection);
-            RetainAll(toRetain);
-            return this;
-        }
-
-        
         /// <summary>
         /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
         /// If this set already any particular character, it has no effect on that character.
@@ -532,19 +344,6 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
         internal UnicodeSet RetainAll(string s) // ICU4N specific - changed from public to internal (we are using IntersectWithChars in .NET)
-        {
-            return RetainAll(FromAll(s));
-        }
-
-
-        /// <summary>
-        /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
-        /// If this set already any particular character, it has no effect on that character.
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
-        internal UnicodeSet RetainAll(ICharSequence s) // ICU4N specific - changed from public to internal (we are using IntersectWithChars in .NET)
         {
             return RetainAll(FromAll(s));
         }
@@ -568,53 +367,6 @@ namespace ICU4N.Text
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
         internal virtual int MatchesAt(string text, int offset) // ICU4N: Marked internal because it is obsolete
-        {
-            int lastLen = -1;
-
-            if (strings.Count != 0)
-            {
-                char firstChar = text[offset];
-                string trial = null;
-                // find the first string starting with firstChar
-                //Iterator<string> it = strings.iterator();
-                using (var it = strings.GetEnumerator())
-                {
-                    while (it.MoveNext())
-                    {
-                        trial = it.Current;
-                        char firstStringChar = trial[0];
-                        if (firstStringChar < firstChar) continue;
-                        if (firstStringChar > firstChar) goto strings_break;
-                    }
-
-                    // now keep checking string until we get the longest one
-                    for (; ; )
-                    {
-                        int tempLen = MatchesAt(text, offset, trial);
-                        if (lastLen > tempLen) goto strings_break;
-                        lastLen = tempLen;
-                        if (!it.MoveNext()) break;
-                        trial = it.Current;
-                    }
-                }
-            }
-            strings_break: { }
-
-            if (lastLen < 2)
-            {
-                int cp = UTF16.CharAt(text, offset);
-                if (Contains(cp)) lastLen = UTF16.GetCharCount(cp);
-            }
-
-            return offset + lastLen;
-        }
-
-
-        /// <summary>
-        /// Tests whether the text matches at the offset. If so, returns the end of the longest substring that it matches. If not, returns -1.
-        /// </summary>
-        [Obsolete("This API is ICU internal only.")]
-        internal virtual int MatchesAt(ICharSequence text, int offset) // ICU4N: Marked internal because it is obsolete
         {
             int lastLen = -1;
 
@@ -739,33 +491,6 @@ namespace ICU4N.Text
         /// <param name="substring">Substring to match at offset in text.</param>
         /// <returns>-1 if match fails, otherwise other.Length.</returns>
         // Note: This method was moved from CollectionUtilities
-        private static int MatchesAt(string text, int offsetInText, ICharSequence substring)
-        {
-            int len = substring.Length;
-            int textLength = text.Length;
-            if (textLength + offsetInText > len)
-            {
-                return -1;
-            }
-            int i = 0;
-            for (int j = offsetInText; i < len; ++i, ++j)
-            {
-                char pc = substring[i];
-                char tc = text[j];
-                if (pc != tc) return -1;
-            }
-            return i;
-        }
-
-    
-        /// <summary>
-        /// Does one string contain another, starting at a specific offset?
-        /// </summary>
-        /// <param name="text">Text to match.</param>
-        /// <param name="offsetInText">Offset within that text.</param>
-        /// <param name="substring">Substring to match at offset in text.</param>
-        /// <returns>-1 if match fails, otherwise other.Length.</returns>
-        // Note: This method was moved from CollectionUtilities
         private static int MatchesAt(string text, int offsetInText, ReadOnlySpan<char> substring)
         {
             int len = substring.Length;
@@ -793,115 +518,7 @@ namespace ICU4N.Text
         /// <param name="substring">Substring to match at offset in text.</param>
         /// <returns>-1 if match fails, otherwise other.Length.</returns>
         // Note: This method was moved from CollectionUtilities
-        private static int MatchesAt(ICharSequence text, int offsetInText, string substring)
-        {
-            int len = substring.Length;
-            int textLength = text.Length;
-            if (textLength + offsetInText > len)
-            {
-                return -1;
-            }
-            int i = 0;
-            for (int j = offsetInText; i < len; ++i, ++j)
-            {
-                char pc = substring[i];
-                char tc = text[j];
-                if (pc != tc) return -1;
-            }
-            return i;
-        }
-
-    
-        /// <summary>
-        /// Does one string contain another, starting at a specific offset?
-        /// </summary>
-        /// <param name="text">Text to match.</param>
-        /// <param name="offsetInText">Offset within that text.</param>
-        /// <param name="substring">Substring to match at offset in text.</param>
-        /// <returns>-1 if match fails, otherwise other.Length.</returns>
-        // Note: This method was moved from CollectionUtilities
-        private static int MatchesAt(ICharSequence text, int offsetInText, ICharSequence substring)
-        {
-            int len = substring.Length;
-            int textLength = text.Length;
-            if (textLength + offsetInText > len)
-            {
-                return -1;
-            }
-            int i = 0;
-            for (int j = offsetInText; i < len; ++i, ++j)
-            {
-                char pc = substring[i];
-                char tc = text[j];
-                if (pc != tc) return -1;
-            }
-            return i;
-        }
-
-    
-        /// <summary>
-        /// Does one string contain another, starting at a specific offset?
-        /// </summary>
-        /// <param name="text">Text to match.</param>
-        /// <param name="offsetInText">Offset within that text.</param>
-        /// <param name="substring">Substring to match at offset in text.</param>
-        /// <returns>-1 if match fails, otherwise other.Length.</returns>
-        // Note: This method was moved from CollectionUtilities
-        private static int MatchesAt(ICharSequence text, int offsetInText, ReadOnlySpan<char> substring)
-        {
-            int len = substring.Length;
-            int textLength = text.Length;
-            if (textLength + offsetInText > len)
-            {
-                return -1;
-            }
-            int i = 0;
-            for (int j = offsetInText; i < len; ++i, ++j)
-            {
-                char pc = substring[i];
-                char tc = text[j];
-                if (pc != tc) return -1;
-            }
-            return i;
-        }
-
-        
-        /// <summary>
-        /// Does one string contain another, starting at a specific offset?
-        /// </summary>
-        /// <param name="text">Text to match.</param>
-        /// <param name="offsetInText">Offset within that text.</param>
-        /// <param name="substring">Substring to match at offset in text.</param>
-        /// <returns>-1 if match fails, otherwise other.Length.</returns>
-        // Note: This method was moved from CollectionUtilities
         private static int MatchesAt(ReadOnlySpan<char> text, int offsetInText, string substring)
-        {
-            int len = substring.Length;
-            int textLength = text.Length;
-            if (textLength + offsetInText > len)
-            {
-                return -1;
-            }
-            int i = 0;
-            for (int j = offsetInText; i < len; ++i, ++j)
-            {
-                char pc = substring[i];
-                char tc = text[j];
-                if (pc != tc) return -1;
-            }
-            return i;
-        }
-
-    
-        /// <summary>
-        /// Does one string contain another, starting at a specific offset?
-        /// </summary>
-        /// <param name="text">Text to match.</param>
-        /// <param name="offsetInText">Offset within that text.</param>
-        /// <param name="substring">Substring to match at offset in text.</param>
-        /// <returns>-1 if match fails, otherwise other.Length.</returns>
-        // Note: This method was moved from CollectionUtilities
-        private static int MatchesAt(ReadOnlySpan<char> text, int offsetInText, ICharSequence substring)
         {
             int len = substring.Length;
             int textLength = text.Length;
@@ -986,34 +603,6 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
-        public UnicodeSet Add(ICharSequence s)
-        {
-            CheckFrozen();
-            int cp = GetSingleCP(s);
-            if (cp < 0)
-            {
-                strings.Add(s.ToString());
-                pat = null;
-            }
-            else
-            {
-                AddUnchecked(cp, cp);
-            }
-            return this;
-        }
-
-
-        /// <summary>
-        /// Adds the specified multicharacter to this set if it is not already
-        /// present.  If this set already contains the multicharacter,
-        /// the call leaves this set unchanged.
-        /// Thus "ch" =&gt; {"ch"}
-        /// <para/>
-        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
         public UnicodeSet Add(ReadOnlySpan<char> s)
         {
             CheckFrozen();
@@ -1038,31 +627,6 @@ namespace ICU4N.Text
         /// <param name="s">To test.</param>
         /// <returns>A code point IF the string consists of a single one. Otherwise returns -1.</returns>
         private static int GetSingleCP(string s)
-        {
-            if (s.Length < 1)
-            {
-                throw new ArgumentException("Can't use zero-length strings in UnicodeSet");
-            }
-            if (s.Length > 2) return -1;
-            if (s.Length == 1) return s[0];
-
-            // at this point, len = 2
-            int cp = UTF16.CharAt(s, 0);
-            if (cp > 0xFFFF)
-            { // is surrogate pair
-                return cp;
-            }
-            return -1;
-        }
-
-
-        /// <summary>
-        /// Utility for getting code point from single code point <see cref="ICharSequence"/>.
-        /// See the public <see cref="UTF16.GetSingleCodePoint(ICharSequence)"/>.
-        /// </summary>
-        /// <param name="s">To test.</param>
-        /// <returns>A code point IF the string consists of a single one. Otherwise returns -1.</returns>
-        private static int GetSingleCP(ICharSequence s)
         {
             if (s.Length < 1)
             {
@@ -1129,20 +693,6 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>A newly created set containing the given string.</returns>
         /// <stable>ICU 2.0</stable>
-        public static UnicodeSet From(ICharSequence s)
-        {
-            return new UnicodeSet().Add(s);
-        }
-
-
-        /// <summary>
-        /// Makes a set from a multicharacter string. Thus "ch" =&gt; {"ch"}
-        /// <para/>
-        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>A newly created set containing the given string.</returns>
-        /// <stable>ICU 2.0</stable>
         public static UnicodeSet From(ReadOnlySpan<char> s)
         {
             return new UnicodeSet().Add(s);
@@ -1156,18 +706,6 @@ namespace ICU4N.Text
         /// <returns>A newly created set containing the given characters.</returns>
         /// <stable>ICU 2.0</stable>
         public static UnicodeSet FromAll(string s) // ICU4N TODO: API - rename FromChars() to match other APIs
-        {
-            return new UnicodeSet().AddAll(s);
-        }
-
-
-        /// <summary>
-        /// Makes a set from each of the characters in the string. Thus "ch" =&gt; {"c", "h"}
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>A newly created set containing the given characters.</returns>
-        /// <stable>ICU 2.0</stable>
-        public static UnicodeSet FromAll(ICharSequence s) // ICU4N TODO: API - rename FromChars() to match other APIs
         {
             return new UnicodeSet().AddAll(s);
         }
@@ -1194,30 +732,6 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
         public UnicodeSet Remove(string s)
-        {
-            int cp = GetSingleCP(s);
-            if (cp < 0)
-            {
-                strings.Remove(s.ToString());
-                pat = null;
-            }
-            else
-            {
-                Remove(cp, cp);
-            }
-            return this;
-        }
-
-
-        /// <summary>
-        /// Removes the specified string from this set if it is present.
-        /// The set will not contain the specified string once the call
-        /// returns.
-        /// </summary>
-        /// <param name="s">The string to be removed.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
-        public UnicodeSet Remove(ICharSequence s)
         {
             int cp = GetSingleCP(s);
             if (cp < 0)
@@ -1285,27 +799,6 @@ namespace ICU4N.Text
         /// <param name="s">String to be checked for containment.</param>
         /// <returns><tt>true</tt> if this set contains the specified string.</returns>
         /// <stable>ICU 2.0</stable>
-        public bool Contains(ICharSequence s)
-        {
-            int cp = GetSingleCP(s);
-            if (cp < 0)
-            {
-                return strings.Contains(s.ToString());
-            }
-            else
-            {
-                return Contains(cp);
-            }
-        }
-
-
-        /// <summary>
-        /// Returns <tt>true</tt> if this set contains the given
-        /// multicharacter string.
-        /// </summary>
-        /// <param name="s">String to be checked for containment.</param>
-        /// <returns><tt>true</tt> if this set contains the specified string.</returns>
-        /// <stable>ICU 2.0</stable>
         public bool Contains(ReadOnlySpan<char> s)
         {
             int cp = GetSingleCP(s);
@@ -1328,19 +821,6 @@ namespace ICU4N.Text
         /// <returns>true if the test condition is met.</returns>
         /// <stable>ICU 2.0</stable>
         public virtual bool ContainsNone(string s)
-        {
-            return Span(s, SpanCondition.NotContained) == s.Length;
-        }
-
-
-        /// <summary>
-        /// Returns true if this set contains none of the characters
-        /// of the given string.
-        /// </summary>
-        /// <param name="s">String containing characters to be checked for containment.</param>
-        /// <returns>true if the test condition is met.</returns>
-        /// <stable>ICU 2.0</stable>
-        public virtual bool ContainsNone(ICharSequence s)
         {
             return Span(s, SpanCondition.NotContained) == s.Length;
         }
@@ -1383,21 +863,6 @@ namespace ICU4N.Text
         /// <param name="spanCondition">The span condition.</param>
         /// <returns>The length of the span.</returns>
         /// <stable>ICU 4.4</stable>
-        public virtual int Span(ICharSequence s, SpanCondition spanCondition)
-        {
-            return Span(s, 0, spanCondition);
-        }
-
-
-        /// <summary>
-        /// Span a string using this UnicodeSet.
-        /// <para/>
-        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <returns>The length of the span.</returns>
-        /// <stable>ICU 4.4</stable>
         public virtual int Span(ReadOnlySpan<char> s, SpanCondition spanCondition)
         {
             return Span(s, 0, spanCondition);
@@ -1419,56 +884,6 @@ namespace ICU4N.Text
         /// <returns>The string index which ends the span (i.e. exclusive).</returns>
         /// <stable>ICU 4.4</stable>
         public virtual int Span(string s, int start, SpanCondition spanCondition)
-        {
-            int ignoredOutCount;
-            int end = s.Length;
-            if (start < 0)
-            {
-                start = 0;
-            }
-            else if (start >= end)
-            {
-                return end;
-            }
-            if (bmpSet != null)
-            {
-                // Frozen set without strings, or no string is relevant for span().
-                return bmpSet.Span(s, start, spanCondition, out ignoredOutCount);
-            }
-            if (stringSpan != null)
-            {
-                return stringSpan.Span(s, start, spanCondition);
-            }
-            else if (strings.Count > 0)
-            {
-                int which = spanCondition == SpanCondition.NotContained ? UnicodeSetStringSpan.ForwardUtf16NotContained
-                        : UnicodeSetStringSpan.ForwardUtf16Contained;
-                UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
-                if (strSpan.NeedsStringSpanUTF16)
-                {
-                    return strSpan.Span(s, start, spanCondition);
-                }
-            }
-
-            return SpanCodePointsAndCount(s, start, spanCondition, out ignoredOutCount);
-        }
-
-
-        /// <summary>
-        /// Span a string using this <see cref="UnicodeSet"/>.
-        /// <list type="bullet">
-        ///     <item><description>If the start index is less than 0, span will start from 0.</description></item>
-        ///     <item><description>If the start index is greater than the string length, span returns the string length.</description></item>
-        /// </list>
-        /// <para/>
-        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="start">The start index that the span begins.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <returns>The string index which ends the span (i.e. exclusive).</returns>
-        /// <stable>ICU 4.4</stable>
-        public virtual int Span(ICharSequence s, int start, SpanCondition spanCondition)
         {
             int ignoredOutCount;
             int end = s.Length;
@@ -1601,52 +1016,6 @@ namespace ICU4N.Text
 
 
         /// <summary>
-        /// Same as <see cref="Span(ICharSequence, SpanCondition)"/> but also counts the smallest number of set elements on any path across the span.
-        /// <para/>
-        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
-        /// </summary>
-        /// <param name="s"></param>
-        /// <param name="start"></param>
-        /// <param name="spanCondition"></param>
-        /// <param name="outCount">Returns the count.</param>
-        /// <returns>The limit (exclusive end) of the span.</returns>
-        [Obsolete("This API is ICU internal only.")]
-        internal virtual int SpanAndCount(ICharSequence s, int start, SpanCondition spanCondition, out int outCount) // ICU4N: Made internal because it is obsolete
-        {
-            outCount = default(int);
-            int end = s.Length;
-            if (start < 0)
-            {
-                start = 0;
-            }
-            else if (start >= end)
-            {
-                return end;
-            }
-            if (stringSpan != null)
-            {
-                // We might also have bmpSet != null,
-                // but fully-contained strings are relevant for counting elements.
-                return stringSpan.SpanAndCount(s, start, spanCondition, out outCount);
-            }
-            else if (bmpSet != null)
-            {
-                return bmpSet.Span(s, start, spanCondition, out outCount);
-            }
-            else if (strings.Count > 0)
-            {
-                int which = spanCondition == SpanCondition.NotContained ? UnicodeSetStringSpan.ForwardUtf16NotContained
-                        : UnicodeSetStringSpan.ForwardUtf16Contained;
-                which |= UnicodeSetStringSpan.WithCount;
-                UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
-                return strSpan.SpanAndCount(s, start, spanCondition, out outCount);
-            }
-
-            return SpanCodePointsAndCount(s, start, spanCondition, out outCount);
-        }
-
-
-        /// <summary>
         /// Same as <see cref="Span(ReadOnlySpan{Char}, SpanCondition)"/> but also counts the smallest number of set elements on any path across the span.
         /// <para/>
         /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
@@ -1693,31 +1062,6 @@ namespace ICU4N.Text
 
 
         private int SpanCodePointsAndCount(string s, int start,
-            SpanCondition spanCondition, out int outCount)
-        {
-            // Pin to 0/1 values.
-            bool spanContained = (spanCondition != SpanCondition.NotContained);
-
-            int c;
-            int next = start;
-            int length = s.Length;
-            int count = 0;
-            do
-            {
-                c = Character.CodePointAt(s, next);
-                if (spanContained != Contains(c))
-                {
-                    break;
-                }
-                ++count;
-                next += Character.CharCount(c);
-            } while (next < length);
-            outCount = count;
-            return next;
-        }
-
-
-        private int SpanCodePointsAndCount(ICharSequence s, int start,
             SpanCondition spanCondition, out int outCount)
         {
             // Pin to 0/1 values.
@@ -1791,21 +1135,6 @@ namespace ICU4N.Text
         /// <param name="spanCondition">The span condition.</param>
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
         /// <stable>ICU 4.4</stable>
-        public virtual int SpanBack(ICharSequence s, SpanCondition spanCondition)
-        {
-            return SpanBack(s, s.Length, spanCondition);
-        }
-
-
-        /// <summary>
-        /// Span a string backwards (from the end) using this <see cref="UnicodeSet"/>.
-        /// <para/>
-        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
-        /// <stable>ICU 4.4</stable>
         public virtual int SpanBack(ReadOnlySpan<char> s, SpanCondition spanCondition)
         {
             return SpanBack(s, s.Length, spanCondition);
@@ -1825,67 +1154,6 @@ namespace ICU4N.Text
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
         /// <stable>ICU 4.4</stable>
         public virtual int SpanBack(string s, int fromIndex, SpanCondition spanCondition)
-        {
-            if (fromIndex <= 0)
-            {
-                return 0;
-            }
-            if (fromIndex > s.Length)
-            {
-                fromIndex = s.Length;
-            }
-            if (bmpSet != null)
-            {
-                // Frozen set without strings, or no string is relevant for spanBack().
-                return bmpSet.SpanBack(s, fromIndex, spanCondition);
-            }
-            if (stringSpan != null)
-            {
-                return stringSpan.SpanBack(s, fromIndex, spanCondition);
-            }
-            else if (strings.Count > 0)
-            {
-                int which = (spanCondition == SpanCondition.NotContained)
-                        ? UnicodeSetStringSpan.BackwardUtf16NotContained
-                                : UnicodeSetStringSpan.BackwardUtf16Contained;
-                UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
-                if (strSpan.NeedsStringSpanUTF16)
-                {
-                    return strSpan.SpanBack(s, fromIndex, spanCondition);
-                }
-            }
-
-            // Pin to 0/1 values.
-            bool spanContained = (spanCondition != SpanCondition.NotContained);
-
-            int c;
-            int prev = fromIndex;
-            do
-            {
-                c = Character.CodePointBefore(s, prev);
-                if (spanContained != Contains(c))
-                {
-                    break;
-                }
-                prev -= Character.CharCount(c);
-            } while (prev > 0);
-            return prev;
-        }
-
-
-        /// <summary>
-        /// Span a string backwards (from the <paramref name="fromIndex"/>) using this <see cref="UnicodeSet"/>.
-        /// If the <paramref name="fromIndex"/> is less than 0, SpanBack will return 0.
-        /// If <paramref name="fromIndex"/> is greater than the string length, SpanBack will start from the string length.
-        /// <para/>
-        /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="fromIndex">The index of the char (exclusive) that the string should be spanned backwards.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
-        /// <stable>ICU 4.4</stable>
-        public virtual int SpanBack(ICharSequence s, int fromIndex, SpanCondition spanCondition)
         {
             if (fromIndex <= 0)
             {
@@ -2010,21 +1278,6 @@ namespace ICU4N.Text
         }
 
         
-        /// <seealso cref="ContainsNone(UnicodeSet)"/>
-        /// <stable>ICU 4.4</stable>
-        public virtual bool ContainsNone<T>(IEnumerable<T> collection) where T : ICharSequence
-        {
-            foreach (var o in collection)
-            {
-                if (Contains(o))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        
         /// <summary>
         /// Utility to compare a string to a code point.
         /// Same results as turning the code point into a string (with the [ugly] new StringBuilder().AppendCodePoint(codepoint).ToString())
@@ -2034,22 +1287,6 @@ namespace ICU4N.Text
         /// </summary>
         /// <stable>ICU 4.4</stable>
         public static int Compare(string str, int codePoint)
-        {
-#pragma warning disable 612, 618
-            return CharSequences.Compare(str, codePoint);
-#pragma warning restore 612, 618
-        }
-
-
-        /// <summary>
-        /// Utility to compare a string to a code point.
-        /// Same results as turning the code point into a string (with the [ugly] new StringBuilder().AppendCodePoint(codepoint).ToString())
-        /// and comparing, but much faster (no object creation).
-        /// Actually, there is one difference; a null compares as less.
-        /// Note that this (=String) order is UTF-16 order -- *not* code point order.
-        /// </summary>
-        /// <stable>ICU 4.4</stable>
-        public static int Compare(ICharSequence str, int codePoint)
         {
 #pragma warning disable 612, 618
             return CharSequences.Compare(str, codePoint);
@@ -2095,21 +1332,6 @@ namespace ICU4N.Text
         /// Note that this (=String) order is UTF-16 order -- *not* code point order.
         /// </summary>
         /// <stable>ICU 4.4</stable>
-        public static int Compare(int codePoint, ICharSequence str)
-        {
-#pragma warning disable 612, 618
-            return -CharSequences.Compare(str, codePoint);
-#pragma warning restore 612, 618
-        }
-
-
-        /// <summary>
-        /// Utility to compare a string to a code point.
-        /// Same results as turning the code point into a string and comparing, but much faster (no object creation).
-        /// Actually, there is one difference; a null compares as less.
-        /// Note that this (=String) order is UTF-16 order -- *not* code point order.
-        /// </summary>
-        /// <stable>ICU 4.4</stable>
         public static int Compare(int codePoint, ReadOnlySpan<char> str)
         {
 #pragma warning disable 612, 618
@@ -2134,17 +1356,6 @@ namespace ICU4N.Text
         /// Otherwise return <see cref="int.MaxValue"/>.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        internal static int GetSingleCodePoint(ICharSequence s) // ICU4N: Made internal because it is obsolete
-        {
-            return CharSequences.GetSingleCodePoint(s);
-        }
-
-
-        /// <summary>
-        /// Return the value of the first code point, if the string is exactly one code point. 
-        /// Otherwise return <see cref="int.MaxValue"/>.
-        /// </summary>
-        [Obsolete("This API is ICU internal only.")]
         internal static int GetSingleCodePoint(ReadOnlySpan<char> s) // ICU4N: Made internal because it is obsolete
         {
             return CharSequences.GetSingleCodePoint(s);
@@ -2158,28 +1369,6 @@ namespace ICU4N.Text
         /// </summary>
         [Obsolete("This API is ICU internal only.Use span instead.")]
         internal virtual int FindIn(string value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
-        {
-            //TODO add strings, optimize, using ICU4C algorithms
-            int cp;
-            for (; fromIndex < value.Length; fromIndex += UTF16.GetCharCount(cp))
-            {
-                cp = UTF16.CharAt(value, fromIndex);
-                if (Contains(cp) != findNot)
-                {
-                    break;
-                }
-            }
-            return fromIndex;
-        }
-
-
-        /// <summary>
-        /// Find the first index at or after <paramref name="fromIndex"/> where the <see cref="UnicodeSet"/> matches at that index.
-        /// If <paramref name="findNot"/> is true, then reverse the sense of the match: find the first place where the <see cref="UnicodeSet"/> doesn't match.
-        /// If there is no match, length is returned.
-        /// </summary>
-        [Obsolete("This API is ICU internal only.Use span instead.")]
-        internal virtual int FindIn(ICharSequence value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
         {
             //TODO add strings, optimize, using ICU4C algorithms
             int cp;
@@ -2248,30 +1437,6 @@ namespace ICU4N.Text
         /// BEFORE index is not in the <see cref="UnicodeSet"/>.
         /// </summary>
         [Obsolete("This API is ICU internal only. Use spanBack instead.")]
-        internal virtual int FindLastIn(ICharSequence value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
-        {
-            //TODO add strings, optimize, using ICU4C algorithms
-            int cp;
-            fromIndex -= 1;
-            for (; fromIndex >= 0; fromIndex -= UTF16.GetCharCount(cp))
-            {
-                cp = UTF16.CharAt(value, fromIndex);
-                if (Contains(cp) != findNot)
-                {
-                    break;
-                }
-            }
-            return fromIndex < 0 ? -1 : fromIndex;
-        }
-
-
-        /// <summary>
-        /// Find the last index before <paramref name="fromIndex"/> where the <see cref="UnicodeSet"/> matches at that index.
-        /// If <paramref name="findNot"/> is true, then reverse the sense of the match: find the last place where the <see cref="UnicodeSet"/> doesn't match.
-        /// If there is no match, -1 is returned.
-        /// BEFORE index is not in the <see cref="UnicodeSet"/>.
-        /// </summary>
-        [Obsolete("This API is ICU internal only. Use spanBack instead.")]
         internal virtual int FindLastIn(ReadOnlySpan<char> value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
         {
             //TODO add strings, optimize, using ICU4C algorithms
@@ -2304,27 +1469,6 @@ namespace ICU4N.Text
             {
                 int inside = FindIn(source, pos, !matches);
                 result.Append(source.AsSpan(pos, inside - pos)); // ICU4N: Corrected 2nd parameter
-                pos = FindIn(source, inside, matches); // get next start
-            }
-            return result.ToString();
-        }
-
-
-        /// <summary>
-        /// Strips code points from source. If matches is true, script all that match <i>this</i>. 
-        /// If matches is false, then strip all that <i>don't</i> match.
-        /// </summary>
-        /// <param name="source">The source of the <see cref="ICharSequence"/> to strip from.</param>
-        /// <param name="matches">A bool to either strip all that matches or don't match with the current <see cref="UnicodeSet"/> object.</param>
-        /// <returns>The string after it has been stripped.</returns>
-        [Obsolete("This API is ICU internal only. Use replaceFrom.")]
-        internal virtual string StripFrom(ICharSequence source, bool matches) // ICU4N: Made internal because it is obsolete
-        {
-            StringBuilder result = new StringBuilder(source.Length);
-            for (int pos = 0; pos < source.Length;)
-            {
-                int inside = FindIn(source, pos, !matches);
-                result.Append(source.Subsequence(pos, inside - pos)); // ICU4N: Corrected 2nd parameter
                 pos = FindIn(source, inside, matches); // get next start
             }
             return result.ToString();

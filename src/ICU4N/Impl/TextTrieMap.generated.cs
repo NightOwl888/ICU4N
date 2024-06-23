@@ -32,21 +32,6 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Adds the text key and its associated object in this object.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="val">The value object associated with the text.</param>
-        /// <returns></returns>
-        public virtual TextTrieMap<TValue> Put(ICharSequence text, TValue val)
-        {
-            if (text is null)
-                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
-            CharEnumerator chitr = new CharEnumerator(text, 0, ignoreCase);
-            root.Add(chitr, val);
-            return this;
-        }
-
-        /// <summary>
         /// Gets an enumerator of the objects associated with the
         /// longest prefix matching string key starting at the
         /// specified position.
@@ -63,35 +48,7 @@ namespace ICU4N.Impl
             return Get(text, start, null);
         }
 
-        /// <summary>
-        /// Gets an enumerator of the objects associated with the
-        /// longest prefix matching string key starting at the
-        /// specified position.
-        /// </summary>
-        /// <param name="text">The text to be matched with prefixes.</param>
-        /// <param name="start">The start index of of the text.</param>
-        /// <returns>
-        /// An enumerator of the objects associated with the
-        /// longest prefix matching matching key, or <c>null</c> if no
-        /// matching entry is found.
-        /// </returns>
-        public virtual IEnumerator<TValue> Get(ICharSequence text, int start)
-        {
-            return Get(text, start, null);
-        }
-
         public virtual IEnumerator<TValue> Get(string text, int start, int[] matchLen)
-        {
-            LongestMatchHandler<TValue> handler = new LongestMatchHandler<TValue>();
-            Find(text, start, handler);
-            if (matchLen != null && matchLen.Length > 0)
-            {
-                matchLen[0] = handler.MatchLength;
-            }
-            return handler.Matches;
-        }
-
-        public virtual IEnumerator<TValue> Get(ICharSequence text, int start, int[] matchLen)
         {
             LongestMatchHandler<TValue> handler = new LongestMatchHandler<TValue>();
             Find(text, start, handler);
@@ -107,20 +64,9 @@ namespace ICU4N.Impl
             Find(text, 0, handler);
         }
 
-        public virtual void Find(ICharSequence text, IResultHandler<TValue> handler)
-        {
-            Find(text, 0, handler);
-        }
-
         public virtual void Find(string text, int offset, IResultHandler<TValue> handler)
         {
             CharEnumerator chitr = new CharEnumerator(text.AsCharSequence(), offset, ignoreCase);
-            Find(root, chitr, handler);
-        }
-
-        public virtual void Find(ICharSequence text, int offset, IResultHandler<TValue> handler)
-        {
-            CharEnumerator chitr = new CharEnumerator(text, offset, ignoreCase);
             Find(root, chitr, handler);
         }
     }

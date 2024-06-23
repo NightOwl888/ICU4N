@@ -110,7 +110,7 @@ namespace ICU4N.Numerics
 
         /// <summary>
         /// Estimates the number of code points present in an unescaped version of the affix pattern string
-        /// (one that would be returned by <see cref="Unescape(ICharSequence, NumberStringBuilder, int, ISymbolProvider)"/>,
+        /// (one that would be returned by <see cref="Unescape(ReadOnlySpan{char}, NumberStringBuilder, int, ISymbolProvider)"/>,
         /// assuming that all interpolated symbols
         /// consume one code point and that currencies consume as many code points as their symbol width.
         /// Used for computing padding width.
@@ -118,7 +118,7 @@ namespace ICU4N.Numerics
         /// <param name="patternString">The original string whose width will be estimated.</param>
         /// <returns>The length of the unescaped string.</returns>
         /// <exception cref="FormatException">A non-terminated quote symbol was included in <paramref name="patternString"/>.</exception>
-        public static int EstimateLength(ICharSequence patternString)
+        public static int EstimateLength(ReadOnlySpan<char> patternString)
         {
             if (patternString == null) return 0;
             int state = STATE_BASE;
@@ -202,7 +202,7 @@ namespace ICU4N.Numerics
 
         /// <summary>
         /// Estimates the number of code points present in an unescaped version of the affix pattern string
-        /// (one that would be returned by <see cref="Unescape(ReadOnlySpan{char}, NumberStringBuilder, int, ISymbolProvider)"/>,
+        /// (one that would be returned by <see cref="Unescape(ICharSequence, NumberStringBuilder, int, ISymbolProvider)"/>,
         /// assuming that all interpolated symbols
         /// consume one code point and that currencies consume as many code points as their symbol width.
         /// Used for computing padding width.
@@ -210,7 +210,7 @@ namespace ICU4N.Numerics
         /// <param name="patternString">The original string whose width will be estimated.</param>
         /// <returns>The length of the unescaped string.</returns>
         /// <exception cref="FormatException">A non-terminated quote symbol was included in <paramref name="patternString"/>.</exception>
-        public static int EstimateLength(ReadOnlySpan<char> patternString)
+        public static int EstimateLength(ICharSequence patternString)
         {
             if (patternString == null) return 0;
             int state = STATE_BASE;
@@ -372,7 +372,7 @@ namespace ICU4N.Numerics
         /// <param name="output">The string builder to which to append the escaped string.</param>
         /// <returns>The number of chars (UTF-16 code units) appended to the output.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="output"/> is <c>null</c>.</exception>
-        public static int Escape(ICharSequence input, StringBuilder output)
+        public static int Escape(ReadOnlySpan<char> input, StringBuilder output)
         {
             if (output is null)
                 throw new ArgumentNullException(nameof(output));
@@ -442,7 +442,7 @@ namespace ICU4N.Numerics
         /// <param name="output">The string builder to which to append the escaped string.</param>
         /// <returns>The number of chars (UTF-16 code units) appended to the output.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="output"/> is <c>null</c>.</exception>
-        public static int Escape(ReadOnlySpan<char> input, StringBuilder output)
+        public static int Escape(ICharSequence input, StringBuilder output)
         {
             if (output is null)
                 throw new ArgumentNullException(nameof(output));
@@ -515,11 +515,11 @@ namespace ICU4N.Numerics
         }
 
         /// <summary>
-        /// Version of <see cref="Escape(ICharSequence, StringBuilder)"/> that returns a <see cref="string"/>.
+        /// Version of <see cref="Escape(ReadOnlySpan{char}, StringBuilder)"/> that returns a <see cref="string"/>.
         /// </summary>
         /// <param name="input">The string to be escaped.</param>
         /// <returns>The string containing the escaped string.</returns>
-        public static string Escape(ICharSequence input)
+        public static string Escape(ReadOnlySpan<char> input)
         {
             StringBuilder sb = new StringBuilder();
             Escape(input, sb);
@@ -527,11 +527,11 @@ namespace ICU4N.Numerics
         }
 
         /// <summary>
-        /// Version of <see cref="Escape(ReadOnlySpan{char}, StringBuilder)"/> that returns a <see cref="string"/>.
+        /// Version of <see cref="Escape(ICharSequence, StringBuilder)"/> that returns a <see cref="string"/>.
         /// </summary>
         /// <param name="input">The string to be escaped.</param>
         /// <returns>The string containing the escaped string.</returns>
-        public static string Escape(ReadOnlySpan<char> input)
+        public static string Escape(ICharSequence input)
         {
             StringBuilder sb = new StringBuilder();
             Escape(input, sb);
@@ -552,57 +552,6 @@ namespace ICU4N.Numerics
         /// <returns>The length of the string added to <paramref name="affixPattern"/>.</returns>
         public static int Unescape(
             string affixPattern,
-            NumberStringBuilder output,
-            int position,
-            ISymbolProvider provider)
-        {
-            // ICU4N specific - added guard clauses
-            if (affixPattern is null)
-                throw new ArgumentNullException(nameof(affixPattern));
-            if (output is null)
-                throw new ArgumentNullException(nameof(output));
-            if (provider is null)
-                throw new ArgumentNullException(nameof(provider));
-
-            //Debug.Assert(affixPattern != null);
-            int length = 0;
-            long tag = 0L;
-            while (HasNext(tag, affixPattern))
-            {
-                tag = NextToken(tag, affixPattern);
-                int typeOrCp = GetTypeOrCp(tag);
-                if (typeOrCp == (int)Type.CurrencyOverflow)
-                {
-                    // Don't go to the provider for this special case
-                    length += output.InsertCodePoint(position + length, 0xFFFD, NumberFormatField.Currency);
-                }
-                else if (typeOrCp < 0)
-                {
-                    Type type = (Type)typeOrCp;
-                    length += output.Insert(position + length, provider.GetSymbol(type), GetFieldForType(type));
-                }
-                else
-                {
-                    length += output.InsertCodePoint(position + length, typeOrCp, null);
-                }
-            }
-            return length;
-        }
-
-        /// <summary>
-        /// Executes the unescape state machine. Replaces the unquoted characters "-", "+", "%", "‰", and
-        /// "¤" with the corresponding symbols provided by the <see cref="ISymbolProvider"/>, and inserts the
-        /// result into the <see cref="NumberStringBuilder"/> at the requested location.
-        /// <para/>
-        /// Example input: "'-'¤x"; example output: "-$x"
-        /// </summary>
-        /// <param name="affixPattern">The original string to be unescaped.</param>
-        /// <param name="output">The <see cref="NumberStringBuilder"/> to mutate with the result.</param>
-        /// <param name="position">The index into the <see cref="NumberStringBuilder"/> to insert the string.</param>
-        /// <param name="provider">An object to generate locale symbols.</param>
-        /// <returns>The length of the string added to <paramref name="affixPattern"/>.</returns>
-        public static int Unescape(
-            ICharSequence affixPattern,
             NumberStringBuilder output,
             int position,
             ISymbolProvider provider)
@@ -689,6 +638,57 @@ namespace ICU4N.Numerics
         }
 
         /// <summary>
+        /// Executes the unescape state machine. Replaces the unquoted characters "-", "+", "%", "‰", and
+        /// "¤" with the corresponding symbols provided by the <see cref="ISymbolProvider"/>, and inserts the
+        /// result into the <see cref="NumberStringBuilder"/> at the requested location.
+        /// <para/>
+        /// Example input: "'-'¤x"; example output: "-$x"
+        /// </summary>
+        /// <param name="affixPattern">The original string to be unescaped.</param>
+        /// <param name="output">The <see cref="NumberStringBuilder"/> to mutate with the result.</param>
+        /// <param name="position">The index into the <see cref="NumberStringBuilder"/> to insert the string.</param>
+        /// <param name="provider">An object to generate locale symbols.</param>
+        /// <returns>The length of the string added to <paramref name="affixPattern"/>.</returns>
+        public static int Unescape(
+            ICharSequence affixPattern,
+            NumberStringBuilder output,
+            int position,
+            ISymbolProvider provider)
+        {
+            // ICU4N specific - added guard clauses
+            if (affixPattern is null)
+                throw new ArgumentNullException(nameof(affixPattern));
+            if (output is null)
+                throw new ArgumentNullException(nameof(output));
+            if (provider is null)
+                throw new ArgumentNullException(nameof(provider));
+
+            //Debug.Assert(affixPattern != null);
+            int length = 0;
+            long tag = 0L;
+            while (HasNext(tag, affixPattern))
+            {
+                tag = NextToken(tag, affixPattern);
+                int typeOrCp = GetTypeOrCp(tag);
+                if (typeOrCp == (int)Type.CurrencyOverflow)
+                {
+                    // Don't go to the provider for this special case
+                    length += output.InsertCodePoint(position + length, 0xFFFD, NumberFormatField.Currency);
+                }
+                else if (typeOrCp < 0)
+                {
+                    Type type = (Type)typeOrCp;
+                    length += output.Insert(position + length, provider.GetSymbol(type), GetFieldForType(type));
+                }
+                else
+                {
+                    length += output.InsertCodePoint(position + length, typeOrCp, null);
+                }
+            }
+            return length;
+        }
+
+        /// <summary>
         /// Same as <see cref="Unescape(string, NumberStringBuilder, int, ISymbolProvider)"/>,
         /// but only calculates the code point count.  More efficient than
         /// <see cref="Unescape(string, NumberStringBuilder, int, ISymbolProvider)"/>
@@ -699,46 +699,6 @@ namespace ICU4N.Numerics
         /// <returns>The number of code points in the unescaped string.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="affixPattern"/> or <paramref name="provider"/> is <c>null</c>.</exception>
         public static int UnescapedCodePointCount(string affixPattern, ISymbolProvider provider)
-        {
-            // ICU4N: Added guard clause
-            // Note that HasNext() checks the affixPattern for null.
-            if (provider is null)
-                throw new ArgumentNullException(nameof(provider));
-
-            int length = 0;
-            long tag = 0L;
-            while (HasNext(tag, affixPattern))
-            {
-                tag = NextToken(tag, affixPattern);
-                int typeOrCp = GetTypeOrCp(tag);
-                if (typeOrCp == (int)Type.CurrencyOverflow)
-                {
-                    length += 1;
-                }
-                else if (typeOrCp < 0)
-                {
-                    string symbol = provider.GetSymbol((Type)typeOrCp);
-                    length += Character.CodePointCount(symbol, 0, symbol.Length);
-                }
-                else
-                {
-                    length += 1;
-                }
-            }
-            return length;
-        }
-
-        /// <summary>
-        /// Same as <see cref="Unescape(ICharSequence, NumberStringBuilder, int, ISymbolProvider)"/>,
-        /// but only calculates the code point count.  More efficient than
-        /// <see cref="Unescape(ICharSequence, NumberStringBuilder, int, ISymbolProvider)"/>
-        /// if you only need the length but not the string itself.
-        /// </summary>
-        /// <param name="affixPattern">The original string to be unescaped.</param>
-        /// <param name="provider">An object to generate locale symbols.</param>
-        /// <returns>The number of code points in the unescaped string.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="affixPattern"/> or <paramref name="provider"/> is <c>null</c>.</exception>
-        public static int UnescapedCodePointCount(ICharSequence affixPattern, ISymbolProvider provider)
         {
             // ICU4N: Added guard clause
             // Note that HasNext() checks the affixPattern for null.
@@ -804,28 +764,43 @@ namespace ICU4N.Numerics
         }
 
         /// <summary>
-        /// Checks whether the given affix pattern contains at least one token of the given type, which is
-        /// one of the <see cref="Type"/> enum values.
+        /// Same as <see cref="Unescape(ICharSequence, NumberStringBuilder, int, ISymbolProvider)"/>,
+        /// but only calculates the code point count.  More efficient than
+        /// <see cref="Unescape(ICharSequence, NumberStringBuilder, int, ISymbolProvider)"/>
+        /// if you only need the length but not the string itself.
         /// </summary>
-        /// <param name="affixPattern">The affix pattern to check.</param>
-        /// <param name="type">The token type.</param>
-        /// <returns><c>true</c> if the affix pattern contains the given token type; <c>false</c> otherwise.</returns>
-        public static bool ContainsType(string affixPattern, Type type)
+        /// <param name="affixPattern">The original string to be unescaped.</param>
+        /// <param name="provider">An object to generate locale symbols.</param>
+        /// <returns>The number of code points in the unescaped string.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="affixPattern"/> or <paramref name="provider"/> is <c>null</c>.</exception>
+        public static int UnescapedCodePointCount(ICharSequence affixPattern, ISymbolProvider provider)
         {
-            if (affixPattern is null || affixPattern.Length == 0)
-            {
-                return false;
-            }
+            // ICU4N: Added guard clause
+            // Note that HasNext() checks the affixPattern for null.
+            if (provider is null)
+                throw new ArgumentNullException(nameof(provider));
+
+            int length = 0;
             long tag = 0L;
             while (HasNext(tag, affixPattern))
             {
                 tag = NextToken(tag, affixPattern);
-                if (GetTypeOrCp(tag) == (int)type)
+                int typeOrCp = GetTypeOrCp(tag);
+                if (typeOrCp == (int)Type.CurrencyOverflow)
                 {
-                    return true;
+                    length += 1;
+                }
+                else if (typeOrCp < 0)
+                {
+                    string symbol = provider.GetSymbol((Type)typeOrCp);
+                    length += Character.CodePointCount(symbol, 0, symbol.Length);
+                }
+                else
+                {
+                    length += 1;
                 }
             }
-            return false;
+            return length;
         }
 
         /// <summary>
@@ -835,7 +810,7 @@ namespace ICU4N.Numerics
         /// <param name="affixPattern">The affix pattern to check.</param>
         /// <param name="type">The token type.</param>
         /// <returns><c>true</c> if the affix pattern contains the given token type; <c>false</c> otherwise.</returns>
-        public static bool ContainsType(ICharSequence affixPattern, Type type)
+        public static bool ContainsType(string affixPattern, Type type)
         {
             if (affixPattern is null || affixPattern.Length == 0)
             {
@@ -879,6 +854,31 @@ namespace ICU4N.Numerics
         }
 
         /// <summary>
+        /// Checks whether the given affix pattern contains at least one token of the given type, which is
+        /// one of the <see cref="Type"/> enum values.
+        /// </summary>
+        /// <param name="affixPattern">The affix pattern to check.</param>
+        /// <param name="type">The token type.</param>
+        /// <returns><c>true</c> if the affix pattern contains the given token type; <c>false</c> otherwise.</returns>
+        public static bool ContainsType(ICharSequence affixPattern, Type type)
+        {
+            if (affixPattern is null || affixPattern.Length == 0)
+            {
+                return false;
+            }
+            long tag = 0L;
+            while (HasNext(tag, affixPattern))
+            {
+                tag = NextToken(tag, affixPattern);
+                if (GetTypeOrCp(tag) == (int)type)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Checks whether the specified affix pattern has any unquoted currency symbols ("¤").
         /// </summary>
         /// <param name="affixPattern">The string to check for currency symbols.</param>
@@ -904,9 +904,9 @@ namespace ICU4N.Numerics
         /// </summary>
         /// <param name="affixPattern">The string to check for currency symbols.</param>
         /// <returns><c>true</c> if the literal has at least one unquoted currency symbol; <c>false</c> otherwise.</returns>
-        public static bool HasCurrencySymbols(ICharSequence affixPattern)
+        public static bool HasCurrencySymbols(ReadOnlySpan<char> affixPattern)
         {
-            if (affixPattern is null || affixPattern.Length == 0) return false;
+            if (affixPattern.Length == 0) return false;
             long tag = 0L;
             while (HasNext(tag, affixPattern))
             {
@@ -925,9 +925,9 @@ namespace ICU4N.Numerics
         /// </summary>
         /// <param name="affixPattern">The string to check for currency symbols.</param>
         /// <returns><c>true</c> if the literal has at least one unquoted currency symbol; <c>false</c> otherwise.</returns>
-        public static bool HasCurrencySymbols(ReadOnlySpan<char> affixPattern)
+        public static bool HasCurrencySymbols(ICharSequence affixPattern)
         {
-            if (affixPattern.Length == 0) return false;
+            if (affixPattern is null || affixPattern.Length == 0) return false;
             long tag = 0L;
             while (HasNext(tag, affixPattern))
             {
@@ -972,9 +972,9 @@ namespace ICU4N.Numerics
         /// <param name="type">The token type.</param>
         /// <param name="replacementChar">The char to substitute in place of chars of the given token type.</param>
         /// <returns>A string containing the new affix pattern.</returns>
-        public static string ReplaceType(ICharSequence affixPattern, Type type, char replacementChar)
+        public static string ReplaceType(ReadOnlySpan<char> affixPattern, Type type, char replacementChar)
         {
-            if (affixPattern is null || affixPattern.Length == 0) return string.Empty;
+            if (affixPattern.Length == 0) return string.Empty;
             char[] chars = affixPattern.ToString().ToCharArray();
             long tag = 0L;
             while (HasNext(tag, affixPattern))
@@ -996,9 +996,9 @@ namespace ICU4N.Numerics
         /// <param name="type">The token type.</param>
         /// <param name="replacementChar">The char to substitute in place of chars of the given token type.</param>
         /// <returns>A string containing the new affix pattern.</returns>
-        public static string ReplaceType(ReadOnlySpan<char> affixPattern, Type type, char replacementChar)
+        public static string ReplaceType(ICharSequence affixPattern, Type type, char replacementChar)
         {
-            if (affixPattern.Length == 0) return string.Empty;
+            if (affixPattern is null || affixPattern.Length == 0) return string.Empty;
             char[] chars = affixPattern.ToString().ToCharArray();
             long tag = 0L;
             while (HasNext(tag, affixPattern))
@@ -1025,195 +1025,6 @@ namespace ICU4N.Numerics
         /// <exception cref="ArgumentNullException"><paramref name="patternString"/> is <c>null</c>.</exception>
         /// <exception cref="FormatException">A non-terminated quote symbol was included in <paramref name="patternString"/>.</exception>
         public static long NextToken(long tag, string patternString)
-        {
-            // ICU4N: Added guard clause
-            if (patternString is null)
-                throw new ArgumentNullException(nameof(patternString));
-
-            int offset = GetOffset(tag);
-            int state = GetState(tag);
-            for (; offset < patternString.Length;)
-            {
-                int cp = Character.CodePointAt(patternString, offset);
-                int count = Character.CharCount(cp);
-
-                switch (state)
-                {
-                    case STATE_BASE:
-                        switch (cp)
-                        {
-                            case '\'':
-                                state = STATE_FIRST_QUOTE;
-                                offset += count;
-                                // continue to the next code point
-                                break;
-                            case '-':
-                                return MakeTag(offset + count, (int)Type.MinusSign, STATE_BASE, 0);
-                            case '+':
-                                return MakeTag(offset + count, (int)Type.PlusSign, STATE_BASE, 0);
-                            case '%':
-                                return MakeTag(offset + count, (int)Type.Percent, STATE_BASE, 0);
-                            case '‰':
-                                return MakeTag(offset + count, (int)Type.PerMille, STATE_BASE, 0);
-                            case '¤':
-                                state = STATE_FIRST_CURR;
-                                offset += count;
-                                // continue to the next code point
-                                break;
-                            default:
-                                return MakeTag(offset + count, TYPE_CODEPOINT, STATE_BASE, cp);
-                        }
-                        break;
-                    case STATE_FIRST_QUOTE:
-                        if (cp == '\'')
-                        {
-                            return MakeTag(offset + count, TYPE_CODEPOINT, STATE_BASE, cp);
-                        }
-                        else
-                        {
-                            return MakeTag(offset + count, TYPE_CODEPOINT, STATE_INSIDE_QUOTE, cp);
-                        }
-                    case STATE_INSIDE_QUOTE:
-                        if (cp == '\'')
-                        {
-                            state = STATE_AFTER_QUOTE;
-                            offset += count;
-                            // continue to the next code point
-                            break;
-                        }
-                        else
-                        {
-                            return MakeTag(offset + count, TYPE_CODEPOINT, STATE_INSIDE_QUOTE, cp);
-                        }
-                    case STATE_AFTER_QUOTE:
-                        if (cp == '\'')
-                        {
-                            return MakeTag(offset + count, TYPE_CODEPOINT, STATE_INSIDE_QUOTE, cp);
-                        }
-                        else
-                        {
-                            state = STATE_BASE;
-                            // re-evaluate this code point
-                            break;
-                        }
-                    case STATE_FIRST_CURR:
-                        if (cp == '¤')
-                        {
-                            state = STATE_SECOND_CURR;
-                            offset += count;
-                            // continue to the next code point
-                            break;
-                        }
-                        else
-                        {
-                            return MakeTag(offset, (int)Type.CurrencySymbol, STATE_BASE, 0);
-                        }
-                    case STATE_SECOND_CURR:
-                        if (cp == '¤')
-                        {
-                            state = STATE_THIRD_CURR;
-                            offset += count;
-                            // continue to the next code point
-                            break;
-                        }
-                        else
-                        {
-                            return MakeTag(offset, (int)Type.CurrencyDouble, STATE_BASE, 0);
-                        }
-                    case STATE_THIRD_CURR:
-                        if (cp == '¤')
-                        {
-                            state = STATE_FOURTH_CURR;
-                            offset += count;
-                            // continue to the next code point
-                            break;
-                        }
-                        else
-                        {
-                            return MakeTag(offset, (int)Type.CurrencyTriple, STATE_BASE, 0);
-                        }
-                    case STATE_FOURTH_CURR:
-                        if (cp == '¤')
-                        {
-                            state = STATE_FIFTH_CURR;
-                            offset += count;
-                            // continue to the next code point
-                            break;
-                        }
-                        else
-                        {
-                            return MakeTag(offset, (int)Type.CurrencyQuad, STATE_BASE, 0);
-                        }
-                    case STATE_FIFTH_CURR:
-                        if (cp == '¤')
-                        {
-                            state = STATE_OVERFLOW_CURR;
-                            offset += count;
-                            // continue to the next code point
-                            break;
-                        }
-                        else
-                        {
-                            return MakeTag(offset, (int)Type.CurrencyQuint, STATE_BASE, 0);
-                        }
-                    case STATE_OVERFLOW_CURR:
-                        if (cp == '¤')
-                        {
-                            offset += count;
-                            // continue to the next code point and loop back to this state
-                            break;
-                        }
-                        else
-                        {
-                            return MakeTag(offset, (int)Type.CurrencyOverflow, STATE_BASE, 0);
-                        }
-                    default:
-                        throw new InvalidOperationException(); //throw new AssertionError(); // Should never get here
-                }
-            }
-            // End of string
-            switch (state)
-            {
-                case STATE_BASE:
-                    // No more tokens in string.
-                    return -1L;
-                case STATE_FIRST_QUOTE:
-                case STATE_INSIDE_QUOTE:
-                    // For consistent behavior with the JDK and ICU 58, throw an exception here.
-                    throw new FormatException(
-                        "Unterminated quote in pattern affix: \"" + patternString.ToString() + "\""); // ICU4N: Changed from ArgumentException to FormatException
-                case STATE_AFTER_QUOTE:
-                    // No more tokens in string.
-                    return -1L;
-                case STATE_FIRST_CURR:
-                    return MakeTag(offset, (int)Type.CurrencySymbol, STATE_BASE, 0);
-                case STATE_SECOND_CURR:
-                    return MakeTag(offset, (int)Type.CurrencyDouble, STATE_BASE, 0);
-                case STATE_THIRD_CURR:
-                    return MakeTag(offset, (int)Type.CurrencyTriple, STATE_BASE, 0);
-                case STATE_FOURTH_CURR:
-                    return MakeTag(offset, (int)Type.CurrencyQuad, STATE_BASE, 0);
-                case STATE_FIFTH_CURR:
-                    return MakeTag(offset, (int)Type.CurrencyQuint, STATE_BASE, 0);
-                case STATE_OVERFLOW_CURR:
-                    return MakeTag(offset, (int)Type.CurrencyOverflow, STATE_BASE, 0);
-                default:
-                    throw new InvalidOperationException(); //throw new AssertionError(); // Should never get here
-            }
-        }
-
-        /// <summary>
-        /// Returns the next token from the affix pattern.
-        /// </summary>
-        /// <param name="tag">A bitmask used for keeping track of state from token to token. The initial value
-        /// should be 0L.</param>
-        /// <param name="patternString">The affix pattern.</param>
-        /// <returns>The bitmask tag to pass to the next call of this method to retrieve the following token
-        /// (never negative), or -1 if there were no more tokens in the affix pattern.</returns>
-        /// <seealso cref="HasNext(long, ICharSequence)"/>
-        /// <exception cref="ArgumentNullException"><paramref name="patternString"/> is <c>null</c>.</exception>
-        /// <exception cref="FormatException">A non-terminated quote symbol was included in <paramref name="patternString"/>.</exception>
-        public static long NextToken(long tag, ICharSequence patternString)
         {
             // ICU4N: Added guard clause
             if (patternString is null)
@@ -1577,6 +1388,195 @@ namespace ICU4N.Numerics
         }
 
         /// <summary>
+        /// Returns the next token from the affix pattern.
+        /// </summary>
+        /// <param name="tag">A bitmask used for keeping track of state from token to token. The initial value
+        /// should be 0L.</param>
+        /// <param name="patternString">The affix pattern.</param>
+        /// <returns>The bitmask tag to pass to the next call of this method to retrieve the following token
+        /// (never negative), or -1 if there were no more tokens in the affix pattern.</returns>
+        /// <seealso cref="HasNext(long, ICharSequence)"/>
+        /// <exception cref="ArgumentNullException"><paramref name="patternString"/> is <c>null</c>.</exception>
+        /// <exception cref="FormatException">A non-terminated quote symbol was included in <paramref name="patternString"/>.</exception>
+        public static long NextToken(long tag, ICharSequence patternString)
+        {
+            // ICU4N: Added guard clause
+            if (patternString is null)
+                throw new ArgumentNullException(nameof(patternString));
+
+            int offset = GetOffset(tag);
+            int state = GetState(tag);
+            for (; offset < patternString.Length;)
+            {
+                int cp = Character.CodePointAt(patternString, offset);
+                int count = Character.CharCount(cp);
+
+                switch (state)
+                {
+                    case STATE_BASE:
+                        switch (cp)
+                        {
+                            case '\'':
+                                state = STATE_FIRST_QUOTE;
+                                offset += count;
+                                // continue to the next code point
+                                break;
+                            case '-':
+                                return MakeTag(offset + count, (int)Type.MinusSign, STATE_BASE, 0);
+                            case '+':
+                                return MakeTag(offset + count, (int)Type.PlusSign, STATE_BASE, 0);
+                            case '%':
+                                return MakeTag(offset + count, (int)Type.Percent, STATE_BASE, 0);
+                            case '‰':
+                                return MakeTag(offset + count, (int)Type.PerMille, STATE_BASE, 0);
+                            case '¤':
+                                state = STATE_FIRST_CURR;
+                                offset += count;
+                                // continue to the next code point
+                                break;
+                            default:
+                                return MakeTag(offset + count, TYPE_CODEPOINT, STATE_BASE, cp);
+                        }
+                        break;
+                    case STATE_FIRST_QUOTE:
+                        if (cp == '\'')
+                        {
+                            return MakeTag(offset + count, TYPE_CODEPOINT, STATE_BASE, cp);
+                        }
+                        else
+                        {
+                            return MakeTag(offset + count, TYPE_CODEPOINT, STATE_INSIDE_QUOTE, cp);
+                        }
+                    case STATE_INSIDE_QUOTE:
+                        if (cp == '\'')
+                        {
+                            state = STATE_AFTER_QUOTE;
+                            offset += count;
+                            // continue to the next code point
+                            break;
+                        }
+                        else
+                        {
+                            return MakeTag(offset + count, TYPE_CODEPOINT, STATE_INSIDE_QUOTE, cp);
+                        }
+                    case STATE_AFTER_QUOTE:
+                        if (cp == '\'')
+                        {
+                            return MakeTag(offset + count, TYPE_CODEPOINT, STATE_INSIDE_QUOTE, cp);
+                        }
+                        else
+                        {
+                            state = STATE_BASE;
+                            // re-evaluate this code point
+                            break;
+                        }
+                    case STATE_FIRST_CURR:
+                        if (cp == '¤')
+                        {
+                            state = STATE_SECOND_CURR;
+                            offset += count;
+                            // continue to the next code point
+                            break;
+                        }
+                        else
+                        {
+                            return MakeTag(offset, (int)Type.CurrencySymbol, STATE_BASE, 0);
+                        }
+                    case STATE_SECOND_CURR:
+                        if (cp == '¤')
+                        {
+                            state = STATE_THIRD_CURR;
+                            offset += count;
+                            // continue to the next code point
+                            break;
+                        }
+                        else
+                        {
+                            return MakeTag(offset, (int)Type.CurrencyDouble, STATE_BASE, 0);
+                        }
+                    case STATE_THIRD_CURR:
+                        if (cp == '¤')
+                        {
+                            state = STATE_FOURTH_CURR;
+                            offset += count;
+                            // continue to the next code point
+                            break;
+                        }
+                        else
+                        {
+                            return MakeTag(offset, (int)Type.CurrencyTriple, STATE_BASE, 0);
+                        }
+                    case STATE_FOURTH_CURR:
+                        if (cp == '¤')
+                        {
+                            state = STATE_FIFTH_CURR;
+                            offset += count;
+                            // continue to the next code point
+                            break;
+                        }
+                        else
+                        {
+                            return MakeTag(offset, (int)Type.CurrencyQuad, STATE_BASE, 0);
+                        }
+                    case STATE_FIFTH_CURR:
+                        if (cp == '¤')
+                        {
+                            state = STATE_OVERFLOW_CURR;
+                            offset += count;
+                            // continue to the next code point
+                            break;
+                        }
+                        else
+                        {
+                            return MakeTag(offset, (int)Type.CurrencyQuint, STATE_BASE, 0);
+                        }
+                    case STATE_OVERFLOW_CURR:
+                        if (cp == '¤')
+                        {
+                            offset += count;
+                            // continue to the next code point and loop back to this state
+                            break;
+                        }
+                        else
+                        {
+                            return MakeTag(offset, (int)Type.CurrencyOverflow, STATE_BASE, 0);
+                        }
+                    default:
+                        throw new InvalidOperationException(); //throw new AssertionError(); // Should never get here
+                }
+            }
+            // End of string
+            switch (state)
+            {
+                case STATE_BASE:
+                    // No more tokens in string.
+                    return -1L;
+                case STATE_FIRST_QUOTE:
+                case STATE_INSIDE_QUOTE:
+                    // For consistent behavior with the JDK and ICU 58, throw an exception here.
+                    throw new FormatException(
+                        "Unterminated quote in pattern affix: \"" + patternString.ToString() + "\""); // ICU4N: Changed from ArgumentException to FormatException
+                case STATE_AFTER_QUOTE:
+                    // No more tokens in string.
+                    return -1L;
+                case STATE_FIRST_CURR:
+                    return MakeTag(offset, (int)Type.CurrencySymbol, STATE_BASE, 0);
+                case STATE_SECOND_CURR:
+                    return MakeTag(offset, (int)Type.CurrencyDouble, STATE_BASE, 0);
+                case STATE_THIRD_CURR:
+                    return MakeTag(offset, (int)Type.CurrencyTriple, STATE_BASE, 0);
+                case STATE_FOURTH_CURR:
+                    return MakeTag(offset, (int)Type.CurrencyQuad, STATE_BASE, 0);
+                case STATE_FIFTH_CURR:
+                    return MakeTag(offset, (int)Type.CurrencyQuint, STATE_BASE, 0);
+                case STATE_OVERFLOW_CURR:
+                    return MakeTag(offset, (int)Type.CurrencyOverflow, STATE_BASE, 0);
+                default:
+                    throw new InvalidOperationException(); //throw new AssertionError(); // Should never get here
+            }
+        }
+
+        /// <summary>
         /// Returns whether the affix pattern string has any more tokens to be retrieved from a call to
         /// <see cref="NextToken(long, string)"/>.
         /// </summary>
@@ -1586,43 +1586,6 @@ namespace ICU4N.Numerics
         /// <exception cref="ArgumentNullException"><paramref name="affixPattern"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="tag"/> is less than 0.</exception>
         public static bool HasNext(long tag, string affixPattern)
-        {
-            // ICU4N: Added guard clauses.
-            if (affixPattern is null)
-                throw new ArgumentNullException(nameof(affixPattern));
-            if (tag < 0)
-                throw new ArgumentOutOfRangeException(nameof(tag)); // ICU4N TODO: Error message
-
-            //Debug.Assert(tag >= 0);
-            int state = GetState(tag);
-            int offset = GetOffset(tag);
-            // Special case: the last character in string is an end quote.
-            if (state == STATE_INSIDE_QUOTE
-                && offset == affixPattern.Length - 1
-                && affixPattern[offset] == '\'')
-            {
-                return false;
-            }
-            else if (state != STATE_BASE)
-            {
-                return true;
-            }
-            else
-            {
-                return offset < affixPattern.Length;
-            }
-        }
-
-        /// <summary>
-        /// Returns whether the affix pattern string has any more tokens to be retrieved from a call to
-        /// <see cref="NextToken(long, ICharSequence)"/>.
-        /// </summary>
-        /// <param name="tag">The bitmask tag of the previous token, as returned by <see cref="NextToken(long, ICharSequence)"/>.</param>
-        /// <param name="affixPattern">The affix pattern.</param>
-        /// <returns><c>true</c> if there are more tokens to consume; <c>false</c> otherwise.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="affixPattern"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="tag"/> is less than 0.</exception>
-        public static bool HasNext(long tag, ICharSequence affixPattern)
         {
             // ICU4N: Added guard clauses.
             if (affixPattern is null)
@@ -1662,6 +1625,43 @@ namespace ICU4N.Numerics
         public static bool HasNext(long tag, ReadOnlySpan<char> affixPattern)
         {
             // ICU4N: Added guard clauses.
+            if (tag < 0)
+                throw new ArgumentOutOfRangeException(nameof(tag)); // ICU4N TODO: Error message
+
+            //Debug.Assert(tag >= 0);
+            int state = GetState(tag);
+            int offset = GetOffset(tag);
+            // Special case: the last character in string is an end quote.
+            if (state == STATE_INSIDE_QUOTE
+                && offset == affixPattern.Length - 1
+                && affixPattern[offset] == '\'')
+            {
+                return false;
+            }
+            else if (state != STATE_BASE)
+            {
+                return true;
+            }
+            else
+            {
+                return offset < affixPattern.Length;
+            }
+        }
+
+        /// <summary>
+        /// Returns whether the affix pattern string has any more tokens to be retrieved from a call to
+        /// <see cref="NextToken(long, ICharSequence)"/>.
+        /// </summary>
+        /// <param name="tag">The bitmask tag of the previous token, as returned by <see cref="NextToken(long, ICharSequence)"/>.</param>
+        /// <param name="affixPattern">The affix pattern.</param>
+        /// <returns><c>true</c> if there are more tokens to consume; <c>false</c> otherwise.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="affixPattern"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="tag"/> is less than 0.</exception>
+        public static bool HasNext(long tag, ICharSequence affixPattern)
+        {
+            // ICU4N: Added guard clauses.
+            if (affixPattern is null)
+                throw new ArgumentNullException(nameof(affixPattern));
             if (tag < 0)
                 throw new ArgumentOutOfRangeException(nameof(tag)); // ICU4N TODO: Error message
 

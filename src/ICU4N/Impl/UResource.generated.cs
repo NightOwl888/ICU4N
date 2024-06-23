@@ -28,26 +28,6 @@ namespace ICU4N.Impl
         }
 
 
-        private bool RegionMatches(int start, ICharSequence cs, int n)
-        {
-            //if (cs is StringBuilderCharSequence stringBuilder)
-            //{
-            //    if (!stringBuilder.HasValue) return false;
-            //    // ICU4N: Indexing StringBuilder is really slow,
-            //    // so we cascade the call.
-            //    return RegionMatches(start, stringBuilder.Value, n);
-            //}
-            for (int i = 0; i < n; ++i)
-            {
-                if (bytes[offset + start + i] != cs[i])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-
         private bool RegionMatches(int start, ReadOnlySpan<char> cs, int n)
         {
             for (int i = 0; i < n; ++i)
@@ -66,20 +46,6 @@ namespace ICU4N.Impl
             if (cs == null)
             {
                 return false;
-            }
-            return (cs.Length == length && RegionMatches(0, cs, length));
-        }
-
-
-        public bool ContentEquals(ICharSequence cs)
-        {
-            if (cs == null)
-            {
-                return false;
-            }
-            if (this == cs)
-            {
-                return true;
             }
             return (cs.Length == length && RegionMatches(0, cs, length));
         }
@@ -106,17 +72,6 @@ namespace ICU4N.Impl
         }
 
 
-        public bool StartsWith(ICharSequence cs)
-        {
-            // ICU4N: Added guard clause
-            if (cs is null)
-                throw new ArgumentNullException(nameof(cs));
-
-            int csLength = cs.Length;
-            return csLength <= length && RegionMatches(0, cs, csLength);
-        }
-
-
         public bool StartsWith(ReadOnlySpan<char> cs)
         {
             int csLength = cs.Length;
@@ -125,17 +80,6 @@ namespace ICU4N.Impl
 
 
         public bool EndsWith(string cs)
-        {
-            // ICU4N: Added guard clause
-            if (cs is null)
-                throw new ArgumentNullException(nameof(cs));
-
-            int csLength = cs.Length;
-            return csLength <= length && RegionMatches(length - csLength, cs, csLength);
-        }
-
-
-        public bool EndsWith(ICharSequence cs)
         {
             // ICU4N: Added guard clause
             if (cs is null)
@@ -168,19 +112,6 @@ namespace ICU4N.Impl
 
         /// <returns>true if the substring of this key starting from the offset
         /// contains the same characters as the other sequence.</returns>
-        public bool RegionMatches(int start, ICharSequence cs)
-        {
-            // ICU4N: Added guard clause
-            if (cs is null)
-                throw new ArgumentNullException(nameof(cs));
-
-            int csLength = cs.Length;
-            return csLength == (length - start) && RegionMatches(start, cs, csLength);
-        }
-
-
-        /// <returns>true if the substring of this key starting from the offset
-        /// contains the same characters as the other sequence.</returns>
         public bool RegionMatches(int start, ReadOnlySpan<char> cs)
         {
             int csLength = cs.Length;
@@ -191,29 +122,6 @@ namespace ICU4N.Impl
         public int CompareTo(string cs)
         {
             if (cs is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
-
-            int csLength = cs.Length;
-            int minLength = length <= csLength ? length : csLength;
-            for (int i = 0; i < minLength; ++i)
-            {
-                int diff = this[i] - cs[i];
-                if (diff != 0)
-                {
-                    return diff;
-                }
-            }
-            return length - csLength;
-        }
-
-
-        public int CompareTo(ICharSequence cs)
-        {
-            if (cs is null) return 1; // ICU4N: Using 1 if other is null as specified here: https://stackoverflow.com/a/4852537
-            if (!cs.HasValue) return 1;
-            //if (cs is StringBuilderCharSequence stringBuilder)
-            //{
-            //    return CompareTo(stringBuilder.Value);
-            //}
 
             int csLength = cs.Length;
             int minLength = length <= csLength ? length : csLength;

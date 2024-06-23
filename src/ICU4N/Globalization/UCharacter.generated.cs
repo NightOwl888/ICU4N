@@ -63,36 +63,6 @@ namespace ICU4N
         /// <returns>a <see cref="UProperty"/> enum.</returns>
         /// <exception cref="ArgumentException">thrown if <paramref name="propertyAlias"/> is not recognized.</exception>
         /// <seealso cref="UProperty"/>
-        /// <seealso cref="TryGetPropertyEnum(ICharSequence, out int)"/>
-        /// <stable>ICU 2.4</stable>
-        public static int GetPropertyEnum(ICharSequence propertyAlias)
-        {
-            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
-#pragma warning disable 612, 618
-            if (propEnum == (int)UPropertyConstants.Undefined)
-#pragma warning restore 612, 618
-            {
-                throw new IcuArgumentException("Invalid name: " + propertyAlias.ToString());
-            }
-            return propEnum;
-        }
-
-        /// <summary>
-        /// Return the <see cref="UProperty"/> selector for a given property name, as
-        /// specified in the Unicode database file PropertyAliases.txt.
-        /// Short, long, and any other variants are recognized.
-        /// </summary>
-        /// <remarks>
-        /// In addition, this function maps the synthetic names "gcm" /
-        /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
-        /// PropertyAliases.txt.
-        /// </remarks>
-        /// <param name="propertyAlias">The property name to be matched.  The name
-        /// is compared using "loose matching" as described in PropertyAliases.txt.</param>
-        /// <returns>a <see cref="UProperty"/> enum.</returns>
-        /// <exception cref="ArgumentException">thrown if <paramref name="propertyAlias"/> is not recognized.</exception>
-        /// <seealso cref="UProperty"/>
         /// <seealso cref="TryGetPropertyEnum(ReadOnlySpan{char}, out int)"/>
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyEnum(ReadOnlySpan<char> propertyAlias)
@@ -128,40 +98,6 @@ namespace ICU4N
         /// <seealso cref="GetPropertyEnum(string)"/>
         /// <stable>ICU4N 60.1.0</stable>
         public static bool TryGetPropertyEnum(string propertyAlias, out int result) // ICU4N TODO: Tests
-        {
-            result = 0;
-            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
-#pragma warning disable 612, 618
-            if (propEnum == (int)UPropertyConstants.Undefined)
-#pragma warning restore 612, 618
-            {
-                return false;
-            }
-            result = propEnum;
-            return true;
-        }
-
-        /// <summary>
-        /// Get the <see cref="UProperty"/> selector for a given property name, as
-        /// specified in the Unicode database file PropertyAliases.txt.
-        /// Short, long, and any other variants are recognized.
-        /// </summary>
-        /// <remarks>
-        /// In addition, this function maps the synthetic names "gcm" /
-        /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
-        /// PropertyAliases.txt.
-        /// </remarks>
-        /// <param name="propertyAlias">The property name to be matched.  The name
-        /// is compared using "loose matching" as described in PropertyAliases.txt.</param>
-        /// <param name="result">A <see cref="UProperty"/> enum.</param>
-        /// <returns>
-        /// true if <paramref name="propertyAlias"/> is valid, othewise false.
-        /// </returns>
-        /// <seealso cref="UProperty"/>
-        /// <seealso cref="GetPropertyEnum(ICharSequence)"/>
-        /// <stable>ICU4N 60.1.0</stable>
-        public static bool TryGetPropertyEnum(ICharSequence propertyAlias, out int result) // ICU4N TODO: Tests
         {
             result = 0;
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
@@ -244,52 +180,6 @@ namespace ICU4N
         /// <seealso cref="TryGetPropertyValueEnum(UProperty, string, out int)"/>
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyValueEnum(UProperty property, string valueAlias)
-        {
-            int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
-#pragma warning disable 612, 618
-            if (propEnum == (int)UPropertyConstants.Undefined)
-#pragma warning restore 612, 618
-            {
-                throw new IcuArgumentException("Invalid name: " + valueAlias.ToString());
-            }
-            return propEnum;
-        }
-
-        /// <summary>
-        /// Return the property value integer for a given value name, as
-        /// specified in the Unicode database file PropertyValueAliases.txt.
-        /// Short, long, and any other variants are recognized.
-        /// </summary>
-        /// <remarks>
-        /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
-        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
-        /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
-        /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
-        /// </remarks>
-        /// <param name="property">UProperty selector constant.
-        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
-        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
-        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
-        /// Only these properties can be enumerated.
-        /// </param>
-        /// <param name="valueAlias">the value name to be matched.  The name is
-        /// compared using "loose matching" as described in
-        /// PropertyValueAliases.txt.
-        /// </param>
-        /// <returns>
-        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
-        /// values are mask values produced by left-shifting 1 by
-        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
-        /// [:L:] to be represented.
-        /// </returns>
-        /// <exception cref="ArgumentException">if <paramref name="property"/> is not a valid <see cref="UProperty"/>
-        /// selector or <paramref name="valueAlias"/> is not a value of this <paramref name="property"/>
-        /// </exception>
-        /// <seealso cref="UProperty"/>
-        /// <seealso cref="TryGetPropertyValueEnum(UProperty, ICharSequence, out int)"/>
-        /// <stable>ICU 2.4</stable>
-        public static int GetPropertyValueEnum(UProperty property, ICharSequence valueAlias)
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
 #pragma warning disable 612, 618
@@ -422,47 +312,6 @@ namespace ICU4N
         /// </returns>
         /// <see cref="UProperty"/>
         /// <stable>ICU 60.1</stable>
-        /// <seealso cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>
-        // ICU4N specific
-        public static bool TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias, out int result) // ICU4N TODO: Tests
-        {
-            return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
-        }
-
-        /// <summary>
-        /// Gets the property value integer for a given value name, as
-        /// specified in the Unicode database file PropertyValueAliases.txt.
-        /// Short, long, and any other variants are recognized.
-        /// </summary>
-        /// <remarks>
-        /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
-        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
-        /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
-        /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
-        /// </remarks>
-        /// <param name="property">UProperty selector constant.
-        /// <see cref="UPropertyConstants.Int_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Int_Limit"/> or
-        /// <see cref="UPropertyConstants.Binary_Start"/> &lt;= property &lt; <see cref="UPropertyConstants.Binary_Limit"/> or
-        /// <see cref="UPropertyConstants.Mask_Start"/> &lt; = property &lt; <see cref="UPropertyConstants.Mask_Limit"/>.
-        /// Only these properties can be enumerated.
-        /// </param>
-        /// <param name="valueAlias">the value name to be matched.  The name is
-        /// compared using "loose matching" as described in
-        /// PropertyValueAliases.txt.
-        /// </param>
-        /// <param name="result">
-        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
-        /// values are mask values produced by left-shifting 1 by
-        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
-        /// [:L:] to be represented.
-        /// </param>
-        /// <returns>
-        /// true if <paramref name="property"/> is a valid <see cref="UProperty"/>
-        /// selector and <paramref name="valueAlias"/> is a value of this <paramref name="property"/>; othewise false;
-        /// </returns>
-        /// <see cref="UProperty"/>
-        /// <stable>ICU 60.1</stable>
         /// <seealso cref="GetPropertyValueEnum(UProperty, ReadOnlySpan{char})"/>
         // ICU4N specific
         public static bool TryGetPropertyValueEnum(UProperty property, ReadOnlySpan<char> valueAlias, out int result) // ICU4N TODO: Tests
@@ -480,36 +329,6 @@ namespace ICU4N
         /// <returns>The code point at the index.</returns>
         /// <stable>ICU 3.0</stable>
         public static int CodePointAt(string seq, int index)
-        {
-            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
-            if (seq is null)
-                throw new ArgumentNullException(nameof(seq));
-
-            char c1 = seq[index++];
-            if (IsHighSurrogate(c1))
-            {
-                if (index < seq.Length)
-                {
-                    char c2 = seq[index];
-                    if (IsLowSurrogate(c2))
-                    {
-                        return ToCodePoint(c1, c2);
-                    }
-                }
-            }
-            return c1;
-        }
-
-        /// <summary>
-        /// Same as <see cref="Character.CodePointAt(ICharSequence, int)"/>.
-        /// Returns the code point at index.
-        /// This examines only the characters at index and index+1.
-        /// </summary>
-        /// <param name="seq">The characters to check.</param>
-        /// <param name="index">The index of the first or only char forming the code point.</param>
-        /// <returns>The code point at the index.</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int CodePointAt(ICharSequence seq, int index)
         {
             // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq is null)
@@ -566,36 +385,6 @@ namespace ICU4N
         /// <returns>The code point before the index.</returns>
         /// <stable>ICU 3.0</stable>
         public static int CodePointBefore(string seq, int index)
-        {
-            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
-            if (seq is null)
-                throw new ArgumentNullException(nameof(seq));
-
-            char c2 = seq[--index];
-            if (IsLowSurrogate(c2))
-            {
-                if (index > 0)
-                {
-                    char c1 = seq[--index];
-                    if (IsHighSurrogate(c1))
-                    {
-                        return ToCodePoint(c1, c2);
-                    }
-                }
-            }
-            return c2;
-        }
-
-        /// <summary>
-        /// Same as <see cref="Character.CodePointBefore(ICharSequence, int)"/>.
-        /// Return the code point before index.
-        /// This examines only the characters at index-1 and index-2.
-        /// </summary>
-        /// <param name="seq">The characters to check.</param>
-        /// <param name="index">The index after the last or only char forming the code point.</param>
-        /// <returns>The code point before the index.</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int CodePointBefore(ICharSequence seq, int index)
         {
             // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq is null)
@@ -682,46 +471,6 @@ namespace ICU4N
             return len;
         }
 
-        /// <summary>
-        /// Equivalent to the <see cref="Character.CodePointCount(ICharSequence, int, int)"/>
-        /// method, for convenience.  Counts the number of code points in the range
-        /// of text.
-        /// </summary>
-        /// <param name="text">the characters to check</param>
-        /// <param name="start">the start of the range</param>
-        /// <param name="limit">the limit of the range</param>
-        /// <returns>the number of code points in the range</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int CodePointCount(ICharSequence text, int start, int limit) // ICU4N TODO: API - Change limit to length to match .NET and J2N.Character
-        {
-            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
-            if (text is null)
-                throw new ArgumentNullException(nameof(text));
-
-            if (start < 0 || limit < start || limit > text.Length)
-            {
-                throw new IndexOutOfRangeException("start (" + start +
-                        ") or limit (" + limit +
-                        ") invalid or out of range 0, " + text.Length); // ICU4N TODO: API - Change to ArgumentOutOfRangeException
-            }
-
-            int len = limit - start;
-            while (limit > start)
-            {
-                char ch = text[--limit];
-                while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && limit > start)
-                {
-                    ch = text[--limit];
-                    if (ch >= MinHighSurrogate && ch <= MaxHighSurrogate)
-                    {
-                        --len;
-                        break;
-                    }
-                }
-            }
-            return len;
-        }
-
     // ICU4N TODO: API - Create overload of CodePointCount(ReadOnlySpan<char>), since passing start and length is superfluous
 
         /// <summary>
@@ -734,68 +483,6 @@ namespace ICU4N
         /// <returns>The adjusted index.</returns>
         /// <stable>ICU 3.0</stable>
         public static int OffsetByCodePoints(string text, int index, int codePointOffset)
-        {
-            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
-            if (text is null)
-                throw new ArgumentNullException(nameof(text));
-
-            if (index < 0 || index > text.Length)
-            {
-                throw new IndexOutOfRangeException("index ( " + index +
-                        ") out of range 0, " + text.Length);
-            }
-
-            if (codePointOffset < 0)
-            {
-                while (++codePointOffset <= 0)
-                {
-                    char ch = text[--index];
-                    while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && index > 0)
-                    {
-                        ch = text[--index];
-                        if (ch < MinHighSurrogate || ch > MaxHighSurrogate)
-                        {
-                            if (++codePointOffset > 0)
-                            {
-                                return index + 1;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                int limit = text.Length;
-                while (--codePointOffset >= 0)
-                {
-                    char ch = text[index++];
-                    while (ch >= MinHighSurrogate && ch <= MaxHighSurrogate && index < limit)
-                    {
-                        ch = text[index++];
-                        if (ch < MinLowSurrogate || ch > MaxLowSurrogate)
-                        {
-                            if (--codePointOffset < 0)
-                            {
-                                return index - 1;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return index;
-        }
-
-        /// <summary>
-        /// Equivalent to the <see cref="Character.OffsetByCodePoints(ICharSequence, int, int)"/>
-        /// method, for convenience.  Adjusts the char index by a code point offset.
-        /// </summary>
-        /// <param name="text">The characters to check.</param>
-        /// <param name="index">The index to adjust.</param>
-        /// <param name="codePointOffset">The number of code points by which to offset the index.</param>
-        /// <returns>The adjusted index.</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int OffsetByCodePoints(ICharSequence text, int index, int codePointOffset)
         {
             // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text is null)
