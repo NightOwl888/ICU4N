@@ -1738,7 +1738,7 @@ namespace ICU4N.Impl
         /// Create and cache a spanNotSet which contains
         /// all of the single code points of the original set but none of its strings.
         /// For each set string add its initial code point to the spanNotSet.
-        /// (Also add its final code point for <see cref="SpanNotBack(ICharSequence, int)"/>.)
+        /// (Also add its final code point for <see cref="SpanNotBack(string, int)"/>.)
         /// <para/>
         /// - Loop:
         ///   + Do spanLength=spanNotSet.Span(SpanCondition.Contained).
@@ -1948,7 +1948,7 @@ namespace ICU4N.Impl
         /// Create and cache a spanNotSet which contains
         /// all of the single code points of the original set but none of its strings.
         /// For each set string add its initial code point to the spanNotSet.
-        /// (Also add its final code point for <see cref="SpanNotBack(ICharSequence, int)"/>.)
+        /// (Also add its final code point for <see cref="SpanNotBack(ReadOnlySpan{char}, int)"/>.)
         /// <para/>
         /// - Loop:
         ///   + Do spanLength=spanNotSet.Span(SpanCondition.Contained).
