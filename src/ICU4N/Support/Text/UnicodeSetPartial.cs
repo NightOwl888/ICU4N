@@ -122,42 +122,6 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Add the contents of the UnicodeSet (as <see cref="StringCharSequence"/>s) into a collection.
-        /// </summary>
-        /// <param name="target">Collection to add into.</param>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual ICollection<ICharSequence> CopyTo(ICollection<ICharSequence> target)
-        {
-            if (target == null)
-                throw new ArgumentNullException(nameof(target));
-            foreach (var item in this)
-            {
-                target.Add(item.AsCharSequence());
-            }
-            return target;
-        }
-
-        /// <summary>
-        /// Add the contents of the UnicodeSet (using a factory delegate to instantiate the <see cref="ICharSequence"/> types) into a collection.
-        /// </summary>
-        /// <typeparam name="T">Collection type.</typeparam>
-        /// <param name="target">Collection to add into.</param>
-        /// <param name="charSequencFactory">A factory delegate to  instantiate the <see cref="ICharSequence"/> types.</param>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual T CopyTo<T>(T target, Func<string, ICharSequence> charSequencFactory) where T : ICollection<ICharSequence>
-        {
-            if (target == null)
-                throw new ArgumentNullException(nameof(target));
-            foreach (var item in this)
-            {
-                target.Add(charSequencFactory(item));
-            }
-            return target;
-        }
-
-        /// <summary>
         /// Complements the specified range in this set.  Any character in
         /// the range will be removed if it is in this set, or will be
         /// added if it is not in this set.  If <c><paramref name="end"/> &gt; <paramref name="start"/></c>
