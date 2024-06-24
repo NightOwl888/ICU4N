@@ -800,7 +800,7 @@ namespace ICU4N.Util
             // look for the names
             TextTrieMap<CurrencyStringInfo> currencyNameTrie = currencyTrieVec[1];
             CurrencyNameResultHandler handler = new CurrencyNameResultHandler();
-            currencyNameTrie.Find(text, pos.Index, handler);
+            currencyNameTrie.Find(text.AsSpan(pos.Index), handler);
             isoResult = handler.BestCurrencyISOCode;
             maxLength = handler.BestMatchLength;
 
@@ -808,7 +808,7 @@ namespace ICU4N.Util
             {  // not long name only
                 TextTrieMap<CurrencyStringInfo> currencySymbolTrie = currencyTrieVec[0];
                 handler = new CurrencyNameResultHandler();
-                currencySymbolTrie.Find(text, pos.Index, handler);
+                currencySymbolTrie.Find(text.AsSpan(pos.Index), handler);
                 if (handler.BestMatchLength > maxLength)
                 {
                     isoResult = handler.BestCurrencyISOCode;

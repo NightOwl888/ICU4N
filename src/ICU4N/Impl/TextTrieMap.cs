@@ -45,7 +45,49 @@ namespace ICU4N.Impl
             this.ignoreCase = ignoreCase;
         }
 
-        // ICU4N specific: Put(ICharSequence text, TValue val) moved to TextTrieMap.generated.tt
+        /// <summary>
+        /// Adds the text key and its associated value in this object.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="value">The value associated with the text.</param>
+        /// <returns></returns>
+        public virtual TextTrieMap<TValue> Put(string text, TValue value)
+        {
+            if (text is null)
+                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
+            return Put(text.AsSpan(), value);
+        }
+
+        /// <summary>
+        /// Adds the text key and its associated value in this object.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="value">The value associated with the text.</param>
+        /// <returns></returns>
+        public virtual TextTrieMap<TValue> Put(ReadOnlySpan<char> text, TValue value)
+        {
+            CharEnumerator chitr = new CharEnumerator(text, ignoreCase);
+            root.Add(chitr, value);
+            return this;
+        }
+
+        /// <summary>
+        /// Gets an enumerator of the values associated with the
+        /// longest prefix matching string key.
+        /// </summary>
+        /// <param name="text">The text to be matched with prefixes.</param>
+        /// <returns>
+        /// An enumerator of the values associated with
+        /// the longest prefix matching matching key, or <c>null</c>
+        /// if no matching entry is found.
+        /// </returns>
+        public virtual IEnumerator<TValue> Get(string text)
+        {
+            if (text is null)
+                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
+
+            return Get(text.AsSpan());
+        }
 
         /// <summary>
         /// Gets an enumerator of the objects associated with the
@@ -57,18 +99,44 @@ namespace ICU4N.Impl
         /// the longest prefix matching matching key, or <c>null</c>
         /// if no matching entry is found.
         /// </returns>
-        public virtual IEnumerator<TValue> Get(string text)
+        public virtual IEnumerator<TValue> Get(ReadOnlySpan<char> text)
         {
-            return Get(text, 0);
+            return Get(text, out _);
         }
 
-        // ICU4N specific: Get(ICharSequence text, int start) moved to TextTrieMap.generated.tt
+        // ICU4N specific: Eliminatd Get(ICharSequence text, int start, int[] matchLen) because we can slice a ReadOnlySpan<char>
 
-        // ICU4N specific: Get(ICharSequence text, int start, int[] matchLen) moved to TextTrieMap.generated.tt
+        public virtual IEnumerator<TValue> Get(string text, out int matchLength)
+        {
+            if (text is null)
+                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
 
-        // ICU4N specific: Find(ICharSequence text, IResultHandler<TValue> handler) moved to TextTrieMap.generated.tt
+            return Get(text.AsSpan(), out matchLength);
+        }
 
-        // ICU4N specific: Find(ICharSequence text, int offset, IResultHandler<TValue> handler) moved to TextTrieMap.generated.tt
+        public virtual IEnumerator<TValue> Get(ReadOnlySpan<char> text, out int matchLength)
+        {
+            LongestMatchHandler<TValue> handler = new LongestMatchHandler<TValue>();
+            Find(text, handler);
+            matchLength = handler.MatchLength;
+            return handler.Matches;
+        }
+
+        public virtual void Find(string text, IResultHandler<TValue> handler)
+        {
+            if (text is null)
+                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause.
+
+            Find(text.AsSpan(), handler);
+        }
+
+        public virtual void Find(ReadOnlySpan<char> text, IResultHandler<TValue> handler)
+        {
+            CharEnumerator chitr = new CharEnumerator(text, ignoreCase);
+            Find(root, chitr, handler);
+        }
+
+        // ICU4N specific: Eliminated Find(ICharSequence text, int offset, IResultHandler<TValue> handler) because we can slice a ReadOnlySpan<char>
 
         private void Find(Node node, CharEnumerator chitr, IResultHandler<TValue> handler)
         {
@@ -178,20 +246,19 @@ namespace ICU4N.Impl
             public bool AtEnd => node == null || (node.CharCount == offset && node.children == null);
         }
 
-        public class CharEnumerator : IEnumerator<char>
+        internal ref struct CharEnumerator // ICU4N: Cannot implement IEnumerator<char> here because we are a ref struct. Eliminate like in C++? Not sure why this is public in Java, since it cannot be instantiated or subclassed with a package private constructor.
         {
             private readonly bool ignoreCase;
-            private readonly ICharSequence text;
+            private readonly ReadOnlySpan<char> text;
             private int nextIdx;
-            private int startIdx;
 
             private char? remainingChar;
             private char current;
 
-            internal CharEnumerator(ICharSequence text, int offset, bool ignoreCase)
+            internal CharEnumerator(ReadOnlySpan<char> text, bool ignoreCase)
             {
-                this.text = text ?? throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause
-                nextIdx = startIdx = offset;
+                this.text = text;
+                nextIdx = 0;
                 this.ignoreCase = ignoreCase;
             }
 
@@ -248,14 +315,6 @@ namespace ICU4N.Impl
                 return next;
             }
 
-            /* (non-Javadoc)
-             * @see java.util.Iterator#remove()
-             */
-            void IEnumerator.Reset()
-            {
-                throw new NotSupportedException("Reset() not supported");
-            }
-
             public bool MoveNext()
             {
                 if (!HasNext)
@@ -279,13 +338,11 @@ namespace ICU4N.Impl
                     {
                         throw new InvalidOperationException("In the middle of surrogate pair");
                     }
-                    return nextIdx - startIdx;
+                    return nextIdx;
                 }
             }
 
             public char Current => current;
-
-            object IEnumerator.Current => current;
         }
 
         // ICU4N specific - de-nested IResultHandler<V>
@@ -355,7 +412,7 @@ namespace ICU4N.Impl
                 return values.GetEnumerator();
             }
 
-            public void Add(CharEnumerator chitr, TValue value)
+            internal void Add(CharEnumerator chitr, TValue value) // ICU4N: Marked internal instead of public so we don't expose CharEnumerator (which has an internal constructor, anyway).
             {
                 StringBuilder buf = new StringBuilder();
                 while (chitr.MoveNext())
@@ -365,7 +422,7 @@ namespace ICU4N.Impl
                 Add(ToCharArray(buf), 0, value);
             }
 
-            public Node FindMatch(CharEnumerator chitr)
+            internal Node FindMatch(CharEnumerator chitr) // ICU4N: Marked internal instead of public so we don't expose CharEnumerator (which has an internal constructor, anyway).
             {
                 if (children == null)
                 {

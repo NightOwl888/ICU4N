@@ -447,11 +447,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>StandardPlural.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Impl\TextTrieMap.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>TextTrieMap.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Impl\UnicodeSetStringSpan.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -564,10 +559,6 @@
     <None Update="Impl\StandardPlural.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>StandardPlural.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Impl\TextTrieMap.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TextTrieMap.generated.cs</LastGenOutput>
     </None>
     <None Update="Impl\UnicodeSetStringSpan.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
