@@ -93,7 +93,7 @@ namespace ICU4N.Util
         /// After <see cref="Clear()"/> has been called, a new array will be used.
         /// </remarks>
         /// <param name="buildOption">Build option, see <see cref="TrieBuilderOption"/>.</param>
-        /// <returns>A <see cref="ICharSequence"/> with the char-serialized <see cref="CharsTrie"/> for the <see cref="Add(string, int)"/>ed data.</returns>
+        /// <returns>A <see cref="ReadOnlyMemory{Char}"/> with the char-serialized <see cref="CharsTrie"/> for the <see cref="Add(string, int)"/>ed data.</returns>
         /// <stable>ICU 4.8</stable>
         public ReadOnlyMemory<char> BuildCharSequence(TrieBuilderOption buildOption)
         {
