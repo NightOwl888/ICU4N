@@ -556,7 +556,7 @@ namespace ICU4N.Impl
                 key.SetBytes(poolBundleReader.keyBytes, keyOffset & 0x7fffffff);
             }
         }
-        private int CompareKeys(string key, char keyOffset)  // ICU4N specific: Changed key from ICharSequence to string
+        private int CompareKeys(ReadOnlySpan<char> key, char keyOffset)
         {
             if (keyOffset < localKeyLimit)
             {
@@ -567,7 +567,7 @@ namespace ICU4N.Impl
                 return ICUBinary.CompareKeys(key, poolBundleReader.keyBytes, keyOffset - localKeyLimit);
             }
         }
-        private int CompareKeys32(string key, int keyOffset) // ICU4N specific: Changed key from ICharSequence to string
+        private int CompareKeys32(ReadOnlySpan<char> key, int keyOffset)
         {
             if (keyOffset >= 0)
             {
@@ -1227,7 +1227,7 @@ namespace ICU4N.Impl
                             reader.GetKey32String(key32Offsets[index]);
             }
             private const int URESDATA_ITEM_NOT_FOUND = -1;
-            internal int FindTableItem(ICUResourceBundleReader reader, string key) // ICU4N specific: Changed key from ICharSequence to string
+            internal int FindTableItem(ICUResourceBundleReader reader, ReadOnlySpan<char> key)
             {
                 int mid, start, limit;
                 int result;
@@ -1265,7 +1265,7 @@ namespace ICU4N.Impl
 
             internal override int GetResource(ICUResourceBundleReader reader, string resKey)
             {
-                return GetContainerResource(reader, FindTableItem(reader, resKey));
+                return GetContainerResource(reader, FindTableItem(reader, resKey.AsSpan()));
             }
 
             public virtual bool GetKeyAndValue(int i, ResourceKey key, ResourceValue value)
