@@ -229,7 +229,7 @@ namespace ICU4N.Numerics.BigMath
             if (((flags & IsTight) == 0) && ((flags & NoSpace) == 0))
             {
                 int iBefore = i;
-                EatWhiteSpace(s, ref i);
+                EatWhiteSpace(s.AsSpan(), ref i);
                 if (i == end)
                     return ParsingStatus.Format_EmptyInputString;
                     //throw new FormatException(SR.Format_EmptyInputString);
@@ -301,7 +301,7 @@ namespace ICU4N.Numerics.BigMath
             {
                 //if (!Integer.TryParse(s, substrStart, substrEnd - substrStart, radix, out int bigRadixDigit)) // ICU4N TODO: When this is put into J2N - call the internal method
                 int grabNumbersStart = substrStart;
-                if (!TryGrabInts(radix, s, ref grabNumbersStart, substrEnd, isUnsigned: true, out int bigRadixDigit))
+                if (!TryGrabInts(radix, s.AsSpan(), ref grabNumbersStart, substrEnd, isUnsigned: true, out int bigRadixDigit))
                 {
                     //exception = null;
                     //result = null;
@@ -341,191 +341,7 @@ namespace ICU4N.Numerics.BigMath
         // These are the same implementation as in J2N
         #region TryGrabInts
 
-#if FEATURE_READONLYSPAN
-
         private static bool TryGrabInts(int radix, ReadOnlySpan<char> s, ref int i, int end, bool isUnsigned, out int result) // KEEP OVERLOADS FOR ICharSequence, char[], ReadOnlySpan<char>, and string IN SYNC
-        {
-            uint unsignedResult = 0;
-            uint maxVal;
-
-            // Allow all non-decimal numbers to set the sign bit.
-            if (radix == 10 && !isUnsigned)
-            {
-                maxVal = (0x7FFFFFFF / 10);
-
-                // Read all of the digits and convert to a number
-                while (i < end && IsDigit(s, i, end, radix, out int value, out int charCount))
-                {
-                    // Check for overflows - this is sufficient & correct.
-                    if (unsignedResult > maxVal || (int)unsignedResult < 0)
-                    {
-                        result = default;
-                        return false;
-                    }
-                    unsignedResult = unsignedResult * (uint)radix + (uint)value;
-                    i += charCount;
-                }
-                if ((int)unsignedResult < 0 && unsignedResult != 0x80000000)
-                {
-                    result = default;
-                    return false;
-                }
-            }
-            else
-            {
-                Debug.Assert(radix >= Character.MinRadix && radix <= Character.MaxRadix);
-                maxVal = 0xffffffff / (uint)radix;
-
-                // Read all of the digits and convert to a number
-                while (i < end && IsDigit(s, i, end, radix, out int value, out int charCount))
-                {
-                    // Check for overflows - this is sufficient & correct.
-                    if (unsignedResult > maxVal)
-                    {
-                        result = default;
-                        return false;
-                    }
-
-                    uint temp = unsignedResult * (uint)radix + (uint)value;
-
-                    if (temp < unsignedResult) // this means overflow as well
-                    {
-                        result = default;
-                        return false;
-                    }
-
-                    unsignedResult = temp;
-                    i += charCount;
-                }
-            }
-
-            result = (int)unsignedResult;
-            return true;
-        }
-
-#endif
-
-        private static bool TryGrabInts(int radix, string s, ref int i, int end, bool isUnsigned, out int result) // KEEP OVERLOADS FOR ICharSequence, char[], ReadOnlySpan<char>, and string IN SYNC
-        {
-            uint unsignedResult = 0;
-            uint maxVal;
-
-            // Allow all non-decimal numbers to set the sign bit.
-            if (radix == 10 && !isUnsigned)
-            {
-                maxVal = (0x7FFFFFFF / 10);
-
-                // Read all of the digits and convert to a number
-                while (i < end && IsDigit(s, i, end, radix, out int value, out int charCount))
-                {
-                    // Check for overflows - this is sufficient & correct.
-                    if (unsignedResult > maxVal || (int)unsignedResult < 0)
-                    {
-                        result = default;
-                        return false;
-                    }
-                    unsignedResult = unsignedResult * (uint)radix + (uint)value;
-                    i += charCount;
-                }
-                if ((int)unsignedResult < 0 && unsignedResult != 0x80000000)
-                {
-                    result = default;
-                    return false;
-                }
-            }
-            else
-            {
-                Debug.Assert(radix >= Character.MinRadix && radix <= Character.MaxRadix);
-                maxVal = 0xffffffff / (uint)radix;
-
-                // Read all of the digits and convert to a number
-                while (i < end && IsDigit(s, i, end, radix, out int value, out int charCount))
-                {
-                    // Check for overflows - this is sufficient & correct.
-                    if (unsignedResult > maxVal)
-                    {
-                        result = default;
-                        return false;
-                    }
-
-                    uint temp = unsignedResult * (uint)radix + (uint)value;
-
-                    if (temp < unsignedResult) // this means overflow as well
-                    {
-                        result = default;
-                        return false;
-                    }
-
-                    unsignedResult = temp;
-                    i += charCount;
-                }
-            }
-
-            result = (int)unsignedResult;
-            return true;
-        }
-
-        private static bool TryGrabInts(int radix, char[] s, ref int i, int end, bool isUnsigned, out int result) // KEEP OVERLOADS FOR ICharSequence, char[], ReadOnlySpan<char>, and string IN SYNC
-        {
-            uint unsignedResult = 0;
-            uint maxVal;
-
-            // Allow all non-decimal numbers to set the sign bit.
-            if (radix == 10 && !isUnsigned)
-            {
-                maxVal = (0x7FFFFFFF / 10);
-
-                // Read all of the digits and convert to a number
-                while (i < end && IsDigit(s, i, end, radix, out int value, out int charCount))
-                {
-                    // Check for overflows - this is sufficient & correct.
-                    if (unsignedResult > maxVal || (int)unsignedResult < 0)
-                    {
-                        result = default;
-                        return false;
-                    }
-                    unsignedResult = unsignedResult * (uint)radix + (uint)value;
-                    i += charCount;
-                }
-                if ((int)unsignedResult < 0 && unsignedResult != 0x80000000)
-                {
-                    result = default;
-                    return false;
-                }
-            }
-            else
-            {
-                Debug.Assert(radix >= Character.MinRadix && radix <= Character.MaxRadix);
-                maxVal = 0xffffffff / (uint)radix;
-
-                // Read all of the digits and convert to a number
-                while (i < end && IsDigit(s, i, end, radix, out int value, out int charCount))
-                {
-                    // Check for overflows - this is sufficient & correct.
-                    if (unsignedResult > maxVal)
-                    {
-                        result = default;
-                        return false;
-                    }
-
-                    uint temp = unsignedResult * (uint)radix + (uint)value;
-
-                    if (temp < unsignedResult) // this means overflow as well
-                    {
-                        result = default;
-                        return false;
-                    }
-
-                    unsignedResult = temp;
-                    i += charCount;
-                }
-            }
-
-            result = (int)unsignedResult;
-            return true;
-        }
-
-        private static bool TryGrabInts(int radix, ICharSequence s, ref int i, int end, bool isUnsigned, out int result) // KEEP OVERLOADS FOR ICharSequence, char[], ReadOnlySpan<char>, and string IN SYNC
         {
             uint unsignedResult = 0;
             uint maxVal;
@@ -590,30 +406,7 @@ namespace ICU4N.Numerics.BigMath
         // These are the same implementation as in J2N
         #region EatWhiteSpace
 
-#if FEATURE_READONLYSPAN
-        private static void EatWhiteSpace(ReadOnlySpan<char> s, ref int i) // KEEP OVERLOADS FOR ICharSequence, char[], ReadOnlySpan<char>, and string IN SYNC
-        {
-            int localIndex = i;
-            for (; localIndex < s.Length && char.IsWhiteSpace(s[localIndex]); localIndex++) ;
-            i = localIndex;
-        }
-#endif
-
-        private static void EatWhiteSpace(string s, ref int i) // KEEP OVERLOADS FOR ICharSequence, char[], ReadOnlySpan<char>, and string IN SYNC
-        {
-            int localIndex = i;
-            for (; localIndex < s.Length && char.IsWhiteSpace(s[localIndex]); localIndex++) ;
-            i = localIndex;
-        }
-
-        private static void EatWhiteSpace(char[] s, ref int i) // KEEP OVERLOADS FOR ICharSequence, char[], ReadOnlySpan<char>, and string IN SYNC
-        {
-            int localIndex = i;
-            for (; localIndex < s.Length && char.IsWhiteSpace(s[localIndex]); localIndex++) ;
-            i = localIndex;
-        }
-
-        private static void EatWhiteSpace(ICharSequence s, ref int i) // KEEP OVERLOADS FOR ICharSequence, char[], ReadOnlySpan<char>, and string IN SYNC
+        private static void EatWhiteSpace(ReadOnlySpan<char> s, ref int i)
         {
             int localIndex = i;
             for (; localIndex < s.Length && char.IsWhiteSpace(s[localIndex]); localIndex++) ;
@@ -625,12 +418,10 @@ namespace ICU4N.Numerics.BigMath
         // These are the same implementation as in J2N
         #region IsDigit
 
-#if FEATURE_READONLYSPAN
-
 #if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        private static bool IsDigit(ReadOnlySpan<char> s, int i, int end, int radix, out int result, out int charCount) // KEEP OVERLOADS FOR ICharSequence, char[], ReadOnlySpan<char>, and string IN SYNC
+        private static bool IsDigit(ReadOnlySpan<char> s, int i, int end, int radix, out int result, out int charCount)
         {
             if (char.IsHighSurrogate(s[i]) && i + 1 < end && char.IsLowSurrogate(s[i + 1]))
             {
@@ -643,55 +434,6 @@ namespace ICU4N.Numerics.BigMath
             return result != -1;
         }
 
-#endif
-
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif 
-        private static bool IsDigit(string s, int i, int end, int radix, out int result, out int charCount) // KEEP OVERLOADS FOR ICharSequence, char[], ReadOnlySpan<char>, and string IN SYNC
-        {
-            if (char.IsHighSurrogate(s[i]) && i + 1 < end && char.IsLowSurrogate(s[i + 1]))
-            {
-                result = Character.Digit(Character.ToCodePoint(s[i++], s[i++]), radix);
-                charCount = result == -1 ? 0 : 2;
-                return result != -1;
-            }
-            result = Character.Digit(s[i++], radix);
-            charCount = result == -1 ? 0 : 1;
-            return result != -1;
-        }
-
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif 
-        private static bool IsDigit(char[] s, int i, int end, int radix, out int result, out int charCount) // KEEP OVERLOADS FOR ICharSequence, char[], ReadOnlySpan<char>, and string IN SYNC
-        {
-            if (char.IsHighSurrogate(s[i]) && i + 1 < end && char.IsLowSurrogate(s[i + 1]))
-            {
-                result = Character.Digit(Character.ToCodePoint(s[i++], s[i++]), radix);
-                charCount = result == -1 ? 0 : 2;
-                return result != -1;
-            }
-            result = Character.Digit(s[i++], radix);
-            charCount = result == -1 ? 0 : 1;
-            return result != -1;
-        }
-
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif 
-        private static bool IsDigit(ICharSequence s, int i, int end, int radix, out int result, out int charCount) // KEEP OVERLOADS FOR ICharSequence, char[], ReadOnlySpan<char>, and string IN SYNC
-        {
-            if (char.IsHighSurrogate(s[i]) && i + 1 < end && char.IsLowSurrogate(s[i + 1]))
-            {
-                result = Character.Digit(Character.ToCodePoint(s[i++], s[i++]), radix);
-                charCount = result == -1 ? 0 : 2;
-                return result != -1;
-            }
-            result = Character.Digit(s[i++], radix);
-            charCount = result == -1 ? 0 : 1;
-            return result != -1;
-        }
 
         #endregion IsDigit
 
