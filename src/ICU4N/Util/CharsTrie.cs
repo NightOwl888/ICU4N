@@ -855,7 +855,7 @@ namespace ICU4N.Util
         /// Iterates from the root of a char-serialized <see cref="BytesTrie"/>.
         /// </summary>
         /// <remarks>
-        /// This is equivalent to iterator(ICharSequence, int, int) in ICU4J.
+        /// This is equivalent to iterator(CharSequence, int, int) in ICU4J.
         /// </remarks>
         /// <param name="trieChars"><see cref="string"/> that contains the serialized trie.</param>
         /// <param name="offset">Root offset of the trie in the <see cref="string"/>.</param>
@@ -875,7 +875,7 @@ namespace ICU4N.Util
         /// Iterates from the root of a char-serialized <see cref="BytesTrie"/>.
         /// </summary>
         /// <remarks>
-        /// This is equivalent to iterator(ICharSequence, int, int) in ICU4J.
+        /// This is equivalent to iterator(CharSequence, int, int) in ICU4J.
         /// </remarks>
         /// <param name="trieChars"><see cref="string"/> that contains the serialized trie.</param>
         /// <param name="offset">Root offset of the trie in the <see cref="string"/>.</param>
