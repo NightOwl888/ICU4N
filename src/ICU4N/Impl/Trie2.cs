@@ -497,7 +497,9 @@ namespace ICU4N.Impl
             return bytesWritten;
         }
 
-        // ICU4N: De-nested CharSequenceValues and renamed Trie2CharSequenceValues
+        // ICU4N: Factored out CharSequenceValues and added the properties to CharSequenceEnumerator
+
+#nullable enable
 
         /// <summary>
         /// Create an enumerator that will produce the values from the <see cref="Trie2"/> for
@@ -505,34 +507,13 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="text">A text string to be iterated over.</param>
         /// <param name="index">The starting iteration position within the input text.</param>
-        /// <returns>The <see cref="Trie2CharSequenceEnumerator"/>.</returns>
-        public virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(string text, int index) // ICU4N specific
+        /// <returns>The <see cref="CharSequenceEnumerator"/>.</returns>
+        public virtual CharSequenceEnumerator GetCharSequenceEnumerator(string text, int index) // ICU4N specific
         {
-            return new Trie2CharSequenceEnumerator(this, text.AsCharSequence(), index);
-        }
+            if (text is null)
+                throw new ArgumentNullException(nameof(text)); // ICU4N: Added guard clause
 
-        /// <summary>
-        /// Create an enumerator that will produce the values from the <see cref="Trie2"/> for
-        /// the sequence of code points in an input text.
-        /// </summary>
-        /// <param name="text">A text string to be iterated over.</param>
-        /// <param name="index">The starting iteration position within the input text.</param>
-        /// <returns>The <see cref="Trie2CharSequenceEnumerator"/>.</returns>
-        public virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(StringBuilder text, int index) // ICU4N specific
-        {
-            return new Trie2CharSequenceEnumerator(this, text.AsCharSequence(), index);
-        }
-
-        /// <summary>
-        /// Create an iterator that will produce the values from the Trie2 for
-        /// the sequence of code points in an input text.
-        /// </summary>
-        /// <param name="text">A text string to be iterated over.</param>
-        /// <param name="index">The starting iteration position within the input text.</param>
-        /// <returns>The <see cref="Trie2CharSequenceEnumerator"/>.</returns>
-        public virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(char[] text, int index) // ICU4N specific
-        {
-            return new Trie2CharSequenceEnumerator(this, text.AsCharSequence(), index);
+            return new CharSequenceEnumerator(this, text.AsSpan(), index);
         }
 
         /// <summary>
@@ -541,13 +522,110 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="text">A text string to be iterated over.</param>
         /// <param name="index">The starting iteration position within the input text.</param>
-        /// <returns>The <see cref="Trie2CharSequenceEnumerator"/>.</returns>
-        public virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(ICharSequence text, int index)
+        /// <returns>The <see cref="CharSequenceEnumerator"/>.</returns>
+        public virtual CharSequenceEnumerator GetCharSequenceEnumerator(ReadOnlySpan<char> text, int index)
         {
-            return new Trie2CharSequenceEnumerator(this, text, index);
+            return new CharSequenceEnumerator(this, text, index);
         }
 
-        // ICU4N: De-nested CharSequenceEnumerator and renamed Trie2CharSequenceEnumerator
+        // TODO:  Survey usage of the equivalent of CharSequenceIterator in ICU4C
+        //        and if there is none, remove it from here.
+        //        Don't waste time testing and maintaining unused code.
+
+        /// <summary>
+        /// An enumerator that operates over an input <see cref="ReadOnlySpan{Char}"/>, and for each Unicode code point
+        /// in the input returns the associated value from the <see cref="Trie2"/>.
+        /// </summary>
+        /// <remarks>
+        /// This enumerator can move forwards or backwards, and can be reset to an arbitrary index.
+        /// </remarks>
+        public ref struct CharSequenceEnumerator
+        {
+            /// <summary>
+            /// Internal constructor.
+            /// </summary>
+            internal CharSequenceEnumerator(Trie2 trie2, ReadOnlySpan<char> t, int index)
+            {
+                this.trie2 = trie2;
+                text = t;
+                textLength = text.Length;
+                Index = index;
+            }
+            private /*readonly*/ Trie2 trie2;
+
+            private ReadOnlySpan<char> text;
+            private int textLength;
+            private int index;
+            private int cursor; // The actual current index of this enumerator. This is index + 1 when iterating forward.
+            private int codePoint;
+            private int value;
+
+            /// <summary>String index of the current code point.</summary>
+            public int Index
+            {
+                get => index;
+                set
+                {
+                    if (value < 0 || value > textLength)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(index));
+                    }
+                    index = value;
+                    cursor = value;
+                    codePoint = Character.CodePointAt(text, cursor);
+                    this.value = trie2.Get(codePoint);
+                }
+            }
+            /// <summary>The code point at index.</summary>
+            public int CodePoint => codePoint;
+
+            /// <summary>The <see cref="Trie2"/> value for the current code point.</summary>
+            public int Value => value;
+
+            public bool HasNext => cursor < textLength;
+
+            public bool HasPrevious => cursor > 0;
+
+            /// <summary>
+            /// Moves to the next codepoint in the text. Note this is a post-increment iterator,
+            /// So the first call to this method after setting <see cref="Index"/> will not move
+            /// the position. This is what we want when using this enumerator in a while loop, since
+            /// the first position is expected <i>after</i> the first call to <see cref="MoveNext()"/>.
+            /// </summary>
+            /// <returns><c>true</c></returns>
+            public bool MoveNext()
+            {
+                if (!HasNext)
+                    return false;
+
+                codePoint = Character.CodePointAt(text, cursor);
+                value = trie2.Get(codePoint);
+                index = cursor; // ICU4N: Need to record this before we move for the Index property to be correct
+                cursor++;
+                if (codePoint >= 0x10000)
+                {
+                    cursor++;
+                }
+                return true;
+            }
+
+            public bool MovePrevious()
+            {
+                if (!HasPrevious)
+                    return false;
+                codePoint = Character.CodePointBefore(text, index);
+                value = trie2.Get(codePoint);
+                cursor--;
+                if (codePoint >= 0x10000)
+                {
+                    cursor--;
+                }
+                index = cursor;
+                return true;
+            }
+        }
+
+#nullable restore
 
         //--------------------------------------------------------------------------------
         //
@@ -858,7 +936,7 @@ namespace ICU4N.Impl
     /// If you need to retain complete iteration results, clone each returned <see cref="Trie2Range"/>,
     /// or save the range in some other way, before advancing to the next iteration step.
     /// </remarks>
-    public class Trie2Range
+    public class Trie2Range // ICU4N TODO: API - this is a good candidate for a struct
     {
         public int StartCodePoint { get; set; }
         public int EndCodePoint { get; set; }    // Inclusive.
@@ -891,138 +969,6 @@ namespace ICU4N.Impl
         }
     }
 
-    /// <summary>
-    /// Struct-like class for holding the results returned by a UTrie2  <see cref="Trie2CharSequenceEnumerator"/>.
-    /// The iteration walks over a <see cref="ICharSequence"/>, and for each Unicode code point therein
-    /// returns the character and its associated <see cref="Trie2"/> value.
-    /// </summary>
-    public class Trie2CharSequenceValues
-    {
-        /// <summary>String index of the current code point.</summary>
-        public int Index { get; set; }
-        /// <summary>The code point at index.</summary>
-        public int CodePoint { get; set; }
-        /// <summary>The <see cref="Trie2"/> value for the current code point.</summary>
-        public int Value { get; set; }
-    }
-
-    // TODO:  Survey usage of the equivalent of CharSequenceIterator in ICU4C
-    //        and if there is none, remove it from here.
-    //        Don't waste time testing and maintaining unused code.
-
-    /// <summary>
-    /// An enumerator that operates over an input <see cref="ICharSequence"/>, and for each Unicode code point
-    /// in the input returns the associated value from the <see cref="Trie2"/>.
-    /// </summary>
-    /// <remarks>
-    /// This iterator can move forwards or backwards, and can be reset to an arbitrary index.
-    /// <para/>
-    /// Note that <see cref="Trie2_16"/> and <see cref="Trie2_32"/> subclass <see cref="Trie2CharSequenceEnumerator"/>.  This is done
-    /// only for performance reasons.  It does require that any changes made here be propagated
-    /// into the corresponding code in the subclasses.
-    /// </remarks>
-    public class Trie2CharSequenceEnumerator : IEnumerator<Trie2CharSequenceValues>
-    {
-        /// <summary>
-        /// Internal constructor.
-        /// </summary>
-        internal Trie2CharSequenceEnumerator(Trie2 trie2, ICharSequence t, int index)
-        {
-            this.trie2 = trie2;
-            text = t;
-            textLength = text.Length;
-            Set(index);
-        }
-        private readonly Trie2 trie2;
-
-        private ICharSequence text;
-        private int textLength;
-        private int index;
-        private Trie2CharSequenceValues fResults = new Trie2CharSequenceValues();
-
-        public virtual void Set(int i)
-        {
-            if (i < 0 || i > textLength)
-            {
-                throw new IndexOutOfRangeException();
-            }
-            index = i;
-        }
-
-        protected virtual bool HasNext => index < textLength;
-
-        protected virtual bool HasPrevious => index > 0;
-
-        public Trie2CharSequenceValues Current => fResults;
-
-        object IEnumerator.Current => fResults;
-
-        protected virtual Trie2CharSequenceValues Next()
-        {
-            int c = Character.CodePointAt(text, index);
-            int val = trie2.Get(c);
-
-            fResults.Index = index;
-            fResults.CodePoint = c;
-            fResults.Value = val;
-            index++;
-            if (c >= 0x10000)
-            {
-                index++;
-            }
-            return fResults;
-        }
-
-
-        protected virtual Trie2CharSequenceValues Previous()
-        {
-            int c = Character.CodePointBefore(text, index);
-            int val = trie2.Get(c);
-            index--;
-            if (c >= 0x10000)
-            {
-                index--;
-            }
-            fResults.Index = index;
-            fResults.CodePoint = c;
-            fResults.Value = val;
-            return fResults;
-        }
-
-        public virtual bool MoveNext()
-        {
-            if (!HasNext)
-                return false;
-            Next();
-            return true;
-        }
-
-        public virtual bool MovePrevious()
-        {
-            if (!HasPrevious)
-                return false;
-            Previous();
-            return true;
-        }
-
-        public virtual void Reset()
-        {
-            throw new NotSupportedException();
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            // Nothing to do
-        }
-
-        // ICU4N specific - Remove not supported by the interface
-    }
 
     /// <summary>
     /// Implementation class for an enumerator over a <see cref="Trie2"/>.
@@ -1031,7 +977,7 @@ namespace ICU4N.Impl
     /// then returns the special alternate values for the lead surrogates.
     /// </summary>
     /// <internal/>
-    public class Trie2Enumerator : IEnumerator<Trie2Range>
+    public class Trie2Enumerator : IEnumerator<Trie2Range> // ICU4N TODO: API Re-nest this and rename Enumerator. This is typical of data structures in .NET.
     {
         private readonly Trie2 trie2;
         private Trie2Range current = null;

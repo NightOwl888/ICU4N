@@ -401,38 +401,48 @@ namespace ICU4N.Dev.Test.Util
             tw.Set(' ', 'S');
             tw.Set(0x10001, 'X');
 
-            using (Trie2CharSequenceEnumerator it = tw.GetCharSequenceEnumerator(text, 0))
+            var it = tw.GetCharSequenceEnumerator(text, 0);
+            int i;
+            for (i = 0; it.MoveNext(); i++)
             {
-
-                // Check forwards iteration.
-                Trie2CharSequenceValues ir;
-                int i;
-                for (i = 0; it.MoveNext(); i++)
+                int expectedCP = Character.CodePointAt(text, i);
+                assertEquals("" + " i=" + i, expectedCP, it.CodePoint);
+                assertEquals("" + " i=" + i, i, it.Index);
+                assertEquals("" + " i=" + i, vals[i], it.Value);
+                if (expectedCP >= 0x10000)
                 {
-                    ir = it.Current;
-                    int expectedCP = Character.CodePointAt(text, i);
-                    assertEquals("" + " i=" + i, expectedCP, ir.CodePoint);
-                    assertEquals("" + " i=" + i, i, ir.Index);
-                    assertEquals("" + " i=" + i, vals[i], ir.Value);
-                    if (expectedCP >= 0x10000)
-                    {
-                        i++;
-                    }
+                    i++;
                 }
-                assertEquals("", text.Length, i);
+            }
+            assertEquals("", text.Length, i);
 
-                // Check reverse iteration, starting at an intermediate point.
-                it.Set(5);
-                for (i = 5; it.MovePrevious();)
-                {
-                    ir = it.Current;
-                    int expectedCP = Character.CodePointBefore(text, i);
-                    i -= (expectedCP < 0x10000 ? 1 : 2);
-                    assertEquals("" + " i=" + i, expectedCP, ir.CodePoint);
-                    assertEquals("" + " i=" + i, i, ir.Index);
-                    assertEquals("" + " i=" + i, vals[i], ir.Value);
-                }
-                assertEquals("", 0, i);
+            // Check reverse iteration, starting at an intermediate point.
+            it.Index = 5;
+            for (i = 5; it.MovePrevious();)
+            {
+                int expectedCP = Character.CodePointBefore(text, i);
+                i -= (expectedCP < 0x10000 ? 1 : 2);
+                assertEquals("" + " i=" + i, expectedCP, it.CodePoint);
+                assertEquals("" + " i=" + i, i, it.Index);
+                assertEquals("" + " i=" + i, vals[i], it.Value);
+            }
+            assertEquals("", 0, i);
+
+            // ICU4N: Check arbitrary setting of index
+            {
+                i = 3;
+                int expectedCP = Character.CodePointAt(text, i);
+                it.Index = i;
+                assertEquals("" + " i=" + i, expectedCP, it.CodePoint);
+                assertEquals("" + " i=" + i, i, it.Index);
+                assertEquals("" + " i=" + i, vals[i], it.Value);
+
+                i = 1;
+                expectedCP = Character.CodePointAt(text, i);
+                it.Index = i;
+                assertEquals("" + " i=" + i, expectedCP, it.CodePoint);
+                assertEquals("" + " i=" + i, i, it.Index);
+                assertEquals("" + " i=" + i, vals[i], it.Value);
             }
         }
 
