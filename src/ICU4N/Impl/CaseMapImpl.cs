@@ -1680,8 +1680,6 @@ namespace ICU4N.Impl
                 }
             }
 
-            // ICU4N specific - IsFollowedByCasedLetter(ICharSequence s, int i) moved to CaseMapImpl.generated.tt
-
             private unsafe static bool IsFollowedByCasedLetter(char* s, int i, int length)
             {
                 while (i < length)
