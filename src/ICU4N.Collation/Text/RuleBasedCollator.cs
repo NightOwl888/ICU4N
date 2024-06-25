@@ -10,6 +10,7 @@ using J2N.Text;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 
@@ -179,7 +180,12 @@ namespace ICU4N.Text
             }
             catch (TargetInvocationException e)
             {
+#if FEATURE_EXCEPTIONDISPATCHINFO
+                ExceptionDispatchInfo.Capture(e.GetBaseException()).Throw();
+                return;
+#else
                 throw e.GetBaseException();
+#endif
             }
 
 
