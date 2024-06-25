@@ -180,7 +180,7 @@ namespace ICU4N.Impl
                 return null;
             }
 
-            return new ParseState(this, root);
+            return new ParseState(ignoreCase, root);
         }
 
         /// <summary>
@@ -189,17 +189,15 @@ namespace ICU4N.Impl
         /// </summary>
         public class ParseState
         {
-            private readonly TextTrieMap<TValue> map;
+            private readonly bool ignoreCase;
             private Node node;
             private int offset;
-            private Node.StepResult result;
 
-            internal ParseState(TextTrieMap<TValue> map, Node start)
+            internal ParseState(bool ignoreCase, Node start)
             {
-                this.map = map ?? throw new ArgumentNullException(nameof(map));
+                this.ignoreCase = ignoreCase;
                 node = start ?? throw new ArgumentNullException(nameof(start));
                 offset = 0;
-                result = start.CreateStepResult();
             }
 
             /// <summary>
@@ -209,20 +207,18 @@ namespace ICU4N.Impl
             public virtual void Accept(int cp)
             {
                 Debug.Assert(node != null);
-                if (map.ignoreCase)
+                if (ignoreCase)
                 {
                     cp = UChar.FoldCase(cp, true);
                 }
                 int count = Character.CharCount(cp);
                 char ch1 = (count == 1) ? (char)cp : UTF16.GetLeadSurrogate(cp);
-                node.TakeStep(ch1, offset, result);
-                if (count == 2 && result.node != null)
+                node = node.TakeStep(ch1, ref offset);
+                if (count == 2 && node != null)
                 {
                     char ch2 = UTF16.GetTrailSurrogate(cp);
-                    result.node.TakeStep(ch2, result.offset, result);
+                    node = node.TakeStep(ch2, ref offset);
                 }
-                node = result.node;
-                offset = result.offset;
             }
 
             /// <summary>
@@ -321,11 +317,6 @@ namespace ICU4N.Impl
                     return false;
                 current = Next().Value;
                 return true;
-            }
-
-            public void Dispose()
-            {
-                // Intentionally empty
             }
 
             public int NextIndex => nextIdx;
@@ -459,18 +450,11 @@ namespace ICU4N.Impl
                 return match;
             }
 
-            public class StepResult
-            {
-                public Node? node;
-                public int offset;
-            }
+            // ICU4N: Factored out StepResult and CreateStepResult() because we can
+            // use a ref int for offset and simply return the node instead of maintaining
+            // this state in a separate type.
 
-            public virtual StepResult CreateStepResult()
-            {
-                return new StepResult();
-            }
-
-            public void TakeStep(char ch, int offset, StepResult result)
+            public Node? TakeStep(char ch, ref int offset)
             {
                 Debug.Assert(offset <= CharCount);
                 if (offset == CharCount)
@@ -484,9 +468,8 @@ namespace ICU4N.Impl
                         if (ch == childText0)
                         {
                             // Found a matching child node
-                            result.node = child;
-                            result.offset = 1;
-                            return;
+                            offset = 1;
+                            return child;
                         }
                     }
                     // No matching children; fall through
@@ -494,13 +477,12 @@ namespace ICU4N.Impl
                 else if (text.Span[offset] == ch)
                 {
                     // Return to this node; increase offset
-                    result.node = this;
-                    result.offset = offset + 1;
-                    return;
+                    offset += 1;
+                    return this;
                 }
                 // No matches
-                result.node = null;
-                result.offset = -1;
+                offset = -1;
+                return null;
             }
 
             private void Add(ReadOnlyMemory<char> text, TValue value) // ICU4N: Removed offset, since we can slice a ReadOnlyMemory
