@@ -448,186 +448,33 @@ namespace ICU4N.Impl
         public void Append(string s, int start, int length,
             int leadCC, int trailCC) // ICU4N specific: changed limit to length
         {
-            if (length == 0)
-            {
-                return;
-            }
-            if (lastCC <= leadCC || leadCC == 0)
-            {
-                if (trailCC <= 1)
-                {
-                    reorderStart = str.Length + length;
-                }
-                else if (leadCC <= 1)
-                {
-                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
-                }
-                str.Append(s, start, length); // ICU4N: checked 3rd parameter
-                lastCC = trailCC;
-            }
-            else
-            {
-                int limit = start + length;
-                int c = Character.CodePointAt(s, start);
-                start += Character.CharCount(c);
-                Insert(c, leadCC);  // insert first code point
-                while (start < limit)
-                {
-                    c = Character.CodePointAt(s, start);
-                    start += Character.CharCount(c);
-                    if (start < limit)
-                    {
-                        // s must be in NFD, otherwise we need to use getCC().
-                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
-                    }
-                    else
-                    {
-                        leadCC = trailCC;
-                    }
-                    Append(c, leadCC);
-                }
-            }
-        }
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
 
+            Append(s.AsSpan(start, length), leadCC, trailCC);
+        }
 
         // s must be in NFD, otherwise change the implementation.
         public void Append(StringBuilder s, int start, int length,
             int leadCC, int trailCC) // ICU4N specific: changed limit to length
         {
-            if (length == 0)
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[Normalizer2.CharStackBufferSize]);
+            try
             {
-                return;
+                buffer.Append(s);
+                Append(buffer.AsSpan(), leadCC, trailCC);
             }
-            if (lastCC <= leadCC || leadCC == 0)
+            finally
             {
-                if (trailCC <= 1)
-                {
-                    reorderStart = str.Length + length;
-                }
-                else if (leadCC <= 1)
-                {
-                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
-                }
-                str.Append(s, start, length); // ICU4N: checked 3rd parameter
-                lastCC = trailCC;
-            }
-            else
-            {
-                int limit = start + length;
-                int c = Character.CodePointAt(s, start);
-                start += Character.CharCount(c);
-                Insert(c, leadCC);  // insert first code point
-                while (start < limit)
-                {
-                    c = Character.CodePointAt(s, start);
-                    start += Character.CharCount(c);
-                    if (start < limit)
-                    {
-                        // s must be in NFD, otherwise we need to use getCC().
-                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
-                    }
-                    else
-                    {
-                        leadCC = trailCC;
-                    }
-                    Append(c, leadCC);
-                }
+                buffer.Dispose();
             }
         }
-
 
         // s must be in NFD, otherwise change the implementation.
-        public void Append(char[] s, int start, int length,
-            int leadCC, int trailCC) // ICU4N specific: changed limit to length
-        {
-            if (length == 0)
-            {
-                return;
-            }
-            if (lastCC <= leadCC || leadCC == 0)
-            {
-                if (trailCC <= 1)
-                {
-                    reorderStart = str.Length + length;
-                }
-                else if (leadCC <= 1)
-                {
-                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
-                }
-                str.Append(s, start, length); // ICU4N: checked 3rd parameter
-                lastCC = trailCC;
-            }
-            else
-            {
-                int limit = start + length;
-                int c = Character.CodePointAt(s, start);
-                start += Character.CharCount(c);
-                Insert(c, leadCC);  // insert first code point
-                while (start < limit)
-                {
-                    c = Character.CodePointAt(s, start);
-                    start += Character.CharCount(c);
-                    if (start < limit)
-                    {
-                        // s must be in NFD, otherwise we need to use getCC().
-                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
-                    }
-                    else
-                    {
-                        leadCC = trailCC;
-                    }
-                    Append(c, leadCC);
-                }
-            }
-        }
-
-
-        // s must be in NFD, otherwise change the implementation.
-        public void Append(ICharSequence s, int start, int length,
-            int leadCC, int trailCC) // ICU4N specific: changed limit to length
-        {
-            if (length == 0)
-            {
-                return;
-            }
-            if (lastCC <= leadCC || leadCC == 0)
-            {
-                if (trailCC <= 1)
-                {
-                    reorderStart = str.Length + length;
-                }
-                else if (leadCC <= 1)
-                {
-                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
-                }
-                str.Append(s, start, length); // ICU4N: checked 3rd parameter
-                lastCC = trailCC;
-            }
-            else
-            {
-                int limit = start + length;
-                int c = Character.CodePointAt(s, start);
-                start += Character.CharCount(c);
-                Insert(c, leadCC);  // insert first code point
-                while (start < limit)
-                {
-                    c = Character.CodePointAt(s, start);
-                    start += Character.CharCount(c);
-                    if (start < limit)
-                    {
-                        // s must be in NFD, otherwise we need to use getCC().
-                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
-                    }
-                    else
-                    {
-                        leadCC = trailCC;
-                    }
-                    Append(c, leadCC);
-                }
-            }
-        }
-
-        public void Append(ReadOnlySpan<char> s, int leadCC, int trailCC)
+        public void Append(scoped ReadOnlySpan<char> s, int leadCC, int trailCC)
         {
             int start = 0, length = s.Length; // ICU4N: Removed from method signature because we can slice
             if (length == 0)
@@ -689,8 +536,6 @@ namespace ICU4N.Impl
             reorderStart = str.Length;
         }
 
-
-
         public void Append(string? s)
         {
             if (s != null && s.Length != 0)
@@ -711,27 +556,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public void Append(char[]? s)
-        {
-            if (s != null && s.Length != 0)
-            {
-                str.Append(s);
-                lastCC = 0;
-                reorderStart = str.Length;
-            }
-        }
-
-        public void Append(ICharSequence? s)
-        {
-            if (s != null && s.Length != 0)
-            {
-                str.Append(s);
-                lastCC = 0;
-                reorderStart = str.Length;
-            }
-        }
-
-        public void Append(ReadOnlySpan<char> s)
+        public void Append(scoped ReadOnlySpan<char> s)
         {
             if (s.Length != 0)
             {
@@ -752,26 +577,6 @@ namespace ICU4N.Impl
         }
 
         public void Append(StringBuilder? s, int start, int length) // ICU4N specific: changed limit to length
-        {
-            if (length != 0)
-            {
-                str.Append(s, start, length); // ICU4N: checked 3rd parameter
-                lastCC = 0;
-                reorderStart = str.Length;
-            }
-        }
-
-        public void Append(char[]? s, int start, int length) // ICU4N specific: changed limit to length
-        {
-            if (length != 0)
-            {
-                str.Append(s, start, length); // ICU4N: checked 3rd parameter
-                lastCC = 0;
-                reorderStart = str.Length;
-            }
-        }
-
-        public void Append(ICharSequence? s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (length != 0)
             {
@@ -894,7 +699,6 @@ namespace ICU4N.Impl
         /// <returns>true or false</returns>
         public static bool IsSurrogateLead(int c) { return (c & 0x400) == 0; }
 
-        // ICU4N specific -  Equal(ICharSequence s1, ICharSequence s2) moved to Normalizer2Impl.generated.tt
         #region Equal(ICharSequence, ICharSequence)
         /// <summary>
         /// Compares two character sequence objects for binary equality.
