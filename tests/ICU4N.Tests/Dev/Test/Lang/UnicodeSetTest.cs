@@ -3084,11 +3084,11 @@ namespace ICU4N.Dev.Test.Lang
         public void TestAddAll_CharacterSequences()
         {
             UnicodeSet unicodeSet = new UnicodeSet();
-            unicodeSet.AddAll("a", "b");
+            unicodeSet.UnionWith("a", "b");
             assertEquals("Wrong UnicodeSet pattern", "[ab]", unicodeSet.ToPattern(true));
-            unicodeSet.AddAll("b", "x");
+            unicodeSet.UnionWith("b", "x");
             assertEquals("Wrong UnicodeSet pattern", "[abx]", unicodeSet.ToPattern(true));
-            unicodeSet.AddAll(new ICharSequence[] { new StringBuilder("foo").AsCharSequence(), new StringBuffer("bar").AsCharSequence() });
+            unicodeSet.UnionWith(new object[] { new StringBuilder("foo"), new StringBuffer("bar") });
             assertEquals("Wrong UnicodeSet pattern", "[abx{bar}{foo}]", unicodeSet.ToPattern(true));
         }
 
