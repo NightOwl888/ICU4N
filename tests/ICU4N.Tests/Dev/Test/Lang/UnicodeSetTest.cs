@@ -1757,21 +1757,6 @@ namespace ICU4N.Dev.Test.Lang
             assertEquals("remove all", mod1, mod2);
         }
 
-        private class AnonymousUnicodeSetComparer : IComparer<UnicodeSet>
-        {
-            private readonly Func<UnicodeSet, UnicodeSet, int> compare;
-
-            public AnonymousUnicodeSetComparer(Func<UnicodeSet, UnicodeSet, int> compare)
-            {
-                this.compare = compare;
-            }
-
-            public int Compare(UnicodeSet x, UnicodeSet y)
-            {
-                return compare(x, y);
-            }
-        }
-
         [Test]
         public void TestComparison()
         {
@@ -1790,8 +1775,8 @@ namespace ICU4N.Dev.Test.Lang
             assertNotEquals("compareTo-shorter-first", unsorted, sorted);
             assertEquals("compareTo-shorter-first", goalShortest, sorted);
 
-            SortedSet<UnicodeSet> sorted1 = new SortedSet<UnicodeSet>(new AnonymousUnicodeSetComparer(
-                compare: (o1, o2) =>
+            SortedSet<UnicodeSet> sorted1 = new SortedSet<UnicodeSet>(Comparer<UnicodeSet>.Create(
+                comparison: (o1, o2) =>
                 {
                     // TODO Auto-generated method stub
                     return o1.CompareTo(o2, ComparisonStyle.LongerFirst);
@@ -1803,8 +1788,8 @@ namespace ICU4N.Dev.Test.Lang
             assertNotEquals("compareTo-longer-first", unsorted, sorted);
             assertEquals("compareTo-longer-first", goalLongest, sorted);
 
-            sorted1 = new SortedSet<UnicodeSet>(new AnonymousUnicodeSetComparer(
-                compare: (o1, o2) =>
+            sorted1 = new SortedSet<UnicodeSet>(Comparer<UnicodeSet>.Create(
+                comparison: (o1, o2) =>
                 {
                     // TODO Auto-generated method stub
                     return o1.CompareTo(o2, ComparisonStyle.Lexicographic);
@@ -1878,6 +1863,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             compare_break: { }
 
+            // ICU4N TODO: This test doesn't seem to test anything in ICU4N...?
             //compare(Iterable<T>, Iterable<T>)
             int max = 10;
             List<String> test1 = new List<String>(max);
@@ -1888,8 +1874,8 @@ namespace ICU4N.Dev.Test.Lang
                 test2.Add("a" + (max - i)); // add in reverse order
             }
             assertNotEquals("compare iterable test", test1, test2);
-            SortedSet<ICharSequence> sortedTest1 = new SortedSet<ICharSequence>(test1.Select((s) => s.AsCharSequence()));
-            SortedSet<ICharSequence> sortedTest2 = new SortedSet<ICharSequence>(test2.Select((s) => s.AsCharSequence()));
+            SortedSet<string> sortedTest1 = new SortedSet<string>(test1, StringComparer.Ordinal);
+            SortedSet<string> sortedTest2 = new SortedSet<string>(test2, StringComparer.Ordinal);
             assertEquals("compare iterable test", sortedTest1, sortedTest2);
         }
 
