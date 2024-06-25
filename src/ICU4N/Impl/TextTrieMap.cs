@@ -367,35 +367,39 @@ namespace ICU4N.Impl
             public int MatchLength => length;
         }
 
+#nullable enable
+
         /// <summary>
         /// Inner class representing a text node in the trie.
         /// </summary>
         public class Node
         {
-            private char[] text;
-            private IList<TValue> values;
-            internal IList<Node> children;
+            private ReadOnlyMemory<char> text;
+            private object? textReference; // This will pin the memory so the GC cannot collect it.
+            private IList<TValue>? values;
+            internal IList<Node>? children;
 
             internal Node()
             {
             }
 
-            private Node(char[] text, IList<TValue> values, IList<Node> children) // ICU4N NOTE: all params are nullable
+            private Node(ReadOnlyMemory<char> text, IList<TValue>? values, IList<Node>? children)
             {
                 this.text = text;
+                text.TryGetReference(ref this.textReference);
                 this.values = values;
                 this.children = children;
             }
 
-            public int CharCount => text == null ? 0 : text.Length;
+            public int CharCount => text.Length;
 
             public bool HasChildFor(char ch)
             {
                 for (int i = 0; children != null && i < children.Count; i++)
                 {
-                    Node child = children[i];
-                    if (ch < child.text[0]) break;
-                    if (ch == child.text[0])
+                    ReadOnlySpan<char> childText = children[i].text.Span;
+                    if (ch < childText[0]) break;
+                    if (ch == childText[0])
                     {
                         return true;
                     }
@@ -403,7 +407,7 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            public IEnumerator<TValue> GetValues()
+            public IEnumerator<TValue>? GetValues()
             {
                 if (values == null)
                 {
@@ -414,15 +418,17 @@ namespace ICU4N.Impl
 
             internal void Add(CharEnumerator chitr, TValue value) // ICU4N: Marked internal instead of public so we don't expose CharEnumerator (which has an internal constructor, anyway).
             {
-                StringBuilder buf = new StringBuilder();
+                using ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[32]);
                 while (chitr.MoveNext())
                 {
                     buf.Append(chitr.Current);
                 }
-                Add(ToCharArray(buf), 0, value);
+
+                // ICU4N: Now that we know the length, allocate the memory for the node.
+                Add(buf.ToString().AsMemory(), value);
             }
 
-            internal Node FindMatch(CharEnumerator chitr) // ICU4N: Marked internal instead of public so we don't expose CharEnumerator (which has an internal constructor, anyway).
+            internal Node? FindMatch(CharEnumerator chitr) // ICU4N: Marked internal instead of public so we don't expose CharEnumerator (which has an internal constructor, anyway).
             {
                 if (children == null)
                 {
@@ -432,15 +438,16 @@ namespace ICU4N.Impl
                 {
                     return null;
                 }
-                Node match = null;
+                Node? match = null;
                 char ch = chitr.Current;
                 foreach (Node child in children)
                 {
-                    if (ch < child.text[0])
+                    char childText0 = child.text.Span[0];
+                    if (ch < childText0)
                     {
                         break;
                     }
-                    if (ch == child.text[0])
+                    if (ch == childText0)
                     {
                         if (child.MatchFollowing(chitr))
                         {
@@ -454,7 +461,7 @@ namespace ICU4N.Impl
 
             public class StepResult
             {
-                public Node node;
+                public Node? node;
                 public int offset;
             }
 
@@ -472,8 +479,9 @@ namespace ICU4N.Impl
                     for (int i = 0; children != null && i < children.Count; i++)
                     {
                         Node child = children[i];
-                        if (ch < child.text[0]) break;
-                        if (ch == child.text[0])
+                        char childText0 = child.text.Span[0];
+                        if (ch < childText0) break;
+                        if (ch == childText0)
                         {
                             // Found a matching child node
                             result.node = child;
@@ -483,7 +491,7 @@ namespace ICU4N.Impl
                     }
                     // No matching children; fall through
                 }
-                else if (text[offset] == ch)
+                else if (text.Span[offset] == ch)
                 {
                     // Return to this node; increase offset
                     result.node = this;
@@ -495,9 +503,9 @@ namespace ICU4N.Impl
                 result.offset = -1;
             }
 
-            private void Add(char[] text, int offset, TValue value)
+            private void Add(ReadOnlyMemory<char> text, TValue value) // ICU4N: Removed offset, since we can slice a ReadOnlyMemory
             {
-                if (text.Length == offset)
+                if (text.Length == 0)
                 {
                     values = AddValue(values, value);
                     return;
@@ -506,7 +514,7 @@ namespace ICU4N.Impl
                 if (children == null)
                 {
                     children = new List<Node>();
-                    Node child = new Node(SubArray(text, offset), AddValue(null, value), null);
+                    Node child = new Node(text, AddValue(null, value), null);
                     children.Add(child);
                     return;
                 }
@@ -517,24 +525,26 @@ namespace ICU4N.Impl
                 for (; index < children.Count; index++)
                 {
                     Node next = children[index];
-                    if (text[offset] < next.text[0])
+                    char nextText0 = next.text.Span[0];
+                    ReadOnlySpan<char> textSpan = text.Span;
+                    if (textSpan[0] < nextText0)
                     {
                         //isPrevious = true;
                         break;
                     }
-                    if (text[offset] == next.text[0])
+                    if (textSpan[0] == nextText0)
                     {
-                        int matchLen = next.LenMatches(text, offset);
+                        int matchLen = next.LenMatches(textSpan);
                         if (matchLen == next.text.Length)
                         {
                             // full match
-                            next.Add(text, offset + matchLen, value);
+                            next.Add(text.Slice(matchLen), value);
                         }
                         else
                         {
                             // partial match, create a branch
                             next.Split(matchLen);
-                            next.Add(text, offset + matchLen, value);
+                            next.Add(text.Slice(matchLen), value);
                         }
                         return;
                     }
@@ -551,7 +561,7 @@ namespace ICU4N.Impl
                 // previous would return the new element. (This call increases by one the value that would be
                 // returned by a call to nextIndex or previousIndex.)
 
-                var newNode = new Node(SubArray(text, offset), AddValue(null, value), null);
+                var newNode = new Node(text, AddValue(null, value), null);
                 if (index != children.Count)
                 {
                     children.Insert(index, newNode);
@@ -597,6 +607,7 @@ namespace ICU4N.Impl
             {
                 bool matched = true;
                 int idx = 1;
+                ReadOnlySpan<char> textSpan = text.Span;
                 while (idx < text.Length)
                 {
                     if (!chitr.MoveNext())
@@ -605,7 +616,7 @@ namespace ICU4N.Impl
                         break;
                     }
                     char ch = chitr.Current;
-                    if (ch != text[idx])
+                    if (ch != textSpan[idx])
                     {
                         matched = false;
                         break;
@@ -615,14 +626,15 @@ namespace ICU4N.Impl
                 return matched;
             }
 
-            private int LenMatches(char[] text, int offset)
+            private int LenMatches(ReadOnlySpan<char> text)
             {
-                int textLen = text.Length - offset;
+                int textLen = text.Length;
                 int limit = this.text.Length < textLen ? this.text.Length : textLen;
                 int len = 0;
+                ReadOnlySpan<char> thisText = this.text.Span;
                 while (len < limit)
                 {
-                    if (this.text[len] != text[offset + len])
+                    if (thisText[len] != text[len])
                     {
                         break;
                     }
@@ -634,8 +646,13 @@ namespace ICU4N.Impl
             private void Split(int offset)
             {
                 // split the current node at the offset
-                char[] childText = SubArray(text, offset);
-                text = SubArray(text, 0, offset);
+
+                // ICU4N: Note that we don't allocate memory for the new
+                // node, we simply slice the existing memory. Each node
+                // holds a reference to the original underlying string
+                // to keep it in scope.
+                ReadOnlyMemory<char> childText = text.Slice(offset);
+                text = text.Slice(0, offset);
 
                 // add the Node representing after the offset as a child
                 Node child = new Node(childText, values, children);
@@ -644,7 +661,7 @@ namespace ICU4N.Impl
                 children = new List<Node> { child };
             }
 
-            private IList<TValue> AddValue(IList<TValue> list, TValue value)
+            private IList<TValue> AddValue(IList<TValue>? list, TValue value)
             {
                 if (list == null)
                 {
@@ -655,37 +672,8 @@ namespace ICU4N.Impl
             }
         }
 
-        private static char[] ToCharArray(StringBuilder text)
-        {
-            char[] array = new char[text.Length];
-            //for (int i = 0; i < array.Length; i++)
-            //{
-            //    array[i] = text[i];
-            //}
-            text.CopyTo(sourceIndex: 0, array, destinationIndex: 0, array.Length);
-            return array;
-        }
+        // ICU4N: Removed ToCharArray() and replaced with StringBuilder.ToString().AsMemory()
 
-        private static char[] SubArray(char[] array, int start)
-        {
-            if (start == 0)
-            {
-                return array;
-            }
-            char[] sub = new char[array.Length - start];
-            Array.Copy(array, start, sub, 0, sub.Length);
-            return sub;
-        }
-
-        private static char[] SubArray(char[] array, int start, int limit) // ICU4N TODO: Change limit to length
-        {
-            if (start == 0 && limit == array.Length)
-            {
-                return array;
-            }
-            char[] sub = new char[limit - start];
-            Array.Copy(array, start, sub, 0, limit - start);
-            return sub;
-        }
+        // ICU4N: Removed SubArray() and replaced with ReadOnlyMemory<char>.Slice()
     }
 }
