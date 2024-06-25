@@ -1,4 +1,5 @@
-﻿using ICU4N.Util;
+﻿using ICU4N.Text;
+using ICU4N.Util;
 using J2N;
 using J2N.Collections;
 using J2N.Text;
@@ -1126,7 +1127,7 @@ namespace ICU4N.Impl.Coll
         {
             // Collect digits.
             // TODO: Use some kind of a byte buffer? We only store values 0..9.
-            StringBuilder digits = new StringBuilder();
+            using ValueStringBuilder digits = new ValueStringBuilder(stackalloc char[Collator.CharStackBufferSize]);
             if (forward)
             {
                 for (; ; )
@@ -1179,7 +1180,7 @@ namespace ICU4N.Impl.Coll
                 // Write a sequence of CEs for at most 254 digits at a time.
                 int segmentLength = digits.Length - pos;
                 if (segmentLength > 254) { segmentLength = 254; }
-                AppendNumericSegmentCEs(digits.Subsequence(pos, /*pos +*/ segmentLength)); // ICU4N: Corrected Subsequence math
+                AppendNumericSegmentCEs(digits.AsSpan(pos, /*pos +*/ segmentLength)); // ICU4N: Corrected AsSpan math
                 pos += segmentLength;
             } while (pos < digits.Length);
         }
@@ -1188,7 +1189,7 @@ namespace ICU4N.Impl.Coll
         /// Turns 1..254 digits into a sequence of CEs.
         /// Called by <see cref="AppendNumericCEs(int, bool)"/> for each segment of at most 254 digits.
         /// </summary>
-        private void AppendNumericSegmentCEs(ICharSequence digits)
+        private void AppendNumericSegmentCEs(ReadOnlySpan<char> digits)
         {
             int length = digits.Length;
             Debug.Assert(1 <= length && length <= 254);
