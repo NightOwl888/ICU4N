@@ -1130,7 +1130,8 @@ namespace ICU4N.Impl.Coll
                 // and the CanonicalIterator, so we can ignore them here.
                 return false;
             }
-            if (EqualSubSequences(nfdString, indexAfterLastStarter, decomp, lastStarterLength))
+            // C++ UnicodeString::compare(leftStart, 0x7fffffff, right, rightStart, 0x7fffffff) == 0
+            if (nfdString.Slice(indexAfterLastStarter).Equals(decomp.Slice(lastStarterLength), StringComparison.Ordinal))
             {
                 // same strings, nothing new to be found here
                 return false;
@@ -1222,20 +1223,8 @@ namespace ICU4N.Impl.Coll
             return true;
         }
 
-        private bool EqualSubSequences(ReadOnlySpan<char> left, int leftStart, ReadOnlySpan<char> right, int rightStart) // ICU4N specific - changed right from ICharSequence to string
-        {
-            // C++ UnicodeString::compare(leftStart, 0x7fffffff, right, rightStart, 0x7fffffff) == 0
-            int leftLength = left.Length;
-            if ((leftLength - leftStart) != (right.Length - rightStart)) { return false; }
-            while (leftStart < leftLength)
-            {
-                if (left[leftStart++] != right[rightStart++])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        // ICU4N: Factored out EqualSubSequences because we can slice spans in .NET
+
         // ICU4N specific overload
         private bool IgnorePrefix(string s)
         {
