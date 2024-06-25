@@ -126,7 +126,7 @@ namespace ICU4N.Text
              * a bulk mode normalization could be used.
              * (For details, see the comment in the C++ version.)
              */
-            StringBuilder normalized = new StringBuilder();
+            ValueStringBuilder normalized = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             ValueStringBuilder segment = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             try
             {
@@ -150,11 +150,11 @@ namespace ICU4N.Text
                         start = prev;
                         break;
                     }
-                    norm2.Normalize(segment.AsSpan(), normalized); // ICU4N TODO: Use ValueStringBuilder for normalized result
-                    if (!UTF16Plus.Equal(segment.AsSpan(), normalized))
+                    norm2.Normalize(segment.AsSpan(), ref normalized);
+                    if (!UTF16Plus.Equal(segment.AsSpan(), normalized.AsSpan()))
                     {
                         // replace the input chunk with its normalized form
-                        text.Replace(prev, start - prev, normalized.ToString()); // ICU4N: Corrected 2nd parameter
+                        text.Replace(prev, start - prev, normalized.AsSpan()); // ICU4N: Corrected 2nd parameter
 
                         // update all necessary indexes accordingly
                         int delta = normalized.Length - (start - prev);
@@ -166,6 +166,7 @@ namespace ICU4N.Text
             finally
             {
                 segment.Dispose();
+                normalized.Dispose();
             }
 
             offsets.Start = start;
