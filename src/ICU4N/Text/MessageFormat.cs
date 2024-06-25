@@ -3188,134 +3188,74 @@ namespace ICU4N.Text
 
             public void Append(string s)
             {
-                try
-                {
-                    app.Append(s);
-                    length += s.Length;
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);
-                }
+                // ICU4N: Removed unnecessary try/catch
+                app.Append(s);
+                length += s.Length;
+
             }
 
             public void Append(string s, int startIndex, int count) // ICU4N: Changed 3rd parameter to count
             {
-                try
-                {
-                    app.Append(s, startIndex, count); // ICU4N: 3rd parameter corrected by the method signature
-                    length += count;
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);
-                }
+                // ICU4N: Removed unnecessary try/catch
+                app.Append(s, startIndex, count); // ICU4N: 3rd parameter corrected by the method signature
+                length += count;
             }
 
             public void Append(StringBuilder s)
             {
-                try
-                {
-                    app.Append(s);
-                    length += s.Length;
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);
-                }
-            }
-
-            public void Append(char[] s)
-            {
-                try
-                {
-                    app.Append(s);
-                    length += s.Length;
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);
-                }
-            }
-
-            public void Append(char[] s, int startIndex, int count) // ICU4N: Changed 3rd parameter to count
-            {
-                try
-                {
-                    app.Append(s, startIndex, count);
-                    length += count;
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);
-                }
+                // ICU4N: Removed unnecessary try/catch
+                app.Append(s);
+                length += s.Length;
             }
 
             public void Append(StringBuilder s, int startIndex, int count) // ICU4N: Changed 3rd parameter to count
             {
-                try
-                {
-                    app.Append(s, startIndex, count); // ICU4N: 3rd parameter corrected by the method signature
-                    length += count;
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);
-                }
+                // ICU4N: Removed unnecessary try/catch
+                app.Append(s, startIndex, count); // ICU4N: 3rd parameter corrected by the method signature
+                length += count;
             }
 
-            public void Append(ICharSequence s)
+            public void Append(char[] s)
             {
-                try
-                {
-                    app.Append(s);
-                    length += s.Length;
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);
-                }
+                // ICU4N: Removed unnecessary try/catch
+                app.Append(s);
+                length += s.Length;
             }
 
-            public void Append(ICharSequence s, int startIndex, int count) // ICU4N: Changed 3rd parameter to count
+            public void Append(char[] s, int startIndex, int count) // ICU4N: Changed 3rd parameter to count
             {
-                try
-                {
-                    app.Append(s, startIndex, count); // ICU4N: 3rd parameter corrected by the method signature
-                    length += count;
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);
-                }
+                // ICU4N: Removed unnecessary try/catch
+                app.Append(s, startIndex, count);
+                length += count;
             }
 
-            public void Append(CharacterIterator iterator)
+            public void Append(ReadOnlySpan<char> s)
+            {
+                // ICU4N: Removed unnecessary try/catch
+                app.Append(s);
+                length += s.Length;
+            }
+
+            public void Append(CharacterIterator iterator) // ICU4N TODO: API - factor out (we can't wrap ReadOnlySpan<char> in CharacterIterator)
             {
                 length += Append(app, iterator);
             }
 
-            public static int Append(IAppendable result, CharacterIterator iterator)
+            public static int Append(IAppendable result, CharacterIterator iterator) // ICU4N TODO: API - factor out (we can't wrap ReadOnlySpan<char> in CharacterIterator)
             {
-                try
+                // ICU4N: Removed unnecessary try/catch
+                int start = iterator.BeginIndex;
+                int limit = iterator.EndIndex;
+                int length = limit - start;
+                if (start < limit)
                 {
-                    int start = iterator.BeginIndex;
-                    int limit = iterator.EndIndex;
-                    int length = limit - start;
-                    if (start < limit)
+                    result.Append(iterator.First());
+                    while (++start < limit)
                     {
-                        result.Append(iterator.First());
-                        while (++start < limit)
-                        {
-                            result.Append(iterator.Next());
-                        }
+                        result.Append(iterator.Next());
                     }
-                    return length;
                 }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);
-                }
+                return length;
             }
 
             public void FormatAndAppend(Formatter formatter, object arg)
