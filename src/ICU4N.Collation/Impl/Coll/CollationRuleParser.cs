@@ -70,7 +70,7 @@ namespace ICU4N.Impl.Coll
             /// Adds a relation with strength and prefix | str / extension.
             /// </summary>
             void AddRelation(CollationStrength strength, ReadOnlySpan<char> prefix,
-                    ReadOnlyMemory<char> str, ReadOnlySpan<char> extension); // ICU4N specific - changed prefix and extension from ICharSequence to ReadOnlySpan<char>
+                    ReadOnlyMemory<char> str, ReadOnlySpan<char> extension);
 
             void SuppressContractions(UnicodeSet set);
 
@@ -614,22 +614,22 @@ namespace ICU4N.Impl.Coll
             if (j > i && rules[j] == 0x5d && rawBuilder.Length != 0)
             {  // words end with ]
                 ++j;
-                string raw = rawBuilder.ToString();
+                ReadOnlySpan<char> raw = rawBuilder.AsSpan();
                 str.Length = 0;
                 for (int pos = 0; pos < positions.Length; ++pos)
                 {
-                    if (raw.Equals(positions[pos]))
+                    if (raw.Equals(positions[pos], StringComparison.Ordinal))
                     {
                         str.Append(POS_LEAD).Append((char)(POS_BASE + pos));
                         return j;
                     }
                 }
-                if (raw.Equals("top"))
+                if (raw.Equals("top", StringComparison.Ordinal))
                 {
                     str.Append(POS_LEAD).Append((char)(POS_BASE + (int)Position.LastRegular));
                     return j;
                 }
-                if (raw.Equals("variable top"))
+                if (raw.Equals("variable top", StringComparison.Ordinal))
                 {
                     str.Append(POS_LEAD).Append((char)(POS_BASE + (int)Position.LastVariable));
                     return j;
@@ -648,7 +648,7 @@ namespace ICU4N.Impl.Coll
                 SetParseError("expected a setting/option at '['");
             }
             // startsWith() etc. are available for String but not CharSequence/StringBuilder.
-            string raw = rawBuilder.ToString();
+            ReadOnlySpan<char> raw = rawBuilder.AsSpan();
             if (rules[j] == 0x5d)
             {  // words end with ]
                 ++j;
@@ -659,24 +659,24 @@ namespace ICU4N.Impl.Coll
                     ruleIndex = j;
                     return;
                 }
-                if (raw.Equals("backwards 2"))
+                if (raw.Equals("backwards 2", StringComparison.Ordinal))
                 {
                     settings.SetFlag(CollationSettings.BackwardSecondary, true);
                     ruleIndex = j;
                     return;
                 }
-                string v;
+                ReadOnlySpan<char> v;
                 int valueIndex = raw.LastIndexOf((char)0x20);
                 if (valueIndex >= 0)
                 {
-                    v = raw.Substring(valueIndex + 1);
-                    raw = raw.Substring(0, valueIndex - 0); // ICU4N: Checked 2nd parameter
+                    v = raw.Slice(valueIndex + 1);
+                    raw = raw.Slice(0, valueIndex - 0); // ICU4N: Checked 2nd parameter
                 }
                 else
                 {
-                    v = "";
+                    v = ReadOnlySpan<char>.Empty;
                 }
-                if (raw.Equals("strength") && v.Length == 1)
+                if (raw.Equals("strength", StringComparison.Ordinal) && v.Length == 1)
                 {
                     int value = UCOL_DEFAULT;
                     char c = v[0];
@@ -695,14 +695,14 @@ namespace ICU4N.Impl.Coll
                         return;
                     }
                 }
-                else if (raw.Equals("alternate"))
+                else if (raw.Equals("alternate", StringComparison.Ordinal))
                 {
                     int value = UCOL_DEFAULT;
-                    if (v.Equals("non-ignorable"))
+                    if (v.Equals("non-ignorable", StringComparison.Ordinal))
                     {
                         value = 0;  // UCOL_NON_IGNORABLE
                     }
-                    else if (v.Equals("shifted"))
+                    else if (v.Equals("shifted", StringComparison.Ordinal))
                     {
                         value = 1;  // UCOL_SHIFTED
                     }
@@ -713,22 +713,22 @@ namespace ICU4N.Impl.Coll
                         return;
                     }
                 }
-                else if (raw.Equals("maxVariable"))
+                else if (raw.Equals("maxVariable", StringComparison.Ordinal))
                 {
                     int value = UCOL_DEFAULT;
-                    if (v.Equals("space"))
+                    if (v.Equals("space", StringComparison.Ordinal))
                     {
                         value = CollationSettings.MaxVariableSpace;
                     }
-                    else if (v.Equals("punct"))
+                    else if (v.Equals("punct", StringComparison.Ordinal))
                     {
                         value = CollationSettings.MaxVariblePunctuation;
                     }
-                    else if (v.Equals("symbol"))
+                    else if (v.Equals("symbol", StringComparison.Ordinal))
                     {
                         value = CollationSettings.MaxVariableSymbol;
                     }
-                    else if (v.Equals("currency"))
+                    else if (v.Equals("currency", StringComparison.Ordinal))
                     {
                         value = CollationSettings.MaxVarCurrency;
                     }
@@ -742,18 +742,18 @@ namespace ICU4N.Impl.Coll
                         return;
                     }
                 }
-                else if (raw.Equals("caseFirst"))
+                else if (raw.Equals("caseFirst", StringComparison.Ordinal))
                 {
                     int value = UCOL_DEFAULT;
-                    if (v.Equals("off"))
+                    if (v.Equals("off", StringComparison.Ordinal))
                     {
                         value = UCOL_OFF;
                     }
-                    else if (v.Equals("lower"))
+                    else if (v.Equals("lower", StringComparison.Ordinal))
                     {
                         value = CollationSettings.CaseFirst;  // UCOL_LOWER_FIRST
                     }
-                    else if (v.Equals("upper"))
+                    else if (v.Equals("upper", StringComparison.Ordinal))
                     {
                         value = CollationSettings.CaseFirstAndUpperMask;  // UCOL_UPPER_FIRST
                     }
@@ -764,7 +764,7 @@ namespace ICU4N.Impl.Coll
                         return;
                     }
                 }
-                else if (raw.Equals("caseLevel"))
+                else if (raw.Equals("caseLevel", StringComparison.Ordinal))
                 {
                     int value = GetOnOffValue(v);
                     if (value != UCOL_DEFAULT)
@@ -774,7 +774,7 @@ namespace ICU4N.Impl.Coll
                         return;
                     }
                 }
-                else if (raw.Equals("normalization"))
+                else if (raw.Equals("normalization", StringComparison.Ordinal))
                 {
                     int value = GetOnOffValue(v);
                     if (value != UCOL_DEFAULT)
@@ -784,7 +784,7 @@ namespace ICU4N.Impl.Coll
                         return;
                     }
                 }
-                else if (raw.Equals("numericOrdering"))
+                else if (raw.Equals("numericOrdering", StringComparison.Ordinal))
                 {
                     int value = GetOnOffValue(v);
                     if (value != UCOL_DEFAULT)
@@ -794,7 +794,7 @@ namespace ICU4N.Impl.Coll
                         return;
                     }
                 }
-                else if (raw.Equals("hiraganaQ"))
+                else if (raw.Equals("hiraganaQ", StringComparison.Ordinal))
                 {
                     int value = GetOnOffValue(v);
                     if (value != UCOL_DEFAULT)
@@ -807,15 +807,15 @@ namespace ICU4N.Impl.Coll
                         return;
                     }
                 }
-                else if (raw.Equals("import"))
+                else if (raw.Equals("import", StringComparison.Ordinal))
                 {
                     // BCP 47 language tag -> ICU locale ID
                     UCultureInfo localeID;
                     try
                     {
-                        localeID = new UCultureInfoBuilder().SetLanguageTag(v).Build();
+                        localeID = new UCultureInfoBuilder().SetLanguageTag(v.ToString()).Build(); // ICU4N TODO: Eliminate this allocation
                     }
-                    catch (Exception e)
+                    catch (Exception e) // ICU4N TODO: Find a way to eliminate the exceptions, if possible.
                     {
                         SetParseError("expected language tag in [import langTag]", e);
                         return;
@@ -863,7 +863,7 @@ namespace ICU4N.Impl.Coll
             {  // words end with [
                 UnicodeSet set = new UnicodeSet();
                 j = ParseUnicodeSet(j, set);
-                if (raw.Equals("optimize"))
+                if (raw.Equals("optimize", StringComparison.Ordinal))
                 {
                     try
                     {
@@ -876,7 +876,7 @@ namespace ICU4N.Impl.Coll
                     ruleIndex = j;
                     return;
                 }
-                else if (raw.Equals("suppressContractions"))
+                else if (raw.Equals("suppressContractions", StringComparison.Ordinal))
                 {
                     try
                     {
@@ -893,7 +893,7 @@ namespace ICU4N.Impl.Coll
             SetParseError("not a valid setting/option");
         }
 
-        private void ParseReordering(string raw) // ICU4N specific - changed raw from ICharSequence to string
+        private void ParseReordering(ReadOnlySpan<char> raw)
         {
             int i = 7;  // after "reorder"
             if (i == raw.Length)
@@ -909,7 +909,7 @@ namespace ICU4N.Impl.Coll
                 ++i;  // skip the word-separating space
                 int limit = i;
                 while (limit < raw.Length && raw[limit] != ' ') { ++limit; }
-                string word = raw.Substring(i, limit - i); // ICU4N: Corrected 2nd parameter
+                ReadOnlySpan<char> word = raw.Slice(i, limit - i); // ICU4N: Corrected 2nd parameter
                 int code = GetReorderCode(word);
                 if (code < 0)
                 {
@@ -943,6 +943,19 @@ namespace ICU4N.Impl.Coll
         /// <returns>The script/reorder code, or -1 if not recognized.</returns>
         public static int GetReorderCode(string word)
         {
+            if (word is null)
+                throw new ArgumentNullException(nameof(word));
+
+            return GetReorderCode(word.AsSpan());
+        }
+
+        /// <summary>
+        /// Gets a script or reorder code from its string representation.
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns>The script/reorder code, or -1 if not recognized.</returns>
+        public static int GetReorderCode(ReadOnlySpan<char> word)
+        {
             for (int i = 0; i < gSpecialReorderCodes.Length; ++i)
             {
                 if (word.Equals(gSpecialReorderCodes[i], StringComparison.OrdinalIgnoreCase))
@@ -969,13 +982,13 @@ namespace ICU4N.Impl.Coll
             return -1;
         }
 
-        private static int GetOnOffValue(string s)
+        private static int GetOnOffValue(ReadOnlySpan<char> s)
         {
-            if (s.Equals("on"))
+            if (s.Equals("on", StringComparison.Ordinal))
             {
                 return UCOL_ON;
             }
-            else if (s.Equals("off"))
+            else if (s.Equals("off", StringComparison.Ordinal))
             {
                 return UCOL_OFF;
             }
