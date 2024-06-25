@@ -864,7 +864,209 @@ namespace ICU4N.Impl
         /// </summary>
         internal const int UNEWTRIE2_MAX_DATA_LENGTH = (0x110000 + 0x40 + 0x40 + 0x400);
 
-        // ICU4N: De-nested Trie2Enumerator
+        /// <summary>
+        /// Implementation class for an enumerator over a <see cref="Trie2"/>.
+        /// <para/>
+        /// Iteration over a <see cref="Trie2"/> first returns all of the ranges that are indexed by code points,
+        /// then returns the special alternate values for the lead surrogates.
+        /// </summary>
+        /// <internal/>
+        internal class Trie2Enumerator : IEnumerator<Trie2Range>
+        {
+            private readonly Trie2 trie2;
+            private Trie2Range current = null;
+
+            // The normal constructor that configures the iterator to cover the complete
+            //   contents of the Trie2
+            internal Trie2Enumerator(Trie2 trie2, IValueMapper vm)
+            {
+                this.trie2 = trie2;
+                mapper = vm;
+                nextStart = 0;
+                limitCP = 0x110000;
+                doLeadSurrogates = true;
+            }
+
+            // An alternate constructor that configures the iterator to cover only the
+            //   code points corresponding to a particular Lead Surrogate value.
+            internal Trie2Enumerator(Trie2 trie2, char leadSurrogate, IValueMapper vm)
+            {
+                if (leadSurrogate < 0xd800 || leadSurrogate > 0xdbff)
+                {
+                    throw new ArgumentException("Bad lead surrogate value.");
+                }
+                this.trie2 = trie2;
+                mapper = vm;
+                nextStart = (leadSurrogate - 0xd7c0) << 10;
+                limitCP = nextStart + 0x400;
+                doLeadSurrogates = false;   // Do not iterate over lead the special lead surrogate
+                                            //   values after completing iteration over code points.
+            }
+
+            /// <summary>
+            /// The main Next() function for <see cref="Trie2"/> iterators
+            /// </summary>
+            private Trie2Range Next()
+            {
+                //if (!hasNext())
+                //{
+                //    throw new NoSuchElementException();
+                //}
+                if (nextStart >= limitCP)
+                {
+                    // Switch over from iterating normal code point values to
+                    //   doing the alternate lead-surrogate values.
+                    doingCodePoints = false;
+                    nextStart = 0xd800;
+                }
+                int endOfRange = 0;
+                int val = 0;
+                int mappedVal = 0;
+
+                if (doingCodePoints)
+                {
+                    // Iteration over code point values.
+                    val = trie2.Get(nextStart);
+                    mappedVal = mapper.Map(val);
+                    endOfRange = trie2.RangeEnd(nextStart, limitCP, val);
+                    // Loop once for each range in the Trie2 with the same raw (unmapped) value.
+                    // Loop continues so long as the mapped values are the same.
+                    for (; ; )
+                    {
+                        if (endOfRange >= limitCP - 1)
+                        {
+                            break;
+                        }
+                        val = trie2.Get(endOfRange + 1);
+                        if (mapper.Map(val) != mappedVal)
+                        {
+                            break;
+                        }
+                        endOfRange = trie2.RangeEnd(endOfRange + 1, limitCP, val);
+                    }
+                }
+                else
+                {
+                    // Iteration over the alternate lead surrogate values.
+                    val = trie2.GetFromU16SingleLead((char)nextStart);
+                    mappedVal = mapper.Map(val);
+                    endOfRange = RangeEndLS((char)nextStart);
+                    // Loop once for each range in the Trie2 with the same raw (unmapped) value.
+                    // Loop continues so long as the mapped values are the same.
+                    for (; ; )
+                    {
+                        if (endOfRange >= 0xdbff)
+                        {
+                            break;
+                        }
+                        val = trie2.GetFromU16SingleLead((char)(endOfRange + 1));
+                        if (mapper.Map(val) != mappedVal)
+                        {
+                            break;
+                        }
+                        endOfRange = RangeEndLS((char)(endOfRange + 1));
+                    }
+                }
+                returnValue.StartCodePoint = nextStart;
+                returnValue.EndCodePoint = endOfRange;
+                returnValue.Value = mappedVal;
+                returnValue.IsLeadSurrogate = !doingCodePoints;
+                nextStart = endOfRange + 1;
+                return returnValue;
+            }
+
+            private bool HasNext => doingCodePoints && (doLeadSurrogates || nextStart < limitCP) || nextStart < 0xdc00;
+
+            public virtual Trie2Range Current => current;
+
+            object IEnumerator.Current => this.Current;
+
+            public virtual bool MoveNext()
+            {
+                if (!HasNext)
+                    return false;
+                current = Next();
+                return true;
+            }
+
+            public virtual void Reset()
+            {
+                throw new NotSupportedException();
+            }
+
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                // Nothing to do
+            }
+
+            // ICU4N specific - Remove() not supported in .NET
+
+            /// <summary>
+            /// Find the last lead surrogate in a contiguous range  with the
+            /// same <see cref="Trie2"/> value as the input character.
+            /// </summary>
+            /// <remarks>
+            /// Use the alternate Lead Surrogate values from the Trie2,
+            /// not the code-point values.
+            /// <para/>
+            /// Note: <see cref="Trie2_16"/> and <see cref="Trie2_32"/> override this implementation with optimized versions,
+            ///       meaning that the implementation here is only being used with
+            ///       <see cref="Trie2Writable"/>.  The code here is logically correct with any type
+            ///       of <see cref="Trie2"/>, however.      
+            /// </remarks>
+            /// <param name="startingLS">The character to begin with.</param>
+            /// <returns>The last contiguous character with the same value.</returns>
+            private int RangeEndLS(char startingLS)
+            {
+                if (startingLS >= 0xdbff)
+                {
+                    return 0xdbff;
+                }
+
+                int c;
+                int val = trie2.GetFromU16SingleLead(startingLS);
+                for (c = startingLS + 1; c <= 0x0dbff; c++)
+                {
+                    if (trie2.GetFromU16SingleLead((char)c) != val)
+                    {
+                        break;
+                    }
+                }
+                return c - 1;
+            }
+
+            //
+            //   Iteration State Variables
+            //
+            private IValueMapper mapper;
+            private Trie2Range returnValue = new Trie2Range();
+            /// <summary>The starting code point for the next range to be returned.</summary>
+            private int nextStart;
+            /// <summary>
+            /// The upper limit for the last normal range to be returned.  Normally 0x110000, but
+            /// may be lower when iterating over the code points for a single lead surrogate.
+            /// </summary>
+            private int limitCP;
+
+            /// <summary>
+            /// True while iterating over the the <see cref="Trie2"/> values for code points.
+            /// False while iterating over the alternate values for lead surrogates.
+            /// </summary>
+            private bool doingCodePoints = true;
+
+            /// <summary>
+            /// True if the iterator should iterate the special values for lead surrogates in
+            /// addition to the normal values for code points.
+            /// </summary>
+            private bool doLeadSurrogates = true;
+        }
+
 
         /// <summary>
         /// Find the last character in a contiguous range of characters with the
@@ -970,206 +1172,5 @@ namespace ICU4N.Impl
     }
 
 
-    /// <summary>
-    /// Implementation class for an enumerator over a <see cref="Trie2"/>.
-    /// <para/>
-    /// Iteration over a <see cref="Trie2"/> first returns all of the ranges that are indexed by code points,
-    /// then returns the special alternate values for the lead surrogates.
-    /// </summary>
-    /// <internal/>
-    public class Trie2Enumerator : IEnumerator<Trie2Range> // ICU4N TODO: API Re-nest this and rename Enumerator. This is typical of data structures in .NET.
-    {
-        private readonly Trie2 trie2;
-        private Trie2Range current = null;
 
-        // The normal constructor that configures the iterator to cover the complete
-        //   contents of the Trie2
-        internal Trie2Enumerator(Trie2 trie2, IValueMapper vm)
-        {
-            this.trie2 = trie2;
-            mapper = vm;
-            nextStart = 0;
-            limitCP = 0x110000;
-            doLeadSurrogates = true;
-        }
-
-        // An alternate constructor that configures the iterator to cover only the
-        //   code points corresponding to a particular Lead Surrogate value.
-        internal Trie2Enumerator(Trie2 trie2, char leadSurrogate, IValueMapper vm)
-        {
-            if (leadSurrogate < 0xd800 || leadSurrogate > 0xdbff)
-            {
-                throw new ArgumentException("Bad lead surrogate value.");
-            }
-            this.trie2 = trie2;
-            mapper = vm;
-            nextStart = (leadSurrogate - 0xd7c0) << 10;
-            limitCP = nextStart + 0x400;
-            doLeadSurrogates = false;   // Do not iterate over lead the special lead surrogate
-                                        //   values after completing iteration over code points.
-        }
-
-        /// <summary>
-        /// The main Next() function for <see cref="Trie2"/> iterators
-        /// </summary>
-        private Trie2Range Next()
-        {
-            //if (!hasNext())
-            //{
-            //    throw new NoSuchElementException();
-            //}
-            if (nextStart >= limitCP)
-            {
-                // Switch over from iterating normal code point values to
-                //   doing the alternate lead-surrogate values.
-                doingCodePoints = false;
-                nextStart = 0xd800;
-            }
-            int endOfRange = 0;
-            int val = 0;
-            int mappedVal = 0;
-
-            if (doingCodePoints)
-            {
-                // Iteration over code point values.
-                val = trie2.Get(nextStart);
-                mappedVal = mapper.Map(val);
-                endOfRange = trie2.RangeEnd(nextStart, limitCP, val);
-                // Loop once for each range in the Trie2 with the same raw (unmapped) value.
-                // Loop continues so long as the mapped values are the same.
-                for (; ; )
-                {
-                    if (endOfRange >= limitCP - 1)
-                    {
-                        break;
-                    }
-                    val = trie2.Get(endOfRange + 1);
-                    if (mapper.Map(val) != mappedVal)
-                    {
-                        break;
-                    }
-                    endOfRange = trie2.RangeEnd(endOfRange + 1, limitCP, val);
-                }
-            }
-            else
-            {
-                // Iteration over the alternate lead surrogate values.
-                val = trie2.GetFromU16SingleLead((char)nextStart);
-                mappedVal = mapper.Map(val);
-                endOfRange = RangeEndLS((char)nextStart);
-                // Loop once for each range in the Trie2 with the same raw (unmapped) value.
-                // Loop continues so long as the mapped values are the same.
-                for (; ; )
-                {
-                    if (endOfRange >= 0xdbff)
-                    {
-                        break;
-                    }
-                    val = trie2.GetFromU16SingleLead((char)(endOfRange + 1));
-                    if (mapper.Map(val) != mappedVal)
-                    {
-                        break;
-                    }
-                    endOfRange = RangeEndLS((char)(endOfRange + 1));
-                }
-            }
-            returnValue.StartCodePoint = nextStart;
-            returnValue.EndCodePoint = endOfRange;
-            returnValue.Value = mappedVal;
-            returnValue.IsLeadSurrogate = !doingCodePoints;
-            nextStart = endOfRange + 1;
-            return returnValue;
-        }
-
-        private bool HasNext => doingCodePoints && (doLeadSurrogates || nextStart < limitCP) || nextStart < 0xdc00;
-
-        public virtual Trie2Range Current => current;
-
-        object IEnumerator.Current => this.Current;
-
-        public virtual bool MoveNext()
-        {
-            if (!HasNext)
-                return false;
-            current = Next();
-            return true;
-        }
-
-        public virtual void Reset()
-        {
-            throw new NotSupportedException();
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            // Nothing to do
-        }
-
-        // ICU4N specific - Remove() not supported in .NET
-
-        /// <summary>
-        /// Find the last lead surrogate in a contiguous range  with the
-        /// same <see cref="Trie2"/> value as the input character.
-        /// </summary>
-        /// <remarks>
-        /// Use the alternate Lead Surrogate values from the Trie2,
-        /// not the code-point values.
-        /// <para/>
-        /// Note: <see cref="Trie2_16"/> and <see cref="Trie2_32"/> override this implementation with optimized versions,
-        ///       meaning that the implementation here is only being used with
-        ///       <see cref="Trie2Writable"/>.  The code here is logically correct with any type
-        ///       of <see cref="Trie2"/>, however.      
-        /// </remarks>
-        /// <param name="startingLS">The character to begin with.</param>
-        /// <returns>The last contiguous character with the same value.</returns>
-        private int RangeEndLS(char startingLS)
-        {
-            if (startingLS >= 0xdbff)
-            {
-                return 0xdbff;
-            }
-
-            int c;
-            int val = trie2.GetFromU16SingleLead(startingLS);
-            for (c = startingLS + 1; c <= 0x0dbff; c++)
-            {
-                if (trie2.GetFromU16SingleLead((char)c) != val)
-                {
-                    break;
-                }
-            }
-            return c - 1;
-        }
-
-        //
-        //   Iteration State Variables
-        //
-        private IValueMapper mapper;
-        private Trie2Range returnValue = new Trie2Range();
-        /// <summary>The starting code point for the next range to be returned.</summary>
-        private int nextStart;
-        /// <summary>
-        /// The upper limit for the last normal range to be returned.  Normally 0x110000, but
-        /// may be lower when iterating over the code points for a single lead surrogate.
-        /// </summary>
-        private int limitCP;
-
-        /// <summary>
-        /// True while iterating over the the <see cref="Trie2"/> values for code points.
-        /// False while iterating over the alternate values for lead surrogates.
-        /// </summary>
-        private bool doingCodePoints = true;
-
-        /// <summary>
-        /// True if the iterator should iterate the special values for lead surrogates in
-        /// addition to the normal values for code points.
-        /// </summary>
-        private bool doLeadSurrogates = true;
-    }
 }
