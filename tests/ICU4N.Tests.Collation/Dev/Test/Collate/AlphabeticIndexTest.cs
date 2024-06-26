@@ -207,7 +207,7 @@ namespace ICU4N.Dev.Test.Collate
             {
                 foreach (var record in bucket)
                 {
-                    if (record.Name.Equals(probe))
+                    if (record.Name.Span.Equals(probe, StringComparison.Ordinal))
                     {
                         return bucket;
                     }
@@ -440,10 +440,10 @@ namespace ICU4N.Dev.Test.Collate
                         bucket.LabelType, immIndex.GetBucket(bucketIndex).LabelType);
                 foreach (var r in bucket)
                 {
-                    string name = r.Name; // ICU4N specific - changed from ICharSequence to string
-                    assertEquals("getBucketIndex(" + name + ")",
+                    ReadOnlyMemory<char> name = r.Name;
+                    assertEquals("getBucketIndex(" + name.ToString() + ")",
                             bucketIndex, index.GetBucketIndex(name));
-                    assertEquals("immutable getBucketIndex(" + name + ")",
+                    assertEquals("immutable getBucketIndex(" + name.ToString() + ")",
                             bucketIndex, immIndex.GetBucketIndex(name));
                 }
                 if (bucket.Label.Equals(testBucket))
@@ -536,9 +536,12 @@ namespace ICU4N.Dev.Test.Collate
             buffer.Append(label + " ");
         }
 
-        private void ShowIndexedItem<T>(StringBuilder buffer, string key, T value) // ICU4N specific - changed key from ICharSequence to string
+        private void ShowIndexedItem<T>(StringBuilder buffer, ReadOnlyMemory<char> key, T value)
         {
-            buffer.Append("\t " + key + ARROW + value);
+            buffer.Append("\t ");
+            buffer.Append(key.Span);
+            buffer.Append(ARROW);
+            buffer.Append(value);
         }
 
         private void ShowLabelInList(StringBuilder buffer, String label)
@@ -724,7 +727,7 @@ namespace ICU4N.Dev.Test.Collate
                                 }
                                 if (!record.Name.Equals(myName))
                                 {
-                                    gotError |= !assertEquals(ulocale + "\t" + bucketLabel + "\t" + "Record Names (" + index + "." + recordIndex++ + ")", record.Name, myName);
+                                    gotError |= !assertEquals(ulocale + "\t" + bucketLabel + "\t" + "Record Names (" + index + "." + recordIndex++ + ")", record.Name.ToString(), myName);
                                 }
                             }
                             while (myBucketIterator.MoveNext())

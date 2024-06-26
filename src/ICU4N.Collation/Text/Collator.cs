@@ -803,6 +803,8 @@ namespace ICU4N.Text
         /// </summary>
         private sealed class ASCII
         {
+            // ICU4N TODO: Need to run a benchmark and possibly factor this out.
+            // I suspect this is either slower or equivalent to string.Equals(string, OrdinalIgnoreCase) or the span equivalent.
             internal static bool EqualIgnoreCase(string left, string right) // ICU4N specific - changed params from ICharSequence to string
             {
                 int length = left.Length;
@@ -1442,7 +1444,14 @@ namespace ICU4N.Text
         /// </returns>
         /// <exception cref="ArgumentNullException">thrown if either argument is null.</exception>
         /// <stable>ICU 2.8</stable>
-        public abstract int Compare(string source, string target); // ICU4N TODO: Throw ArgumentNullException ?
+        public virtual int Compare(string source, string target)
+        {
+            // ICU4N: Comparers don't throw in .NET, so we fixup the null cases
+            if (source is null) return (target is null ? 0 : -1);
+            if (target is null) return 1;
+
+            return Compare(source.AsMemory(), target.AsMemory());
+        }
 
         /// <summary>
         /// Compares the source <see cref="object"/> to the target <see cref="object"/>.
@@ -1454,44 +1463,69 @@ namespace ICU4N.Text
         /// less than target, value is zero if source and target are equal,
         /// value is greater than zero if source is greater than target.
         /// </returns>
-        /// <exception cref="InvalidCastException">thrown if either arguments cannot be cast to <see cref="string"/>.</exception>
         /// <stable>ICU 4.2</stable>
         public virtual int Compare(object source, object target)
         {
-            return Compare(ObjectToString(source), ObjectToString(target));
+            // ICU4N: Comparers don't throw in .NET, so we fixup the null cases
+            if (source is null) return (target is null ? 0 : -1);
+            if (target is null) return 1;
 
-            //return DoCompare((ICharSequence)source, (ICharSequence)target); 
+            // These are just to keep the strings in scope.
+            string sourceString, targetString;
+            if (!TryObjectToMemory(source, out ReadOnlyMemory<char> sourceMemory))
+            {
+                sourceString = source.ToString();
+                sourceMemory = sourceString.AsMemory();
+            }
+            if (!TryObjectToMemory(target, out ReadOnlyMemory<char> targetMemory))
+            {
+                targetString = target.ToString();
+                targetMemory = targetString.AsMemory();
+            }
+
+            return Compare(sourceMemory, targetMemory);
         }
 
-        private string ObjectToString(object obj)
+        private bool TryObjectToMemory(object obj, out ReadOnlyMemory<char> memory)
         {
-            if (obj is string)
+            if (obj is string str)
             {
-                return (string)obj;
+                memory = str.AsMemory();
+                return true;
             }
-            else if (obj is char[])
+            else if (obj is char[] chars)
             {
-                return new string((char[])obj);
+                memory = chars.AsMemory();
+                return true;
             }
             else
             {
-                return obj.ToString();
+
+                memory = default;
+                return false;
             }
         }
 
+        // ICU4N: Factored out DoCompare from the API, since we want users to be able to pass in their own memory.
+
         /// <summary>
-        /// Compares two <see cref="ICharSequence"/>s.
-        /// The base class just calls <c>Compare(left.ToString(), right.ToString())</c>.
-        /// Subclasses should instead implement this method and have the String API call this method.
+        /// Compares the source text <see cref="ReadOnlyMemory{T}"/> to the target text <see cref="ReadOnlyMemory{T}"/> according to
+        /// this <see cref="Collator"/>'s rules, strength and decomposition mode.
+        /// Returns an integer less than,
+        /// equal to or greater than zero depending on whether the source String is
+        /// less than, equal to or greater than the target <see cref="ReadOnlyMemory{T}"/>. See the <see cref="Collator"/>
+        /// class description for an example of use.
         /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        [Obsolete("This API is ICU internal only.")]
-        internal virtual int DoCompare(ReadOnlyMemory<char> left, ReadOnlyMemory<char> right) // ICU4N specific - marked internal instead of public, since the functionality is obsolete
-        {
-            return Compare(left.ToString(), right.ToString());
-        }
+        /// <param name="source">the source string.</param>
+        /// <param name="target">the target string.</param>
+        /// <returns>
+        /// Returns an integer value. Value is less than zero if source is
+        /// less than target, value is zero if source and target are equal,
+        /// value is greater than zero if source is greater than target.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">thrown if either argument is null.</exception>
+        /// <draft>ICU 60.1</draft>
+        public abstract int Compare(ReadOnlyMemory<char> source, ReadOnlyMemory<char> target);
 
         /// <summary>
         /// Transforms the <see cref="string"/> into a <see cref="CollationKey"/> suitable for efficient

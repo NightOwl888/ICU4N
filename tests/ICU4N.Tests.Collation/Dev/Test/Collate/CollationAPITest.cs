@@ -819,9 +819,9 @@ namespace ICU4N.Dev.Test.Collate
                 return 0;
             }
 
-            public override int Compare(String source, String target)
+            public override int Compare(ReadOnlyMemory<char> source, ReadOnlyMemory<char> target)
             {
-                return source.CompareToOrdinal(target);
+                return source.Span.CompareTo(target.Span, StringComparison.Ordinal);
             }
 
             public override CollationKey GetCollationKey(String source)

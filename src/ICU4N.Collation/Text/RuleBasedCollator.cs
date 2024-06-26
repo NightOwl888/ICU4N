@@ -1070,7 +1070,7 @@ namespace ICU4N.Text
             }
         }
 
-        private CollationKey GetCollationKey(string source, CollationBuffer buffer)
+        private CollationKey GetCollationKey(string source, CollationBuffer buffer) // ICU4N TODO: API - Add ReadOnlyMemory overload?
         {
             // ICU4N Port Note: using the System.Globalization.SortKey was considered as an option, but
             // since its constructor is internal and using Reflection to set the internal
@@ -1098,7 +1098,7 @@ namespace ICU4N.Text
         /// <seealso cref="Compare(string, string)"/>
         /// <seealso cref="RawCollationKey"/>
         /// <stable>ICU 2.8</stable>
-        public override RawCollationKey GetRawCollationKey(string source, RawCollationKey key)
+        public override RawCollationKey GetRawCollationKey(string source, RawCollationKey key) // ICU4N TODO: API - Add ReadOnlyMemory overload?
         {
             if (source == null)
             {
@@ -1382,9 +1382,10 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public override int Compare(string source, string target)
         {
-#pragma warning disable 612, 618
-            return DoCompare(source.AsMemory(), target.AsMemory());
-#pragma warning restore 612, 618
+            if (source is null) return (target is null ? 0 : -1);
+            if (target is null) return 1;
+
+            return Compare(source.AsMemory(), target.AsMemory());
         }
 
         /// <summary>
@@ -1568,11 +1569,40 @@ namespace ICU4N.Text
         }
 
         /// <summary>
+        /// Compares the source text <see cref="ReadOnlyMemory{Char}"/> to the target text <see cref="ReadOnlyMemory{Char}"/>
+        /// according to the collation rules, strength and decomposition mode for this <see cref="RuleBasedCollator"/>.
+        /// Returns an <see cref="int"/> less than, equal to or greater than zero depending on whether the source
+        /// <see cref="ReadOnlyMemory{Char}"/> is less than, equal to or greater than the target <see cref="ReadOnlyMemory{Char}"/>.
+        /// See the <see cref="Collator"/> documentation for an example of use.
+        /// <para/>
+        /// General recommendation: <br/>
+        /// If comparison are to be done to the same string multiple times, it would be more efficient to generate
+        /// <see cref="CollationKey"/>s for the strings and use <see cref="CollationKey.CompareTo(CollationKey)"/> for the comparisons. If speed
+        /// performance is critical and object instantiation is to be reduced, further optimization may be achieved by
+        /// generating a simpler key of the form <see cref="RawCollationKey"/> and reusing this <see cref="RawCollationKey"/> object with the method
+        /// <see cref="RuleBasedCollator.GetRawCollationKey(string, RawCollationKey)"/>. Internal byte representation can be directly accessed via <see cref="RawCollationKey"/>
+        /// and stored for future use. Like <see cref="CollationKey"/>, <see cref="RawCollationKey"/> provides a method <see cref="RawCollationKey.CompareTo(ByteArrayWrapper)"/> for key
+        /// comparisons. If the each <see cref="string"/>s are compared to only once, using the method <see cref="RuleBasedCollator.Compare(string, string)"/>
+        /// will have a better performance.
+        /// </summary>
+        /// <param name="source">The source text <see cref="ReadOnlyMemory{Char}"/>.</param>
+        /// <param name="target">The target text <see cref="ReadOnlyMemory{Char}"/>.</param>
+        /// <returns>Returns an integer value. Value is less than zero if source is less than target, value is zero if source
+        /// and target are equal, value is greater than zero if source is greater than target.</returns>
+        /// <seealso cref="CollationKey"/>
+        /// <seealso cref="GetCollationKey(string)"/>
+        /// <stable>ICU 2.8</stable>
+        public override int Compare(ReadOnlyMemory<char> source, ReadOnlyMemory<char> target)
+        {
+            return DoCompare(source, target);
+        }
+
+        /// <summary>
         /// Compares two <see cref="ReadOnlyMemory{Char}"/>s.
         /// </summary>
         /// <internal/>
-        [Obsolete("This API is ICU internal only.")]
-        internal override int DoCompare(ReadOnlyMemory<char> left, ReadOnlyMemory<char> right) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
+        //[Obsolete("This API is ICU internal only.")]
+        private int DoCompare(ReadOnlyMemory<char> left, ReadOnlyMemory<char> right)
         {
             var leftSpan = left.Span;
             var rightSpan = right.Span;
