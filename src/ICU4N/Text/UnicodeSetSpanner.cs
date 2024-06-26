@@ -5,7 +5,7 @@ using System.Text;
 namespace ICU4N.Text
 {
     /// <summary>
-    /// A helper class used to count, replace, and trim <see cref="ICharSequence"/>s based on <see cref="Text.UnicodeSet"/> matches.
+    /// A helper class used to count, replace, and trim character sequences based on <see cref="Text.UnicodeSet"/> matches.
     /// </summary>
     /// <remarks>
     /// An instance is immutable (and thus thread-safe) iff the source UnicodeSet is frozen.
