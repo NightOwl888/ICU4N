@@ -366,7 +366,7 @@ namespace ICU4N.Impl
         public class Node
         {
             private ReadOnlyMemory<char> text;
-            private object? textReference; // This will pin the memory so the GC cannot collect it.
+            private object? textReference; // ICU4N: Keeps the string or char[] behind text alive for the lifetime of this class
             private IList<TValue>? values;
             internal IList<Node>? children;
 

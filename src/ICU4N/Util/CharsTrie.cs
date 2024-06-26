@@ -21,7 +21,7 @@ namespace ICU4N.Util
     public sealed class CharsTrieState
     {
         private ReadOnlyMemory<char> chars;
-        private object charsReference;
+        private object charsReference; // ICU4N: Keeps the string or char[] behind chars alive for the lifetime of this class
 
         /// <summary>
         /// Constructs an empty <see cref="CharsTrieState"/>.
@@ -340,7 +340,7 @@ namespace ICU4N.Util
         }
 
         private ReadOnlyMemory<char> chars_;
-        private object charsReference_;
+        private object charsReference_; // ICU4N: Keeps the string or char[] behind chars_ alive for the lifetime of this class
         private int pos_;
         private int initialPos_;
         private int remainingMatchLength_;

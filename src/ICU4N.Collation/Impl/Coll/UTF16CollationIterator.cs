@@ -24,6 +24,7 @@ namespace ICU4N.Impl.Coll
             : base(d, numeric)
         {
             seq = s;
+            seq.TryGetReference(ref seqReference);
             start = 0;
             pos = p;
             limit = s.Length;
@@ -59,6 +60,7 @@ namespace ICU4N.Impl.Coll
         {
             Reset(numeric);
             seq = s;
+            seq.TryGetReference(ref seqReference);
             start = 0;
             pos = p;
             limit = s.Length;
@@ -157,6 +159,7 @@ namespace ICU4N.Impl.Coll
         }
 
         protected ReadOnlyMemory<char> seq;
+        protected object seqReference; // ICU4N: Keeps the string or char[] behind seq alive for the lifetime of this class
         protected int start;
         protected int pos;
         protected int limit;

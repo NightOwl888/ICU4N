@@ -1489,6 +1489,7 @@ namespace ICU4N.Impl.Coll
                 // Modified copy of CollationIterator.nextCE() and CollationIterator.nextCEFromCE32().
                 Reset();
                 s = str;
+                str.TryGetReference(ref sReference);
                 pos = start;
                 ReadOnlySpan<char> sSpan = s.Span;
                 while (pos < s.Length)
@@ -1603,6 +1604,7 @@ namespace ICU4N.Impl.Coll
             private readonly CollationData builderData;
             private readonly int[] jamoCE32s = new int[CollationData.JAMO_CE32S_LENGTH];
             private ReadOnlyMemory<char> s;
+            private object sReference; // ICU4N: Keeps the string or char[] behind s alive for the lifetime of this class
             private int pos;
         }
 

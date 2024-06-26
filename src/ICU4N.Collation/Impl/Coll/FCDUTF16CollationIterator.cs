@@ -534,7 +534,7 @@ namespace ICU4N.Impl.Coll
         // or the current segment had to be normalized so that
         // rawSeq[segmentStart..segmentLimit[ turned into the normalized string,
         // corresponding to seq==normalized && 0==start<=pos<=limit==start+normalized.length().
-        private ReadOnlyMemory<char> rawSeq;
+        private ReadOnlyMemory<char> rawSeq; // ICU4N: The base class keeps this alive for us
         private const int rawStart = 0;
         private int segmentStart;
         private int segmentLimit;

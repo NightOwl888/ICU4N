@@ -1,6 +1,7 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Text;
 using System;
+#nullable enable
 
 namespace ICU4N.Impl
 {
@@ -12,6 +13,7 @@ namespace ICU4N.Impl
     {
         private int index;
         private readonly ReadOnlyMemory<char> seq;
+        private readonly object? seqReference; // ICU4N: Keeps the string or char[] behind seq alive for the lifetime of this class
 
         /// <summary>
         /// Constructor.
@@ -20,6 +22,7 @@ namespace ICU4N.Impl
         public ReadOnlyMemoryCharacterIterator(ReadOnlyMemory<char> text)
         {
             seq = text;
+            text.TryGetReference(ref seqReference);
             index = 0;
         }
 
@@ -153,7 +156,7 @@ namespace ICU4N.Impl
         /// <param name="obj">The object to compare with this object.</param>
         /// <returns><c>true</c> if the specified object is equal to this <see cref="ReadOnlyMemoryCharacterIterator"/>; <c>false</c> otherwise.</returns>
         /// <seealso cref="GetHashCode()"/>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is ReadOnlyMemoryCharacterIterator it)
             {

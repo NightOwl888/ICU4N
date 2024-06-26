@@ -10,7 +10,7 @@ namespace ICU4N.Text
     internal class CharsDictionaryMatcher : DictionaryMatcher
     {
         private readonly ReadOnlyMemory<char> characters;
-        private readonly object? reference;
+        private readonly object? reference; // ICU4N: Keeps the string or char[] behind characters alive for the lifetime of this class
 
         public CharsDictionaryMatcher(string chars)
             : this(chars.AsMemory())
