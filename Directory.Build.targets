@@ -41,6 +41,7 @@
 
     <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_APPCONTEXT_BASEDIRECTORY</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_ARRAYEMPTY</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_ASYNCLOCAL</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_CULTUREINFO_CURRENTCULTURE_SETTER</DefineConstants>
     <DefineConstants Condition=" '$(TargetFramework)' != 'netstandard1.0' ">$(DefineConstants);FEATURE_RUNTIMEINFORMATION_ISOSPLATFORM</DefineConstants>
@@ -62,6 +63,7 @@
   <!-- Features in .NET Framework 4.6+ only -->
   <PropertyGroup Condition="$(TargetFramework.StartsWith('net46')) Or $(TargetFramework.StartsWith('net47')) Or $(TargetFramework.StartsWith('net48'))">
 
+    <DefineConstants>$(DefineConstants);FEATURE_ARRAYEMPTY</DefineConstants>
     <DefineConstants>$(DefineConstants);FEATURE_STRINGBUILDER_APPEND_CHARPTR</DefineConstants>
 
   </PropertyGroup>
