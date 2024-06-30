@@ -1,20 +1,27 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ICU4N.Support.Collections
 {
-    internal static class DictionaryExtensions
+    internal static partial class DictionaryExtensions
     {
         public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {
+            if (dictionary is null)
+                throw new ArgumentNullException(nameof(dictionary));
+
             dictionary.TryGetValue(key, out TValue result);
             return result;
         }
 
-        public static void PutAll<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<KeyValuePair<TKey, TValue>> kvps)
+        public static void PutAll<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, IEnumerable<KeyValuePair<TKey, TValue>> collection)
         {
-            foreach (var kvp in kvps)
+            if (dictionary is null)
+                throw new ArgumentNullException(nameof(dictionary));
+
+            foreach (var kvp in collection)
             {
-                dict[kvp.Key] = kvp.Value;
+                dictionary[kvp.Key] = kvp.Value;
             }
         }
     }
