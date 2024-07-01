@@ -153,7 +153,7 @@ namespace ICU4N.Impl.Locale
         ///
         /// privateuse    = "x" 1*("-" (1*8alphanum))
         /// </remarks>
-        public static LanguageTag Parse(ReadOnlySpan<char> languageTag, out ParseStatus status)
+        public static bool TryParse(ReadOnlySpan<char> languageTag, out LanguageTag result, out ParseStatus status)
         {
             var sts = new ParseStatus();
 
@@ -210,7 +210,8 @@ namespace ICU4N.Impl.Locale
             }
 
             status = sts;
-            return tag;
+            result = tag;
+            return !sts.IsError;
         }
 
         //

@@ -3281,7 +3281,7 @@ namespace ICU4N.Globalization
             if (languageTag == null)
                 throw new ArgumentNullException(nameof(languageTag));
 
-            LanguageTag tag = LanguageTag.Parse(languageTag.AsSpan(), out _);
+            LanguageTag.TryParse(languageTag.AsSpan(), out LanguageTag tag, out _);
             InternalLocaleBuilder bldr = new InternalLocaleBuilder();
             bldr.SetLanguageTag(tag);
             return GetInstance(bldr.GetBaseLocale(), bldr.GetLocaleExtensions());
