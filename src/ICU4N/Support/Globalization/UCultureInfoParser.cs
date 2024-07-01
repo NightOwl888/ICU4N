@@ -109,8 +109,7 @@ namespace ICU4N.Globalization
          */
         public UCultureInfoBuilder SetLanguageTag(string languageTag)
         {
-            ParseStatus sts = new ParseStatus();
-            LanguageTag tag = LanguageTag.Parse(languageTag.AsSpan(), sts);
+            LanguageTag tag = LanguageTag.Parse(languageTag.AsSpan(), out ParseStatus sts);
             if (sts.IsError)
             {
                 throw new IllformedLocaleException(sts.ErrorMessage, sts.ErrorIndex);

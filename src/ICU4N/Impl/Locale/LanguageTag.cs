@@ -153,16 +153,9 @@ namespace ICU4N.Impl.Locale
         ///
         /// privateuse    = "x" 1*("-" (1*8alphanum))
         /// </remarks>
-        public static LanguageTag Parse(ReadOnlySpan<char> languageTag, ParseStatus? sts)
+        public static LanguageTag Parse(ReadOnlySpan<char> languageTag, out ParseStatus status)
         {
-            if (sts == null)
-            {
-                sts = new ParseStatus();
-            }
-            else
-            {
-                sts.Reset();
-            }
+            var sts = new ParseStatus();
 
             StringTokenEnumerator itr;
             bool isGrandfathered = false;
@@ -184,15 +177,15 @@ namespace ICU4N.Impl.Locale
             LanguageTag tag = new LanguageTag();
 
             // langtag must start with either language or privateuse
-            if (tag.ParseLanguage(ref itr, sts))
+            if (tag.ParseLanguage(ref itr, ref sts))
             {
-                tag.ParseExtlangs(ref itr, sts);
-                tag.ParseScript(ref itr, sts);
-                tag.ParseRegion(ref itr, sts);
-                tag.ParseVariants(ref itr, sts);
-                tag.ParseExtensions(ref itr, sts);
+                tag.ParseExtlangs(ref itr, ref sts);
+                tag.ParseScript(ref itr, ref sts);
+                tag.ParseRegion(ref itr, ref sts);
+                tag.ParseVariants(ref itr, ref sts);
+                tag.ParseExtensions(ref itr, ref sts);
             }
-            tag.ParsePrivateuse(ref itr, sts);
+            tag.ParsePrivateuse(ref itr, ref sts);
 
             if (isGrandfathered)
             {
@@ -216,6 +209,7 @@ namespace ICU4N.Impl.Locale
                 }
             }
 
+            status = sts;
             return tag;
         }
 
@@ -223,7 +217,7 @@ namespace ICU4N.Impl.Locale
         // Language subtag parsers
         //
 
-        private bool ParseLanguage(ref StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParseLanguage(ref StringTokenEnumerator itr, ref ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -244,7 +238,7 @@ namespace ICU4N.Impl.Locale
             return found;
         }
 
-        private bool ParseExtlangs(ref StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParseExtlangs(ref StringTokenEnumerator itr, ref ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -279,7 +273,7 @@ namespace ICU4N.Impl.Locale
             return found;
         }
 
-        private bool ParseScript(ref StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParseScript(ref StringTokenEnumerator itr, ref ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -300,7 +294,7 @@ namespace ICU4N.Impl.Locale
             return found;
         }
 
-        private bool ParseRegion(ref StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParseRegion(ref StringTokenEnumerator itr, ref ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -321,7 +315,7 @@ namespace ICU4N.Impl.Locale
             return found;
         }
 
-        private bool ParseVariants(ref StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParseVariants(ref StringTokenEnumerator itr, ref ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -350,7 +344,7 @@ namespace ICU4N.Impl.Locale
             return found;
         }
 
-        private bool ParseExtensions(ref StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParseExtensions(ref StringTokenEnumerator itr, ref ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -415,7 +409,7 @@ namespace ICU4N.Impl.Locale
             return found;
         }
 
-        private bool ParsePrivateuse(ref StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParsePrivateuse(ref StringTokenEnumerator itr, ref ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
