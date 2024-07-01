@@ -23,9 +23,7 @@ namespace ICU4N
         /// <param name="value">The value to seek within the source span.</param>
         /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="value"/> are compared.</param>
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int IndexOf(this ReadOnlySpan<char> span, string value, StringComparison comparisonType)
         {
             return System.MemoryExtensions.IndexOf(span, value.AsSpan(), comparisonType);
@@ -39,9 +37,7 @@ namespace ICU4N
         /// <param name="other">The value to compare with the source span.</param>
         /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="other"/> are compared.</param>
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static bool Equals(this ReadOnlySpan<char> span, string other, StringComparison comparisonType)
         {
             return System.MemoryExtensions.Equals(span, other.AsSpan(), comparisonType);
@@ -53,9 +49,7 @@ namespace ICU4N
         /// <param name="span">The source span.</param>
         /// <param name="value">The sequence to compare to the beginning of the source span.</param>
         /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="value"/> are compared.</param>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static bool StartsWith(this ReadOnlySpan<char> span, string value, StringComparison comparisonType)
         {
             return System.MemoryExtensions.StartsWith(span, value.AsSpan(), comparisonType);
@@ -67,9 +61,7 @@ namespace ICU4N
         /// <param name="span">The source span.</param>
         /// <param name="value">The sequence to compare to the end of the source span.</param>
         /// <param name="comparisonType">One of the enumeration values that determines how the <paramref name="span"/> and <paramref name="value"/> are compared.</param>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static bool EndsWith(this ReadOnlySpan<char> span, string value, StringComparison comparisonType)
         {
             return System.MemoryExtensions.EndsWith(span, value.AsSpan(), comparisonType);
@@ -77,9 +69,7 @@ namespace ICU4N
 #endif
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int IndexOf(this ReadOnlySpan<char> span, string value, int startIndex, StringComparison comparisonType)
         {
             return IndexOf(span, value.AsSpan(), startIndex, comparisonType);
@@ -93,9 +83,7 @@ namespace ICU4N
         }
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int IndexOf(this ReadOnlySpan<char> span, string value, int startIndex, int count, StringComparison comparisonType)
         {
             return IndexOf(span, value.AsSpan(), startIndex, count, comparisonType);

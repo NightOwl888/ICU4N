@@ -255,9 +255,7 @@ namespace ICU4N.Numerics
             }
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         private int PrepareForInsertHelper(int index, int count)
         {
             // Java note: Keeping this code out of prepareForInsert() increases the speed of append operations.

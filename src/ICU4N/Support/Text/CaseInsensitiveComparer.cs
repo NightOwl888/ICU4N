@@ -46,9 +46,7 @@ namespace ICU4N.Support.Text
         }
 
         // Optimized for ASCII
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         private static int CompareValue(int ch)
         {
             if (ch < 128)

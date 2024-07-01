@@ -46,9 +46,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
         /// <exception cref="System.Resources.MissingManifestResourceException">Throws <see cref="System.Resources.MissingManifestResourceException"/> if the
         /// three-letter country abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string GetThreeLetterISOCountryName(string country)
             => GetThreeLetterISOCountryName(country.AsSpan());
 #endif
@@ -91,9 +89,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
         /// <exception cref="System.Resources.MissingManifestResourceException">Throws <see cref="System.Resources.MissingManifestResourceException"/> if the
         /// three-letter language abbreviation is not available for this locale.</exception>
         /// <stable>ICU 3.0</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string GetThreeLetterISOLanguageName(string language)
             => GetThreeLetterISOLanguageName(language.AsSpan());
 #endif
@@ -128,9 +124,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
         }
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string ThreeToTwoLetterLanguage(string lang)
             => ThreeToTwoLetterLanguage(lang.AsSpan());
 #endif
@@ -154,9 +148,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
         }
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string ThreeToTwoLetterRegion(string region)
             => ThreeToTwoLetterRegion(region.AsSpan());
 #endif
@@ -515,9 +507,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
         };
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string GetCurrentCountryID(string oldID)
             => GetCurrentCountryID(oldID.AsSpan());
 #endif
@@ -533,9 +523,7 @@ namespace ICU4N.Globalization // ICU4N: Moved from ICU4N.Util namespace
         }
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string GetCurrentLanguageID(string oldID)
             => GetCurrentLanguageID(oldID.AsSpan());
 #endif

@@ -555,36 +555,28 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static bool HasCertainErrors(ref IDNAInfo info, IDNAErrors errors) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             return info.errors != IDNAErrors.None && (info.Errors & errors) != 0;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static bool HasCertainLabelErrors(ref IDNAInfo info, IDNAErrors errors) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             return info.labelErrors != IDNAErrors.None && (info.labelErrors & errors) != 0;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void AddLabelError(ref IDNAInfo info, IDNAErrors error) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             info.labelErrors |= error;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void PromoteAndResetLabelErrors(ref IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             if (info.labelErrors > 0)
@@ -595,54 +587,42 @@ namespace ICU4N.Text
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void AddError(ref IDNAInfo info, IDNAErrors error) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             info.errors |= error;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void SetTransitionalDifferent(ref IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             info.isTransDiff = true;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void SetBiDi(ref IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             info.isBiDi = true;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static bool IsBiDi(ref IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             return info.isBiDi;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void SetNotOkBiDi(ref IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             info.isOkBiDi = false;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static bool IsOkBiDi(ref IDNAInfo info) // ICU4N specific - marked internal instead of protected, since the functionality is obsolete
         {
             return info.isOkBiDi;

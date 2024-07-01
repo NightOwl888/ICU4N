@@ -179,9 +179,7 @@ namespace ICU4N.Text
         }
 
         // A span-based equivalent of String.GetHashCode(). Computes an ordinal hash code.
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int GetHashCode(ReadOnlySpan<char> value)
         {
 #if FEATURE_STRING_GETHASHCODE_READONLYSPAN

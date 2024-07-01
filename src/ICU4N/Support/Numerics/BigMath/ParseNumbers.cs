@@ -418,9 +418,7 @@ namespace ICU4N.Numerics.BigMath
         // These are the same implementation as in J2N
         #region IsDigit
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         private static bool IsDigit(ReadOnlySpan<char> s, int i, int end, int radix, out int result, out int charCount)
         {
             if (char.IsHighSurrogate(s[i]) && i + 1 < end && char.IsLowSurrogate(s[i + 1]))

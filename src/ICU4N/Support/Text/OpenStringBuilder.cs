@@ -184,9 +184,7 @@ namespace ICU4N.Text
             return this;
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         private void InsertBlank(int index, int numberOfChars)
         {
             int count = numberOfChars;
@@ -206,9 +204,7 @@ namespace ICU4N.Text
             _pos += count;
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public OpenStringBuilder Append(char c)
         {
             int pos = _pos;
@@ -224,9 +220,7 @@ namespace ICU4N.Text
             return this;
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public OpenStringBuilder Append(string? s)
         {
             if (s == null)
@@ -296,9 +290,7 @@ namespace ICU4N.Text
             return this;
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public Span<char> AppendSpan(int length)
         {
             int origPos = _pos;

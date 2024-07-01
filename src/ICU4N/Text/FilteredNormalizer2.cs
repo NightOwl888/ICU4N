@@ -126,9 +126,7 @@ namespace ICU4N.Text
             }
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal override void NormalizeSecondAndAppend(
             ref ValueStringBuilder first, ReadOnlySpan<char> second)
         {
@@ -168,9 +166,7 @@ namespace ICU4N.Text
             }
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
         {
             if (MemoryHelper.AreSame(first.RawChars, second))
@@ -193,9 +189,7 @@ namespace ICU4N.Text
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s decomposition mapping, if any; otherwise <c>null</c>.</returns>
         /// <stable>ICU 4.6</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override string GetDecomposition(int codePoint)
         {
             return set.Contains(codePoint) ? norm2.GetDecomposition(codePoint) : null;
@@ -216,9 +210,7 @@ namespace ICU4N.Text
         /// the minimum number of chars required.</param>
         /// <returns><c>true</c> if the decomposition was succssfully written to <paramref name="destination"/>; otherwise, <c>false</c>.</returns>
         /// <draft>ICU 60.1</draft>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override bool TryGetDecomposition(int codePoint, Span<char> destination, out int charsLength)
         {
             charsLength = 0;
@@ -247,9 +239,7 @@ namespace ICU4N.Text
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s raw decomposition mapping, if any; otherwise <c>null</c>.</returns>
         /// <stable>ICU 49</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override string GetRawDecomposition(int codePoint)
         {
             return set.Contains(codePoint) ? norm2.GetRawDecomposition(codePoint) : null;
@@ -282,9 +272,7 @@ namespace ICU4N.Text
         /// the minimum number of chars required.</param>
         /// <returns><c>true</c> if the decomposition was succssfully written to <paramref name="destination"/>; otherwise, <c>false</c>.</returns>
         /// <draft>ICU 60.1</draft>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override bool TryGetRawDecomposition(int codePoint, Span<char> destination, out int charsLength)
         {
             charsLength = 0;
@@ -307,9 +295,7 @@ namespace ICU4N.Text
         /// <param name="b">Another code point.</param>
         /// <returns>The non-negative composite code point if there is one; otherwise a negative value.</returns>
         /// <stable>ICU 49</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override int ComposePair(int a, int b)
         {
             return (set.Contains(a) && set.Contains(b)) ? norm2.ComposePair(a, b) : -1;
@@ -323,9 +309,7 @@ namespace ICU4N.Text
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s combining class.</returns>
         /// <stable>ICU 49</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override int GetCombiningClass(int codePoint)
         {
             return set.Contains(codePoint) ? norm2.GetCombiningClass(codePoint) : 0;
@@ -474,9 +458,7 @@ namespace ICU4N.Text
         /// <param name="character">Character to test.</param>
         /// <returns>true if <paramref name="character"/> has a normalization boundary before it.</returns>
         /// <stable>ICU 4.4</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override bool HasBoundaryBefore(int character)
         {
             return !set.Contains(character) || norm2.HasBoundaryBefore(character);
@@ -497,9 +479,7 @@ namespace ICU4N.Text
         /// <param name="character">Character to test.</param>
         /// <returns>true if <paramref name="character"/> has a normalization boundary after it.</returns>
         /// <stable>ICU 4.4</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override bool HasBoundaryAfter(int character)
         {
             return !set.Contains(character) || norm2.HasBoundaryAfter(character);
@@ -519,9 +499,7 @@ namespace ICU4N.Text
         /// <param name="character">Character to test.</param>
         /// <returns>true if <paramref name="character"/> is normalization-inert.</returns>
         /// <stable>ICU 4.4</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override bool IsInert(int character)
         {
             return !set.Contains(character) || norm2.IsInert(character);
@@ -784,15 +762,11 @@ namespace ICU4N.Text
             return buffer.TryCopyTo(destination, out _);
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
             => TryNormalizeSecondAndConcat(first, second, destination, out charsLength, doNormalize: true);
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public override bool TryConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength)
             => TryNormalizeSecondAndConcat(first, second, destination, out charsLength, doNormalize: false);
 

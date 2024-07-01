@@ -31,9 +31,7 @@ namespace ICU4N.Impl
         /// Convenience utility to compare two <see cref="T:object[]"/>s.
         /// Ought to be in System.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static bool ArrayEquals<T>(T[] source, T[] target)
         {
             // ICU4N: Using generics and a comparer is much faster in .NET
@@ -74,9 +72,7 @@ namespace ICU4N.Impl
         /// This method should help document that we really want == not <see cref="object.Equals(object, object)"/>
         /// and to have a single place to suppress warnings from static analysis tools.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static bool SameObjects(object a, object b) // ICU4N: Factor out and use object.ReferenceEquals()
         {
             return a == b;
@@ -85,9 +81,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience utility. Does null checks on objects, then calls <see cref="object.Equals(object)"/>.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static bool ObjectEquals(object a, object b)
         {
             return a == null ?
@@ -99,9 +93,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience utility. Does null checks on objects, then calls <see cref="J2N.Text.StringExtensions.CompareToOrdinal(string, string)"/>.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int CheckCompare(string a, string b)
         {
             return a == null ?
@@ -113,9 +105,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience utility. Does null checks on objects, then calls <see cref="IComparable{T}.CompareTo(T)"/>.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int CheckCompare<T>(T a, T b) where T : IComparable<T>
         {
             return a == null ?
@@ -126,9 +116,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience utility. Does null checks on objects, then calls <see cref="IComparable.CompareTo(object)"/>.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int CheckCompare(IComparable a, IComparable b)
         {
             return a == null ?
@@ -139,9 +127,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience utility. Does null checks on object, then calls <see cref="object.GetHashCode()"/>.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int CheckHashCode(object a)
         {
             return a == null ? 0 : a.GetHashCode();
@@ -751,9 +737,7 @@ namespace ICU4N.Impl
         /// be updated to point after the escape sequence.</param>
         /// <returns>Character value from 0 to 10FFFF, or -1 on error.</returns>
         // ICU4N: To fix lack of implicit conversion
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int UnescapeAt(string s, ref int offset16)
             => UnescapeAt(s.AsSpan(), ref offset16);
 #endif
@@ -912,9 +896,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <exception cref="ArgumentException">If an invalid escape is seen.</exception>
         // ICU4N: To fix lack of implicit conversion
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string Unescape(string s)
             => Unescape(s.AsSpan());
 #endif
@@ -954,9 +936,7 @@ namespace ICU4N.Impl
         /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
         /// Leave invalid escape sequences unchanged.
         /// </summary>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static string UnescapeLeniently(string s)
             => UnescapeLeniently(s.AsSpan());
 #endif

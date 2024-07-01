@@ -118,9 +118,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, <#=GenerateValuesParams(i + 1, "ReadOnlySpan<char>")#>)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, <#=GenerateValuesParams(i + 1)#>);
 
@@ -263,9 +261,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, <#=GenerateValuesParams(i + 1, "ReadOnlySpan<char>")#>)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(<#=GenerateValuesParams(i + 1)#>));
 
@@ -300,9 +296,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, <#=GenerateValuesParams(i + 1, "ReadOnlySpan<char>")#>)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(<#=GenerateValuesParams(i + 1)#>));
 

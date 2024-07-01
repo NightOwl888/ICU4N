@@ -32,9 +32,7 @@ namespace ICU4N.Support.Collections
         /// <returns>An empty array.</returns>
         // ICU4N: Since Array.Empty<T>() doesn't exist in all supported platforms, we
         // have this wrapper method to add support.
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
         public static T[] Empty<T>()
         {
 #if FEATURE_ARRAYEMPTY

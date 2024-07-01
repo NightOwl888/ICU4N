@@ -492,9 +492,7 @@ namespace ICU4N.Text
         /// <param name="char16">The input character.</param>
         /// <returns>true if the input character is a surrogate.</returns>
         /// <stable>ICU 2.1</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static bool IsSurrogate(char char16)
         {
             return (char16 & SurrogateBitmask) == SurrogateBits;
@@ -506,9 +504,7 @@ namespace ICU4N.Text
         /// <param name="char16">The input character.</param>
         /// <returns>true if the input character is a trail surrogate.</returns>
         /// <stable>ICU 2.1</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static bool IsTrailSurrogate(char char16)
         {
             return (char16 & TrailSurrogateBitmask) == TrailSurrogateBits;
@@ -520,9 +516,7 @@ namespace ICU4N.Text
         /// <param name="char16">The input character.</param>
         /// <returns>true if the input character is a lead surrogate.</returns>
         /// <stable>ICU 2.1</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static bool IsLeadSurrogate(char char16)
         {
             return (char16 & LeadSurrogateBitmask) == LeadSurrogateBits;
@@ -536,9 +530,7 @@ namespace ICU4N.Text
         /// <returns>Lead surrogate if the <c>GetCharCount(ch)</c> is 2;
         /// and 0 otherwise (note: 0 is not a valid lead surrogate).</returns>
         /// 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static char GetLeadSurrogate(int char32)
         {
             if (char32 >= SupplementaryMinValue)
@@ -556,9 +548,7 @@ namespace ICU4N.Text
         /// <returns>The trail surrogate if the <c>GetCharCount(ch)</c> is 2;
         /// otherwise the character itself.</returns>
         /// <stable>ICU 2.1</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static char GetTrailSurrogate(int char32)
         {
             if (char32 >= SupplementaryMinValue)
@@ -3162,9 +3152,7 @@ namespace ICU4N.Text
         /// since it will never be longer than 2 chars. This must be passed in to allow allocation on the stack
         /// and to hold a reference to the memory outside of this method.</param>
         /// <returns>A <see cref="ReadOnlySpan{Char}"/> containing the chars of the code point.</returns>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         private static ReadOnlySpan<char> ToSpan(int ch, Span<char> buffer)
         {
             if (ch < SupplementaryMinValue)

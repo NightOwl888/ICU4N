@@ -1482,9 +1482,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0);
 
@@ -1505,9 +1503,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1);
 
@@ -1532,9 +1528,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2);
 
@@ -1563,9 +1557,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3);
 
@@ -1598,9 +1590,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4);
 
@@ -1637,9 +1627,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5);
 
@@ -1680,9 +1668,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6);
 
@@ -1727,9 +1713,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7);
 
@@ -1778,9 +1762,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8);
 
@@ -1833,9 +1815,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9);
 
@@ -1892,9 +1872,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
 
@@ -1955,9 +1933,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
 
@@ -2022,9 +1998,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
 
@@ -2093,9 +2067,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
 
@@ -2168,9 +2140,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
 
@@ -2247,9 +2217,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatCompiledPattern(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder destination, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
             => FormatAndAppend(compiledPattern, ref destination, offsets: default, value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
 
@@ -4833,9 +4801,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3));
 
@@ -4874,9 +4840,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4));
 
@@ -4919,9 +4883,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5));
 
@@ -4968,9 +4930,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6));
 
@@ -5021,9 +4981,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7));
 
@@ -5078,9 +5036,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8));
 
@@ -5139,9 +5095,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9));
 
@@ -5204,9 +5158,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10));
 
@@ -5273,9 +5225,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11));
 
@@ -5346,9 +5296,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12));
 
@@ -5423,9 +5371,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13));
 
@@ -5504,9 +5450,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14));
 
@@ -5589,9 +5533,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndAppend(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder appendTo, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
             => FormatAndAppend(compiledPattern, ref appendTo, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15));
 
@@ -5634,9 +5576,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3));
 
@@ -5677,9 +5617,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4));
 
@@ -5724,9 +5662,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5));
 
@@ -5775,9 +5711,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6));
 
@@ -5830,9 +5764,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7));
 
@@ -5889,9 +5821,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8));
 
@@ -5952,9 +5882,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9));
 
@@ -6019,9 +5947,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10));
 
@@ -6090,9 +6016,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11));
 
@@ -6165,9 +6089,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12));
 
@@ -6244,9 +6166,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13));
 
@@ -6327,9 +6247,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14));
 
@@ -6414,9 +6332,7 @@ namespace ICU4N.Impl
         /// The number of values passed must be at least <see cref="GetArgumentLimit(ReadOnlySpan{Char})"/>
         /// with <paramref name="compiledPattern"/> as the argument.
         /// </remarks>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         internal static void FormatAndReplace(scoped ReadOnlySpan<char> compiledPattern, ref ValueStringBuilder result, Span<int> offsets, ReadOnlySpan<char> value0, ReadOnlySpan<char> value1, ReadOnlySpan<char> value2, ReadOnlySpan<char> value3, ReadOnlySpan<char> value4, ReadOnlySpan<char> value5, ReadOnlySpan<char> value6, ReadOnlySpan<char> value7, ReadOnlySpan<char> value8, ReadOnlySpan<char> value9, ReadOnlySpan<char> value10, ReadOnlySpan<char> value11, ReadOnlySpan<char> value12, ReadOnlySpan<char> value13, ReadOnlySpan<char> value14, ReadOnlySpan<char> value15)
             => FormatAndReplace(compiledPattern, ref result, offsets, new ReadOnlySpanArray<char>(value0, value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15));
 

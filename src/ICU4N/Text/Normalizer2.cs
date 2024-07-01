@@ -248,9 +248,7 @@ namespace ICU4N.Text
         /// <param name="src">Source <see cref="ReadOnlySpan{Char}"/>.</param>
         /// <returns>Normalized <paramref name="src"/>.</returns>
         /// <stable>ICU 4.4</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public virtual string Normalize(ReadOnlySpan<char> src)
         {
             ValueStringBuilder sb = src.Length <= CharStackBufferSize
@@ -399,9 +397,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="dest"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="src"/> or <paramref name="dest"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public virtual StringBuilder Normalize(string src, StringBuilder dest)
         {
             if (src is null)
@@ -451,9 +447,7 @@ namespace ICU4N.Text
         /// <typeparam name="TAppendable">The implementation of <see cref="IAppendable"/> to use to write the output.</typeparam>
         /// <exception cref="ArgumentNullException"><paramref name="src"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.6</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public virtual TAppendable Normalize<TAppendable>(string src, TAppendable dest) where TAppendable : IAppendable
         {
             if (src is null)
@@ -490,9 +484,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="first"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="first"/> or <paramref name="second"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public virtual StringBuilder NormalizeSecondAndAppend(
             StringBuilder first, string second)
         {
@@ -548,9 +540,7 @@ namespace ICU4N.Text
         /// <returns><paramref name="first"/></returns>
         /// <exception cref="ArgumentNullException"><paramref name="first"/> or <paramref name="second"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public virtual StringBuilder Append(StringBuilder first, string second)
         {
             if (first is null)
@@ -716,9 +706,7 @@ namespace ICU4N.Text
         /// <returns>true if <paramref name="s"/> is normalized.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="s"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public virtual bool IsNormalized(string s)
         {
             if (s is null)
@@ -756,9 +744,7 @@ namespace ICU4N.Text
         /// <returns>The quick check result.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="s"/> is <c>null</c>.</exception>
         /// <stable>ICU 4.4</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public virtual QuickCheckResult QuickCheck(string s)
         {
             if (s is null)
@@ -804,9 +790,7 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>"yes" span end index.</returns>
         /// <stable>ICU 4.4</stable>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public virtual int SpanQuickCheckYes(string s)
         {
             if (s is null)

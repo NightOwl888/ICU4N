@@ -892,9 +892,7 @@ namespace ICU4N.Impl
             }
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         private static bool EmbeddedResourceFileExists(Assembly assembly, string baseName, string localeID)
         {
             var icuPath = Path.Combine(baseName, string.Concat(localeID, ".res"));
@@ -903,9 +901,7 @@ namespace ICU4N.Impl
             return assembly.GetManifestResourceInfo(ResourceUtil.ConvertResourceName(icuPath)) != null;
         }
 
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         private static bool LooksLikeACultureName(string cultureName)
                 => (cultureName.Length > 1 && cultureName.Length <= 3) || cultureName.IndexOf('-') >= 2;
 

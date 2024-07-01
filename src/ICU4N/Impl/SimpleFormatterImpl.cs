@@ -281,9 +281,7 @@ namespace ICU4N.Impl
 
         /// <param name="compiledPattern">Compiled form of a pattern string.</param>
         /// <returns>The max argument number + 1.</returns>
-#if FEATURE_METHODIMPLOPTIONS_AGRESSIVEINLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static int GetArgumentLimit(ReadOnlySpan<char> compiledPattern)
         {
             return compiledPattern[0];
