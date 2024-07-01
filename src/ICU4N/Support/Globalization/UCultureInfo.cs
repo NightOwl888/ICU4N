@@ -3116,56 +3116,63 @@ namespace ICU4N.Globalization
                 }
             }
 
-            LanguageTag tag = LanguageTag.ParseLocale(@base, exts);
+            LanguageTag.ParseLocale(@base, exts, out LanguageTag tag);
 
             ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            string subtag = tag.Language;
-            if (subtag.Length > 0)
+            try
             {
-                buf.Append(LanguageTag.CanonicalizeLanguage(subtag));
-            }
+                string subtag = tag.Language;
+                if (subtag.Length > 0)
+                {
+                    buf.Append(LanguageTag.CanonicalizeLanguage(subtag));
+                }
 
-            subtag = tag.Script;
-            if (subtag.Length > 0)
-            {
-                buf.Append(LanguageTag.Separator);
-                buf.Append(LanguageTag.CanonicalizeScript(subtag));
-            }
-
-            subtag = tag.Region;
-            if (subtag.Length > 0)
-            {
-                buf.Append(LanguageTag.Separator);
-                buf.Append(LanguageTag.CanonicalizeRegion(subtag));
-            }
-
-            IList<string> subtags = tag.Variants;
-            foreach (string s in subtags)
-            {
-                buf.Append(LanguageTag.Separator);
-                buf.Append(LanguageTag.CanonicalizeVariant(s));
-            }
-
-            subtags = tag.Extensions;
-            foreach (string s in subtags)
-            {
-                buf.Append(LanguageTag.Separator);
-                buf.Append(LanguageTag.CanonicalizeExtension(s));
-            }
-
-            subtag = tag.PrivateUse;
-            if (subtag.Length > 0)
-            {
-                if (buf.Length > 0)
+                subtag = tag.Script;
+                if (subtag.Length > 0)
                 {
                     buf.Append(LanguageTag.Separator);
+                    buf.Append(LanguageTag.CanonicalizeScript(subtag));
                 }
-                buf.Append(LanguageTag.Private_Use);
-                buf.Append(LanguageTag.Separator);
-                buf.Append(LanguageTag.CanonicalizePrivateuse(subtag));
-            }
 
-            return buf.ToString();
+                subtag = tag.Region;
+                if (subtag.Length > 0)
+                {
+                    buf.Append(LanguageTag.Separator);
+                    buf.Append(LanguageTag.CanonicalizeRegion(subtag));
+                }
+
+                IList<string> subtags = tag.Variants;
+                foreach (string s in subtags)
+                {
+                    buf.Append(LanguageTag.Separator);
+                    buf.Append(LanguageTag.CanonicalizeVariant(s));
+                }
+
+                subtags = tag.Extensions;
+                foreach (string s in subtags)
+                {
+                    buf.Append(LanguageTag.Separator);
+                    buf.Append(LanguageTag.CanonicalizeExtension(s));
+                }
+
+                subtag = tag.PrivateUse;
+                if (subtag.Length > 0)
+                {
+                    if (buf.Length > 0)
+                    {
+                        buf.Append(LanguageTag.Separator);
+                    }
+                    buf.Append(LanguageTag.Private_Use);
+                    buf.Append(LanguageTag.Separator);
+                    buf.Append(LanguageTag.CanonicalizePrivateuse(subtag));
+                }
+
+                return buf.ToString();
+            }
+            finally
+            {
+                buf.Dispose();
+            }
         }
 
         /**

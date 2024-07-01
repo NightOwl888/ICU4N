@@ -463,7 +463,7 @@ namespace ICU4N.Impl.Locale
             return found;
         }
 
-        public static LanguageTag ParseLocale(BaseLocale baseLocale, LocaleExtensions localeExtensions)
+        public static void ParseLocale(BaseLocale baseLocale, LocaleExtensions localeExtensions, out LanguageTag result)
         {
             LanguageTag tag = new LanguageTag();
 
@@ -698,7 +698,7 @@ namespace ICU4N.Impl.Locale
                 tag._language = Undetermined;
             }
 
-            return tag;
+            result = tag;
         }
 
         //
