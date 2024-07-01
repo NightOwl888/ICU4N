@@ -1,6 +1,7 @@
 ﻿using J2N.Collections.Generic.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using JCG = J2N.Collections.Generic;
 
@@ -27,7 +28,7 @@ namespace ICU4N.Impl.Locale
                 {
                     ["ca"] = "japanese"
                 },
-                m_value = "ca-japanese"
+                Value = "ca-japanese"
             };
         }
         private static UnicodeLocaleExtension LoadNumberThai() // ICU4N: Avoid static constructor
@@ -38,7 +39,7 @@ namespace ICU4N.Impl.Locale
                 {
                     ["nu"] = "thai"
                 },
-                m_value = "nu-thai"
+                Value = "nu-thai"
             };
         }
 
@@ -78,7 +79,7 @@ namespace ICU4N.Impl.Locale
                         sb.Append(LanguageTag.Separator).Append(value);
                     }
                 }
-                m_value = sb.ToString(1, sb.Length - 1);   // skip leading '-'
+                Value = sb.ToString(1, sb.Length - 1);   // skip leading '-'
             }
         }
 
@@ -99,38 +100,69 @@ namespace ICU4N.Impl.Locale
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsSingletonChar(char c)
         {
             return (Singleton == AsciiUtil.ToLower(c));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAttribute(string s)
         {
             // 3*8alphanum
             return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsAttribute(ReadOnlySpan<char> s)
+        {
+            // 3*8alphanum
+            return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsKey(string s)
         {
             // 2alphanum
             return (s.Length == 2) && AsciiUtil.IsAlphaNumeric(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsKey(ReadOnlySpan<char> s)
+        {
+            // 2alphanum
+            return (s.Length == 2) && AsciiUtil.IsAlphaNumeric(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsTypeSubtag(string s)
         {
             // 3*8alphanum
             return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsTypeSubtag(ReadOnlySpan<char> s)
+        {
+            // 3*8alphanum
+            return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsType(string s)
+        {
+            return IsType(s.AsSpan());
+        }
+
+        public static bool IsType(ReadOnlySpan<char> s)
         {
             // sequence of type subtags delimited by '-'
             int startIdx = 0;
             bool sawSubtag = false;
             while (true)
             {
-                int idx = s.IndexOf(LanguageTag.Separator, startIdx, StringComparison.Ordinal);
-                string subtag = idx < 0 ? s.Substring(startIdx) : s.Substring(startIdx, idx - startIdx); // ICU4N: Corrected 2nd parameter
+                int idx = s.IndexOf(LanguageTag.Separator, startIdx);
+                ReadOnlySpan<char> subtag = idx < 0 ? s.Slice(startIdx) : s.Slice(startIdx, idx - startIdx); // ICU4N: Corrected 2nd parameter
                 if (!IsTypeSubtag(subtag))
                 {
                     return false;

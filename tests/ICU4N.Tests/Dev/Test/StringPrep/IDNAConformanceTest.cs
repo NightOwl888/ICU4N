@@ -3,6 +3,7 @@ using ICU4N.Support.Collections;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -178,20 +179,26 @@ namespace ICU4N.Dev.Test.StringPrep
 
                     // ICU4N: Test the Try... version of the API
 
-
-                    Span<char> resultSpan = stackalloc char[namebase.Length + 16];
+                    char[] arrayToReturnToPool = ArrayPool<char>.Shared.Rent(namebase.Length + 16);
                     int charsLength = 0;
 
-                    //by default STD3 rules are not used, but if the description
-                    //includes UseSTD3ASCIIRules, we will set it.
-                    if (desc.IndexOf(
-                            "UseSTD3ASCIIRules", StringComparison.OrdinalIgnoreCase) == -1)
+                    try
                     {
-                        failed = !IDNA.TryConvertIDNToUnicode(namebase.AsSpan(), resultSpan, out charsLength, IDNA2003Options.AllowUnassigned, out _);
+                        //by default STD3 rules are not used, but if the description
+                        //includes UseSTD3ASCIIRules, we will set it.
+                        if (desc.IndexOf(
+                                "UseSTD3ASCIIRules", StringComparison.OrdinalIgnoreCase) == -1)
+                        {
+                            failed = !IDNA.TryConvertIDNToUnicode(namebase.AsSpan(), arrayToReturnToPool, out charsLength, IDNA2003Options.AllowUnassigned, out _);
+                        }
+                        else
+                        {
+                            failed = !IDNA.TryConvertIDNToUnicode(namebase.AsSpan(), arrayToReturnToPool, out charsLength, IDNA2003Options.UseSTD3Rules, out _);
+                        }
                     }
-                    else
+                    finally
                     {
-                        failed = !IDNA.TryConvertIDNToUnicode(namebase.AsSpan(), resultSpan, out charsLength, IDNA2003Options.UseSTD3Rules, out _);
+                        ArrayPool<char>.Shared.Return(arrayToReturnToPool);
                     }
 
                     if ("pass".Equals(passfail))

@@ -745,7 +745,7 @@ namespace ICU4N.Text
     /// <see cref="MultiDelimiterSplitTokenizerEnumerator"/>.
     /// </summary>
     [Flags]
-    internal enum TrimBehavior
+    public enum TrimBehavior
     {
         /// <summary>
         /// Trim the beginning of the token.

@@ -8,7 +8,7 @@ namespace ICU4N.Impl.Locale
     {
         private static readonly bool JDKIMPL = false;
 
-        public const string Separator = "_";
+        public const char Separator = '_';
 
         private static readonly Cache CACHE = new Cache();
         public static readonly BaseLocale Root = BaseLocale.GetInstance("", "", "", "");

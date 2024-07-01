@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 
 namespace ICU4N.Support.Text
 {
-    internal class Marvin
+    internal static partial class Marvin
     {
         /// <summary>
         /// Compute a Marvin hash and collapse it into a 32-bit hash.

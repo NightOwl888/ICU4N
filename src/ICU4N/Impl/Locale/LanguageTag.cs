@@ -1,21 +1,26 @@
-﻿using J2N.Collections;
+﻿using ICU4N.Support.Collections;
+using ICU4N.Text;
 using J2N.Collections.Generic.Extensions;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+#nullable enable
 
 namespace ICU4N.Impl.Locale
 {
     public class LanguageTag
     {
+        private const int CharStackBufferSize = 32;
+
         private static readonly bool JDKIMPL = false;
 
         //
         // static fields
         //
-        public const string Separator = "-";
+        public const char Separator = '-';
         public const string Private_Use = "x";
         public const string Undetermined = "und";
         public const string PrivateUse_Variant_Prefix = "lvariant";
@@ -28,82 +33,76 @@ namespace ICU4N.Impl.Locale
         private string _region = "";        // region subtag
         private string _privateuse = "";    // privateuse
 
-        private IList<string> _extlangs = new List<string>();   // extlang subtags
-        private IList<string> _variants = new List<string>();   // variant subtags
-        private IList<string> _extensions = new List<string>(); // extensions
+
+        private IList<string> _extlangs = Arrays.Empty<string>();   // extlang subtags
+        private IList<string> _variants = Arrays.Empty<string>();   // variant subtags
+        private IList<string> _extensions = Arrays.Empty<string>(); // extensions
+
+
+        // grandfathered = irregular           ; non-redundant tags registered
+        //               / regular             ; during the RFC 3066 era
+        //
+        // irregular     = "en-GB-oed"         ; irregular tags do not match
+        //               / "i-ami"             ; the 'langtag' production and
+        //               / "i-bnn"             ; would not otherwise be
+        //               / "i-default"         ; considered 'well-formed'
+        //               / "i-enochian"        ; These tags are all valid,
+        //               / "i-hak"             ; but most are deprecated
+        //               / "i-klingon"         ; in favor of more modern
+        //               / "i-lux"             ; subtags or subtag
+        //               / "i-mingo"           ; combination
+        //               / "i-navajo"
+        //               / "i-pwn"
+        //               / "i-tao"
+        //               / "i-tay"
+        //               / "i-tsu"
+        //               / "sgn-BE-FR"
+        //               / "sgn-BE-NL"
+        //               / "sgn-CH-DE"
+        //
+        // regular       = "art-lojban"        ; these tags match the 'langtag'
+        //               / "cel-gaulish"       ; production, but their subtags
+        //               / "no-bok"            ; are not extended language
+        //               / "no-nyn"            ; or variant subtags: their meaning
+        //               / "zh-guoyu"          ; is defined by their registration
+        //               / "zh-hakka"          ; and all of these are deprecated
+        //               / "zh-min"            ; in favor of a more modern
+        //               / "zh-min-nan"        ; subtag or sequence of subtags
+        //               / "zh-xiang"
 
         // Map contains grandfathered tags and its preferred mappings from
         // http://www.ietf.org/rfc/rfc5646.txt
-        private static readonly IDictionary<AsciiCaseInsensitiveKey, string[]> Grandfathered =
-            new Dictionary<AsciiCaseInsensitiveKey, string[]>();
-
-        static LanguageTag()
+        private static readonly Dictionary<string, string> Grandfathered
+            = new Dictionary<string, string>(AsciiStringComparer.OrdinalIgnoreCase)
         {
-            // grandfathered = irregular           ; non-redundant tags registered
-            //               / regular             ; during the RFC 3066 era
-            //
-            // irregular     = "en-GB-oed"         ; irregular tags do not match
-            //               / "i-ami"             ; the 'langtag' production and
-            //               / "i-bnn"             ; would not otherwise be
-            //               / "i-default"         ; considered 'well-formed'
-            //               / "i-enochian"        ; These tags are all valid,
-            //               / "i-hak"             ; but most are deprecated
-            //               / "i-klingon"         ; in favor of more modern
-            //               / "i-lux"             ; subtags or subtag
-            //               / "i-mingo"           ; combination
-            //               / "i-navajo"
-            //               / "i-pwn"
-            //               / "i-tao"
-            //               / "i-tay"
-            //               / "i-tsu"
-            //               / "sgn-BE-FR"
-            //               / "sgn-BE-NL"
-            //               / "sgn-CH-DE"
-            //
-            // regular       = "art-lojban"        ; these tags match the 'langtag'
-            //               / "cel-gaulish"       ; production, but their subtags
-            //               / "no-bok"            ; are not extended language
-            //               / "no-nyn"            ; or variant subtags: their meaning
-            //               / "zh-guoyu"          ; is defined by their registration
-            //               / "zh-hakka"          ; and all of these are deprecated
-            //               / "zh-min"            ; in favor of a more modern
-            //               / "zh-min-nan"        ; subtag or sequence of subtags
-            //               / "zh-xiang"
-
-            string[][] entries = {
-                // new string[] {"tag",         "preferred"},
-                new string[] {"art-lojban",  "jbo"},
-                new string[] {"cel-gaulish", "xtg-x-cel-gaulish"},   // fallback
-                new string[]  {"en-GB-oed",   "en-GB-x-oed"},         // fallback
-                new string[] {"i-ami",       "ami"},
-                new string[] {"i-bnn",       "bnn"},
-                new string[] {"i-default",   "en-x-i-default"},      // fallback
-                new string[] {"i-enochian",  "und-x-i-enochian"},    // fallback
-                new string[] {"i-hak",       "hak"},
-                new string[] {"i-klingon",   "tlh"},
-                new string[] {"i-lux",       "lb"},
-                new string[] {"i-mingo",     "see-x-i-mingo"},       // fallback
-                new string[] {"i-navajo",    "nv"},
-                new string[] {"i-pwn",       "pwn"},
-                new string[] {"i-tao",       "tao"},
-                new string[] {"i-tay",       "tay"},
-                new string[] {"i-tsu",       "tsu"},
-                new string[] {"no-bok",      "nb"},
-                new string[] {"no-nyn",      "nn"},
-                new string[] {"sgn-BE-FR",   "sfb"},
-                new string[] {"sgn-BE-NL",   "vgt"},
-                new string[] {"sgn-CH-DE",   "sgg"},
-                new string[] {"zh-guoyu",    "cmn"},
-                new string[] {"zh-hakka",    "hak"},
-                new string[] {"zh-min",      "nan-x-zh-min"},        // fallback
-                new string[] {"zh-min-nan",  "nan"},
-                new string[] {"zh-xiang",    "hsn"},
-            };
-            foreach (string[] e in entries)
-            {
-                Grandfathered[new AsciiCaseInsensitiveKey(e[0])] = e;
-            }
-        }
+            // {"tag",         "preferred"},
+            {"art-lojban",  "jbo"},
+            {"cel-gaulish", "xtg-x-cel-gaulish"},   // fallback
+            {"en-GB-oed",   "en-GB-x-oed"},         // fallback
+            {"i-ami",       "ami"},
+            {"i-bnn",       "bnn"},
+            {"i-default",   "en-x-i-default"},      // fallback
+            {"i-enochian",  "und-x-i-enochian"},    // fallback
+            {"i-hak",       "hak"},
+            {"i-klingon",   "tlh"},
+            {"i-lux",       "lb"},
+            {"i-mingo",     "see-x-i-mingo"},       // fallback
+            {"i-navajo",    "nv"},
+            {"i-pwn",       "pwn"},
+            {"i-tao",       "tao"},
+            {"i-tay",       "tay"},
+            {"i-tsu",       "tsu"},
+            {"no-bok",      "nb"},
+            {"no-nyn",      "nn"},
+            {"sgn-BE-FR",   "sfb"},
+            {"sgn-BE-NL",   "vgt"},
+            {"sgn-CH-DE",   "sgg"},
+            {"zh-guoyu",    "cmn"},
+            {"zh-hakka",    "hak"},
+            {"zh-min",      "nan-x-zh-min"},        // fallback
+            {"zh-min-nan",  "nan"},
+            {"zh-xiang",    "hsn"},
+        };
 
         private LanguageTag()
         {
@@ -154,7 +153,7 @@ namespace ICU4N.Impl.Locale
         ///
         /// privateuse    = "x" 1*("-" (1*8alphanum))
         /// </remarks>
-        public static LanguageTag Parse(string languageTag, ParseStatus sts)
+        public static LanguageTag Parse(ReadOnlySpan<char> languageTag, ParseStatus? sts)
         {
             if (sts == null)
             {
@@ -169,10 +168,10 @@ namespace ICU4N.Impl.Locale
             bool isGrandfathered = false;
 
             // Check if the tag is grandfathered
-            if (Grandfathered.TryGetValue(new AsciiCaseInsensitiveKey(languageTag), out string[] gfmap) && gfmap != null)
+            if (Grandfathered.TryGetValue(languageTag, out string? gf))
             {
                 // use preferred mapping
-                itr = new StringTokenEnumerator(gfmap[1], Separator);
+                itr = new StringTokenEnumerator(gf.AsSpan(), Separator);
                 isGrandfathered = true;
             }
             else
@@ -185,35 +184,35 @@ namespace ICU4N.Impl.Locale
             LanguageTag tag = new LanguageTag();
 
             // langtag must start with either language or privateuse
-            if (tag.ParseLanguage(itr, sts))
+            if (tag.ParseLanguage(ref itr, sts))
             {
-                tag.ParseExtlangs(itr, sts);
-                tag.ParseScript(itr, sts);
-                tag.ParseRegion(itr, sts);
-                tag.ParseVariants(itr, sts);
-                tag.ParseExtensions(itr, sts);
+                tag.ParseExtlangs(ref itr, sts);
+                tag.ParseScript(ref itr, sts);
+                tag.ParseRegion(ref itr, sts);
+                tag.ParseVariants(ref itr, sts);
+                tag.ParseExtensions(ref itr, sts);
             }
-            tag.ParsePrivateuse(itr, sts);
+            tag.ParsePrivateuse(ref itr, sts);
 
             if (isGrandfathered)
             {
                 // Grandfathered tag is replaced with a well-formed tag above.
                 // However, the parsed length must be the original tag length.
-                Debug.Assert(itr.IsDone);
+                Debug.Assert(itr.Current.Text.IsEmpty);
                 Debug.Assert(!sts.IsError);
                 sts.ParseLength = languageTag.Length;
             }
             else if (!itr.IsDone && !sts.IsError)
             {
-                string s = itr.Current;
-                sts.ErrorIndex = itr.CurrentStart;
+                ReadOnlySpan<char> s = itr.Current;
+                sts.ErrorIndex = itr.Current.StartIndex;
                 if (s.Length == 0)
                 {
                     sts.ErrorMessage = "Empty subtag";
                 }
                 else
                 {
-                    sts.ErrorMessage = "Invalid subtag: " + s;
+                    sts.ErrorMessage = $"Invalid subtag: {s.ToString()}";
                 }
             }
 
@@ -224,7 +223,7 @@ namespace ICU4N.Impl.Locale
         // Language subtag parsers
         //
 
-        private bool ParseLanguage(StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParseLanguage(ref StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -233,19 +232,19 @@ namespace ICU4N.Impl.Locale
 
             bool found = false;
 
-            string s = itr.Current;
+            ReadOnlySpan<char> s = itr.Current;
             if (IsLanguage(s))
             {
                 found = true;
-                _language = s;
-                sts.ParseLength = itr.CurrentEnd;
+                _language = s.ToString();
+                sts.ParseLength = itr.Current.StartIndex + s.Length;
                 itr.MoveNext();
             }
 
             return found;
         }
 
-        private bool ParseExtlangs(StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParseExtlangs(ref StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -256,18 +255,18 @@ namespace ICU4N.Impl.Locale
 
             while (!itr.IsDone)
             {
-                string s = itr.Current;
+                ReadOnlySpan<char> s = itr.Current;
                 if (!IsExtlang(s))
                 {
                     break;
                 }
                 found = true;
-                if (!_extlangs.Any())
+                if (_extlangs.Count == 0)
                 {
                     _extlangs = new List<string>(3);
                 }
-                _extlangs.Add(s);
-                sts.ParseLength = itr.CurrentEnd;
+                _extlangs.Add(s.ToString());
+                sts.ParseLength = itr.Current.StartIndex + s.Length;
                 itr.MoveNext();
 
                 if (_extlangs.Count == 3)
@@ -280,7 +279,7 @@ namespace ICU4N.Impl.Locale
             return found;
         }
 
-        private bool ParseScript(StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParseScript(ref StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -289,19 +288,19 @@ namespace ICU4N.Impl.Locale
 
             bool found = false;
 
-            string s = itr.Current;
+            ReadOnlySpan<char> s = itr.Current;
             if (IsScript(s))
             {
                 found = true;
-                _script = s;
-                sts.ParseLength = itr.CurrentEnd;
+                _script = s.ToString();
+                sts.ParseLength = itr.Current.StartIndex + s.Length;
                 itr.MoveNext();
             }
 
             return found;
         }
 
-        private bool ParseRegion(StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParseRegion(ref StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -310,19 +309,19 @@ namespace ICU4N.Impl.Locale
 
             bool found = false;
 
-            string s = itr.Current;
+            ReadOnlySpan<char> s = itr.Current;
             if (IsRegion(s))
             {
                 found = true;
-                _region = s;
-                sts.ParseLength = itr.CurrentEnd;
+                _region = s.ToString();
+                sts.ParseLength = itr.Current.StartIndex + s.Length;
                 itr.MoveNext();
             }
 
             return found;
         }
 
-        private bool ParseVariants(StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParseVariants(ref StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -333,25 +332,25 @@ namespace ICU4N.Impl.Locale
 
             while (!itr.IsDone)
             {
-                string s = itr.Current;
+                ReadOnlySpan<char> s = itr.Current;
                 if (!IsVariant(s))
                 {
                     break;
                 }
                 found = true;
-                if (!_variants.Any())
+                if (_variants.Count == 0)
                 {
                     _variants = new List<string>(3);
                 }
-                _variants.Add(s);
-                sts.ParseLength = itr.CurrentEnd;
+                _variants.Add(s.ToString());
+                sts.ParseLength = itr.Current.StartIndex + s.Length;
                 itr.MoveNext();
             }
 
             return found;
         }
 
-        private bool ParseExtensions(StringTokenEnumerator itr, ParseStatus sts)
+        private bool ParseExtensions(ref StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -359,94 +358,111 @@ namespace ICU4N.Impl.Locale
             }
 
             bool found = false;
-
-            while (!itr.IsDone)
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                string s = itr.Current;
-                if (IsExtensionSingleton(s))
+                while (!itr.IsDone)
                 {
-                    int start = itr.CurrentStart;
-                    string singleton = s;
-                    StringBuilder sb = new StringBuilder(singleton);
+                    ReadOnlySpan<char> s = itr.Current;
+                    if (IsExtensionSingleton(s))
+                    {
+                        int start = itr.Current.StartIndex;
+                        ReadOnlySpan<char> singleton = s;
+                        sb.Length = 0;
+                        sb.Append(singleton);
+
+                        itr.MoveNext();
+                        while (!itr.IsDone)
+                        {
+                            s = itr.Current;
+                            if (IsExtensionSubtag(s))
+                            {
+                                sb.Append(Separator);
+                                sb.Append(s);
+                                sts.ParseLength = itr.Current.StartIndex + s.Length;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            itr.MoveNext();
+                        }
+
+                        if (sts.ParseLength <= start)
+                        {
+                            sts.ErrorIndex = start;
+                            sts.ErrorMessage = $"Incomplete extension '{singleton.ToString()}'";
+                            break;
+                        }
+
+                        if (_extensions.Count == 0)
+                        {
+                            _extensions = new List<string>(4);
+                        }
+                        _extensions.Add(sb.ToString());
+                        found = true;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+            return found;
+        }
+
+        private bool ParsePrivateuse(ref StringTokenEnumerator itr, ParseStatus sts)
+        {
+            if (itr.IsDone || sts.IsError)
+            {
+                return false;
+            }
+
+            bool found = false;
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ReadOnlySpan<char> s = itr.Current;
+                if (IsPrivateusePrefix(s))
+                {
+                    int start = itr.Current.StartIndex;
+                    sb.Append(s);
 
                     itr.MoveNext();
                     while (!itr.IsDone)
                     {
                         s = itr.Current;
-                        if (IsExtensionSubtag(s))
-                        {
-                            sb.Append(Separator).Append(s);
-                            sts.ParseLength = itr.CurrentEnd;
-                        }
-                        else
+                        if (!IsPrivateuseSubtag(s))
                         {
                             break;
                         }
+                        sb.Append(Separator);
+                        sb.Append(s);
+                        sts.ParseLength = itr.Current.StartIndex + s.Length;
+
                         itr.MoveNext();
                     }
 
                     if (sts.ParseLength <= start)
                     {
+                        // need at least 1 private subtag
                         sts.ErrorIndex = start;
-                        sts.ErrorMessage = "Incomplete extension '" + singleton + "'";
-                        break;
+                        sts.ErrorMessage = "Incomplete privateuse";
                     }
-
-                    if (_extensions.Count == 0)
+                    else
                     {
-                        _extensions = new List<String>(4);
+                        _privateuse = sb.ToString();
+                        found = true;
                     }
-                    _extensions.Add(sb.ToString());
-                    found = true;
-                }
-                else
-                {
-                    break;
                 }
             }
-            return found;
-        }
-
-        private bool ParsePrivateuse(StringTokenEnumerator itr, ParseStatus sts)
-        {
-            if (itr.IsDone || sts.IsError)
+            finally
             {
-                return false;
-            }
-
-            bool found = false;
-
-            string s = itr.Current;
-            if (IsPrivateusePrefix(s))
-            {
-                int start = itr.CurrentStart;
-                StringBuilder sb = new StringBuilder(s);
-
-                itr.MoveNext();
-                while (!itr.IsDone)
-                {
-                    s = itr.Current;
-                    if (!IsPrivateuseSubtag(s))
-                    {
-                        break;
-                    }
-                    sb.Append(Separator).Append(s);
-                    sts.ParseLength = itr.CurrentEnd;
-
-                    itr.MoveNext();
-                }
-
-                if (sts.ParseLength <= start)
-                {
-                    // need at least 1 private subtag
-                    sts.ErrorIndex = start;
-                    sts.ErrorMessage = "Incomplete privateuse";
-                }
-                else
-                {
-                    _privateuse = sb.ToString();
-                    found = true;
-                }
+                sb.Dispose();
             }
 
             return found;
@@ -459,25 +475,25 @@ namespace ICU4N.Impl.Locale
             string language = baseLocale.Language;
             string script = baseLocale.Script;
             string region = baseLocale.Region;
-            string variant = baseLocale.Variant;
+            ReadOnlySpan<char> variant = baseLocale.Variant.AsSpan();
 
             bool hasSubtag = false;
 
-            string privuseVar = null;   // store ill-formed variant subtags
+            string? privuseVar = null;   // store ill-formed variant subtags
 
             if (language.Length > 0 && IsLanguage(language))
             {
                 // Convert a deprecated language code used by Java to
                 // a new code
-                if (language.Equals("iw"))
+                if (language.Equals("iw", StringComparison.Ordinal))
                 {
                     language = "he";
                 }
-                else if (language.Equals("ji"))
+                else if (language.Equals("ji", StringComparison.Ordinal))
                 {
                     language = "yi";
                 }
-                else if (language.Equals("in"))
+                else if (language.Equals("in", StringComparison.Ordinal))
                 {
                     language = "id";
                 }
@@ -500,20 +516,24 @@ namespace ICU4N.Impl.Locale
             if (JDKIMPL)
             {
                 // Special handling for no_NO_NY - use nn_NO for language tag
-                if (tag._language.Equals("no") && tag._region.Equals("NO") && variant.Equals("NY")) // ICU4N TODO: Fix this handling for .NET (no-NO is not reliable across platforms)
+                if (tag._language.Equals("no", StringComparison.Ordinal) &&
+                    tag._region.Equals("NO", StringComparison.Ordinal) &&
+                    variant.Equals("NY", StringComparison.Ordinal)) // ICU4N TODO: Fix this handling for .NET (no-NO is not reliable across platforms)
                 {
                     tag._language = "nn";
-                    variant = "";
+                    variant = ReadOnlySpan<char>.Empty;
                 }
             }
 
             if (variant.Length > 0)
             {
-                List<string> variants = null;
+                Span<char> stackBuffer = stackalloc char[CharStackBufferSize];
+                List<string>? variants = null;
                 StringTokenEnumerator varitr = new StringTokenEnumerator(variant, BaseLocale.Separator);
-                while (varitr.MoveNext())
+                varitr.MoveNext();
+                while (!varitr.IsDone)
                 {
-                    string var = varitr.Current;
+                    scoped ReadOnlySpan<char> var = varitr.Current;
                     if (!IsVariant(var))
                     {
                         break;
@@ -524,12 +544,28 @@ namespace ICU4N.Impl.Locale
                     }
                     if (JDKIMPL)
                     {
-                        variants.Add(var);  // Do not canonicalize!
+                        variants.Add(var.ToString());  // Do not canonicalize!
                     }
                     else
                     {
-                        variants.Add(CanonicalizeVariant(var));
+                        if (var.Length <= stackBuffer.Length)
+                        {
+                            variants.Add(CanonicalizeVariant(var, stackBuffer).ToString());
+                        }
+                        else // rare
+                        {
+                            char[] heapBuffer = ArrayPool<char>.Shared.Rent(var.Length);
+                            try
+                            {
+                                variants.Add(CanonicalizeVariant(var, heapBuffer).ToString());
+                            }
+                            finally
+                            {
+                                ArrayPool<char>.Shared.Return(heapBuffer);
+                            }
+                        }
                     }
+                    varitr.MoveNext();
                 }
                 if (variants != null)
                 {
@@ -539,35 +575,58 @@ namespace ICU4N.Impl.Locale
                 if (!varitr.IsDone)
                 {
                     // ill-formed variant subtags
-                    StringBuilder buf = new StringBuilder();
-                    while (!varitr.IsDone)
+                    ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                    try
                     {
-                        string prvv = varitr.Current;
-                        if (!IsPrivateuseSubtag(prvv))
+                        while (!varitr.IsDone)
                         {
-                            // cannot use private use subtag - truncated
-                            break;
+                            scoped ReadOnlySpan<char> prvv = varitr.Current;
+                            if (!IsPrivateuseSubtag(prvv))
+                            {
+                                // cannot use private use subtag - truncated
+                                break;
+                            }
+                            if (buf.Length > 0)
+                            {
+                                buf.Append(Separator);
+                            }
+                            if (!JDKIMPL)
+                            {
+                                if (prvv.Length <= stackBuffer.Length)
+                                {
+                                    prvv = AsciiUtil.ToLower(prvv, stackBuffer);
+                                }
+                                else // rare
+                                {
+                                    char[] heapBuffer = ArrayPool<char>.Shared.Rent(prvv.Length);
+                                    try
+                                    {
+                                        prvv = AsciiUtil.ToLower(prvv, heapBuffer);
+                                    }
+                                    finally
+                                    {
+                                        ArrayPool<char>.Shared.Return(heapBuffer);
+                                    }
+                                }
+                            }
+                            buf.Append(prvv);
+                            varitr.MoveNext();
                         }
                         if (buf.Length > 0)
                         {
-                            buf.Append(Separator);
+                            privuseVar = buf.ToString(); // ICU4N: This should be a rare case
                         }
-                        if (!JDKIMPL)
-                        {
-                            prvv = AsciiUtil.ToLower(prvv);
-                        }
-                        buf.Append(prvv);
-                        varitr.MoveNext();
                     }
-                    if (buf.Length > 0)
+                    finally
                     {
-                        privuseVar = buf.ToString();
+                        buf.Dispose();
                     }
                 }
             }
 
-            List<string> extensions = null;
-            string privateuse = null;
+            List<string>? extensions = null;
+            string? privateuse = null;
+            Span<char> concatBuffer = stackalloc char[2];
 
             var locextKeys = localeExtensions.Keys;
             foreach (char locextKey in locextKeys)
@@ -583,7 +642,9 @@ namespace ICU4N.Impl.Locale
                     {
                         extensions = new List<string>();
                     }
-                    extensions.Add(locextKey.ToString() + Separator + ext.Value);
+                    concatBuffer[0] = locextKey;
+                    concatBuffer[1] = Separator;
+                    extensions.Add(StringHelper.Concat(concatBuffer, ext.Value.AsSpan()));
                 }
             }
 
@@ -596,13 +657,36 @@ namespace ICU4N.Impl.Locale
             // append ill-formed variant subtags to private use
             if (privuseVar != null)
             {
-                if (privateuse == null)
+                int length = privateuse is null
+                    ? PrivateUse_Variant_Prefix.Length + 1 + privuseVar.Length
+                    : privateuse.Length + 1 + PrivateUse_Variant_Prefix.Length + 1 + privuseVar.Length;
+
+                ValueStringBuilder sb = length <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[length])
+                    : new ValueStringBuilder(length);
+                try
                 {
-                    privateuse = PrivateUse_Variant_Prefix + Separator + privuseVar;
+                    if (privateuse is null)
+                    {
+                        sb.Append(PrivateUse_Variant_Prefix);
+                        sb.Append(Separator);
+                        sb.Append(privuseVar);
+                    }
+                    else
+                    {
+                        sb.Append(privateuse);
+                        sb.Append(Separator);
+                        sb.Append(PrivateUse_Variant_Prefix);
+                        sb.Append(Separator);
+                        var privuse = sb.AppendSpan(privuseVar.Length);
+                        privuseVar.AsSpan().CopyTo(privuse);
+                        privuse.Replace(BaseLocale.Separator, Separator);
+                    }
+                    privateuse = sb.ToString();
                 }
-                else
+                finally
                 {
-                    privateuse = privateuse + Separator + PrivateUse_Variant_Prefix + Separator + privuseVar.Replace(BaseLocale.Separator, Separator);
+                    sb.Dispose();
                 }
             }
 
@@ -659,7 +743,21 @@ namespace ICU4N.Impl.Locale
         // Language subtag syntax checking methods
         //
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsLanguage(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            // language      = 2*3ALPHA            ; shortest ISO 639 code
+            //                 ["-" extlang]       ; sometimes followed by
+            //                                     ;   extended language subtags
+            //               / 4ALPHA              ; or reserved for future use
+            //               / 5*8ALPHA            ; or registered language subtag
+            return (s.Length >= 2) && (s.Length <= 8) && AsciiUtil.IsAlpha(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsLanguage(ReadOnlySpan<char> s)
         {
             // language      = 2*3ALPHA            ; shortest ISO 639 code
             //                 ["-" extlang]       ; sometimes followed by
@@ -669,20 +767,53 @@ namespace ICU4N.Impl.Locale
             return (s.Length >= 2) && (s.Length <= 8) && AsciiUtil.IsAlpha(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsExtlang(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            // extlang       = 3ALPHA              ; selected ISO 639 codes
+            //                 *2("-" 3ALPHA)      ; permanently reserved
+            return (s.Length == 3) && AsciiUtil.IsAlpha(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsExtlang(ReadOnlySpan<char> s)
         {
             // extlang       = 3ALPHA              ; selected ISO 639 codes
             //                 *2("-" 3ALPHA)      ; permanently reserved
             return (s.Length == 3) && AsciiUtil.IsAlpha(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsScript(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            // script        = 4ALPHA              ; ISO 15924 code
+            return (s.Length == 4) && AsciiUtil.IsAlpha(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsScript(ReadOnlySpan<char> s)
         {
             // script        = 4ALPHA              ; ISO 15924 code
             return (s.Length == 4) && AsciiUtil.IsAlpha(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsRegion(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            // region        = 2ALPHA              ; ISO 3166-1 code
+            //               / 3DIGIT              ; UN M.49 code
+            return ((s.Length == 2) && AsciiUtil.IsAlpha(s))
+                    || ((s.Length == 3) && AsciiUtil.IsNumeric(s));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsRegion(ReadOnlySpan<char> s)
         {
             // region        = 2ALPHA              ; ISO 3166-1 code
             //               / 3DIGIT              ; UN M.49 code
@@ -690,7 +821,15 @@ namespace ICU4N.Impl.Locale
                     || ((s.Length == 3) && AsciiUtil.IsNumeric(s));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsVariant(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+            return IsVariant(s.AsSpan());
+        }
+
+        public static bool IsVariant(ReadOnlySpan<char> s)
         {
             // variant       = 5*8alphanum         ; registered variants
             //               / (DIGIT 3alphanum)
@@ -709,8 +848,12 @@ namespace ICU4N.Impl.Locale
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsExtensionSingleton(string s)
         {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
             // singleton     = DIGIT               ; 0 - 9
             //               / %x41-57             ; A - W
             //               / %x59-5A             ; Y - Z
@@ -722,30 +865,81 @@ namespace ICU4N.Impl.Locale
                     && !AsciiUtil.CaseIgnoreMatch(Private_Use, s);
         }
 
-        public static bool IsExtensionSingletonChar(char c)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsExtensionSingleton(ReadOnlySpan<char> s)
         {
-            return IsExtensionSingleton(new string(new char[] { c }));
+            // singleton     = DIGIT               ; 0 - 9
+            //               / %x41-57             ; A - W
+            //               / %x59-5A             ; Y - Z
+            //               / %x61-77             ; a - w
+            //               / %x79-7A             ; y - z
+
+            return (s.Length == 1)
+                    && AsciiUtil.IsAlpha(s)
+                    && !AsciiUtil.CaseIgnoreMatch(Private_Use.AsSpan(), s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsExtensionSingletonChar(char c)
+        {
+            return IsExtensionSingleton(stackalloc char[1] { c });
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsExtensionSubtag(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            // extension     = singleton 1*("-" (2*8alphanum))
+            return (s.Length >= 2) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsExtensionSubtag(ReadOnlySpan<char> s)
         {
             // extension     = singleton 1*("-" (2*8alphanum))
             return (s.Length >= 2) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsPrivateusePrefix(string s)
         {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
             // privateuse    = "x" 1*("-" (1*8alphanum))
             return (s.Length == 1)
                     && AsciiUtil.CaseIgnoreMatch(Private_Use, s);
         }
 
-        public static bool IsPrivateusePrefixChar(char c)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsPrivateusePrefix(ReadOnlySpan<char> s)
         {
-            return (AsciiUtil.CaseIgnoreMatch(Private_Use, new string(new char[] { c })));
+            // privateuse    = "x" 1*("-" (1*8alphanum))
+            return (s.Length == 1)
+                    && AsciiUtil.CaseIgnoreMatch(Private_Use.AsSpan(), s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsPrivateusePrefixChar(char c)
+        {
+            Span<char> buffer = stackalloc char[1] { c };
+            return (AsciiUtil.CaseIgnoreMatch(Private_Use.AsSpan(), buffer));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsPrivateuseSubtag(string s)
+        {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
+            // privateuse    = "x" 1*("-" (1*8alphanum))
+            return (s.Length >= 1) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsPrivateuseSubtag(ReadOnlySpan<char> s)
         {
             // privateuse    = "x" 1*("-" (1*8alphanum))
             return (s.Length >= 1) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
@@ -755,51 +949,121 @@ namespace ICU4N.Impl.Locale
         // Language subtag canonicalization methods
         //
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<char> CanonicalizeLanguage(ReadOnlySpan<char> s, Span<char> buffer)
+        {
+            return AsciiUtil.ToLower(s, buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<char> CanonicalizeExtlang(ReadOnlySpan<char> s, Span<char> buffer)
+        {
+            return AsciiUtil.ToLower(s, buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<char> CanonicalizeScript(ReadOnlySpan<char> s, Span<char> buffer)
+        {
+            return AsciiUtil.ToTitle(s, buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<char> CanonicalizeRegion(ReadOnlySpan<char> s, Span<char> buffer)
+        {
+            return AsciiUtil.ToUpper(s, buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<char> CanonicalizeVariant(ReadOnlySpan<char> s, Span<char> buffer)
+        {
+            return AsciiUtil.ToLower(s, buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<char> CanonicalizeExtension(ReadOnlySpan<char> s, Span<char> buffer)
+        {
+            return AsciiUtil.ToLower(s, buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<char> CanonicalizeExtensionSingleton(ReadOnlySpan<char> s, Span<char> buffer)
+        {
+            return AsciiUtil.ToLower(s, buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<char> CanonicalizeExtensionSubtag(ReadOnlySpan<char> s, Span<char> buffer)
+        {
+            return AsciiUtil.ToLower(s, buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<char> CanonicalizePrivateuse(ReadOnlySpan<char> s, Span<char> buffer)
+        {
+            return AsciiUtil.ToLower(s, buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<char> CanonicalizePrivateuseSubtag(ReadOnlySpan<char> s, Span<char> buffer)
+        {
+            return AsciiUtil.ToLower(s, buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CanonicalizeLanguage(string s)
         {
             return AsciiUtil.ToLower(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CanonicalizeExtlang(string s)
         {
             return AsciiUtil.ToLower(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CanonicalizeScript(string s)
         {
             return AsciiUtil.ToTitle(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CanonicalizeRegion(string s)
         {
             return AsciiUtil.ToUpper(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CanonicalizeVariant(string s)
         {
             return AsciiUtil.ToLower(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CanonicalizeExtension(string s)
         {
             return AsciiUtil.ToLower(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CanonicalizeExtensionSingleton(string s)
         {
             return AsciiUtil.ToLower(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CanonicalizeExtensionSubtag(string s)
         {
             return AsciiUtil.ToLower(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CanonicalizePrivateuse(string s)
         {
             return AsciiUtil.ToLower(s);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string CanonicalizePrivateuseSubtag(string s)
         {
             return AsciiUtil.ToLower(s);
@@ -808,47 +1072,58 @@ namespace ICU4N.Impl.Locale
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-
-            if (_language.Length > 0)
+            ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                sb.Append(_language);
-
-                foreach (string extlang in _extlangs)
+                if (_language.Length > 0)
                 {
-                    sb.Append(Separator).Append(extlang);
+                    sb.Append(_language);
+
+                    foreach (string extlang in _extlangs)
+                    {
+                        sb.Append(Separator);
+                        sb.Append(extlang);
+                    }
+
+                    if (_script.Length > 0)
+                    {
+                        sb.Append(Separator);
+                        sb.Append(_script);
+                    }
+
+                    if (_region.Length > 0)
+                    {
+                        sb.Append(Separator);
+                        sb.Append(_region);
+                    }
+
+                    foreach (string variant in _variants)
+                    {
+                        sb.Append(Separator);
+                        sb.Append(variant);
+                    }
+
+                    foreach (string extension in _extensions)
+                    {
+                        sb.Append(Separator);
+                        sb.Append(extension);
+                    }
+                }
+                if (_privateuse.Length > 0)
+                {
+                    if (sb.Length > 0)
+                    {
+                        sb.Append(Separator);
+                    }
+                    sb.Append(_privateuse);
                 }
 
-                if (_script.Length > 0)
-                {
-                    sb.Append(Separator).Append(_script);
-                }
-
-                if (_region.Length > 0)
-                {
-                    sb.Append(Separator).Append(_region);
-                }
-
-                foreach (string variant in _variants)
-                {
-                    sb.Append(Separator).Append(variant);
-                }
-
-                foreach (string extension in _extensions)
-                {
-                    sb.Append(Separator).Append(extension);
-                }
+                return sb.ToString();
             }
-            if (_privateuse.Length > 0)
+            finally
             {
-                if (sb.Length > 0)
-                {
-                    sb.Append(Separator);
-                }
-                sb.Append(_privateuse);
+                sb.Dispose();
             }
-
-            return sb.ToString();
         }
     }
 }

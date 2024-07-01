@@ -157,6 +157,23 @@ namespace ICU4N
 
 #endif
 
+        /// <summary>
+        /// Returns a new string in which all occurrences of a specified Unicode character in this instance
+        /// are replaced with another specified Unicode character. The operation is done in place.
+        /// </summary>
+        /// <param name="text">This <see cref="Span{T}"/>.</param>
+        /// <param name="oldChar">The Unicode character to be replaced.</param>
+        /// <param name="newChar">The Unicode character to replace all occurrences of <paramref name="oldChar"/>.</param>
+        public static void Replace(this Span<char> text, char oldChar, char newChar)
+        {
+            int length = text.Length;
+            for (int i = 0; i < length; i++)
+            {
+                if (text[i] == oldChar)
+                    text[i] = newChar;
+            }
+        }
+
         // ICU4N TODO: Move to J2N...?
         /// <summary>
         /// Compares the specified <see cref="ReadOnlySpan{Char}"/> to this string and compares the specified

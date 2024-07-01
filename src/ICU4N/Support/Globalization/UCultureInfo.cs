@@ -3281,7 +3281,7 @@ namespace ICU4N.Globalization
             if (languageTag == null)
                 throw new ArgumentNullException(nameof(languageTag));
 
-            LanguageTag tag = LanguageTag.Parse(languageTag, null);
+            LanguageTag tag = LanguageTag.Parse(languageTag.AsSpan(), null);
             InternalLocaleBuilder bldr = new InternalLocaleBuilder();
             bldr.SetLanguageTag(tag);
             return GetInstance(bldr.GetBaseLocale(), bldr.GetLocaleExtensions());
@@ -3571,7 +3571,7 @@ namespace ICU4N.Globalization
                                 foreach (string uattr in uattributes)
                                 {
                                     // ICU4N: Proactively check the parameter going in rather than responding to exceptions
-                                    if (uattr != null || UnicodeLocaleExtensionClass.IsAttribute(uattr))
+                                    if (uattr != null && UnicodeLocaleExtensionClass.IsAttribute(uattr))
                                     {
                                         intbld.AddUnicodeLocaleAttribute(uattr);
                                     }
@@ -3597,7 +3597,7 @@ namespace ICU4N.Globalization
                             {
                                 try
                                 {
-                                    intbld.SetExtension(pair.Key[0], pair.Value.Replace("_",
+                                    intbld.SetExtension(pair.Key[0], pair.Value.Replace(BaseLocale.Separator,
                                             LanguageTag.Separator));
                                 }
                                 catch (FormatException) // ICU4N TODO: Make a TrySet version so we don't have an expensive try catch
