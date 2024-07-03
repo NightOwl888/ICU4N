@@ -426,9 +426,6 @@ namespace ICU4N.Impl.Locale
         /// </summary>
         public InternalLocaleBuilder SetLanguageTag(LanguageTag langtag)
         {
-            if (langtag is null)
-                throw new ArgumentNullException(nameof(langtag));
-
             Clear();
             if (langtag.Extlangs.Count > 0)
             {

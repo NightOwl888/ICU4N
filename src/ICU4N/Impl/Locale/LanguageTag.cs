@@ -11,11 +11,19 @@ using System.Text;
 
 namespace ICU4N.Impl.Locale
 {
-    public class LanguageTag
+    public ref struct LanguageTag
     {
         private const int CharStackBufferSize = 32;
 
         private static readonly bool JDKIMPL = false;
+
+        public bool IsDefault =>_language == string.Empty &&
+            _script == string.Empty &&
+            _region == string.Empty &&
+            _privateuse == string.Empty &&
+            _extlangs == Arrays.Empty<string>() &&
+            _variants == Arrays.Empty<string>() &&
+            _extensions == Arrays.Empty<string>();
 
         //
         // static fields
@@ -28,10 +36,10 @@ namespace ICU4N.Impl.Locale
         //
         // Language subtag fields
         //
-        private string _language = "";      // language subtag
-        private string _script = "";        // script subtag
-        private string _region = "";        // region subtag
-        private string _privateuse = "";    // privateuse
+        private string _language = string.Empty;      // language subtag
+        private string _script = string.Empty;        // script subtag
+        private string _region = string.Empty;        // region subtag
+        private string _privateuse = string.Empty;    // privateuse
 
 
         private IList<string> _extlangs = Arrays.Empty<string>();   // extlang subtags
@@ -104,7 +112,7 @@ namespace ICU4N.Impl.Locale
             {"zh-xiang",    "hsn"},
         };
 
-        private LanguageTag()
+        public LanguageTag()
         {
         }
 
@@ -705,34 +713,34 @@ namespace ICU4N.Impl.Locale
         // Getter methods for language subtag fields
         //
 
-        public virtual string Language => _language;
+        public string Language => _language;
 
-        public virtual IList<string> Extlangs
+        public IList<string> Extlangs
 #if FEATURE_ILIST_ASREADONLY
             => System.Collections.Generic.CollectionExtensions.AsReadOnly(_extlangs);
 #else
             => _extlangs.AsReadOnly();
 #endif
 
-        public virtual string Script => _script;
+        public string Script => _script;
 
-        public virtual string Region => _region;
+        public string Region => _region;
 
-        public virtual IList<string> Variants
+        public IList<string> Variants
 #if FEATURE_ILIST_ASREADONLY
             => System.Collections.Generic.CollectionExtensions.AsReadOnly(_variants);
 #else
             => _variants.AsReadOnly();
 #endif
 
-        public virtual IList<string> Extensions
+        public IList<string> Extensions
 #if FEATURE_ILIST_ASREADONLY
             => System.Collections.Generic.CollectionExtensions.AsReadOnly(_extensions);
 #else
             => _extensions.AsReadOnly();
 #endif
 
-        public virtual string PrivateUse => _privateuse;
+        public string PrivateUse => _privateuse;
 
         //
         // Language subtag syntax checking methods
