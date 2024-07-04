@@ -44,6 +44,8 @@ namespace ICU4N.Text
     /// <seealso cref="RuleBasedCollator"/>
     public abstract class SearchIterator
     {
+        private const int CharStackBufferSize = 32;
+
         /// <summary>
         /// The <see cref="Text.BreakIterator"/> to define the boundaries of a logical match.
         /// This value can be a null.
@@ -360,7 +362,10 @@ namespace ICU4N.Text
             if (search_.MatchedLength > 0)
             {
                 int limit = search_.matchedIndex_ + search_.MatchedLength;
-                StringBuilder result = new StringBuilder(search_.MatchedLength);
+                int matchedLength = search_.MatchedLength;
+                using ValueStringBuilder result = matchedLength <= CharStackBufferSize
+                    ? new ValueStringBuilder(stackalloc char[matchedLength])
+                    : new ValueStringBuilder(matchedLength);
                 CharacterIterator it = search_.Text;
                 it.SetIndex(search_.matchedIndex_);
                 while (it.Index < limit)
