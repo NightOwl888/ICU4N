@@ -130,6 +130,8 @@ namespace ICU4N.Text
     /// <stable>ICU 4.8</stable>
     public sealed class AlphabeticIndex<T> : IEnumerable<Bucket<T>>
     {
+        private const int CharStackBufferSize = 32;
+
         /// <summary>
         /// Prefix string for Chinese index buckets.
         /// See http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Collation_Indexes
@@ -618,7 +620,10 @@ namespace ICU4N.Text
         /// </summary>
         private string Separated(string item)
         {
-            StringBuilder result = new StringBuilder();
+            int lengthEstimate = item.Length * 2;
+            using ValueStringBuilder result = lengthEstimate <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(lengthEstimate);
             // add a CGJ except within surrogates
             char last = item[0];
             result.Append(last);
