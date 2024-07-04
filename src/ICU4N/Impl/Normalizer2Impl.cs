@@ -174,6 +174,35 @@ namespace ICU4N.Impl
 
         #endregion AppendHangulDecomposition(int, IAppendable)
 
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
+        /// and returns the length of the decomposition (2 or 3).
+        /// </summary>
+        /// <param name="c">The codepoint to decompose.</param>
+        /// <param name="buffer">A buffer with length >= 3 to write the output.</param>
+        /// <returns>The decomposed text, sliced to the correct length.</returns>
+        public static ReadOnlySpan<char> GetDecomposition(int c, Span<char> buffer) // Buffer should be length 3
+        {
+            if (buffer.Length < 3)
+                throw new ArgumentException("Buffer must be at least 3 characters in length.");
+            int charsLength;
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            c /= JamoTCount;
+            buffer[0] = (char)(JamoLBase + c / JamoVCount);
+            buffer[1] = (char)(JamoVBase + c % JamoVCount);
+            if (c2 == 0)
+            {
+                charsLength = 2;
+            }
+            else
+            {
+                buffer[2] = (char)(JamoTBase + c2);
+                charsLength = 3;
+            }
+            return buffer.Slice(0, charsLength);
+        }
+
         // ICU4N specific - GetRawDecomposition(int c, IAppendable buffer) moved to Normalizer2Impl.generated.tt
         // and renamed to AppendHangulRawDecomposition() (extension method)
         #region AppendHangulRawDecomposition(int, IAppendable)
@@ -276,6 +305,35 @@ namespace ICU4N.Impl
         }
 
         #endregion AppendHangulRawDecomposition(int, IAppendable)
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
+        /// This is the raw, not recursive, decomposition. Its length is always 2.
+        /// </summary>
+        /// <param name="c">The codepoint to decompose.</param>
+        /// <param name="buffer">A buffer with length >= 2 to write the output.</param>
+        /// <returns>The decomposed text, sliced to the correct length.</returns>
+        public static ReadOnlySpan<char> GetRawDecomposition(int c, Span<char> buffer) // Buffer should be length 2
+        {
+            if (buffer.Length < 2)
+                throw new ArgumentException("Buffer must be at least 2 characters in length.");
+            // ICU4N: Removed unnecessary try/catch for IOException
+            int orig = c;
+            c -= HangulBase;
+            int c2 = c % JamoTCount;
+            if (c2 == 0)
+            {
+                c /= JamoTCount;
+                buffer[0] = (char)(JamoLBase + c / JamoVCount);
+                buffer[1] = (char)(JamoVBase + c % JamoVCount);
+            }
+            else
+            {
+                buffer[0] = (char)(orig - c2);  // LV syllable
+                buffer[1] = (char)(JamoTBase + c2);
+            }
+            return buffer.Slice(0, 2);
+        }
     }
 
     // ICU4N specific - ReorderingBuffer moved to Normalizer2Impl.generated.tt
