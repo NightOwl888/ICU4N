@@ -216,7 +216,7 @@ namespace ICU4N.Support.Text
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void Block(ref uint rp0, ref uint rp1)
+        internal static void Block(ref uint rp0, ref uint rp1)
         {
             // Intrinsified in mono interpreter
             uint p0 = rp0;

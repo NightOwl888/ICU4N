@@ -80,36 +80,35 @@ namespace ICU4N.Impl.Locale
 
         // Map contains grandfathered tags and its preferred mappings from
         // http://www.ietf.org/rfc/rfc5646.txt
-        private static readonly Dictionary<string, string> Grandfathered
-            = new Dictionary<string, string>(AsciiStringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<AsciiCaseInsensitiveKey, string> Grandfathered = new Dictionary<AsciiCaseInsensitiveKey, string>()
         {
             // {"tag",         "preferred"},
-            {"art-lojban",  "jbo"},
-            {"cel-gaulish", "xtg-x-cel-gaulish"},   // fallback
-            {"en-GB-oed",   "en-GB-x-oed"},         // fallback
-            {"i-ami",       "ami"},
-            {"i-bnn",       "bnn"},
-            {"i-default",   "en-x-i-default"},      // fallback
-            {"i-enochian",  "und-x-i-enochian"},    // fallback
-            {"i-hak",       "hak"},
-            {"i-klingon",   "tlh"},
-            {"i-lux",       "lb"},
-            {"i-mingo",     "see-x-i-mingo"},       // fallback
-            {"i-navajo",    "nv"},
-            {"i-pwn",       "pwn"},
-            {"i-tao",       "tao"},
-            {"i-tay",       "tay"},
-            {"i-tsu",       "tsu"},
-            {"no-bok",      "nb"},
-            {"no-nyn",      "nn"},
-            {"sgn-BE-FR",   "sfb"},
-            {"sgn-BE-NL",   "vgt"},
-            {"sgn-CH-DE",   "sgg"},
-            {"zh-guoyu",    "cmn"},
-            {"zh-hakka",    "hak"},
-            {"zh-min",      "nan-x-zh-min"},        // fallback
-            {"zh-min-nan",  "nan"},
-            {"zh-xiang",    "hsn"},
+            {new AsciiCaseInsensitiveKey("art-lojban"),  "jbo"},
+            {new AsciiCaseInsensitiveKey("cel-gaulish"), "xtg-x-cel-gaulish"},   // fallback
+            {new AsciiCaseInsensitiveKey("en-GB-oed"),   "en-GB-x-oed"},         // fallback
+            {new AsciiCaseInsensitiveKey("i-ami"),       "ami"},
+            {new AsciiCaseInsensitiveKey("i-bnn"),       "bnn"},
+            {new AsciiCaseInsensitiveKey("i-default"),   "en-x-i-default"},      // fallback
+            {new AsciiCaseInsensitiveKey("i-enochian"),  "und-x-i-enochian"},    // fallback
+            {new AsciiCaseInsensitiveKey("i-hak"),       "hak"},
+            {new AsciiCaseInsensitiveKey("i-klingon"),   "tlh"},
+            {new AsciiCaseInsensitiveKey("i-lux"),       "lb"},
+            {new AsciiCaseInsensitiveKey("i-mingo"),     "see-x-i-mingo"},       // fallback
+            {new AsciiCaseInsensitiveKey("i-navajo"),    "nv"},
+            {new AsciiCaseInsensitiveKey("i-pwn"),       "pwn"},
+            {new AsciiCaseInsensitiveKey("i-tao"),       "tao"},
+            {new AsciiCaseInsensitiveKey("i-tay"),       "tay"},
+            {new AsciiCaseInsensitiveKey("i-tsu"),       "tsu"},
+            {new AsciiCaseInsensitiveKey("no-bok"),      "nb"},
+            {new AsciiCaseInsensitiveKey("no-nyn"),      "nn"},
+            {new AsciiCaseInsensitiveKey("sgn-BE-FR"),   "sfb"},
+            {new AsciiCaseInsensitiveKey("sgn-BE-NL"),   "vgt"},
+            {new AsciiCaseInsensitiveKey("sgn-CH-DE"),   "sgg"},
+            {new AsciiCaseInsensitiveKey("zh-guoyu"),    "cmn"},
+            {new AsciiCaseInsensitiveKey("zh-hakka"),    "hak"},
+            {new AsciiCaseInsensitiveKey("zh-min"),      "nan-x-zh-min"},        // fallback
+            {new AsciiCaseInsensitiveKey("zh-min-nan"),  "nan"},
+            {new AsciiCaseInsensitiveKey("zh-xiang"),    "hsn"},
         };
 
         public LanguageTag()

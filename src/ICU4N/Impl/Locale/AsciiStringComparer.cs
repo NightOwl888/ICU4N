@@ -76,6 +76,10 @@ namespace ICU4N.Impl.Locale
 
             public override int GetHashCode(ReadOnlySpan<char> obj)
             {
+                if (ignoreCase)
+                {
+                    return AsciiUtil.GetHashCodeOrdinalIgnoreCase(obj);
+                }
                 return StringHelper.GetHashCode(obj);
             }
 

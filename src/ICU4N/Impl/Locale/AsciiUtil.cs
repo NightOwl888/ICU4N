@@ -6,9 +6,10 @@ using System.Runtime.CompilerServices;
 
 namespace ICU4N.Impl.Locale
 {
-    public static class AsciiUtil
+    public static partial class AsciiUtil
     {
         private const int CharStackBufferSize = 32;
+        private const char CaseDifference = (char)0x20;
 
         public static bool CaseIgnoreMatch(string s1, string s2)
         {
@@ -120,7 +121,7 @@ namespace ICU4N.Impl.Locale
         {
             if (c >= 'a' && c <= 'z')
             {
-                c -= (char)0x20;
+                c -= CaseDifference;
             }
             return c;
         }
@@ -129,7 +130,7 @@ namespace ICU4N.Impl.Locale
         {
             if (c >= 'A' && c <= 'Z')
             {
-                c += (char)0x20;
+                c += CaseDifference;
             }
             return c;
         }
