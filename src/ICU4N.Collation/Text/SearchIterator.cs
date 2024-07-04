@@ -44,7 +44,7 @@ namespace ICU4N.Text
     /// <seealso cref="RuleBasedCollator"/>
     public abstract class SearchIterator
     {
-        private const int CharStackBufferSize = 32;
+        internal const int CharStackBufferSize = 32;
 
         /// <summary>
         /// The <see cref="Text.BreakIterator"/> to define the boundaries of a logical match.

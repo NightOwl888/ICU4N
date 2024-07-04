@@ -1825,7 +1825,9 @@ namespace ICU4N.Text
         /// <returns>Substring from <paramref name="text"/> starting at <paramref name="start"/> and <paramref name="length"/>.</returns>
         private static string GetString(CharacterIterator text, int start, int length)
         {
-            StringBuilder result = new StringBuilder(length);
+            using ValueStringBuilder result = length <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[length])
+                : new ValueStringBuilder(length);
             int offset = text.Index;
             text.SetIndex(start);
             for (int i = 0; i < length; i++)
