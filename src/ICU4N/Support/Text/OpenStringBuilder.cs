@@ -116,6 +116,18 @@ namespace ICU4N.Text
             }
         }
 
+        public void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count)
+        {
+            Debug.Assert(_pos - sourceIndex >= count);
+            _chars.AsSpan(sourceIndex, count).CopyTo(destination.AsSpan(destinationIndex));
+        }
+
+        public void CopyTo(int sourceIndex, Span<char> destination, int count)
+        {
+            Debug.Assert(_pos - sourceIndex >= count);
+            _chars.AsSpan(sourceIndex, count).CopyTo(destination);
+        }
+
         public OpenStringBuilder Insert(int index, char value)
             => Insert(index, value, count: 1);
 

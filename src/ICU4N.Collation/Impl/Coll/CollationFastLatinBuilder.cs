@@ -864,7 +864,7 @@ namespace ICU4N.Impl.Coll
 
         private bool shortPrimaryOverflow;
 
-        private StringBuilder result = new StringBuilder();
+        private OpenStringBuilder result = new OpenStringBuilder();
         private int headerLength;
     }
 }
