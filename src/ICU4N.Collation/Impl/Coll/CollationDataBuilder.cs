@@ -689,37 +689,47 @@ namespace ICU4N.Impl.Coll
                             return CopyFromBaseCE32(c, ce32, false);
                         }
                         ConditionalCE32 head = new ConditionalCE32("", 0);
-                        StringBuilder context = new StringBuilder("\0");
-                        int index;
-                        if (Collation.IsContractionCE32(ce32))
+                        ValueStringBuilder context = new ValueStringBuilder(stackalloc char[Collator.CharStackBufferSize]);
+                        try
                         {
-                            index = CopyContractionsFromBaseCE32(context, c, ce32, head);
-                        }
-                        else
-                        {
-                            ce32 = CopyFromBaseCE32(c, ce32, true);
-                            head.Next = index = AddConditionalCE32(context.ToString(), ce32);
-                        }
-                        ConditionalCE32 cond = GetConditionalCE32(index);  // the last ConditionalCE32 so far
-                        using (CharsTrieEnumerator prefixes = CharsTrie.GetEnumerator(base_.contexts, trieIndex + 2, 0))
-                        {
-                            while (prefixes.MoveNext())
+                            context.Append('\0');
+                            int index;
+                            if (Collation.IsContractionCE32(ce32))
                             {
-                                CharsTrieEntry entry = prefixes.Current;
-                                context.Length = 0;
-                                context.Append(entry.Chars).Reverse().Insert(0, (char)entry.Chars.Length);
-                                ce32 = entry.Value;
-                                if (Collation.IsContractionCE32(ce32))
-                                {
-                                    index = CopyContractionsFromBaseCE32(context, c, ce32, cond);
-                                }
-                                else
-                                {
-                                    ce32 = CopyFromBaseCE32(c, ce32, true);
-                                    cond.Next = index = AddConditionalCE32(context.ToString(), ce32);
-                                }
-                                cond = GetConditionalCE32(index);
+                                index = CopyContractionsFromBaseCE32(ref context, c, ce32, head);
                             }
+                            else
+                            {
+                                ce32 = CopyFromBaseCE32(c, ce32, true);
+                                head.Next = index = AddConditionalCE32(context.AsSpan().ToString(), ce32);
+                            }
+                            ConditionalCE32 cond = GetConditionalCE32(index);  // the last ConditionalCE32 so far
+                            using (CharsTrieEnumerator prefixes = CharsTrie.GetEnumerator(base_.contexts, trieIndex + 2, 0))
+                            {
+                                while (prefixes.MoveNext())
+                                {
+                                    CharsTrieEntry entry = prefixes.Current;
+                                    context.Length = 0;
+                                    context.Append(entry.Chars.Span);
+                                    context.Reverse();
+                                    context.Insert(0, (char)entry.Chars.Length);
+                                    ce32 = entry.Value;
+                                    if (Collation.IsContractionCE32(ce32))
+                                    {
+                                        index = CopyContractionsFromBaseCE32(ref context, c, ce32, cond);
+                                    }
+                                    else
+                                    {
+                                        ce32 = CopyFromBaseCE32(c, ce32, true);
+                                        cond.Next = index = AddConditionalCE32(context.AsSpan().ToString(), ce32);
+                                    }
+                                    cond = GetConditionalCE32(index);
+                                }
+                            }
+                        }
+                        finally
+                        {
+                            context.Dispose();
                         }
                         ce32 = MakeBuilderContextCE32(head.Next);
                         contextChars.Add(c);
@@ -734,8 +744,16 @@ namespace ICU4N.Impl.Coll
                             return CopyFromBaseCE32(c, ce32, false);
                         }
                         ConditionalCE32 head = new ConditionalCE32("", 0);
-                        StringBuilder context = new StringBuilder("\0");
-                        CopyContractionsFromBaseCE32(context, c, ce32, head);
+                        ValueStringBuilder context = new ValueStringBuilder(stackalloc char[Collator.CharStackBufferSize]);
+                        try
+                        {
+                            context.Append('\0');
+                            CopyContractionsFromBaseCE32(ref context, c, ce32, head);
+                        }
+                        finally
+                        {
+                            context.Dispose();
+                        }
                         ce32 = MakeBuilderContextCE32(head.Next);
                         contextChars.Add(c);
                         break;
@@ -760,7 +778,7 @@ namespace ICU4N.Impl.Coll
         /// Sets <c>cond.Next</c> to the index of the first new item
         /// and returns the index of the last new item.
         /// </summary>
-        private int CopyContractionsFromBaseCE32(StringBuilder context, int c, int ce32,
+        private int CopyContractionsFromBaseCE32(ref ValueStringBuilder context, int c, int ce32,
                 ConditionalCE32 cond)
         {
             int trieIndex = Collation.IndexFromCE32(ce32);
@@ -778,7 +796,7 @@ namespace ICU4N.Impl.Coll
                 ce32 = base_.GetCE32FromContexts(trieIndex);  // Default if no suffix match.
                 Debug.Assert(!Collation.IsContractionCE32(ce32));
                 ce32 = CopyFromBaseCE32(c, ce32, true);
-                cond.Next = index = AddConditionalCE32(context.ToString(), ce32);
+                cond.Next = index = AddConditionalCE32(context.AsSpan().ToString(), ce32);
                 cond = GetConditionalCE32(index);
             }
 
@@ -788,9 +806,9 @@ namespace ICU4N.Impl.Coll
                 while (suffixes.MoveNext())
                 {
                     CharsTrieEntry entry = suffixes.Current;
-                    context.Append(entry.Chars);
+                    context.Append(entry.Chars.Span);
                     ce32 = CopyFromBaseCE32(c, entry.Value, true);
-                    cond.Next = index = AddConditionalCE32(context.ToString(), ce32);
+                    cond.Next = index = AddConditionalCE32(context.AsSpan().ToString(), ce32);
                     // No need to update the unsafeBackwardSet because the tailoring set
                     // is already a copy of the base set.
                     cond = GetConditionalCE32(index);
