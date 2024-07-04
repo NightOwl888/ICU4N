@@ -15,8 +15,6 @@ namespace ICU4N.Impl.Locale
     {
         private const int CharStackBufferSize = 32;
 
-        private static readonly bool JDKIMPL = false;
-
         public bool IsDefault =>_language == string.Empty &&
             _script == string.Empty &&
             _region == string.Empty &&
@@ -514,18 +512,17 @@ namespace ICU4N.Impl.Locale
                 hasSubtag = true;
             }
 
+#if JDKIMPL
             // ICU4N TODO: Remove ?
-            if (JDKIMPL)
+            // Special handling for no_NO_NY - use nn_NO for language tag
+            if (tag._language.Equals("no", StringComparison.Ordinal) &&
+                tag._region.Equals("NO", StringComparison.Ordinal) &&
+                variant.Equals("NY", StringComparison.Ordinal)) // ICU4N TODO: Fix this handling for .NET (no-NO is not reliable across platforms)
             {
-                // Special handling for no_NO_NY - use nn_NO for language tag
-                if (tag._language.Equals("no", StringComparison.Ordinal) &&
-                    tag._region.Equals("NO", StringComparison.Ordinal) &&
-                    variant.Equals("NY", StringComparison.Ordinal)) // ICU4N TODO: Fix this handling for .NET (no-NO is not reliable across platforms)
-                {
-                    tag._language = "nn";
-                    variant = ReadOnlySpan<char>.Empty;
-                }
+                tag._language = "nn";
+                variant = ReadOnlySpan<char>.Empty;
             }
+#endif
 
             if (variant.Length > 0)
             {
@@ -544,29 +541,26 @@ namespace ICU4N.Impl.Locale
                     {
                         variants = new List<string>();
                     }
-                    if (JDKIMPL)
+#if JDKIMPL
+                    variants.Add(var.ToString());  // Do not canonicalize!
+#else
+                    if (var.Length <= stackBuffer.Length)
                     {
-                        variants.Add(var.ToString());  // Do not canonicalize!
+                        variants.Add(CanonicalizeVariant(var, stackBuffer).ToString());
                     }
-                    else
+                    else // rare
                     {
-                        if (var.Length <= stackBuffer.Length)
+                        char[] heapBuffer = ArrayPool<char>.Shared.Rent(var.Length);
+                        try
                         {
-                            variants.Add(CanonicalizeVariant(var, stackBuffer).ToString());
+                            variants.Add(CanonicalizeVariant(var, heapBuffer).ToString());
                         }
-                        else // rare
+                        finally
                         {
-                            char[] heapBuffer = ArrayPool<char>.Shared.Rent(var.Length);
-                            try
-                            {
-                                variants.Add(CanonicalizeVariant(var, heapBuffer).ToString());
-                            }
-                            finally
-                            {
-                                ArrayPool<char>.Shared.Return(heapBuffer);
-                            }
+                            ArrayPool<char>.Shared.Return(heapBuffer);
                         }
                     }
+#endif
                     varitr.MoveNext();
                 }
                 if (variants != null)
@@ -592,25 +586,24 @@ namespace ICU4N.Impl.Locale
                             {
                                 buf.Append(Separator);
                             }
-                            if (!JDKIMPL)
+#if !JDKIMPL
+                            if (prvv.Length <= stackBuffer.Length)
                             {
-                                if (prvv.Length <= stackBuffer.Length)
+                                prvv = AsciiUtil.ToLower(prvv, stackBuffer);
+                            }
+                            else // rare
+                            {
+                                char[] heapBuffer = ArrayPool<char>.Shared.Rent(prvv.Length);
+                                try
                                 {
-                                    prvv = AsciiUtil.ToLower(prvv, stackBuffer);
+                                    prvv = AsciiUtil.ToLower(prvv, heapBuffer);
                                 }
-                                else // rare
+                                finally
                                 {
-                                    char[] heapBuffer = ArrayPool<char>.Shared.Rent(prvv.Length);
-                                    try
-                                    {
-                                        prvv = AsciiUtil.ToLower(prvv, heapBuffer);
-                                    }
-                                    finally
-                                    {
-                                        ArrayPool<char>.Shared.Return(heapBuffer);
-                                    }
+                                    ArrayPool<char>.Shared.Return(heapBuffer);
                                 }
                             }
+#endif
                             buf.Append(prvv);
                             varitr.MoveNext();
                         }

@@ -14,8 +14,6 @@ namespace ICU4N.Impl.Locale
     {
         private const int CharStackBufferSize = 32;
 
-        private static readonly bool JDKIMPL = false;
-
         private string _language = "";
         private string _script = "";
         private string _region = "";
@@ -474,36 +472,35 @@ namespace ICU4N.Impl.Locale
             string region = @base.Region;
             string variant = @base.Variant;
 
+#if JDKIMPL
             // ICU4N TODO: Remove ?
-            if (JDKIMPL)
-            {
-                // Special backward compatibility support
+            // Special backward compatibility support
 
-                // Exception 1 - ja_JP_JP
-                if (language.Equals("ja", StringComparison.Ordinal) && region.Equals("JP", StringComparison.Ordinal) && variant.Equals("JP", StringComparison.Ordinal))
-                {
-                    // When locale ja_JP_JP is created, ca-japanese is always there.
-                    // The builder ignores the variant "JP"
-                    Debug.Assert("japanese".Equals(extensions?.GetUnicodeLocaleType("ca") ?? string.Empty));
-                    variant = "";
-                }
-                // Exception 2 - th_TH_TH
-                else if (language.Equals("th", StringComparison.Ordinal) && region.Equals("TH", StringComparison.Ordinal) && variant.Equals("TH", StringComparison.Ordinal))
-                {
-                    // When locale th_TH_TH is created, nu-thai is always there.
-                    // The builder ignores the variant "TH"
-                    Debug.Assert("thai".Equals(extensions?.GetUnicodeLocaleType("nu") ?? string.Empty));
-                    variant = "";
-                }
-                // Exception 3 - no_NO_NY
-                else if (language.Equals("no", StringComparison.Ordinal) && region.Equals("NO", StringComparison.Ordinal) && variant.Equals("NY", StringComparison.Ordinal)) // ICU4N TODO: Fix this handling for .NET (no-NO is not reliable across platforms)
-                {
-                    // no_NO_NY is a valid locale and used by Java 6 or older versions.
-                    // The build ignores the variant "NY" and change the language to "nn".
-                    language = "nn";
-                    variant = "";
-                }
+            // Exception 1 - ja_JP_JP
+            if (language.Equals("ja", StringComparison.Ordinal) && region.Equals("JP", StringComparison.Ordinal) && variant.Equals("JP", StringComparison.Ordinal))
+            {
+                // When locale ja_JP_JP is created, ca-japanese is always there.
+                // The builder ignores the variant "JP"
+                Debug.Assert("japanese".Equals(extensions?.GetUnicodeLocaleType("ca") ?? string.Empty));
+                variant = "";
             }
+            // Exception 2 - th_TH_TH
+            else if (language.Equals("th", StringComparison.Ordinal) && region.Equals("TH", StringComparison.Ordinal) && variant.Equals("TH", StringComparison.Ordinal))
+            {
+                // When locale th_TH_TH is created, nu-thai is always there.
+                // The builder ignores the variant "TH"
+                Debug.Assert("thai".Equals(extensions?.GetUnicodeLocaleType("nu") ?? string.Empty));
+                variant = "";
+            }
+            // Exception 3 - no_NO_NY
+            else if (language.Equals("no", StringComparison.Ordinal) && region.Equals("NO", StringComparison.Ordinal) && variant.Equals("NY", StringComparison.Ordinal)) // ICU4N TODO: Fix this handling for .NET (no-NO is not reliable across platforms)
+            {
+                // no_NO_NY is a valid locale and used by Java 6 or older versions.
+                // The build ignores the variant "NY" and change the language to "nn".
+                language = "nn";
+                variant = "";
+            }
+#endif
 
             // Validate base locale fields before updating internal state.
             // LocaleExtensions always store validated/canonicalized values,
