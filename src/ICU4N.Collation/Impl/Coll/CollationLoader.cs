@@ -1,4 +1,5 @@
-﻿using ICU4N.Globalization;
+﻿using ICU4N.Impl.Locale;
+using ICU4N.Globalization;
 using ICU4N.Util;
 using J2N.IO;
 using System;
@@ -43,33 +44,7 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /// <summary>
-        /// Simpler/faster methods for ASCII than ones based on Unicode data.
-        /// </summary>
-        // TODO: There should be code like this somewhere already??
-        private sealed class ASCII
-        {
-            internal static string ToLower(string s)
-            {
-                for (int i = 0; i < s.Length; ++i)
-                {
-                    char c = s[i];
-                    if ('A' <= c && c <= 'Z')
-                    {
-                        StringBuilder sb = new StringBuilder(s.Length);
-                        sb.Append(s, 0, i - 0).Append((char)(c + 0x20));// ICU4N: Checked 3rd parameter
-                        while (++i < s.Length)
-                        {
-                            c = s[i];
-                            if ('A' <= c && c <= 'Z') { c = (char)(c + 0x20); }
-                            sb.Append(c);
-                        }
-                        return sb.ToString();
-                    }
-                }
-                return s;
-            }
-        }
+        // ICU4N: ASCII removed and replaced with AsciiUtil
 
         internal static string LoadRules(UCultureInfo locale, string collationType)
         {
@@ -77,7 +52,7 @@ namespace ICU4N.Impl.Coll
                     // ICU4N specific - passing in the current assembly to load resources from.
                     ICUData.IcuCollationBaseName, locale, ICUResourceBundle.IcuDataAssembly);
             UResourceBundle data = ((ICUResourceBundle)bundle).GetWithFallback(
-                    "collations/" + ASCII.ToLower(collationType));
+                    "collations/" + AsciiUtil.ToLower(collationType));
             string rules = data.GetString("Sequence");
             return rules;
         }
@@ -159,7 +134,7 @@ namespace ICU4N.Impl.Coll
             }
             else
             {
-                type = ASCII.ToLower(type);
+                type = AsciiUtil.ToLower(type);
             }
 
             // Load the collations/type tailoring, with type fallback.
