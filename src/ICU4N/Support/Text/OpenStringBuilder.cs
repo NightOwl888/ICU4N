@@ -315,12 +315,12 @@ namespace ICU4N.Text
             return _chars.AsSpan(origPos, length);
         }
 
-        public void Remove(int startIndex, int length)
+        public OpenStringBuilder Remove(int startIndex, int length)
         {
             if (_pos == length && startIndex == 0)
             {
                 _pos = 0;
-                return;
+                return this;
             }
 
             if (length > 0)
@@ -329,6 +329,7 @@ namespace ICU4N.Text
                 _chars.AsSpan(endIndex).CopyTo(_chars.AsSpan(startIndex));
                 _pos -= length;
             }
+            return this;
         }
 
         /// <summary>Round the specified value up to the next power of 2, if it isn't one already.</summary>

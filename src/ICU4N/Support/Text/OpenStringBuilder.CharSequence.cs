@@ -49,12 +49,13 @@ namespace ICU4N.Text
 
         public int OffsetByCodePoints(int index, int codePointOffset) => AsSpan().OffsetByCodePoints(index, codePointOffset);
 
-        public void Reverse()
+        public OpenStringBuilder Reverse()
         {
             _chars.AsSpan(0, _pos).ReverseText();
+            return this;
         }
 
-        public void Delete(int startIndex, int count)
+        public OpenStringBuilder Delete(int startIndex, int count)
         {
             Debug.Assert(startIndex >= 0 || startIndex <= _pos);
             Debug.Assert(count >= 0);
@@ -64,16 +65,17 @@ namespace ICU4N.Text
                 count = pos - startIndex;
             if (count > 0)
                 Remove(startIndex, count);
+            return this;
         }
 
-        public void Replace(int startIndex, int count, string newValue)
+        public OpenStringBuilder Replace(int startIndex, int count, string newValue)
         {
             Debug.Assert(newValue != null);
 
-            Replace(startIndex, count, newValue.AsSpan());
+            return Replace(startIndex, count, newValue.AsSpan());
         }
 
-        public void Replace(int startIndex, int count, ReadOnlySpan<char> newValue)
+        public OpenStringBuilder Replace(int startIndex, int count, ReadOnlySpan<char> newValue)
         {
             Debug.Assert(startIndex >= 0 || startIndex <= _pos);
             Debug.Assert(count >= 0);
@@ -103,6 +105,7 @@ namespace ICU4N.Text
             {
                 Insert(startIndex, newValue);
             }
+            return this;
         }
 
         public int IndexOf(char value) => _chars.AsSpan(0, _pos).IndexOf(value);

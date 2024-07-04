@@ -180,7 +180,7 @@ namespace ICU4N.Impl.Coll
                 // Note: UnicodeString.replace() pins pos to at most length().
                 int oldLength = oldBuffer.Length;
                 if (pos > oldLength) { pos = oldLength; }
-                oldBuffer.Delete(0, pos - 0).Insert(0, newBuffer, 0, Math.Max(Math.Min(skipLengthAtMatch, newBuffer.Length), 0)); // ICU4N: Corrected 4th parameter of Insert and 2nd parameter of Delete
+                oldBuffer.Delete(0, pos - 0).Insert(0, newBuffer.AsSpan(0, Math.Max(Math.Min(skipLengthAtMatch, newBuffer.Length), 0))); // ICU4N: Corrected 4th parameter of Insert and 2nd parameter of Delete
                 pos = 0;
             }
 
@@ -189,10 +189,10 @@ namespace ICU4N.Impl.Coll
 
             // Combining marks skipped in previous discontiguous-contraction matching.
             // After that discontiguous contraction was completed, we start reading them from here.
-            private readonly StringBuilder oldBuffer = new StringBuilder();
+            private readonly OpenStringBuilder oldBuffer = new OpenStringBuilder();
             // Combining marks newly skipped in current discontiguous-contraction matching.
             // These might have been read from the normal text or from the oldBuffer.
-            private readonly StringBuilder newBuffer = new StringBuilder();
+            private readonly OpenStringBuilder newBuffer = new OpenStringBuilder();
             // Reading index in oldBuffer,
             // or counter for how many code points have been read beyond oldBuffer (pos-oldBuffer.length()).
             private int pos;
