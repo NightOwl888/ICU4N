@@ -1,7 +1,7 @@
 ﻿using ICU4N.Impl.Coll;
+using ICU4N.Support.Text;
 using System;
 using System.Diagnostics;
-using System.Text;
 
 namespace ICU4N.Text
 {
@@ -365,19 +365,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    int size = m_key_.Length >> 1;
-                    StringBuilder key = new StringBuilder(size);
-                    int i = 0;
-                    while (m_key_[i] != 0 && m_key_[i + 1] != 0)
-                    {
-                        key.Append((char)((m_key_[i] << 8) | (0xff & m_key_[i + 1])));
-                        i += 2;
-                    }
-                    if (m_key_[i] != 0)
-                    {
-                        key.Append((char)(m_key_[i] << 8));
-                    }
-                    m_hashCode_ = key.ToString().GetHashCode();
+                    m_hashCode_ = Marvin.ComputeHash32(m_key_.AsSpan(0, Length), Marvin.DefaultSeed, isLittleEndian: false);
                 }
             }
             return m_hashCode_;
@@ -628,7 +616,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Sequence of bytes that represents the sort key
         /// </summary>
-        private byte[] m_key_;
+        internal byte[] m_key_; // ICU4N: Internal for testing
 
         /// <summary>
         /// Source string this <see cref="CollationKey"/> represents
