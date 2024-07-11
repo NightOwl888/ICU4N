@@ -206,7 +206,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public byte[] ToByteArray()
         {
-            int length = GetLength() + 1;
+            int length = Length + 1;
             byte[] result = new byte[length];
             System.Array.Copy(m_key_, 0, result, 0, length);
             return result;
@@ -554,7 +554,7 @@ namespace ICU4N.Text
         public CollationKey Merge(CollationKey source)
         {
             // check arguments
-            if (source == null || source.GetLength() == 0)
+            if (source == null || source.Length == 0)
             {
                 throw new ArgumentException(
                           "CollationKey argument can not be null or of 0 length");
@@ -562,7 +562,7 @@ namespace ICU4N.Text
 
             // 1 byte extra for the 02 separator at the end of the copy of this sort key,
             // and 1 more for the terminating 00.
-            byte[] result = new byte[GetLength() + source.GetLength() + 2];
+            byte[] result = new byte[Length + source.Length + 2];
 
             // merge the sort keys with the same number of levels
             int rindex = 0;
@@ -654,23 +654,26 @@ namespace ICU4N.Text
         /// Gets the length of the <see cref="CollationKey"/>.
         /// </summary>
         /// <returns>Length of the <see cref="CollationKey"/>.</returns>
-        private int GetLength()
+        private int Length
         {
-            if (m_length_ >= 0)
+            get
             {
+                if (m_length_ >= 0)
+                {
+                    return m_length_;
+                }
+                int length = m_key_.Length;
+                for (int index = 0; index < length; index++)
+                {
+                    if (m_key_[index] == 0)
+                    {
+                        length = index;
+                        break;
+                    }
+                }
+                m_length_ = length;
                 return m_length_;
             }
-            int length = m_key_.Length;
-            for (int index = 0; index < length; index++)
-            {
-                if (m_key_[index] == 0)
-                {
-                    length = index;
-                    break;
-                }
-            }
-            m_length_ = length;
-            return m_length_;
         }
     }
 }
