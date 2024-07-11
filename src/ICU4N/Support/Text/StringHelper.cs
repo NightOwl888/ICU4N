@@ -188,7 +188,7 @@ namespace ICU4N.Text
             ulong seed = Marvin.DefaultSeed;
 
             // Multiplication below will not overflow since going from positive Int32 to UInt32.
-            return Marvin.ComputeHash32(ref Unsafe.As<char, byte>(ref MemoryMarshal.GetReference(value)), (uint)value.Length * 2 /* in bytes, not chars */, (uint)seed, (uint)(seed >> 32));
+            return Marvin.ComputeHash32(ref Unsafe.As<char, byte>(ref MemoryMarshal.GetReference(value)), (uint)value.Length * 2 /* in bytes, not chars */, (uint)seed, (uint)(seed >> 32), BitConverter.IsLittleEndian);
 #endif
         }
     }

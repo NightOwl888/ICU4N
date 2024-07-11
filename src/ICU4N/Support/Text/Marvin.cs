@@ -16,12 +16,18 @@ namespace ICU4N.Support.Text
         /// Compute a Marvin hash and collapse it into a 32-bit hash.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int ComputeHash32(ReadOnlySpan<byte> data, ulong seed) => ComputeHash32(ref MemoryMarshal.GetReference(data), (uint)data.Length, (uint)seed, (uint)(seed >> 32));
+        public static int ComputeHash32(ReadOnlySpan<byte> data, ulong seed) => ComputeHash32(ref MemoryMarshal.GetReference(data), (uint)data.Length, (uint)seed, (uint)(seed >> 32), BitConverter.IsLittleEndian);
 
         /// <summary>
         /// Compute a Marvin hash and collapse it into a 32-bit hash.
         /// </summary>
-        public static int ComputeHash32(ref byte data, uint count, uint p0, uint p1)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int ComputeHash32(ref byte data, uint count, uint p0, uint p1) => ComputeHash32(ref data, count, p0, p1, BitConverter.IsLittleEndian);
+
+        /// <summary>
+        /// Compute a Marvin hash and collapse it into a 32-bit hash.
+        /// </summary>
+        public static int ComputeHash32(ref byte data, uint count, uint p0, uint p1, bool isLittleEndian)
         {
             // Control flow of this method generally flows top-to-bottom, trying to
             // minimize the number of branches taken for large (>= 8 bytes, 4 chars) inputs.
@@ -58,7 +64,7 @@ namespace ICU4N.Support.Text
                 // running in a 64-bit process.
 
                 p0 += Unsafe.ReadUnaligned<uint>(ref data);
-                uint nextUInt32 = Unsafe.ReadUnaligned<uint>(ref Unsafe.AddByteOffset(ref data, (IntPtr)4)); // ICU4N TODO: Need to test this because it was converted from cast to nuint to cast to IntPtr
+                uint nextUInt32 = Unsafe.ReadUnaligned<uint>(ref Unsafe.AddByteOffset(ref data, (IntPtr)4));
 
                 // One block round for each of the 32-bit integers we just read, 2x rounds total.
 
@@ -73,7 +79,7 @@ namespace ICU4N.Support.Text
                 // Requires https://github.com/dotnet/runtime/issues/6794 to be addressed first
                 // before we can realize the full benefits of this.
 
-                data = ref Unsafe.AddByteOffset(ref data, (IntPtr)8); // ICU4N TODO: Need to test this because it was converted from cast to nuint to cast to IntPtr
+                data = ref Unsafe.AddByteOffset(ref data, (IntPtr)8);
             } while (--loopCount > 0);
 
             // n.b. We've not been updating the original 'count' parameter, so its actual value is
@@ -109,7 +115,7 @@ namespace ICU4N.Support.Text
 
             // Read the last 4 bytes of the buffer.
 
-            uint partialResult = Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref Unsafe.AddByteOffset(ref data, ((IntPtr)(count & 7))), -4)); // ICU4N TODO: Need to test this because it was converted from cast to nuint to cast to IntPtr
+            uint partialResult = Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref Unsafe.AddByteOffset(ref data, ((IntPtr)(count & 7))), -4));
 
             // The 'partialResult' local above contains any data we have yet to read, plus some number
             // of bytes which we've already read from the buffer. An example of this is given below
@@ -125,7 +131,7 @@ namespace ICU4N.Support.Text
 
             count = ~count << 3;
 
-            if (BitConverter.IsLittleEndian)
+            if (isLittleEndian)
             {
                 partialResult >>= 8; // make some room for the 0x80 byte
                 partialResult |= 0x8000_0000u; // put the 0x80 byte at the beginning
@@ -156,7 +162,7 @@ namespace ICU4N.Support.Text
             // will only ever run two rounds total of the block function. Let's initialize
             // the partial result to "no data".
 
-            if (BitConverter.IsLittleEndian)
+            if (isLittleEndian)
             {
                 partialResult = 0x80u;
             }
@@ -175,9 +181,9 @@ namespace ICU4N.Support.Text
                 // [ AA          ]  -> 0x0000_80AA / 0xAA80_0000
                 // [ AA BB CC    ]  -> 0x0000_80CC / 0xCC80_0000
 
-                partialResult = Unsafe.AddByteOffset(ref data, (IntPtr)(count & 2)); // ICU4N TODO: Need to test this because it was converted from cast to nuint to cast to IntPtr
+                partialResult = Unsafe.AddByteOffset(ref data, (IntPtr)(count & 2));
 
-                if (BitConverter.IsLittleEndian)
+                if (isLittleEndian)
                 {
                     partialResult |= 0x8000;
                 }
@@ -198,7 +204,7 @@ namespace ICU4N.Support.Text
                 // [ AA BB       ]  -> 0x0080_BBAA / 0xAABB_8000
                 // [ AA BB CC    ]  -> 0x80CC_BBAA / 0xAABB_CC80 (carried over from above)
 
-                if (BitConverter.IsLittleEndian)
+                if (isLittleEndian)
                 {
                     partialResult <<= 16;
                     partialResult |= (uint)Unsafe.ReadUnaligned<ushort>(ref data);
@@ -239,7 +245,7 @@ namespace ICU4N.Support.Text
         }
 
         // ICU4N TODO: Use secure method to generate random seed...?
-        public static ulong DefaultSeed { get; } = (ulong)J2N.Time.CurrentTimeMilliseconds();
+        public static ulong DefaultSeed { get; } = (ulong)J2N.Time.NanoTime();
 
         //private static unsafe ulong GenerateSeed()
         //{
