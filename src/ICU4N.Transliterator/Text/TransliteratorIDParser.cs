@@ -577,6 +577,8 @@ namespace ICU4N.Text
             }
         }
 
+#nullable enable
+
         /// <summary>
         /// Given <paramref name="source"/>, <paramref name="target"/>, and <paramref name="variant"/> strings, concatenate them into a
         /// full ID.  If the source is empty, then "Any" will be used for the
@@ -584,20 +586,47 @@ namespace ICU4N.Text
         /// </summary>
         public static string STVtoID(string source,
                                      string target,
-                                     string variant)
+                                     string? variant)
         {
-            StringBuilder id = new StringBuilder(source);
-            if (id.Length == 0)
-            {
-                id.Append(ANY);
-            }
-            id.Append(TARGET_SEP).Append(target);
-            if (variant != null && variant.Length != 0)
-            {
-                id.Append(VARIANT_SEP).Append(variant);
-            }
-            return id.ToString();
+            return STVtoID(source.AsSpan(), target.AsSpan(), variant.AsSpan());
         }
+
+        /// <summary>
+        /// Given <paramref name="source"/>, <paramref name="target"/>, and <paramref name="variant"/> strings, concatenate them into a
+        /// full ID.  If the source is empty, then "Any" will be used for the
+        /// source, so the ID will always be of the form s-t/v or s-t.
+        /// </summary>
+        public static string STVtoID(ReadOnlySpan<char> source,
+                                     ReadOnlySpan<char> target,
+                                     ReadOnlySpan<char> variant)
+        {
+            int length = source.Length + 1 + target.Length + (variant.IsEmpty ? 0 : 1 + variant.Length);
+            ValueStringBuilder id = length <= Transliterator.CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[length])
+                : new ValueStringBuilder(length);
+            try
+            {
+                id.Append(source);
+                if (id.Length == 0)
+                {
+                    id.Append(ANY);
+                }
+                id.Append(TARGET_SEP);
+                id.Append(target);
+                if (variant.Length != 0)
+                {
+                    id.Append(VARIANT_SEP);
+                    id.Append(variant);
+                }
+                return id.ToString();
+            }
+            finally
+            {
+                id.Dispose();
+            }
+        }
+
+#nullable restore
 
         /// <summary>
         /// Register two targets as being inverses of one another.  For
