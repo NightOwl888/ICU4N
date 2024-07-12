@@ -1,7 +1,9 @@
-﻿using J2N.Collections;
+﻿using ICU4N.Text;
+using J2N.Collections;
 using J2N.IO;
 using System.IO;
 using System.Text;
+#nullable enable
 
 namespace ICU4N.Impl
 {
@@ -84,7 +86,7 @@ namespace ICU4N.Impl
 
             for (int i = 0; i < count; i++)
             {
-                UCharacterName.AlgorithmName an = ReadAlg();
+                UCharacterName.AlgorithmName? an = ReadAlg();
                 if (an == null)
                 {
                     throw new IOException("unames.icu read error: Algorithmic names creation error");
@@ -142,6 +144,8 @@ namespace ICU4N.Impl
         /// </summary>
         private const int DATA_FORMAT_ID_ = 0x756E616D;
 
+        private const int CharStackBufferSize = 32;
+
         // private methods ---------------------------------------------------
 
         /// <summary>
@@ -149,7 +153,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <returns>An instance of <see cref="UCharacterName.AlgorithmName"/>s if read is successful otherwise null.</returns>
         /// <exception cref="IOException">Thrown when file read error occurs or data is corrupted.</exception>
-        private UCharacterName.AlgorithmName ReadAlg()
+        private UCharacterName.AlgorithmName? ReadAlg()
         {
             UCharacterName.AlgorithmName result =
                                                new UCharacterName.AlgorithmName();
@@ -171,17 +175,24 @@ namespace ICU4N.Impl
                 size -= (variant << 1);
             }
 
-            StringBuilder prefix = new StringBuilder();
-            char c = (char)(m_byteBuffer_.Get() & 0x00FF);
-            while (c != 0)
+            ValueStringBuilder prefix = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                prefix.Append(c);
-                c = (char)(m_byteBuffer_.Get() & 0x00FF);
+                char c = (char)(m_byteBuffer_.Get() & 0x00FF);
+                while (c != 0)
+                {
+                    prefix.Append(c);
+                    c = (char)(m_byteBuffer_.Get() & 0x00FF);
+                }
+
+                size -= (ALG_INFO_SIZE_ + prefix.Length + 1);
+
+                result.SetPrefix(prefix.ToString());
             }
-
-            result.SetPrefix(prefix.ToString());
-
-            size -= (ALG_INFO_SIZE_ + prefix.Length + 1);
+            finally
+            {
+                prefix.Dispose();
+            }
 
             if (size > 0)
             {

@@ -1,14 +1,17 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Text;
 using J2N;
+using J2N.Globalization;
 using J2N.IO;
 using J2N.Numerics;
 using J2N.Text;
 using System;
+using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Resources;
-using StringBuffer = System.Text.StringBuilder;
+#nullable enable
 
 namespace ICU4N.Impl
 {
@@ -71,7 +74,7 @@ namespace ICU4N.Impl
         /// <param name="ch">The code point for which to get the name.</param>
         /// <param name="choice">Selector for which name to get.</param>
         /// <returns>If code point is above 0x1fff, null is returned.</returns>
-        public string GetName(int ch, UCharacterNameChoice choice)
+        public string? GetName(int ch, UCharacterNameChoice choice)
         {
             if (ch < UChar.MinValue || ch > UChar.MaxValue ||
                 choice > UCharacterNameChoice.CharNameChoiceCount)
@@ -79,7 +82,7 @@ namespace ICU4N.Impl
                 return null;
             }
 
-            string result = null;
+            string? result = null;
 
             result = GetAlgName(ch, choice);
 
@@ -106,60 +109,111 @@ namespace ICU4N.Impl
         /// <param name="choice">Selector to indicate if argument name is a Unicode 1.0 or the most current version.</param>
         /// <param name="name">The name to search for.</param>
         /// <returns>Code point.</returns>
-        public int GetCharFromName(UCharacterNameChoice choice, string name)
+        public int GetCharFromName(UCharacterNameChoice choice, string? name)
+            => GetCharFromName(choice, name.AsSpan());
+
+        /// <summary>
+        /// Find a character by its name and return its code point value
+        /// 
+        /// </summary>
+        /// <param name="choice">Selector to indicate if argument name is a Unicode 1.0 or the most current version.</param>
+        /// <param name="name">The name to search for.</param>
+        /// <returns>Code point.</returns>
+        public int GetCharFromName(UCharacterNameChoice choice, ReadOnlySpan<char> name)
         {
             // checks for illegal arguments
             if ((int)choice >= (int)UCharacterNameChoice.CharNameChoiceCount ||
-                name == null || name.Length == 0)
+                name.Length == 0)
             {
                 return -1;
             }
 
-            // try extended names first
-            int result = GetExtendedChar(name.ToLowerInvariant(), choice);
-            if (result >= -1)
+            char[]? nameArray = null;
+            try
             {
-                return result;
-            }
+                int nameLengthEstimate = name.Length + 8;
+                Span<char> nameBuffer = nameLengthEstimate > CharStackBufferSize
+                    ? (nameArray = ArrayPool<char>.Shared.Rent(nameLengthEstimate))
+                    : stackalloc char[CharStackBufferSize];
 
-            string upperCaseName = name.ToUpperInvariant();
-            // try algorithmic names first, if fails then try group names
-            // int result = getAlgorithmChar(choice, uppercasename);
-
-            if (choice == UCharacterNameChoice.UnicodeCharName ||
-                choice == UCharacterNameChoice.ExtendedCharName
-            )
-            {
-                int count = 0;
-                if (m_algorithm_ != null)
+                int lowerCaseNameLength;
+                while ((lowerCaseNameLength = name.ToLowerInvariant(nameBuffer)) < 0)
                 {
-                    count = m_algorithm_.Length;
+                    // rare - we didn't have enough buffer
+                    if (nameArray is not null)
+                        ArrayPool<char>.Shared.Return(nameArray);
+
+                    nameLengthEstimate *= 2;
+                    nameBuffer = nameArray = ArrayPool<char>.Shared.Rent(nameLengthEstimate);
                 }
-                for (count--; count >= 0; count--)
+
+                int result;
                 {
-                    result = m_algorithm_[count].GetChar(upperCaseName);
-                    if (result >= 0)
+                    ReadOnlySpan<char> lowerCaseName = nameBuffer.Slice(0, lowerCaseNameLength);
+
+                    // try extended names first
+                    result = GetExtendedChar(lowerCaseName, choice);
+                    if (result >= -1)
                     {
                         return result;
                     }
                 }
-            }
 
-            if (choice == UCharacterNameChoice.ExtendedCharName)
-            {
-                result = GetGroupChar(upperCaseName,
-                                      UCharacterNameChoice.UnicodeCharName);
-                if (result == -1)
+                int upperCaseNameLength;
+                while ((upperCaseNameLength = name.ToUpperInvariant(nameBuffer)) < 0)
+                {
+                    // rare - we didn't have enough buffer
+                    if (nameArray is not null)
+                        ArrayPool<char>.Shared.Return(nameArray);
+
+                    nameLengthEstimate *= 2;
+                    nameBuffer = nameArray = ArrayPool<char>.Shared.Rent(nameLengthEstimate);
+                }
+
+                ReadOnlySpan<char> upperCaseName = nameBuffer.Slice(0, upperCaseNameLength);
+
+                // try algorithmic names first, if fails then try group names
+                // int result = getAlgorithmChar(choice, uppercasename);
+
+                if (choice == UCharacterNameChoice.UnicodeCharName ||
+                    choice == UCharacterNameChoice.ExtendedCharName)
+                {
+                    int count = 0;
+                    if (m_algorithm_ != null)
+                    {
+                        count = m_algorithm_.Length;
+                    }
+                    for (count--; count >= 0; count--)
+                    {
+                        result = m_algorithm_![count].GetChar(upperCaseName);
+                        if (result >= 0)
+                        {
+                            return result;
+                        }
+                    }
+                }
+
+                if (choice == UCharacterNameChoice.ExtendedCharName)
                 {
                     result = GetGroupChar(upperCaseName,
-                                          UCharacterNameChoice.CharNameAlias);
+                                          UCharacterNameChoice.UnicodeCharName);
+                    if (result == -1)
+                    {
+                        result = GetGroupChar(upperCaseName,
+                                              UCharacterNameChoice.CharNameAlias);
+                    }
                 }
+                else
+                {
+                    result = GetGroupChar(upperCaseName, choice);
+                }
+                return result;
             }
-            else
+            finally
             {
-                result = GetGroupChar(upperCaseName, choice);
+                if (nameArray is not null)
+                    ArrayPool<char>.Shared.Return(nameArray);
             }
-            return result;
         }
 
         // these are all UCharacterNameIterator use methods -------------------
@@ -184,14 +238,14 @@ namespace ICU4N.Impl
         /// <param name="lengths">Array to store the value of the string length.</param>
         /// <returns>Next index of the data string immediately after the lengths
         /// in terms of byte address.</returns>
-        public int GetGroupLengths(int index, char[] offsets, char[] lengths)
+        public int GetGroupLengths(int index, Span<char> offsets, Span<char> lengths)
         {
             char length = (char)0xffff;
             byte b = 0,
                 n = 0;
             int shift;
             index = index * m_groupsize_; // byte count offsets of group strings
-            int stringoffset = UCharacterUtility.ToInt(
+            int stringoffset = UCharacterUtility.ToInt32(
                                      m_groupinfo_[index + OFFSET_HIGH_OFFSET_],
                                      m_groupinfo_[index + OFFSET_LOW_OFFSET_]);
 
@@ -254,11 +308,10 @@ namespace ICU4N.Impl
         /// <param name="length">Length of the group name string.</param>
         /// <param name="choice">Choice of Unicode 1.0 name or the most current name.</param>
         /// <returns>Name of the group.</returns>
-        public string GetGroupName(int index, int length, UCharacterNameChoice choice)
+        public string? GetGroupName(int index, int length, UCharacterNameChoice choice)
         {
             if (choice != UCharacterNameChoice.UnicodeCharName &&
-                choice != UCharacterNameChoice.ExtendedCharName
-            )
+                choice != UCharacterNameChoice.ExtendedCharName)
             {
                 if (';' >= m_tokentable_.Length || m_tokentable_[';'] == 0xFFFF)
                 {
@@ -283,10 +336,9 @@ namespace ICU4N.Impl
                     length = 0;
                 }
             }
-
-            lock (m_utilStringBuffer_)
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                m_utilStringBuffer_.Length = 0;
                 byte b;
                 char token;
                 for (int i = 0; i < length;)
@@ -300,7 +352,7 @@ namespace ICU4N.Impl
                         {
                             break;
                         }
-                        m_utilStringBuffer_.Append(b); // implicit letter
+                        sb.Append(b, provider: NumberFormatInfo.InvariantInfo); // implicit letter
                     }
                     else
                     {
@@ -319,7 +371,7 @@ namespace ICU4N.Impl
                                 // skip the semicolon if we are seeking extended
                                 // names and there was no 2.0 name but there
                                 // is a 1.0 name.
-                                if (m_utilStringBuffer_.Length == 0 && choice ==
+                                if (sb.Length == 0 && choice ==
                                        UCharacterNameChoice.ExtendedCharName)
                                 {
                                     continue;
@@ -327,21 +379,26 @@ namespace ICU4N.Impl
                                 break;
                             }
                             // explicit letter
-                            m_utilStringBuffer_.Append((char)(b & 0x00ff));
+                            sb.Append((char)(b & 0x00ff));
                         }
                         else
                         { // write token word
                             UCharacterUtility.GetNullTermByteSubString(
-                                    m_utilStringBuffer_, m_tokenstring_, token);
+                                    ref sb, m_tokenstring_, token);
                         }
                     }
                 }
 
-                if (m_utilStringBuffer_.Length > 0)
+                if (sb.Length > 0)
                 {
-                    return m_utilStringBuffer_.ToString();
+                    return sb.ToString();
                 }
             }
+            finally
+            {
+                sb.Dispose();
+            }
+
             return null;
         }
 
@@ -350,7 +407,7 @@ namespace ICU4N.Impl
         /// </summary>
         public string GetExtendedName(int ch)
         {
-            string result = GetName(ch, UCharacterNameChoice.UnicodeCharName);
+            string? result = GetName(ch, UCharacterNameChoice.UnicodeCharName);
             if (result == null)
             {
                 // TODO: Return Name_Alias/control names for control codes 0..1F & 7F..9F.
@@ -395,7 +452,7 @@ namespace ICU4N.Impl
         /// <returns>Name of codepoint extended or 1.0.</returns>
         public string GetExtendedOr10Name(int ch)
         {
-            string result = null;
+            string? result = null;
             // TODO: Return Name_Alias/control names for control codes 0..1F & 7F..9F.
             if (result == null)
             {
@@ -410,27 +467,25 @@ namespace ICU4N.Impl
                 {
                     result = TYPE_NAMES_[type];
                 }
-                lock (m_utilStringBuffer_)
+                var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    m_utilStringBuffer_.Length = 0;
-                    m_utilStringBuffer_.Append('<');
-                    m_utilStringBuffer_.Append(result);
-                    m_utilStringBuffer_.Append('-');
-                    //string chStr = Integer.toHexString(ch).toUpperCase(Locale.ENGLISH);
-                    string chStr = string.Format(CultureInfo.InvariantCulture, "{0:X2}", ch);
-                    int zeros = 4 - chStr.Length;
-                    while (zeros > 0)
-                    {
-                        m_utilStringBuffer_.Append('0');
-                        zeros--;
-                    }
-                    m_utilStringBuffer_.Append(chStr);
-                    m_utilStringBuffer_.Append('>');
-                    result = m_utilStringBuffer_.ToString();
+                    sb.Append('<');
+                    sb.Append(result);
+                    sb.Append('-');
+                    sb.Append(ch, "X4", NumberFormatInfo.InvariantInfo);
+                    sb.Append('>');
+                    result = sb.ToString();
+                }
+                finally
+                {
+                    sb.Dispose();
                 }
             }
             return result;
         }
+
+
 
         /// <summary>
         /// Gets the MSB from the group index.
@@ -531,14 +586,16 @@ namespace ICU4N.Impl
         /// <returns>Algorithmic name of codepoint.</returns>
         public string GetAlgorithmName(int index, int codepoint)
         {
-            string result = null;
-            lock (m_utilStringBuffer_) // ICU4N TODO: Need to check here whether this lock applies to the StringBuffer. We may actually need to lock it here.
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                m_utilStringBuffer_.Length = 0;
-                m_algorithm_[index].AppendName(codepoint, m_utilStringBuffer_);
-                result = m_utilStringBuffer_.ToString();
+                m_algorithm_[index].AppendName(codepoint, ref sb);
+                return sb.ToString();
             }
-            return result;
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         /// <summary>
@@ -547,7 +604,7 @@ namespace ICU4N.Impl
         /// <param name="ch">Character to get the group name.</param>
         /// <param name="choice"></param>
         /// <returns>Choice name choice selector to choose a unicode 1.0 or newer name.</returns>
-        public string GetGroupName(int ch, UCharacterNameChoice choice)
+        public string? GetGroupName(int ch, UCharacterNameChoice choice)
         {
             lock (this)
             {
@@ -655,9 +712,11 @@ namespace ICU4N.Impl
             /// <summary>
             /// Constructor.
             /// </summary>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable. (Fields are set by UCharacterNameReader)
             internal AlgorithmName()
             {
             }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable. (Fields are set by UCharacterNameReader)
 
             // package private methods ---------------------------------------
 
@@ -706,7 +765,7 @@ namespace ICU4N.Impl
             /// </summary>
             /// <param name="prefix"></param>
             /// <returns>true if prefix is set.</returns>
-            internal bool SetPrefix(string prefix)
+            internal bool SetPrefix(string? prefix)
             {
                 if (prefix != null && prefix.Length > 0)
                 {
@@ -739,32 +798,31 @@ namespace ICU4N.Impl
             }
 
             /// <summary>
-            /// Appends algorithm name of code point into <see cref="StringBuffer"/>.
+            /// Appends algorithm name of code point into <see cref="ValueStringBuilder"/>.
             /// Note this method does not check for validity of code point in Algorithm,
             /// result is undefined if code point does not belong in Algorithm.
             /// </summary>
             /// <param name="ch">Code point.</param>
-            /// <param name="str"><see cref="StringBuffer"/> to append to.</param>
-            internal void AppendName(int ch, StringBuffer str)
+            /// <param name="str"><see cref="ValueStringBuilder"/> to append to.</param>
+            internal void AppendName(int ch, ref ValueStringBuilder str)
             {
                 str.Append(m_prefix_);
                 switch (m_type_)
                 {
                     case TYPE_0_:
                         // prefix followed by hex digits indicating variants
-                        str.Append(Utility.Hex(ch, m_variant_));
+                        str.AppendFormatHex(ch, m_variant_);
                         break;
                     case TYPE_1_:
                         // prefix followed by factorized-elements
                         int offset = ch - m_rangestart_;
-                        int[] indexes = m_utilIntBuffer_;
+                        int[] indexes = ArrayPool<int>.Shared.Rent(256);
                         int factor;
-
-                        // write elements according to the factors
-                        // the factorized elements are determined by modulo
-                        // arithmetic
-                        lock (m_utilIntBuffer_)
+                        try
                         {
+                            // write elements according to the factors
+                            // the factorized elements are determined by modulo
+                            // arithmetic
                             for (int i = m_variant_ - 1; i > 0; i--)
                             {
                                 factor = m_factor_[i] & 0x00FF;
@@ -778,7 +836,11 @@ namespace ICU4N.Impl
                             indexes[0] = offset;
 
                             // joining up the factorized strings
-                            str.Append(GetFactorString(indexes, m_variant_));
+                            GetFactorString(indexes.AsSpan(0, m_variant_), ref str);
+                        }
+                        finally
+                        {
+                            ArrayPool<int>.Shared.Return(indexes);
                         }
                         break;
                 }
@@ -788,11 +850,11 @@ namespace ICU4N.Impl
             /// Gets the character for the argument algorithmic name.
             /// </summary>
             /// <returns>The algorithmic char or -1 otherwise.</returns>
-            internal int GetChar(string name)
+            internal int GetChar(ReadOnlySpan<char> name)
             {
                 int prefixlen = m_prefix_.Length;
                 if (name.Length < prefixlen ||
-                    !m_prefix_.Equals(name.Substring(0, prefixlen - 0))) // ICU4N: Checked 2nd parameter
+                    !m_prefix_.AsSpan().Equals(name.Slice(0, prefixlen), StringComparison.Ordinal)) // ICU4N: Checked 2nd parameter
                 {
                     return -1;
                 }
@@ -800,17 +862,15 @@ namespace ICU4N.Impl
                 switch (m_type_)
                 {
                     case (byte)TYPE_0_:
-                        try // ICU4N TODO: Use int.TryParse to eliminate the exception
+                        if (J2N.Numerics.Int32.TryParse(name.Slice(prefixlen), NumberStyle.HexNumber, NumberFormatInfo.InvariantInfo, out int result))
                         {
-                            int result = System.Convert.ToInt32(name.Substring(prefixlen),
-                                                          16);
                             // does it fit into the range?
                             if (m_rangestart_ <= result && result <= m_rangeend_)
                             {
                                 return result;
                             }
                         }
-                        catch (FormatException)
+                        else
                         {
                             return -1;
                         }
@@ -821,14 +881,14 @@ namespace ICU4N.Impl
                         for (int ch = m_rangestart_; ch <= m_rangeend_; ch++)
                         {
                             int offset = ch - m_rangestart_;
-                            int[] indexes = m_utilIntBuffer_;
+                            int[] indexes = ArrayPool<int>.Shared.Rent(256);
                             int factor;
 
-                            // write elements according to the factors
-                            // the factorized elements are determined by modulo
-                            // arithmetic
-                            lock (m_utilIntBuffer_)
+                            try
                             {
+                                // write elements according to the factors
+                                // the factorized elements are determined by modulo
+                                // arithmetic
                                 for (int i = m_variant_ - 1; i > 0; i--)
                                 {
                                     factor = m_factor_[i] & 0x00FF;
@@ -842,11 +902,14 @@ namespace ICU4N.Impl
                                 indexes[0] = offset;
 
                                 // joining up the factorized strings
-                                if (CompareFactorString(indexes, m_variant_, name,
-                                                        prefixlen))
+                                if (CompareFactorString(indexes.AsSpan(0, m_variant_), name.Slice(prefixlen)))
                                 {
                                     return ch;
                                 }
+                            }
+                            finally
+                            {
+                                ArrayPool<int>.Shared.Return(indexes);
                             }
                         }
                         break;
@@ -866,7 +929,7 @@ namespace ICU4N.Impl
             internal int Add(int[] set, int maxlength)
             {
                 // prefix length
-                int length = UCharacterName.Add(set, m_prefix_);
+                int length = UCharacterName.Add(set, m_prefix_.AsSpan());
                 switch (m_type_)
                 {
                     case TYPE_0_:
@@ -881,35 +944,38 @@ namespace ICU4N.Impl
                         }
                     case TYPE_1_:
                         {
-                            // name = prefix factorized-elements
-                            // get the set and maximum factor suffix length for each
-                            // factor
-                            for (int i = m_variant_ - 1; i > 0; i--)
+                            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                            try
                             {
-                                int maxfactorlength = 0;
-                                int count = 0;
-                                for (int factor = m_factor_[i]; factor > 0; --factor)
+                                // name = prefix factorized-elements
+                                // get the set and maximum factor suffix length for each
+                                // factor
+                                for (int i = m_variant_ - 1; i > 0; i--)
                                 {
-                                    lock (m_utilStringBuffer_)
+                                    int maxfactorlength = 0;
+                                    int count = 0;
+                                    for (int factor = m_factor_[i]; factor > 0; --factor)
                                     {
-                                        m_utilStringBuffer_.Length = 0;
-                                        count
-                                          = UCharacterUtility.GetNullTermByteSubString(
-                                                        m_utilStringBuffer_,
+                                        count = UCharacterUtility.GetNullTermByteSubString(
+                                                        ref sb,
                                                         m_factorstring_, count);
-                                        UCharacterName.Add(set, m_utilStringBuffer_);
-                                        if (m_utilStringBuffer_.Length
+                                        UCharacterName.Add(set, sb.AsSpan());
+                                        if (sb.Length
                                                                     > maxfactorlength)
                                         {
-                                            maxfactorlength
-                                                        = m_utilStringBuffer_.Length;
+                                            maxfactorlength = sb.Length;
                                         }
                                     }
+                                    length += maxfactorlength;
                                 }
-                                length += maxfactorlength;
+                            }
+                            finally
+                            {
+                                sb.Dispose();
                             }
                         }
                         break;
+
                 }
                 if (length > maxlength)
                 {
@@ -930,53 +996,42 @@ namespace ICU4N.Impl
             private char[] m_factor_;
             private string m_prefix_;
             private byte[] m_factorstring_;
-            /// <summary>
-            /// Utility StringBuffer
-            /// </summary>
-            private StringBuffer m_utilStringBuffer_ = new StringBuffer();
-            /// <summary>
-            /// Utility int buffer
-            /// </summary>
-            private int[] m_utilIntBuffer_ = new int[256];
+            // ICU4N: Eliminated the need for m_utilStringBuffer_ by using ValueStringBuilder
+            // ICU4N: Eliminated the need for m_utilIntBuffer_ utility buffer by using ArrayPool
 
             // private methods -----------------------------------------------
 
             /// <summary>
-            /// Gets the indexth string in each of the argument factor block.
+            /// Gets the indexth string in each of the argument factor block and appends it to <paramref name="destination"/>.
             /// </summary>
             /// <param name="index">Array with each index corresponding to each factor block.</param>
-            /// <param name="length">Length of the array index.</param>
+            /// <param name="destination">The buffer to append the factor string to.</param>
             /// <returns>The combined string of the array of indexth factor string in factor block.</returns>
-            private string GetFactorString(int[] index, int length)
+            private void GetFactorString(ReadOnlySpan<int> index, ref ValueStringBuilder destination)
             {
                 int size = m_factor_.Length;
-                if (index == null || length != size)
+                if (index.Length != size)
                 {
-                    return null;
+                    return;
                 }
 
-                lock (m_utilStringBuffer_)
+                int count = 0;
+                int factor;
+                size--;
+                for (int i = 0; i <= size; i++)
                 {
-                    m_utilStringBuffer_.Length = 0;
-                    int count = 0;
-                    int factor;
-                    size--;
-                    for (int i = 0; i <= size; i++)
+                    factor = m_factor_[i];
+                    count = UCharacterUtility.SkipNullTermByteSubString(
+                                                m_factorstring_, count, index[i]);
+                    count = UCharacterUtility.GetNullTermByteSubString(
+                                            ref destination, m_factorstring_,
+                                            count);
+                    if (i != size)
                     {
-                        factor = m_factor_[i];
                         count = UCharacterUtility.SkipNullTermByteSubString(
-                                                 m_factorstring_, count, index[i]);
-                        count = UCharacterUtility.GetNullTermByteSubString(
-                                              m_utilStringBuffer_, m_factorstring_,
-                                              count);
-                        if (i != size)
-                        {
-                            count = UCharacterUtility.SkipNullTermByteSubString(
-                                                           m_factorstring_, count,
-                                                           factor - index[i] - 1);
-                        }
+                                                        m_factorstring_, count,
+                                                        factor - index[i] - 1);
                     }
-                    return m_utilStringBuffer_.ToString();
                 }
             }
 
@@ -985,19 +1040,16 @@ namespace ICU4N.Impl
             /// the argument string.
             /// </summary>
             /// <param name="index">Array with each index corresponding to each factor block.</param>
-            /// <param name="length">Index array length.</param>
             /// <param name="str">String to compare with.</param>
-            /// <param name="offset">Offset of str to start comparison.</param>
             /// <returns>true if string matches.</returns>
-            private bool CompareFactorString(int[] index, int length, string str,
-                                                int offset)
+            private bool CompareFactorString(ReadOnlySpan<int> index, ReadOnlySpan<char> str)
             {
                 int size = m_factor_.Length;
-                if (index == null || length != size)
+                if (index.Length != size)
                     return false;
 
                 int count = 0;
-                int strcount = offset;
+                int strcount = 0;
                 int factor;
                 size--;
                 for (int i = 0; i <= size; i++)
@@ -1041,7 +1093,7 @@ namespace ICU4N.Impl
         /// <param name="token">Array of tokens.</param>
         /// <param name="tokenstring">Array of string values of the tokens.</param>
         /// <returns>false if there is a data error.</returns>
-        internal bool SetToken(char[] token, byte[] tokenstring)
+        internal bool SetToken(char[]? token, byte[]? tokenstring)
         {
             if (token != null && tokenstring != null && token.Length > 0 &&
                 tokenstring.Length > 0)
@@ -1058,7 +1110,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="alg">Algorithm information array.</param>
         /// <returns>true if the group string offset has been set correctly.</returns>
-        internal bool SetAlgorithm(AlgorithmName[] alg)
+        internal bool SetAlgorithm(AlgorithmName[]? alg)
         {
             if (alg != null && alg.Length != 0)
             {
@@ -1091,7 +1143,7 @@ namespace ICU4N.Impl
         /// <param name="group">Index information array.</param>
         /// <param name="groupstring">Name information array.</param>
         /// <returns>false if there is a data error.</returns>
-        internal bool SetGroup(char[] group, byte[] groupstring)
+        internal bool SetGroup(char[]? group, byte[]? groupstring)
         {
             if (group != null && groupstring != null && group.Length > 0 &&
                 groupstring.Length > 0)
@@ -1168,10 +1220,7 @@ namespace ICU4N.Impl
         /// Chars are platform-dependent (can be EBCDIC).
         /// </summary>
         private int[] m_ISOCommentSet_ = new int[8];
-        /// <summary>
-        /// Utility <see cref="StringBuffer"/>
-        /// </summary>
-        private StringBuffer m_utilStringBuffer_ = new StringBuffer();
+        // ICU4N: Eliminated the need for m_utilStringBuffer_ by using ValueStringBuilder
         // ICU4N: Eliminated the need for m_utilIntBuffer_ utility buffer by using out params
         /// <summary>
         /// Maximum ISO comment length
@@ -1238,18 +1287,25 @@ namespace ICU4N.Impl
         /// </summary>
         private const int EXTENDED_CATEGORY_ = UUnicodeCategoryExtensions.CharCategoryCount + 3;
 
+        /// <summary>
+        /// Maximum buffer size until we switch from using stack to using array pool/heap.
+        /// </summary>
+        internal const int CharStackBufferSize = 32;
+
         // private constructor ------------------------------------------------
 
         /// <summary>
         /// Protected constructor for use in <see cref="UChar"/>.
         /// </summary>
         /// <exception cref="IOException">Thrown when data reading fails.</exception>
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable. (Fields are set by UCharacterNameReader)
         private UCharacterName()
         {
             ByteBuffer b = ICUBinary.GetRequiredData(FILE_NAME_);
             UCharacterNameReader reader = new UCharacterNameReader(b);
             reader.Read(this);
         }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable. (Fields are set by UCharacterNameReader)
 
         // private methods ---------------------------------------------------
 
@@ -1259,26 +1315,29 @@ namespace ICU4N.Impl
         /// <param name="ch">Character to determine name for.</param>
         /// <param name="choice">Name choice.</param>
         /// <returns>The algorithmic name or null if not found.</returns>
-        private string GetAlgName(int ch, UCharacterNameChoice choice)
+        private string? GetAlgName(int ch, UCharacterNameChoice choice)
         {
             /* Only the normative character name can be algorithmic. */
             if (choice == UCharacterNameChoice.UnicodeCharName ||
-                choice == UCharacterNameChoice.ExtendedCharName
-            )
+                choice == UCharacterNameChoice.ExtendedCharName)
             {
                 // index in terms integer index
-                lock (m_utilStringBuffer_) // ICU4N TODO: Need to check here whether this lock applies to the StringBuffer. We may actually need to lock it here.
+                var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    m_utilStringBuffer_.Length = 0;
-
+                    // index in terms integer index
                     for (int index = m_algorithm_.Length - 1; index >= 0; index--)
                     {
                         if (m_algorithm_[index].Contains(ch))
                         {
-                            m_algorithm_[index].AppendName(ch, m_utilStringBuffer_);
-                            return m_utilStringBuffer_.ToString();
+                            m_algorithm_[index].AppendName(ch, ref sb);
+                            return sb.ToString();
                         }
                     }
+                }
+                finally
+                {
+                    sb.Dispose();
                 }
             }
             return null;
@@ -1290,7 +1349,7 @@ namespace ICU4N.Impl
         /// <param name="name">Name of the character.</param>
         /// <param name="choice"></param>
         /// <returns>Character with the tokenized argument name or -1 if character is not found.</returns>
-        private int GetGroupChar(string name, UCharacterNameChoice choice)
+        private int GetGroupChar(ReadOnlySpan<char> name, UCharacterNameChoice choice)
         {
             lock (this)
             {
@@ -1324,7 +1383,7 @@ namespace ICU4N.Impl
         /// <param name="choice">Choice of either 1.0 or the most current unicode name.</param>
         /// <returns>Relative character in the group which matches name, otherwise if
         /// not found, -1 will be returned.</returns>
-        private int GetGroupChar(int index, char[] length, string name,
+        private int GetGroupChar(int index, ReadOnlySpan<char> length, ReadOnlySpan<char> name,
                                  UCharacterNameChoice choice)
         {
             byte b = 0;
@@ -1421,8 +1480,8 @@ namespace ICU4N.Impl
                 // not a character we return a invalid category count
                 return NON_CHARACTER_;
             }
-            int result = UChar.GetUnicodeCategory(ch).ToInt32();
-            if (result == UUnicodeCategory.Surrogate.ToInt32())
+            int result = (int)UChar.GetUnicodeCategory(ch);
+            if (result == (int)UUnicodeCategory.Surrogate)
             {
                 if (ch <= UTF16.LeadSurrogateMaxValue)
                 {
@@ -1443,7 +1502,7 @@ namespace ICU4N.Impl
         /// <param name="choice">Name choice.</param>
         /// <returns>Character associated with the name, -1 if such character is not
         /// found and -2 if we should continue with the search.</returns>
-        private static int GetExtendedChar(string name, UCharacterNameChoice choice)
+        private static int GetExtendedChar(ReadOnlySpan<char> name, UCharacterNameChoice choice)
         {
             if (name[0] == '<')
             {
@@ -1457,19 +1516,19 @@ namespace ICU4N.Impl
                         { // We've got a category.
                             startIndex++;
                             int result = -1;
-                            if (!int.TryParse(name.Substring(startIndex, endIndex - startIndex), // ICU4N: Corrected 2nd parameter
-                                NumberStyles.HexNumber, CultureInfo.InvariantCulture, out result))
+                            if (!J2N.Numerics.Int32.TryParse(name.Slice(startIndex, endIndex - startIndex), // ICU4N: Corrected 2nd parameter
+                                NumberStyle.HexNumber, CultureInfo.InvariantCulture, out result))
                             {
                                 return -1;
                             }
 
                             // Now validate the category name. We could use a
                             // binary search, or a trie, if we really wanted to.
-                            string type = name.Substring(1, (startIndex - 1) - 1); // ICU4N: Corrected 2nd parameter
+                            ReadOnlySpan<char> type = name.Slice(1, (startIndex - 1) - 1); // ICU4N: Corrected 2nd parameter
                             int length = TYPE_NAMES_.Length;
                             for (int i = 0; i < length; ++i)
                             {
-                                if (type.CompareToOrdinal(TYPE_NAMES_[i]) == 0)
+                                if (type.CompareTo(TYPE_NAMES_[i].AsSpan(), StringComparison.Ordinal) == 0)
                                 {
                                     if (GetType(result) == i)
                                     {
@@ -1494,7 +1553,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="set">Set to add to.</param>
         /// <param name="ch">16 bit char to add.</param>
-        private static void Add(int[] set, char ch)
+        private static void Add(Span<int> set, char ch)
         {
             set[ch.TripleShift(5)] |= 1 << (ch & 0x1f);
         }
@@ -1506,7 +1565,7 @@ namespace ICU4N.Impl
         /// <param name="set">Set to check in.</param>
         /// <param name="ch">16 bit char to check.</param>
         /// <returns>true if codepoint is part of the set, false otherwise.</returns>
-        private static bool Contains(int[] set, char ch)
+        private static bool Contains(Span<int> set, char ch)
         {
             return (set[ch.TripleShift(5)] & (1 << (ch & 0x1f))) != 0;
         }
@@ -1517,25 +1576,8 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="set">Set to add all chars of <paramref name="str"/> to.</param>
         /// <param name="str">String to add.</param>
-        private static int Add(int[] set, string str)
-        {
-            int result = str.Length;
-
-            for (int i = result - 1; i >= 0; i--)
-            {
-                Add(set, str[i]);
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Adds all characters of the argument <paramref name="str"/> and gets the length.
-        /// Equivalent to calcStringSetLength.
-        /// </summary>
-        /// <param name="set">Set to add all chars of <paramref name="str"/> to.</param>
-        /// <param name="str">String to add.</param>
         /// <returns></returns>
-        private static int Add(int[] set, StringBuffer str)
+        private static int Add(Span<int> set, ReadOnlySpan<char> str)
         {
             int result = str.Length;
 
@@ -1582,7 +1624,7 @@ namespace ICU4N.Impl
                 // 2 for <>
                 // 1 for -
                 // 6 for most hex digits per code point
-                int length = 9 + Add(m_nameSet_, TYPE_NAMES_[i]);
+                int length = 9 + Add(m_nameSet_, TYPE_NAMES_[i].AsSpan());
                 if (length > maxlength)
                 {
                     maxlength = length;
@@ -1602,61 +1644,68 @@ namespace ICU4N.Impl
         /// <param name="nameLength">The length of the name string parsed.</param>
         /// <param name="groupLength">The length of the group string parsed.</param>
         // ICU4N: Changed return value from int[] to out parameters
-        private void AddGroupName(int offset, int length, byte[] tokenlength,
-                                   int[] set, out int nameLength, out int groupLength)
+        private void AddGroupName(int offset, int length, Span<byte> tokenlength,
+                                   Span<int> set, out int nameLength, out int groupLength)
         {
             int resultnlength = 0;
             int resultplength = 0;
-            while (resultplength < length)
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                char b = (char)(m_groupstring_[offset + resultplength] & 0xff);
-                resultplength++;
-                if (b == ';')
+                while (resultplength < length)
                 {
-                    break;
-                }
-
-                if (b >= m_tokentable_.Length)
-                {
-                    Add(set, b); // implicit letter
-                    resultnlength++;
-                }
-                else
-                {
-                    char token = m_tokentable_[b & 0x00ff];
-                    if (token == 0xFFFE)
+                    char b = (char)(m_groupstring_[offset + resultplength] & 0xff);
+                    resultplength++;
+                    if (b == ';')
                     {
-                        // this is a lead byte for a double-byte token
-                        b = (char)(b << 8 | (m_groupstring_[offset + resultplength]
-                                             & 0x00ff));
-                        token = m_tokentable_[b];
-                        resultplength++;
+                        break;
                     }
-                    if (token == 0xFFFF)
+
+                    if (b >= m_tokentable_.Length)
                     {
-                        Add(set, b);
+                        Add(set, b); // implicit letter
                         resultnlength++;
                     }
                     else
                     {
-                        // count token word
-                        // use cached token length
-                        byte tlength = tokenlength[b];
-                        if (tlength == 0)
+                        char token = m_tokentable_[b & 0x00ff];
+                        if (token == 0xFFFE)
                         {
-                            lock (m_utilStringBuffer_)
-                            {
-                                m_utilStringBuffer_.Length = 0;
-                                UCharacterUtility.GetNullTermByteSubString(
-                                               m_utilStringBuffer_, m_tokenstring_,
-                                               token);
-                                tlength = (byte)Add(set, m_utilStringBuffer_);
-                            }
-                            tokenlength[b] = tlength;
+                            // this is a lead byte for a double-byte token
+                            b = (char)(b << 8 | (m_groupstring_[offset + resultplength]
+                                                 & 0x00ff));
+                            token = m_tokentable_[b];
+                            resultplength++;
                         }
-                        resultnlength += tlength;
+                        if (token == 0xFFFF)
+                        {
+                            Add(set, b);
+                            resultnlength++;
+                        }
+                        else
+                        {
+                            // count token word
+                            // use cached token length
+                            byte tlength = tokenlength[b];
+                            if (tlength == 0)
+                            {
+                                sb.Length = 0;
+                                UCharacterUtility.GetNullTermByteSubString(
+                                               ref sb, m_tokenstring_,
+                                               token);
+                                tlength = (byte)Add(set, sb.AsSpan());
+
+
+                                tokenlength[b] = tlength;
+                            }
+                            resultnlength += tlength;
+                        }
                     }
                 }
+            }
+            finally
+            {
+                sb.Dispose();
             }
             nameLength = resultnlength;
             groupLength = resultplength;
@@ -1672,66 +1721,79 @@ namespace ICU4N.Impl
         private void AddGroupName(int maxlength)
         {
             int maxisolength = 0;
-            char[] offsets = new char[LinesPerGroup + 2];
-            char[] lengths = new char[LinesPerGroup + 2];
-            byte[] tokenlengths = new byte[m_tokentable_.Length];
 
-            // enumerate all groups
-            // for (int i = m_groupcount_ - 1; i >= 0; i --) {
-            for (int i = 0; i < m_groupcount_; i++)
+            byte[]? tokenLengthsArray = null;
+            int tokentableLength = m_tokentable_.Length;
+            try
             {
-                int offset = GetGroupLengths(i, offsets, lengths);
-                // enumerate all lines in each group
-                // for (int linenumber = LINES_PER_GROUP_ - 1; linenumber >= 0;
-                //    linenumber --) {
-                for (int linenumber = 0; linenumber < LinesPerGroup;
-                    linenumber++)
-                {
-                    int lineoffset = offset + offsets[linenumber];
-                    int length = lengths[linenumber];
-                    if (length == 0)
-                    {
-                        continue;
-                    }
+                Span<char> offsets = stackalloc char[LinesPerGroup + 2];
+                Span<char> lengths = stackalloc char[LinesPerGroup + 2];
+                Span<byte> tokenlengths = tokentableLength > CharStackBufferSize
+                    ? (tokenLengthsArray = ArrayPool<byte>.Shared.Rent(tokentableLength))
+                    : stackalloc byte[tokentableLength];
 
-                    // read regular name
-                    AddGroupName(lineoffset, length, tokenlengths,
-                                                m_nameSet_, out int parsed0, out int parsed1);
-                    if (parsed0 > maxlength)
+                // enumerate all groups
+                // for (int i = m_groupcount_ - 1; i >= 0; i --) {
+                for (int i = 0; i < m_groupcount_; i++)
+                {
+                    int offset = GetGroupLengths(i, offsets, lengths);
+                    // enumerate all lines in each group
+                    // for (int linenumber = LINES_PER_GROUP_ - 1; linenumber >= 0;
+                    //    linenumber --) {
+                    for (int linenumber = 0; linenumber < LinesPerGroup;
+                        linenumber++)
                     {
-                        // 0 for name length
-                        maxlength = parsed0;
-                    }
-                    lineoffset += parsed1;
-                    if (parsed1 >= length)
-                    {
-                        // 1 for parsed group string length
-                        continue;
-                    }
-                    length -= parsed1;
-                    // read Unicode 1.0 name
-                    AddGroupName(lineoffset, length, tokenlengths,
-                                          m_nameSet_, out parsed0, out parsed1);
-                    if (parsed0 > maxlength)
-                    {
-                        // 0 for name length
-                        maxlength = parsed0;
-                    }
-                    lineoffset += parsed1;
-                    if (parsed1 >= length)
-                    {
-                        // 1 for parsed group string length
-                        continue;
-                    }
-                    length -= parsed1;
-                    // read ISO comment
-                    AddGroupName(lineoffset, length, tokenlengths,
-                                          m_ISOCommentSet_, out _, out parsed1);
-                    if (parsed1 > maxisolength)
-                    {
-                        maxisolength = length;
+                        int lineoffset = offset + offsets[linenumber];
+                        int length = lengths[linenumber];
+                        if (length == 0)
+                        {
+                            continue;
+                        }
+
+                        // read regular name
+                        AddGroupName(lineoffset, length, tokenlengths,
+                                                    m_nameSet_, out int parsed0, out int parsed1);
+                        if (parsed0 > maxlength)
+                        {
+                            // 0 for name length
+                            maxlength = parsed0;
+                        }
+                        lineoffset += parsed1;
+                        if (parsed1 >= length)
+                        {
+                            // 1 for parsed group string length
+                            continue;
+                        }
+                        length -= parsed1;
+                        // read Unicode 1.0 name
+                        AddGroupName(lineoffset, length, tokenlengths,
+                                              m_nameSet_, out parsed0, out parsed1);
+                        if (parsed0 > maxlength)
+                        {
+                            // 0 for name length
+                            maxlength = parsed0;
+                        }
+                        lineoffset += parsed1;
+                        if (parsed1 >= length)
+                        {
+                            // 1 for parsed group string length
+                            continue;
+                        }
+                        length -= parsed1;
+                        // read ISO comment
+                        AddGroupName(lineoffset, length, tokenlengths,
+                                              m_ISOCommentSet_, out _, out parsed1);
+                        if (parsed1 > maxisolength)
+                        {
+                            maxisolength = length;
+                        }
                     }
                 }
+            }
+            finally
+            {
+                if (tokenLengthsArray is not null)
+                    ArrayPool<byte>.Shared.Return(tokenLengthsArray);
             }
 
             // set gMax... - name length last for threading

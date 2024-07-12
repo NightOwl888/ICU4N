@@ -1,4 +1,6 @@
-﻿using StringBuffer = System.Text.StringBuilder;
+﻿using ICU4N.Text;
+using System;
+#nullable enable
 
 namespace ICU4N.Impl
 {
@@ -36,7 +38,7 @@ namespace ICU4N.Impl
         /// <param name="msc">Most significant char.</param>
         /// <param name="lsc">Least significant char.</param>
         /// <returns><see cref="int"/> form.</returns>
-        internal static int ToInt(char msc, char lsc)
+        internal static int ToInt32(char msc, char lsc)
         {
             return ((msc << 16) | lsc);
         }
@@ -47,11 +49,11 @@ namespace ICU4N.Impl
         /// next zero byte. If the first byte is a zero, the next byte will be taken as
         /// the first byte.
         /// </summary>
-        /// <param name="str"><see cref="StringBuffer"/> to store data in, data will be store with each byte as a char.</param>
+        /// <param name="str"><see cref="ValueStringBuilder"/> to store data in, data will be store with each byte as a char.</param>
         /// <param name="array">Byte array.</param>
         /// <param name="index">Index to start substring in byte count.</param>
         /// <returns>The end position of the substring within the character array.</returns>
-        internal static int GetNullTermByteSubString(StringBuffer str, byte[] array,
+        internal static int GetNullTermByteSubString(ref ValueStringBuilder str, byte[] array,
                                                       int index)
         {
             byte b = 1;
@@ -79,7 +81,7 @@ namespace ICU4N.Impl
         /// <param name="strindex">Index within str to start comparing.</param>
         /// <param name="aindex">Array index to start in byte count.</param>
         /// <returns>The end position of the substring within str if matches otherwise a -1.</returns>
-        internal static int CompareNullTermByteSubString(string str, byte[] array,
+        internal static int CompareNullTermByteSubString(ReadOnlySpan<char> str, byte[] array,
                                                           int strindex, int aindex)
         {
             byte b = 1;

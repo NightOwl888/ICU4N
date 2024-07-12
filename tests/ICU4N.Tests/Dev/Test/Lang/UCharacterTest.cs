@@ -1105,48 +1105,53 @@ namespace ICU4N.Dev.Test.Lang
                     Errln("getMaxCharNameLength()=" + length + " is too short");
                 }
 
-                int[] c = {0x0061,                //LATIN SMALL LETTER A
-                       0x000284,              //LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK
-                       0x003401,              //CJK UNIFIED IDEOGRAPH-3401
-                       0x007fed,              //CJK UNIFIED IDEOGRAPH-7FED
-                       0x00ac00,              //HANGUL SYLLABLE GA
-                       0x00d7a3,              //HANGUL SYLLABLE HIH
-                       0x00d800, 0x00dc00,    //LINEAR B SYLLABLE B008 A
-                       0xff08,                //FULLWIDTH LEFT PARENTHESIS
-                       0x00ffe5,              //FULLWIDTH YEN SIGN
-                       0x00ffff,              //null
-                       0x0023456              //CJK UNIFIED IDEOGRAPH-23456
-                       };
+                int[] c = {
+                    0x0061,                //LATIN SMALL LETTER A
+                    0x000284,              //LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK
+                    0x003401,              //CJK UNIFIED IDEOGRAPH-3401
+                    0x007fed,              //CJK UNIFIED IDEOGRAPH-7FED
+                    0x00ac00,              //HANGUL SYLLABLE GA
+                    0x00d7a3,              //HANGUL SYLLABLE HIH
+                    0x00d800, 0x00dc00,    //LINEAR B SYLLABLE B008 A
+                    0xff08,                //FULLWIDTH LEFT PARENTHESIS
+                    0x00ffe5,              //FULLWIDTH YEN SIGN
+                    0x00ffff,              //null
+                    0x0023456              //CJK UNIFIED IDEOGRAPH-23456
+                };
                 String[] name = {
-                             "LATIN SMALL LETTER A",
-                             "LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK",
-                             "CJK UNIFIED IDEOGRAPH-3401",
-                             "CJK UNIFIED IDEOGRAPH-7FED",
-                             "HANGUL SYLLABLE GA",
-                             "HANGUL SYLLABLE HIH",
-                             "",
-                             "",
-                             "FULLWIDTH LEFT PARENTHESIS",
-                             "FULLWIDTH YEN SIGN",
-                             "",
-                             "CJK UNIFIED IDEOGRAPH-23456"
-                             };
-                String[] oldname = {"", "", "",
-                            "",
-                            "", "", "", "", "", "",
-                            "", ""};
-                String[] extendedname = {"LATIN SMALL LETTER A",
-                                 "LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK",
-                                 "CJK UNIFIED IDEOGRAPH-3401",
-                                 "CJK UNIFIED IDEOGRAPH-7FED",
-                                 "HANGUL SYLLABLE GA",
-                                 "HANGUL SYLLABLE HIH",
-                                 "<lead surrogate-D800>",
-                                 "<trail surrogate-DC00>",
-                                 "FULLWIDTH LEFT PARENTHESIS",
-                                 "FULLWIDTH YEN SIGN",
-                                 "<noncharacter-FFFF>",
-                                 "CJK UNIFIED IDEOGRAPH-23456"};
+                    "LATIN SMALL LETTER A",
+                    "LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK",
+                    "CJK UNIFIED IDEOGRAPH-3401",
+                    "CJK UNIFIED IDEOGRAPH-7FED",
+                    "HANGUL SYLLABLE GA",
+                    "HANGUL SYLLABLE HIH",
+                    "",
+                    "",
+                    "FULLWIDTH LEFT PARENTHESIS",
+                    "FULLWIDTH YEN SIGN",
+                    "",
+                    "CJK UNIFIED IDEOGRAPH-23456"
+                };
+                String[] oldname = {
+                    "", "", "",
+                    "",
+                    "", "", "", "", "", "",
+                    "", ""
+                };
+                String[] extendedname = {
+                    "LATIN SMALL LETTER A",
+                    "LATIN SMALL LETTER DOTLESS J WITH STROKE AND HOOK",
+                    "CJK UNIFIED IDEOGRAPH-3401",
+                    "CJK UNIFIED IDEOGRAPH-7FED",
+                    "HANGUL SYLLABLE GA",
+                    "HANGUL SYLLABLE HIH",
+                    "<lead surrogate-D800>",
+                    "<trail surrogate-DC00>",
+                    "FULLWIDTH LEFT PARENTHESIS",
+                    "FULLWIDTH YEN SIGN",
+                    "<noncharacter-FFFF>",
+                    "CJK UNIFIED IDEOGRAPH-23456"
+                };
 
                 int size = c.Length;
                 String str;
