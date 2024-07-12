@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Text;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using StringBuffer = System.Text.StringBuilder;
@@ -23,13 +24,14 @@ namespace ICU4N.Dev.Test.Translit
             // get a couple of characters of each script for testing
 
             StringBuffer testBuffer = new StringBuffer();
+            Span<char> charBuffer = stackalloc char[2];
             for (int script = 0; script < UScript.CodeLimit; ++script)
             {
                 UnicodeSet test = new UnicodeSet().ApplyPropertyAlias("script", UScript.GetName(script));
                 int count = Math.Min(20, test.Count);
                 for (int i = 0; i < count; ++i)
                 {
-                    testBuffer.Append(UTF16.ValueOf(test[i]));
+                    testBuffer.Append(UTF16.ValueOf(test[i], charBuffer));
                 }
             }
             {
@@ -103,6 +105,7 @@ namespace ICU4N.Dev.Test.Translit
             // get a couple of characters of each script for testing
 
             StringBuffer testBuffer = new StringBuffer();
+            Span<char> charBuffer = stackalloc char[2];
             for (int script = 0; script < UScript.CodeLimit; ++script)
             {
                 if (UScript.TryGetName(script, out string name))
@@ -111,7 +114,7 @@ namespace ICU4N.Dev.Test.Translit
                     int count = Math.Min(20, test.Count);
                     for (int i = 0; i < count; ++i)
                     {
-                        testBuffer.Append(UTF16.ValueOf(test[i]));
+                        testBuffer.Append(UTF16.ValueOf(test[i], charBuffer));
                     }
                 }
             }
