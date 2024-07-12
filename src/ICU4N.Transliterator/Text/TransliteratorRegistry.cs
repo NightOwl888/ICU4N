@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Resources;
 using System.Text;
 using Data = ICU4N.Text.RuleBasedTransliterator.Data;
-using StringBuffer = System.Text.StringBuilder;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ICU4N.Text
 {
@@ -320,23 +320,30 @@ namespace ICU4N.Text
             availableIDs = new List<CaseInsensitiveString>();
         }
 
+#nullable enable
+
         /// <summary>
         /// Given a simple <paramref name="id"/> (forward direction, no inline filter, not
         /// compound) attempt to instantiate it from the registry.  Return
-        /// 0 on failure.
+        /// <c>null</c> on failure.
         /// <para/>
-        /// Return a non-empty <paramref name="aliasReturn"/> value if the <paramref name="id"/> points to an alias.
+        /// Return a non-empty <paramref name="alias"/> value if the <paramref name="id"/> points to an alias.
         /// We cannot instantiate it ourselves because the alias may contain
-        /// filters or compounds, which we do not understand.  Caller should
-        /// make <paramref name="aliasReturn"/> empty before calling.
+        /// filters or compounds, which we do not understand.
         /// </summary>
-        public virtual Transliterator Get(string id,
-                                  StringBuffer aliasReturn)
+        public virtual Transliterator? Get(string id,
+                                  out string alias)
         {
             object[] entry = Find(id);
-            return (entry == null) ? null
-                : InstantiateEntry(id, entry, aliasReturn);
+            if (entry is null)
+            {
+                alias = string.Empty;
+                return null;
+            }
+            return InstantiateEntry(id, entry, out alias);
         }
+
+#nullable restore
 
         /// <summary>
         /// Register a <see cref="Type"/>.  This adds an entry to the
@@ -912,18 +919,19 @@ namespace ICU4N.Text
         /// Given an Entry object, instantiate it.  Caller owns result.  Return
         /// 0 on failure.
         /// <para/>
-        /// Return a non-empty <paramref name="aliasReturn"/> value if the <paramref name="ID"/> points to an alias.
+        /// Return a non-empty <paramref name="alias"/> value if the <paramref name="ID"/> points to an alias.
         /// We cannot instantiate it ourselves because the alias may contain
-        /// filters or compounds, which we do not understand.  Caller should
-        /// make <paramref name="aliasReturn"/> empty before calling.
+        /// filters or compounds, which we do not understand.
         /// <para/>
         /// The entry object is assumed to reside in the dynamic store.  It may be
         /// modified.
         /// </summary>
         private Transliterator InstantiateEntry(string ID,
                                                 object[] entryWrapper,
-                                                StringBuffer aliasReturn)
+                                                out string alias)
         {
+            alias = string.Empty;
+
             // We actually modify the entry object in some cases.  If it
             // is a string, we may partially parse it and turn it into a
             // more processed precursor.  This makes the next
@@ -957,7 +965,7 @@ namespace ICU4N.Text
                 }
                 else if (entry is AliasEntry)
                 {
-                    aliasReturn.Append(((AliasEntry)entry).Alias);
+                    alias = ((AliasEntry)entry).Alias;
                     return null;
                 }
                 else if (entry is ITransliteratorFactory)

@@ -1476,13 +1476,12 @@ namespace ICU4N.Text
         /// invalid.</returns>
         internal static Transliterator GetBasicInstance(string id, string canonID)
         {
-            StringBuffer s = new StringBuffer();
-            Transliterator t = registry.Get(id, s);
+            Transliterator t = registry.Get(id, out string s);
             if (s.Length != 0)
             {
                 // assert(t==0);
                 // Instantiate an alias
-                t = GetInstance(s.ToString(), Forward);
+                t = GetInstance(s, Forward);
             }
             if (t != null && canonID != null)
             {
