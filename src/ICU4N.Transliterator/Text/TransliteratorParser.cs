@@ -71,7 +71,7 @@ namespace ICU4N.Text
         /// rule.  <see cref="segmentStandins"/>[0] is the standin for "$1" and corresponds
         /// to <see cref="StringMatcher"/> object <see cref="segmentObjects"/>[0], etc.
         /// </summary>
-        private StringBuffer segmentStandins;
+        private OpenStringBuilder segmentStandins;
 
         /// <summary>
         /// Vector of <see cref="StringMatcher"/> objects for segments.  Used during the
@@ -1300,7 +1300,7 @@ namespace ICU4N.Text
             char op = (char)0;
 
             // Set up segments data
-            segmentStandins = new StringBuffer();
+            segmentStandins = new OpenStringBuilder();
             segmentObjects = new List<StringMatcher>();
 
             RuleHalf left = new RuleHalf();
