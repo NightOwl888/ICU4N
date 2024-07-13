@@ -1193,7 +1193,7 @@ namespace ICU4N.Text
                         //e.fillInStackTrace();
                         errors.Add(e);
                         ++errorCount;
-                        pos = RuleEnd(rule, pos, limit) + 1; // +1 advances past ';'
+                        pos = pos + RuleLength(rule.AsSpan(pos, limit - pos)) + 1; // +1 advances past ';'
                     }
                 }
             }
@@ -1638,19 +1638,19 @@ namespace ICU4N.Text
         /// <param name="start">Position of first character of current <paramref name="rule"/>.</param>
         internal static void SyntaxError(string msg, string rule, int start)
         {
-            int end = RuleEnd(rule, start, rule.Length);
+            int length = RuleLength(rule.AsSpan(start));
             throw new IcuArgumentException(msg + " in \"" +
-                                               Utility.Escape(rule.Substring(start, end - start)) + '"'); // ICU4N: Corrected 2nd substring parameter
+                                               Utility.Escape(rule.AsSpan(start, length)) + '"'); // ICU4N: Corrected 2nd substring parameter
         }
 
-        internal static int RuleEnd(string rule, int start, int limit)
+        internal static int RuleLength(ReadOnlySpan<char> rule) // ICU4N: This was RuleEnd in ICU4J
         {
-            int end = Utility.QuotedIndexOf(rule, start, limit, ";");
-            if (end < 0)
+            int length = Utility.QuotedIndexOf(rule, ";".AsSpan());
+            if (length < 0)
             {
-                end = limit;
+                length = rule.Length;
             }
-            return end;
+            return length;
         }
 
         /// <summary>

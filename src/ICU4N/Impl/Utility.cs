@@ -678,13 +678,40 @@ namespace ICU4N.Impl
             return buffer.ToString();
         }
 
+#if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
         /// <summary>
         /// Convert characters outside the range U+0020 to U+007F to
         /// Unicode escapes, and convert backslash to a double backslash.
         /// </summary>
-        public static string Escape(string s)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static string Escape(string s)
+            => Escape(s.AsSpan());
+#endif
+
+        /// <summary>
+        /// Convert characters outside the range U+0020 to U+007F to
+        /// Unicode escapes, and convert backslash to a double backslash.
+        /// </summary>
+        public static string Escape(ReadOnlySpan<char> s)
         {
             ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Escape(s, ref buf);
+                return buf.ToString();
+            }
+            finally
+            {
+                buf.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Convert characters outside the range U+0020 to U+007F to
+        /// Unicode escapes, and convert backslash to a double backslash.
+        /// </summary>
+        internal static void Escape(ReadOnlySpan<char> s, ref ValueStringBuilder result)
+        {
             for (int i = 0; i < s.Length;)
             {
                 int c = Character.CodePointAt(s, i);
@@ -693,21 +720,20 @@ namespace ICU4N.Impl
                 {
                     if (c == '\\')
                     {
-                        buf.Append("\\\\"); // That is, "\\"
+                        result.Append("\\\\"); // That is, "\\"
                     }
                     else
                     {
-                        buf.Append((char)c);
+                        result.Append((char)c);
                     }
                 }
                 else
                 {
                     bool four = c <= 0xFFFF;
-                    buf.Append(four ? "\\u" : "\\U");
-                    buf.AppendFormatHex(c, four ? 4 : 8);
+                    result.Append(four ? "\\u" : "\\U");
+                    result.AppendFormatHex(c, four ? 4 : 8);
                 }
             }
-            return buf.ToString();
         }
 
         /* This map must be in ASCENDING ORDER OF THE ESCAPE CODE */
@@ -738,7 +764,7 @@ namespace ICU4N.Impl
         /// <returns>Character value from 0 to 10FFFF, or -1 on error.</returns>
         // ICU4N: To fix lack of implicit conversion
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int UnescapeAt(string s, ref int offset16)
+        internal static int UnescapeAt(string s, ref int offset16)
             => UnescapeAt(s.AsSpan(), ref offset16);
 #endif
 
@@ -897,7 +923,7 @@ namespace ICU4N.Impl
         /// <exception cref="ArgumentException">If an invalid escape is seen.</exception>
         // ICU4N: To fix lack of implicit conversion
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string Unescape(string s)
+        internal static string Unescape(string s)
             => Unescape(s.AsSpan());
 #endif
 
@@ -908,6 +934,23 @@ namespace ICU4N.Impl
         public static string Unescape(ReadOnlySpan<char> s)
         {
             ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                Unescape(s, ref buf);
+                return buf.ToString();
+            }
+            finally
+            {
+                buf.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
+        /// </summary>
+        /// <exception cref="ArgumentException">If an invalid escape is seen.</exception>
+        internal static void Unescape(ReadOnlySpan<char> s, ref ValueStringBuilder result)
+        {
             int pos;
             for (int i = 0; i < s.Length;)
             {
@@ -920,15 +963,14 @@ namespace ICU4N.Impl
                     {
                         throw new ArgumentException(StringHelper.Concat("Invalid escape sequence ".AsSpan(), s.Slice(i - 1, Math.Min(i + 8, s.Length) - (i - 1)))); // ICU4N: Corrected 2nd parameter
                     }
-                    buf.AppendCodePoint(e);
+                    result.AppendCodePoint(e);
                     i = pos;
                 }
                 else
                 {
-                    buf.Append(c);
+                    result.Append(c);
                 }
             }
-            return buf.ToString();
         }
 
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
@@ -937,7 +979,7 @@ namespace ICU4N.Impl
         /// Leave invalid escape sequences unchanged.
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string UnescapeLeniently(string s)
+        internal static string UnescapeLeniently(string s)
             => UnescapeLeniently(s.AsSpan());
 #endif
         /// <summary>
@@ -947,6 +989,23 @@ namespace ICU4N.Impl
         public static string UnescapeLeniently(ReadOnlySpan<char> s)
         {
             ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                UnescapeLeniently(s, ref buf);
+                return buf.ToString();
+            }
+            finally
+            {
+                buf.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Convert all escapes in a given string using <see cref="UnescapeAt(ReadOnlySpan{char}, ref int)"/>.
+        /// Leave invalid escape sequences unchanged.
+        /// </summary>
+        internal static void UnescapeLeniently(ReadOnlySpan<char> s, ref ValueStringBuilder result)
+        {
             int pos;
             for (int i = 0; i < s.Length;)
             {
@@ -958,20 +1017,19 @@ namespace ICU4N.Impl
                     int e = UnescapeAt(s, ref pos); // ICU4N: Changed array to ref parameter
                     if (e < 0)
                     {
-                        buf.Append(c);
+                        result.Append(c);
                     }
                     else
                     {
-                        buf.AppendCodePoint(e);
+                        result.AppendCodePoint(e);
                         i = pos;
                     }
                 }
                 else
                 {
-                    buf.Append(c);
+                    result.Append(c);
                 }
             }
-            return buf.ToString();
         }
 
         /// <summary>
@@ -1730,16 +1788,14 @@ namespace ICU4N.Impl
         /// not for a single character, but for any character of the string <paramref name="setOfChars"/>.
         /// </summary>
         /// <param name="text">Text to be searched.</param>
-        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= start &lt;= limit</c>.</param>
-        /// <param name="limit">The ending index, exclusive; <c>start &lt;= limit &lt;= text.Length</c>.</param>
         /// <param name="setOfChars">String with one or more distinct characters.</param>
         /// <returns>Offset of the first character in <paramref name="setOfChars"/>
         /// found, or -1 if not found.</returns>
         /// <seealso cref="string.IndexOf(char, int, int)"/>
-        public static int QuotedIndexOf(string text, int start, int limit, // ICU4N TODO: API Make limit into length, like in .NET ?
-                string setOfChars)
+        public static int QuotedIndexOf(ReadOnlySpan<char> text, ReadOnlySpan<char> setOfChars)
         {
-            for (int i = start; i < limit; ++i)
+            int limit = text.Length;
+            for (int i = 0; i < limit; ++i)
             {
                 char c = text[i];
                 if (c == BACKSLASH)
