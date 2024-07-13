@@ -565,7 +565,7 @@ namespace ICU4N.Text
                                 {
                                     SyntaxError("Unterminated quote", rule, start);
                                 }
-                                buf.Append(rule.Substring(pos, iq - pos)); // ICU4N: Corrected 2nd parameter
+                                buf.Append(rule.AsSpan(pos, iq - pos)); // ICU4N: Corrected 2nd parameter
                                 pos = iq + 1;
                                 if (pos < limit && rule[pos] == QUOTE)
                                 {
