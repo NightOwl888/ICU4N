@@ -2086,6 +2086,8 @@ namespace ICU4N
             return -1;
         }
 
+#nullable enable
+
         /// <icu/>
         /// <summary>
         /// Find a Unicode character by either its name and return its code
@@ -2109,7 +2111,36 @@ namespace ICU4N
         /// <returns>Code point associated with the name or -1 if the name is not
         /// found.</returns>
         /// <stable>ICU 2.6</stable>
-        public static int GetCharFromExtendedName(string name)
+        public static int GetCharFromExtendedName(string? name)
+        {
+            return UCharacterName.Instance.GetCharFromName(
+                    UCharacterNameChoice.ExtendedCharName, name);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Find a Unicode character by either its name and return its code
+        /// point value. 
+        /// </summary>
+        /// <remarks>
+        /// All Unicode names are in uppercase.
+        /// Extended names are all lowercase except for numbers and are contained
+        /// within angle brackets.
+        /// The names are searched in the following order
+        /// <list type="bullet">
+        ///     <item><description>Most current Unicode name if there is any</description></item>
+        ///     <item><description>Unicode 1.0 name if there is any</description></item>
+        ///     <item><description>Extended name in the form of
+        ///         "&lt;codepoint_type-codepoint_hex_digits&gt;". E.g. &lt;noncharacter-FFFE&gt;</description></item>
+        /// </list>
+        /// Note calling any methods related to code point names, e.g. Get*Name*()
+        /// incurs a one-time initialization cost to construct the name tables.
+        /// </remarks>
+        /// <param name="name">Codepoint name.</param>
+        /// <returns>Code point associated with the name or -1 if the name is not
+        /// found.</returns>
+        /// <stable>ICU 2.6</stable>
+        public static int GetCharFromExtendedName(ReadOnlySpan<char> name)
         {
             return UCharacterName.Instance.GetCharFromName(
                     UCharacterNameChoice.ExtendedCharName, name);
@@ -2125,10 +2156,27 @@ namespace ICU4N
         /// <param name="name">Unicode name alias whose code point is to be returned.</param>
         /// <returns>Code point or -1 if name is not found.</returns>
         /// <stable>ICU 4.4</stable>
-        public static int GetCharFromNameAlias(string name)
+        public static int GetCharFromNameAlias(string? name)
         {
             return UCharacterName.Instance.GetCharFromName(UCharacterNameChoice.CharNameAlias, name);
         }
+
+        /// <icu/>
+        /// <summary>
+        /// Find a Unicode character by its corrected name alias and return
+        /// its code point value. All Unicode names are in uppercase.
+        /// Note calling any methods related to code point names, e.g. Get*Name*()
+        /// incurs a one-time initialization cost to construct the name tables.
+        /// </summary>
+        /// <param name="name">Unicode name alias whose code point is to be returned.</param>
+        /// <returns>Code point or -1 if name is not found.</returns>
+        /// <stable>ICU 4.4</stable>
+        public static int GetCharFromNameAlias(ReadOnlySpan<char> name)
+        {
+            return UCharacterName.Instance.GetCharFromName(UCharacterNameChoice.CharNameAlias, name);
+        }
+
+#nullable restore
 
         /// <summary>
         /// Return the Unicode name for a given property, as given in the

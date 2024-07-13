@@ -3,7 +3,6 @@ using ICU4N.Globalization;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
@@ -56,135 +55,146 @@ namespace ICU4N.Text
 
             int maxLen = UCharacterName.Instance.MaxCharNameLength + 1; // allow for temporary trailing space
 
-            StringBuffer name = new StringBuffer(maxLen);
-
-            // Get the legal character set
-            UnicodeSet legal = new UnicodeSet();
-            UCharacterName.Instance.GetCharNameCharacters(legal);
-
-            int cursor = offsets.Start;
-            int limit = offsets.Limit;
-
-            // Modes:
-            // 0 - looking for open delimiter
-            // 1 - after open delimiter
-            int mode = 0;
-            int openPos = -1; // open delim candidate pos
-
-            int c;
-            while (cursor < limit)
+            Span<char> charBuffer = stackalloc char[2]; // For codepoints
+            var name = maxLen <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[maxLen])
+                : new ValueStringBuilder(maxLen);
+            try
             {
-                c = text.Char32At(cursor);
 
-                switch (mode)
+                // Get the legal character set
+                UnicodeSet legal = new UnicodeSet();
+                UCharacterName.Instance.GetCharNameCharacters(legal);
+
+                int cursor = offsets.Start;
+                int limit = offsets.Limit;
+
+                // Modes:
+                // 0 - looking for open delimiter
+                // 1 - after open delimiter
+                int mode = 0;
+                int openPos = -1; // open delim candidate pos
+
+                int c;
+                while (cursor < limit)
                 {
-                    case 0: // looking for open delimiter
-                        if (c == OPEN_DELIM)
-                        { // quick check first
-                            openPos = cursor;
-                            int i = Utility.ParsePattern(OPEN_PAT, text, cursor, limit);
-                            if (i >= 0 && i < limit)
+                    c = text.Char32At(cursor);
+
+                    switch (mode)
+                    {
+                        case 0: // looking for open delimiter
+                            if (c == OPEN_DELIM)
+                            { // quick check first
+                                openPos = cursor;
+                                int i = Utility.ParsePattern(OPEN_PAT, text, cursor, limit);
+                                if (i >= 0 && i < limit)
+                                {
+                                    mode = 1;
+                                    name.Length = 0;
+                                    cursor = i;
+                                    continue; // *** reprocess char32At(cursor)
+                                }
+                            }
+                            break;
+
+                        case 1: // after open delimiter
+                                // Look for legal chars.  If \s+ is found, convert it
+                                // to a single space.  If closeDelimiter is found, exit
+                                // the loop.  If any other character is found, exit the
+                                // loop.  If the limit is reached, exit the loop.
+
+                            // Convert \s+ => SPACE.  This assumes there are no
+                            // runs of >1 space characters in names.
+                            if (PatternProps.IsWhiteSpace(c))
                             {
-                                mode = 1;
-                                name.Length = 0;
-                                cursor = i;
+                                // Ignore leading whitespace
+                                if (name.Length > 0 &&
+                                    name[name.Length - 1] != SPACE)
+                                {
+                                    name.Append(SPACE);
+                                    // If we are too long then abort.  maxLen includes
+                                    // temporary trailing space, so use '>'.
+                                    if (name.Length > maxLen)
+                                    {
+                                        mode = 0;
+                                    }
+                                }
+                                break;
+                            }
+
+                            if (c == CLOSE_DELIM)
+                            {
+
+                                int len = name.Length;
+
+                                // Delete trailing space, if any
+                                if (len > 0 &&
+                                    name[len - 1] == SPACE)
+                                {
+                                    name.Length = --len;
+                                }
+
+                                c = UChar.GetCharFromExtendedName(name.AsSpan());
+                                if (c != -1)
+                                {
+                                    // Lookup succeeded
+
+                                    // assert(UTF16.getCharCount(CLOSE_DELIM) == 1);
+                                    cursor++; // advance over CLOSE_DELIM
+
+                                    ReadOnlySpan<char> str = UTF16.ValueOf(c, charBuffer);
+                                    text.Replace(openPos, cursor - openPos, str); // ICU4N: Corrected 2nd parameter
+
+                                    // Adjust indices for the change in the length of
+                                    // the string.  Do not assume that str.length() ==
+                                    // 1, in case of surrogates.
+                                    int delta = cursor - openPos - str.Length;
+                                    cursor -= delta;
+                                    limit -= delta;
+                                    // assert(cursor == openPos + str.length());
+                                }
+                                // If the lookup failed, we leave things as-is and
+                                // still switch to mode 0 and continue.
+                                mode = 0;
+                                openPos = -1; // close off candidate
                                 continue; // *** reprocess char32At(cursor)
                             }
-                        }
-                        break;
 
-                    case 1: // after open delimiter
-                            // Look for legal chars.  If \s+ is found, convert it
-                            // to a single space.  If closeDelimiter is found, exit
-                            // the loop.  If any other character is found, exit the
-                            // loop.  If the limit is reached, exit the loop.
-
-                        // Convert \s+ => SPACE.  This assumes there are no
-                        // runs of >1 space characters in names.
-                        if (PatternProps.IsWhiteSpace(c))
-                        {
-                            // Ignore leading whitespace
-                            if (name.Length > 0 &&
-                                name[name.Length - 1] != SPACE)
+                            if (legal.Contains(c))
                             {
-                                name.Append(SPACE);
-                                // If we are too long then abort.  maxLen includes
-                                // temporary trailing space, so use '>'.
-                                if (name.Length > maxLen)
+                                name.AppendCodePoint(c);
+                                // If we go past the longest possible name then abort.
+                                // maxLen includes temporary trailing space, so use '>='.
+                                if (name.Length >= maxLen)
                                 {
                                     mode = 0;
                                 }
                             }
-                            break;
-                        }
 
-                        if (c == CLOSE_DELIM)
-                        {
-
-                            int len = name.Length;
-
-                            // Delete trailing space, if any
-                            if (len > 0 &&
-                                name[len - 1] == SPACE)
+                            // Invalid character
+                            else
                             {
-                                name.Length = --len;
-                            }
-
-                            c = UChar.GetCharFromExtendedName(name.ToString());
-                            if (c != -1)
-                            {
-                                // Lookup succeeded
-
-                                // assert(UTF16.getCharCount(CLOSE_DELIM) == 1);
-                                cursor++; // advance over CLOSE_DELIM
-
-                                string str = UTF16.ValueOf(c);
-                                text.Replace(openPos, cursor - openPos, str); // ICU4N: Corrected 2nd parameter
-
-                                // Adjust indices for the change in the length of
-                                // the string.  Do not assume that str.length() ==
-                                // 1, in case of surrogates.
-                                int delta = cursor - openPos - str.Length;
-                                cursor -= delta;
-                                limit -= delta;
-                                // assert(cursor == openPos + str.length());
-                            }
-                            // If the lookup failed, we leave things as-is and
-                            // still switch to mode 0 and continue.
-                            mode = 0;
-                            openPos = -1; // close off candidate
-                            continue; // *** reprocess char32At(cursor)
-                        }
-
-                        if (legal.Contains(c))
-                        {
-                            UTF16.Append(name, c);
-                            // If we go past the longest possible name then abort.
-                            // maxLen includes temporary trailing space, so use '>='.
-                            if (name.Length >= maxLen)
-                            {
+                                --cursor; // Backup and reprocess this character
                                 mode = 0;
                             }
-                        }
 
-                        // Invalid character
-                        else
-                        {
-                            --cursor; // Backup and reprocess this character
-                            mode = 0;
-                        }
+                            break;
+                    }
 
-                        break;
+                    cursor += UTF16.GetCharCount(c);
                 }
 
-                cursor += UTF16.GetCharCount(c);
-            }
+                offsets.ContextLimit += limit - offsets.Limit;
+                offsets.Limit = limit;
+                // In incremental mode, only advance the cursor up to the last
+                // open delimiter candidate.
+                offsets.Start = (isIncremental && openPos >= 0) ? openPos : cursor;
 
-            offsets.ContextLimit += limit - offsets.Limit;
-            offsets.Limit = limit;
-            // In incremental mode, only advance the cursor up to the last
-            // open delimiter candidate.
-            offsets.Start = (isIncremental && openPos >= 0) ? openPos : cursor;
+            }
+            finally
+            {
+                name.Dispose();
+            }
         }
 
         /// <seealso cref="Transliterator.AddSourceTargetSet(UnicodeSet, UnicodeSet, UnicodeSet)"/>
