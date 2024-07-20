@@ -197,16 +197,23 @@ namespace ICU4N.Text
             // ID.
             if (direction == Reverse && fixReverseID)
             {
-                StringBuilder newID = new StringBuilder();
-                for (i = 0; i < count; ++i)
+                ValueStringBuilder newID = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    if (i > 0)
+                    for (i = 0; i < count; ++i)
                     {
-                        newID.Append(ID_DELIM);
+                        if (i > 0)
+                        {
+                            newID.Append(ID_DELIM);
+                        }
+                        newID.Append(trans[i].ID);
                     }
-                    newID.Append(trans[i].ID);
+                    ID = newID.ToString();
                 }
-                ID = newID.ToString();
+                finally
+                {
+                    newID.Dispose();
+                }
             }
 
             ComputeMaximumContextLength();
