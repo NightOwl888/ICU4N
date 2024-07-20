@@ -1160,7 +1160,7 @@ namespace ICU4N.Text
                                     IdBlockVector.Add(idBlockResult.ToString());
                                 else
                                     IdBlockVector.Insert(0, idBlockResult.ToString());
-                                idBlockResult.Delete(0, idBlockResult.Length - 0); // ICU4N: Corrected 2nd parameter
+                                idBlockResult.Length = 0; // ICU4N: Reset length rather than Delete(), which is much faster
                                 parsingIDs = false;
 #pragma warning disable 612, 618
                                 curData = new RuleBasedTransliterator.Data();
