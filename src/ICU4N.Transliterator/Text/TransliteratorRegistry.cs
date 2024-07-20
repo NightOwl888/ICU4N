@@ -759,7 +759,6 @@ namespace ICU4N.Text
             {
                 for (int pass = 0; pass < 2; ++pass)
                 {
-                    //StringBuilder tag = new StringBuilder();
                     tag.Length = 0;
                     // First try either TransliteratorTo_xxx or
                     // TransliterateFrom_xxx, then try the bidirectional
