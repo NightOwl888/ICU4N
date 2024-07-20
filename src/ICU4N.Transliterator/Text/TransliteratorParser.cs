@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Data = ICU4N.Text.RuleBasedTransliterator.Data;
-using StringBuffer = System.Text.StringBuilder;
 using J2N.Collections;
 using J2N.Text;
 
@@ -14,6 +13,8 @@ namespace ICU4N.Text
 {
     internal class TransliteratorParser
     {
+        private const int CharStackBufferSize = 32;
+
         //----------------------------------------------------------------------
         // Data members
         //----------------------------------------------------------------------
@@ -432,9 +433,16 @@ namespace ICU4N.Text
                              TransliteratorParser parser)
             {
                 int start = pos;
-                StringBuffer buf = new StringBuffer();
-                pos = ParseSection(rule, pos, limit, parser, buf, ILLEGAL_TOP, false);
-                Text = buf.ToString();
+                var buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
+                {
+                    pos = ParseSection(rule, pos, limit, parser, ref buf, ILLEGAL_TOP, false);
+                    Text = buf.ToString();
+                }
+                finally
+                {
+                    buf.Dispose();
+                }
 
                 if (CursorOffset > 0 && Cursor != cursorOffsetPos)
                 {
@@ -474,7 +482,7 @@ namespace ICU4N.Text
             /// if <paramref name="limit"/> was reached, <paramref name="limit"/>.</returns>
             private int ParseSection(string rule, int pos, int limit,
                                      TransliteratorParser parser,
-                                     StringBuffer buf,
+                                     ref ValueStringBuilder buf,
                                      UnicodeSet illegal,
                                      bool isSegment)
             {
@@ -538,7 +546,7 @@ namespace ICU4N.Text
                             SyntaxError("Malformed escape", rule, start);
                         }
                         parser.CheckVariableRange(escaped, rule, start);
-                        UTF16.Append(buf, escaped);
+                        buf.AppendCodePoint(escaped);
                         continue;
                     }
                     // Handle quoted matter
@@ -624,14 +632,14 @@ namespace ICU4N.Text
                                 int segmentNumber = nextSegmentNumber++; // 1-based
 
                                 // Parse the segment
-                                pos = ParseSection(rule, pos, limit, parser, buf, ILLEGAL_SEG, true);
+                                pos = ParseSection(rule, pos, limit, parser, ref buf, ILLEGAL_SEG, true);
 
                                 // After parsing a segment, the relevant characters are
                                 // in buf, starting at offset bufSegStart.  Extract them
                                 // into a string matcher, and replace them with a
                                 // standin for that matcher.
                                 StringMatcher m =
-                                    new StringMatcher(buf.ToString(bufSegStart, buf.Length - bufSegStart),
+                                    new StringMatcher(buf.AsSpan(bufSegStart, buf.Length - bufSegStart).ToString(),
                                                       segmentNumber, parser.curData);
 
                                 // Record and associate object and segment number
@@ -663,13 +671,13 @@ namespace ICU4N.Text
                                 int bufSegStart = buf.Length;
 
                                 // Parse the segment
-                                pos = ParseSection(rule, iref, limit, parser, buf, ILLEGAL_FUNC, true);
+                                pos = ParseSection(rule, iref, limit, parser, ref buf, ILLEGAL_FUNC, true);
 
                                 // After parsing a segment, the relevant characters are
                                 // in buf, starting at offset bufSegStart.
                                 FunctionReplacer r =
                                     new FunctionReplacer(t,
-                                        new StringReplacer(buf.ToString(bufSegStart, buf.Length - bufSegStart), parser.curData));
+                                        new StringReplacer(buf.AsSpan(bufSegStart, buf.Length - bufSegStart).ToString(), parser.curData));
 
                                 // Replace the buffer contents with a stand-in
                                 buf.Length = bufSegStart;
@@ -730,7 +738,7 @@ namespace ICU4N.Text
                                     // that case appendVariableDef() will append the
                                     // special placeholder char variableLimit-1.
                                     varStart = buf.Length;
-                                    parser.AppendVariableDef(name, buf);
+                                    parser.AppendVariableDef(name, ref buf);
                                     varLimit = buf.Length;
                                 }
                             }
@@ -784,7 +792,7 @@ namespace ICU4N.Text
                                 IUnicodeMatcher m;
                                 try
                                 {
-                                    m = new StringMatcher(buf.ToString(), qstart, qlimit,
+                                    m = new StringMatcher(buf.AsSpan().ToString(), qstart, qlimit,
                                                       0, parser.curData);
                                 }
                                 catch (Exception e)
@@ -1758,10 +1766,10 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Append the value of the given variable name to the given 
-        /// <see cref="StringBuffer"/>.
+        /// <see cref="ValueStringBuilder"/>.
         /// </summary>
         /// <exception cref="IcuArgumentException">If the name is unknown.</exception>
-        private void AppendVariableDef(string name, StringBuffer buf)
+        private void AppendVariableDef(string name, ref ValueStringBuilder buf)
         {
             if (!variableNames.TryGetValue(name, out char[] ch) || ch == null)
             {
