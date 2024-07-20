@@ -1,6 +1,5 @@
 ﻿using ICU4N.Impl;
 using System;
-using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
@@ -143,104 +142,112 @@ namespace ICU4N.Text
                  * the integrity of indices into the key and surrounding context while
                  * generating the output text.
                  */
-                StringBuffer buf = new StringBuffer();
-                int oOutput; // offset into 'output'
-                isComplex = false;
-
-                // The temporary buffer starts at tempStart, and extends
-                // to destLimit + tempExtra.  The start of the buffer has a single
-                // character from before the key.  This provides style
-                // data when addition characters are filled into the
-                // temporary buffer.  If there is nothing to the left, use
-                // the non-character U+FFFF, which Replaceable subclasses
-                // should treat specially as a "no-style character."
-                // destStart points to the point after the style context
-                // character, so it is tempStart+1 or tempStart+2.
-                int tempStart = text.Length; // start of temp buffer
-                int destStart = tempStart; // copy new text to here
-                if (start > 0)
+                ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    int len = UTF16.GetCharCount(text.Char32At(start - 1));
-                    text.Copy(start - len, len, tempStart); // ICU4N: Corrected 2nd parameter
-                    destStart += len;
-                }
-                else
-                {
-                    text.Replace(tempStart, tempStart - tempStart, "\uFFFF"); // ICU4N: Corrected 2nd parameter
-                    destStart++;
-                }
-                int destLimit = destStart;
-                int tempExtra = 0; // temp chars after destLimit
 
-                for (oOutput = 0; oOutput < output.Length;)
-                {
-                    if (oOutput == cursorPos)
-                    {
-                        // Record the position of the cursor
-                        newStart = buf.Length + destLimit - destStart; // relative to start
-                                                                       // the buf.length() was inserted for bug 5789
-                                                                       // the problem is that if we are accumulating into a buffer (when r == null below)
-                                                                       // then the actual length of the text at that point needs to add the buf length.
-                                                                       // there was an alternative suggested in #5789, but that looks like it won't work
-                                                                       // if we have accumulated some stuff in the dest part AND have a non-zero buffer.
-                    }
-                    int c = UTF16.CharAt(output, oOutput);
+                    int oOutput; // offset into 'output'
+                    isComplex = false;
 
-                    // When we are at the last position copy the right style
-                    // context character into the temporary buffer.  We don't
-                    // do this before because it will provide an incorrect
-                    // right context for previous replace() operations.
-                    int nextIndex = oOutput + UTF16.GetCharCount(c);
-                    if (nextIndex == output.Length)
+                    // The temporary buffer starts at tempStart, and extends
+                    // to destLimit + tempExtra.  The start of the buffer has a single
+                    // character from before the key.  This provides style
+                    // data when addition characters are filled into the
+                    // temporary buffer.  If there is nothing to the left, use
+                    // the non-character U+FFFF, which Replaceable subclasses
+                    // should treat specially as a "no-style character."
+                    // destStart points to the point after the style context
+                    // character, so it is tempStart+1 or tempStart+2.
+                    int tempStart = text.Length; // start of temp buffer
+                    int destStart = tempStart; // copy new text to here
+                    if (start > 0)
                     {
-                        tempExtra = UTF16.GetCharCount(text.Char32At(limit));
-                        text.Copy(limit, tempExtra, destLimit); // ICU4N: Corrected 2nd parameter
-                    }
-
-                    IUnicodeReplacer r = data.LookupReplacer(c);
-                    if (r == null)
-                    {
-                        // Accumulate straight (non-segment) text.
-                        UTF16.Append(buf, c);
+                        int len = UTF16.GetCharCount(text.Char32At(start - 1));
+                        text.Copy(start - len, len, tempStart); // ICU4N: Corrected 2nd parameter
+                        destStart += len;
                     }
                     else
                     {
-                        isComplex = true;
+                        text.Replace(tempStart, tempStart - tempStart, "\uFFFF"); // ICU4N: Corrected 2nd parameter
+                        destStart++;
+                    }
+                    int destLimit = destStart;
+                    int tempExtra = 0; // temp chars after destLimit
 
-                        // Insert any accumulated straight text.
-                        if (buf.Length > 0)
+                    for (oOutput = 0; oOutput < output.Length;)
+                    {
+                        if (oOutput == cursorPos)
                         {
-                            text.Replace(destLimit, destLimit - destLimit, buf.ToString()); // ICU4N: Corrected 2nd parameter
-                            destLimit += buf.Length;
-                            buf.Length = 0;
+                            // Record the position of the cursor
+                            newStart = buf.Length + destLimit - destStart; // relative to start
+                                                                           // the buf.length() was inserted for bug 5789
+                                                                           // the problem is that if we are accumulating into a buffer (when r == null below)
+                                                                           // then the actual length of the text at that point needs to add the buf length.
+                                                                           // there was an alternative suggested in #5789, but that looks like it won't work
+                                                                           // if we have accumulated some stuff in the dest part AND have a non-zero buffer.
+                        }
+                        int c = UTF16.CharAt(output, oOutput);
+
+                        // When we are at the last position copy the right style
+                        // context character into the temporary buffer.  We don't
+                        // do this before because it will provide an incorrect
+                        // right context for previous replace() operations.
+                        int nextIndex = oOutput + UTF16.GetCharCount(c);
+                        if (nextIndex == output.Length)
+                        {
+                            tempExtra = UTF16.GetCharCount(text.Char32At(limit));
+                            text.Copy(limit, tempExtra, destLimit); // ICU4N: Corrected 2nd parameter
                         }
 
-                        // Delegate output generation to replacer object
-                        int len = r.Replace(text, destLimit, destLimit, out cursor);
-                        destLimit += len;
+                        IUnicodeReplacer r = data.LookupReplacer(c);
+                        if (r == null)
+                        {
+                            // Accumulate straight (non-segment) text.
+                            buf.AppendCodePoint(c);
+                        }
+                        else
+                        {
+                            isComplex = true;
+
+                            // Insert any accumulated straight text.
+                            if (buf.Length > 0)
+                            {
+                                text.Replace(destLimit, destLimit - destLimit, buf.AsSpan()); // ICU4N: Corrected 2nd parameter
+                                destLimit += buf.Length;
+                                buf.Length = 0;
+                            }
+
+                            // Delegate output generation to replacer object
+                            int len = r.Replace(text, destLimit, destLimit, out cursor);
+                            destLimit += len;
+                        }
+                        oOutput = nextIndex;
                     }
-                    oOutput = nextIndex;
+                    // Insert any accumulated straight text.
+                    if (buf.Length > 0)
+                    {
+                        text.Replace(destLimit, destLimit - destLimit, buf.AsSpan()); // ICU4N: Corrected 2nd parameter
+                        destLimit += buf.Length;
+                    }
+                    if (oOutput == cursorPos)
+                    {
+                        // Record the position of the cursor
+                        newStart = destLimit - destStart; // relative to start
+                    }
+
+                    outLen = destLimit - destStart;
+
+                    // Copy new text to start, and delete it
+                    text.Copy(destStart, destLimit - destStart, start); // ICU4N: Corrected 2nd parameter
+                    text.Replace(tempStart + outLen, (destLimit + tempExtra + outLen) - (tempStart + outLen), ReadOnlySpan<char>.Empty); // ICU4N: Corrected 2nd parameter
+
+                    // Delete the old text (the key)
+                    text.Replace(start + outLen, (limit + outLen) - (start + outLen), ReadOnlySpan<char>.Empty); // ICU4N: Corrected 2nd parameter
                 }
-                // Insert any accumulated straight text.
-                if (buf.Length > 0)
+                finally
                 {
-                    text.Replace(destLimit, destLimit - destLimit, buf.ToString()); // ICU4N: Corrected 2nd parameter
-                    destLimit += buf.Length;
+                    buf.Dispose();
                 }
-                if (oOutput == cursorPos)
-                {
-                    // Record the position of the cursor
-                    newStart = destLimit - destStart; // relative to start
-                }
-
-                outLen = destLimit - destStart;
-
-                // Copy new text to start, and delete it
-                text.Copy(destStart, destLimit - destStart, start); // ICU4N: Corrected 2nd parameter
-                text.Replace(tempStart + outLen, (destLimit + tempExtra + outLen) - (tempStart + outLen), ""); // ICU4N: Corrected 2nd parameter
-
-                // Delete the old text (the key)
-                text.Replace(start + outLen, (limit + outLen) - (start + outLen), ""); // ICU4N: Corrected 2nd parameter
             }
 
             if (hasCursor)
