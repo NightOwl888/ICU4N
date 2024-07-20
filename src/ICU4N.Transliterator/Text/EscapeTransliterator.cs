@@ -281,18 +281,26 @@ namespace ICU4N.Text
 #pragma warning disable 612, 618
             sourceSet.AddAll(GetFilterAsUnicodeSet(inputFilter));
 #pragma warning restore 612, 618
-            for (EscapeTransliterator it = this; it != null; it = it.supplementalHandler)
+            if (inputFilter.Count != 0) // ICU4N: Moved this condition outside of the loop, since it requires some calculation
             {
-                if (inputFilter.Count != 0)
+                ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    targetSet.AddAll(it.prefix);
-                    targetSet.AddAll(it.suffix);
-                    StringBuilder buffer = new StringBuilder();
-                    for (int i = 0; i < it.radix; ++i)
+                    for (EscapeTransliterator it = this; it != null; it = it.supplementalHandler)
                     {
-                        Utility.AppendNumber(buffer, i, it.radix, it.minDigits);
+                        targetSet.AddAll(it.prefix);
+                        targetSet.AddAll(it.suffix);
+                        buffer.Length = 0;
+                        for (int i = 0; i < it.radix; ++i)
+                        {
+                            Utility.AppendNumber(ref buffer, i, it.radix, it.minDigits);
+                        }
+                        targetSet.AddAll(buffer.AsSpan()); // TODO drop once String is changed to CharSequence in UnicodeSet
                     }
-                    targetSet.AddAll(buffer.ToString()); // TODO drop once String is changed to CharSequence in UnicodeSet
+                }
+                finally
+                {
+                    buffer.Dispose();
                 }
             }
         }
