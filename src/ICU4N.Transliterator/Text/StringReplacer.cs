@@ -1,4 +1,5 @@
 ﻿using ICU4N.Impl;
+using System;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -14,6 +15,8 @@ namespace ICU4N.Text
     /// <author>Alan Liu</author>
     internal class StringReplacer : IUnicodeReplacer
     {
+        private const int CharStackBufferSize = 32;
+
         /// <summary>
         /// Output text, possibly containing stand-in characters that
         /// represent nested <see cref="IUnicodeReplacer"/>s.
@@ -288,61 +291,89 @@ namespace ICU4N.Text
         /// </summary>
         public virtual string ToReplacerPattern(bool escapeUnprintable)
         {
-            StringBuffer rule = new StringBuffer();
-            StringBuffer quoteBuf = new StringBuffer();
-
-            int cursor = cursorPos;
-
-            // Handle a cursor preceding the output
-            if (hasCursor && cursor < 0)
+            ValueStringBuilder rule = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                while (cursor++ < 0)
-                {
-                    Utility.AppendToRule(rule, '@', true, escapeUnprintable, quoteBuf);
-                }
-                // Fall through and append '|' below
+                ToReplacerPattern(escapeUnprintable, ref rule);
+                return rule.ToString();
             }
-
-            for (int i = 0; i < output.Length; ++i)
+            finally
             {
-                if (hasCursor && i == cursor)
-                {
-                    Utility.AppendToRule(rule, '|', true, escapeUnprintable, quoteBuf);
-                }
-                char c = output[i]; // Ok to use 16-bits here
-
-                IUnicodeReplacer r = data.LookupReplacer(c);
-                if (r == null)
-                {
-                    Utility.AppendToRule(rule, c, false, escapeUnprintable, quoteBuf);
-                }
-                else
-                {
-                    StringBuffer buf = new StringBuffer(" ");
-                    buf.Append(r.ToReplacerPattern(escapeUnprintable));
-                    buf.Append(' ');
-                    Utility.AppendToRule(rule, buf.ToString(),
-                                         true, escapeUnprintable, quoteBuf);
-                }
+                rule.Dispose();
             }
+        }
 
-            // Handle a cursor after the output.  Use > rather than >= because
-            // if cursor == output.length() it is at the end of the output,
-            // which is the default position, so we need not emit it.
-            if (hasCursor && cursor > output.Length)
+        /// <summary>
+        /// <see cref="IUnicodeReplacer"/> API
+        /// </summary>
+        public virtual void ToReplacerPattern(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
+            ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            ValueStringBuilder rule = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            ValueStringBuilder quoteBuf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+
+            try
             {
-                cursor -= output.Length;
-                while (cursor-- > 0)
-                {
-                    Utility.AppendToRule(rule, '@', true, escapeUnprintable, quoteBuf);
-                }
-                Utility.AppendToRule(rule, '|', true, escapeUnprintable, quoteBuf);
-            }
-            // Flush quoteBuf out to result
-            Utility.AppendToRule(rule, -1,
-                                 true, escapeUnprintable, quoteBuf);
+                int cursor = cursorPos;
 
-            return rule.ToString();
+                // Handle a cursor preceding the output
+                if (hasCursor && cursor < 0)
+                {
+                    while (cursor++ < 0)
+                    {
+                        Utility.AppendToRule(ref rule, '@', true, escapeUnprintable, ref quoteBuf);
+                    }
+                    // Fall through and append '|' below
+                }
+
+                for (int i = 0; i < output.Length; ++i)
+                {
+                    if (hasCursor && i == cursor)
+                    {
+                        Utility.AppendToRule(ref rule, '|', true, escapeUnprintable, ref quoteBuf);
+                    }
+                    char c = output[i]; // Ok to use 16-bits here
+
+                    IUnicodeReplacer r = data.LookupReplacer(c);
+                    if (r == null)
+                    {
+                        Utility.AppendToRule(ref rule, c, false, escapeUnprintable, ref quoteBuf);
+                    }
+                    else
+                    {
+                        buf.Length = 0;
+                        buf.Append(' ');
+                        r.ToReplacerPattern(escapeUnprintable, ref buf);
+                        buf.Append(' ');
+                        Utility.AppendToRule(ref rule, buf.AsSpan(),
+                            true, escapeUnprintable, ref quoteBuf);
+                    }
+                }
+
+                // Handle a cursor after the output.  Use > rather than >= because
+                // if cursor == output.length() it is at the end of the output,
+                // which is the default position, so we need not emit it.
+                if (hasCursor && cursor > output.Length)
+                {
+                    cursor -= output.Length;
+                    while (cursor-- > 0)
+                    {
+                        Utility.AppendToRule(ref rule, '@', true, escapeUnprintable, ref quoteBuf);
+                    }
+                    Utility.AppendToRule(ref rule, '|', true, escapeUnprintable, ref quoteBuf);
+                }
+                // Flush quoteBuf out to result
+                Utility.AppendToRule(ref rule, -1,
+                                     true, escapeUnprintable, ref quoteBuf);
+
+                destination.Append(rule.AsSpan());
+            }
+            finally
+            {
+                buf.Dispose();
+                rule.Dispose();
+                quoteBuf.Dispose();
+            }
         }
 
         /// <summary>

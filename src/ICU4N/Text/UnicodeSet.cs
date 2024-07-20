@@ -939,6 +939,38 @@ namespace ICU4N.Text
         }
 
         /// <summary>
+        /// Outputs the string representation of this set. If the result of
+        /// calling this function is passed to a <see cref="UnicodeSet"/> constructor, it
+        /// will produce another set that is equal to this one.
+        /// </summary>
+        /// <param name="escapeUnprintable">If true, then unprintable characters
+        /// will be converted to escape form backslash-'u' or
+        /// backslash-'U'.</param>
+        /// <param name="destination">When this method returns successfully, contains the string representation of this set.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are
+        /// usable in <paramref name="destination"/>; otherwise, this is the length of <paramref name="destination"/> 
+        /// that will need to be allocated to succeed in another attempt.</param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        public override bool TryToPattern(bool escapeUnprintable, Span<char> destination, out int charsLength)
+        {
+            if (pat != null && !escapeUnprintable)
+            {
+                charsLength = pat.Length;
+                return pat.AsSpan().TryCopyTo(destination);
+            }
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
+            {
+                ToPattern(ref result, escapeUnprintable);
+                return result.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Append a string representation of this set to result.  This will be
         /// a cleaned version of the string passed to ApplyPattern(), if there
         /// is one.  Otherwise it will be generated.

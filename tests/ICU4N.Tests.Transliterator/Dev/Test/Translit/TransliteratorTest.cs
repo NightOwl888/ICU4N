@@ -461,6 +461,13 @@ namespace ICU4N.Dev.Test.Translit
                 return "";
             }
 
+            public override bool TryToPattern(bool escapeUnprintable, Span<char> destination, out int charsLength)
+            {
+                destination = default;
+                charsLength = 0;
+                return true;
+            }
+
             public override bool MatchesIndexValue(int v)
             {
                 return false;

@@ -1525,8 +1525,8 @@ namespace ICU4N.Text
                 // direction.
                 if (parser.CompoundFilter != null)
                 {
-                    t = GetInstance(parser.CompoundFilter.ToPattern(false) + ";"
-                            + parser.IdBlockVector[0]);
+                    t = GetInstance(string.Concat(parser.CompoundFilter.ToPattern(false), ";",
+                            parser.IdBlockVector[0]));
                 }
                 else
                 {
@@ -1585,7 +1585,29 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual string ToRules(bool escapeUnprintable)
         {
-            return BaseToRules(escapeUnprintable);
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToRules(escapeUnprintable, ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Appends a rule string for this transliterator to <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="escapeUnprintable">If true, then unprintable characters
+        /// will be converted to escape form backslash-'u' or
+        /// backslash-'U'.</param>
+        /// <param name="destination">A <see cref="ValueStringBuilder"/> to append the rules string to.</param>
+        /// <stable>ICU 2.0</stable>
+        internal virtual void ToRules(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
+            BaseToRules(escapeUnprintable, ref destination);
         }
 
         /// <summary>
@@ -1600,27 +1622,53 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         protected internal string BaseToRules(bool escapeUnprintable)
         {
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                BaseToRules(escapeUnprintable, ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Returns a rule string for this transliterator.  This is
+        /// a non-overrideable base class implementation that subclasses
+        /// may call.  It simply munges the ID into the correct format,
+        /// that is, "foo" =&gt; "::foo".
+        /// </summary>
+        /// <param name="escapeUnprintable">If true, then unprintable characters
+        /// will be converted to escape form backslash-'u' or
+        /// backslash-'U'.</param>
+        /// <param name="destination">A <see cref="ValueStringBuilder"/> to append the rules string to.</param>
+        /// <stable>ICU 2.0</stable>
+        internal virtual void BaseToRules(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
             // The base class implementation of toRules munges the ID into
             // the correct format.  That is: foo => ::foo
             // KEEP in sync with rbt_pars
             if (escapeUnprintable)
             {
-                StringBuffer rulesSource = new StringBuffer();
+                destination.Append("::"); // ICU4N: Don't assume the input is cleared, we append instead of insert so we don't mess up the order
                 string id = ID;
                 for (int i = 0; i < id.Length;)
                 {
                     int c = UTF16.CharAt(id, i);
-                    if (!Utility.EscapeUnprintable(rulesSource, c))
+                    if (!Utility.EscapeUnprintable(ref destination, c))
                     {
-                        UTF16.Append(rulesSource, c);
+                        destination.AppendCodePoint(c);
                     }
                     i += UTF16.GetCharCount(c);
                 }
-                rulesSource.Insert(0, "::");
-                rulesSource.Append(ID_DELIM);
-                return rulesSource.ToString();
+                destination.Append(ID_DELIM);
+                return;
             }
-            return "::" + ID + ID_DELIM;
+            destination.Append("::");
+            destination.Append(ID);
+            destination.Append(ID_DELIM);
         }
 
         /// <summary>

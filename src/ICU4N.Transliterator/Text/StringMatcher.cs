@@ -1,5 +1,5 @@
 ﻿using ICU4N.Impl;
-using StringBuffer = System.Text.StringBuilder;
+using System;
 
 namespace ICU4N.Text
 {
@@ -23,6 +23,8 @@ namespace ICU4N.Text
     /// </remarks>
     internal class StringMatcher : IUnicodeMatcher, IUnicodeReplacer
     {
+        private const int CharStackBufferSize = 32;
+
         /// <summary>
         /// The text to be matched.
         /// </summary>
@@ -198,34 +200,74 @@ namespace ICU4N.Text
         /// </summary>
         public virtual string ToPattern(bool escapeUnprintable)
         {
-            StringBuffer result = new StringBuffer();
-            StringBuffer quoteBuf = new StringBuffer();
-            if (segmentNumber > 0)
-            { // i.e., if this is a segment
-                result.Append('(');
-            }
-            for (int i = 0; i < pattern.Length; ++i)
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                char keyChar = pattern[i]; // OK; see note (1) above
-                IUnicodeMatcher m = data.LookupMatcher(keyChar);
-                if (m == null)
-                {
-                    Utility.AppendToRule(result, keyChar, false, escapeUnprintable, quoteBuf);
-                }
-                else
-                {
-                    Utility.AppendToRule(result, m.ToPattern(escapeUnprintable),
-                                         true, escapeUnprintable, quoteBuf);
-                }
+                ToPattern(escapeUnprintable, ref result);
+                return result.ToString();
             }
-            if (segmentNumber > 0)
-            { // i.e., if this is a segment
-                result.Append(')');
+            finally
+            {
+                result.Dispose();
             }
-            // Flush quoteBuf out to result
-            Utility.AppendToRule(result, -1,
-                                 true, escapeUnprintable, quoteBuf);
-            return result.ToString();
+        }
+
+        /// <summary>
+        /// Implement <see cref="IUnicodeMatcher"/>
+        /// </summary>
+        public virtual bool TryToPattern(bool escapeUnprintable, Span<char> destination, out int charsLength)
+        {
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
+            {
+                ToPattern(escapeUnprintable, ref result);
+                return result.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+
+        internal virtual void ToPattern(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            ValueStringBuilder quoteBuf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                if (segmentNumber > 0)
+                { // i.e., if this is a segment
+                    result.Append('(');
+                }
+                for (int i = 0; i < pattern.Length; ++i)
+                {
+                    char keyChar = pattern[i]; // OK; see note (1) above
+                    IUnicodeMatcher m = data.LookupMatcher(keyChar);
+                    if (m == null)
+                    {
+                        Utility.AppendToRule(ref result, keyChar, false, escapeUnprintable, ref quoteBuf);
+                    }
+                    else
+                    {
+                        // ICU4N: Simplified by using overload that accepts IUnicodeMatcher
+                        Utility.AppendToRule(ref result, m, escapeUnprintable, ref quoteBuf);
+                    }
+                }
+                if (segmentNumber > 0)
+                { // i.e., if this is a segment
+                    result.Append(')');
+                }
+                // Flush quoteBuf out to result
+                Utility.AppendToRule(ref result, -1,
+                                     true, escapeUnprintable, ref quoteBuf);
+                destination.Append(result.AsSpan());
+            }
+            finally
+            {
+                result.Dispose();
+                quoteBuf.Dispose();
+            }
         }
 
         /// <summary>
@@ -301,9 +343,22 @@ namespace ICU4N.Text
         public virtual string ToReplacerPattern(bool escapeUnprintable)
         {
             // assert(segmentNumber > 0);
-            StringBuffer rule = new StringBuffer("$");
-            Utility.AppendNumber(rule, segmentNumber, 10, 1);
-            return rule.ToString();
+            ValueStringBuilder rule = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToReplacerPattern(escapeUnprintable, ref rule);
+                return rule.ToString();
+            }
+            finally
+            {
+                rule.Dispose();
+            }
+        }
+
+        public virtual void ToReplacerPattern(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
+            destination.Append('$');
+            Utility.AppendNumber(ref destination, segmentNumber, 10, 1);
         }
 
         /// <summary>

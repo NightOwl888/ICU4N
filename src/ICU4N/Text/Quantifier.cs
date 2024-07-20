@@ -1,11 +1,15 @@
 ﻿using ICU4N.Impl;
 using System;
+using System.Buffers;
+using System.Diagnostics;
 using System.Text;
 
 namespace ICU4N.Text
 {
     internal class Quantifier : IUnicodeMatcher
     {
+        private const int CharStackBufferSize = 64;
+
         private IUnicodeMatcher matcher;
 
         private int minCount;
@@ -74,39 +78,92 @@ namespace ICU4N.Text
             return MatchDegree.Mismatch;
         }
 
+#nullable enable
+
         /// <summary>
         /// Implement <see cref="IUnicodeMatcher"/> API.
         /// </summary>
         public virtual string ToPattern(bool escapeUnprintable)
         {
-            StringBuilder result = new StringBuilder();
-            result.Append(matcher.ToPattern(escapeUnprintable));
+            ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToPattern(escapeUnprintable, ref result);
+                return result.ToString();
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Implement <see cref="IUnicodeMatcher"/> API.
+        /// </summary>
+        public virtual bool TryToPattern(bool escapeUnprintable, Span<char> destination, out int charsLength)
+        {
+            ValueStringBuilder result = new ValueStringBuilder(destination);
+            try
+            {
+                ToPattern(escapeUnprintable, ref result);
+                return result.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                result.Dispose();
+            }
+        }
+
+        internal void ToPattern(bool escapeUnprintable, ref ValueStringBuilder result)
+        {
+            char[]? matcherPatternArray = null;
+            try
+            {
+                Span<char> matcherPattern = stackalloc char[CharStackBufferSize];
+                if (!matcher.TryToPattern(escapeUnprintable, matcherPattern, out int matcherPatternLength))
+                {
+                    // Not enough buffer, use the array pool
+                    matcherPattern = matcherPatternArray = ArrayPool<char>.Shared.Rent(matcherPatternLength);
+                    bool success = matcher.TryToPattern(escapeUnprintable, matcherPattern, out matcherPatternLength);
+                    Debug.Assert(success); // Unexpected
+                }
+                result.Append(matcherPattern.Slice(0, matcherPatternLength));
+            }
+            finally
+            {
+                if (matcherPatternArray is not null)
+                    ArrayPool<char>.Shared.Return(matcherPatternArray);
+            }
             if (minCount == 0)
             {
                 if (maxCount == 1)
                 {
-                    return result.Append('?').ToString();
+                    result.Append('?');
+                    return;
                 }
                 else if (maxCount == MaxCount)
                 {
-                    return result.Append('*').ToString();
+                    result.Append('*');
+                    return;
                 }
                 // else fall through
             }
             else if (minCount == 1 && maxCount == MaxCount)
             {
-                return result.Append('+').ToString();
+                result.Append('+');
+                return;
             }
             result.Append('{');
-            result.Append(Utility.Hex(minCount, 1));
+            result.AppendFormatHex(minCount, 1);
             result.Append(',');
             if (maxCount != MaxCount)
             {
-                result.Append(Utility.Hex(maxCount, 1));
+                result.AppendFormatHex(maxCount, 1);
             }
             result.Append('}');
-            return result.ToString();
         }
+
+#nullable restore
 
         /// <summary>
         /// Implement <see cref="IUnicodeMatcher"/> API.

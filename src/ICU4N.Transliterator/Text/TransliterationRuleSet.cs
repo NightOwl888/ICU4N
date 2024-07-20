@@ -21,6 +21,8 @@ namespace ICU4N.Text
     // ICU4N TODO: The FindMatch() method described above doesn't seem to exist.
     internal class TransliterationRuleSet
     {
+        private const int CharStackBufferSize = 64;
+
         /// <summary>
         /// Vector of rules, in the order added.
         /// </summary>
@@ -247,19 +249,34 @@ namespace ICU4N.Text
         /// </summary>
         internal virtual string ToRules(bool escapeUnprintable)
         {
+            ValueStringBuilder ruleSource = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToRules(escapeUnprintable, ref ruleSource);
+                return ruleSource.ToString();
+            }
+            finally
+            {
+                ruleSource.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// Create rule strings that represents this rule set and append it to <paramref name="destination"/>.
+        /// </summary>
+        internal virtual void ToRules(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
             int i;
             int count = ruleVector.Count;
-            StringBuilder ruleSource = new StringBuilder();
             for (i = 0; i < count; ++i)
             {
                 if (i != 0)
                 {
-                    ruleSource.Append('\n');
+                    destination.Append('\n');
                 }
                 TransliterationRule r = ruleVector[i];
-                ruleSource.Append(r.ToRule(escapeUnprintable));
+                r.ToRule(escapeUnprintable, ref destination);
             }
-            return ruleSource.ToString();
         }
 
         // TODO Handle the case where we have :: [a] ; a > |b ; b > c ;

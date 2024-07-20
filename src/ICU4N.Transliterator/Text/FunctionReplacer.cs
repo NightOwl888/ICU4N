@@ -11,6 +11,8 @@ namespace ICU4N.Text
     /// <author>Alan Liu</author>
     internal class FunctionReplacer : IUnicodeReplacer
     {
+        private const int CharStackBufferSize = 32;
+
         /// <summary>
         /// The transliterator.  Must not be null.
         /// </summary>
@@ -58,12 +60,28 @@ namespace ICU4N.Text
         /// </summary>
         public virtual string ToReplacerPattern(bool escapeUnprintable)
         {
-            StringBuilder rule = new StringBuilder("&");
-            rule.Append(translit.ID);
-            rule.Append("( ");
-            rule.Append(replacer.ToReplacerPattern(escapeUnprintable));
-            rule.Append(" )");
-            return rule.ToString();
+            ValueStringBuilder rule = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                ToReplacerPattern(escapeUnprintable, ref rule);
+                return rule.ToString();
+            }
+            finally
+            {
+                rule.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// <see cref="IUnicodeReplacer"/> API
+        /// </summary>
+        public virtual void ToReplacerPattern(bool escapeUnprintable, ref ValueStringBuilder destination)
+        {
+            destination.Append('&');
+            destination.Append(translit.ID);
+            destination.Append("( ");
+            replacer.ToReplacerPattern(escapeUnprintable, ref destination);
+            destination.Append(" )");
         }
 
         /// <summary>

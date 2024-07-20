@@ -1,4 +1,7 @@
 ﻿using ICU4N.Text;
+using System;
+using System.Buffers;
+using System.Diagnostics;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Impl
@@ -8,43 +11,7 @@ namespace ICU4N.Impl
     /// </summary>
     public class UtilityExtensions
     {
-        /// <summary>
-        /// Append the given string to the rule.  Calls the single-character
-        /// version of appendToRule for each character.
-        /// </summary>
-        /// <param name="rule"></param>
-        /// <param name="text"></param>
-        /// <param name="isLiteral"></param>
-        /// <param name="escapeUnprintable"></param>
-        /// <param name="quoteBuf"></param>
-        public static void AppendToRule(StringBuffer rule,
-                                        string text,
-                                        bool isLiteral,
-                                        bool escapeUnprintable,
-                                        StringBuffer quoteBuf)
-        {
-            for (int i = 0; i < text.Length; ++i)
-            {
-                // Okay to process in 16-bit code units here
-                Utility.AppendToRule(rule, text[i], isLiteral, escapeUnprintable, quoteBuf);
-            }
-        }
-
-        /// <summary>
-        /// Given a <paramref name="matcher"/> reference, which may be null, append its
-        /// pattern as a literal to the given <paramref name="rule"/>.
-        /// </summary>
-        public static void AppendToRule(StringBuffer rule,
-                                        IUnicodeMatcher matcher,
-                                        bool escapeUnprintable,
-                                        StringBuffer quoteBuf)
-        {
-            if (matcher != null)
-            {
-                AppendToRule(rule, matcher.ToPattern(escapeUnprintable),
-                             true, escapeUnprintable, quoteBuf);
-            }
-        }
+        // ICU4N: Removed AppendToRule() because it is redundant with the same method in Utility.cs
 
         /// <summary>
         /// For debugging purposes; format the given text in the form

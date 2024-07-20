@@ -1043,8 +1043,8 @@ namespace ICU4N.Text
                     // direction.
                     if (parser.CompoundFilter != null)
                     {
-                        entryWrapper[0] = new AliasEntry(parser.CompoundFilter.ToPattern(false) + ";"
-                                + parser.IdBlockVector[0]);
+                        entryWrapper[0] = new AliasEntry(string.Concat(parser.CompoundFilter.ToPattern(false), ";",
+                                parser.IdBlockVector[0]));
                     }
                     else
                     {

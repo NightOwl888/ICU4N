@@ -6,6 +6,7 @@ using J2N.Text;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -1638,8 +1639,64 @@ namespace ICU4N.Impl
         // ICU4N specific - RecursiveAppendNumber(IAppendable result, int n,
         //    int radix, int minDigits) moved to Utility.generated.tt
 
+        /// <summary>
+        /// Append the digits of a positive integer to the given
+        /// <see cref="ValueStringBuilder"/> in the given radix. This is
+        /// done recursively since it is easiest to generate the low-
+        /// order digit first, but it must be appended last.
+        /// </summary>
+        /// <param name="result">The <see cref="ValueStringBuilder"/> to append to.</param>
+        /// <param name="n">The positive integer.</param>
+        /// <param name="radix">The radix, from 2 to 36 inclusive.</param>
+        /// <param name="minDigits">The minimum number of digits to append.</param>
+        private static void RecursiveAppendNumber(ref ValueStringBuilder result, int n,
+            int radix, int minDigits)
+        {
+            int digit = n % radix;
+
+            if (n >= radix || minDigits > 1)
+            {
+                RecursiveAppendNumber(ref result, n / radix, radix, minDigits - 1);
+            }
+            result.Append(DIGITS[digit]);
+        }
+
         // ICU4N specific - AppendNumber(T result, int n,
         //    int radix, int minDigits) where T : IAppendable moved to Utility.generated.tt
+
+        /// <summary>
+        /// Append a number to the given <see cref="StringBuilder"/> in the given radix.
+        /// Standard digits '0'-'9' are used and letters 'A'-'Z' for
+        /// radices 11 through 36.
+        /// </summary>
+        /// <param name="result">The digits of the number are appended here.</param>
+        /// <param name="n">The number to be converted to digits; may be negative. If negative, a '-' is prepended to the digits.</param>
+        /// <param name="radix">A radix from 2 to 36 inclusive.</param>
+        /// <param name="minDigits">
+        /// The minimum number of digits, not including
+        /// any '-', to produce.  Values less than 2 have no effect.  One
+        /// digit is always emitted regardless of this parameter.
+        /// </param>
+        /// <returns>A reference to result.</returns>
+        internal static void AppendNumber(this ref ValueStringBuilder result, int n,
+            int radix, int minDigits)
+        {
+            if (radix < 2 || radix > 36)
+            {
+                throw new ArgumentException("Illegal radix " + radix);
+            }
+
+            int abs = n;
+
+            if (n < 0)
+            {
+                abs = -n;
+                result.Append("-");
+            }
+
+            RecursiveAppendNumber(ref result, abs, radix, minDigits); // ICU4N TODO: Append to the ValueStringBuilder and then call ReverseText on the part we want to reverse rather than using recursion.
+        }
+
 
         /// <summary>
         /// Parse an unsigned 31-bit integer at the given offset.  Use
@@ -1815,6 +1872,8 @@ namespace ICU4N.Impl
             return -1;
         }
 
+#nullable enable
+
         /// <summary>
         /// Append a character to a rule that is being built up.  To flush
         /// the <paramref name="quoteBuf"/> to <paramref name="rule"/>, make one final call with <paramref name="isLiteral"/> == true.
@@ -1826,18 +1885,18 @@ namespace ICU4N.Impl
         /// quoted or escaped.  Usually this means it is a syntactic element
         /// such as > or $.</param>
         /// <param name="escapeUnprintable">If true, then unprintable characters
-        /// should be escaped using <see cref="EscapeUnprintable(StringBuffer, int)"/>.  These escapes will
+        /// should be escaped using <c>EscapeUnprintable(ref ValueStringBuilder, int)</c>. These escapes will
         /// appear outside of quotes.</param>
         /// <param name="quoteBuf">A buffer which is used to build up quoted
         /// substrings.  The caller should initially supply an empty buffer,
         /// and thereafter should not modify the buffer.  The buffer should be
         /// cleared out by, at the end, calling this method with a literal
         /// character (which may be -1).</param>
-        public static void AppendToRule(StringBuffer rule,
+        internal static void AppendToRule(ref ValueStringBuilder rule,
                 int c,
                 bool isLiteral,
                 bool escapeUnprintable,
-                StringBuffer quoteBuf)
+                ref ValueStringBuilder quoteBuf)
         {
             // If we are escaping unprintables, then escape them outside
             // quotes.  \\u and \\U are not recognized within quotes.  The same
@@ -1858,7 +1917,8 @@ namespace ICU4N.Impl
                             quoteBuf[0] == APOSTROPHE &&
                             quoteBuf[1] == APOSTROPHE)
                     {
-                        rule.Append(BACKSLASH).Append(APOSTROPHE);
+                        rule.Append(BACKSLASH);
+                        rule.Append(APOSTROPHE);
                         quoteBuf.Delete(0, 2 - 0); // ICU4N: Corrected 2nd parameter
                     }
                     // If the last thing in the quoteBuf is APOSTROPHE
@@ -1874,13 +1934,14 @@ namespace ICU4N.Impl
                     if (quoteBuf.Length > 0)
                     {
                         rule.Append(APOSTROPHE);
-                        rule.Append(quoteBuf);
+                        rule.Append(quoteBuf.AsSpan());
                         rule.Append(APOSTROPHE);
                         quoteBuf.Length = 0;
                     }
                     while (trailingCount-- > 0)
                     {
-                        rule.Append(BACKSLASH).Append(APOSTROPHE);
+                        rule.Append(BACKSLASH);
+                        rule.Append(APOSTROPHE);
                     }
                 }
                 if (c != -1)
@@ -1898,7 +1959,7 @@ namespace ICU4N.Impl
                             rule.Append(' ');
                         }
                     }
-                    else if (!escapeUnprintable || !Utility.EscapeUnprintable(rule, c))
+                    else if (!escapeUnprintable || !Utility.EscapeUnprintable(ref rule, c))
                     {
                         rule.AppendCodePoint(c);
                     }
@@ -1909,7 +1970,8 @@ namespace ICU4N.Impl
             else if (quoteBuf.Length == 0 &&
                     (c == APOSTROPHE || c == BACKSLASH))
             {
-                rule.Append(BACKSLASH).Append((char)c);
+                rule.Append(BACKSLASH);
+                rule.Append((char)c);
             }
 
             // Specials (printable ascii that isn't [0-9a-zA-Z]) and
@@ -1939,18 +2001,18 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Append the given string to the rule.  Calls the single-character
-        /// version of <see cref="AppendToRule(StringBuffer, int, bool, bool, StringBuffer)"/> for each character.
+        /// version of <c>AppendToRule(ref ValueStringBuilder, int, bool, bool, ref ValueStringBuilder)</c> for each character.
         /// </summary>
-        public static void AppendToRule(StringBuffer rule,
-                string text,
+        internal static void AppendToRule(ref ValueStringBuilder rule,
+                scoped ReadOnlySpan<char> text,
                 bool isLiteral,
                 bool escapeUnprintable,
-                StringBuffer quoteBuf)
+                ref ValueStringBuilder quoteBuf)
         {
             for (int i = 0; i < text.Length; ++i)
             {
                 // Okay to process in 16-bit code units here
-                AppendToRule(rule, text[i], isLiteral, escapeUnprintable, quoteBuf);
+                AppendToRule(ref rule, text[i], isLiteral, escapeUnprintable, ref quoteBuf);
             }
         }
 
@@ -1958,17 +2020,37 @@ namespace ICU4N.Impl
         /// Given a matcher reference, which may be null, append its
         /// pattern as a literal to the given rule.
         /// </summary>
-        public static void AppendToRule(StringBuffer rule,
-                IUnicodeMatcher matcher,
+        internal static void AppendToRule(ref ValueStringBuilder rule,
+                IUnicodeMatcher? matcher,
                 bool escapeUnprintable,
-                StringBuffer quoteBuf)
+                ref ValueStringBuilder quoteBuf)
         {
             if (matcher != null)
             {
-                AppendToRule(rule, matcher.ToPattern(escapeUnprintable),
-                        true, escapeUnprintable, quoteBuf);
+                char[]? matcherPatternArray = null;
+                try
+                {
+                    Span<char> matcherPattern = stackalloc char[CharStackBufferSize];
+                    if (!matcher.TryToPattern(escapeUnprintable, matcherPattern, out int matcherPatternLength))
+                    {
+                        // Not enough buffer, use the array pool
+                        matcherPattern = matcherPatternArray = ArrayPool<char>.Shared.Rent(matcherPatternLength);
+                        bool success = matcher.TryToPattern(escapeUnprintable, matcherPattern, out matcherPatternLength);
+                        Debug.Assert(success); // Unexpected
+                    }
+                    AppendToRule(ref rule, matcherPattern.Slice(0, matcherPatternLength),
+                        true, escapeUnprintable, ref quoteBuf);
+                }
+                finally
+                {
+                    if (matcherPatternArray is not null)
+                        ArrayPool<char>.Shared.Return(matcherPatternArray);
+                }
             }
         }
+
+#nullable restore
+
 
         /// <summary>
         /// Compares 2 unsigned integers.
@@ -2052,12 +2134,7 @@ namespace ICU4N.Impl
         public static string ValueOf(int[] source)
         {
             // TODO: Investigate why this method is not on UTF16 class
-            StringBuilder result = new StringBuilder(source.Length);
-            for (int i = 0; i < source.Length; i++)
-            {
-                result.AppendCodePoint(source[i]);
-            }
-            return result.ToString();
+            return Character.ToString(source);
         }
 
         /// <summary>
