@@ -228,7 +228,8 @@ namespace ICU4N.Dev.Test
             StringBuilder buffer = new StringBuilder();
             foreach (var item in c)
             {
-                buffer.Append(item + "\r\n");
+                buffer.Append(item);
+                buffer.Append("\r\n");
             }
             return buffer.ToString();
         }
