@@ -2,9 +2,9 @@
 using J2N;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using JCG = J2N.Collections.Generic;
-using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
@@ -204,35 +204,79 @@ namespace ICU4N.Text
                 return;
             }
 
-            // otherwise iterate through the string, and recursively permute all the other characters
-            ISet<string> subpermute = new JCG.HashSet<string>();
-            int cp;
-            for (int i = 0; i < source.Length; i += UTF16.GetCharCount(cp))
+            PermuteInternal(source.AsSpan(), skipZeros, output);
+        }
+
+        /// <summary>
+        /// Simple implementation of permutation.
+        /// <para/>
+        /// <b>Warning: The strings are not guaranteed to be in any particular order.</b>
+        /// </summary>
+        /// <param name="source">The string to find permutations for.</param>
+        /// <param name="skipZeros">Set to true to skip characters with canonical combining class zero.</param>
+        /// <param name="output">The set to add the results to.</param>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        public static void Permute(ReadOnlySpan<char> source, bool skipZeros, ISet<string> output)
+        {
+            // TODO: optimize
+            //if (PROGRESS) System.out.println("Permute: " + source);
+
+            // optimization:
+            // if zero or one character, just return a set with it
+            // we check for length < 2 to keep from counting code points all the time
+            if (source.Length <= 2 && UTF16.CountCodePoint(source) <= 1)
             {
-                cp = UTF16.CharAt(source, i);
+                output.Add(source.ToString());
+                return;
+            }
 
-                // optimization:
-                // if the character is canonical combining class zero,
-                // don't permute it
-                if (skipZeros && i != 0 && UChar.GetCombiningClass(cp) == 0)
+            PermuteInternal(source, skipZeros, output);
+        }
+
+        [Obsolete("This API is ICU internal only.")]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void PermuteInternal(ReadOnlySpan<char> source, bool skipZeros, ISet<string> output)
+        {
+            ValueStringBuilder buffer = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
+            {
+                // otherwise iterate through the string, and recursively permute all the other characters
+                ISet<string> subpermute = new JCG.HashSet<string>();
+                int cp;
+                for (int i = 0; i < source.Length; i += UTF16.GetCharCount(cp))
                 {
-                    //System.out.println("Skipping " + Utility.hex(UTF16.valueOf(source, i)));
-                    continue;
-                }
+                    cp = UTF16.CharAt(source, i);
 
-                // see what the permutations of the characters before and after this one are
-                subpermute.Clear();
-                Permute(source.Substring(0, i - 0) // ICU4N: Checked 2nd parameter
-                    + source.Substring(i + UTF16.GetCharCount(cp)), skipZeros, subpermute); // ICU4N: Substring only has 1 parameter
+                    // optimization:
+                    // if the character is canonical combining class zero,
+                    // don't permute it
+                    if (skipZeros && i != 0 && UChar.GetCombiningClass(cp) == 0)
+                    {
+                        //System.out.println("Skipping " + Utility.hex(UTF16.valueOf(source, i)));
+                        continue;
+                    }
 
-                // prefix this character to all of them
-                string chStr = UTF16.ValueOf(source, i);
-                foreach (string s in subpermute)
-                {
-                    string piece = chStr + s;
-                    //if (PROGRESS) System.out.println("  Piece: " + piece);
-                    output.Add(piece);
+                    // see what the permutations of the characters before and after this one are
+                    subpermute.Clear();
+                    buffer.Length = 0;
+                    buffer.Append(source.Slice(0, i)); // ICU4N: Checked 2nd parameter
+                    buffer.Append(source.Slice(i + UTF16.GetCharCount(cp)));
+                    Permute(buffer.AsSpan(), skipZeros, subpermute); // ICU4N: Substring only has 1 parameter
+
+                    // prefix this character to all of them
+                    ReadOnlySpan<char> chStr = UTF16.ValueOf(source, i);
+                    foreach (string s in subpermute)
+                    {
+                        string piece = StringHelper.Concat(chStr, s.AsSpan());
+                        //if (PROGRESS) System.out.println("  Piece: " + piece);
+                        output.Add(piece);
+                    }
                 }
+            }
+            finally
+            {
+                buffer.Dispose();
             }
         }
 

@@ -216,7 +216,7 @@ namespace ICU4N.Text
         /// <param name="limit">Offset to substring in the source array for analyzing.</param>
         /// <param name="offset16">UTF-16 offset relative to start.</param>
         /// <returns>UTF-32 value for the UTF-32 value that contains the char at offset16. The boundaries
-        /// of that codepoint are the same as in <see cref="Bounds(char[], int, int, int)"/>.</returns>
+        /// of that codepoint are the same as in <see cref="Bounds(ReadOnlySpan{char}, int)"/>.</returns>
         /// <exception cref="IndexOutOfRangeException">Thrown if offset16 is not within the range of start and limit.</exception>
         /// <stable>ICU 2.1</stable>
         public static int CharAt(char[] source, int start, int limit, int offset16)
@@ -274,7 +274,7 @@ namespace ICU4N.Text
         /// <param name="source">UTF-16 chars string buffer.</param>
         /// <param name="offset16">UTF-16 offset to the start of the character.</param>
         /// <returns>UTF-32 value for the UTF-32 value that contains the char at offset16. The boundaries
-        /// of that codepoint are the same as in <see cref="Bounds(char[], int, int, int)"/>.</returns>
+        /// of that codepoint are the same as in <see cref="Bounds(ReadOnlySpan{char}, int)"/>.</returns>
         /// <exception cref="IndexOutOfRangeException">Thrown if offset16 is not within the range of start and limit.</exception>
         /// <stable>ICU 2.1</stable>
         public static int CharAt(IReplaceable source, int offset16)
@@ -360,6 +360,36 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static int Bounds(string source, int offset16)
         {
+            if (source is null)
+                throw new ArgumentNullException(nameof(source));
+
+            return Bounds(source.AsSpan(), offset16);
+        }
+
+        /// <summary>
+        /// Returns the type of the boundaries around the char at <paramref name="offset16"/>. Used for random access.
+        /// </summary>
+        /// <param name="source">Text to analyze.</param>
+        /// <param name="offset16">UTF-16 offset.</param>
+        /// <returns>
+        /// <list type="bullet">
+        ///     <item><description><see cref="SingleCharBoundary"/> : a single char; the bounds are [offset16, offset16+1]</description></item>
+        ///     <item><description>
+        ///         <see cref="LeadSurrogateBoundary"/> : a surrogate pair starting at offset16; the bounds
+        ///         are [offset16, offset16 + 2]
+        ///     </description></item>
+        ///     <item><description>
+        ///         <see cref="TrailSurrogateBoundary"/> : a surrogate pair starting at offset16 - 1; the
+        ///         bounds are [offset16 - 1, offset16 + 1]
+        ///     </description></item>
+        /// </list>
+        /// For bit-twiddlers, the return values for these are chosen so that the boundaries
+        /// can be gotten by: [offset16 - (value &gt;&gt; 2), offset16 + (value &amp; 3)].
+        /// </returns>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is out of bounds.</exception>
+        /// <stable>ICU 2.1</stable>
+        public static int Bounds(ReadOnlySpan<char> source, int offset16)
+        {
             char ch = source[offset16];
             if (IsSurrogate(ch))
             {
@@ -430,61 +460,61 @@ namespace ICU4N.Text
             return SingleCharBoundary;
         }
 
-        /// <summary>
-        /// Returns the type of the boundaries around the char at <paramref name="offset16"/>. Used for random access. Note
-        /// that the boundaries are determined with respect to the subarray, hence the char array
-        /// {0xD800, 0xDC00} has the result <see cref="SingleCharBoundary"/> for start = offset16 = 0 and limit = 1.
-        /// </summary>
-        /// <param name="source">Char array to analyze.</param>
-        /// <param name="start">Offset to substring in the source array for analyzing.</param>
-        /// <param name="limit">Offset to substring in the source array for analyzing.</param>
-        /// <param name="offset16">UTF16 offset relative to start.</param>
-        /// <returns>
-        /// <list type="bullet">
-        ///     <item><description><see cref="SingleCharBoundary"/> : a single char; the bounds are [offset16, offset16+1]</description></item>
-        ///     <item><description>
-        ///         <see cref="LeadSurrogateBoundary"/> : a surrogate pair starting at offset16; the bounds
-        ///         are [offset16, offset16 + 2]
-        ///     </description></item>
-        ///     <item><description>
-        ///         <see cref="TrailSurrogateBoundary"/> : a surrogate pair starting at offset16 - 1; the
-        ///         bounds are [offset16 - 1, offset16 + 1]
-        ///     </description></item>
-        /// </list>
-        /// For bit-twiddlers, the return values for these are chosen so that the boundaries
-        /// can be gotten by: [offset16 - (value &gt;&gt; 2), offset16 + (value &amp; 3)].
-        /// </returns>
-        /// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is out of bounds.</exception>
-        /// <stable>ICU 2.1</stable>
-        public static int Bounds(char[] source, int start, int limit, int offset16)
-        {
-            offset16 += start;
-            if (offset16 < start || offset16 >= limit)
-            {
-                throw new IndexOutOfRangeException(nameof(offset16));
-            }
-            char ch = source[offset16];
-            if (IsSurrogate(ch))
-            {
-                if (IsLeadSurrogate(ch))
-                {
-                    ++offset16;
-                    if (offset16 < limit && IsTrailSurrogate(source[offset16]))
-                    {
-                        return LeadSurrogateBoundary;
-                    }
-                }
-                else
-                { // IsTrailSurrogate(ch), so
-                    --offset16;
-                    if (offset16 >= start && IsLeadSurrogate(source[offset16]))
-                    {
-                        return TrailSurrogateBoundary;
-                    }
-                }
-            }
-            return SingleCharBoundary;
-        }
+        ///// <summary>
+        ///// Returns the type of the boundaries around the char at <paramref name="offset16"/>. Used for random access. Note
+        ///// that the boundaries are determined with respect to the subarray, hence the char array
+        ///// {0xD800, 0xDC00} has the result <see cref="SingleCharBoundary"/> for start = offset16 = 0 and limit = 1.
+        ///// </summary>
+        ///// <param name="source">Char array to analyze.</param>
+        ///// <param name="start">Offset to substring in the source array for analyzing.</param>
+        ///// <param name="limit">Offset to substring in the source array for analyzing.</param>
+        ///// <param name="offset16">UTF16 offset relative to start.</param>
+        ///// <returns>
+        ///// <list type="bullet">
+        /////     <item><description><see cref="SingleCharBoundary"/> : a single char; the bounds are [offset16, offset16+1]</description></item>
+        /////     <item><description>
+        /////         <see cref="LeadSurrogateBoundary"/> : a surrogate pair starting at offset16; the bounds
+        /////         are [offset16, offset16 + 2]
+        /////     </description></item>
+        /////     <item><description>
+        /////         <see cref="TrailSurrogateBoundary"/> : a surrogate pair starting at offset16 - 1; the
+        /////         bounds are [offset16 - 1, offset16 + 1]
+        /////     </description></item>
+        ///// </list>
+        ///// For bit-twiddlers, the return values for these are chosen so that the boundaries
+        ///// can be gotten by: [offset16 - (value &gt;&gt; 2), offset16 + (value &amp; 3)].
+        ///// </returns>
+        ///// <exception cref="IndexOutOfRangeException">If <paramref name="offset16"/> is out of bounds.</exception>
+        ///// <stable>ICU 2.1</stable>
+        //public static int Bounds(char[] source, int start, int limit, int offset16)
+        //{
+        //    offset16 += start;
+        //    if (offset16 < start || offset16 >= limit)
+        //    {
+        //        throw new IndexOutOfRangeException(nameof(offset16));
+        //    }
+        //    char ch = source[offset16];
+        //    if (IsSurrogate(ch))
+        //    {
+        //        if (IsLeadSurrogate(ch))
+        //        {
+        //            ++offset16;
+        //            if (offset16 < limit && IsTrailSurrogate(source[offset16]))
+        //            {
+        //                return LeadSurrogateBoundary;
+        //            }
+        //        }
+        //        else
+        //        { // IsTrailSurrogate(ch), so
+        //            --offset16;
+        //            if (offset16 >= start && IsLeadSurrogate(source[offset16]))
+        //            {
+        //                return TrailSurrogateBoundary;
+        //            }
+        //        }
+        //    }
+        //    return SingleCharBoundary;
+        //}
 
         /// <summary>
         /// Determines whether the code value is a surrogate.
@@ -665,6 +695,31 @@ namespace ICU4N.Text
         }
 
         /// <summary>
+        /// Convenience method corresponding to <c>(codepoint at <paramref name="offset16"/>) + ""</c>. Returns a one or
+        /// two char string containing the UTF-32 value in UTF16 format. If <paramref name="offset16"/> indexes a surrogate
+        /// character, the whole supplementary codepoint will be returned. If a validity check is
+        /// required, use <see cref="UChar.IsLegal(int)"/> on the codepoint at 
+        /// <paramref name="offset16"/> before calling. The result returned will be a newly created string
+        /// obtained by calling <c><paramref name="source"/>.Substring(..)</c> with the appropriate index and length.
+        /// </summary>
+        /// <param name="source">The input string.</param>
+        /// <param name="offset16">The UTF16 index to the codepoint in source.</param>
+        /// <returns>String value of the codepoint at <paramref name="offset16"/> in UTF16 format.</returns>
+        /// <stable>ICU 2.1</stable>
+        public static ReadOnlySpan<char> ValueOf(ReadOnlySpan<char> source, int offset16)
+        {
+            switch (Bounds(source, offset16))
+            {
+                case LeadSurrogateBoundary:
+                    return source.Slice(offset16, 2); // ICU4N: offset16 + 2 - offset16 = 2
+                case TrailSurrogateBoundary:
+                    return source.Slice(offset16 - 1, 2); // ICU4N: (offset16 + 1) - (offset16 - 1) = 2
+                default:
+                    return source.Slice(offset16, 1); // ICU4N: offset16 + 1 - offset16 = 1
+            }
+        }
+
+        /// <summary>
         /// Convenience method corresponding to <c>(codepoint at <paramref name="offset16"/>) + ""</c>. Returns a
         /// one or two char string containing the UTF-32 value in UTF16 format. If <paramref name="offset16"/> indexes a
         /// surrogate character, the whole supplementary codepoint will be returned. If a validity check
@@ -706,7 +761,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static string ValueOf(char[] source, int start, int limit, int offset16)
         {
-            switch (Bounds(source, start, limit, offset16))
+            switch (Bounds(source.AsSpan(start, limit - start), offset16))
             {
                 case LeadSurrogateBoundary:
                     return new string(source, start + offset16, 2);
@@ -1580,7 +1635,7 @@ namespace ICU4N.Text
         public static int Insert(char[] target, int limit, int offset16, int char32)
         {
             string str = ValueOf(char32);
-            if (offset16 != limit && Bounds(target, 0, limit, offset16) == TrailSurrogateBoundary)
+            if (offset16 != limit && Bounds(target.AsSpan(0, limit), offset16) == TrailSurrogateBoundary)
             {
                 offset16++;
             }
@@ -1637,7 +1692,7 @@ namespace ICU4N.Text
         public static int Delete(char[] target, int limit, int offset16)
         {
             int count = 1;
-            switch (Bounds(target, 0, limit, offset16))
+            switch (Bounds(target.AsSpan(0, limit), offset16))
             {
                 case LeadSurrogateBoundary:
                     count++;

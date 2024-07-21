@@ -112,7 +112,7 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     Errln("FAIL checking bound type at index " + i);
                 }
-                if (UTF16.Bounds(array, 0, length, i) != boundtype[i])
+                if (UTF16.Bounds(array.AsSpan(0, length), i) != boundtype[i])
                 {
                     Errln("FAIL checking bound type at index " + i);
                 }
@@ -127,7 +127,7 @@ namespace ICU4N.Dev.Test.Lang
                    UTF16.TrailSurrogateBoundary};
             try
             {
-                UTF16.Bounds(array, start, limit, -1);
+                UTF16.Bounds(array.AsSpan(start, limit - start), -1);
                 Errln("FAIL Out of bounds index in bounds should fail");
             }
             catch (Exception e)
@@ -138,7 +138,7 @@ namespace ICU4N.Dev.Test.Lang
 
             for (int i = 0; i < limit - start; i++)
             {
-                if (UTF16.Bounds(array, start, limit, i) != subboundtype1[i])
+                if (UTF16.Bounds(array.AsSpan(start, limit - start), i) != subboundtype1[i])
                 {
                     Errln("FAILED Subarray bounds in [" + start + ", " + limit +
                 "] expected " + subboundtype1[i] + " at offset " + i);
@@ -154,7 +154,7 @@ namespace ICU4N.Dev.Test.Lang
             limit = 9;
             for (int i = 0; i < limit - start; i++)
             {
-                if (UTF16.Bounds(array, start, limit, i) != subboundtype2[i])
+                if (UTF16.Bounds(array.AsSpan(start, limit - start), i) != subboundtype2[i])
                 {
                     Errln("FAILED Subarray bounds in [" + start + ", " + limit +
                 "] expected " + subboundtype2[i] + " at offset " + i);
@@ -169,7 +169,7 @@ namespace ICU4N.Dev.Test.Lang
             limit = 8;
             for (int i = 0; i < limit - start; i++)
             {
-                if (UTF16.Bounds(array, start, limit, i) != subboundtype3[i])
+                if (UTF16.Bounds(array.AsSpan(start, limit - start), i) != subboundtype3[i])
                 {
                     Errln("FAILED Subarray bounds in [" + start + ", " + limit +
                 "] expected " + subboundtype3[i] + " at offset " + i);
