@@ -1,6 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Globalization;
 using System.Text;
+using System;
 
 namespace ICU4N.Text
 {
@@ -186,6 +187,7 @@ namespace ICU4N.Text
             int start = pos.Start;
             int limit = pos.Limit;
             int i, ipat;
+            Span<char> codePointBuffer = stackalloc char[2];
 
             //loop:
             while (start < limit)
@@ -290,7 +292,7 @@ namespace ICU4N.Text
                             if (match)
                             {
                                 // At this point, we have a match
-                                string str = UTF16.ValueOf(u);
+                                ReadOnlySpan<char> str = UTF16.ValueOf(u, codePointBuffer);
                                 text.Replace(start, s - start, str); // ICU4N: Corrected 2nd parameter
                                 limit -= s - start - str.Length;
                                 // The following break statement leaves the
