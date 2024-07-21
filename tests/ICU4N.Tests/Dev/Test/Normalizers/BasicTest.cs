@@ -882,26 +882,39 @@ namespace ICU4N.Dev.Test.Normalizers
                 int reqLength = 0;
                 while (true)
                 {
-                    try
+                    if (Normalizer.TryNormalize(input, output, out reqLength, mode, 0))
                     {
-                        reqLength = Normalizer.Normalize(input, output, mode, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
                         }
                     }
-                    catch (IndexOutOfRangeException e)
+                    else
                     {
-                        output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                        output = new char[reqLength];
                         continue;
                     }
+
+                    //try
+                    //{
+                    //    reqLength = Normalizer.Normalize(input, output, mode, 0);
+                    //    if (reqLength <= output.Length)
+                    //    {
+                    //        break;
+                    //    }
+                    //}
+                    //catch (IndexOutOfRangeException e)
+                    //{
+                    //    output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                    //    continue;
+                    //}
                 }
-                if (!expect.Equals(new string(output, 0, reqLength)))
+                if (!expect.AsSpan().Equals(output.AsSpan(0, reqLength), StringComparison.Ordinal))
                 {
                     Errln("FAIL: case " + i
                         + " expected '" + expect + "' (" + Hex(expect) + ")"
                         + " but got '" + new string(output)
-                        + "' (" + Hex(new string(output)) + ")");
+                        + "' (" + Hex(output) + ")");
                 }
             }
         }
@@ -1950,14 +1963,18 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     data[size] = datachar[rand.Next(RAND_MAX) * 50 / RAND_MAX];
                     Logln("0x" + data[size]);
-                    normStart += Normalizer.Normalize(data, size, size + 1,
-                                                        norm, normStart, 100,
-                                                        NormalizerMode.NFD, 0);
+                    //normStart += Normalizer.Normalize(data, size, size + 1,
+                    //                                    norm, normStart, 100,
+                    //                                    NormalizerMode.NFD, 0);
+                    assertTrue("", Normalizer.TryNormalize(data.AsSpan(size, 1), norm.AsSpan(normStart, 100 - normStart), out int charsLength, NormalizerMode.NFD, 0));
+                    normStart += charsLength;
                     size++;
                 }
                 Logln("\n");
 
-                nfdsize = Normalizer.Normalize(data, 0, size, nfd, 0, nfd.Length, NormalizerMode.NFD, 0);
+                assertTrue("", Normalizer.TryNormalize(data.AsSpan(0, size), nfd.AsSpan(0, nfd.Length), out nfdsize, NormalizerMode.NFD, 0));
+
+                //nfdsize = Normalizer.Normalize(data, 0, size, nfd, 0, nfd.Length, NormalizerMode.NFD, 0);
                 //    nfdsize = unorm_normalize(data, size, UNORM_NFD, UCOL_IGNORE_HANGUL,
                 //                      nfd, 100, &status);
                 if (nfdsize != normStart || Utility.ArrayRegionMatches(nfd, 0, norm, 0, nfdsize) == false)
@@ -1975,7 +1992,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 if (Normalizer.QuickCheck(data.AsSpan(0, data.Length), NormalizerMode.FCD, 0) != testresult)
                 {
-                    Errln("Normalizer.QuickCheck(FCD) failed: expected " + testresult + " for random data: " + Hex(new string(data)));
+                    Errln("Normalizer.QuickCheck(FCD) failed: expected " + testresult + " for random data: " + Hex(data));
                 }
             }
         }

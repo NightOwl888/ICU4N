@@ -257,7 +257,8 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 char[] fcd2 = new char[fcd.Length * 2];
                 char[] src = field[0].ToCharArray();
-                int fcdLen = Normalizer.Normalize(src, 0, src.Length, fcd2, fcd.Length, fcd2.Length, NormalizerMode.FCD, 0);
+                //int fcdLen = Normalizer.Normalize(src, 0, src.Length, fcd2, fcd.Length, fcd2.Length, NormalizerMode.FCD, 0);
+                assertTrue("", Normalizer.TryNormalize(src.AsSpan(0, src.Length), fcd2.AsSpan(fcd.Length, fcd2.Length - fcd.Length), out int fcdLen, NormalizerMode.FCD, 0));
                 if (fcdLen != fcd.Length)
                 {
                     Errln("makeFCD did not return the correct length");

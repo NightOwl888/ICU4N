@@ -249,7 +249,7 @@ namespace ICU4N.Text
         /// <returns>Normalized <paramref name="src"/>.</returns>
         /// <stable>ICU 4.4</stable>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual string Normalize(ReadOnlySpan<char> src)
+        public virtual string Normalize(scoped ReadOnlySpan<char> src)
         {
             ValueStringBuilder sb = src.Length <= CharStackBufferSize
                 ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
@@ -288,7 +288,7 @@ namespace ICU4N.Text
         /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
         /// <returns>Normalized <paramref name="source"/>.</returns>
         /// <draft>ICU 60.1</draft>
-        public abstract bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength);
+        public abstract bool TryNormalize(scoped ReadOnlySpan<char> source, Span<char> destination, out int charsLength);
 
         /// <summary>
         /// Appends the normalized form of the <paramref name="second"/> string to the <paramref name="first"/> string

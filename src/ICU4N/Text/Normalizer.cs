@@ -1162,8 +1162,10 @@ namespace ICU4N.Text
         /// The string will be normalized according to the specified normalization
         /// mode and options.
         /// </summary>
-        /// <param name="source">The char array to normalize.</param>
+        /// <param name="source">The string to normalize.</param>
         /// <param name="target">A char buffer to receive the normalized text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
         /// <param name="mode">The normalization mode; one of <see cref="NormalizerMode.None"/>,
         /// <see cref="NormalizerMode.NFD"/>, <see cref="NormalizerMode.NFC"/>, <see cref="NormalizerMode.NFKC"/>,
         /// <see cref="NormalizerMode.NFKD"/>, <see cref="NormalizerMode.Default"/>.
@@ -1173,49 +1175,11 @@ namespace ICU4N.Text
         /// If you want the default behavior corresponding to one of the
         /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
         /// </param>
-        /// <returns>The total buffer size needed;if greater than length of
-        /// than the required length.</returns>
-        /// <exception cref="IndexOutOfRangeException">If the target capacity is less than
-        /// the required length.</exception>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Normalize(char[] source, char[] target, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        public static bool TryNormalize(scoped ReadOnlySpan<char> source, Span<char> target, out int charsLength, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            return Normalize(source, 0, source.Length, target, 0, target.Length, mode, unicodeVersion);
-        }
-
-        /// <summary>
-        /// Normalize a string.
-        /// The string will be normalized according to the specified normalization
-        /// mode and options.
-        /// </summary>
-        /// <param name="src">The char array to compose.</param>
-        /// <param name="srcStart">Start index of the source.</param>
-        /// <param name="srcLimit">Limit index of the source.</param>
-        /// <param name="dest">The char buffer to fill in.</param>
-        /// <param name="destStart">Start index of the destination buffer.</param>
-        /// <param name="destLimit">End index of the destination buffer.</param>
-        /// <param name="mode">The normalization mode; one of <see cref="NormalizerMode.None"/>,
-        /// <see cref="NormalizerMode.NFD"/>, <see cref="NormalizerMode.NFC"/>, <see cref="NormalizerMode.NFKC"/>,
-        /// <see cref="NormalizerMode.NFKD"/>, <see cref="NormalizerMode.Default"/>.
-        /// </param>
-        /// <param name="unicodeVersion">The Unicode version to use.
-        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
-        /// </param>
-        /// <returns>The total buffer size needed;if greater than length of
-        /// less than the required length.</returns>
-        /// <exception cref="IndexOutOfRangeException">If the target capacity is less than
-        /// the required length.</exception>
-        [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Normalize(char[] src, int srcStart, int srcLimit,
-                                char[] dest, int destStart, int destLimit,
-                                NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
-        {
-            Span<char> srcBuffer = src.AsSpan(srcStart, srcLimit - srcStart);
-            CharsAppendable app = new CharsAppendable(dest, destStart, destLimit);
-            GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Normalize(srcBuffer, app);
-            return app.Length;
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).TryNormalize(source, target, out charsLength);
         }
 
         /// <summary>
