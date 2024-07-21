@@ -256,35 +256,44 @@ namespace ICU4N.Dev.Test.Translit
             // must be the same after we finalize (see below).
             rsource.Replace(0, rsource.Length - 0, ""); // ICU4N: Corrected 2nd parameter
             TransliterationPosition index = new TransliterationPosition();
-            StringBuffer log = new StringBuffer();
-
-            for (int i = 0; i < source.Length; ++i)
+            ValueStringBuilder log = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                if (i != 0)
+
+                for (int i = 0; i < source.Length; ++i)
                 {
-                    log.Append(" + ");
+                    if (i != 0)
+                    {
+                        log.Append(" + ");
+                    }
+                    log.Append(source[i]);
+                    log.Append(" -> ");
+                    t.Transliterate(rsource, index,
+                                    source[i]); // ICU4N: We don't convert to a string here - UTF16.ValueOf() will automatically convert this to a ReadOnlySpan<char> with 1 char
+                                                // Append the string buffer with a vertical bar '|' where
+                                                // the committed index is.
+                    string s = rsource.ToString();
+                    log.Append(s.AsSpan(0, index.Start)); // ICU4N: Checked 2nd parameter
+                    log.Append('|');
+                    log.Append(s.AsSpan(index.Start));
                 }
-                log.Append(source[i]).Append(" -> ");
-                t.Transliterate(rsource, index,
-                                source[i] + "");
-                // Append the string buffer with a vertical bar '|' where
-                // the committed index is.
-                String s = rsource.ToString();
-                log.Append(s.Substring(0, index.Start)). // ICU4N: Checked 2nd parameter
-                    Append('|').
-                    Append(s.Substring(index.Start));
+
+                // As a final step in keyboard transliteration, we must call
+                // transliterate to finish off any pending partial matches that
+                // were waiting for more input.
+                t.FinishTransliteration(rsource, index);
+                result = rsource.ToString();
+                log.Append(" => ");
+                log.Append(rsource.ToString());
+                expectAux(t.ID + ":Keyboard", log.ToString(),
+                         result.Equals(expectedResult),
+                         expectedResult);
+
             }
-
-            // As a final step in keyboard transliteration, we must call
-            // transliterate to finish off any pending partial matches that
-            // were waiting for more input.
-            t.FinishTransliteration(rsource, index);
-            result = rsource.ToString();
-            log.Append(" => ").Append(rsource.ToString());
-            expectAux(t.ID + ":Keyboard", log.ToString(),
-                     result.Equals(expectedResult),
-                     expectedResult);
-
+            finally
+            {
+                log.Dispose();
+            }
         }
         private void expectAux(String tag, String source,
                       String result, String expectedResult)
