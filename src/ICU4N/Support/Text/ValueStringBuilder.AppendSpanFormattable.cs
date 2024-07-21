@@ -22,6 +22,19 @@ namespace ICU4N.Text
                 Append(value.ToString(format, provider));
             }
         }
+
+        internal void InsertSpanFormattable<T>(int index, T value, string? format = null, IFormatProvider? provider = null) where T : ISpanFormattable
+        {
+            Span<char> buffer = stackalloc char[CharStackBufferSize];
+            if (value.TryFormat(buffer, out int charsWritten, format, provider))
+            {
+                Insert(index, buffer.Slice(0, charsWritten));
+            }
+            else
+            {
+                Insert(index, value.ToString(format, provider));
+            }
+        }
     }
 }
 

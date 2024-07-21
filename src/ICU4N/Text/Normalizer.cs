@@ -903,10 +903,12 @@ namespace ICU4N.Text
         /// Compose a string.
         /// The string will be composed to according to the specified mode.
         /// </summary>
-        /// <param name="source">The char array to compose.</param>
-        /// <param name="target">A char buffer to receive the normalized text.</param>
-        /// <param name="compat">If true the char array will be composed according to
-        /// <see cref="NormalizerMode.NFKC"/> rules and if false will be composed according to
+        /// <param name="source">The string to compose.</param>
+        /// <param name="destination">A span to receive the normalized text.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="compat">If <c>true</c> the string will be composed according to
+        /// <see cref="NormalizerMode.NFKC"/> rules and if <c>false</c> will be composed according to
         /// <see cref="NormalizerMode.NFC"/> rules.
         /// </param>
         /// <param name="unicodeVersion">The Unicode version to use.
@@ -914,46 +916,11 @@ namespace ICU4N.Text
         /// If you want the default behavior corresponding to one of the
         /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
         /// </param>
-        /// <returns>The total buffer size needed;if greater than length of
-        /// result, the output was truncated.</returns>
-        /// <exception cref="IndexOutOfRangeException">If target.Length is less than the required length.</exception>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Compose(char[] source, char[] target, bool compat, NormalizerUnicodeVersion unicodeVersion)
+        public static bool TryCompose(ReadOnlySpan<char> source, Span<char> destination, out int charsLength, bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
-            return Compose(source, 0, source.Length, target, 0, target.Length, compat, unicodeVersion);
-        }
-
-        /// <summary>
-        /// Compose a string.
-        /// The string will be composed to according to the specified mode.
-        /// </summary>
-        /// <param name="src">The char array to compose.</param>
-        /// <param name="srcStart">Start index of the source.</param>
-        /// <param name="srcLimit">Limit index of the source.</param>
-        /// <param name="dest">The char buffer to fill in.</param>
-        /// <param name="destStart">Start index of the destination buffer.</param>
-        /// <param name="destLimit">End index of the destination buffer.</param>
-        /// <param name="compat">If true the char array will be composed according to
-        /// <see cref="NormalizerMode.NFKC"/> rules and if false will be composed according to
-        /// <see cref="NormalizerMode.NFC"/> rules.
-        /// </param>
-        /// <param name="unicodeVersion">The Unicode version to use.
-        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
-        /// </param>
-        /// <returns>The total buffer size needed;if greater than length of
-        /// result, the output was truncated.</returns>
-        /// <exception cref="IndexOutOfRangeException">If target.Length is less than the required length.</exception>
-        [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Compose(char[] src, int srcStart, int srcLimit,
-                              char[] dest, int destStart, int destLimit,
-                              bool compat, NormalizerUnicodeVersion unicodeVersion)
-        {
-            Span<char> srcBuffer = src.AsSpan(srcStart, srcLimit - srcStart);
-            CharsAppendable app = new CharsAppendable(dest, destStart, destLimit);
-            GetComposeNormalizer2(compat, (int)unicodeVersion).Normalize(srcBuffer, app);
-            return app.Length;
+            return GetComposeNormalizer2(compat, (int)unicodeVersion).TryNormalize(source, destination, out charsLength);
         }
 
         /// <summary>

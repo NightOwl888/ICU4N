@@ -1490,7 +1490,7 @@ namespace ICU4N
         /// </summary>
         /// <param name="utf32">Code point.</param>
         /// <returns>String representation of the code point, null if code point is not
-        /// defined in unicode.
+        /// defined in Unicode.
         /// </returns>
         /// <stable>ICU 2.1</stable>
         public static string ConvertFromUtf32(int utf32) // ICU4N: Renamed from ToString to cover System.Char API
@@ -1500,12 +1500,43 @@ namespace ICU4N
                 return null;
             }
 
-            if (utf32 < SupplementaryMinValue)
+            return ConvertFromUtf32(utf32, stackalloc char[2]).ToString();
+        }
+
+        /// <summary>
+        /// Converts argument code point and returns a string object representing
+        /// the code point's value in UTF-16 format.
+        /// The result is a string whose length is 1 for BMP code points, 2 for supplementary ones.
+        /// <para/>
+        /// Up-to-date Unicode implementation of <see cref="char.ConvertFromUtf32(int)"/>, however
+        /// this implementation differs in that it returns null rather than throwing exceptions if
+        /// the input is not a valid code point.
+        /// </summary>
+        /// <param name="utf32">Code point.</param>
+        /// <param name="buffer">The memory location to store the chars. Typically, it should be <c>stackalloc char[2]</c>
+        /// since it will never be longer than 2 chars.</param>
+        /// <returns>Span representation of the code point. default if code point is not
+        /// defined in Unicode.
+        /// </returns>
+        /// <draft>ICU 60.1</draft>
+        public static ReadOnlySpan<char> ConvertFromUtf32(int utf32, Span<char> buffer) // ICU4N: Renamed from ToString to cover System.Char API
+        {
+            if (utf32 < MinValue || utf32 > MaxValue)
             {
-                return new string(new char[] { (char)utf32 });
+                return default;
             }
 
-            return new string(Character.ToChars(utf32));
+            if (utf32 < SupplementaryMinValue)
+            {
+                buffer[0] = (char)utf32;
+                return buffer.Slice(0, 1);
+            }
+
+            int cpPrime = utf32 - 65536;
+            buffer[0] = (char)(0xD800 | ((cpPrime >> 10) & 0x3FF));
+            buffer[1] = (char)(0xDC00 | (cpPrime & 0x3FF));
+
+            return buffer.Slice(0, 2);
         }
 
         /// <summary>

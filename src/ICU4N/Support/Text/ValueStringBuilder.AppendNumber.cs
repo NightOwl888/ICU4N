@@ -104,5 +104,100 @@ namespace ICU4N.Text
             => Append(value.ToString(format, provider ?? NumberFormatInfo.InvariantInfo));
 #endif
 
+
+
+
+        //[CLSCompliant(false)]
+        public void Insert(int index, sbyte value, string? format = null, IFormatProvider? provider = null)
+
+#if FEATURE_SPANFORMATTABLE
+            => InsertSpanFormattable(index, value, format, provider ?? NumberFormatInfo.InvariantInfo);
+#else
+            => Insert(index, value.ToString(format, provider ?? NumberFormatInfo.InvariantInfo));
+#endif
+
+        public void Insert(int index, byte value, string? format = null, IFormatProvider? provider = null)
+
+#if FEATURE_SPANFORMATTABLE
+            => InsertSpanFormattable(index, value, format, provider ?? NumberFormatInfo.InvariantInfo);
+#else
+            => Insert(index, value.ToString(format, provider ?? NumberFormatInfo.InvariantInfo));
+#endif
+
+        public void Insert(int index, short value, string? format = null, IFormatProvider? provider = null)
+
+#if FEATURE_SPANFORMATTABLE
+            => InsertSpanFormattable(index, value, format, provider ?? NumberFormatInfo.InvariantInfo);
+#else
+            => Insert(index, value.ToString(format, provider ?? NumberFormatInfo.InvariantInfo));
+#endif
+
+        public void Insert(int index, int value, string? format = null, IFormatProvider? provider = null)
+
+#if FEATURE_SPANFORMATTABLE
+            => InsertSpanFormattable(index, value, format, provider ?? NumberFormatInfo.InvariantInfo);
+#else
+            => Insert(index, value.ToString(format, provider ?? NumberFormatInfo.InvariantInfo));
+#endif
+
+        public void Insert(int index, long value, string? format = null, IFormatProvider? provider = null)
+
+#if FEATURE_SPANFORMATTABLE
+            => InsertSpanFormattable(index, value, format, provider ?? NumberFormatInfo.InvariantInfo);
+#else
+            => Insert(index, value.ToString(format, provider ?? NumberFormatInfo.InvariantInfo));
+#endif
+
+        public void Insert(int index, float value, string? format = null, IFormatProvider? provider = null)
+
+#if FEATURE_SPANFORMATTABLE
+            => InsertSpanFormattable(index, value, format, provider ?? NumberFormatInfo.InvariantInfo);
+#else
+            => Insert(index, value.ToString(format, provider ?? NumberFormatInfo.InvariantInfo));
+#endif
+
+        public void Insert(int index, double value, string? format = null, IFormatProvider? provider = null)
+
+#if FEATURE_SPANFORMATTABLE
+            => InsertSpanFormattable(index, value, format, provider ?? NumberFormatInfo.InvariantInfo);
+#else
+            => Insert(index, value.ToString(format, provider ?? NumberFormatInfo.InvariantInfo));
+#endif
+
+        public void Insert(int index, decimal value, string? format = null, IFormatProvider? provider = null)
+
+#if FEATURE_SPANFORMATTABLE
+            => InsertSpanFormattable(index, value, format, provider ?? NumberFormatInfo.InvariantInfo);
+#else
+            => Insert(index, value.ToString(format, provider ?? NumberFormatInfo.InvariantInfo));
+#endif
+
+        //[CLSCompliant(false)]
+        public void Insert(int index, ushort value, string? format = null, IFormatProvider? provider = null)
+
+#if FEATURE_SPANFORMATTABLE
+            => InsertSpanFormattable(index, value, format, provider ?? NumberFormatInfo.InvariantInfo);
+#else
+            => Insert(index, value.ToString(format, provider ?? NumberFormatInfo.InvariantInfo));
+#endif
+
+        //[CLSCompliant(false)]
+        public void Insert(int index, uint value, string? format = null, IFormatProvider? provider = null)
+
+#if FEATURE_SPANFORMATTABLE
+            => InsertSpanFormattable(index, value, format, provider ?? NumberFormatInfo.InvariantInfo);
+#else
+            => Insert(index, value.ToString(format, provider ?? NumberFormatInfo.InvariantInfo));
+#endif
+
+        //[CLSCompliant(false)]
+        public void Insert(int index, ulong value, string? format = null, IFormatProvider? provider = null)
+
+#if FEATURE_SPANFORMATTABLE
+            => InsertSpanFormattable(index, value, format, provider ?? NumberFormatInfo.InvariantInfo);
+#else
+            => Insert(index, value.ToString(format, provider ?? NumberFormatInfo.InvariantInfo));
+#endif
+
     }
 }

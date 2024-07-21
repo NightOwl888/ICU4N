@@ -808,37 +808,47 @@ namespace ICU4N.Dev.Test.Normalizers
 
         private void backAndForth(Normalizer iter, string[][] tests)
         {
-            for (int i = 0; i < tests.Length; i++)
+            ValueStringBuilder forward = new ValueStringBuilder(stackalloc char[32]);
+            ValueStringBuilder reverse = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                iter.SetText(tests[i][0]);
+                for (int i = 0; i < tests.Length; i++)
+                {
+                    iter.SetText(tests[i][0]);
 
-                // Run through the iterator forwards and stick it into a
-                // StringBuffer
-                StringBuffer forward = new StringBuffer();
-                for (int ch = iter.First(); ch != Normalizer.Done; ch = iter.Next())
-                {
-                    forward.Append(ch);
-                }
+                    // Run through the iterator forwards and stick it into a
+                    // StringBuffer
+                    forward.Length = 0;
+                    for (int ch = iter.First(); ch != Normalizer.Done; ch = iter.Next())
+                    {
+                        forward.Append(ch);
+                    }
 
-                // Now do it backwards
-                StringBuffer reverse = new StringBuffer();
-                for (int ch = iter.Last(); ch != Normalizer.Done; ch = iter.Previous())
-                {
-                    reverse.Insert(0, ch);
-                }
+                    // Now do it backwards
+                    reverse.Length = 0;
+                    for (int ch = iter.Last(); ch != Normalizer.Done; ch = iter.Previous())
+                    {
+                        reverse.Insert(0, ch);
+                    }
 
-                if (!forward.ToString().Equals(reverse.ToString()))
-                {
-                    Errln("FAIL: Forward/reverse mismatch for input "
-                        + Hex(tests[i][0]) + ", forward: " + Hex(forward)
-                        + ", backward: " + Hex(reverse));
+                    if (!forward.AsSpan().Equals(reverse.AsSpan(), StringComparison.Ordinal))
+                    {
+                        Errln("FAIL: Forward/reverse mismatch for input "
+                            + Hex(tests[i][0]) + ", forward: " + Hex(forward.AsSpan())
+                            + ", backward: " + Hex(reverse.AsSpan()));
+                    }
+                    else if (IsVerbose())
+                    {
+                        Logln("Ok: Forward/reverse for input " + Hex(tests[i][0])
+                              + ", forward: " + Hex(forward.AsSpan()) + ", backward: "
+                              + Hex(reverse.AsSpan()));
+                    }
                 }
-                else if (IsVerbose())
-                {
-                    Logln("Ok: Forward/reverse for input " + Hex(tests[i][0])
-                          + ", forward: " + Hex(forward) + ", backward: "
-                          + Hex(reverse));
-                }
+            }
+            finally
+            {
+                forward.Dispose();
+                reverse.Dispose();
             }
         }
 
@@ -1019,19 +1029,32 @@ namespace ICU4N.Dev.Test.Normalizers
                 int reqLength = 0;
                 while (true)
                 {
-                    try
+                    if (Normalizer.TryCompose(input, output, out reqLength, mode == NormalizerMode.NFKC, 0))
                     {
-                        reqLength = Normalizer.Compose(input, output, mode == NormalizerMode.NFKC, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
                         }
                     }
-                    catch (IndexOutOfRangeException e)
+                    else
                     {
-                        output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                        output = new char[reqLength];
                         continue;
                     }
+
+                    //try
+                    //{
+                    //    reqLength = Normalizer.Compose(input, output, mode == NormalizerMode.NFKC, 0);
+                    //    if (reqLength <= output.Length)
+                    //    {
+                    //        break;
+                    //    }
+                    //}
+                    //catch (IndexOutOfRangeException e)
+                    //{
+                    //    output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                    //    continue;
+                    //}
                 }
                 if (!expect.Equals(new string(output, 0, reqLength)))
                 {
@@ -1048,25 +1071,39 @@ namespace ICU4N.Dev.Test.Normalizers
                 string expect = Utility.Unescape(tests[i][outCol]);
 
                 Logln("Normalizing '" + new string(input) + "' (" +
-                            Hex(new string(input)) + ")");
+                            Hex(input) + ")");
                 int reqLength = 0;
                 while (true)
                 {
-                    try
+                    if (Normalizer.TryCompose(input.AsSpan(0, input.Length), output.AsSpan(0, output.Length), out reqLength, mode == NormalizerMode.NFKC, 0))
                     {
-                        reqLength = Normalizer.Compose(input, 0, input.Length, output, 0, output.Length, mode == NormalizerMode.NFKC, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
                         }
                     }
-                    catch (IndexOutOfRangeException e)
+                    else
                     {
-                        output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                        output = new char[reqLength];
                         continue;
                     }
+
+                    //try
+                    //{
+                    //    reqLength = Normalizer.Compose(input, 0, input.Length, output, 0, output.Length, mode == NormalizerMode.NFKC, 0);
+                    //    if (reqLength <= output.Length)
+                    //    {
+                    //        break;
+                    //    }
+                    //}
+                    //catch (IndexOutOfRangeException e)
+                    //{
+                    //    output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                    //    continue;
+                    //}
                 }
-                if (!expect.Equals(new string(output, 0, reqLength)))
+                //if (!expect.Equals(new string(output, 0, reqLength)))
+                if (!expect.AsSpan().Equals(output.AsSpan(0, reqLength), StringComparison.Ordinal))
                 {
                     Errln("FAIL: case " + i
                         + " expected '" + expect + "' (" + Hex(expect) + ")"
@@ -1076,7 +1113,8 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 char[] output2 = new char[reqLength * 2];
                 System.Array.Copy(output, 0, output2, 0, reqLength);
-                int retLength = Normalizer.Compose(input, 0, input.Length, output2, reqLength, output2.Length, mode == NormalizerMode.NFKC, 0);
+                //int retLength = Normalizer.Compose(input, 0, input.Length, output2, reqLength, output2.Length, mode == NormalizerMode.NFKC, 0);
+                bool success = Normalizer.TryCompose(input.AsSpan(0, input.Length), output2.AsSpan(reqLength, output2.Length - reqLength), out int retLength, mode == NormalizerMode.NFKC, 0);
                 if (retLength != reqLength)
                 {
                     Logln("FAIL: Normalizer.compose did not return the expected length. Expected: " + reqLength + " Got: " + retLength);
@@ -1262,55 +1300,62 @@ namespace ICU4N.Dev.Test.Normalizers
             int ch;
             Normalizer iter = new Normalizer(new StringCharacterIterator(Utility.Unescape(input)),
                                                     NormalizerMode.NFKC, 0);
-            StringBuffer got = new StringBuffer();
-            for (ch = iter.First(); ch != Normalizer.Done; ch = iter.Next())
+            Span<char> codePointBuffer = stackalloc char[2];
+            ValueStringBuilder got = new ValueStringBuilder(stackalloc char[32]);
+            try
             {
-                if (index >= expected.Length)
+                for (ch = iter.First(); ch != Normalizer.Done; ch = iter.Next())
                 {
-                    Errln("FAIL: " + "Unexpected character '" + (char)ch +
-                           "' (" + Hex(ch) + ")" + " at index " + index);
-                    break;
+                    if (index >= expected.Length)
+                    {
+                        Errln("FAIL: " + "Unexpected character '" + (char)ch +
+                               "' (" + Hex(ch) + ")" + " at index " + index);
+                        break;
+                    }
+                    got.Append(UChar.ConvertFromUtf32(ch, codePointBuffer));
+                    index++;
                 }
-                got.Append(UChar.ConvertFromUtf32(ch));
-                index++;
-            }
-            if (!expected.Equals(got.ToString()))
-            {
-                Errln("FAIL: " + "got '" + got + "' (" + Hex(got) + ")"
-                        + " but expected '" + expected + "' ("
-                        + Hex(expected) + ")");
-            }
-            if (got.Length < expected.Length)
-            {
-                Errln("FAIL: " + "Only got " + index + " chars, expected "
-                               + expected.Length);
-            }
-
-            Logln("Reverse Iteration\n");
-            iter.SetIndexOnly(iter.EndIndex);
-            got.Length = 0;
-            for (ch = iter.Previous(); ch != Normalizer.Done; ch = iter.Previous())
-            {
-                if (index >= expected.Length)
+                if (!expected.AsSpan().Equals(got.AsSpan(), StringComparison.Ordinal))
                 {
-                    Errln("FAIL: " + "Unexpected character '" + (char)ch
-                                   + "' (" + Hex(ch) + ")" + " at index " + index);
-                    break;
+                    Errln("FAIL: " + "got '" + got.AsSpan().ToString() + "' (" + Hex(got.AsSpan()) + ")"
+                            + " but expected '" + expected + "' ("
+                            + Hex(expected) + ")");
                 }
-                got.Append(UChar.ConvertFromUtf32(ch));
-            }
-            if (!expectedReverse.Equals(got.ToString()))
-            {
-                Errln("FAIL: " + "got '" + got + "' (" + Hex(got) + ")"
-                               + " but expected '" + expected
-                               + "' (" + Hex(expected) + ")");
-            }
-            if (got.Length < expected.Length)
-            {
-                Errln("FAIL: " + "Only got " + index + " chars, expected "
-                          + expected.Length);
-            }
+                if (got.Length < expected.Length)
+                {
+                    Errln("FAIL: " + "Only got " + index + " chars, expected "
+                                   + expected.Length);
+                }
 
+                Logln("Reverse Iteration\n");
+                iter.SetIndexOnly(iter.EndIndex);
+                got.Length = 0;
+                for (ch = iter.Previous(); ch != Normalizer.Done; ch = iter.Previous())
+                {
+                    if (index >= expected.Length)
+                    {
+                        Errln("FAIL: " + "Unexpected character '" + (char)ch
+                                       + "' (" + Hex(ch) + ")" + " at index " + index);
+                        break;
+                    }
+                    got.Append(UChar.ConvertFromUtf32(ch, codePointBuffer));
+                }
+                if (!expectedReverse.AsSpan().Equals(got.AsSpan(), StringComparison.Ordinal))
+                {
+                    Errln("FAIL: " + "got '" + got.AsSpan().ToString() + "' (" + Hex(got.AsSpan()) + ")"
+                                   + " but expected '" + expected
+                                   + "' (" + Hex(expected) + ")");
+                }
+                if (got.Length < expected.Length)
+                {
+                    Errln("FAIL: " + "Only got " + index + " chars, expected "
+                              + expected.Length);
+                }
+            }
+            finally
+            {
+                got.Dispose();
+            }
         }
         //--------------------------------------------------------------------------
         // helper class for TestPreviousNext()
