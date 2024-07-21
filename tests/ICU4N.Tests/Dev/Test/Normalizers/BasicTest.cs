@@ -1715,22 +1715,22 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 char[] fillIn1 = new char[clone.Length];
                 char[] fillIn2 = new char[iter.Length];
-                int len = clone.GetText(fillIn1);
+                clone.TryGetText(fillIn1, out int len);
                 iter.TryGetText(fillIn2, out _);
                 if (!Utility.ArrayRegionMatches(fillIn1, 0, fillIn2, 0, len))
                 {
-                    Errln("error in Normalizer.GetText(). Normalizer: " +
-                                    Utility.Hex(new string(fillIn1)) +
-                                    " Iter: " + Utility.Hex(new string(fillIn2)));
+                    Errln("error in Normalizer.TryGetText(). Normalizer: " +
+                                    Utility.Hex(fillIn1) +
+                                    " Iter: " + Utility.Hex(fillIn2));
                 }
 
                 clone.SetText(fillIn1);
-                len = clone.GetText(fillIn2);
+                clone.TryGetText(fillIn2, out len);
                 if (!Utility.ArrayRegionMatches(fillIn1, 0, fillIn2, 0, len))
                 {
-                    Errln("error in Normalizer.SetText() or Normalizer.GetText()" +
-                                    Utility.Hex(new string(fillIn1)) +
-                                    " Iter: " + Utility.Hex(new string(fillIn2)));
+                    Errln("error in Normalizer.SetText() or Normalizer.TryGetText()" +
+                                    Utility.Hex(fillIn1) +
+                                    " Iter: " + Utility.Hex(fillIn2));
                 }
 
                 // test setText(UChar *), getUMode() and setMode()

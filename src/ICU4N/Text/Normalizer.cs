@@ -2478,19 +2478,12 @@ namespace ICU4N.Text
         /// <summary>
         /// Gets the underlying text storage.
         /// </summary>
-        /// <param name="fillIn">the char buffer to fill the UTF-16 units.
-        /// The length of the buffer should be equal to the length of the
-        /// underlying text storage.</param>
-        /// <exception cref="IndexOutOfRangeException">If the index passed for the array is invalid.</exception>
-        /// <seealso cref="Length"/>
-        [Obsolete("ICU 56")]
-        public int GetText(char[] fillIn)
-        {
-            if (!text.TryGetText(fillIn, out int charsLength))
-                throw new IndexOutOfRangeException(); // ICU4N TODO: API - For now, this is required by the contract. Need to eliminate this exception all the way up the call stack.
-
-            return charsLength;
-        }
+        /// <param name="destination">The char buffer to fill the UTF-16 units.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
+        public bool TryGetText(Span<char> destination, out int charsLength)
+            => text.TryGetText(destination, out charsLength);
 
         /// <summary>
         /// Gets the length of underlying text storage.
