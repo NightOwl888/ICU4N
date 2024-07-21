@@ -1798,7 +1798,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 right = (string)cases[i][2];
                 expect = (string)cases[i][3];
                 {
-                    result = Normalizer.Concatenate(left, right, mode, 0);
+                    result = Normalizer.Concat(left, right, mode, 0);
                     if (!result.Equals(expect))
                     {
                         Errln("error in Normalizer.Concatenate(), cases[] failed"
@@ -1807,7 +1807,7 @@ namespace ICU4N.Dev.Test.Normalizers
                     }
                 }
                 {
-                    result = Normalizer.Concatenate(left.ToCharArray(), right.ToCharArray(), mode, 0);
+                    result = Normalizer.Concat(left.AsSpan(), right.AsSpan(), mode, 0);
                     if (!result.Equals(expect))
                     {
                         Errln("error in Normalizer.Concatenate(), cases[] failed"
@@ -1825,27 +1825,31 @@ namespace ICU4N.Dev.Test.Normalizers
 
             // Concatenates 're' with '\u0301sum\u00e9 is HERE' and places the result at
             // position 3 of string 'My resume is here'.
-            Normalizer.Concatenate(left.ToCharArray(), 0, 2, right.ToCharArray(), 2, 15,
-                                             destination, 3, 17, mode, 0);
+            Normalizer.TryConcat(left.AsSpan(0, 2), right.AsSpan(2, 15 - 2),
+                                             destination.AsSpan(3, 17 - 3), out int charsLength, mode, 0);
             if (!new string(destination).Equals(expect))
             {
-                Errln("error in Normalizer.Concatenate(), cases2[] failed"
+                Errln("error in Normalizer.TryConcat(), cases2[] failed"
                       + ", result==expect: expected: "
                       + Hex(expect) + " =========> got: " + Hex(destination));
             }
 
             // Error case when result of concatenation won't fit into destination array.
-            try
-            {
-                Normalizer.Concatenate(left.ToCharArray(), 0, 2, right.ToCharArray(), 2, 15,
-                                             destination, 3, 16, mode, 0);
-            }
-            catch (IndexOutOfRangeException e)
-            {
-                assertTrue("Normalizer.Concatenate() failed", e.Message.Equals("14"));
-                return;
-            }
-            fail("Normalizer.Concatenate() tested for failure but passed");
+            assertFalse("Normalizer.TryConcat() tested for failure but passed", Normalizer.TryConcat(left.AsSpan(0, 2), right.AsSpan(2, 15 - 2),
+                                             destination.AsSpan(3, 16 - 3), out charsLength, mode, 0));
+            assertEquals("Normalizer.TryConcat() failed", 14, charsLength);
+
+            //try
+            //{
+            //    Normalizer.TryConcat(left.AsSpan(0, 2), right.AsSpan(2, 15 - 2),
+            //                                 destination.AsSpan(3, 16 - 3), out charsLength, mode, 0);
+            //}
+            //catch (IndexOutOfRangeException e)
+            //{
+            //    assertTrue("Normalizer.TryConcat() failed", e.Message.Equals("14"));
+            //    return;
+            //}
+            //fail("Normalizer.TryConcat() tested for failure but passed");
         }
 
         private readonly int RAND_MAX = 0x7fff;
@@ -3096,7 +3100,7 @@ namespace ICU4N.Dev.Test.Normalizers
             // Use the deprecated Mode Normalizer.NONE for coverage of the internal NoopNormalizer2
             // as far as its methods are reachable that way.
             assertEquals("NONE.Concatenate()", "ä\u0327",
-                    Normalizer.Concatenate("ä", "\u0327", NormalizerMode.None, 0));
+                    Normalizer.Concat("ä", "\u0327", NormalizerMode.None, 0));
             string input = "ä\u0327";
             assertTrue("NONE.IsNormalized()", Normalizer.IsNormalized(input, NormalizerMode.None, 0));
         }

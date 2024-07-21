@@ -1885,71 +1885,29 @@ namespace ICU4N.Text
         /// then the result will be
         ///
         /// <code>
-        ///     dest=Normalize(left+right, mode)
+        ///     destination=Normalize(left+right, mode)
         /// </code>
         ///
-        /// With the input strings already being normalized,
-        /// this function will use <see cref="Next()"/> and <see cref="Previous()"/>
-        /// to find the adjacent end pieces of the input strings.
-        /// Only the concatenation of these end pieces will be normalized and
-        /// then concatenated with the remaining parts of the input strings.
         /// <para/>
-        /// It is allowed to have dest==left to avoid copying the entire left string.
+        /// It is allowed to have destination==left to avoid copying the entire left string.
         /// </remarks>
-        /// <param name="left">Left source array, may be same as dest.</param>
-        /// <param name="leftStart">Start in the left array.</param>
-        /// <param name="leftLimit">Limit in the left array (==length).</param>
-        /// <param name="right">Right source array.</param>
-        /// <param name="rightStart">Start in the right array.</param>
-        /// <param name="rightLimit">Limit in the right array (==length).</param>
-        /// <param name="dest">The output buffer; can be null if destStart==destLimit==0
-        /// for pure preflighting.</param>
-        /// <param name="destStart">Start in the destination array.</param>
-        /// <param name="destLimit">Limit in the destination array (==length).</param>
+        /// <param name="left">Left source string, may be same as <paramref name="destination"/>.</param>
+        /// <param name="right">Right source string.</param>
+        /// <param name="destination">The output buffer.</param>
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
         /// <param name="mode">The normalization mode.</param>
         /// <param name="unicodeVersion">The Unicode version to use.
         /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
         /// If you want the default behavior corresponding to one of the
         /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
         /// </param>
-        /// <returns>Length of output (number of chars) when successful or <see cref="IndexOutOfRangeException"/>.</returns>
-        /// <exception cref="IndexOutOfRangeException">If target capacity is less than the required length.</exception>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
         /// <see cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
-        /// <see cref="Next()"/>
-        /// <see cref="Previous()"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Concatenate(char[] left, int leftStart, int leftLimit,
-                                  char[] right, int rightStart, int rightLimit,
-                                  char[] dest, int destStart, int destLimit,
-                                  NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        public static bool TryConcat(ReadOnlySpan<char> left, ReadOnlySpan<char> right, Span<char> destination, out int charsLength, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            if (dest == null)
-            {
-                throw new ArgumentException();
-            }
-
-            /* check for overlapping right and destination */
-            if (right == dest && rightStart < destLimit && destStart < rightLimit)
-            {
-                throw new ArgumentException("overlapping right and dst ranges");
-            }
-
-            /* allow left==dest */
-            StringBuilder destBuilder = new StringBuilder(leftLimit - leftStart + rightLimit - rightStart + 16);
-            destBuilder.Append(left, leftStart, (leftLimit - leftStart) - leftStart); // ICU4N: Fixed 3rd parameter math
-            Span<char> rightBuffer = right.AsSpan(rightStart, rightLimit - rightStart);
-            GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(destBuilder, rightBuffer);
-            int destLength = destBuilder.Length;
-            if (destLength <= (destLimit - destStart))
-            {
-                //destBuilder.GetChars(0, destLength, dest, destStart);
-                destBuilder.CopyTo(0, dest, destStart, destLength);
-                return destLength;
-            }
-            else
-            {
-                throw new IndexOutOfRangeException(destLength.ToString());
-            }
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).TryConcat(left, right, destination, out charsLength);
         }
 
         /// <summary>
@@ -1966,7 +1924,7 @@ namespace ICU4N.Text
         /// </code>
         /// 
         /// <para/>
-        /// For details see <see cref="Concatenate(char[], int, int, char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>.
+        /// For details see <see cref="TryConcat(ReadOnlySpan{char}, ReadOnlySpan{char}, Span{char}, out int, NormalizerMode, NormalizerUnicodeVersion)"/>.
         /// </remarks>
         /// <param name="left">Left source string.</param>
         /// <param name="right">Right source string.</param>
@@ -1978,15 +1936,27 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>Result.</returns>
         /// <exception cref="IndexOutOfRangeException">If target capacity is less than the required length.</exception>
-        /// <see cref="Concatenate(char[], int, int, char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
+        /// <see cref="TryConcat(ReadOnlySpan{char}, ReadOnlySpan{char}, Span{char}, out int, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <see cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <see cref="Next()"/>
         /// <see cref="Previous()"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static string Concatenate(char[] left, char[] right, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        public static string Concat(ReadOnlySpan<char> left, ReadOnlySpan<char> right, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            StringBuilder dest = new StringBuilder(left.Length + right.Length + 16).Append(left);
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(dest, right).ToString();
+            int length = left.Length + right.Length + 16;
+            ValueStringBuilder dest = length < CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[CharStackBufferSize])
+                : new ValueStringBuilder(length);
+            try
+            {
+                dest.Append(left);
+                GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(ref dest, right);
+                return dest.ToString();
+            }
+            finally
+            {
+                dest.Dispose();
+            }
         }
 
         /// <summary>
@@ -2018,16 +1988,15 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>Result.</returns>
         /// <exception cref="IndexOutOfRangeException">If target capacity is less than the required length.</exception>
-        /// <see cref="Concatenate(char[], int, int, char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
+        /// <see cref="TryConcat(ReadOnlySpan{char}, ReadOnlySpan{char}, Span{char}, out int, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <see cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <see cref="Next()"/>
         /// <see cref="Previous()"/>
-        /// <see cref="Concatenate(char[], char[], NormalizerMode, NormalizerUnicodeVersion)"/>
+        /// <see cref="Concat(ReadOnlySpan{Char}, ReadOnlySpan{Char}, NormalizerMode, NormalizerUnicodeVersion)"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static string Concatenate(string left, string right, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        public static string Concat(string left, string right, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            StringBuilder dest = new StringBuilder(left.Length + right.Length + 16).Append(left);
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Append(dest, right.AsSpan()).ToString();
+            return Concat(left.AsSpan(), right.AsSpan(), mode, unicodeVersion);
         }
 
         /// <summary>
