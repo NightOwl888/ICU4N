@@ -235,7 +235,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 pass = false;
             }
             // test api that takes a char[]
-            if (!Normalizer.IsNormalized(field[1].ToCharArray(), 0, field[1].Length, NormalizerMode.NFC, normalizerVersion))
+            if (!Normalizer.IsNormalized(field[1].AsSpan(0, field[1].Length), NormalizerMode.NFC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(NFC(s), Normalizer.NFC) is false");
                 pass = false;

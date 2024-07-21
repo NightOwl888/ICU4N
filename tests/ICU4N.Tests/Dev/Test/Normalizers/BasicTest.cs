@@ -1838,17 +1838,17 @@ namespace ICU4N.Dev.Test.Normalizers
 
             int count = 0;
 
-            if (Normalizer.QuickCheck(FAST, 0, FAST.Length, NormalizerMode.FCD, 0) != QuickCheckResult.Yes)
+            if (Normalizer.QuickCheck(FAST.AsSpan(0, FAST.Length), NormalizerMode.FCD, 0) != QuickCheckResult.Yes)
                 Errln("Normalizer.QuickCheck(FCD) failed: expected value for fast Normalizer.quickCheck is NormalizerQuickCheckResult.Yes\n");
-            if (Normalizer.QuickCheck(FALSE, 0, FALSE.Length, NormalizerMode.FCD, 0) != QuickCheckResult.No)
+            if (Normalizer.QuickCheck(FALSE.AsSpan(0, FALSE.Length), NormalizerMode.FCD, 0) != QuickCheckResult.No)
                 Errln("Normalizer.QuickCheck(FCD) failed: expected value for error Normalizer.quickCheck is NormalizerQuickCheckResult.No\n");
-            if (Normalizer.QuickCheck(TRUE, 0, TRUE.Length, NormalizerMode.FCD, 0) != QuickCheckResult.Yes)
+            if (Normalizer.QuickCheck(TRUE.AsSpan(0, TRUE.Length), NormalizerMode.FCD, 0) != QuickCheckResult.Yes)
                 Errln("Normalizer.QuickCheck(FCD) failed: expected value for correct Normalizer.quickCheck is NormalizerQuickCheckResult.Yes\n");
 
 
             while (count < 4)
             {
-                QuickCheckResult fcdresult = Normalizer.QuickCheck(datastr[count], 0, datastr[count].Length, NormalizerMode.FCD, 0);
+                QuickCheckResult fcdresult = Normalizer.QuickCheck(datastr[count].AsSpan(0, datastr[count].Length), NormalizerMode.FCD, 0);
                 if (result[count] != fcdresult)
                 {
                     Errln("Normalizer.QuickCheck(FCD) failed: Data set " + count
@@ -1897,7 +1897,7 @@ namespace ICU4N.Dev.Test.Normalizers
                     Logln("result NormalizerQuickCheckResult.No\n");
                 }
 
-                if (Normalizer.QuickCheck(data, 0, data.Length, NormalizerMode.FCD, 0) != testresult)
+                if (Normalizer.QuickCheck(data.AsSpan(0, data.Length), NormalizerMode.FCD, 0) != testresult)
                 {
                     Errln("Normalizer.QuickCheck(FCD) failed: expected " + testresult + " for random data: " + Hex(new string(data)));
                 }
@@ -1969,8 +1969,8 @@ namespace ICU4N.Dev.Test.Normalizers
 
             int cmpStrings = Normalizer.Compare(s1, s2, normalizerComparison, foldCase, unicodeVersion);
             int cmpArrays = Normalizer.Compare(
-                    s1.ToCharArray(), 0, s1.Length,
-                    s2.ToCharArray(), 0, s2.Length, normalizerComparison, foldCase, unicodeVersion);
+                    s1.AsSpan(0, s1.Length),
+                    s2.AsSpan(0, s2.Length), normalizerComparison, foldCase, unicodeVersion);
             assertEquals("compare strings == compare char arrays", cmpStrings, cmpArrays);
             return cmpStrings;
         }

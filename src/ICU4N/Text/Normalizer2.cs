@@ -725,7 +725,7 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>true if <paramref name="s"/> is normalized.</returns>
         /// <stable>ICU 4.4</stable>
-        public abstract bool IsNormalized(ReadOnlySpan<char> s);
+        public abstract bool IsNormalized(scoped ReadOnlySpan<char> s);
 
         #endregion IsNormalized(ICharSequence)
 
@@ -765,7 +765,7 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
         /// <stable>ICU 4.4</stable>
-        public abstract QuickCheckResult QuickCheck(ReadOnlySpan<char> s);
+        public abstract QuickCheckResult QuickCheck(scoped ReadOnlySpan<char> s);
 
         #endregion QuickCheck(ICharSequence)
 

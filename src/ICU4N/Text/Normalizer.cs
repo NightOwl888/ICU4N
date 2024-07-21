@@ -1079,6 +1079,23 @@ namespace ICU4N.Text
         /// If you want the default behavior corresponding to one of the
         /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
         /// </param>
+        /// <returns>The normalized string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static string Normalize(scoped ReadOnlySpan<char> str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        {
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).Normalize(str);
+        }
+
+        /// <summary>
+        /// Normalizes a <see cref="string"/> using the given normalization operation.
+        /// </summary>
+        /// <param name="str">The input string to be normalized.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
         /// <param name="destination">The <see cref="ValueStringBuilder"/> in which to append the result.</param>
         /// <returns>The normalized string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
@@ -1103,6 +1120,23 @@ namespace ICU4N.Text
         /// <returns>The normalized string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Normalize(string src, NormalizerMode mode)
+        {
+            return Normalize(src, mode, NormalizerUnicodeVersion.Default);
+        }
+
+        /// <summary>
+        /// Normalize a string.
+        /// The string will be normalized according to the specified normalization
+        /// mode and options.
+        /// </summary>
+        /// <param name="src">The string to normalize.</param>
+        /// <param name="mode">The normalization mode; one of <see cref="NormalizerMode.None"/>,
+        /// <see cref="NormalizerMode.NFD"/>, <see cref="NormalizerMode.NFC"/>, <see cref="NormalizerMode.NFKC"/>,
+        /// <see cref="NormalizerMode.NFKD"/>, <see cref="NormalizerMode.Default"/>.
+        /// </param>
+        /// <returns>The normalized string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static string Normalize(scoped ReadOnlySpan<char> src, NormalizerMode mode)
         {
             return Normalize(src, mode, NormalizerUnicodeVersion.Default);
         }
@@ -1191,7 +1225,7 @@ namespace ICU4N.Text
                 }
                 return decomposition;
             }
-            return Normalize(UTF16.ValueOf(char32), mode, unicodeVersion);
+            return Normalize(UTF16.ValueOf(char32, stackalloc char[2]), mode, unicodeVersion);
         }
 
         /// <summary>
@@ -1216,6 +1250,20 @@ namespace ICU4N.Text
         /// (<see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or <see cref="QuickCheckResult.Maybe"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static QuickCheckResult QuickCheck(string source, NormalizerMode mode)
+        {
+            return QuickCheck(source.AsSpan(), mode, 0);
+        }
+
+        /// <summary>
+        /// Convenience method.
+        /// </summary>
+        /// <param name="source">String for determining if it is in a normalized format.</param>
+        /// <param name="mode">Normalization format (<see cref="NormalizerMode.NFC"/>,<see cref="NormalizerMode.NFD"/>,
+        /// <see cref="NormalizerMode.NFKC"/>,<see cref="NormalizerMode.NFKD"/>).</param>
+        /// <returns>Return code to specify if the text is normalized or not
+        /// (<see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or <see cref="QuickCheckResult.Maybe"/>)</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static QuickCheckResult QuickCheck(scoped ReadOnlySpan<char> source, NormalizerMode mode)
         {
             return QuickCheck(source, mode, 0);
         }
@@ -1248,26 +1296,6 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Convenience method.
-        /// </summary>
-        /// <param name="source">Array of characters for determining if it is in a
-        /// normalized format.</param>
-        /// <param name="mode">Normalization format (<see cref="NormalizerMode.NFC"/>,<see cref="NormalizerMode.NFD"/>,
-        /// <see cref="NormalizerMode.NFKC"/>,<see cref="NormalizerMode.NFKD"/>).</param>
-        /// <param name="unicodeVersion">The Unicode version to use.
-        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
-        /// </param>
-        /// <returns>Return code to specify if the text is normalized or not
-        /// (<see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or <see cref="QuickCheckResult.Maybe"/>)</returns>
-        [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static QuickCheckResult QuickCheck(char[] source, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
-        {
-            return QuickCheck(source, 0, source.Length, mode, unicodeVersion);
-        }
-
-        /// <summary>
         /// Performing quick check on a string, to quickly determine if the string is
         /// in a particular normalization format.
         /// Three types of result can be returned <see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or
@@ -1279,8 +1307,6 @@ namespace ICU4N.Text
         /// the results.
         /// </summary>
         /// <param name="source">String for determining if it is in a normalized format.</param>
-        /// <param name="start">The start index of the source.</param>
-        /// <param name="limit">The limit index of the source it is equal to the length.</param>
         /// <param name="mode">Normalization format (<see cref="NormalizerMode.NFC"/>,<see cref="NormalizerMode.NFD"/>,
         /// <see cref="NormalizerMode.NFKC"/>,<see cref="NormalizerMode.NFKD"/>).</param>
         /// <param name="unicodeVersion">The Unicode version to use.
@@ -1291,41 +1317,9 @@ namespace ICU4N.Text
         /// <returns>Return code to specify if the text is normalized or not
         /// (<see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or <see cref="QuickCheckResult.Maybe"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static QuickCheckResult QuickCheck(char[] source, int start,
-                                              int limit, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        public static QuickCheckResult QuickCheck(scoped ReadOnlySpan<char> source, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            Span<char> srcBuffer = source.AsSpan(start, limit - start);
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).QuickCheck(srcBuffer);
-        }
-
-        /// <summary>
-        /// Test if a string is in a given normalization form.
-        /// This is semantically equivalent to <c>source.Equals(Normalize(source, mode))</c>.
-        /// Unlike <see cref="QuickCheck(string, NormalizerMode)"/>, this function returns a definitive result,
-        /// never a "maybe".
-        /// For <see cref="NormalizerMode.NFD"/>, <see cref="NormalizerMode.NFKD"/>, and <see cref="NormalizerMode.FCD"/>, both functions work exactly the same.
-        /// For <see cref="NormalizerMode.NFC"/> and <see cref="NormalizerMode.NFKC"/> where quickCheck may return "maybe", this function will
-        /// perform further tests to arrive at a true/false result.
-        /// </summary>
-        /// <param name="src">The input array of characters to be checked to see if
-        /// it is normalized.</param>
-        /// <param name="start">The strart index in the source.</param>
-        /// <param name="limit">The limit index in the source.</param>
-        /// <param name="mode">The normalization mode.</param>
-        /// <param name="unicodeVersion">The Unicode version to use.
-        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
-        /// </param>
-        /// <returns>Boolean value indicating whether the source string is in the
-        /// "<paramref name="mode"/>" normalization form.</returns>
-        [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static bool IsNormalized(char[] src, int start,
-                                       int limit, NormalizerMode mode,
-                                       NormalizerUnicodeVersion unicodeVersion)
-        {
-            Span<char> srcBuffer = src.AsSpan(start, limit - start);
-            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).IsNormalized(srcBuffer);
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).QuickCheck(source);
         }
 
         /// <summary>
@@ -1346,11 +1340,36 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>Boolean value indicating whether the source string is in the
         /// "<paramref name="mode"/>" normalization form.</returns>
-        /// <seealso cref="IsNormalized(char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
+        /// <seealso cref="IsNormalized(ReadOnlySpan{char}, NormalizerMode, NormalizerUnicodeVersion)"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static bool IsNormalized(string str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
             return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).IsNormalized(str.AsSpan());
+        }
+
+        /// <summary>
+        /// Test if a string is in a given normalization form.
+        /// This is semantically equivalent to source.Equals(Normalize(source, mode)).
+        /// Unlike <see cref="QuickCheck(string, NormalizerMode)"/>, this function returns a definitive result,
+        /// never a "maybe".
+        /// For <see cref="NormalizerMode.NFD"/>, <see cref="NormalizerMode.NFKD"/>, and <see cref="NormalizerMode.FCD"/>, both functions work exactly the same.
+        /// For <see cref="NormalizerMode.NFC"/> and<see cref="NormalizerMode.NFKC"/> where <see cref="QuickCheck(string, NormalizerMode)"/> may return "maybe", this function will
+        /// perform further tests to arrive at a true/false result.
+        /// </summary>
+        /// <param name="str">The input string to be checked to see if it is normalized.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <returns>Boolean value indicating whether the source string is in the
+        /// "<paramref name="mode"/>" normalization form.</returns>
+        /// <seealso cref="IsNormalized(ReadOnlySpan{char}, NormalizerMode, NormalizerUnicodeVersion)"/>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static bool IsNormalized(scoped ReadOnlySpan<char> str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        {
+            return GetModeInstance(mode).GetNormalizer2((int)unicodeVersion).IsNormalized(str);
         }
 
         /// <summary>
@@ -1369,233 +1388,7 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static bool IsNormalized(int char32, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
-            return IsNormalized(UTF16.ValueOf(char32), mode, unicodeVersion);
-        }
-
-        /// <summary>
-        /// Compare two strings for canonical equivalence.
-        /// Further options include case-insensitive comparison and
-        /// code point order (as opposed to code unit order).
-        /// </summary>
-        /// <remarks>
-        /// Canonical equivalence between two strings is defined as their normalized
-        /// forms (<see cref="NormalizerMode.NFD"/> or <see cref="NormalizerMode.NFC"/>) being identical.
-        /// This function compares strings incrementally instead of normalizing
-        /// (and optionally case-folding) both strings entirely,
-        /// improving performance significantly.
-        /// <para/>
-        /// Bulk normalization is only necessary if the strings do not fulfill the
-        /// <see cref="NormalizerMode.FCD"/> conditions. Only in this case, and only if the strings are relatively
-        /// long, is memory allocated temporarily.
-        /// For <see cref="NormalizerMode.FCD"/> strings and short non-<see cref="NormalizerMode.FCD"/> strings there is no memory allocation.
-        /// <para/>
-        /// Semantically, this is equivalent to
-        /// <code>strcmp[CodePointOrder](foldCase(NFD(s1)), foldCase(NFD(s2)))</code>
-        /// where code point order and foldCase are all optional.
-        /// </remarks>
-        /// <param name="s1">First source character array.</param>
-        /// <param name="s1Start">start index of source</param>
-        /// <param name="s1Limit">limit of the source</param>
-        /// <param name="s2">Second source character array.</param>
-        /// <param name="s2Start">start index of the source</param>
-        /// <param name="s2Limit">limit of the source</param>
-        /// <returns>&lt;0 or 0 or &gt;0 as usual for string comparisons</returns>
-        /// <seealso cref="Normalize(char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
-        /// <seealso cref="NormalizerMode.FCD"/>
-        /// <draft>ICU4N 60.1</draft>
-        public static int Compare(char[] s1, int s1Start, int s1Limit,
-                                  char[] s2, int s2Start, int s2Limit) // ICU4N specific overload
-        {
-            return Compare(s1, s1Start, s1Limit,
-                           s2, s2Start, s2Limit,
-                           NormalizerComparison.Default, FoldCase.Default, NormalizerUnicodeVersion.Default);
-        }
-
-        /// <summary>
-        /// Compare two strings for canonical equivalence.
-        /// Further options include case-insensitive comparison and
-        /// code point order (as opposed to code unit order).
-        /// </summary>
-        /// <remarks>
-        /// Canonical equivalence between two strings is defined as their normalized
-        /// forms (<see cref="NormalizerMode.NFD"/> or <see cref="NormalizerMode.NFC"/>) being identical.
-        /// This function compares strings incrementally instead of normalizing
-        /// (and optionally case-folding) both strings entirely,
-        /// improving performance significantly.
-        /// <para/>
-        /// Bulk normalization is only necessary if the strings do not fulfill the
-        /// <see cref="NormalizerMode.FCD"/> conditions. Only in this case, and only if the strings are relatively
-        /// long, is memory allocated temporarily.
-        /// For <see cref="NormalizerMode.FCD"/> strings and short non-<see cref="NormalizerMode.FCD"/> strings there is no memory allocation.
-        /// <para/>
-        /// Semantically, this is equivalent to
-        /// <code>strcmp[CodePointOrder](foldCase(NFD(s1)), foldCase(NFD(s2)))</code>
-        /// where code point order and foldCase are all optional.
-        /// </remarks>
-        /// <param name="s1">First source character array.</param>
-        /// <param name="s1Start">start index of source</param>
-        /// <param name="s1Limit">limit of the source</param>
-        /// <param name="s2">Second source character array.</param>
-        /// <param name="s2Start">start index of the source</param>
-        /// <param name="s2Limit">limit of the source</param>
-        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.
-        /// <list type="table">
-        ///     <item><term><see cref="NormalizerComparison.InputIsFCD"/></term><description>
-        ///         Set if the caller knows that both <paramref name="s1"/> and <paramref name="s2"/> fulfill the FCD
-        ///         conditions. If not set, the function will quickCheck for FCD
-        ///         and normalize if necessary.
-        ///     </description></item>
-        ///     <item><term><see cref="NormalizerComparison.CodePointOrder"/></term><description>
-        ///         Set to choose code point order instead of code unit order.
-        ///     </description></item>
-        ///     <item><term><see cref="NormalizerComparison.IgnoreCase"/></term><description>
-        ///         Set to compare strings case-insensitively using case folding,
-        ///         instead of case-sensitively.
-        ///         If set, then the following case folding options are used.
-        ///     </description></item>
-        /// </list>
-        /// </param>
-        /// <returns>&lt;0 or 0 or &gt;0 as usual for string comparisons</returns>
-        /// <seealso cref="Normalize(char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
-        /// <seealso cref="FCD"/>
-        /// <draft>ICU4N 60.1</draft>
-        public static int Compare(char[] s1, int s1Start, int s1Limit,
-                                  char[] s2, int s2Start, int s2Limit,
-                                  NormalizerComparison comparison) // ICU4N specific overload
-        {
-            return Compare(s1, s1Start, s1Limit,
-                           s2, s2Start, s2Limit,
-                           comparison, FoldCase.Default, NormalizerUnicodeVersion.Default);
-        }
-
-        /// <summary>
-        /// Compare two strings for canonical equivalence.
-        /// Further options include case-insensitive comparison and
-        /// code point order (as opposed to code unit order).
-        /// </summary>
-        /// <remarks>
-        /// Canonical equivalence between two strings is defined as their normalized
-        /// forms (<see cref="NormalizerMode.NFD"/> or <see cref="NormalizerMode.NFC"/>) being identical.
-        /// This function compares strings incrementally instead of normalizing
-        /// (and optionally case-folding) both strings entirely,
-        /// improving performance significantly.
-        /// <para/>
-        /// Bulk normalization is only necessary if the strings do not fulfill the
-        /// <see cref="NormalizerMode.FCD"/> conditions. Only in this case, and only if the strings are relatively
-        /// long, is memory allocated temporarily.
-        /// For <see cref="NormalizerMode.FCD"/> strings and short non-<see cref="NormalizerMode.FCD"/> strings there is no memory allocation.
-        /// <para/>
-        /// Semantically, this is equivalent to
-        /// <code>strcmp[CodePointOrder](foldCase(NFD(s1)), foldCase(NFD(s2)))</code>
-        /// where code point order and foldCase are all optional.
-        /// </remarks>
-        /// <param name="s1">First source character array.</param>
-        /// <param name="s1Start">start index of source</param>
-        /// <param name="s1Limit">limit of the source</param>
-        /// <param name="s2">Second source character array.</param>
-        /// <param name="s2Start">start index of the source</param>
-        /// <param name="s2Limit">limit of the source</param>
-        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.
-        /// <list type="table">
-        ///     <item><term><see cref="NormalizerComparison.InputIsFCD"/></term><description>
-        ///         Set if the caller knows that both <paramref name="s1"/> and <paramref name="s2"/> fulfill the FCD
-        ///         conditions. If not set, the function will quickCheck for FCD
-        ///         and normalize if necessary.
-        ///     </description></item>
-        ///     <item><term><see cref="NormalizerComparison.CodePointOrder"/></term><description>
-        ///         Set to choose code point order instead of code unit order.
-        ///     </description></item>
-        ///     <item><term><see cref="NormalizerComparison.IgnoreCase"/></term><description>
-        ///         Set to compare strings case-insensitively using case folding,
-        ///         instead of case-sensitively.
-        ///         If set, then the following case folding options are used.
-        ///     </description></item>
-        /// </list>
-        /// </param>
-        /// <param name="foldCase"><see cref="FoldCase"/> option, such as 
-        /// <see cref="FoldCase.ExcludeSpecialI"/> or <see cref="FoldCase.Default"/>.</param>
-        /// <returns>&lt;0 or 0 or &gt;0 as usual for string comparisons</returns>
-        /// <seealso cref="Normalize(char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
-        /// <seealso cref="NormalizerMode.FCD"/>
-        /// <draft>ICU4N 60.1</draft>
-        public static int Compare(char[] s1, int s1Start, int s1Limit,
-                                  char[] s2, int s2Start, int s2Limit,
-                                  NormalizerComparison comparison, FoldCase foldCase) // ICU4N specific overload
-        {
-            return Compare(s1, s1Start, s1Limit,
-                           s2, s2Start, s2Limit,
-                           comparison, foldCase, NormalizerUnicodeVersion.Default);
-        }
-
-        /// <summary>
-        /// Compare two strings for canonical equivalence.
-        /// Further options include case-insensitive comparison and
-        /// code point order (as opposed to code unit order).
-        /// </summary>
-        /// <remarks>
-        /// Canonical equivalence between two strings is defined as their normalized
-        /// forms (<see cref="NormalizerMode.NFD"/> or <see cref="NormalizerMode.NFC"/>) being identical.
-        /// This function compares strings incrementally instead of normalizing
-        /// (and optionally case-folding) both strings entirely,
-        /// improving performance significantly.
-        /// <para/>
-        /// Bulk normalization is only necessary if the strings do not fulfill the
-        /// <see cref="NormalizerMode.FCD"/> conditions. Only in this case, and only if the strings are relatively
-        /// long, is memory allocated temporarily.
-        /// For <see cref="NormalizerMode.FCD"/> strings and short non-<see cref="NormalizerMode.FCD"/> strings there is no memory allocation.
-        /// <para/>
-        /// Semantically, this is equivalent to
-        /// <code>strcmp[CodePointOrder](foldCase(NFD(s1)), foldCase(NFD(s2)))</code>
-        /// where code point order and foldCase are all optional.
-        /// </remarks>
-        /// <param name="s1">First source character array.</param>
-        /// <param name="s1Start">start index of source</param>
-        /// <param name="s1Limit">limit of the source</param>
-        /// <param name="s2">Second source character array.</param>
-        /// <param name="s2Start">start index of the source</param>
-        /// <param name="s2Limit">limit of the source</param>
-        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.
-        /// <list type="table">
-        ///     <item><term><see cref="NormalizerComparison.InputIsFCD"/></term><description>
-        ///         Set if the caller knows that both <paramref name="s1"/> and <paramref name="s2"/> fulfill the FCD
-        ///         conditions. If not set, the function will quickCheck for FCD
-        ///         and normalize if necessary.
-        ///     </description></item>
-        ///     <item><term><see cref="NormalizerComparison.CodePointOrder"/></term><description>
-        ///         Set to choose code point order instead of code unit order.
-        ///     </description></item>
-        ///     <item><term><see cref="NormalizerComparison.IgnoreCase"/></term><description>
-        ///         Set to compare strings case-insensitively using case folding,
-        ///         instead of case-sensitively.
-        ///         If set, then the following case folding options are used.
-        ///     </description></item>
-        /// </list>
-        /// </param>
-        /// <param name="foldCase"><see cref="FoldCase"/> option, such as 
-        /// <see cref="FoldCase.ExcludeSpecialI"/> or <see cref="FoldCase.Default"/>.</param>
-        /// <param name="unicodeVersion">The Unicode version to use.
-        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
-        /// </param>
-        /// <returns>&lt;0 or 0 or &gt;0 as usual for string comparisons</returns>
-        /// <seealso cref="Normalize(char[], int, int, char[], int, int, NormalizerMode, NormalizerUnicodeVersion)"/>
-        /// <seealso cref="NormalizerMode.FCD"/>
-        /// <stable>ICU 2.8</stable>
-        public static int Compare(char[] s1, int s1Start, int s1Limit,
-                                  char[] s2, int s2Start, int s2Limit,
-                                  NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
-        {
-            if (s1 == null || s1Start < 0 || s1Limit < 0 ||
-                s2 == null || s2Start < 0 || s2Limit < 0 ||
-                s1Limit < s1Start || s2Limit < s2Start
-            )
-            {
-                throw new ArgumentException();
-            }
-            return InternalCompare(s1.AsSpan(s1Start, s1Limit - s1Start),
-                                   s2.AsSpan(s2Start, s2Limit - s2Start),
-                                   (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return IsNormalized(UTF16.ValueOf(char32, stackalloc char[2]), mode, unicodeVersion);
         }
 
         // ---------------------------------
@@ -1802,7 +1595,7 @@ namespace ICU4N.Text
         /// <seealso cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <seealso cref="NormalizerMode.FCD"/>
         /// <draft>ICU4N 60.1</draft>
-        public static int Compare(char[] s1, char[] s2) // ICU4N specific overload
+        public static int Compare(scoped ReadOnlySpan<char> s1, scoped ReadOnlySpan<char> s2) // ICU4N specific overload
         {
             return Compare(s1, s2, NormalizerComparison.Default, FoldCase.Default, NormalizerUnicodeVersion.Default);
         }
@@ -1836,7 +1629,7 @@ namespace ICU4N.Text
         /// <seealso cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <seealso cref="NormalizerMode.FCD"/>
         /// <draft>ICU4N 60.1</draft>
-        public static int Compare(char[] s1, char[] s2, NormalizerComparison comparison) // ICU4N specific overload
+        public static int Compare(scoped ReadOnlySpan<char> s1, scoped ReadOnlySpan<char> s2, NormalizerComparison comparison) // ICU4N specific overload
         {
             return Compare(s1, s2, comparison, FoldCase.Default, NormalizerUnicodeVersion.Default);
         }
@@ -1872,7 +1665,7 @@ namespace ICU4N.Text
         /// <seealso cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <seealso cref="NormalizerMode.FCD"/>
         /// <draft>ICU4N 60.1</draft>
-        public static int Compare(char[] s1, char[] s2, NormalizerComparison comparison, FoldCase foldCase) // ICU4N specific overload
+        public static int Compare(scoped ReadOnlySpan<char> s1, scoped ReadOnlySpan<char> s2, NormalizerComparison comparison, FoldCase foldCase) // ICU4N specific overload
         {
             return Compare(s1, s2, comparison, foldCase, NormalizerUnicodeVersion.Default);
         }
@@ -1913,9 +1706,9 @@ namespace ICU4N.Text
         /// <seealso cref="Normalize(string, NormalizerMode, NormalizerUnicodeVersion)"/>
         /// <seealso cref="NormalizerMode.FCD"/>
         /// <stable>ICU 2.8</stable>
-        public static int Compare(char[] s1, char[] s2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
+        public static int Compare(scoped ReadOnlySpan<char> s1, scoped ReadOnlySpan<char> s2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(s1.AsSpan(), s2.AsSpan(), (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return InternalCompare(s1, s2, (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
         // ---------------------------------
@@ -1980,7 +1773,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(int char32a, int char32b, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(UTF16.ValueOf(char32a).AsSpan(), UTF16.ValueOf(char32b).AsSpan(), (int)comparison | (int)foldCase | INPUT_IS_FCD, (int)unicodeVersion);
+            return InternalCompare(UTF16.ValueOf(char32a, stackalloc char[2]), UTF16.ValueOf(char32b, stackalloc char[2]), (int)comparison | (int)foldCase | INPUT_IS_FCD, (int)unicodeVersion);
         }
 
         // ---------------------------------
@@ -2045,7 +1838,72 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(int char32a, string str2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(UTF16.ValueOf(char32a).AsSpan(), str2.AsSpan(), (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return InternalCompare(UTF16.ValueOf(char32a, stackalloc char[2]), str2.AsSpan(), (int)comparison | (int)foldCase, (int)unicodeVersion);
+        }
+
+        // ---------------------------------
+
+        /// <summary>
+        /// Convenience method that can have faster implementation
+        /// by not allocating buffers.
+        /// </summary>
+        /// <param name="char32a">The first code point to be checked against the.</param>
+        /// <param name="str2">The second string.</param>
+        /// <draft>ICU4N 60.1</draft>
+        public static int Compare(int char32a, scoped ReadOnlySpan<char> str2) // ICU4N specific overload
+        {
+            return Compare(char32a, str2, NormalizerComparison.Default, FoldCase.Default, NormalizerUnicodeVersion.Default);
+        }
+
+        /// <summary>
+        /// Convenience method that can have faster implementation
+        /// by not allocating buffers.
+        /// </summary>
+        /// <param name="char32a">The first code point to be checked against the.</param>
+        /// <param name="str2">The second string.</param>
+        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.
+        /// </param>
+        /// <draft>ICU4N 60.1</draft>
+        public static int Compare(int char32a, scoped ReadOnlySpan<char> str2, NormalizerComparison comparison) // ICU4N specific overload
+        {
+            return Compare(char32a, str2, comparison, FoldCase.Default, NormalizerUnicodeVersion.Default);
+        }
+
+        /// <summary>
+        /// Convenience method that can have faster implementation
+        /// by not allocating buffers.
+        /// </summary>
+        /// <param name="char32a">The first code point to be checked against the.</param>
+        /// <param name="str2">The second string.</param>
+        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.
+        /// </param>
+        /// <param name="foldCase"><see cref="FoldCase"/> option, such as 
+        /// <see cref="FoldCase.ExcludeSpecialI"/> or <see cref="FoldCase.Default"/>.</param>
+        /// <draft>ICU4N 60.1</draft>
+        public static int Compare(int char32a, scoped ReadOnlySpan<char> str2, NormalizerComparison comparison, FoldCase foldCase) // ICU4N specific overload
+        {
+            return Compare(char32a, str2, comparison, foldCase, NormalizerUnicodeVersion.Default);
+        }
+
+        /// <summary>
+        /// Convenience method that can have faster implementation
+        /// by not allocating buffers.
+        /// </summary>
+        /// <param name="char32a">The first code point to be checked against the.</param>
+        /// <param name="str2">The second string.</param>
+        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.
+        /// </param>
+        /// <param name="foldCase"><see cref="FoldCase"/> option, such as 
+        /// <see cref="FoldCase.ExcludeSpecialI"/> or <see cref="FoldCase.Default"/>.</param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <stable>ICU 2.8</stable>
+        public static int Compare(int char32a, scoped ReadOnlySpan<char> str2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
+        {
+            return InternalCompare(UTF16.ValueOf(char32a, stackalloc char[2]), str2, (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
         /* Concatenation of normalized strings --------------------------------- */
@@ -2807,7 +2665,7 @@ namespace ICU4N.Text
         /* compare canonically equivalent ------------------------------------------- */
 
         // TODO: Broaden the public compare(string, string, options) API like this. Ticket #7407
-        private static int InternalCompare(ReadOnlySpan<char> s1, ReadOnlySpan<char> s2, int options, int normOptions)
+        private static int InternalCompare(scoped ReadOnlySpan<char> s1, scoped ReadOnlySpan<char> s2, int options, int normOptions)
         {
 //#pragma warning disable 612, 618
 //            int normOptions = options.TripleShift(COMPARE_NORM_OPTIONS_SHIFT);
