@@ -875,6 +875,21 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Compose(string str, bool compat)
         {
+            return Compose(str.AsSpan(), compat, NormalizerUnicodeVersion.Default);
+        }
+
+        /// <summary>
+        /// Compose a string.
+        /// The string will be composed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to compose.</param>
+        /// <param name="compat">If true the string will be composed according to
+        /// <see cref="NormalizerMode.NFKC"/> rules and if false will be composed according to
+        /// <see cref="NormalizerMode.NFC"/> rules.</param>
+        /// <returns>The composed string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static string Compose(scoped ReadOnlySpan<char> str, bool compat)
+        {
             return Compose(str, compat, NormalizerUnicodeVersion.Default);
         }
 
@@ -895,6 +910,27 @@ namespace ICU4N.Text
         /// <returns>The composed string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Compose(string str, bool compat, NormalizerUnicodeVersion unicodeVersion)
+        {
+            return GetComposeNormalizer2(compat, (int)unicodeVersion).Normalize(str.AsSpan());
+        }
+
+        /// <summary>
+        /// Compose a string.
+        /// The string will be composed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to compose.</param>
+        /// <param name="compat">If true the string will be composed according to
+        /// <see cref="NormalizerMode.NFKC"/> rules and if false will be composed according to
+        /// <see cref="NormalizerMode.NFC"/> rules.
+        /// </param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <returns>The composed string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static string Compose(scoped ReadOnlySpan<char> str, bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
             return GetComposeNormalizer2(compat, (int)unicodeVersion).Normalize(str);
         }
@@ -918,7 +954,7 @@ namespace ICU4N.Text
         /// </param>
         /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static bool TryCompose(ReadOnlySpan<char> source, Span<char> destination, out int charsLength, bool compat, NormalizerUnicodeVersion unicodeVersion)
+        public static bool TryCompose(scoped ReadOnlySpan<char> source, Span<char> destination, out int charsLength, bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
             return GetComposeNormalizer2(compat, (int)unicodeVersion).TryNormalize(source, destination, out charsLength);
         }
@@ -935,6 +971,22 @@ namespace ICU4N.Text
         /// <returns>The decomposed string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Decompose(string str, bool compat)
+        {
+            return Decompose(str.AsSpan(), compat, NormalizerUnicodeVersion.Default);
+        }
+
+        /// <summary>
+        /// Decompose a string.
+        /// The string will be decomposed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to decompose.</param>
+        /// <param name="compat">If true the string will be decomposed according to <see cref="NormalizerMode.NFKD"/>
+        /// rules and if false will be decomposed according to <see cref="NormalizerMode.NFD"/>
+        /// rules.
+        /// </param>
+        /// <returns>The decomposed string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static string Decompose(scoped ReadOnlySpan<char> str, bool compat)
         {
             return Decompose(str, compat, NormalizerUnicodeVersion.Default);
         }
@@ -957,6 +1009,27 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Decompose(string str, bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
+            return GetDecomposeNormalizer2(compat, (int)unicodeVersion).Normalize(str.AsSpan());
+        }
+
+        /// <summary>
+        /// Decompose a string.
+        /// The string will be decomposed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to decompose.</param>
+        /// <param name="compat">If true the string will be decomposed according to <see cref="NormalizerMode.NFKD"/>
+        /// rules and if false will be decomposed according to <see cref="NormalizerMode.NFD"/>
+        /// rules.
+        /// </param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <returns>The decomposed string.</returns>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public static string Decompose(scoped ReadOnlySpan<char> str, bool compat, NormalizerUnicodeVersion unicodeVersion)
+        {
             return GetDecomposeNormalizer2(compat, (int)unicodeVersion).Normalize(str);
         }
 
@@ -964,10 +1037,14 @@ namespace ICU4N.Text
         /// Decompose a string.
         /// The string will be decomposed to according to the specified mode.
         /// </summary>
-        /// <param name="source">The char array to decompose.</param>
-        /// <param name="target">A char buffer to receive the normalized text.</param>
-        /// <param name="compat">If true the char array will be decomposed according to <see cref="NormalizerMode.NFKD"/>
-        /// rules and if false will be decomposed according to
+        /// <param name="source">The string to decompose.</param>
+        /// <param name="destination">A span to receive the normalized text.</param>
+        /// When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.
+        /// <param name="charsLength">When this method returns <c>true</c>, contains the number of characters that are usable in destination;
+        /// otherwise, this is the length of buffer that will need to be allocated to succeed in another attempt.</param>
+        /// <param name="compat">If <c>true</c> the string will be decomposed according to <see cref="NormalizerMode.NFKD"/>
+        /// rules and if <c>false</c> will be decomposed according to
         /// <see cref="NormalizerMode.NFD"/> rules.
         /// </param>
         /// <param name="unicodeVersion">The Unicode version to use.
@@ -975,48 +1052,20 @@ namespace ICU4N.Text
         /// If you want the default behavior corresponding to one of the
         /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
         /// </param>
-        /// <returns>The total buffer size needed;if greater than length of
-        /// result,the output was truncated.</returns>
-        /// <exception cref="IndexOutOfRangeException">If the target capacity is less than
-        /// the required length.</exception>
+        /// <returns><c>true</c> if the operation was successful; otherwise, <c>false</c>.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Decompose(char[] source, char[] target, bool compat, NormalizerUnicodeVersion unicodeVersion)
+        public static bool TryDecompose(scoped ReadOnlySpan<char> source, Span<char> destination, out int charsLength, bool compat, NormalizerUnicodeVersion unicodeVersion)
         {
-            return Decompose(source, 0, source.Length, target, 0, target.Length, compat, unicodeVersion);
-        }
-
-        /// <summary>
-        /// Decompose a string.
-        /// The string will be decomposed to according to the specified mode.
-        /// </summary>
-        /// <param name="src">The char array to compose.</param>
-        /// <param name="srcStart">Start index of the source.</param>
-        /// <param name="srcLimit">Limit index of the source.</param>
-        /// <param name="dest">The char buffer to fill in.</param>
-        /// <param name="destStart">Start index of the destination buffer.</param>
-        /// <param name="destLimit">End index of the destination buffer.</param>
-        /// <param name="compat">If true the char array will be decomposed according to <see cref="NormalizerMode.NFKD"/>
-        /// rules and if false will be decomposed according to
-        /// <see cref="NormalizerMode.NFD"/> rules.
-        /// </param>
-        /// <param name="unicodeVersion">The Unicode version to use.
-        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
-        /// </param>
-        /// <returns>The total buffer size needed;if greater than length of
-        /// result,the output was truncated.</returns>
-        /// <exception cref="IndexOutOfRangeException">If the target capacity is less than
-        /// the required length.</exception>
-        [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int Decompose(char[] src, int srcStart, int srcLimit,
-                                char[] dest, int destStart, int destLimit,
-                                bool compat, NormalizerUnicodeVersion unicodeVersion)
-        {
-            Span<char> srcBuffer = src.AsSpan(srcStart, srcLimit - srcStart);
-            CharsAppendable app = new CharsAppendable(dest, destStart, destLimit);
-            GetDecomposeNormalizer2(compat, (int)unicodeVersion).Normalize(srcBuffer, app);
-            return app.Length;
+            var sb = new ValueStringBuilder(destination);
+            try
+            {
+                GetDecomposeNormalizer2(compat, (int)unicodeVersion).Normalize(source, ref sb);
+                return sb.FitsInitialBuffer(out charsLength);
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         /// <summary>

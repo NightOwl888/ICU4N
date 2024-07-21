@@ -935,26 +935,39 @@ namespace ICU4N.Dev.Test.Normalizers
                 int reqLength = 0;
                 while (true)
                 {
-                    try
+                    if (Normalizer.TryDecompose(input, output, out reqLength, mode == NormalizerMode.NFKD, 0))
                     {
-                        reqLength = Normalizer.Decompose(input, output, mode == NormalizerMode.NFKD, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
                         }
                     }
-                    catch (IndexOutOfRangeException e)
+                    else
                     {
-                        output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                        output = new char[reqLength];
                         continue;
                     }
+
+                    //try
+                    //{
+                    //    reqLength = Normalizer.Decompose(input, output, mode == NormalizerMode.NFKD, 0);
+                    //    if (reqLength <= output.Length)
+                    //    {
+                    //        break;
+                    //    }
+                    //}
+                    //catch (IndexOutOfRangeException e)
+                    //{
+                    //    output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                    //    continue;
+                    //}
                 }
-                if (!expect.Equals(new string(output, 0, reqLength)))
+                if (!expect.AsSpan().Equals(output.AsSpan(0, reqLength), StringComparison.Ordinal))
                 {
                     Errln("FAIL: case " + i
                         + " expected '" + expect + "' (" + Hex(expect) + ")"
                         + " but got '" + new string(output)
-                        + "' (" + Hex(new string(output)) + ")");
+                        + "' (" + Hex(output) + ")");
                 }
             }
             output = new char[1];
@@ -964,37 +977,51 @@ namespace ICU4N.Dev.Test.Normalizers
                 string expect = Utility.Unescape(tests[i][outCol]);
 
                 Logln("Normalizing '" + new string(input) + "' (" +
-                            Hex(new string(input)) + ")");
+                            Hex(input) + ")");
                 int reqLength = 0;
                 while (true)
                 {
-                    try
+                    if (Normalizer.TryDecompose(input.AsSpan(0, input.Length), output.AsSpan(0, output.Length), out reqLength, mode == NormalizerMode.NFKD, 0))
                     {
-                        reqLength = Normalizer.Decompose(input, 0, input.Length, output, 0, output.Length, mode == NormalizerMode.NFKD, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
                         }
                     }
-                    catch (IndexOutOfRangeException e)
+                    else
                     {
-                        output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                        output = new char[reqLength];
                         continue;
                     }
+
+                    //try
+                    //{
+                    //    reqLength = Normalizer.Decompose(input, 0, input.Length, output, 0, output.Length, mode == NormalizerMode.NFKD, 0);
+                    //    if (reqLength <= output.Length)
+                    //    {
+                    //        break;
+                    //    }
+                    //}
+                    //catch (IndexOutOfRangeException e)
+                    //{
+                    //    output = new char[int.Parse(e.Message, CultureInfo.InvariantCulture)];
+                    //    continue;
+                    //}
                 }
-                if (!expect.Equals(new string(output, 0, reqLength)))
+                if (!expect.AsSpan().Equals(output.AsSpan(0, reqLength), StringComparison.Ordinal))
                 {
                     Errln("FAIL: case " + i
                         + " expected '" + expect + "' (" + Hex(expect) + ")"
                         + " but got '" + new string(output)
-                        + "' (" + Hex(new string(output)) + ")");
+                        + "' (" + Hex(output) + ")");
                 }
                 char[] output2 = new char[reqLength * 2];
                 System.Array.Copy(output, 0, output2, 0, reqLength);
-                int retLength = Normalizer.Decompose(input, 0, input.Length, output2, reqLength, output2.Length, mode == NormalizerMode.NFKC, 0);
+                //int retLength = Normalizer.Decompose(input, 0, input.Length, output2, reqLength, output2.Length, mode == NormalizerMode.NFKC, 0);
+                bool success = Normalizer.TryDecompose(input.AsSpan(0, input.Length), output2.AsSpan(reqLength, output2.Length - reqLength), out int retLength, mode == NormalizerMode.NFKC, 0);
                 if (retLength != reqLength)
                 {
-                    Logln("FAIL: Normalizer.compose did not return the expected length. Expected: " + reqLength + " Got: " + retLength);
+                    Logln("FAIL: Normalizer.TryDecompose did not return the expected length. Expected: " + reqLength + " Got: " + retLength);
                 }
             }
         }
@@ -2902,8 +2929,10 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             char[] term = { 'r', '\u00e9', 's', 'u', 'm', '\u00e9' };
             char[] decomposed_term = new char[10 + term.Length + 2];
-            int rc = Normalizer.Decompose(term, 0, term.Length, decomposed_term, 0, decomposed_term.Length, true, 0);
-            int rc1 = Normalizer.Decompose(term, 0, term.Length, decomposed_term, 10, decomposed_term.Length, true, 0);
+            //int rc = Normalizer.Decompose(term, 0, term.Length, decomposed_term, 0, decomposed_term.Length, true, 0);
+            //int rc1 = Normalizer.Decompose(term, 0, term.Length, decomposed_term, 10, decomposed_term.Length, true, 0);
+            Normalizer.TryDecompose(term.AsSpan(0, term.Length), decomposed_term.AsSpan(0, decomposed_term.Length), out int rc, true, 0);
+            Normalizer.TryDecompose(term.AsSpan(0, term.Length), decomposed_term.AsSpan(10, decomposed_term.Length - 10), out int rc1, true, 0);
             if (rc != rc1)
             {
                 Errln("Normalizer decompose did not return correct length");
