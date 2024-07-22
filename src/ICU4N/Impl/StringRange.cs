@@ -1,5 +1,6 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Support.Text;
+using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Text;
@@ -18,6 +19,8 @@ namespace ICU4N.Impl
 
     public class StringRange
     {
+        private const int CharStackBufferSize = 32;
+
         private static readonly bool DEBUG = false;
 
         private class Int32ArrayComparer : IComparer<int[]>
@@ -180,8 +183,18 @@ namespace ICU4N.Impl
 
             public override string ToString()
             {
-                StringBuilder result = new StringBuilder().AppendCodePoint(Min);
-                return Max == Max ? result.ToString() : result.Append('~').AppendCodePoint(Max).ToString();
+                using ValueStringBuilder result = new ValueStringBuilder(stackalloc char[8]);
+                result.AppendCodePoint(Min);
+                if (Max == Max)
+                {
+                    return result.ToString();
+                }
+                else
+                {
+                    result.Append('~');
+                    result.AppendCodePoint(Max);
+                    return result.ToString();
+                }
             }
         }
 
@@ -227,7 +240,7 @@ namespace ICU4N.Impl
 
             public string Start()
             {
-                StringBuilder result = new StringBuilder();
+                using ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
                 for (int i = 0; i < ranges.Length; ++i)
                 {
                     result.AppendCodePoint(ranges[i].Min);
@@ -241,7 +254,7 @@ namespace ICU4N.Impl
                 {
                     return null;
                 }
-                StringBuilder result = new StringBuilder();
+                using ValueStringBuilder result = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
                 for (int i = mostCompact ? firstDiff : 0; i < ranges.Length; ++i)
                 {
                     result.AppendCodePoint(ranges[i].Max);
@@ -312,16 +325,23 @@ namespace ICU4N.Impl
                 throw new ICUException("Range must have end-length > 0");
             }
 
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < startOffset; ++i)
+            ValueStringBuilder builder = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                builder.AppendCodePoint(startCps[i]);
+                for (int i = 0; i < startOffset; ++i)
+                {
+                    builder.AppendCodePoint(startCps[i]);
+                }
+                Add(0, startOffset, startCps, endCps, ref builder, output);
+                return output;
             }
-            Add(0, startOffset, startCps, endCps, builder, output);
-            return output;
+            finally
+            {
+                builder.Dispose();
+            }
         }
 
-        private static void Add(int endIndex, int startOffset, int[] starts, int[] ends, StringBuilder builder, ICollection<string> output)
+        private static void Add(int endIndex, int startOffset, int[] starts, int[] ends, ref ValueStringBuilder builder, ICollection<string> output)
         {
             int start = starts[endIndex + startOffset];
             int end = ends[endIndex];
@@ -336,11 +356,11 @@ namespace ICU4N.Impl
                 builder.AppendCodePoint(i);
                 if (last)
                 {
-                    output.Add(builder.ToString());
+                    output.Add(builder.AsSpan().ToString());
                 }
                 else
                 {
-                    Add(endIndex + 1, startOffset, starts, ends, builder, output);
+                    Add(endIndex + 1, startOffset, starts, ends, ref builder, output);
                 }
                 builder.Length = startLen;
             }
