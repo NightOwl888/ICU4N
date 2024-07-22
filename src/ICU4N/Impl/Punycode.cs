@@ -385,7 +385,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="source">The source of the string buffer being passed.</param>
         /// <param name="caseFlags">The array of bool case flags.</param>
-        /// <returns><see cref="StringBuilder"/> string.</returns>
+        /// <returns>The Unicode string.</returns>
         public static string Decode(ReadOnlySpan<char> source, bool[]? caseFlags) // ICU4N TODO: API - Tests
         {
             ValueStringBuilder sb = source.Length <= CharStackBufferSize
