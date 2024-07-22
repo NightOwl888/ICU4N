@@ -1,4 +1,5 @@
-﻿using J2N.Collections.Generic.Extensions;
+﻿using ICU4N.Text;
+using J2N.Collections.Generic.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -9,6 +10,8 @@ namespace ICU4N.Impl.Locale
 {
     public class UnicodeLocaleExtension : Extension
     {
+        private const int CharStackBufferSize = 32;
+
         public const char Singleton = 'u';
 
         private static readonly JCG.SortedSet<string> EMPTY_SORTED_SET = new JCG.SortedSet<string>(StringComparer.Ordinal);
@@ -63,23 +66,33 @@ namespace ICU4N.Impl.Locale
 
             if (_attributes.Count > 0 || _keywords.Count > 0)
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (string attribute in _attributes)
+                ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    sb.Append(LanguageTag.Separator).Append(attribute);
-                }
-                foreach (var keyword in _keywords)
-                {
-                    string key = keyword.Key;
-                    string value = keyword.Value;
-
-                    sb.Append(LanguageTag.Separator).Append(key);
-                    if (value.Length > 0)
+                    foreach (string attribute in _attributes)
                     {
-                        sb.Append(LanguageTag.Separator).Append(value);
+                        sb.Append(LanguageTag.Separator);
+                        sb.Append(attribute);
                     }
+                    foreach (var keyword in _keywords)
+                    {
+                        string key = keyword.Key;
+                        string value = keyword.Value;
+
+                        sb.Append(LanguageTag.Separator);
+                        sb.Append(key);
+                        if (value.Length > 0)
+                        {
+                            sb.Append(LanguageTag.Separator);
+                            sb.Append(value);
+                        }
+                    }
+                    Value = sb.AsSpan(1, sb.Length - 1).ToString();   // skip leading '-'
                 }
-                Value = sb.ToString(1, sb.Length - 1);   // skip leading '-'
+                finally
+                {
+                    sb.Dispose();
+                }
             }
         }
 
