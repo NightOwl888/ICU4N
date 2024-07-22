@@ -350,7 +350,7 @@ namespace ICU4N.Impl
         {
             if (buf != null)
             {
-                return UTF16.CharAt(buf, 0, buf.Length, bufPos);
+                return UTF16.CharAt(buf.AsSpan(), bufPos);
             }
             else
             {

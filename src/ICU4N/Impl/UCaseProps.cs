@@ -609,7 +609,7 @@ namespace ICU4N.Impl
 
                     for (i = unfoldStringWidth; i < unfoldRowWidth && unfold[unfoldOffset + i] != 0; i += UTF16.GetCharCount(c))
                     {
-                        c = UTF16.CharAt(unfold, unfoldOffset, unfold.Length, i);
+                        c = UTF16.CharAt(unfold.AsSpan(unfoldOffset), i); // ICU4N: changed to ReadOnlySpan<char> overload
                         set.Add(c);
                         AddCaseClosure(c, set);
                     }
