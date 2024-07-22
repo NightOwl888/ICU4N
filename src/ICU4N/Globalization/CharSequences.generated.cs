@@ -14,7 +14,7 @@ using System.Text;
 
 namespace ICU4N.Globalization
 {
-    internal partial class CharSequences
+    internal static partial class CharSequences
     {
     
         /// <summary>
@@ -133,7 +133,7 @@ namespace ICU4N.Globalization
         /// Count the code point length. Unpaired surrogates count as 1.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        public int CodePointLength(string s)
+        public static int CodePointLength(string s)
         {
             return Character.CodePointCount(s, 0, s.Length);
             //        int length = s.length();
@@ -154,7 +154,7 @@ namespace ICU4N.Globalization
         /// Count the code point length. Unpaired surrogates count as 1.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        public int CodePointLength(ReadOnlySpan<char> s)
+        public static int CodePointLength(ReadOnlySpan<char> s)
         {
             return Character.CodePointCount(s);
             //        int length = s.length();
@@ -558,82 +558,6 @@ namespace ICU4N.Globalization
                 }
             }
             return -1;
-        }
-
-        /// <summary>
-        /// Utility function for simplified, more robust loops, such as:
-        /// <code>
-        ///     foreach (int codePoint in CharSequences.CodePoints(string)) 
-        ///     {
-        ///         DoSomethingWith(codePoint);
-        ///     }
-        /// </code>
-        /// </summary>
-        [Obsolete("This API is ICU internal only.")]
-        public static int[] CodePoints(string s)
-        {
-            int[] result = new int[s.Length]; // in the vast majority of cases, the length is the same
-            int j = 0;
-            for (int i = 0; i < s.Length; ++i)
-            {
-                char cp = s[i];
-                if (cp >= 0xDC00 && cp <= 0xDFFF && i != 0)
-                { // hand-code for speed
-                    char last = (char)result[j - 1];
-                    if (last >= 0xD800 && last <= 0xDBFF)
-                    {
-                        // Note: j-1 is safe, because j can only be zero if i is zero. But i!=0 in this block.
-                        result[j - 1] = Character.ToCodePoint(last, cp);
-                        continue;
-                    }
-                }
-                result[j++] = cp;
-            }
-            if (j == result.Length)
-            {
-                return result;
-            }
-            int[] shortResult = new int[j];
-            System.Array.Copy(result, 0, shortResult, 0, j);
-            return shortResult;
-        }
-
-        /// <summary>
-        /// Utility function for simplified, more robust loops, such as:
-        /// <code>
-        ///     foreach (int codePoint in CharSequences.CodePoints(string)) 
-        ///     {
-        ///         DoSomethingWith(codePoint);
-        ///     }
-        /// </code>
-        /// </summary>
-        [Obsolete("This API is ICU internal only.")]
-        public static int[] CodePoints(ReadOnlySpan<char> s)
-        {
-            int[] result = new int[s.Length]; // in the vast majority of cases, the length is the same
-            int j = 0;
-            for (int i = 0; i < s.Length; ++i)
-            {
-                char cp = s[i];
-                if (cp >= 0xDC00 && cp <= 0xDFFF && i != 0)
-                { // hand-code for speed
-                    char last = (char)result[j - 1];
-                    if (last >= 0xD800 && last <= 0xDBFF)
-                    {
-                        // Note: j-1 is safe, because j can only be zero if i is zero. But i!=0 in this block.
-                        result[j - 1] = Character.ToCodePoint(last, cp);
-                        continue;
-                    }
-                }
-                result[j++] = cp;
-            }
-            if (j == result.Length)
-            {
-                return result;
-            }
-            int[] shortResult = new int[j];
-            System.Array.Copy(result, 0, shortResult, 0, j);
-            return shortResult;
         }
 
 

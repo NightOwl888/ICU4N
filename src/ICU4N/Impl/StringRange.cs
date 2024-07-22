@@ -5,6 +5,7 @@ using ICU4N.Util;
 using J2N;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Text;
 
@@ -20,6 +21,7 @@ namespace ICU4N.Impl
     public class StringRange
     {
         private const int CharStackBufferSize = 32;
+        private const int Int32StackBufferSize = 32;
 
         private static readonly bool DEBUG = false;
 
@@ -203,13 +205,25 @@ namespace ICU4N.Impl
             private readonly Range[] ranges;
             public Ranges(string s)
             {
-#pragma warning disable 612, 618
-                int[] array = CharSequences.CodePoints(s);
-#pragma warning restore 612, 618
-                ranges = new Range[array.Length];
-                for (int i = 0; i < array.Length; ++i)
+                int[] arrayToReturnToPool = null;
+                try
                 {
-                    ranges[i] = new Range(array[i], array[i]);
+                    Span<int> buffer = s.Length > Int32StackBufferSize
+                        ? (arrayToReturnToPool = ArrayPool<int>.Shared.Rent(s.Length))
+                        : stackalloc int[s.Length];
+#pragma warning disable 612, 618
+                    ReadOnlySpan<int> array = CharSequences.CodePoints(s, buffer);
+#pragma warning restore 612, 618
+                    ranges = new Range[array.Length];
+                    for (int i = 0; i < array.Length; ++i)
+                    {
+                        ranges[i] = new Range(array[i], array[i]);
+                    }
+                }
+                finally
+                {
+                    if (arrayToReturnToPool is not null)
+                        ArrayPool<int>.Shared.Return(arrayToReturnToPool);
                 }
             }
             public bool Merge(int pivot, Ranges other)
@@ -306,42 +320,61 @@ namespace ICU4N.Impl
             {
                 throw new ICUException("Range must have 2 valid strings");
             }
-#pragma warning disable 612, 618
-            int[] startCps = CharSequences.CodePoints(start);
-            int[] endCps = CharSequences.CodePoints(end);
-#pragma warning restore 612, 618
-            int startOffset = startCps.Length - endCps.Length;
-
-            if (requireSameLength && startOffset != 0)
-            {
-                throw new ICUException("Range must have equal-length strings");
-            }
-            else if (startOffset < 0)
-            {
-                throw new ICUException("Range must have start-length ≥ end-length");
-            }
-            else if (endCps.Length == 0)
-            {
-                throw new ICUException("Range must have end-length > 0");
-            }
-
-            ValueStringBuilder builder = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            int[] startCpsArrayToReturnToPool = null;
+            int[] endCpsArrayToReturnToPool = null;
             try
             {
-                for (int i = 0; i < startOffset; ++i)
+                Span<int> startCpsBuffer = start.Length > Int32StackBufferSize
+                    ? (startCpsArrayToReturnToPool = ArrayPool<int>.Shared.Rent(start.Length))
+                    : stackalloc int[start.Length];
+                Span<int> endCpsBuffer = end.Length > Int32StackBufferSize
+                    ? (endCpsArrayToReturnToPool = ArrayPool<int>.Shared.Rent(end.Length))
+                    : stackalloc int[end.Length];
+
+#pragma warning disable 612, 618
+                ReadOnlySpan<int> startCps = CharSequences.CodePoints(start, startCpsBuffer);
+                ReadOnlySpan<int> endCps = CharSequences.CodePoints(end, endCpsBuffer);
+#pragma warning restore 612, 618
+                int startOffset = startCps.Length - endCps.Length;
+
+                if (requireSameLength && startOffset != 0)
                 {
-                    builder.AppendCodePoint(startCps[i]);
+                    throw new ICUException("Range must have equal-length strings");
                 }
-                Add(0, startOffset, startCps, endCps, ref builder, output);
-                return output;
+                else if (startOffset < 0)
+                {
+                    throw new ICUException("Range must have start-length ≥ end-length");
+                }
+                else if (endCps.Length == 0)
+                {
+                    throw new ICUException("Range must have end-length > 0");
+                }
+
+                ValueStringBuilder builder = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
+                {
+                    for (int i = 0; i < startOffset; ++i)
+                    {
+                        builder.AppendCodePoint(startCps[i]);
+                    }
+                    Add(0, startOffset, startCps, endCps, ref builder, output);
+                    return output;
+                }
+                finally
+                {
+                    builder.Dispose();
+                }
             }
             finally
             {
-                builder.Dispose();
+                if (startCpsArrayToReturnToPool is not null)
+                    ArrayPool<int>.Shared.Return(startCpsArrayToReturnToPool);
+                if (endCpsArrayToReturnToPool is not null)
+                    ArrayPool<int>.Shared.Return(endCpsArrayToReturnToPool);
             }
         }
 
-        private static void Add(int endIndex, int startOffset, int[] starts, int[] ends, ref ValueStringBuilder builder, ICollection<string> output)
+        private static void Add(int endIndex, int startOffset, ReadOnlySpan<int> starts, ReadOnlySpan<int> ends, ref ValueStringBuilder builder, ICollection<string> output)
         {
             int start = starts[endIndex + startOffset];
             int end = ends[endIndex];
