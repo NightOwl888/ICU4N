@@ -984,6 +984,22 @@ namespace ICU4N.Text
         /// rules and if false will be decomposed according to <see cref="NormalizerMode.NFD"/>
         /// rules.
         /// </param>
+        /// <param name="destination">The buffer to write the decomposed string to.</param>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        internal static void Decompose(scoped ReadOnlySpan<char> str, bool compat, ref ValueStringBuilder destination) // ICU4N: Added to support StringSearch
+        {
+            GetDecomposeNormalizer2(compat, (int)NormalizerUnicodeVersion.Default).Normalize(str, ref destination);
+        }
+
+        /// <summary>
+        /// Decompose a string.
+        /// The string will be decomposed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to decompose.</param>
+        /// <param name="compat">If true the string will be decomposed according to <see cref="NormalizerMode.NFKD"/>
+        /// rules and if false will be decomposed according to <see cref="NormalizerMode.NFD"/>
+        /// rules.
+        /// </param>
         /// <returns>The decomposed string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Decompose(scoped ReadOnlySpan<char> str, bool compat)
