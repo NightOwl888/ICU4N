@@ -442,11 +442,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>UnicodeSetStringSpan.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Impl\UPropertyAliases.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UPropertyAliases.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Impl\UResource.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -540,10 +535,6 @@
     <None Update="Impl\UnicodeSetStringSpan.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UnicodeSetStringSpan.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Impl\UPropertyAliases.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UPropertyAliases.generated.cs</LastGenOutput>
     </None>
     <None Update="Impl\UResource.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
