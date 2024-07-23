@@ -427,11 +427,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>NumberStringBuilder.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Impl\PatternProps.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>PatternProps.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Impl\SimpleFormatterImpl.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -533,10 +528,6 @@
     <None Update="Impl\Number\NumberStringBuilder.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>NumberStringBuilder.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Impl\PatternProps.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>PatternProps.generated.cs</LastGenOutput>
     </None>
     <None Update="Impl\SimpleFormatterImpl.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
