@@ -412,11 +412,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CharSequences.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Globalization\UCharacter.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UCharacter.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Impl\BMPSet.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -531,10 +526,6 @@
     <None Update="Globalization\CharSequences.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CharSequences.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Globalization\UCharacter.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UCharacter.generated.cs</LastGenOutput>
     </None>
     <None Update="Impl\BMPSet.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
