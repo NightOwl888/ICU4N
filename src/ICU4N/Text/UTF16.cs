@@ -199,7 +199,7 @@ namespace ICU4N.Text
         // /CLOVER:ON
         // public method ------------------------------------------------------
 
-        // ICU4N specific - These methods were combined into one and moved to UTF16.generated.tt
+        // ICU4N specific - These methods were combined into one
         // - CharAt(string source, int offset16)
         // - _charAt(string source, int offset16, char single)
         // - CharAt(char[] source, int offset16)
@@ -207,6 +207,88 @@ namespace ICU4N.Text
         // - CharAt(ICharSequence source, int offset16)
         // - _charAt(ICharSequence source, int offset16, char single)
         // - CharAt(StringBuilder source, int offset16)
+
+        /// <summary>
+        /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
+        /// <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
+        /// required, use <see cref="UChar.IsLegal(int)"/>
+        /// on the return value. If the char retrieved is part of a surrogate pair, its supplementary
+        /// character will be returned. If a complete supplementary character is not found the incomplete
+        /// character will be returned.
+        /// </summary>
+        /// <param name="source">Array of UTF-16 chars</param>
+        /// <param name="offset16">UTF-16 offset to the start of the character.</param>
+        /// <returns>
+        /// UTF-32 value for the UTF-32 value that contains the char at <paramref name="offset16"/>. The boundaries
+        /// of that codepoint are the same as in <c>Bounds32()</c>.
+        /// </returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is out of bounds.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
+        /// <stable>ICU 2.1</stable>
+        public static int CharAt(string source, int offset16)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            return CharAt(source.AsSpan(), offset16);
+        }
+
+        /// <summary>
+        /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
+        /// <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
+        /// required, use <see cref="UChar.IsLegal(int)"/>
+        /// on the return value. If the char retrieved is part of a surrogate pair, its supplementary
+        /// character will be returned. If a complete supplementary character is not found the incomplete
+        /// character will be returned.
+        /// </summary>
+        /// <param name="source">Array of UTF-16 chars</param>
+        /// <param name="offset16">UTF-16 offset to the start of the character.</param>
+        /// <returns>
+        /// UTF-32 value for the UTF-32 value that contains the char at <paramref name="offset16"/>. The boundaries
+        /// of that codepoint are the same as in <c>Bounds32()</c>.
+        /// </returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is out of bounds.</exception>
+        /// <stable>ICU 2.1</stable>
+        public static int CharAt(ReadOnlySpan<char> source, int offset16)
+        {
+            if (offset16 < 0 || offset16 >= source.Length)
+                throw new IndexOutOfRangeException(nameof(offset16));
+
+            char single = source[offset16];
+            if (!IsSurrogate(single))
+            {
+                return single;
+            }
+
+            // Convert the UTF-16 surrogate pair if necessary.
+            // For simplicity in usage, and because the frequency of pairs is
+            // low, look both directions.
+
+            if (single <= LeadSurrogateMaxValue)
+            {
+                ++offset16;
+                if (source.Length != offset16)
+                {
+                    char trail = source[offset16];
+                    if (IsTrailSurrogate(trail))
+                        return Character.ToCodePoint(single, trail);
+                }
+            }
+            else
+            {
+                --offset16;
+                if (offset16 >= 0)
+                {
+                    // single is a trail surrogate so
+                    char lead = source[offset16];
+                    if (IsLeadSurrogate(lead))
+                    {
+                        return Character.ToCodePoint(lead, single);
+                    }
+                }
+            }
+            return single; // return unmatched surrogate
+        }
 
         // ICU4N: Factored out CharAt(char[] source, int start, int limit, int offset16) because we have ReadOnlySpan<char> that can be sliced
 
@@ -2516,10 +2598,135 @@ namespace ICU4N.Text
             }
         }
 
-        // ICU4N specific - GetSingleCodePoint(ICharSequence s) moved to UTF16.generated.tt
+        /// <summary>
+        /// Utility for getting a code point from a character sequence that contains exactly one code point.
+        /// </summary>
+        /// <param name="s">to test</param>
+        /// <returns>The code point IF the string is non-null and consists of a single code point. Otherwise returns -1.</returns>
+        /// <stable>ICU 54</stable>
+        public static int GetSingleCodePoint(string s)
+        {
+            if (s is null || s.Length == 0)
+            {
+                return -1;
+            }
+            else if (s.Length == 1)
+            {
+                return s[0];
+            }
+            else if (s.Length > 2)
+            {
+                return -1;
+            }
 
-        // ICU4N specific - CompareCodePoint(int codePoint, ICharSequence s) moved to UTF16.generated.tt
+            // at this point, len = 2
+            int cp = Character.CodePointAt(s, 0);
+            if (cp > 0xFFFF)
+            { // is surrogate pair
+                return cp;
+            }
+            return -1;
+        }
 
+        /// <summary>
+        /// Utility for getting a code point from a character sequence that contains exactly one code point.
+        /// </summary>
+        /// <param name="s">to test</param>
+        /// <returns>The code point IF the string consists of a single code point. Otherwise returns -1.</returns>
+        /// <stable>ICU 54</stable>
+        public static int GetSingleCodePoint(ReadOnlySpan<char> s)
+        {
+            if (s.Length == 0)
+            {
+                return -1;
+            }
+            else if (s.Length == 1)
+            {
+                return s[0];
+            }
+            else if (s.Length > 2)
+            {
+                return -1;
+            }
+
+            // at this point, len = 2
+            int cp = Character.CodePointAt(s, 0);
+            if (cp > 0xFFFF)
+            { // is surrogate pair
+                return cp;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Utility for comparing a code point to a string without having to create a new string. Returns the same results
+        /// as a code point comparison of UTF16.ValueOf(codePoint) and s.ToString(). More specifically, if
+        /// <code>
+        ///    sc = new StringComparer(true,false,0);
+        ///    fast = UTF16.CompareCodePoint(codePoint, charSequence)
+        ///    slower = sc.Compare(UTF16.ValueOf(codePoint), charSequence == null ? "" : charSequence.ToString())
+        /// </code>
+        /// then
+        /// <code>
+        ///    Math.Sign(fast) == Math.Sign(slower)
+        /// </code>
+        /// </summary>
+        /// <param name="codePoint">CodePoint to test.</param>
+        /// <param name="s">String to test.</param>
+        /// <returns>Equivalent of code point comparator comparing two strings.</returns>
+        /// <stable>ICU 54</stable>
+        public static int CompareCodePoint(int codePoint, string s)
+        {
+            if (s is null)
+            {
+                return 1;
+            }
+            int strLen = s.Length;
+            if (strLen == 0)
+            {
+                return 1;
+            }
+            int second = Character.CodePointAt(s, 0);
+            int diff = codePoint - second;
+            if (diff != 0)
+            {
+                return diff;
+            }
+            return strLen == Character.CharCount(codePoint) ? 0 : -1;
+        }
+
+        /// <summary>
+        /// Utility for comparing a code point to a string without having to create a new string. Returns the same results
+        /// as a code point comparison of UTF16.ValueOf(codePoint) and s.ToString(). More specifically, if
+        /// <code>
+        ///    sc = new StringComparer(true,false,0);
+        ///    fast = UTF16.CompareCodePoint(codePoint, charSequence)
+        ///    slower = sc.Compare(UTF16.ValueOf(codePoint), charSequence == null ? "" : charSequence.ToString())
+        /// </code>
+        /// then
+        /// <code>
+        ///    Math.Sign(fast) == Math.Sign(slower)
+        /// </code>
+        /// </summary>
+        /// <param name="codePoint">CodePoint to test.</param>
+        /// <param name="s">String to test.</param>
+        /// <returns>Equivalent of code point comparator comparing two strings.</returns>
+        /// <stable>ICU 54</stable>
+        public static int CompareCodePoint(int codePoint, ReadOnlySpan<char> s)
+        {
+            int strLen = s.Length;
+            if (strLen == 0)
+            {
+                return 1;
+            }
+            int second = Character.CodePointAt(s, 0);
+            int diff = codePoint - second;
+            if (diff != 0)
+            {
+                return diff;
+            }
+            return strLen == Character.CharCount(codePoint) ? 0 : -1;
+        }
 
         // private data members -------------------------------------------------
 
