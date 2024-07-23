@@ -437,11 +437,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>StandardPlural.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Impl\UnicodeSetStringSpan.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UnicodeSetStringSpan.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Impl\UResource.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -526,10 +521,6 @@
     <None Update="Impl\StandardPlural.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>StandardPlural.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Impl\UnicodeSetStringSpan.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UnicodeSetStringSpan.generated.cs</LastGenOutput>
     </None>
     <None Update="Impl\UResource.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
