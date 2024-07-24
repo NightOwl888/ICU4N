@@ -412,11 +412,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CharSequences.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Impl\BMPSet.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>BMPSet.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Impl\Number\AffixUtils.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -491,10 +486,6 @@
     <None Update="Globalization\CharSequences.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CharSequences.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Impl\BMPSet.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BMPSet.generated.cs</LastGenOutput>
     </None>
     <None Update="Impl\Number\AffixUtils.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
