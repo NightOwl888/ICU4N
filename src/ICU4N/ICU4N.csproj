@@ -407,11 +407,6 @@
   </UsingTask>
 
   <ItemGroup>
-    <Compile Update="Globalization\CharSequences.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CharSequences.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Impl\Number\AffixUtils.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -483,10 +478,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Globalization\CharSequences.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CharSequences.generated.cs</LastGenOutput>
-    </None>
     <None Update="Impl\Number\AffixUtils.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AffixUtils.generated.cs</LastGenOutput>
