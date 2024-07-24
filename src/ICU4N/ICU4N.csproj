@@ -452,11 +452,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>FormatNumberRuleBased.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Support\Text\UnicodeSetExtensions.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UnicodeSetExtensions.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Text\CaseMap.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -528,10 +523,6 @@
     <None Update="Support\FormatNumberRuleBased.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FormatNumberRuleBased.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Support\Text\UnicodeSetExtensions.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UnicodeSetExtensions.generated.cs</LastGenOutput>
     </None>
     <None Update="Text\CaseMap.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
