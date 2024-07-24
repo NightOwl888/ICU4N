@@ -21,7 +21,7 @@ namespace ICU4N.Impl
     /// </summary>
     // ICU4N TODO: Use AsSpan() to implement StartsWith, EndsWith, Equals
     // ICU4N TODO: Use Memory<byte> so we don't have to track offset, length, and string
-    public sealed partial class ResourceKey : ICharSequence, IComparable<ResourceKey> // ICU4N: Renamed from Key
+    public sealed partial class ResourceKey : IComparable<ResourceKey> // ICU4N: Renamed from Key
 #if FEATURE_CLONEABLE
         , ICloneable
 #endif
@@ -158,15 +158,6 @@ namespace ICU4N.Impl
         }
 
         public int Length => length;
-
-        public ICharSequence Subsequence(int startIndex, int length)
-        {
-            Debug.Assert(0 <= startIndex); // ICU4N: Changed to using length instead of end index
-            Debug.Assert(0 <= length);
-            return new ResourceKey(bytes, offset + startIndex, length);
-        }
-
-        bool ICharSequence.HasValue => s != string.Empty;
 
         /// <summary>
         /// Creates/caches/returns this resource key string as a .NET <see cref="string"/>.
