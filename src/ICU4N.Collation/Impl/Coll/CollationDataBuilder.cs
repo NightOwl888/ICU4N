@@ -950,7 +950,7 @@ namespace ICU4N.Impl.Coll
                             destIndex = dest.AddConditionalCE32(
                                     cond.Context, CopyCE32(cond.Ce32));
                             int suffixStart = cond.PrefixLength + 1;
-                            dest.unsafeBackwardSet.AddAll(cond.Context.Substring(suffixStart));
+                            dest.unsafeBackwardSet.AddAll(cond.Context.AsSpan(suffixStart));
                             prevDestCond.Next = destIndex;
                         }
                     }
