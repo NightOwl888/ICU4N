@@ -467,11 +467,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>SimpleFormatter.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Text\UnicodeSet.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UnicodeSet.generated.tt</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -545,10 +540,6 @@
     <None Update="Text\SimpleFormatter.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SimpleFormatter.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Text\UnicodeSet.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UnicodeSet.generated.cs</LastGenOutput>
     </None>
   </ItemGroup>
 

@@ -752,7 +752,8 @@ namespace ICU4N.Dev.Test.Lang
             if (!set.ContainsNone(exp)) { Errln("FAIL: containsNone(UnicodeSet)"); }
             if (set.ContainsSome(exp)) { Errln("FAIL: containsSome(UnicodeSet)"); }
 
-            if (set.ContainsNone((char)0x61, (char)0x7A))
+            //if (set.ContainsNone((char)0x61, (char)0x7A))
+            if (!set.Overlaps((char)0x61, (char)0x7A)) // ICU4N: ContainsNone in Java == !Overlaps in .NET
             {
                 Errln("FAIL: containsNone(char, char)");
             }
@@ -760,7 +761,8 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("FAIL: containsSome(char, char)");
             }
-            if (!set.ContainsNone((char)0x41, (char)0x5A))
+            //if (!set.ContainsNone((char)0x41, (char)0x5A))
+            if (set.Overlaps((char)0x41, (char)0x5A)) // ICU4N: ContainsNone in Java == !Overlaps in .NET
             {
                 Errln("FAIL: containsNone(char, char)");
             }

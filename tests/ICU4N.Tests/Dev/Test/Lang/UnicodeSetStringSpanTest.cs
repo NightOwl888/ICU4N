@@ -1260,7 +1260,8 @@ namespace ICU4N.Dev.Test.Lang
             UnicodeSet crlf = new UnicodeSet().Add('\n').Add('\r').Add("\r\n");
             // a set with no "irrelevant" string but some interesting overlaps
             UnicodeSet ab_cd = new UnicodeSet().Add('a').Add("ab").Add("abc").Add("cd");
-            String s = "ab\n\r\r\n" + UTF16.ValueOf(0x50000) + "abcde";
+            string sStr = StringHelper.Concat("ab\n\r\r\n".AsSpan(), UTF16.ValueOf(0x50000, stackalloc char[2]), "abcde".AsSpan());
+            ReadOnlySpan<char> s = sStr.AsSpan();
             int count = 0;
             assertEquals("abc span[8, 11[", 11,
                     abc.SpanAndCount(s, 8, SpanCondition.Simple, out count));
