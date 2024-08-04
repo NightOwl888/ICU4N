@@ -1,16 +1,13 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Impl.Locale;
-using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
-using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Resources;
-using System.Text;
 using System.Threading;
 using JCG = J2N.Collections.Generic;
 
@@ -75,16 +72,16 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Map from resource key to <see cref="CapitalizationContextUsage"/> value
         /// </summary>
-        private static readonly IDictionary<string, CapitalizationContextUsage> contextUsageTypeMap
+        private static readonly Dictionary<ResourceKey, CapitalizationContextUsage> contextUsageTypeMap
             // ICU4N: Avoid static constructor and initialize inline
-            = new Dictionary<string, CapitalizationContextUsage>
+            = new Dictionary<ResourceKey, CapitalizationContextUsage>()
             {
-                {"languages", CapitalizationContextUsage.Language},
-                {"script",    CapitalizationContextUsage.Script},
-                {"territory", CapitalizationContextUsage.Territory},
-                {"variant",   CapitalizationContextUsage.Variant},
-                {"key",       CapitalizationContextUsage.Key},
-                {"keyValue",  CapitalizationContextUsage.KeyValue},
+                {new ResourceKey("languages"), CapitalizationContextUsage.Language},
+                {new ResourceKey("script"),    CapitalizationContextUsage.Script},
+                {new ResourceKey("territory"), CapitalizationContextUsage.Territory},
+                {new ResourceKey("variant"),   CapitalizationContextUsage.Variant},
+                {new ResourceKey("key"),       CapitalizationContextUsage.Key},
+                {new ResourceKey("keyValue"),  CapitalizationContextUsage.KeyValue},
             };
 
         /// <summary>
@@ -98,9 +95,16 @@ namespace ICU4N.Globalization
         private static string ToTitleWholeStringNoLowercase(UCultureInfo culture, string s)
         {
             var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            ToTitleWholeStringNoLower.Apply(
-                culture.ToCultureInfo(), null, s.AsMemory(), ref sb, null);
-            return sb.ToString();
+            try
+            {
+                ToTitleWholeStringNoLower.Apply(
+                    culture.ToCultureInfo(), null, s.AsMemory(), ref sb, null);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
         }
 
         // ICU4N: Removed static GetInstance() method and moved the cache to the DefaultCultureDisplayNamesFactory
@@ -120,7 +124,7 @@ namespace ICU4N.Globalization
                 IResourceTable contextsTable = value.GetTable();
                 for (int i = 0; contextsTable.GetKeyAndValue(i, key, value); ++i)
                 {
-                    if (!contextUsageTypeMap.TryGetValue(key.ToString(), out CapitalizationContextUsage usage))
+                    if (!contextUsageTypeMap.TryGetValue(key, out CapitalizationContextUsage usage))
                     {
                         continue;
                     }
@@ -389,7 +393,7 @@ namespace ICU4N.Globalization
                         else if (!key.Equals(keyDisplayName))
                         {
                             string keyValue = SimpleFormatterImpl.FormatCompiledPattern(
-                            keyTypeFormat.AsSpan(), keyDisplayName, valueDisplayName);
+                                keyTypeFormat.AsSpan(), keyDisplayName, valueDisplayName);
                             AppendWithSep(keyValue, ref buf);
                         }
                         else

@@ -263,7 +263,7 @@ namespace ICU4N.Util
                 for (int i2 = 0; unitTypesTable.GetKeyAndValue(i2, key, value); ++i2)
                 {
                     // Skip "compound" and "coordinate" since they are treated differently from the other units
-                    if (key.ContentEquals("compound") || key.ContentEquals("coordinate"))
+                    if (key.SequenceEqual("compound") || key.SequenceEqual("coordinate"))
                     {
                         continue;
                     }

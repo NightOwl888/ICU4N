@@ -1269,7 +1269,7 @@ namespace ICU4N.Text
                     UResourceType type = value.Type;
                     if (type == UResourceType.String)
                     {
-                        if (!hasDefault && key.ContentEquals("default"))
+                        if (!hasDefault && key.SequenceEqual("default"))
                         {
                             string defcoll = value.GetString();
                             if (!string.IsNullOrEmpty(defcoll))

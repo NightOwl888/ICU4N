@@ -1,4 +1,5 @@
 ﻿using J2N.Collections.Generic.Extensions;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,10 +85,77 @@ namespace ICU4N.Impl
 
         // ICU4N specific: OrNullFromString(ICharSequence keyword) moved to StandardPlural.generated.tt
 
+        /// <summary>
+        /// Returns the plural form corresponding to the keyword, or <c>null</c>.
+        /// </summary>
+        /// <param name="keyword">Keyword for example "few" or "other".</param>
+        /// <returns>The plural form corresponding to the keyword, or null.</returns>
+        public static StandardPlural? OrNullFromString(ResourceKey keyword)
+        {
+            switch (keyword.Length)
+            {
+                case 3:
+                    if (keyword.SequenceEqual("one"))
+                    {
+                        return StandardPlural.One;
+                    }
+                    else if (keyword.SequenceEqual("two"))
+                    {
+                        return StandardPlural.Two;
+                    }
+                    else if (keyword.SequenceEqual("few"))
+                    {
+                        return StandardPlural.Few;
+                    }
+                    break;
+                case 4:
+                    if (keyword.SequenceEqual("many"))
+                    {
+                        return StandardPlural.Many;
+                    }
+                    else if (keyword.SequenceEqual("zero"))
+                    {
+                        return StandardPlural.Zero;
+                    }
+                    break;
+                case 5:
+                    if (keyword.SequenceEqual("other"))
+                    {
+                        return StandardPlural.Other;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return null;
+        }
+
         // ICU4N specific: OrOtherFromString(ICharSequence keyword) moved to StandardPlural.generated.tt
 
         // ICU4N specific: FromString(ICharSequence keyword) moved to StandardPlural.generated.tt and
         // made into TryFromString
+
+        /// <summary>
+        /// Returns the plural form corresponding to the keyword.
+        /// </summary>
+        /// <param name="keyword">Keyword for example "few" or "other".</param>
+        /// <param name="result">>When this method returns, contains the index of the plural form corresponding to the keyword, otherwise
+        /// <see cref="T:default(StandardPlural)"/>. This parameter is passed uninitialized.</param>
+        /// <returns><c>true</c> if the <paramref name="keyword"/> is valid; otherwise <c>false</c>.</returns>
+        public static bool TryFromString(ResourceKey keyword, out StandardPlural result)
+        {
+            StandardPlural? p = OrNullFromString(keyword);
+            if (p != null)
+            {
+                result = p.Value;
+                return true;
+            }
+            else
+            {
+                result = default(StandardPlural);
+                return false;
+            }
+        }
 
         // ICU4N specific: IndexOrNegativeFromString(ICharSequence keyword) moved to StandardPlural.generated.tt
 

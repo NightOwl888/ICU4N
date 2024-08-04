@@ -500,7 +500,7 @@ namespace ICU4N.Impl
             ICUResourceBundleImpl impl = (ICUResourceBundleImpl)this;
             readerValue.reader = impl.wholeBundle.reader;
             readerValue.res = impl.GetResource();
-            key.SetString(this.m_key != null ? this.m_key : "");
+            key.SetValue(this.m_key != null ? this.m_key : "");
             sink.Put(key, readerValue, m_parent == null);
             if (m_parent != null)
             {

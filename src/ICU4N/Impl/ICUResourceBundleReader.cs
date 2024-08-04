@@ -548,22 +548,22 @@ namespace ICU4N.Impl
         {
             if (keyOffset < localKeyLimit)
             {
-                key.SetBytes(keyBytes, keyOffset);
+                key.SetValue(keyBytes, keyOffset);
             }
             else
             {
-                key.SetBytes(poolBundleReader.keyBytes, keyOffset - localKeyLimit);
+                key.SetValue(poolBundleReader.keyBytes, keyOffset - localKeyLimit);
             }
         }
         private void SetKeyFromKey32(int keyOffset, ResourceKey key)
         {
             if (keyOffset >= 0)
             {
-                key.SetBytes(keyBytes, keyOffset);
+                key.SetValue(keyBytes, keyOffset);
             }
             else
             {
-                key.SetBytes(poolBundleReader.keyBytes, keyOffset & 0x7fffffff);
+                key.SetValue(poolBundleReader.keyBytes, keyOffset & 0x7fffffff);
             }
         }
         private int CompareKeys(ReadOnlySpan<char> key, char keyOffset)

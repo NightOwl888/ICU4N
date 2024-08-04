@@ -33,12 +33,12 @@ namespace ICU4N.Numerics
                 IResourceTable pluralsTable = value.GetTable();
                 for (int i = 0; pluralsTable.GetKeyAndValue(i, key, value); ++i)
                 {
-                    if (key.ContentEquals("dnam") || key.ContentEquals("per"))
+                    if (key.SequenceEqual("dnam") || key.SequenceEqual("per"))
                     {
                         continue;
                     }
                     //StandardPlural plural = StandardPlural.fromString(key);
-                    StandardPluralUtil.TryFromString(key.AsSpan(), out StandardPlural plural); // ICU4N TODO: Throw here?
+                    StandardPluralUtil.TryFromString(key, out StandardPlural plural); // ICU4N TODO: Throw here?
                     if (output.ContainsKey(plural))
                     {
                         continue;
