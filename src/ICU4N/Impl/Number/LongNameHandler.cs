@@ -38,7 +38,7 @@ namespace ICU4N.Numerics
                         continue;
                     }
                     //StandardPlural plural = StandardPlural.fromString(key);
-                    StandardPluralUtil.TryFromString(key, out StandardPlural plural); // ICU4N TODO: Throw here?
+                    StandardPluralUtil.TryGetValue(key, out StandardPlural plural); // ICU4N TODO: Throw here?
                     if (output.ContainsKey(plural))
                     {
                         continue;
@@ -81,7 +81,7 @@ namespace ICU4N.Numerics
             {
                 String pluralKeyword = e.Key;
                 //StandardPlural plural = StandardPlural.fromString(e.Key);
-                StandardPluralUtil.TryFromString(e.Key, out StandardPlural plural);
+                StandardPluralUtil.TryGetValue(e.Key, out StandardPlural plural); // ICU4N TODO: Throw here?
                 String longName = currency.GetName(locale, Currency.PluralLongName, pluralKeyword, out bool _);
                 String simpleFormat = e.Value;
                 // Example pattern from data: "{0} {1}"

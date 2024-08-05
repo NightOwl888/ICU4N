@@ -183,12 +183,11 @@ namespace ICU4N.Impl
 
             public override string GetPluralName(string isoCode, string pluralKey)
             {
-                StandardPlural? plural = StandardPluralUtil.OrNullFromString(pluralKey);
                 string[] pluralsData = FetchPluralsData(isoCode);
 
                 // See http://unicode.org/reports/tr35/#Currencies, especially the fallback rule.
                 string result = null;
-                if (plural != null)
+                if (StandardPluralUtil.TryGetValue(pluralKey, out StandardPlural plural))
                 {
                     result = pluralsData[1 + (int)plural];
                 }
@@ -576,8 +575,7 @@ namespace ICU4N.Impl
                         IResourceTable pluralsTable = value.GetTable();
                         for (int j = 0; pluralsTable.GetKeyAndValue(j, key, value); j++)
                         {
-                            StandardPlural? plural = StandardPluralUtil.OrNullFromString(key);
-                            if (plural == null)
+                            if (!StandardPluralUtil.TryGetValue(key, out _))
                             {
                                 throw new ICUException("Could not make StandardPlural from keyword " + key);
                             }
@@ -593,8 +591,7 @@ namespace ICU4N.Impl
                     IResourceTable pluralsTable = value.GetTable();
                     for (int j = 0; pluralsTable.GetKeyAndValue(j, key, value); j++)
                     {
-                        StandardPlural? plural = StandardPluralUtil.OrNullFromString(key);
-                        if (plural == null)
+                        if (!StandardPluralUtil.TryGetValue(key, out StandardPlural plural))
                         {
                             throw new ICUException("Could not make StandardPlural from keyword " + key);
                         }

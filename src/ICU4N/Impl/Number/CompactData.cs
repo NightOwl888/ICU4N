@@ -92,7 +92,7 @@ namespace ICU4N.Numerics
                 foreach (var pluralEntry in magnitudeEntry.Value)
                 {
                     //StandardPlural plural = StandardPlural.FromString(pluralEntry.Key.ToString());
-                    StandardPluralUtil.TryFromString(pluralEntry.Key, out StandardPlural plural); // ICU4N TODO: Throw here?
+                    StandardPluralUtil.TryGetValue(pluralEntry.Key, out StandardPlural plural); // ICU4N TODO: Throw here?
                     string patternString = pluralEntry.Value;
                     patterns[GetIndex(magnitude, plural)] = patternString;
                     int numZeros = CountZeros(patternString);
@@ -189,7 +189,7 @@ namespace ICU4N.Numerics
                         // Skip this magnitude/plural if we already have it from a child locale.
                         // Note: This also skips USE_FALLBACK entries.
                         //StandardPlural plural = StandardPluralUtil.FromString(key.ToString());
-                        StandardPluralUtil.TryFromString(key, out StandardPlural plural); // ICU4N TODO: Throw here?
+                        StandardPluralUtil.TryGetValue(key, out StandardPlural plural); // ICU4N TODO: Throw here?
                         if (data.patterns[GetIndex(magnitude, plural)] != null)
                         {
                             continue;

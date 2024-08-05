@@ -243,7 +243,7 @@ namespace ICU4N.Numerics
 #pragma warning disable CS0618 // Type or member is obsolete
                 string ruleString = rules.Select(this);
 #pragma warning restore CS0618 // Type or member is obsolete
-                return StandardPluralUtil.OrOtherFromString(ruleString);
+                return StandardPluralUtil.GetValueOrOther(ruleString);
             }
         }
 

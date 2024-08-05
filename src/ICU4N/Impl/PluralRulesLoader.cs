@@ -576,9 +576,9 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    StandardPluralUtil.TryFromString(row[0], out StandardPlural start);
-                    StandardPluralUtil.TryFromString(row[1], out StandardPlural end);
-                    StandardPluralUtil.TryFromString(row[2], out StandardPlural result);
+                    StandardPluralUtil.TryGetValue(row[0], out StandardPlural start);
+                    StandardPluralUtil.TryGetValue(row[1], out StandardPlural end);
+                    StandardPluralUtil.TryGetValue(row[2], out StandardPlural result);
 #pragma warning disable 612, 618
                     pr!.Add(start, end, result);
 #pragma warning restore 612, 618
