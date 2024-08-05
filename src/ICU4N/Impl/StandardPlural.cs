@@ -53,6 +53,10 @@ namespace ICU4N.Impl
             ((StandardPlural[])Enum.GetValues(typeof(StandardPlural))).AsReadOnly();
 #endif
 
+        private static readonly string[] keywords = new string[] {
+            "zero", "one", "two", "few", "many", "other"
+        };
+
         /// <summary>
         /// Gets an unmodifiable List of all standard plural form constants.
         /// <see cref="IList{T}"/> version of <see cref="StandardPlural"/>.
@@ -71,16 +75,11 @@ namespace ICU4N.Impl
         /// <returns>The lowercase CLDR keyword string for the plural form.</returns>
         public static string GetKeyword(this StandardPlural standardPlural)
         {
-            switch (standardPlural)
-            {
-                case StandardPlural.Zero: return "zero";
-                case StandardPlural.One: return "one";
-                case StandardPlural.Two: return "two";
-                case StandardPlural.Few: return "few";
-                case StandardPlural.Many: return "many";
-                case StandardPlural.Other: return "other";
-                default: throw new ArgumentOutOfRangeException(nameof(standardPlural));
-            }
+            int index = (int)standardPlural;
+            if (index < 0 || index >= keywords.Length)
+                throw new ArgumentOutOfRangeException(nameof(standardPlural));
+
+            return keywords[index];
         }
 
         // ICU4N specific: OrNullFromString(ICharSequence keyword) moved to StandardPlural.generated.tt
