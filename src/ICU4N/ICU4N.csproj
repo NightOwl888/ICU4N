@@ -422,11 +422,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>SimpleFormatterImpl.generated.tt</DependentUpon>
     </Compile>
-    <Compile Update="Impl\Utility.generated.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Utility.generated.tt</DependentUpon>
-    </Compile>
     <Compile Update="Support\FormatNumberRuleBased.generated.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -479,10 +474,6 @@
     <None Update="Impl\SimpleFormatterImpl.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SimpleFormatterImpl.generated.cs</LastGenOutput>
-    </None>
-    <None Update="Impl\Utility.generated.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Utility.generated.cs</LastGenOutput>
     </None>
     <None Update="Support\FormatNumberRuleBased.generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
