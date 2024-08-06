@@ -1235,33 +1235,8 @@ namespace ICU4N.Impl
             'U', 'V', 'W', 'X', 'Y', 'Z'
         };
 
-        // ICU4N specific - RecursiveAppendNumber(IAppendable result, int n,
-        //    int radix, int minDigits) moved to Utility.generated.tt
-
-        /// <summary>
-        /// Append the digits of a positive integer to the given
-        /// <see cref="ValueStringBuilder"/> in the given radix. This is
-        /// done recursively since it is easiest to generate the low-
-        /// order digit first, but it must be appended last.
-        /// </summary>
-        /// <param name="result">The <see cref="ValueStringBuilder"/> to append to.</param>
-        /// <param name="n">The positive integer.</param>
-        /// <param name="radix">The radix, from 2 to 36 inclusive.</param>
-        /// <param name="minDigits">The minimum number of digits to append.</param>
-        private static void RecursiveAppendNumber(ref ValueStringBuilder result, int n,
-            int radix, int minDigits)
-        {
-            int digit = n % radix;
-
-            if (n >= radix || minDigits > 1)
-            {
-                RecursiveAppendNumber(ref result, n / radix, radix, minDigits - 1);
-            }
-            result.Append(DIGITS[digit]);
-        }
-
-        // ICU4N specific - AppendNumber(T result, int n,
-        //    int radix, int minDigits) where T : IAppendable moved to Utility.generated.tt
+        // ICU4N: Factored out RecursiveAppendNumber(IAppendable result, int n,
+        //    int radix, int minDigits) and loop inside AppendNumber() instead
 
         /// <summary>
         /// Append a number to the given <see cref="StringBuilder"/> in the given radix.
@@ -1277,6 +1252,7 @@ namespace ICU4N.Impl
         /// digit is always emitted regardless of this parameter.
         /// </param>
         /// <returns>A reference to result.</returns>
+        // ICU4N: Refactored to eliminate recursion to keep the stack size small
         internal static void AppendNumber(this ref ValueStringBuilder result, int n,
             int radix, int minDigits)
         {
@@ -1284,18 +1260,33 @@ namespace ICU4N.Impl
             {
                 throw new ArgumentException("Illegal radix " + radix);
             }
-
             int abs = n;
-
             if (n < 0)
             {
                 abs = -n;
-                result.Append("-");
+                result.Append('-');
             }
+            // Pre-count the amount to allocate
+            int count = 1;
+            while ((n /= radix) != 0)
+                count++;
+            if (count < minDigits)
+                count = minDigits;
 
-            RecursiveAppendNumber(ref result, abs, radix, minDigits); // ICU4N TODO: Append to the ValueStringBuilder and then call ReverseText on the part we want to reverse rather than using recursion.
+            Span<char> buffer = result.AppendSpan(count);
+
+            // Append the actual number
+            do
+            {
+                int digit = abs % radix;
+                buffer[--count] = DIGITS[digit];
+
+            } while ((abs /= radix) != 0);
+
+            // Fill any remaining space with zeros
+            while (--count >= 0)
+                buffer[count] = '0';
         }
-
 
         /// <summary>
         /// Parse an unsigned 31-bit integer at the given offset.  Use
