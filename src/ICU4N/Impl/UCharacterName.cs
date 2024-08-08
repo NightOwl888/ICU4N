@@ -140,8 +140,7 @@ namespace ICU4N.Impl
                 while ((lowerCaseNameLength = name.ToLowerInvariant(nameBuffer)) < 0)
                 {
                     // rare - we didn't have enough buffer
-                    if (nameArray is not null)
-                        ArrayPool<char>.Shared.Return(nameArray);
+                    ArrayPool<char>.Shared.ReturnIfNotNull(nameArray);
 
                     nameLengthEstimate *= 2;
                     nameBuffer = nameArray = ArrayPool<char>.Shared.Rent(nameLengthEstimate);
@@ -163,8 +162,7 @@ namespace ICU4N.Impl
                 while ((upperCaseNameLength = name.ToUpperInvariant(nameBuffer)) < 0)
                 {
                     // rare - we didn't have enough buffer
-                    if (nameArray is not null)
-                        ArrayPool<char>.Shared.Return(nameArray);
+                    ArrayPool<char>.Shared.ReturnIfNotNull(nameArray);
 
                     nameLengthEstimate *= 2;
                     nameBuffer = nameArray = ArrayPool<char>.Shared.Rent(nameLengthEstimate);
@@ -211,8 +209,7 @@ namespace ICU4N.Impl
             }
             finally
             {
-                if (nameArray is not null)
-                    ArrayPool<char>.Shared.Return(nameArray);
+                ArrayPool<char>.Shared.ReturnIfNotNull(nameArray);
             }
         }
 
@@ -1792,8 +1789,7 @@ namespace ICU4N.Impl
             }
             finally
             {
-                if (tokenLengthsArray is not null)
-                    ArrayPool<byte>.Shared.Return(tokenLengthsArray);
+                ArrayPool<byte>.Shared.ReturnIfNotNull(tokenLengthsArray);
             }
 
             // set gMax... - name length last for threading

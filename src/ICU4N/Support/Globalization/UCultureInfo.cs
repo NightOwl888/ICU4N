@@ -723,8 +723,7 @@ namespace ICU4N.Globalization
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
         }
 
@@ -907,8 +906,7 @@ namespace ICU4N.Globalization
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
         }
 

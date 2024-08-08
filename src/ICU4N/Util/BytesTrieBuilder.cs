@@ -56,8 +56,7 @@ namespace ICU4N.Util
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
             return this;
         }

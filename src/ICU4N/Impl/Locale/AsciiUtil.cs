@@ -1,4 +1,6 @@
-﻿using ICU4N.Text;
+﻿using ICU4N;
+using ICU4N.Support;
+using ICU4N.Text;
 using System;
 using System.Buffers;
 using System.Runtime.CompilerServices;
@@ -95,13 +97,16 @@ namespace ICU4N.Impl.Locale
                 }
             }
 
-            bool s1UsePool = s1Length > CharStackBufferSize, s2UsePool = s2Length > CharStackBufferSize;
-            char[]? s1PoolArray = s1UsePool ? ArrayPool<char>.Shared.Rent(s1Length) : null;
-            char[]? s2PoolArray = s2UsePool ? ArrayPool<char>.Shared.Rent(s2Length) : null;
+            char[]? s1PoolArray = null;
+            char[]? s2PoolArray = null;
             try
             {
-                Span<char> s1Buffer = s1UsePool ? s1PoolArray : stackalloc char[s1Length];
-                Span<char> s2Buffer = s2UsePool ? s2PoolArray : stackalloc char[s2Length];
+                Span<char> s1Buffer = s1Length > CharStackBufferSize
+                    ? (s1PoolArray = ArrayPool<char>.Shared.Rent(s1Length))
+                    : stackalloc char[s1Length];
+                Span<char> s2Buffer = s2Length > CharStackBufferSize
+                    ? (s2PoolArray = ArrayPool<char>.Shared.Rent(s2Length))
+                    : stackalloc char[s2Length];
 
                 ReadOnlySpan<char> s1Lowered = AsciiUtil.ToLower(s1, s1Buffer);
                 ReadOnlySpan<char> s2Lowered = AsciiUtil.ToLower(s2, s2Buffer);
@@ -110,10 +115,8 @@ namespace ICU4N.Impl.Locale
             }
             finally
             {
-                if (s1PoolArray is not null)
-                    ArrayPool<char>.Shared.Return(s1PoolArray);
-                if (s2PoolArray is not null)
-                    ArrayPool<char>.Shared.Return(s2PoolArray);
+                ArrayPool<char>.Shared.ReturnIfNotNull(s1PoolArray);
+                ArrayPool<char>.Shared.ReturnIfNotNull(s2PoolArray);
             }
         }
 

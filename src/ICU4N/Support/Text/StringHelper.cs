@@ -41,8 +41,7 @@ namespace ICU4N.Text
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
 #endif
         }
@@ -74,8 +73,7 @@ namespace ICU4N.Text
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
 #endif
         }
@@ -108,8 +106,7 @@ namespace ICU4N.Text
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
 
 #endif
@@ -140,8 +137,7 @@ namespace ICU4N.Text
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
 
 
@@ -173,8 +169,7 @@ namespace ICU4N.Text
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
         }
 

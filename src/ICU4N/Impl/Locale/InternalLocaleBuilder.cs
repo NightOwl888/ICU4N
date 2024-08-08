@@ -249,8 +249,7 @@ namespace ICU4N.Impl.Locale
                 }
                 finally
                 {
-                    if (pooledArray is not null)
-                        ArrayPool<char>.Shared.Return(pooledArray);
+                    ArrayPool<char>.Shared.ReturnIfNotNull(pooledArray);
                 }
             }
             return this;

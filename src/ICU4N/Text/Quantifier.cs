@@ -131,8 +131,7 @@ namespace ICU4N.Text
             }
             finally
             {
-                if (matcherPatternArray is not null)
-                    ArrayPool<char>.Shared.Return(matcherPatternArray);
+                ArrayPool<char>.Shared.ReturnIfNotNull(matcherPatternArray);
             }
             if (minCount == 0)
             {

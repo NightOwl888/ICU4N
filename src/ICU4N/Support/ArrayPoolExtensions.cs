@@ -1,7 +1,7 @@
 ﻿using System.Buffers;
 #nullable enable
 
-namespace ICU4N.Support
+namespace ICU4N
 {
     /// <summary>
     /// Extensions for <see cref="ArrayPool{T}"/>.

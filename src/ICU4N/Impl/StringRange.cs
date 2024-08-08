@@ -222,8 +222,7 @@ namespace ICU4N.Impl
                 }
                 finally
                 {
-                    if (arrayToReturnToPool is not null)
-                        ArrayPool<int>.Shared.Return(arrayToReturnToPool);
+                    ArrayPool<int>.Shared.ReturnIfNotNull(arrayToReturnToPool);
                 }
             }
             public bool Merge(int pivot, Ranges other)
@@ -367,10 +366,8 @@ namespace ICU4N.Impl
             }
             finally
             {
-                if (startCpsArrayToReturnToPool is not null)
-                    ArrayPool<int>.Shared.Return(startCpsArrayToReturnToPool);
-                if (endCpsArrayToReturnToPool is not null)
-                    ArrayPool<int>.Shared.Return(endCpsArrayToReturnToPool);
+                ArrayPool<int>.Shared.ReturnIfNotNull(startCpsArrayToReturnToPool);
+                ArrayPool<int>.Shared.ReturnIfNotNull(endCpsArrayToReturnToPool);
             }
         }
 

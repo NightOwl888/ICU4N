@@ -359,8 +359,7 @@ namespace ICU4N.Impl
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<int>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<int>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
         }
 

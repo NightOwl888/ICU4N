@@ -14,6 +14,7 @@
     <Compile Include="..\..\ICU4N\Impl\LocaleIDParser.cs" Link="Shared\LocaleIDParser.cs" />
     <Compile Include="..\..\ICU4N\Impl\LocaleIDs.cs" Link="Shared\LocaleIDs.cs" />
     <Compile Include="..\..\ICU4N\Impl\Locale\AsciiUtil.cs" Link="Shared\AsciiUtil.cs" />
+    <Compile Include="..\..\ICU4N\Support\ArrayPoolExtensions.cs" Link="Shared\ArrayPoolExtensions.cs" />
     <Compile Include="..\..\ICU4N\Support\Collections\DictionaryExtensions.cs" Link="Shared\DictionaryExtensions.cs" />
     <Compile Include="..\..\ICU4N\Support\Globalization\LocaleID.cs" Link="Shared\LocaleID.cs" />
     <Compile Include="..\..\ICU4N\Support\Text\ValueStringBuilder.cs" Link="Shared\ValueStringBuilder.cs" />

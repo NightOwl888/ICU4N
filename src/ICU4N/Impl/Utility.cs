@@ -728,8 +728,7 @@ namespace ICU4N.Impl
             }
             finally
             {
-                if (arrayToReturnToPool is not null)
-                    ArrayPool<char>.Shared.Return(arrayToReturnToPool);
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
             }
         }
 
@@ -1633,8 +1632,7 @@ namespace ICU4N.Impl
                 }
                 finally
                 {
-                    if (matcherPatternArray is not null)
-                        ArrayPool<char>.Shared.Return(matcherPatternArray);
+                    ArrayPool<char>.Shared.ReturnIfNotNull(matcherPatternArray);
                 }
             }
         }
