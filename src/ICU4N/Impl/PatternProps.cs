@@ -139,33 +139,23 @@ namespace ICU4N.Impl
 
         /// <returns><paramref name="s"/> except with leading and trailing Pattern_White_Space removed.</returns>
         public static string TrimWhiteSpace(string s)
-        {
-            return s.Trim(WhiteSpace);
-        }
+            => s.Trim(WhiteSpace);
 
         /// <returns><paramref name="s"/> except with leading and trailing Pattern_White_Space removed.</returns>
         public static ReadOnlySpan<char> TrimWhiteSpace(ReadOnlySpan<char> s)
-        {
-            return System.MemoryExtensions.Trim(s, WhiteSpace);
-        }
+            => s.Trim(WhiteSpace);
 
         /// <returns><paramref name="s"/> except with leading and trailing Pattern_White_Space removed.</returns>
         public static Span<char> TrimWhiteSpace(Span<char> s)
-        {
-            return System.MemoryExtensions.Trim(s, WhiteSpace);
-        }
+            => s.Trim(WhiteSpace);
 
         /// <returns><paramref name="s"/> except with leading and trailing Pattern_White_Space removed.</returns>
         public static ReadOnlyMemory<char> TrimWhiteSpace(ReadOnlyMemory<char> s)
-        {
-            return System.MemoryExtensions.Trim(s, WhiteSpace);
-        }
+            => s.Trim(WhiteSpace);
 
         /// <returns><paramref name="s"/> except with leading and trailing Pattern_White_Space removed.</returns>
         public static Memory<char> TrimWhiteSpace(Memory<char> s)
-        {
-            return System.MemoryExtensions.Trim(s, WhiteSpace);
-        }
+            => s.Trim(WhiteSpace);
 
         /// <summary>
         /// Tests whether the string contains a "pattern identifier", that is,
