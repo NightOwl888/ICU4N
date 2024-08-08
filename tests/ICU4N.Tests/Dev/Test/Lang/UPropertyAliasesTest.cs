@@ -165,9 +165,8 @@ namespace ICU4N.Dev.Test.Lang
                 for (choice = 0; ; ++choice)
                 {
                     string name = null;
-                    if (UChar.TryGetPropertyName(p, choice, out ReadOnlySpan<char> nameSpan))
+                    if (UChar.TryGetPropertyName(p, choice, out name))
                     {
-                        name = nameSpan.IsEmpty ? null : nameSpan.ToString();
                         if (!sawProp) Log("prop " + p + ":");
                         string n = (name != null) ? ("\"" + name + '"') : "null";
                         Log(" " + choice + "=" + n);
@@ -180,8 +179,7 @@ namespace ICU4N.Dev.Test.Lang
                     if (name != null)
                     {
                         /* test reverse mapping */
-                        //rev = UChar.GetPropertyEnum(name);
-                        UChar.TryGetPropertyEnum(name, out rev);
+                        rev = UChar.GetPropertyEnum(name);
                         if (rev != (int)p)
                         {
                             Errln("Property round-trip failure: " + p + " -> " +
@@ -192,11 +190,8 @@ namespace ICU4N.Dev.Test.Lang
                 if (sawProp)
                 {
                     /* looks like a valid property; check the values */
-                    string pname = null;
-                    if (UChar.TryGetPropertyName(p, NameChoice.Long, out ReadOnlySpan<char> pnameSpan))
-                    {
-                        pname = pnameSpan.ToString();
-                    }
+                    string pname;
+                    UChar.TryGetPropertyName(p, NameChoice.Long, out pname);
                     int max = 0;
                     if (p == UProperty.Canonical_Combining_Class)
                     {
@@ -220,10 +215,9 @@ namespace ICU4N.Dev.Test.Lang
                         for (choice = 0; ; ++choice)
                         {
                             string vname = null;
-                            if (UChar.TryGetPropertyValueName(p, v, choice, out ReadOnlySpan<char> vnameSpan))
+                            if (UChar.TryGetPropertyValueName(p, v, choice, out vname))
                             {
-                                vname = vnameSpan.ToString();
-                                string n = "\"" + vname + '"';
+                                string n = (vname != null) ? ("\"" + vname + '"') : "null";
                                 if (!sawValue) Log(" " + pname + ", value " + v + ":");
                                 Log(" " + choice + "=" + n);
                                 sawValue = true;
@@ -240,7 +234,7 @@ namespace ICU4N.Dev.Test.Lang
                                 {
                                     Errln("Value round-trip failure (" + pname +
                                           "): " + v + " -> " +
-                                          vname.ToString() + " -> " + rev);
+                                          vname + " -> " + rev);
                                 }
                             }
                         }
@@ -283,9 +277,10 @@ namespace ICU4N.Dev.Test.Lang
                                             UProperty.Canonical_Combining_Class);
                     i++)
             {
+                string valueName;
                 if (!UChar.TryGetPropertyValueName(
                                             UProperty.Canonical_Combining_Class,
-                                            i, NameChoice.Long, out ReadOnlySpan<char> valueName))
+                                            i, NameChoice.Long, out valueName))
                 {
                     Errln("0x" + i.ToHexString()
                         + " should have a null property value name");

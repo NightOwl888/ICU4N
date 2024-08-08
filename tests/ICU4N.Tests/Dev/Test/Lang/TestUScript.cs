@@ -276,14 +276,9 @@ namespace ICU4N.Dev.Test.Lang
             int v, rev;
             for (int i = 0; i < UScript.CodeLimit; i++)
             {
-                string name = null;
-                if (!UScript.TryGetName(i, out ReadOnlySpan<char> nameSpan) || nameSpan.Equals("", StringComparison.Ordinal))
+                if (!UScript.TryGetName(i, out string name) || name.Equals(""))
                 {
                     Errln("FAILED: getName for code : " + i);
-                }
-                else
-                {
-                    name = nameSpan.ToString();
                 }
                 if (name != null)
                 {
@@ -295,14 +290,9 @@ namespace ICU4N.Dev.Test.Lang
                               name + " -> " + rev);
                     }
                 }
-                string shortName = null;
-                if (!UScript.TryGetShortName(i, out ReadOnlySpan<char> shortNameSpan) || shortNameSpan.Equals("", StringComparison.Ordinal))
+                if (!UScript.TryGetShortName(i, out string shortName) || shortName.Equals(""))
                 {
                     Errln("FAILED: getName for code : " + i);
-                }
-                else
-                {
-                    shortName = shortNameSpan.ToString();
                 }
                 if (shortName != null)
                 {
@@ -354,10 +344,10 @@ namespace ICU4N.Dev.Test.Lang
                 if (code == UScript.InvalidCode)
                     Errln("UScript.GetScript for codepoint 0x" + Hex(i) + " failed");
 
-                if (!UScript.TryGetName(code, out ReadOnlySpan<char> id) || id.IndexOf("INVALID", StringComparison.Ordinal) >= 0)
+                if (!UScript.TryGetName(code, out string id) || id.IndexOf("INVALID", StringComparison.Ordinal) >= 0)
                     Errln("UScript.GetScript for codepoint 0x" + Hex(i) + " failed");
 
-                if (!UScript.TryGetShortName(code, out ReadOnlySpan<char> abbr) || abbr.IndexOf("INV", StringComparison.Ordinal) >= 0)
+                if (!UScript.TryGetShortName(code, out string abbr) || abbr.IndexOf("INV", StringComparison.Ordinal) >= 0)
                     Errln("UScript.GetScript for codepoint 0x" + Hex(i) + " failed");
             }
         }

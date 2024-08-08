@@ -187,9 +187,9 @@ namespace ICU4N.Impl
         }
 
         // ICU4N specific method for getting property name without throwing exceptions
-        private bool TryGetName(int nameGroupsIndex, int nameIndex, out ReadOnlySpan<char> result)
+        private bool TryGetName(int nameGroupsIndex, int nameIndex, out string result) // ICU4N TODO: Change result to ReadOnlySpan<char> so we don't need to allocate
         {
-            result = default;
+            result = null;
             int numNames = nameGroups[nameGroupsIndex++];
             if (nameIndex < 0 || numNames <= nameIndex)
             {
@@ -208,24 +208,21 @@ namespace ICU4N.Impl
             }
             if (nameStart == nameGroupsIndex)
             {
-                result = default;  // no name (Property[Value]Aliases.txt has "n/a")
+                result = null;  // no name (Property[Value]Aliases.txt has "n/a")
                 return true;
             }
-            result = nameGroups.AsSpan(nameStart, nameGroupsIndex - nameStart); // ICU4N: Corrected 2nd parameter
+            result = nameGroups.Substring(nameStart, nameGroupsIndex - nameStart); // ICU4N: Corrected 2nd parameter
             return true;
         }
 
         private string GetName(int nameGroupsIndex, int nameIndex)
         {
-            if (!TryGetName(nameGroupsIndex, nameIndex, out ReadOnlySpan<char> result))
+            string result;
+            if (TryGetName(nameGroupsIndex, nameIndex, out result))
             {
-                throw new IcuArgumentException("Invalid property (value) name choice");
+                return result;
             }
-            if (result.IsEmpty)
-            {
-                return null;
-            }
-            return result.ToString();
+            throw new IcuArgumentException("Invalid property (value) name choice");
         }
 
         private static int AsciiToLowercase(int c)
@@ -308,7 +305,7 @@ namespace ICU4N.Impl
         /// the <paramref name="nameChoice"/> selects among them.
         /// </summary>
         /// <stable>ICU4N 60.1</stable>
-        public bool TryGetPropertyName(UProperty property, NameChoice nameChoice, out ReadOnlySpan<char> result) // ICU4N TODO: Tests
+        public bool TryGetPropertyName(UProperty property, NameChoice nameChoice, out string result) // ICU4N TODO: Tests
         {
             result = null;
             int valueMapIndex = FindProperty((int)property);
@@ -324,7 +321,7 @@ namespace ICU4N.Impl
         /// Multiple names may be available for each value;
         /// the <paramref name="nameChoice"/> selects among them.
         /// </summary>
-        /// <seealso cref="TryGetPropertyValueName(UProperty, int, NameChoice, out ReadOnlySpan{Char})"/>
+        /// <seealso cref="TryGetPropertyValueName(UProperty, int, NameChoice, out string)"/>
         public string GetPropertyValueName(UProperty property, int value, NameChoice nameChoice) // ICU4N TODO: API - make value into enum ?
         {
             int valueMapIndex = FindProperty((int)property);
@@ -354,7 +351,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <seealso cref="GetPropertyValueName(UProperty, int, NameChoice)"/>
          // ICU4N TODO: API - make value into enum ?
-        public bool TryGetPropertyValueName(UProperty property, int value, NameChoice nameChoice, out ReadOnlySpan<char> result) // ICU4N TODO: Tests
+        public bool TryGetPropertyValueName(UProperty property, int value, NameChoice nameChoice, out string result) // ICU4N TODO: Tests
         {
             result = null;
             int valueMapIndex = FindProperty((int)property);

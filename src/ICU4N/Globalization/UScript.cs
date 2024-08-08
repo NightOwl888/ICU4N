@@ -1288,7 +1288,6 @@ namespace ICU4N.Globalization
         [SuppressMessage("Performance", "CA1802:Use literals where appropriate", Justification = "May change over time")]
         internal static readonly int CodeLimit = 178;
 
-        // ICU4N TODO: API - make TryGetCodesFromLocale() overload
         private static int[] GetCodesFromLocale(UCultureInfo locale)
         {
             // Multi-script languages, equivalent to the LocaleScript data
@@ -1327,7 +1326,6 @@ namespace ICU4N.Globalization
         /// Helper function to find the code from locale.
         /// </summary>
         /// <param name="locale">The locale.</param>
-        // ICU4N TODO: API - make TryFindCodeFromLocale() overload
         private static int[] FindCodeFromLocale(UCultureInfo locale)
         {
             int[] result = GetCodesFromLocale(locale);
@@ -1347,7 +1345,6 @@ namespace ICU4N.Globalization
         /// <param name="locale"><see cref="CultureInfo"/>.</param>
         /// <returns>The script codes array. null if the the code cannot be found.</returns>
         /// <stable>ICU 2.4</stable>
-        // ICU4N TODO: API - make TryGetCode() overload
         public static int[] GetCode(CultureInfo locale)
         {
             return FindCodeFromLocale(locale.ToUCultureInfo());
@@ -1361,7 +1358,6 @@ namespace ICU4N.Globalization
         /// <param name="locale"><see cref="UCultureInfo"/>.</param>
         /// <returns>The script codes array. null if the the code cannot be found.</returns>
         /// <stable>ICU 3.0.</stable>
-        // ICU4N TODO: API - make TryGetCode() overload
         public static int[] GetCode(UCultureInfo locale)
         {
             return FindCodeFromLocale(locale);
@@ -1379,7 +1375,6 @@ namespace ICU4N.Globalization
         /// <param name="nameOrAbbrOrLocale">Name of the script or ISO 15924 code or locale.</param>
         /// <returns>The script codes array. null if the the code cannot be found.</returns>
         /// <stable>ICU 2.4</stable>
-        // ICU4N TODO: API - make TryGetCode() overload
         public static int[] GetCode(string nameOrAbbrOrLocale)
         {
             bool triedCode = false;
@@ -1417,8 +1412,6 @@ namespace ICU4N.Globalization
         /// <param name="nameOrAbbr">Name of the script or ISO 15924 code.</param>
         /// <returns>The script code value, or <see cref="UScript.InvalidCode"/> if the code cannot be found.</returns>
         /// <stable>ICU 54</stable>
-        // ICU4N TODO: API - make overload that accepts ReadOnlySpan<char>, if possible
-        // ICU4N TODO: API - make TryGetCodeFromName() overload
         public static int GetCodeFromName(string nameOrAbbr)
         {
             // ICU4N specific - using TryGetPropertyValueEnum rather than GetPropertyValueEnumNoThrow
@@ -1590,8 +1583,8 @@ namespace ICU4N.Globalization
         /// <param name="result">Long script name as given in PropertyValueAliases.txt, or the 4-letter code.</param>
         /// <returns>true if the script code is valid, otherwise false.</returns>
         /// <seealso cref="GetName(int)"/>
-        /// <stable>ICU4N 60.1</stable>
-        public static bool TryGetName(int scriptCode, out ReadOnlySpan<char> result)
+        /// <stable>ICU4N 60.1.0</stable>
+        public static bool TryGetName(int scriptCode, out string result)
         {
             return UChar.TryGetPropertyValueName(UProperty.Script,
                     scriptCode,
@@ -1625,8 +1618,8 @@ namespace ICU4N.Globalization
         /// <returns>true if the name was retrieved, otherwise false.</returns>
         /// <exception cref="ArgumentException">If the script code is not valid.</exception>
         /// <seealso cref="GetShortName(int)"/>
-        /// <stable>ICU4N 60.1</stable>
-        public static bool TryGetShortName(int scriptCode, out ReadOnlySpan<char> result)
+        /// <stable>ICU4N 60.1.0</stable>
+        public static bool TryGetShortName(int scriptCode, out string result)
         {
             return UChar.TryGetPropertyValueName(UProperty.Script,
                     scriptCode,

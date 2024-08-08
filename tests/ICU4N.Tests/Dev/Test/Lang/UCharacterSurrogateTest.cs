@@ -31,7 +31,7 @@ namespace ICU4N.Dev.Test.Lang
                 try
                 {
                     UnicodeBlock b = UnicodeBlock
-                            .GetInstance(names[i]);
+                            .ForName(names[i]);
                     Logln("found: " + b + " for name: " + names[i]);
                 }
                 catch (Exception e)

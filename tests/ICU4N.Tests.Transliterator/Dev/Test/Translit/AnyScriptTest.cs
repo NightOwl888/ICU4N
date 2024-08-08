@@ -108,9 +108,9 @@ namespace ICU4N.Dev.Test.Translit
             Span<char> charBuffer = stackalloc char[2];
             for (int script = 0; script < UScript.CodeLimit; ++script)
             {
-                if (UScript.TryGetName(script, out ReadOnlySpan<char> name))
+                if (UScript.TryGetName(script, out string name))
                 {
-                    UnicodeSet test = new UnicodeSet().ApplyPropertyAlias("script", name.ToString());
+                    UnicodeSet test = new UnicodeSet().ApplyPropertyAlias("script", name);
                     int count = Math.Min(20, test.Count);
                     for (int i = 0; i < count; ++i)
                     {
@@ -142,10 +142,8 @@ namespace ICU4N.Dev.Test.Translit
                         continue;
                     }
 
-                    string scriptName = null;
-                    if (UScript.TryGetName(script, out ReadOnlySpan<char> scriptNameSpan))
+                    if (UScript.TryGetName(script, out string scriptName))
                     {
-                        scriptName = scriptNameSpan.ToString();
                         UCultureInfo locale = new UCultureInfo(scriptName);
                         if (locale.Language.Equals("new") || locale.Language.Equals("pau"))
                         {
@@ -174,9 +172,8 @@ namespace ICU4N.Dev.Test.Translit
                     }
 
                     string shortScriptName = "";
-                    if (UScript.TryGetName(script, out scriptNameSpan))  // 4-letter script code
+                    if (UScript.TryGetName(script, out scriptName))  // 4-letter script code
                     {
-                        scriptName = scriptNameSpan.ToString();
                         try
                         {
                             t = Transliterator.GetInstance("any-" + shortScriptName);
