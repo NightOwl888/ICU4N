@@ -2889,11 +2889,13 @@ namespace ICU4N.Dev.Test.Translit
                     Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
                 }
 
-                if (!UScript.TryGetName(code, out string id))
+                if (!UScript.TryGetName(code, out ReadOnlySpan<char> idSpan))
                     Errln("UScript.TryGetName for codepoint 0x" + Hex(i) + " failed");
+                string id = idSpan.ToString();
 
-                if (!UScript.TryGetShortName(code, out string abbr))
+                if (!UScript.TryGetShortName(code, out ReadOnlySpan<char> abbrSpan))
                     Errln("UScript.TryGetShortName for codepoint 0x" + Hex(i) + " failed");
+                string abbr = abbrSpan.ToString();
 
                 if (!scriptIdsChecked.Contains(id))
                 {

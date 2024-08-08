@@ -1,11 +1,13 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
+using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Text;
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -126,7 +128,7 @@ namespace ICU4N
     // ICU4N TODO: API Add all members of System.Char to this class
     public static partial class UChar // ICU4N specific - renamed from UCharacter to match .NET and made class static because there are no instance members
     {
-        private static int CharStackBufferSize = 32;
+        private const int CharStackBufferSize = 32;
 
         // ICU4N specific - copy UNASSIGNED from UCharacterEnums.ECharacterCategory (since we cannot inherit via interface)
 
@@ -1993,12 +1995,15 @@ namespace ICU4N
         /// <stable>ICU 3.8</stable>
         public static string GetName(string s, string separator)
         {
+            if (s is null)
+                throw new ArgumentNullException(nameof(s));
+
             if (s.Length == 1)
             { // handle common case
                 return GetName(s[0]);
             }
             int cp;
-            StringBuilder sb = new StringBuilder();
+            using ValueStringBuilder sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             for (int i = 0; i < s.Length; i += Character.CharCount(cp))
             {
                 cp = s.CodePointAt(i);
@@ -2280,10 +2285,10 @@ namespace ICU4N
         /// </returns>
         /// <seealso cref="UProperty"/>
         /// <seealso cref="NameChoice"/>
-        /// <stable>ICU4N 60.1.0</stable>
+        /// <stable>ICU4N 60.1</stable>
         // ICU4N specific
         public static bool TryGetPropertyName(UProperty property,
-                NameChoice nameChoice, out string result) // ICU4N TODO: Tests
+                NameChoice nameChoice, out ReadOnlySpan<char> result) // ICU4N TODO: Tests
         {
             return UPropertyAliases.Instance.TryGetPropertyName(property, nameChoice, out result);
         }
@@ -2499,8 +2504,11 @@ namespace ICU4N
                 // because PropertyValueAliases.txt does not contain all of them
 
                 // ICU4N specific - using TryGet version instead of falling back on exception
-                UPropertyAliases.Instance.TryGetPropertyValueName(property, value, nameChoice, out string result);
-                return result;
+                if (UPropertyAliases.Instance.TryGetPropertyValueName(property, value, nameChoice, out ReadOnlySpan<char> result) && !result.IsEmpty)
+                {
+                    return result.ToString();
+                }
+                return null;
             }
             return UPropertyAliases.Instance.GetPropertyValueName(property, value, nameChoice);
         }
@@ -2576,7 +2584,7 @@ namespace ICU4N
         /// <stable>ICU 2.4</stable>
         public static bool TryGetPropertyValueName(UProperty property,
                int value,
-               NameChoice nameChoice, out string result) // ICU4N TODO: Tests
+               NameChoice nameChoice, out ReadOnlySpan<char> result) // ICU4N TODO: Tests
         {
             if ((property == UProperty.Canonical_Combining_Class
                     || property == UProperty.Lead_Canonical_Combining_Class
@@ -4794,6 +4802,8 @@ namespace ICU4N.Text.Unicode
     /// <stable>ICU 2.4</stable>
     public sealed class UnicodeBlock
     {
+        private const int CharStackBufferSize = 32;
+
         // block id corresponding to icu4c -----------------------------------
 
         /// <stable>ICU 2.4</stable>
@@ -6465,17 +6475,36 @@ namespace ICU4N.Text.Unicode
                     UCharacterProperty.Instance.GetIntPropertyValue(ch, UProperty.Block));
         }
 
+#nullable enable
+
         /// <summary>
         /// Returns the Unicode block with the given name. This matches
         /// against the official UCD name (ignoring case).
         /// </summary>
         /// <param name="blockName">The name of the block to match.</param>
         /// <returns>The <see cref="UnicodeBlock"/> with that name.</returns>
-        /// <exception cref="ArgumentException">If the blockName could not be matched.</exception>
+        /// <exception cref="ArgumentException">If the <paramref name="blockName"/> could not be matched.</exception>
+        /// <exception cref="ArgumentNullException">If <paramref name="blockName"/> is <c>null</c>.</exception>
         /// <stable>ICU 3.0</stable>
-        public static UnicodeBlock ForName(string blockName) // ICU4N TODO: API - rename GetInstance() ? ForName is a Java-ism.
+        public static UnicodeBlock GetInstance(string blockName)
         {
-            IDictionary<string, UnicodeBlock> m = null;
+            if (blockName is null)
+                throw new ArgumentNullException(nameof(blockName));
+
+            return GetInstance(blockName.AsSpan());
+        }
+
+        /// <summary>
+        /// Returns the Unicode block with the given name. This matches
+        /// against the official UCD name (ignoring case).
+        /// </summary>
+        /// <param name="blockName">The name of the block to match.</param>
+        /// <returns>The <see cref="UnicodeBlock"/> with that name.</returns>
+        /// <exception cref="ArgumentException">If the <paramref name="blockName"/> could not be matched.</exception>
+        /// <stable>ICU 3.0</stable>
+        public static UnicodeBlock GetInstance(ReadOnlySpan<char> blockName)
+        {
+            IDictionary<string, UnicodeBlock>? m = null;
             if (mref != null)
             {
 #if FEATURE_TYPEDWEAKREFERENCE
@@ -6485,7 +6514,7 @@ namespace ICU4N.Text.Unicode
                 m = (IDictionary<string, UnicodeBlock>) mref.Target;
 #endif
             }
-            if (m == null)
+            if (m is null)
             {
                 m = new Dictionary<string, UnicodeBlock>(BLOCKS_.Length);
                 for (int i = 0; i < BLOCKS_.Length; ++i)
@@ -6493,7 +6522,15 @@ namespace ICU4N.Text.Unicode
                     UnicodeBlock b2 = BLOCKS_[i];
                     string name = TrimBlockName(
                             UChar.GetPropertyValueName(UProperty.Block, b2.ID,
-                                    NameChoice.Long));
+                                    NameChoice.Long).AsSpan());
+
+                    // ICU4N TODO: Use this instead when we fix TryGetPropertyValueName
+                    //if (!UChar.TryGetPropertyValueName(UProperty.Block, b2.ID,
+                    //                NameChoice.Long, out ReadOnlySpan<char> valueName))
+                    //{
+                    //    throw new IcuArgumentException("Invalid property (value) name choice");
+                    //}
+                    //string name = TrimBlockName(valueName);
                     m[name] = b2;
                 }
 #if FEATURE_TYPEDWEAKREFERENCE
@@ -6502,12 +6539,12 @@ namespace ICU4N.Text.Unicode
                 mref = new WeakReference(m);
 #endif
             }
-            UnicodeBlock b = m[TrimBlockName(blockName)];
-            if (b == null)
+            if (!m.TryGetValue(TrimBlockName(blockName), out UnicodeBlock? b) || b is null)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("blockName could not be matched.");
             }
             return b;
+            
         }
 #if FEATURE_TYPEDWEAKREFERENCE
         private static WeakReference<IDictionary<string, UnicodeBlock>> mref;
@@ -6515,19 +6552,39 @@ namespace ICU4N.Text.Unicode
         private static WeakReference mref;
 #endif
 
-        private static string TrimBlockName(string name)
+        private static string TrimBlockName(ReadOnlySpan<char> name)
         {
-            string upper = name.ToUpperInvariant();
-            StringBuilder result = new StringBuilder(upper.Length);
-            for (int i = 0; i < upper.Length; i++)
+            char[]? arrayToReturnToPool = null;
+            try
             {
-                char c = upper[i];
-                if (c != ' ' && c != '_' && c != '-')
+                int bufferLength = name.Length + 8;
+                Span<char> upper = bufferLength <= CharStackBufferSize
+                    ? stackalloc char[CharStackBufferSize]
+                    : (arrayToReturnToPool = ArrayPool<char>.Shared.Rent(bufferLength));
+
+                int upperNameLength = name.ToUpperInvariant(upper);
+                while (upperNameLength < 0) // rare
                 {
-                    result.Append(c);
+                    ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
+                    bufferLength *= 2;
+                    upper = arrayToReturnToPool = ArrayPool<char>.Shared.Rent(bufferLength);
+                    upperNameLength = name.ToUpperInvariant(upper);
                 }
+                int current = 0;
+                for (int i = 0; i < upperNameLength; i++)
+                {
+                    char c = upper[i];
+                    if (c != ' ' && c != '_' && c != '-')
+                    {
+                        upper[current++] = c;
+                    }
+                }
+                return upper.Slice(0, current).ToString();
             }
-            return result.ToString();
+            finally
+            {
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
+            }
         }
 
         /// <icu/>
