@@ -13,7 +13,7 @@ namespace ICU4N
     /// Extensions to <see cref="ReadOnlySpan{T}"/>, <see cref="Span{T}"/>,
     /// <see cref="ReadOnlyMemory{T}"/>, and <see cref="Memory{T}"/>.
     /// </summary>
-    internal static class MemoryExtensions
+    internal static partial class MemoryExtensions
     {
 #if !FEATURE_STRING_IMPLCIT_TO_READONLYSPAN
 
