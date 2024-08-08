@@ -3141,14 +3141,21 @@ namespace ICU4N.Text
             }
 
             ValueStringBuilder rebuiltPat = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-            RuleCharacterIterator chars =
-                    new RuleCharacterIterator(pattern, symbols, pos);
-            ApplyPattern(chars, symbols, ref rebuiltPat, options);
-            if (chars.InVariable)
+            try
             {
-                SyntaxError(chars, "Extra chars in variable value");
+                RuleCharacterIterator chars =
+                        new RuleCharacterIterator(pattern, symbols, pos);
+                ApplyPattern(chars, symbols, ref rebuiltPat, options);
+                if (chars.InVariable)
+                {
+                    SyntaxError(chars, "Extra chars in variable value");
+                }
+                pat = rebuiltPat.ToString();
             }
-            pat = rebuiltPat.ToString();
+            finally
+            {
+                rebuiltPat.Dispose();
+            }
             if (parsePositionWasNull)
             {
                 int i = pos.Index;
@@ -4311,31 +4318,21 @@ namespace ICU4N.Text
         /// Remove leading and trailing Pattern_White_Space and compress
         /// internal Pattern_White_Space to a single space character.
         /// </summary>
-        private static string MungeCharName(string source)
+        private static void MungeCharName(ReadOnlySpan<char> source, ref ValueStringBuilder destination)
         {
             source = PatternProps.TrimWhiteSpace(source);
-            StringBuilder buf = null;
-            for (int i = 0; i < source.Length; ++i)
+            int length = source.Length;
+            for (int i = 0; i < length; ++i)
             {
                 char ch = source[i];
                 if (PatternProps.IsWhiteSpace(ch))
                 {
-                    if (buf == null)
-                    {
-                        buf = new StringBuilder().Append(source, 0, i);
-                    }
-                    else if (buf[buf.Length - 1] == ' ')
-                    {
+                    if (destination[destination.Length - 1] == ' ')
                         continue;
-                    }
                     ch = ' '; // convert to ' '
                 }
-                if (buf != null)
-                {
-                    buf.Append(ch);
-                }
+                destination.Append(ch);
             }
-            return buf == null ? source : buf.ToString();
         }
 
         //----------------------------------------------------------------
@@ -4517,15 +4514,26 @@ namespace ICU4N.Text
                                 // Must munge name, since
                                 // UChar.charFromName() does not do
                                 // 'loose' matching.
-                                string buf = MungeCharName(valueAlias);
-                                int ch = UChar.GetCharFromExtendedName(buf);
-                                if (ch == -1)
+                                int bufferLength = valueAlias.Length;
+                                ValueStringBuilder buf = bufferLength <= CharStackBufferSize
+                                    ? new ValueStringBuilder(stackalloc char[bufferLength])
+                                    : new ValueStringBuilder(bufferLength);
+                                try
                                 {
-                                    throw new ArgumentException("Invalid character name");
+                                    MungeCharName(valueAlias.AsSpan(), ref buf);
+                                    int ch = UChar.GetCharFromExtendedName(buf.AsSpan());
+                                    if (ch == -1)
+                                    {
+                                        throw new ArgumentException("Invalid character name");
+                                    }
+                                    Clear();
+                                    AddUnchecked(ch);
+                                    return this;
                                 }
-                                Clear();
-                                AddUnchecked(ch);
-                                return this;
+                                finally
+                                {
+                                    buf.Dispose();
+                                }
                             }
 #pragma warning disable 612, 618
                         case UPropertyConstants.Unicode_1_Name:
@@ -4537,9 +4545,21 @@ namespace ICU4N.Text
                                 // Must munge name, since
                                 // VersionInfo.getInstance() does not do
                                 // 'loose' matching.
-                                VersionInfo version = VersionInfo.GetInstance(MungeCharName(valueAlias));
-                                ApplyFilter(new VersionFilter(version), UPropertySource.PropertiesVectorsTrie);
-                                return this;
+                                int bufferLength = valueAlias.Length;
+                                ValueStringBuilder buf = bufferLength <= CharStackBufferSize
+                                    ? new ValueStringBuilder(stackalloc char[bufferLength])
+                                    : new ValueStringBuilder(bufferLength);
+                                try
+                                {
+                                    MungeCharName(valueAlias.AsSpan(), ref buf);
+                                    VersionInfo version = VersionInfo.GetInstance(buf.AsSpan());
+                                    ApplyFilter(new VersionFilter(version), UPropertySource.PropertiesVectorsTrie);
+                                    return this;
+                                }
+                                finally
+                                {
+                                    buf.Dispose();
+                                }
                             }
                         case UProperty.Script_Extensions:
                             v = (UProperty)UChar.GetPropertyValueEnum(UProperty.Script, valueAlias);
