@@ -268,7 +268,7 @@ namespace ICU4N.Text
         private int nextIndex;
 
         // A buffer for holding intermediate results
-        private StringBuilder buffer;
+        private OpenStringBuilder buffer;
         private int bufferPos;
 
         // Helper classes to defer loading of normalization data.
@@ -744,7 +744,7 @@ namespace ICU4N.Text
             this.mode = GetModeInstance(mode);
             this.options = (int)unicodeVersion;
             norm2 = this.mode.GetNormalizer2(this.options);
-            buffer = new StringBuilder();
+            buffer = new OpenStringBuilder();
         }
 
         /// <summary>
@@ -781,7 +781,7 @@ namespace ICU4N.Text
             this.mode = GetModeInstance(mode);
             this.options = (int)unicodeVersion;
             norm2 = this.mode.GetNormalizer2(this.options);
-            buffer = new StringBuilder();
+            buffer = new OpenStringBuilder();
         }
 
         /// <summary>
@@ -818,7 +818,7 @@ namespace ICU4N.Text
             this.mode = GetModeInstance(mode);
             this.options = (int)unicodeVersion;
             norm2 = this.mode.GetNormalizer2(this.options);
-            buffer = new StringBuilder();
+            buffer = new OpenStringBuilder();
         }
 
         /// <summary>
@@ -839,7 +839,7 @@ namespace ICU4N.Text
             copy.mode = mode;
             copy.options = options;
             copy.norm2 = norm2;
-            copy.buffer = new StringBuilder(buffer.ToString());
+            copy.buffer = new OpenStringBuilder(buffer.AsSpan());
             copy.bufferPos = bufferPos;
             copy.currentIndex = currentIndex;
             copy.nextIndex = nextIndex;
