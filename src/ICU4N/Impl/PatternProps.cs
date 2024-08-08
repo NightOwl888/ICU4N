@@ -140,26 +140,31 @@ namespace ICU4N.Impl
         /// <returns><paramref name="s"/> except with leading and trailing Pattern_White_Space removed.</returns>
         public static string TrimWhiteSpace(string s)
         {
-            if (s.Length == 0 || (!IsWhiteSpace(s[0]) && !IsWhiteSpace(s[s.Length - 1])))
-            {
-                return s;
-            }
-            int start = 0;
-            int limit = s.Length;
-            while (start < limit && IsWhiteSpace(s[start]))
-            {
-                ++start;
-            }
-            if (start < limit)
-            {
-                // There is non-white space at start; we will not move limit below that,
-                // so we need not test start<limit in the loop.
-                while (IsWhiteSpace(s[limit - 1]))
-                {
-                    --limit;
-                }
-            }
-            return s.Substring(start, limit - start); // ICU4N: Corrected 2nd parameter
+            return s.Trim(WhiteSpace);
+        }
+
+        /// <returns><paramref name="s"/> except with leading and trailing Pattern_White_Space removed.</returns>
+        public static ReadOnlySpan<char> TrimWhiteSpace(ReadOnlySpan<char> s)
+        {
+            return System.MemoryExtensions.Trim(s, WhiteSpace);
+        }
+
+        /// <returns><paramref name="s"/> except with leading and trailing Pattern_White_Space removed.</returns>
+        public static Span<char> TrimWhiteSpace(Span<char> s)
+        {
+            return System.MemoryExtensions.Trim(s, WhiteSpace);
+        }
+
+        /// <returns><paramref name="s"/> except with leading and trailing Pattern_White_Space removed.</returns>
+        public static ReadOnlyMemory<char> TrimWhiteSpace(ReadOnlyMemory<char> s)
+        {
+            return System.MemoryExtensions.Trim(s, WhiteSpace);
+        }
+
+        /// <returns><paramref name="s"/> except with leading and trailing Pattern_White_Space removed.</returns>
+        public static Memory<char> TrimWhiteSpace(Memory<char> s)
+        {
+            return System.MemoryExtensions.Trim(s, WhiteSpace);
         }
 
         /// <summary>
@@ -349,7 +354,7 @@ namespace ICU4N.Impl
         // IMPORTANT: This must exist physically in the code after latin1 for the static initialiation to work in the correct order.
         public static readonly char[] WhiteSpace = LoadWhiteSpace();
 
-        private static char[] LoadWhiteSpace() // ICU4N TODO: API - change to ImmutableArray<char>?
+        private static char[] LoadWhiteSpace()
         {
             var result = new List<char>(11);
             for (int i = UChar.MinCodePoint; i < UChar.MinSupplementaryCodePoint; i++)
