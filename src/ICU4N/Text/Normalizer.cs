@@ -724,6 +724,20 @@ namespace ICU4N.Text
         /// <summary>
         /// Creates a new <see cref="Normalizer"/> object for iterating over the
         /// normalized form of a given string.
+        /// </summary>
+        /// <param name="str">The string to be normalized.  The normalization
+        /// will start at the beginning of the string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <draft>ICU4N 60.1</draft>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public Normalizer(ReadOnlySpan<char> str, NormalizerMode mode)
+            : this(str, mode, NormalizerUnicodeVersion.Default)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Normalizer"/> object for iterating over the
+        /// normalized form of a given string.
         /// <para/>
         /// The <paramref name="unicodeVersion"/> parameter specifies which optional
         /// <see cref="Normalizer"/> features are to be enabled for this object.
@@ -739,6 +753,32 @@ namespace ICU4N.Text
         /// <draft>ICU4N 60.1</draft>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public Normalizer(string str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
+        {
+            this.text = UCharacterIterator.GetInstance(str);
+            this.mode = GetModeInstance(mode);
+            this.options = (int)unicodeVersion;
+            norm2 = this.mode.GetNormalizer2(this.options);
+            buffer = new OpenStringBuilder();
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Normalizer"/> object for iterating over the
+        /// normalized form of a given string.
+        /// <para/>
+        /// The <paramref name="unicodeVersion"/> parameter specifies which optional
+        /// <see cref="Normalizer"/> features are to be enabled for this object.
+        /// </summary>
+        /// <param name="str">The string to be normalized.  The normalization
+        /// will start at the beginning of the string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <draft>ICU4N 60.1</draft>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public Normalizer(ReadOnlySpan<char> str, NormalizerMode mode, NormalizerUnicodeVersion unicodeVersion)
         {
             this.text = UCharacterIterator.GetInstance(str);
             this.mode = GetModeInstance(mode);

@@ -1,12 +1,15 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Text;
 using J2N;
+using System;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
     internal class CjkBreakEngine : DictionaryBreakEngine
     {
+        private const int CharStackBufferSize = 32;
+
         // ICU4N: Avoid static constructor by initializing inline
         private static readonly UnicodeSet fHangulWordSet = new UnicodeSet("[\\uac00-\\ud7a3]").Freeze();
         private static readonly UnicodeSet fHanWordSet = new UnicodeSet("[:Han:]").Freeze();
@@ -75,52 +78,69 @@ namespace ICU4N.Text
 
             inText.SetIndex(startPos);
 
-            int inputLength = endPos - startPos;
-            int[] charPositions = new int[inputLength + 1];
-            StringBuffer s = new StringBuffer("");
-            inText.SetIndex(startPos);
-            while (inText.Index < endPos)
-            {
-                s.Append(inText.Current);
-                inText.Next();
-            }
-            string prenormstr = s.ToString();
-#pragma warning disable 612, 618
-            bool isNormalized = Normalizer.QuickCheck(prenormstr, NormalizerMode.NFKC) == QuickCheckResult.Yes ||
-                               Normalizer.IsNormalized(prenormstr, NormalizerMode.NFKC, 0);
-#pragma warning restore 612, 618
             CharacterIterator text;
             int numChars = 0;
-            if (isNormalized)
+
+            int inputLength = endPos - startPos;
+            int[] charPositions = new int[inputLength + 1];
+            var s = new ValueStringBuilder(inputLength + 1); // ICU4N: We need to keep this on the heap to use ReadOnlyMemoryCharacterIterator
+            try
             {
-                text = new StringCharacterIterator(prenormstr);
-                int index = 0;
-                charPositions[0] = 0;
-                while (index < prenormstr.Length)
+                inText.SetIndex(startPos);
+                while (inText.Index < endPos)
                 {
-                    int codepoint = prenormstr.CodePointAt(index);
-                    index += Character.CharCount(codepoint);
-                    numChars++;
-                    charPositions[numChars] = index;
+                    s.Append(inText.Current);
+                    inText.Next();
+                }
+                ReadOnlyMemory<char> prenormstr = s.AsMemory();
+                ReadOnlySpan<char> prenormstrSpan = prenormstr.Span;
+#pragma warning disable 612, 618
+                bool isNormalized = Normalizer.QuickCheck(prenormstrSpan, NormalizerMode.NFKC) == QuickCheckResult.Yes ||
+                                   Normalizer.IsNormalized(prenormstrSpan, NormalizerMode.NFKC, 0);
+#pragma warning restore 612, 618
+                if (isNormalized)
+                {
+                    text = new ReadOnlyMemoryCharacterIterator(prenormstr);
+                    int index = 0;
+                    charPositions[0] = 0;
+                    while (index < prenormstr.Length)
+                    {
+                        int codepoint = prenormstrSpan.CodePointAt(index);
+                        index += Character.CharCount(codepoint);
+                        numChars++;
+                        charPositions[numChars] = index;
+                    }
+                }
+                else
+                {
+#pragma warning disable 612, 618
+                    var normStr = new ValueStringBuilder(prenormstrSpan.Length); // ICU4N: We need to keep this on the heap to use ReadOnlyMemoryCharacterIterator
+                    try
+                    {
+                        Normalizer.Normalize(prenormstrSpan, NormalizerMode.NFKC, NormalizerUnicodeVersion.Default, ref normStr);
+                        text = new ReadOnlyMemoryCharacterIterator(normStr.AsMemory());
+                        charPositions = new int[normStr.Length + 1];
+                        Normalizer normalizer = new Normalizer(prenormstrSpan, NormalizerMode.NFKC, 0);
+                        int index = 0;
+                        charPositions[0] = 0;
+                        while (index < normalizer.EndIndex)
+                        {
+                            normalizer.Next();
+                            numChars++;
+                            index = normalizer.Index;
+                            charPositions[numChars] = index;
+                        }
+                    }
+                    finally
+                    {
+                        normStr.Dispose();
+                    }
+#pragma warning restore 612, 618
                 }
             }
-            else
+            finally
             {
-#pragma warning disable 612, 618
-                string normStr = Normalizer.Normalize(prenormstr, NormalizerMode.NFKC);
-                text = new StringCharacterIterator(normStr);
-                charPositions = new int[normStr.Length + 1];
-                Normalizer normalizer = new Normalizer(prenormstr, NormalizerMode.NFKC, 0);
-                int index = 0;
-                charPositions[0] = 0;
-                while (index < normalizer.EndIndex)
-                {
-                    normalizer.Next();
-                    numChars++;
-                    index = normalizer.Index;
-                    charPositions[numChars] = index;
-                }
-#pragma warning restore 612, 618
+                s.Dispose();
             }
 
             // From here on out, do the algorithm. Note that our indices

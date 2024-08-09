@@ -10,7 +10,7 @@ namespace ICU4N.Impl
         ///     Positive value so fast case (not end, not surrogate) can be checked
         ///     with a single test.
         /// </summary>
-        public static readonly int Done32 = 0x7fffffff;
+        public const int Done32 = 0x7fffffff;
 
         /// <summary>
         /// Move the iterator forward to the next code point, and return that code point,
