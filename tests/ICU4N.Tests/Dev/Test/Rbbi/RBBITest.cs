@@ -514,7 +514,7 @@ namespace ICU4N.Dev.Test.Rbbi
             // Make a "word" from each code point, separated by spaces.
             // For dictionary based breaking, runs the start-of-range
             // logic with all possible dictionary characters.
-            StringBuilder sb = new StringBuilder();
+            using ValueStringBuilder sb = new ValueStringBuilder(0x110000 * 5);
             for (int c = 0; c < 0x110000; ++c)
             {
                 sb.AppendCodePoint(c);
@@ -523,7 +523,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 sb.AppendCodePoint(c);
                 sb.Append(' ');
             }
-            String s = sb.ToString();
+            ReadOnlyMemory<char> s = sb.AsMemory();
 
             for (int breakKind = BreakIterator.KIND_CHARACTER; breakKind <= BreakIterator.KIND_TITLE; ++breakKind)
             {
