@@ -1,4 +1,5 @@
 ﻿using ICU4N.Globalization;
+using ICU4N.Text;
 using ICU4N.Util;
 using J2N.IO;
 using J2N.Text;
@@ -35,6 +36,8 @@ namespace ICU4N.Impl
     /// <since>ICU 2.4</since>
     public sealed partial class UPropertyAliases
     {
+        private const int CharStackBufferSize = 32;
+
         // Byte offsets from the start of the data, after the generic header.
         private const int IX_VALUE_MAPS_OFFSET = 0;
         private const int IX_BYTE_TRIES_OFFSET = 1;
@@ -101,12 +104,27 @@ namespace ICU4N.Impl
             offset = nextOffset;
             nextOffset = inIndexes[IX_RESERVED3_OFFSET];
             numBytes = nextOffset - offset;
-            StringBuilder sb = new StringBuilder(numBytes);
+#if FEATURE_STRING_CREATE
+            nameGroups = string.Create(numBytes, bytes, FillSpan);
+
+            static void FillSpan(Span<char> span, ByteBuffer byteBuffer)
+            {
+                int spanLength = span.Length;
+                for (int i = 0; i < spanLength; i++)
+                {
+                    span[i] = (char)byteBuffer.Get();
+                }
+            }
+#else
+            using var sb = numBytes <= CharStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[numBytes])
+                : new ValueStringBuilder(numBytes);
             for (int i = 0; i < numBytes; ++i)
             {
                 sb.Append((char)bytes.Get());
             }
             nameGroups = sb.ToString();
+#endif
         }
 
         private UPropertyAliases()
