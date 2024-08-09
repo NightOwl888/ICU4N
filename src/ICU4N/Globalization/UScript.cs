@@ -1,4 +1,5 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Text;
 using J2N.Text;
 using System;
 using System.Collections;
@@ -1852,7 +1853,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Returns the script sample character string.
-        /// This string normally consists of one code point but might be longer.
+        /// This string consists of one code point.
         /// The string is empty if the script is not encoded.
         /// </summary>
         /// <param name="script">Script code.</param>
@@ -1863,9 +1864,31 @@ namespace ICU4N.Globalization
             int sampleChar = ScriptMetadata.GetScriptProps(script) & 0x1fffff;
             if (sampleChar != 0)
             {
-                return new StringBuilder().AppendCodePoint(sampleChar).ToString();
+                return UTF16.ValueOf(sampleChar);
             }
             return "";
+        }
+
+        /// <summary>
+        /// Returns the script sample character string.
+        /// This string consists of one code point.
+        /// The string is empty if the script is not encoded.
+        /// </summary>
+        /// <param name="script">Script code.</param>
+        /// <param name="buffer">A buffer to write the result to, which will be
+        /// sliced to the correct size for the return value. Typically, <c>stackalloc char[2]</c>
+        /// since there will only be 1 code point.</param>
+        /// <returns>The sample character span, trimmed to the correct length. Note there may be
+        /// no sample available for a given <paramref name="script"/>, in which case the length is 0.</returns>
+        /// <stable>ICU 60.1</stable>
+        public static ReadOnlySpan<char> GetSampleSpan(int script, Span<char> buffer)
+        {
+            int sampleChar = ScriptMetadata.GetScriptProps(script) & 0x1fffff;
+            if (sampleChar != 0)
+            {
+                return UTF16.ValueOf(sampleChar, buffer);
+            }
+            return default;
         }
 
         /// <summary>
