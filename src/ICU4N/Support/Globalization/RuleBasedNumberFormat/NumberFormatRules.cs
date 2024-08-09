@@ -27,7 +27,7 @@ namespace ICU4N.Globalization
         private const string DigitsOrdinalRuleName = "%digits-ordinal";
         private const string DurationRuleName = "%duration";
 
-        private const int RuleStringMaxStackBufferSize = 256;
+        private const int RuleStringStackBufferSize = 256;
 
         //-----------------------------------------------------------------------
         // data members
@@ -109,7 +109,7 @@ namespace ICU4N.Globalization
 
             public override string ToString()
             {
-                return string.Concat(Name.ToString(), ", ", NumberPresentation.ToString());
+                return string.Concat(Name, ", ", NumberPresentation.ToString());
             }
         }
 
@@ -131,7 +131,7 @@ namespace ICU4N.Globalization
             // Reuse the bundle if it doesn't exist.
             bundle ??= GetBundle(cultureName);
 
-            StringBuilder description = new StringBuilder();
+            using ValueStringBuilder description = new ValueStringBuilder(stackalloc char[RuleStringStackBufferSize]);
             localizations = null;
 
             try
@@ -143,7 +143,7 @@ namespace ICU4N.Globalization
                     description.Append(it.Current.GetString());
                 }
             }
-            catch (MissingManifestResourceException)
+            catch (MissingManifestResourceException) // ICU4N TODO: Factor out exception catch (use TryGetWithFallback)
             {
                 // ICU4N: Intentionally blank
             }
@@ -414,14 +414,14 @@ namespace ICU4N.Globalization
         /// <param name="description">The formatter description.</param>
         /// <returns>The description with all the whitespace that follows semicolons
         /// taken out.</returns>
-        private ReadOnlySpan<char> StripWhiteSpace(ReadOnlySpan<char> description)
+        private ReadOnlySpan<char> StripWhiteSpace(ReadOnlySpan<char> description) // ICU4N TODO: There is a bug here. We need to return a string to ensure this stays on the stack while we parse the rest. This could go out of scope before we are done. Ideally, we could "strip" the whitespace by ignoring it while parsing rather than calling a method like this.
         {
             int descriptionLength = description.Length;
 
             // since we don't have a method that deletes characters
             // create a new StringBuffer to copy the text into
-            using ValueStringBuilder result = descriptionLength <= RuleStringMaxStackBufferSize
-                ? new ValueStringBuilder(stackalloc char[RuleStringMaxStackBufferSize])
+            using ValueStringBuilder result = descriptionLength <= RuleStringStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[RuleStringStackBufferSize])
                 : new ValueStringBuilder(descriptionLength);
 
             // iterate through the characters...
@@ -535,14 +535,29 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.0</stable>
         public override string ToString()
         {
+            int length = ruleSets.Length * 20;
+            var sb = length <= RuleStringStackBufferSize
+                ? new ValueStringBuilder(stackalloc char[length])
+                : new ValueStringBuilder(length);
+            try
+            {
+                ToString(ref sb);
+                return sb.ToString();
+            }
+            finally
+            {
+                sb.Dispose();
+            }
+        }
+
+        internal void ToString(ref ValueStringBuilder destination)
+        {
             // accumulate the descriptions of all the rule sets in a
-            // StringBuffer, then cast it to a String and return it
-            StringBuilder result = new StringBuilder(ruleSets.Length * 20);
+            // ValueStringBuilder
             foreach (NumberFormatRuleSet ruleSet in ruleSets)
             {
-                result.Append(ruleSet.ToString());
+                ruleSet.ToString(ref destination);
             }
-            return result.ToString();
         }
 
         //-----------------------------------------------------------------------
