@@ -1,4 +1,5 @@
-﻿using J2N.Text;
+﻿using ICU4N.Text;
+using J2N.Text;
 using System;
 using System.Text;
 
@@ -6,6 +7,7 @@ namespace ICU4N.Impl.Locale
 {
     public sealed class BaseLocale
     {
+        private const int CharStackBufferSize = 32;
         public const char Separator = '_';
 
         private static readonly Cache CACHE = new Cache();
@@ -93,7 +95,7 @@ namespace ICU4N.Impl.Locale
 
         public override string ToString()
         {
-            StringBuilder buf = new StringBuilder();
+            using ValueStringBuilder buf = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
             if (_language.Length > 0)
             {
                 buf.Append("language=");
