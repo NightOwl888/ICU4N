@@ -2,7 +2,15 @@
 
   <Import Project="$(MSBuildThisFileDirectory)/.build/dependencies.props" Condition="Exists('$(MSBuildThisFileDirectory)/.build/dependencies.props')" />
   <Import Project="$(MSBuildThisFileDirectory)/.build/nowarn.props" Condition="Exists('$(MSBuildThisFileDirectory)/.build/nowarn.props')" />
+
   
+  <!--Features in .NET 9+ only-->
+  <PropertyGroup Condition=" $(TargetFramework.StartsWith('net9.')) ">
+
+    <DefineConstants>$(DefineConstants);FEATURE_MEMORYEXTENSIONS_STARTSWITH_ENDSWITH_ELEMENT</DefineConstants>
+
+  </PropertyGroup>
+
   <!--Features in .NET 7+ only-->
   <PropertyGroup Condition=" $(TargetFramework.StartsWith('net7.')) ">
     

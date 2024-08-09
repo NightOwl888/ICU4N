@@ -157,6 +157,28 @@ namespace ICU4N
 
 #endif
 
+#if !FEATURE_MEMORYEXTENSIONS_STARTSWITH_ENDSWITH_ELEMENT
+
+        /// <summary>
+        /// Determines whether the specified value appears at the start of the span.
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The value to compare.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool StartsWith<T>(this ReadOnlySpan<T> span, T value) where T : IEquatable<T>? =>
+            span.Length != 0 && (span[0]?.Equals(value) ?? (object?)value is null);
+
+        /// <summary>
+        /// Determines whether the specified value appears at the end of the span.
+        /// </summary>
+        /// <param name="span">The span to search.</param>
+        /// <param name="value">The value to compare.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool EndsWith<T>(this ReadOnlySpan<T> span, T value) where T : IEquatable<T>? =>
+            span.Length != 0 && (span[span.Length - 1]?.Equals(value) ?? (object?)value is null);
+
+#endif
+
         /// <summary>
         /// Returns a new string in which all occurrences of a specified Unicode character in this instance
         /// are replaced with another specified Unicode character. The operation is done in place.
