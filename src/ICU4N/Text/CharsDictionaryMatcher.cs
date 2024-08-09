@@ -24,7 +24,7 @@ namespace ICU4N.Text
         }
 
         // ICU4N: Changed count parameter from int[] to out int
-        public override int Matches(CharacterIterator text_, int maxLength, int[] lengths, out int count, int limit, int[] values)
+        public override int Matches(CharacterIterator text_, int maxLength, Span<int> lengths, out int count, int limit, Span<int> values)
         {
             count = 0;
             UCharacterIterator text = UCharacterIterator.GetInstance(text_);
@@ -43,7 +43,7 @@ namespace ICU4N.Text
                 {
                     if (count < limit)
                     {
-                        if (values != null)
+                        if (!values.IsEmpty)
                         {
                             values[count] = uct.GetValue();
                         }

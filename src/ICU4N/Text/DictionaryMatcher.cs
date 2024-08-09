@@ -1,4 +1,5 @@
 ﻿using ICU4N.Support.Text;
+using System;
 
 namespace ICU4N.Text
 {
@@ -20,14 +21,14 @@ namespace ICU4N.Text
         /// <param name="values">Filled with the weight values associated with the various words.</param>
         /// <returns>The number of characters in text that were matched.</returns>
         // ICU4N: Changed count parameter from int[] to out int
-        public abstract int Matches(CharacterIterator text, int maxLength, int[] lengths,
-                out int count, int limit, int[] values);
+        public abstract int Matches(CharacterIterator text, int maxLength, Span<int> lengths,
+                out int count, int limit, Span<int> values);
 
         // ICU4N: Changed count parameter from int[] to out int
-        public int Matches(CharacterIterator text, int maxLength, int[] lengths,
+        public int Matches(CharacterIterator text, int maxLength, Span<int> lengths,
                 out int count, int limit)
         {
-            return Matches(text, maxLength, lengths, out count, limit, null);
+            return Matches(text, maxLength, lengths, out count, limit, values: default);
         }
 
         /// <summary>
