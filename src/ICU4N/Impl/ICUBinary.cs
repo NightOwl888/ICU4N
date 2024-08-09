@@ -1,4 +1,5 @@
-﻿using ICU4N.Util;
+﻿using ICU4N.Text;
+using ICU4N.Util;
 using J2N.IO;
 using J2N.IO.MemoryMappedFiles;
 using J2N.Numerics;
@@ -134,10 +135,17 @@ namespace ICU4N.Impl
 
                 int @base = bytes.Position;
                 int count = bytes.GetInt32(@base);
-                StringBuilder sb = new StringBuilder();
-                while (index < count && AddBaseName(bytes, index, folder, suffix, sb, names))
+                var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                try
                 {
-                    ++index;
+                    while (index < count && AddBaseName(bytes, index, folder, suffix, ref sb, names))
+                    {
+                        ++index;
+                    }
+                }
+                finally
+                {
+                    sb.Dispose();
                 }
             }
 
@@ -200,7 +208,7 @@ namespace ICU4N.Impl
             }
 
             internal static bool AddBaseName(ByteBuffer bytes, int index,
-                    string folder, string suffix, StringBuilder sb, ISet<string> names)
+                    string folder, string suffix, ref ValueStringBuilder sb, ISet<string> names)
             {
                 int offset = GetNameOffset(bytes, index);
                 // Skip "icudt54b/".
@@ -235,7 +243,7 @@ namespace ICU4N.Impl
                 int nameLimit = sb.Length - suffix.Length;
                 if (sb.LastIndexOf(suffix, nameLimit, StringComparison.Ordinal) >= 0)
                 {
-                    names.Add(sb.ToString(0, nameLimit - 0));
+                    names.Add(sb.AsSpan(0, nameLimit).ToString()); // ICU4N: Checked 2nd parameter
                 }
                 return true;
             }
@@ -266,9 +274,9 @@ namespace ICU4N.Impl
 
         private sealed class SingleDataFile : DataFile
         {
-            private readonly FileInfo path;
+            private readonly string path;
 
-            internal SingleDataFile(string item, FileInfo path)
+            internal SingleDataFile(string item, string path)
                     : base(item)
             {
                 this.path = path;
@@ -276,12 +284,12 @@ namespace ICU4N.Impl
 
             public override string ToString()
             {
-                return path.ToString();
+                return path;
             }
 
             internal override ByteBuffer GetData(string requestedPath)
             {
-                if (requestedPath.Equals(itemPath))
+                if (requestedPath.Equals(itemPath, StringComparison.Ordinal))
                 {
                     return MapFile(path);
                 }
@@ -369,14 +377,18 @@ namespace ICU4N.Impl
                 {
                     pathLimit = dataPath.Length;
                 }
-                string path = dataPath.Substring(pathStart, pathLimit - pathStart).Trim(); // ICU4N: Corrected 2nd parameter
-                if (path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
-                {
-                    path = path.Substring(0, (path.Length - 1) - 0); // ICU4N: Checked 2nd parameter
-                }
+                ReadOnlySpan<char> path = dataPath.AsSpan(pathStart, pathLimit - pathStart).Trim().TrimEnd(Path.DirectorySeparatorChar); // ICU4N: Corrected 2nd parameter
                 if (path.Length != 0)
                 {
-                    AddDataFilesFromFolder(new DirectoryInfo(path), new StringBuilder(), icuDataFiles);
+                    var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                    try
+                    {
+                        AddDataFilesFromFolder(Path.GetFullPath(path.ToString()), ref sb, icuDataFiles);
+                    }
+                    finally
+                    {
+                        sb.Dispose();
+                    }
                 }
                 if (sepIndex < 0)
                 {
@@ -386,11 +398,12 @@ namespace ICU4N.Impl
             }
         }
 
-        private static void AddDataFilesFromFolder(DirectoryInfo folder, StringBuilder itemPath,
+        private static void AddDataFilesFromFolder(string folder, ref ValueStringBuilder itemPath,
                 IList<DataFile> dataFiles)
         {
-            FileInfo[] files = folder.GetFiles();
-            DirectoryInfo[] folders = folder.GetDirectories();
+            string[] files = Directory.GetFiles(folder);
+            string[] folders = Directory.GetDirectories(folder);
+
             if ((files == null || files.Length == 0) && (folders == null || folders.Length == 0))
             {
                 return;
@@ -404,31 +417,31 @@ namespace ICU4N.Impl
                 itemPath.Append('/');
                 ++folderPathLength;
             }
-            foreach (DirectoryInfo folder2 in folders)
+            foreach (string folder2 in folders)
             {
                 // TODO: Within a folder, put all single files before all .dat packages?
-                AddDataFilesFromFolder(folder2, itemPath, dataFiles);
+                AddDataFilesFromFolder(folder2, ref itemPath, dataFiles);
             }
 
-            foreach (FileInfo file in files)
+            foreach (string file in files)
             {
-                string fileName = file.Name;
-                if (fileName.EndsWith(".txt", StringComparison.Ordinal))
+                //string fileName = file.Name;
+                if (file.EndsWith(".txt", StringComparison.Ordinal))
                 {
                     continue;
                 }
-                itemPath.Append(fileName);
-                if (fileName.EndsWith(".dat", StringComparison.Ordinal))
+                itemPath.Append(file);
+                if (file.EndsWith(".dat", StringComparison.Ordinal))
                 {
                     ByteBuffer pkgBytes = MapFile(file);
                     if (pkgBytes != null && DatPackageReader.Validate(pkgBytes))
                     {
-                        dataFiles.Add(new PackageDataFile(itemPath.ToString(), pkgBytes));
+                        dataFiles.Add(new PackageDataFile(itemPath.AsSpan().ToString(), pkgBytes));
                     }
                 }
                 else
                 {
-                    dataFiles.Add(new SingleDataFile(itemPath.ToString(), file));
+                    dataFiles.Add(new SingleDataFile(itemPath.AsSpan().ToString(), file));
                 }
                 itemPath.Length = folderPathLength;
             }
@@ -615,12 +628,12 @@ namespace ICU4N.Impl
         }
 
         // Closing a file closes its channel.
-        private static ByteBuffer MapFile(FileInfo path)
+        private static ByteBuffer MapFile(string path)
         {
             MemoryMappedFile file;
             try
             {
-                file = MemoryMappedFile.CreateFromFile(path.FullName);
+                file = MemoryMappedFile.CreateFromFile(path);
                 ByteBuffer bytes = null;
                 try
                 {
@@ -935,5 +948,6 @@ namespace ICU4N.Impl
         private const string HEADER_AUTHENTICATION_FAILED_ =
             "ICU data file error: Header authentication failed, please check if you have a valid ICU data file";
 
+        internal const int CharStackBufferSize = 32;
     }
 }
