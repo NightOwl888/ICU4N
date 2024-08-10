@@ -1,5 +1,7 @@
 ﻿using System;
-using StringBuffer = System.Text.StringBuilder;
+using System.Buffers;
+using System.Text;
+#nullable enable
 
 namespace ICU4N.Text
 {
@@ -8,7 +10,7 @@ namespace ICU4N.Text
     /// <see cref="IReplaceable"/> API around an <see cref="OpenStringBuilder"/>.
     /// </summary>
     /// <remarks>
-    /// <em>Note:</em> This class does not support attributes and is not
+    /// <em>Note:</em> This class is not
     /// intended for general use.  Most clients will need to implement
     /// <see cref="IReplaceable"/> in their text representation class.
     /// </remarks>
@@ -17,6 +19,7 @@ namespace ICU4N.Text
     /// <stable>ICU 2.0</stable>
     public class ReplaceableString : IReplaceable
     {
+        private const int CharStackBufferSize = 32;
         private readonly OpenStringBuilder buf;
 
         /// <summary>
@@ -24,7 +27,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="str">Initial contents.</param>
         /// <stable>ICU 2.0</stable>
-        public ReplaceableString(string str)
+        public ReplaceableString(string? str)
         {
             buf = new OpenStringBuilder(str);
         }
@@ -46,8 +49,11 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="buf">Object to be used as internal storage.</param>
         /// <stable>ICU 2.0</stable>
-        public ReplaceableString(StringBuffer buf)
+        public ReplaceableString(StringBuilder buf)
         {
+            if (buf is null)
+                throw new ArgumentNullException(nameof(buf));
+
             this.buf = new OpenStringBuilder(buf);
         }
 
@@ -62,7 +68,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         internal ReplaceableString(OpenStringBuilder buf)
         {
-            this.buf = buf;
+            this.buf = buf ?? throw new ArgumentNullException(nameof(buf));
         }
 
         /// <summary>
@@ -93,27 +99,53 @@ namespace ICU4N.Text
         /// </remarks>
         /// <stable>ICU 2.0</stable>
         public virtual string Substring(int start, int count) // ICU4N NOTE: Using .NET semantics here - be vigilant about use
-        {
-            return buf.AsSpan(start, count).ToString();
-        }
+            => buf.AsSpan(start, count).ToString();
 
         /// <summary>
-        /// Return a span of the given string.
+        /// Creates a new read-only span over a string.
+        /// </summary>
+        /// <draft>ICU 60.1</draft>
+        public virtual ReadOnlySpan<char> AsSpan()
+            => buf.AsSpan();
+
+        /// <summary>
+        /// Creates a new read-only span over a portion of the target string from
+        /// a specified position to the end of the string.
+        /// </summary>
+        /// <draft>ICU 60.1</draft>
+        public virtual ReadOnlySpan<char> AsSpan(int start)
+            => buf.AsSpan(start);
+
+        /// <summary>
+        /// Creates a new read-only span over a portion of the target string from
+        /// a specified position for a specified number of characters.
         /// </summary>
         /// <draft>ICU 60.1</draft>
         public virtual ReadOnlySpan<char> AsSpan(int start, int count)
-        {
-            return buf.AsSpan(start, count);
-        }
+            => buf.AsSpan(start, count);
 
         /// <summary>
-        /// Return the memory of the given string.
+        /// Creates a new <c>ReadOnlyMemory&lt;Char&gt;</c> over the target string.
+        /// </summary>
+        /// <draft>ICU 60.1</draft>
+        public virtual ReadOnlyMemory<char> AsMemory()
+            => buf.AsMemory();
+
+        /// <summary>
+        /// Creates a new <c>ReadOnlyMemory&lt;Char&gt;</c> over a portion of the target string
+        /// starting at a specified index.
+        /// </summary>
+        /// <draft>ICU 60.1</draft>
+        public virtual ReadOnlyMemory<char> AsMemory(int start)
+            => buf.AsMemory(start);
+
+        /// <summary>
+        /// Creates a new <c>ReadOnlyMemory&lt;Char&gt;</c> over a portion of the target string from
+        /// a specified position for a specified number of characters.
         /// </summary>
         /// <draft>ICU 60.1</draft>
         public virtual ReadOnlyMemory<char> AsMemory(int start, int count)
-        {
-            return buf.AsMemory(start, count);
-        }
+            => buf.AsMemory(start, count);
 
         /// <summary>
         /// Return the number of characters contained in this object.
@@ -136,15 +168,6 @@ namespace ICU4N.Text
         /// with surrogate pairs intermixed.  If the offset of a leading or
         /// trailing code unit of a surrogate pair is given, return the
         /// code point of the surrogate pair.
-        /// <para/>
-        /// Usage Note: If you are making external changes to a <see cref="StringBuffer"/>
-        /// that is passed into the <see cref="ReplaceableString"/> constructor,
-        /// it is recommended to call <see cref="ReplaceableString.ToString()"/> if
-        /// the contents of the <see cref="StringBuffer"/> changed but the length
-        /// did not change before calling this method. Since the indexer of the
-        /// <see cref="StringBuffer"/> in .NET is slow, the contents are cached internally
-        /// so multiple calls to this method in a row are not expensive.
-        /// <see cref="ReplaceableString.ToString()"/> forces a reload of the cache.
         /// </summary>
         /// <param name="offset">An integer between 0 and <see cref="Length"/>-1 inclusive.</param>
         /// <returns>32-bit code point of text at given offset.</returns>
@@ -219,6 +242,9 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual void Replace(int startIndex, int count, string text) // ICU4N: Made 2nd parameter into count rather than limit
         {
+            if (text is null)
+                throw new ArgumentNullException(nameof(text));
+
             buf.Replace(startIndex, count, text);
         }
 
@@ -267,10 +293,19 @@ namespace ICU4N.Text
             {
                 return;
             }
-            char[] text = new char[length]; // ICU4N: Corrected length
-            //getChars(start, limit, text, 0);
-            CopyTo(startIndex, text, 0, length); // ICU4N: Corrected 4th parameter
-            Replace(destinationIndex, destinationIndex - destinationIndex, text.AsSpan(0, length)); // ICU4N: Corrected 2nd and 5th Replace parameters
+            char[]? arrayToReturnToPool = null;
+            try
+            {
+                Span<char> text = length > CharStackBufferSize // ICU4N: Corrected length
+                    ? (arrayToReturnToPool = ArrayPool<char>.Shared.Rent(length)).AsSpan(0, length)
+                    : stackalloc char[length];
+                CopyTo(startIndex, text, length); // ICU4N: Corrected 3rd parameter
+                Replace(destinationIndex, destinationIndex - destinationIndex, text); // ICU4N: Corrected 2nd and 5th Replace parameters
+            }
+            finally
+            {
+                ArrayPool<char>.Shared.ReturnIfNotNull(arrayToReturnToPool);
+            }
         }
 
         /// <summary>
