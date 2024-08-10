@@ -1026,8 +1026,6 @@ namespace ICU4N.Text
 
             ruleArray.Reset();
 
-            StringBuilder idBlockResult = new StringBuilder();
-
             // The compound filter offset is an index into idBlockResult.
             // If it is 0, then the compound filter occurred at the start,
             // and it is the offset to the _start_ of the compound filter
@@ -1036,189 +1034,199 @@ namespace ICU4N.Text
             this.CompoundFilter = null;
             int compoundFilterOffset = -1;
 
-            //main:
-            for (; ; )
+            ValueStringBuilder idBlockResult = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                string rule = ruleArray.NextLine();
-                if (rule == null)
+                //main:
+                for (; ; )
                 {
-                    break;
-                }
-                int pos = 0;
-                int limit = rule.Length;
-                while (pos < limit)
-                {
-                    char c = rule[pos++];
-                    if (PatternProps.IsWhiteSpace(c))
+                    string rule = ruleArray.NextLine();
+                    if (rule == null)
                     {
-                        continue;
+                        break;
                     }
-                    // Skip lines starting with the comment character
-                    if (c == RULE_COMMENT_CHAR)
+                    int pos = 0;
+                    int limit = rule.Length;
+                    while (pos < limit)
                     {
-                        pos = rule.IndexOf('\n', pos) + 1;
-                        if (pos == 0)
+                        char c = rule[pos++];
+                        if (PatternProps.IsWhiteSpace(c))
                         {
-                            break; // No "\n" found; rest of rule is a commnet
+                            continue;
                         }
-                        continue; // Either fall out or restart with next line
-                    }
-
-                    // skip empty rules
-                    if (c == END_OF_RULE)
-                        continue;
-
-                    // Often a rule file contains multiple errors.  It's
-                    // convenient to the rule author if these are all reported
-                    // at once.  We keep parsing rules even after a failure, up
-                    // to a specified limit, and report all errors at once.
-                    try
-                    {
-                        ++ruleCount;
-
-                        // We've found the start of a rule or ID.  c is its first
-                        // character, and pos points past c.
-                        --pos;
-                        // Look for an ID token.  Must have at least ID_TOKEN_LEN + 1
-                        // chars left.
-                        if ((pos + ID_TOKEN_LEN + 1) <= limit &&
-                                rule.RegionMatches(pos, ID_TOKEN, 0, ID_TOKEN_LEN, StringComparison.Ordinal))
+                        // Skip lines starting with the comment character
+                        if (c == RULE_COMMENT_CHAR)
                         {
-                            pos += ID_TOKEN_LEN;
-                            c = rule[pos];
-                            while (PatternProps.IsWhiteSpace(c) && pos < limit)
+                            pos = rule.IndexOf('\n', pos) + 1;
+                            if (pos == 0)
                             {
-                                ++pos;
+                                break; // No "\n" found; rest of rule is a commnet
+                            }
+                            continue; // Either fall out or restart with next line
+                        }
+
+                        // skip empty rules
+                        if (c == END_OF_RULE)
+                            continue;
+
+                        // Often a rule file contains multiple errors.  It's
+                        // convenient to the rule author if these are all reported
+                        // at once.  We keep parsing rules even after a failure, up
+                        // to a specified limit, and report all errors at once.
+                        try
+                        {
+                            ++ruleCount;
+
+                            // We've found the start of a rule or ID.  c is its first
+                            // character, and pos points past c.
+                            --pos;
+                            // Look for an ID token.  Must have at least ID_TOKEN_LEN + 1
+                            // chars left.
+                            if ((pos + ID_TOKEN_LEN + 1) <= limit &&
+                                    rule.RegionMatches(pos, ID_TOKEN, 0, ID_TOKEN_LEN, StringComparison.Ordinal))
+                            {
+                                pos += ID_TOKEN_LEN;
                                 c = rule[pos];
-                            }
-                            int p = pos;
-
-                            if (!parsingIDs)
-                            {
-                                if (curData != null)
+                                while (PatternProps.IsWhiteSpace(c) && pos < limit)
                                 {
-                                    if (direction == Transliterator.Forward)
-                                        DataVector.Add(curData);
-                                    else
-                                        DataVector.Insert(0, curData);
-                                    curData = null;
+                                    ++pos;
+                                    c = rule[pos];
                                 }
-                                parsingIDs = true;
-                            }
+                                int p = pos;
 
-                            TransliteratorIDParser.SingleID id =
-                                TransliteratorIDParser.ParseSingleID(
-                                              rule, ref p, direction);
-                            if (p != pos && Utility.ParseChar(rule, ref p, END_OF_RULE))
-                            {
-                                // Successful ::ID parse.
-
-                                if (direction == Transliterator.Forward)
+                                if (!parsingIDs)
                                 {
-                                    idBlockResult.Append(id.CanonID).Append(END_OF_RULE);
+                                    if (curData != null)
+                                    {
+                                        if (direction == Transliterator.Forward)
+                                            DataVector.Add(curData);
+                                        else
+                                            DataVector.Insert(0, curData);
+                                        curData = null;
+                                    }
+                                    parsingIDs = true;
+                                }
+
+                                TransliteratorIDParser.SingleID id =
+                                    TransliteratorIDParser.ParseSingleID(
+                                                  rule, ref p, direction);
+                                if (p != pos && Utility.ParseChar(rule, ref p, END_OF_RULE))
+                                {
+                                    // Successful ::ID parse.
+
+                                    if (direction == Transliterator.Forward)
+                                    {
+                                        idBlockResult.Append(id.CanonID);
+                                        idBlockResult.Append(END_OF_RULE);
+                                    }
+                                    else
+                                    {
+                                        idBlockResult.Insert(0, id.CanonID + END_OF_RULE);
+                                    }
+
                                 }
                                 else
                                 {
-                                    idBlockResult.Insert(0, id.CanonID + END_OF_RULE);
-                                }
-
-                            }
-                            else
-                            {
-                                // Couldn't parse an ID.  Try to parse a global filter
-                                int withParens = -1;
-                                UnicodeSet f = TransliteratorIDParser.ParseGlobalFilter(rule, ref p, direction, ref withParens, null);
-                                if (f != null && Utility.ParseChar(rule, ref p, END_OF_RULE))
-                                {
-                                    if ((direction == Transliterator.Forward) ==
-                                        (withParens == 0))
+                                    // Couldn't parse an ID.  Try to parse a global filter
+                                    int withParens = -1;
+                                    UnicodeSet f = TransliteratorIDParser.ParseGlobalFilter(rule, ref p, direction, ref withParens, null);
+                                    if (f != null && Utility.ParseChar(rule, ref p, END_OF_RULE))
                                     {
-                                        if (CompoundFilter != null)
+                                        if ((direction == Transliterator.Forward) ==
+                                            (withParens == 0))
                                         {
-                                            // Multiple compound filters
-                                            SyntaxError("Multiple global filters", rule, pos);
+                                            if (CompoundFilter != null)
+                                            {
+                                                // Multiple compound filters
+                                                SyntaxError("Multiple global filters", rule, pos);
+                                            }
+                                            CompoundFilter = f;
+                                            compoundFilterOffset = ruleCount;
                                         }
-                                        CompoundFilter = f;
-                                        compoundFilterOffset = ruleCount;
+                                    }
+                                    else
+                                    {
+                                        // Invalid ::id
+                                        // Can be parsed as neither an ID nor a global filter
+                                        SyntaxError("Invalid ::ID", rule, pos);
                                     }
                                 }
-                                else
-                                {
-                                    // Invalid ::id
-                                    // Can be parsed as neither an ID nor a global filter
-                                    SyntaxError("Invalid ::ID", rule, pos);
-                                }
-                            }
 
-                            pos = p;
-                        }
-                        else
-                        {
-                            if (parsingIDs)
-                            {
-                                if (direction == Transliterator.Forward)
-                                    IdBlockVector.Add(idBlockResult.ToString());
-                                else
-                                    IdBlockVector.Insert(0, idBlockResult.ToString());
-                                idBlockResult.Length = 0; // ICU4N: Reset length rather than Delete(), which is much faster
-                                parsingIDs = false;
-#pragma warning disable 612, 618
-                                curData = new RuleBasedTransliterator.Data();
-#pragma warning restore 612, 618
-
-                                // By default, rules use part of the private use area
-                                // E000..F8FF for variables and other stand-ins.  Currently
-                                // the range F000..F8FF is typically sufficient.  The 'use
-                                // variable range' pragma allows rule sets to modify this.
-                                SetVariableRange(0xF000, 0xF8FF);
-                            }
-
-                            if (ResemblesPragma(rule, pos, limit))
-                            {
-                                int ppp = ParsePragma(rule, pos, limit);
-                                if (ppp < 0)
-                                {
-                                    SyntaxError("Unrecognized pragma", rule, pos);
-                                }
-                                pos = ppp;
-                                // Parse a rule
+                                pos = p;
                             }
                             else
                             {
-                                pos = ParseRule(rule, pos, limit);
+                                if (parsingIDs)
+                                {
+                                    if (direction == Transliterator.Forward)
+                                        IdBlockVector.Add(idBlockResult.AsSpan().ToString());
+                                    else
+                                        IdBlockVector.Insert(0, idBlockResult.AsSpan().ToString());
+                                    idBlockResult.Length = 0; // ICU4N: Reset length rather than Delete(), which is much faster
+                                    parsingIDs = false;
+#pragma warning disable 612, 618
+                                    curData = new RuleBasedTransliterator.Data();
+#pragma warning restore 612, 618
+
+                                    // By default, rules use part of the private use area
+                                    // E000..F8FF for variables and other stand-ins.  Currently
+                                    // the range F000..F8FF is typically sufficient.  The 'use
+                                    // variable range' pragma allows rule sets to modify this.
+                                    SetVariableRange(0xF000, 0xF8FF);
+                                }
+
+                                if (ResemblesPragma(rule, pos, limit))
+                                {
+                                    int ppp = ParsePragma(rule, pos, limit);
+                                    if (ppp < 0)
+                                    {
+                                        SyntaxError("Unrecognized pragma", rule, pos);
+                                    }
+                                    pos = ppp;
+                                    // Parse a rule
+                                }
+                                else
+                                {
+                                    pos = ParseRule(rule, pos, limit);
+                                }
                             }
                         }
-                    }
-                    catch (ArgumentException e)
-                    {
-                        // ICU4N TODO: Throw AggregateException ?
-                        if (errorCount == 30)
+                        catch (ArgumentException e)
                         {
-                            IcuArgumentException icuEx = new IcuArgumentException("\nMore than 30 errors; further messages squelched", e);
-                            errors.Add(icuEx);
-                            goto main_break;
+                            // ICU4N TODO: Throw AggregateException ?
+                            if (errorCount == 30)
+                            {
+                                IcuArgumentException icuEx = new IcuArgumentException("\nMore than 30 errors; further messages squelched", e);
+                                errors.Add(icuEx);
+                                goto main_break;
+                            }
+                            //e.fillInStackTrace();
+                            errors.Add(e);
+                            ++errorCount;
+                            pos = pos + RuleLength(rule.AsSpan(pos, limit - pos)) + 1; // +1 advances past ';'
                         }
-                        //e.fillInStackTrace();
-                        errors.Add(e);
-                        ++errorCount;
-                        pos = pos + RuleLength(rule.AsSpan(pos, limit - pos)) + 1; // +1 advances past ';'
                     }
                 }
+                main_break: { }
+            
+                if (parsingIDs && idBlockResult.Length > 0)
+                {
+                    if (direction == Transliterator.Forward)
+                        IdBlockVector.Add(idBlockResult.AsSpan().ToString());
+                    else
+                        IdBlockVector.Insert(0, idBlockResult.AsSpan().ToString());
+                }
+                else if (!parsingIDs && curData != null)
+                {
+                    if (direction == Transliterator.Forward)
+                        DataVector.Add(curData);
+                    else
+                        DataVector.Insert(0, curData);
+                }
             }
-            main_break: { }
-            if (parsingIDs && idBlockResult.Length > 0)
+            finally
             {
-                if (direction == Transliterator.Forward)
-                    IdBlockVector.Add(idBlockResult.ToString());
-                else
-                    IdBlockVector.Insert(0, idBlockResult.ToString());
-            }
-            else if (!parsingIDs && curData != null)
-            {
-                if (direction == Transliterator.Forward)
-                    DataVector.Add(curData);
-                else
-                    DataVector.Insert(0, curData);
+                idBlockResult.Dispose();
             }
 
             // Convert the set vector to an array
