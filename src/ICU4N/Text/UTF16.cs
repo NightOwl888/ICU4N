@@ -225,7 +225,7 @@ namespace ICU4N.Text
         /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is out of bounds.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="source"/> is <c>null</c>.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int CharAt(string source, int offset16)
+        public static int CharAt(string source, int offset16) // ICU4N TODO: API - Rename CodePointAt()
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
@@ -249,7 +249,7 @@ namespace ICU4N.Text
         /// </returns>
         /// <exception cref="IndexOutOfRangeException">Thrown if <paramref name="offset16"/> is out of bounds.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int CharAt(ReadOnlySpan<char> source, int offset16)
+        public static int CharAt(ReadOnlySpan<char> source, int offset16) // ICU4N TODO: API - Rename CodePointAt()
         {
             if (offset16 < 0 || offset16 >= source.Length)
                 throw new IndexOutOfRangeException(nameof(offset16));
@@ -306,7 +306,7 @@ namespace ICU4N.Text
         /// of that codepoint are the same as in <see cref="Bounds(ReadOnlySpan{char}, int)"/>.</returns>
         /// <exception cref="IndexOutOfRangeException">Thrown if offset16 is not within the range of start and limit.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int CharAt(IReplaceable source, int offset16)
+        public static int CharAt(IReplaceable source, int offset16) // ICU4N TODO: API - Rename CodePointAt()
         {
             if (offset16 < 0 || offset16 >= source.Length)
             {
@@ -577,7 +577,7 @@ namespace ICU4N.Text
         /// <returns>The length of the characters that were written to <paramref name="destination"/> (either 1 or 2).</returns>
         /// <exception cref="ArgumentException">Thrown if <paramref name="char32"/> is a invalid codepoint.</exception>
         /// <draft>ICU 60.1</draft>
-        public static int ValueOf(int char32, Span<char> destination, int destinationIndex) // ICU4N TODO: This method name is Java-like. In J2N, these were named ToChars().
+        public static int ValueOf(int char32, Span<char> destination, int destinationIndex) // ICU4N TODO: API - This method name is Java-like. In J2N, these were named ToChars().
         {
             if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
             {

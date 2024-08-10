@@ -87,7 +87,7 @@ namespace ICU4N.Text
         /// <param name="index">An integer between 0 and <see cref="Length"/>-1 inclusive.</param>
         /// <returns>32-bit code point of text at given offset.</returns>
         /// <stable>ICU 2.0</stable>
-        int Char32At(int index);
+        int Char32At(int index); // ICU4N TODO: API - Rename CodePointAt()
 
         /// <summary>
         /// Copies characters from this object into the destination
