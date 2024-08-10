@@ -33,7 +33,7 @@ namespace ICU4N.Text
             _pos = 0;
         }
 
-        public OpenStringBuilder(string value) : this(value.AsSpan()) { }
+        public OpenStringBuilder(string? value) : this(value.AsSpan()) { }
         public OpenStringBuilder(ReadOnlySpan<char> value)
         {
             _chars = new char[RoundUpToPowerOf2(value.Length)];
