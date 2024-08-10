@@ -309,23 +309,29 @@ namespace ICU4N.Text
             internal virtual string NextLine()
             {
                 string s = HandleNextLine();
-                if (s != null &&
-                    s.Length > 0 &&
-                    s[s.Length - 1] == '\\')
+                if (s?.Length > 0 && s[s.Length - 1] == '\\')
                 {
-                    StringBuilder b = new StringBuilder(s);
-                    do
+                    ValueStringBuilder b = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+                    try
                     {
-                        b.Remove(b.Length - 1, 1);
-                        s = HandleNextLine();
-                        if (s == null)
-                        {
-                            break;
-                        }
                         b.Append(s);
-                    } while (s.Length > 0 &&
-                             s[s.Length - 1] == '\\');
-                    s = b.ToString();
+                        do
+                        {
+                            b.Length--;
+                            s = HandleNextLine();
+                            if (s == null)
+                            {
+                                break;
+                            }
+                            b.Append(s);
+                        } while (s.Length > 0 &&
+                                 s[s.Length - 1] == '\\');
+                        s = b.ToString();
+                    }
+                    finally
+                    {
+                        b.Dispose();
+                    }
                 }
                 return s;
             }
