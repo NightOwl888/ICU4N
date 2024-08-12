@@ -1,5 +1,6 @@
 ﻿using J2N.Text;
 using System;
+using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -15,12 +16,12 @@ namespace ICU4N.Text
     /// if the StringBuilder lifetime can be put on the stack, <see cref="Text.ValueStringBuilder"/> should
     /// be used instead.
     /// </summary>
-    internal sealed partial class OpenStringBuilder : ICharSequence, ISpanAppendable
+    internal partial class OpenStringBuilder : ICharSequence, ISpanAppendable
     {
         /// <summary>
-        /// The default capacity of a <see cref="StringBuilder"/>.
+        /// The default capacity of an <see cref="OpenStringBuilder"/>.
         /// </summary>
-        internal const int DefaultCapacity = 16;
+        protected const int DefaultCapacity = 16;
 
         private char[] _chars;
         private int _pos;
@@ -49,6 +50,14 @@ namespace ICU4N.Text
             _chars = new char[RoundUpToPowerOf2(length)];
             value.CopyTo(0, _chars.AsSpan(_pos), length);
             _pos = length;
+        }
+
+        protected OpenStringBuilder(char[] initialBuffer) : this(initialBuffer, initialLength: 0) { }
+
+        protected OpenStringBuilder(char[] initialBuffer, int initialLength)
+        {
+            _chars = initialBuffer ?? throw new ArgumentNullException(nameof(initialBuffer));
+            _pos = initialLength;
         }
 
         public int Length
@@ -333,7 +342,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>Round the specified value up to the next power of 2, if it isn't one already.</summary>
-        internal static int RoundUpToPowerOf2(int i)
+        protected static int RoundUpToPowerOf2(int i)
         {
             // Based on https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
             --i;
@@ -374,12 +383,23 @@ namespace ICU4N.Text
                 (uint)(_pos + additionalCapacityBeyondPos),
                 Math.Min((uint)_chars.Length * 2, ArrayMaxLength));
 
-            // Make sure to let Rent throw an exception if the caller has a bug and the desired capacity is negative.
-            // This could also go negative if the actual required length wraps around.
-            char[] temp = new char[RoundUpToPowerOf2(newCapacity)];
+            _chars = ReplaceBuffer(_chars.AsSpan(0, _pos), RoundUpToPowerOf2(newCapacity));
 
-            _chars.AsSpan(0, _pos).CopyTo(temp);
-            _chars = temp;
+            //// Make sure to let Rent throw an exception if the caller has a bug and the desired capacity is negative.
+            //// This could also go negative if the actual required length wraps around.
+            //char[] temp = Allocate(RoundUpToPowerOf2(newCapacity));
+
+            //_chars.AsSpan(0, _pos).CopyTo(temp);
+            //_chars = temp;
+        }
+
+        protected virtual char[] ReplaceBuffer(ReadOnlySpan<char> value, int newCapacity)
+        {
+            // Make sure to let the array allocation throw an exception if the caller has a bug and the desired capacity is negative.
+            // This could also go negative if the actual required length wraps around.
+            char[] temp = new char[newCapacity];
+            value.CopyTo(temp);
+            return temp;
         }
 
         public void EnsureCapacity(int capacity)
@@ -396,6 +416,5 @@ namespace ICU4N.Text
         {
             return _chars.AsSpan(0, _pos).ToString();
         }
-
     }
 }

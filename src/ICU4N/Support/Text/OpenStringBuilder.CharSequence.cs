@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace ICU4N.Text
 {
-    internal sealed partial class OpenStringBuilder
+    internal partial class OpenStringBuilder
     {
         public OpenStringBuilder AppendCodePoint(int codePoint)
         {

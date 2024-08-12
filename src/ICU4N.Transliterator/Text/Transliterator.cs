@@ -577,7 +577,20 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public string Transliterate(string text)
         {
-            ReplaceableString result = new ReplaceableString(text);
+            using PooledReplaceableString result = new PooledReplaceableString(text);
+            Transliterate(result);
+            return result.ToString();
+        }
+
+        /// <summary>
+        /// Transliterate an entire string and returns the result. Convenience method.
+        /// </summary>
+        /// <param name="text">The string to be transliterated.</param>
+        /// <returns>The transliterated text.</returns>
+        /// <draft>ICU 60.1</draft>
+        public string Transliterate(ReadOnlySpan<char> text) // ICU4N TODO: Tests
+        {
+            using PooledReplaceableString result = new PooledReplaceableString(text);
             Transliterate(result);
             return result.ToString();
         }
