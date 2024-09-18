@@ -4410,7 +4410,7 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>A reference to this set.</returns>
         /// <stable>ICU 2.4</stable>
-        public virtual UnicodeSet ApplyPropertyAlias(string propertyAlias, string valueAlias)
+        public virtual UnicodeSet ApplyPropertyAlias(string propertyAlias, string valueAlias) // ICU4N TODO: API - Add overload for ReadOnlySpan<char>, if possible
         {
             return ApplyPropertyAlias(propertyAlias, valueAlias, null);
         }

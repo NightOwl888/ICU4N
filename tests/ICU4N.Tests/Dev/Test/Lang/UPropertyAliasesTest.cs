@@ -1,4 +1,5 @@
 ﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using J2N;
 using NUnit.Framework;
 using System;
@@ -159,27 +160,38 @@ namespace ICU4N.Dev.Test.Lang
             int v, rev;
             UProperty p;
             NameChoice choice;
+            bool success = false;
             for (p = 0; ; ++p)
             {
                 bool sawProp = false;
                 for (choice = 0; ; ++choice)
                 {
                     string name = null;
-                    if (UChar.TryGetPropertyName(p, choice, out name))
+                    success = UChar.TryGetPropertyName(p, choice, out ICU4N.Impl.UPropertyAliases.NameFetchError error, out ReadOnlySpan<char> nameSpan);
+                    if (success || !success && error == UPropertyAliases.NameFetchError.Undefined)
                     {
+                        name = error == ICU4N.Impl.UPropertyAliases.NameFetchError.Undefined ? null : nameSpan.ToString();
                         if (!sawProp) Log("prop " + p + ":");
                         string n = (name != null) ? ("\"" + name + '"') : "null";
                         Log(" " + choice + "=" + n);
                         sawProp = true;
                     }
-                    else
+                    else if (!success)
                     {
                         if (choice > 0) break;
                     }
                     if (name != null)
                     {
                         /* test reverse mapping */
-                        rev = UChar.GetPropertyEnum(name);
+                        //rev = UChar.GetPropertyEnum(name);
+                        UChar.TryGetPropertyEnum(name, out rev);
+                        if (rev != (int)p)
+                        {
+                            Errln("Property round-trip failure: " + p + " -> " +
+                                  name + " -> " + rev);
+                        }
+                        // ICU4N: Check the ReadOnlySpan<char> overload
+                        UChar.TryGetPropertyEnum(name.AsSpan(), out rev);
                         if (rev != (int)p)
                         {
                             Errln("Property round-trip failure: " + p + " -> " +
@@ -190,8 +202,11 @@ namespace ICU4N.Dev.Test.Lang
                 if (sawProp)
                 {
                     /* looks like a valid property; check the values */
-                    string pname;
-                    UChar.TryGetPropertyName(p, NameChoice.Long, out pname);
+                    string pname = null;
+                    if (UChar.TryGetPropertyName(p, NameChoice.Long, out ReadOnlySpan<char> pnameSpan))
+                    {
+                        pname = pnameSpan.ToString();
+                    }
                     int max = 0;
                     if (p == UProperty.Canonical_Combining_Class)
                     {
@@ -215,14 +230,16 @@ namespace ICU4N.Dev.Test.Lang
                         for (choice = 0; ; ++choice)
                         {
                             string vname = null;
-                            if (UChar.TryGetPropertyValueName(p, v, choice, out vname))
+                            success = UChar.TryGetPropertyValueName(p, v, choice, out UPropertyAliases.NameFetchError error, out ReadOnlySpan<char> vnameSpan);
+                            if (success || !success && error == UPropertyAliases.NameFetchError.Undefined)
                             {
+                                vname = error == UPropertyAliases.NameFetchError.Undefined ? null : vnameSpan.ToString();
                                 string n = (vname != null) ? ("\"" + vname + '"') : "null";
                                 if (!sawValue) Log(" " + pname + ", value " + v + ":");
                                 Log(" " + choice + "=" + n);
                                 sawValue = true;
                             }
-                            else
+                            else if (!success)
                             {
                                 if (choice > 0) break;
                             }
@@ -234,7 +251,15 @@ namespace ICU4N.Dev.Test.Lang
                                 {
                                     Errln("Value round-trip failure (" + pname +
                                           "): " + v + " -> " +
-                                          vname + " -> " + rev);
+                                          vname.ToString() + " -> " + rev);
+                                }
+                                // ICU4N: Check the ReadOnlySpan<char> overload
+                                UChar.TryGetPropertyValueEnum(p, vname.AsSpan(), out rev);
+                                if (rev != v)
+                                {
+                                    Errln("Value round-trip failure (" + pname +
+                                          "): " + v + " -> " +
+                                          vname.ToString() + " -> " + rev);
                                 }
                             }
                         }
@@ -277,13 +302,13 @@ namespace ICU4N.Dev.Test.Lang
                                             UProperty.Canonical_Combining_Class);
                     i++)
             {
-                string valueName;
-                if (!UChar.TryGetPropertyValueName(
+                success = UChar.TryGetPropertyValueName(
                                             UProperty.Canonical_Combining_Class,
-                                            i, NameChoice.Long, out valueName))
+                                            i, NameChoice.Long, out UPropertyAliases.NameFetchError error, out ReadOnlySpan<char> valueName);
+                if (!success && error != UPropertyAliases.NameFetchError.Undefined)
                 {
                     Errln("0x" + i.ToHexString()
-                        + " should have a null property value name");
+                        + " should return false or should have a valid property value name");
                     break;
                 }
             }
@@ -309,6 +334,29 @@ namespace ICU4N.Dev.Test.Lang
                       " rather than throwing an exception");
             }
             catch (ArgumentException e)
+            {
+                // ok
+            }
+        }
+
+        [Test]
+        public void TestUnknownPropertyNamesUsingTry()
+        {
+            if (UChar.TryGetPropertyEnum("??", out int p))
+            {
+                Errln("UCharacter.TryGetPropertyEnum(??) returned " + p +
+                      " rather than false");
+            }
+            else
+            {
+                // ok
+            }
+            if (UChar.TryGetPropertyValueEnum(UProperty.Line_Break, "?!", out p))
+            {
+                Errln("UCharacter.TryGetPropertyValueEnum(UProperty.LINE_BREAK, ?!) returned " + p +
+                      " rather than false");
+            }
+            else
             {
                 // ok
             }

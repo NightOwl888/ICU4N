@@ -6,6 +6,7 @@ using J2N.Text;
 using System;
 using System.IO;
 using System.Resources;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ICU4N.Impl
@@ -204,13 +205,22 @@ namespace ICU4N.Impl
             return 0;
         }
 
-        // ICU4N specific method for getting property name without throwing exceptions
-        private bool TryGetName(int nameGroupsIndex, int nameIndex, out string result) // ICU4N TODO: Change result to ReadOnlySpan<char> so we don't need to allocate
+        internal enum NameFetchError // ICU4N: Internal for testing
         {
-            result = null;
+            None = 0,
+            Invalid = 1,
+            Undefined = -1, // ICU4N: -1 to match UPropertyConstants
+        }
+
+        // ICU4N specific method for getting property name without throwing exceptions
+        private bool TryGetName(int nameGroupsIndex, int nameIndex, out NameFetchError error, out ReadOnlySpan<char> result)
+        {
+            error = default;
+            result = default;
             int numNames = nameGroups[nameGroupsIndex++];
             if (nameIndex < 0 || numNames <= nameIndex)
             {
+                error = NameFetchError.Invalid;
                 return false;
             }
             // Skip nameIndex names.
@@ -226,23 +236,28 @@ namespace ICU4N.Impl
             }
             if (nameStart == nameGroupsIndex)
             {
-                result = null;  // no name (Property[Value]Aliases.txt has "n/a")
-                return true;
+                //result = default;  // no name (Property[Value]Aliases.txt has "n/a")
+                error = NameFetchError.Undefined;
+                return false;
             }
-            result = nameGroups.Substring(nameStart, nameGroupsIndex - nameStart); // ICU4N: Corrected 2nd parameter
+            result = nameGroups.AsSpan(nameStart, nameGroupsIndex - nameStart); // ICU4N: Corrected 2nd parameter
             return true;
         }
 
         private string GetName(int nameGroupsIndex, int nameIndex)
         {
-            string result;
-            if (TryGetName(nameGroupsIndex, nameIndex, out result))
+            if (TryGetName(nameGroupsIndex, nameIndex, out NameFetchError error, out ReadOnlySpan<char> result))
             {
-                return result;
+                return result.ToString();
             }
-            throw new IcuArgumentException("Invalid property (value) name choice");
+            else if (error == NameFetchError.Invalid)
+            {
+                throw new IcuArgumentException("Invalid property (value) name choice");
+            }
+            return null; // NameFetchError.Undefined
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int AsciiToLowercase(int c)
         {
             return 'A' <= c && c <= 'Z' ? c + 0x20 : c;
@@ -323,15 +338,20 @@ namespace ICU4N.Impl
         /// the <paramref name="nameChoice"/> selects among them.
         /// </summary>
         /// <stable>ICU4N 60.1</stable>
-        public bool TryGetPropertyName(UProperty property, NameChoice nameChoice, out string result) // ICU4N TODO: Tests
+        public bool TryGetPropertyName(UProperty property, NameChoice nameChoice, out ReadOnlySpan<char> result)
+            => TryGetPropertyName(property, nameChoice, out _, out result);
+
+        // ICU4N TODO: API - Make public? This could be used to check whether a name is defined/valid without throwing an exception.
+        internal bool TryGetPropertyName(UProperty property, NameChoice nameChoice, out NameFetchError error, out ReadOnlySpan<char> result)
         {
             result = null;
             int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
             {
+                error = NameFetchError.Invalid;
                 return false;
             }
-            return TryGetName(valueMaps[valueMapIndex], (int)nameChoice, out result);
+            return TryGetName(valueMaps[valueMapIndex], (int)nameChoice, out error, out result);
         }
 
         /// <summary>
@@ -339,7 +359,7 @@ namespace ICU4N.Impl
         /// Multiple names may be available for each value;
         /// the <paramref name="nameChoice"/> selects among them.
         /// </summary>
-        /// <seealso cref="TryGetPropertyValueName(UProperty, int, NameChoice, out string)"/>
+        /// <seealso cref="TryGetPropertyValueName(UProperty, int, NameChoice, out ReadOnlySpan{Char})"/>
         public string GetPropertyValueName(UProperty property, int value, NameChoice nameChoice) // ICU4N TODO: API - make value into enum ?
         {
             int valueMapIndex = FindProperty((int)property);
@@ -369,20 +389,26 @@ namespace ICU4N.Impl
         /// </summary>
         /// <seealso cref="GetPropertyValueName(UProperty, int, NameChoice)"/>
          // ICU4N TODO: API - make value into enum ?
-        public bool TryGetPropertyValueName(UProperty property, int value, NameChoice nameChoice, out string result) // ICU4N TODO: Tests
+        public bool TryGetPropertyValueName(UProperty property, int value, NameChoice nameChoice, out ReadOnlySpan<char> result) // ICU4N TODO: Tests
+            => TryGetPropertyValueName(property, value, nameChoice, out _, out result);
+
+        // ICU4N TODO: API - Make public? This could be used to check whether a name is defined/valid without throwing an exception.
+        internal bool TryGetPropertyValueName(UProperty property, int value, NameChoice nameChoice, out NameFetchError error, out ReadOnlySpan<char> result) // ICU4N TODO: Tests
         {
-            result = null;
+            result = default;
             int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
             {
+                error = NameFetchError.Invalid;
                 return false;
             }
             int nameGroupOffset = FindPropertyValueNameGroup(valueMaps[valueMapIndex + 1], value);
             if (nameGroupOffset == 0)
             {
+                error = NameFetchError.Invalid;
                 return false;
             }
-            return TryGetName(nameGroupOffset, (int)nameChoice, out result);
+            return TryGetName(nameGroupOffset, (int)nameChoice, out error, out result);
         }
 
         private int GetPropertyOrValueEnum(int bytesTrieOffset, string alias)
