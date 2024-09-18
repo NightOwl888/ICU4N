@@ -476,14 +476,15 @@ namespace ICU4N
         /// </summary>
         /// <param name="span">The source span from which the elements are removed.</param>
         /// <param name="trimElements">The span which contains the set of elements to remove.</param>
-        //[SuppressMessage()]
         private static int ClampStart<T>(ReadOnlySpan<T> span, ReadOnlySpan<T> trimElements) where T : IEquatable<T>?
         {
             int start = 0;
             for (; start < span.Length; start++)
             {
                 //if (!trimElements.Contains(span[start]))
+#pragma warning disable CS8631 // The type 'T' cannot be used as a type parameter 'T' i the generic type method
                 if (trimElements.IndexOf(span[start]) < 0)
+#pragma warning restore CS8631 // The type 'T' cannot be used as a type parameter 'T' i the generic type method
                 {
                     break;
                 }
@@ -508,7 +509,9 @@ namespace ICU4N
             for (; end >= start; end--)
             {
                 //if (!trimElements.Contains(span[end]))
+#pragma warning disable CS8631 // The type 'T' cannot be used as a type parameter 'T' i the generic type method
                 if (trimElements.IndexOf(span[end]) < 0)
+#pragma warning restore CS8631 // The type 'T' cannot be used as a type parameter 'T' i the generic type method
                 {
                     break;
                 }
