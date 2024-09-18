@@ -364,37 +364,39 @@ namespace ICU4N.Impl
             // and its array allocation.
             // (There is no simple by-character split()
             // and the StringTokenizer "is discouraged in new code".)
-            int pathStart = 0;
-            while (pathStart < dataPath.Length)
+            var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
+            try
             {
-                int sepIndex = dataPath.IndexOf(Path.DirectorySeparatorChar, pathStart);
-                int pathLimit;
-                if (sepIndex >= 0)
+                int pathStart = 0;
+                while (pathStart < dataPath.Length)
                 {
-                    pathLimit = sepIndex;
-                }
-                else
-                {
-                    pathLimit = dataPath.Length;
-                }
-                ReadOnlySpan<char> path = dataPath.AsSpan(pathStart, pathLimit - pathStart).Trim().TrimEnd(Path.DirectorySeparatorChar); // ICU4N: Corrected 2nd parameter
-                if (path.Length != 0)
-                {
-                    var sb = new ValueStringBuilder(stackalloc char[CharStackBufferSize]);
-                    try
+                    int sepIndex = dataPath.IndexOf(Path.DirectorySeparatorChar, pathStart);
+                    int pathLimit;
+                    if (sepIndex >= 0)
                     {
+                        pathLimit = sepIndex;
+                    }
+                    else
+                    {
+                        pathLimit = dataPath.Length;
+                    }
+                    ReadOnlySpan<char> path = dataPath.AsSpan(pathStart, pathLimit - pathStart).Trim().TrimEnd(Path.DirectorySeparatorChar); // ICU4N: Corrected 2nd parameter
+                    if (path.Length != 0)
+                    {
+                        sb.Length = 0;
                         AddDataFilesFromFolder(Path.GetFullPath(path.ToString()), ref sb, icuDataFiles);
+
                     }
-                    finally
+                    if (sepIndex < 0)
                     {
-                        sb.Dispose();
+                        break;
                     }
+                    pathStart = sepIndex + 1;
                 }
-                if (sepIndex < 0)
-                {
-                    break;
-                }
-                pathStart = sepIndex + 1;
+            }
+            finally
+            {
+                sb.Dispose();
             }
         }
 
