@@ -418,10 +418,12 @@ namespace ICU4N.Text
             // the ArrayPool is able to return.
             var builder = new ValueStringBuilder(stackalloc char[32]);
 
-            builder.EnsureCapacity(65);
+            builder.EnsureCapacity(65, out int newCapacity);
 
-            Assert.AreEqual(128, builder.Capacity);
+            Assert.AreEqual(65, newCapacity);
+            Assert.GreaterOrEqual(builder.Capacity, 128);
             Assert.IsTrue(builder.CapacityExceeded);
+            builder.Dispose();
         }
 
         [Test]
@@ -429,10 +431,12 @@ namespace ICU4N.Text
         {
             var builder = new ValueStringBuilder(stackalloc char[32]);
 
-            builder.EnsureCapacity(33);
+            builder.EnsureCapacity(33, out int newCapacity);
 
-            Assert.AreEqual(64, builder.Capacity);
+            Assert.AreEqual(64, newCapacity);
+            Assert.GreaterOrEqual(builder.Capacity, 64);
             Assert.IsTrue(builder.CapacityExceeded);
+            builder.Dispose();
         }
 
         [Test]

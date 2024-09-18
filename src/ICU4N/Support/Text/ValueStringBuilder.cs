@@ -11,13 +11,14 @@ using System.Runtime.InteropServices;
 
 namespace ICU4N.Text
 {
+    [StructLayout(LayoutKind.Sequential)]
     internal ref partial struct ValueStringBuilder
     {
         private char[]? _arrayToReturnToPool;
         private Span<char> _chars;
         private int _pos;
-        private bool _capacityExceeded;
         private int _maxLength;
+        private bool _capacityExceeded;
 
         public ValueStringBuilder(Span<char> initialBuffer)
         {
@@ -68,13 +69,19 @@ namespace ICU4N.Text
         }
 
         public void EnsureCapacity(int capacity)
+            => EnsureCapacity(capacity, out _);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void EnsureCapacity(int capacity, out int newCapacity) // Internal for testing
         {
             // This is not expected to be called this with negative capacity
             Debug.Assert(capacity >= 0);
 
+            newCapacity = default;
+
             // If the caller has a bug and calls this with negative capacity, make sure to call Grow to throw an exception.
             if ((uint)capacity > (uint)_chars.Length)
-                Grow(capacity - _pos);
+                Grow(capacity - _pos, out newCapacity);
         }
 
         /// <summary>
@@ -471,24 +478,27 @@ namespace ICU4N.Text
         /// <param name="additionalCapacityBeyondPos">
         /// Number of chars requested beyond current position.
         /// </param>
-        [MethodImpl(MethodImplOptions.NoInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Grow(int additionalCapacityBeyondPos)
+            => Grow(additionalCapacityBeyondPos, out _);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void Grow(int additionalCapacityBeyondPos, out int newCapacity)
         {
             Debug.Assert(additionalCapacityBeyondPos > 0);
             Debug.Assert(_pos > _chars.Length - additionalCapacityBeyondPos, "Grow called incorrectly, no resize is needed.");
 
-            const uint ArrayMaxLength = 0x7FFFFFC7; // same as Array.MaxLength
-
             _capacityExceeded = true;
+
+            const uint ArrayMaxLength = 0x7FFFFFC7; // same as Array.MaxLength
 
             // Increase to at least the required size (_pos + additionalCapacityBeyondPos), but try
             // to double the size if possible, bounding the doubling to not go beyond the max array length.
-            int newCapacity = (int)Math.Max(
+            newCapacity = (int)Math.Max(
                 (uint)(_pos + additionalCapacityBeyondPos),
                 Math.Min((uint)_chars.Length * 2, ArrayMaxLength));
 
-            // Make sure to let Rent throw an exception if the caller has a bug and the desired capacity is negative.
-            // This could also go negative if the actual required length wraps around.
+            // Make sure to let Rent throw an exception if the caller has a bug and the desired capacity is negative
             char[] poolArray = ArrayPool<char>.Shared.Rent(newCapacity);
 
             _chars.Slice(0, _pos).CopyTo(poolArray);
