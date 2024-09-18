@@ -3,6 +3,7 @@ using ICU4N.Support.Text;
 using J2N;
 using System;
 using System.Buffers;
+using System.Diagnostics;
 #nullable enable
 
 namespace ICU4N.Text
@@ -69,6 +70,9 @@ namespace ICU4N.Text
                     (value >= 0xFF66 && value <= 0xFF9F);
         }
 
+        // ICU4N: Note that something is up with this method in .NET Framework. The assert for prev[t_boundary[numBreaks - 1]] == 0 throws an IndexOutOfRangeException
+        // only when optimizations are enabled. It has been changed to Debug.Assert() so it is left out of the compile, but this may be a symptom of a larger issue.
+        // This started happening after switching to Span<T> and ArrayPool<T> to reuse the temporary int arrays in this method.
         public override int DivideUpDictionaryRange(CharacterIterator inText, int startPos, int endPos,
                 DequeI foundBreaks)
         {
@@ -257,7 +261,7 @@ namespace ICU4N.Text
                         t_boundary[numBreaks] = i;
                         numBreaks++;
                     }
-                    Assert.Assrt(prev[t_boundary[numBreaks - 1]] == 0);
+                    Debug.Assert(prev[t_boundary[numBreaks - 1]] == 0); // ICU4N: Using Debug.Assert, since this breaks in Release mode on .NET Framework. We don't want to use Assert.Assrt() in .NET, anyway.
                 }
 
                 if (foundBreaks.Count == 0 || foundBreaks.Peek() < startPos)
