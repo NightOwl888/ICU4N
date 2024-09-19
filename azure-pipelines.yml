@@ -51,6 +51,10 @@ stages:
       vmImage: 'windows-2019'
 
     steps:
+    # Nerdbank.GitVersioning requires a deep clone. See: https://github.com/dotnet/Nerdbank.GitVersioning/blob/main/doc/cloudbuild.md#azure-pipelines
+    - checkout: self
+      fetchDepth: 0
+
     - pwsh: |
         $configuration = if ($env:BUILDCONFIGURATION) { $env:BUILDCONFIGURATION } else { "Release" }
         Write-Host "##vso[task.setvariable variable=BuildConfiguration;]$configuration"
