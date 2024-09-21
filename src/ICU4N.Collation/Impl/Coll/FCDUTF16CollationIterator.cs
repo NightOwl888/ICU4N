@@ -49,8 +49,8 @@ namespace ICU4N.Impl.Coll
             }
             ReadOnlySpan<char> seqSpan = seq.Span;
             ReadOnlySpan<char> rawSeqSpan = rawSeq.Span;
-            ReadOnlySpan<char> oSeqSpan = seq.Span;
-            ReadOnlySpan<char> oRawSeqSpan = rawSeq.Span;
+            ReadOnlySpan<char> oSeqSpan = o.seq.Span;
+            ReadOnlySpan<char> oRawSeqSpan = o.rawSeq.Span;
             if (checkDir == 0 && (seqSpan.Equals(rawSeqSpan, StringComparison.Ordinal)) != (oSeqSpan.Equals(oRawSeqSpan, StringComparison.Ordinal)))
             {
                 return false;
