@@ -813,7 +813,7 @@ namespace ICU4N.Impl.Coll
                     UCultureInfo localeID;
                     try
                     {
-                        localeID = new UCultureInfoBuilder().SetLanguageTag(v.ToString()).Build(); // ICU4N TODO: Eliminate this allocation
+                        localeID = new UCultureInfoBuilder().SetLanguageTag(v).Build();
                     }
                     catch (Exception e) // ICU4N TODO: Find a way to eliminate the exceptions, if possible.
                     {
