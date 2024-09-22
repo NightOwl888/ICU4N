@@ -285,7 +285,7 @@ namespace ICU4N.Impl
             // call it first.
             if (MemoryHelper.AreSame(dest.RawChars, src))
             {
-                throw new ArgumentException($"'{nameof(src)}' cannot be the same reference as '{nameof(dest)}'");
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same memory location as '{nameof(dest)}'");
             }
             // Arguments are fine, reset output values.
             dest.Delete(0, 0x7fffffff - 0); // ICU4N: Corrected 2nd parameter

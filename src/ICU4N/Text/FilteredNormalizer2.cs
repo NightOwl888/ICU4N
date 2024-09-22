@@ -62,7 +62,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         internal override void Normalize(scoped ReadOnlySpan<char> src, ref ValueStringBuilder dest)
         {
-            if (MemoryHelper.AreSame(src, dest.RawChars))
+            if (src.Overlaps(dest.RawChars))
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same memory location as '{nameof(dest)}'");
             }
@@ -169,7 +169,7 @@ namespace ICU4N.Text
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal override void Append(ref ValueStringBuilder first, ReadOnlySpan<char> second)
         {
-            if (MemoryHelper.AreSame(first.RawChars, second))
+            if (first.RawChars.Overlaps(second))
             {
                 throw new ArgumentException($"'{nameof(first)}' cannot be the same memory location as '{nameof(second)}'");
             }
@@ -666,7 +666,7 @@ namespace ICU4N.Text
         private void NormalizeSecondAndAppend(ref ValueStringBuilder first, ReadOnlySpan<char> second,
                                                bool doNormalize)
         {
-            if (MemoryHelper.AreSame(first.RawChars, second))
+            if (first.RawChars.Overlaps(second))
             {
                 throw new ArgumentException($"'{nameof(first)}' cannot be the same memory location as '{nameof(second)}'");
             }
@@ -747,7 +747,7 @@ namespace ICU4N.Text
 
         public override bool TryNormalize(ReadOnlySpan<char> source, Span<char> destination, out int charsLength)
         {
-            if (MemoryHelper.AreSame(source, destination))
+            if (source.Overlaps(destination))
             {
                 throw new ArgumentException($"'{nameof(source)}' cannot be the same memory location as '{nameof(destination)}'");
             }
@@ -772,7 +772,7 @@ namespace ICU4N.Text
 
         private bool TryNormalizeSecondAndConcat(ReadOnlySpan<char> first, ReadOnlySpan<char> second, Span<char> destination, out int charsLength, bool doNormalize)
         {
-            if (MemoryHelper.AreSame(second, destination))
+            if (second.Overlaps(destination))
             {
                 throw new ArgumentException($"'{nameof(second)}' cannot be the same memory location as '{nameof(destination)}'");
             }
