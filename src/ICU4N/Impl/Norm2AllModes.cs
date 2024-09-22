@@ -195,8 +195,8 @@ namespace ICU4N.Impl
         {
             int length = source.Length;
             var buffer = length <= CharStackBufferSize
-                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
-                : new ValueReorderingBuffer(Impl, length);
+                ? new ReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, length);
             try
             {
                 Normalize(source, ref buffer);
@@ -226,8 +226,8 @@ namespace ICU4N.Impl
             }
             int length = source.Length;
             var buffer = length <= CharStackBufferSize
-                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
-                : new ValueReorderingBuffer(Impl, length);
+                ? new ReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, length);
             try
             {
                 Normalize(source, ref buffer);
@@ -256,8 +256,8 @@ namespace ICU4N.Impl
             }
             int length = first.Length + second.Length;
             var buffer = length <= CharStackBufferSize
-                ? new ValueReorderingBuffer(Impl, initialValue: first, stackalloc char[CharStackBufferSize])
-                : new ValueReorderingBuffer(Impl, initialValue: first, length);
+                ? new ReorderingBuffer(Impl, initialValue: first, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, initialValue: first, length);
             try
             {
                 NormalizeAndAppend(second, doNormalize, ref buffer);
@@ -281,8 +281,8 @@ namespace ICU4N.Impl
             dest.Length = 0;
             int length = src.Length;
             var buffer = length <= CharStackBufferSize
-                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
-                : new ValueReorderingBuffer(Impl, length);
+                ? new ReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, length);
             try
             {
                 Normalize(src, ref buffer);
@@ -306,8 +306,8 @@ namespace ICU4N.Impl
             dest.Length = 0;
             int length = src.Length;
             var buffer = length <= CharStackBufferSize
-                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
-                : new ValueReorderingBuffer(Impl, length);
+                ? new ReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, length);
             try
             {
                 Normalize(src, ref buffer);
@@ -330,8 +330,8 @@ namespace ICU4N.Impl
         {
             int length = src.Length;
             var buffer = length <= CharStackBufferSize
-                ? new ValueReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
-                : new ValueReorderingBuffer(Impl, length);
+                ? new ReorderingBuffer(Impl, stackalloc char[CharStackBufferSize])
+                : new ReorderingBuffer(Impl, length);
             try
             {
                 Normalize(src, ref buffer);
@@ -348,9 +348,9 @@ namespace ICU4N.Impl
         #endregion Normalize(ICharSequence, IAppendable)
 
         #region Normalize(ICharSequence, ReorderingBuffer)
-        protected abstract void Normalize(string src, ref ValueReorderingBuffer buffer);
+        protected abstract void Normalize(string src, ref ReorderingBuffer buffer);
 
-        protected abstract void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer);
+        protected abstract void Normalize(ReadOnlySpan<char> src, ref ReorderingBuffer buffer);
 
         #endregion Normalize(ICharSequence, ReorderingBuffer)
 
@@ -398,7 +398,7 @@ namespace ICU4N.Impl
             try
             {
                 sb.Append(first);
-                var buffer = new ValueReorderingBuffer(Impl, ref sb, length);
+                var buffer = new ReorderingBuffer(Impl, ref sb, length);
                 NormalizeAndAppend(second, doNormalize, ref buffer);
                 first.Length = 0;
                 first.Append(buffer.AsSpan());
@@ -424,7 +424,7 @@ namespace ICU4N.Impl
             try
             {
                 sb.Append(first.AsSpan());
-                var buffer = new ValueReorderingBuffer(Impl, ref sb, length);
+                var buffer = new ReorderingBuffer(Impl, ref sb, length);
                 NormalizeAndAppend(second, doNormalize, ref buffer);
                 first.Length = 0;
                 unsafe
@@ -442,10 +442,10 @@ namespace ICU4N.Impl
 
         #region NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
         protected abstract void NormalizeAndAppend(
-            string src, bool doNormalize, ref ValueReorderingBuffer buffer);
+            string src, bool doNormalize, ref ReorderingBuffer buffer);
 
         protected abstract void NormalizeAndAppend(
-            ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer);
+            ReadOnlySpan<char> src, bool doNormalize, ref ReorderingBuffer buffer);
 
         #endregion NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
 
@@ -514,7 +514,7 @@ namespace ICU4N.Impl
         }
 
         #region Normalize(ICharSequence, ReorderingBuffer)
-        protected override void Normalize(string src, ref ValueReorderingBuffer buffer)
+        protected override void Normalize(string src, ref ReorderingBuffer buffer)
         {
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
@@ -522,7 +522,7 @@ namespace ICU4N.Impl
             Impl.Decompose(src.AsSpan(), ref buffer); // ICU4N: Checked 3rd parameter
         }
 
-        protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
+        protected override void Normalize(ReadOnlySpan<char> src, ref ReorderingBuffer buffer)
         {
             if (src.Overlaps(buffer.RawChars))
             {
@@ -535,7 +535,7 @@ namespace ICU4N.Impl
         #endregion Normalize(ICharSequence, ReorderingBuffer)
 
         #region NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer)
-        protected override void NormalizeAndAppend(string src, bool doNormalize, ref ValueReorderingBuffer buffer)
+        protected override void NormalizeAndAppend(string src, bool doNormalize, ref ReorderingBuffer buffer)
         {
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
@@ -543,7 +543,7 @@ namespace ICU4N.Impl
             Impl.DecomposeAndAppend(src.AsSpan(), doNormalize, ref buffer);
         }
 
-        protected override void NormalizeAndAppend(ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer)
+        protected override void NormalizeAndAppend(ReadOnlySpan<char> src, bool doNormalize, ref ReorderingBuffer buffer)
         {
             if (src.Overlaps(buffer.RawChars))
             {
@@ -585,7 +585,7 @@ namespace ICU4N.Impl
         }
 
         #region Normalize(ICharSequence, ReorderingBuffer)
-        protected override void Normalize(string src, ref ValueReorderingBuffer buffer)
+        protected override void Normalize(string src, ref ReorderingBuffer buffer)
         {
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
@@ -593,7 +593,7 @@ namespace ICU4N.Impl
             Impl.Compose(src.AsSpan(), onlyContiguous, doCompose: true, ref buffer);
         }
 
-        protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
+        protected override void Normalize(ReadOnlySpan<char> src, ref ReorderingBuffer buffer)
         {
             if (src.Overlaps(buffer.RawChars))
             {
@@ -609,7 +609,7 @@ namespace ICU4N.Impl
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void NormalizeAndAppend(
-            string src, bool doNormalize, ref ValueReorderingBuffer buffer)
+            string src, bool doNormalize, ref ReorderingBuffer buffer)
         {
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
@@ -619,7 +619,7 @@ namespace ICU4N.Impl
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void NormalizeAndAppend(
-            ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer)
+            ReadOnlySpan<char> src, bool doNormalize, ref ReorderingBuffer buffer)
         {
             if (src.Overlaps(buffer.RawChars))
             {
@@ -637,7 +637,7 @@ namespace ICU4N.Impl
         public override bool IsNormalized(ReadOnlySpan<char> s)
         {
             // 5: small destCapacity for substring normalization
-            var buffer = new ValueReorderingBuffer(Impl, stackalloc char[5]);
+            var buffer = new ReorderingBuffer(Impl, stackalloc char[5]);
             try
             {
                 return Impl.Compose(s, onlyContiguous, doCompose: false, ref buffer);
@@ -707,7 +707,7 @@ namespace ICU4N.Impl
 
         #region Normalize(ICharSequence, ReorderingBuffer)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void Normalize(string src, ref ValueReorderingBuffer buffer)
+        protected override void Normalize(string src, ref ReorderingBuffer buffer)
         {
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
@@ -716,7 +716,7 @@ namespace ICU4N.Impl
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected override void Normalize(ReadOnlySpan<char> src, ref ValueReorderingBuffer buffer)
+        protected override void Normalize(ReadOnlySpan<char> src, ref ReorderingBuffer buffer)
         {
             if (src.Overlaps(buffer.RawChars))
             {
@@ -732,7 +732,7 @@ namespace ICU4N.Impl
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void NormalizeAndAppend(
-            string src, bool doNormalize, ref ValueReorderingBuffer buffer)
+            string src, bool doNormalize, ref ReorderingBuffer buffer)
         {
             if (src is null)
                 throw new ArgumentNullException(nameof(src));
@@ -742,7 +742,7 @@ namespace ICU4N.Impl
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected override void NormalizeAndAppend(
-            ReadOnlySpan<char> src, bool doNormalize, ref ValueReorderingBuffer buffer)
+            ReadOnlySpan<char> src, bool doNormalize, ref ReorderingBuffer buffer)
         {
             Impl.MakeFCDAndAppend(src, doNormalize, ref buffer);
         }

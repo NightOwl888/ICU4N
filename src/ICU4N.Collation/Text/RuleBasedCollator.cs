@@ -1511,7 +1511,7 @@ namespace ICU4N.Text
                     try
                     {
                         sb.Append(seqSpan.Slice(start, spanLimit - start)); // ICU4N: Corrected 3rd parameter
-                        ValueReorderingBuffer buffer = new ValueReorderingBuffer(nfcImpl, ref sb, bufferSize);
+                        ReorderingBuffer buffer = new ReorderingBuffer(nfcImpl, ref sb, bufferSize);
                         nfcImpl.MakeFCD(seqSpan.Slice(spanLimit, seq.Length - spanLimit), ref buffer); // ICU4N: Corrected 3rd parameter
                         str.Append(buffer.AsSpan());
                     }

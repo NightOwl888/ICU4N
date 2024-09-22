@@ -426,7 +426,7 @@ namespace ICU4N.Impl
                         Normalizer2Impl kcf = Norm2AllModes.NFKC_CFInstance.Impl;
                         Span<char> src = stackalloc char[2];
                         int charCount = Character.ToChars(c, src, 0);
-                        ValueReorderingBuffer buffer = new ValueReorderingBuffer(kcf, stackalloc char[5]); // Small destCapacity for NFKC_CF(c).
+                        ReorderingBuffer buffer = new ReorderingBuffer(kcf, stackalloc char[5]); // Small destCapacity for NFKC_CF(c).
                         try
                         {
                             kcf.Compose(src.Slice(0, charCount), false, true, ref buffer); // ICU4N: Checked 3rd parameter

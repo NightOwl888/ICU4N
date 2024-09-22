@@ -153,7 +153,7 @@ namespace ICU4N.Impl
         /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
         /// and returns the length of the decomposition (2 or 3).
         /// </summary>
-        public static int AppendHangulDecomposition(this ref ValueReorderingBuffer buffer, int c)
+        public static int AppendHangulDecomposition(this ref ReorderingBuffer buffer, int c)
         {
             // ICU4N: Removed unnecessary try/catch for IOException
             c -= HangulBase;
@@ -285,7 +285,7 @@ namespace ICU4N.Impl
         /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
         /// This is the raw, not recursive, decomposition. Its length is always 2.
         /// </summary>
-        public static void AppendHangulRawDecomposition(this ref ValueReorderingBuffer buffer, int c)
+        public static void AppendHangulRawDecomposition(this ref ReorderingBuffer buffer, int c)
         {
             // ICU4N: Removed unnecessary try/catch for IOException
             int orig = c;
@@ -336,8 +336,7 @@ namespace ICU4N.Impl
         }
     }
 
-    // ICU4N specific - ReorderingBuffer moved to Normalizer2Impl.generated.tt
-    #region ValueReorderingBuffer
+    #region ReorderingBuffer
 
     /// <summary>
     /// Writable buffer that takes care of canonical ordering.
@@ -351,13 +350,13 @@ namespace ICU4N.Impl
     /// <see cref="ToString()"/>. The user is responsible for calling <see cref="Dispose()"/>
     /// if the value is not obtained through <see cref="ToString()"/>.
     /// </summary>
-    public unsafe ref struct ValueReorderingBuffer
+    public unsafe ref struct ReorderingBuffer
     {
-        public ValueReorderingBuffer(Normalizer2Impl ni, Span<char> initialBuffer)
+        public ReorderingBuffer(Normalizer2Impl ni, Span<char> initialBuffer)
             : this(ni, ReadOnlySpan<char>.Empty, initialBuffer)
         {
         }
-        public ValueReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, Span<char> initialBuffer)
+        public ReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, Span<char> initialBuffer)
         {
             impl = ni ?? throw new ArgumentNullException(nameof(ni));
             str = new ValueStringBuilder(initialBuffer);
@@ -386,13 +385,13 @@ namespace ICU4N.Impl
             }
         }
 
-        public ValueReorderingBuffer(Normalizer2Impl ni, int initialCapacity)
+        public ReorderingBuffer(Normalizer2Impl ni, int initialCapacity)
             : this(ni, ReadOnlySpan<char>.Empty, initialCapacity)
         {
         }
 
         // ICU4N TODO: Evaluate whether this approach makes sense and if not, remove
-        public ValueReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, int initialCapacity)
+        public ReorderingBuffer(Normalizer2Impl ni, ReadOnlySpan<char> initialValue, int initialCapacity)
         {
             impl = ni ?? throw new ArgumentNullException(nameof(ni));
             str = new ValueStringBuilder(initialCapacity);
@@ -421,7 +420,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal ValueReorderingBuffer(Normalizer2Impl ni, ref ValueStringBuilder destination, int destinationCapacity)
+        internal ReorderingBuffer(Normalizer2Impl ni, ref ValueStringBuilder destination, int destinationCapacity)
         {
             impl = ni ?? throw new ArgumentNullException(nameof(ni));
             str = destination;
@@ -742,7 +741,7 @@ namespace ICU4N.Impl
         private int codePointStart, codePointLimit;
     }
 
-    #endregion ValueReorderingBuffer
+    #endregion ReorderingBuffer
 
     // TODO: Propose as public API on the UTF16 class.
     // TODO: Propose widening UTF16 methods that take char to take int.
@@ -1651,7 +1650,7 @@ namespace ICU4N.Impl
             {
                 destLengthEstimate = limit - src;
             }
-            ValueReorderingBuffer buffer = new ValueReorderingBuffer(this, ref dest, destLengthEstimate);
+            ReorderingBuffer buffer = new ReorderingBuffer(this, ref dest, destLengthEstimate);
             dest.Length = 0;
             Decompose(s, ref buffer);
             dest.Length = buffer.Length; // HACK: Although the value gets written to dest, the length value needs to be manually transferred.
@@ -1660,7 +1659,7 @@ namespace ICU4N.Impl
         // normalize
         // ICU4N: This was part of the dual functionality of Decompose() in ICU4J.
         // Separated out into Decompose() and DecomposeQuickCheck() so we can use a ref struct for the buffer.
-        public int Decompose(ReadOnlySpan<char> s, ref ValueReorderingBuffer buffer)
+        public int Decompose(ReadOnlySpan<char> s, ref ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             int minNoCP = minDecompNoCP;
@@ -1716,7 +1715,7 @@ namespace ICU4N.Impl
                 // copy these code units all at once
                 if (src != prevSrc)
                 {
-                    // For ValueReorderingBuffer, call Append() instead of FlushAndAppendZeroCC()
+                    // For ReorderingBuffer, call Append() instead of FlushAndAppendZeroCC()
                     buffer.Append(s.Slice(prevSrc, src - prevSrc)); // ICU4N: Corrected 3rd parameter
                 }
                 if (src == limit)
@@ -1820,7 +1819,7 @@ namespace ICU4N.Impl
             return src;
         }
 
-        public void DecomposeAndAppend(ReadOnlySpan<char> s, bool doDecompose, ref ValueReorderingBuffer buffer)
+        public void DecomposeAndAppend(ReadOnlySpan<char> s, bool doDecompose, ref ReorderingBuffer buffer)
         {
             int limit = s.Length;
             if (limit == 0)
@@ -1858,7 +1857,7 @@ namespace ICU4N.Impl
         public bool Compose(ReadOnlySpan<char> s,
                            bool onlyContiguous,
                            bool doCompose,
-                           ref ValueReorderingBuffer buffer)
+                           ref ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             int prevBoundary = src;
@@ -2317,7 +2316,7 @@ namespace ICU4N.Impl
         public void ComposeAndAppend(ReadOnlySpan<char> s,
             bool doCompose,
             bool onlyContiguous,
-            ref ValueReorderingBuffer buffer)
+            ref ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             if (!buffer.IsEmpty)
@@ -2360,7 +2359,7 @@ namespace ICU4N.Impl
 
         // normalize
         // ICU4N: Separated dual functionality that was in ICU4J into MakeFCD() and MakeFCDSpanQuickCheckYes()
-        public int MakeFCD(ReadOnlySpan<char> s, ref ValueReorderingBuffer buffer)
+        public int MakeFCD(ReadOnlySpan<char> s, ref ReorderingBuffer buffer)
         {
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
@@ -2472,7 +2471,7 @@ namespace ICU4N.Impl
                     }
                     // The last lccc==0 character is excluded from the
                     // flush-and-append call in case it needs to be modified.
-                    // ICU4N: Call Append() rather than FlushAndAppendZeroCC() on ValueReorderingBuffer
+                    // ICU4N: Call Append() rather than FlushAndAppendZeroCC() on ReorderingBuffer
                     buffer.Append(s.Slice(prevSrc, prevBoundary - prevSrc)); // ICU4N: Corrected 3rd parameter
                     buffer.Append(s.Slice(prevBoundary, src - prevBoundary)); // ICU4N: Corrected 3rd parameter
                     // The start of the current character (c).
@@ -2664,7 +2663,7 @@ namespace ICU4N.Impl
             return src;
         }
 
-        public void MakeFCDAndAppend(ReadOnlySpan<char> s, bool doMakeFCD, ref ValueReorderingBuffer buffer)
+        public void MakeFCDAndAppend(ReadOnlySpan<char> s, bool doMakeFCD, ref ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             if (!buffer.IsEmpty)
@@ -2921,7 +2920,7 @@ namespace ICU4N.Impl
         private int DecomposeShort(
                 ReadOnlySpan<char> s, int src, int limit,
                 bool stopAtCompBoundary, bool onlyContiguous,
-                ref ValueReorderingBuffer buffer)
+                ref ReorderingBuffer buffer)
         {
             while (src < limit)
             {
@@ -2945,7 +2944,7 @@ namespace ICU4N.Impl
             return src;
         }
 
-        private void Decompose(int c, int norm16, ref ValueReorderingBuffer buffer)
+        private void Decompose(int c, int norm16, ref ReorderingBuffer buffer)
         {
             // get the decomposition and the lead and trail cc's
             if (norm16 >= limitNoNo)
@@ -3122,10 +3121,10 @@ namespace ICU4N.Impl
         /// a composition may contain at most one more code unit than the original starter,
         /// while the combining mark that is removed has at least one code unit.
         /// </remarks>
-        private void Recompose(ref ValueReorderingBuffer buffer, int startIndex,
+        private void Recompose(ref ReorderingBuffer buffer, int startIndex,
                                bool onlyContiguous)
         {
-            ref ValueReorderingBuffer sb = ref buffer;
+            ref ReorderingBuffer sb = ref buffer;
             int p = startIndex;
             if (p == sb.Length)
             {
