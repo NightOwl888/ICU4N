@@ -769,7 +769,7 @@ namespace ICU4N.Util
         /// (Only uses the output.Append(c) method.)</param>
         /// <returns>The number of chars which continue the string from here.</returns>
         /// <stable>ICU 4.8</stable>
-        public int GetNextChars(StringBuilder output) /*const*/
+        public int GetNextChars(StringBuilder output) /*const*/ // ICU4N TODO: API - Remove StringBuilder from API. Originally this was IAppendable, but we could probably make it accept a delegate to receive the entire value. TryGetNextChars() won't work because the method advances the position and may even change the node or other state of CharsTrie, so we need a method that cannot fail but accept any length.
         {
             ReadOnlySpan<char> chars_ = this.chars_.Span;
 
